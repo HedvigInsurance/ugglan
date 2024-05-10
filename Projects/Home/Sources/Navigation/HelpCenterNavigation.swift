@@ -223,48 +223,14 @@ public struct HelpCenterNavigation<Content: View>: View {
     }
 
     private func getSubmitClaimDeflectScreen() -> some View {
-        let store: HomeStore = globalPresentableStoreContainer.get()
-        let quickActions = store.state.quickActions
-        let sickAbroadPartners: [Partner]? = quickActions.first(where: { $0.sickAboardPartners != nil })?
-            .sickAboardPartners
-            .map { sickabr in
-                sickabr.map { partner in
-                    Partner(id: "", imageUrl: partner.imageUrl, url: "", phoneNumber: partner.phoneNumber)
-                }
-            }
-
-        let config = FlowClaimDeflectConfig(
-            infoText: L10n.submitClaimEmergencyInfoLabel,
-            infoSectionText: L10n.submitClaimEmergencyInsuranceCoverLabel,
-            infoSectionTitle: L10n.submitClaimEmergencyInsuranceCoverTitle,
-            cardTitle: L10n.submitClaimEmergencyGlobalAssistanceTitle,
-            cardText: L10n.submitClaimEmergencyGlobalAssistanceLabel,
-            buttonText: nil,
-            infoViewTitle: nil,
-            infoViewText: nil,
-            questions: [
-                .init(question: L10n.submitClaimEmergencyFaq1Title, answer: L10n.submitClaimEmergencyFaq1Label),
-                .init(question: L10n.submitClaimEmergencyFaq2Title, answer: L10n.submitClaimEmergencyFaq2Label),
-                .init(question: L10n.submitClaimEmergencyFaq3Title, answer: L10n.submitClaimEmergencyFaq3Label),
-                .init(question: L10n.submitClaimEmergencyFaq4Title, answer: L10n.submitClaimEmergencyFaq4Label),
-                .init(question: L10n.submitClaimEmergencyFaq5Title, answer: L10n.submitClaimEmergencyFaq5Label),
-                .init(question: L10n.submitClaimEmergencyFaq6Title, answer: L10n.submitClaimEmergencyFaq6Label),
-            ]
-        )
-        return SubmitClaimDeflectScreen(
-            openChat: {
-                NotificationCenter.default.post(name: .openChat, object: ChatTopicWrapper(topic: nil, onTop: true))
-            },
-            isEmergencyStep: true,
-            partners: sickAbroadPartners ?? [],
-            config: config
-        )
+        redirect(.deflect)
     }
 }
 
 public enum HelpCenterRedirectType {
     case travelInsurance(redirect: (HelpCenterRedirectType) -> Void)
     case moveFlow
+    case deflect
     case editCoInsured(
         config: InsuredPeopleConfig,
         showMissingAlert: Bool,

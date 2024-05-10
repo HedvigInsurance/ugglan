@@ -2,7 +2,6 @@ import Apollo
 import Chat
 import Combine
 import Contracts
-//import EditCoInsuredShared
 import Foundation
 import Payment
 import Presentation
@@ -13,7 +12,6 @@ import hCoreUI
 import hGraphQL
 
 public struct HomeView<Claims: View>: View {
-
     @PresentableStore var store: HomeStore
     @StateObject var vm = HomeVM()
     @Inject var featureFlags: FeatureFlags

@@ -7,6 +7,8 @@ struct PriceInputScreen: View {
     @PresentableStore var store: SubmitClaimStore
     @State var purchasePrice: String = ""
     @State var type: ClaimsFlowSingleItemFieldType? = .purchasePrice
+    @EnvironmentObject var router: Router
+
     let currency: String
     var onSave: (String) -> Void
 
@@ -46,7 +48,7 @@ struct PriceInputScreen: View {
                     }
                     hButton.LargeButton(type: .ghost) {
                         UIApplication.dismissKeyboard()
-                        store.send(.navigationAction(action: .dismissScreen))
+                        router.dismiss()
                     } content: {
                         hText(L10n.generalNotSure, style: .body)
                     }

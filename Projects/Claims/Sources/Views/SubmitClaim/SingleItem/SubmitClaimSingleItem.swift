@@ -7,6 +7,7 @@ import hGraphQL
 public struct SubmitClaimSingleItem: View {
     @PresentableStore var store: SubmitClaimStore
     @State var type: ClaimsFlowSingleItemFieldType?
+    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
 
     public init() {}
 
@@ -60,7 +61,7 @@ public struct SubmitClaimSingleItem: View {
                 value: singleItemStep?.getBrandOrModelName() ?? "",
                 placeholder: L10n.singleItemInfoBrand,
                 onTap: {
-                    store.send(.navigationAction(action: .openBrandPicker))
+                    claimsNavigationVm.isBrandPickerPresented = true
                 }
             )
         }
@@ -85,7 +86,7 @@ public struct SubmitClaimSingleItem: View {
                 value: claim?.getChoosenDamagesAsText() ?? "",
                 placeholder: L10n.Claims.Item.Screen.Damage.button,
                 onTap: {
-                    store.send(.navigationAction(action: .openDamagePickerScreen))
+                    claimsNavigationVm.isDamagePickerPresented = true
                 }
             )
         }
@@ -97,7 +98,7 @@ public struct SubmitClaimSingleItem: View {
                 ? String(format: "%.0f", claim?.purchasePrice ?? 0) + " " + (claim?.prefferedCurrency ?? "") : "",
             placeholder: L10n.Claims.Item.Screen.Purchase.Price.button,
             onTap: {
-                store.send(.navigationAction(action: .openPriceInput))
+                claimsNavigationVm.isPriceInputPresented = true
             }
         )
     }

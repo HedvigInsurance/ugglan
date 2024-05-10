@@ -1,7 +1,5 @@
 import Claims
 import Combine
-import Foundation
-import Presentation
 import Profile
 import SwiftUI
 import hCore
@@ -14,14 +12,14 @@ struct SlideTrack: View {
 
     var body: some View {
         ZStack {
-            VStack(alignment: .center) {
-                L10n.claimsPledgeSlideLabel.hText(.body)
-                    .foregroundColor(getLabelColor)
-
+            withAnimation(shouldAnimate && labelOpacity == 1 ? .easeInOut : nil) {
+                VStack(alignment: .center) {
+                    L10n.claimsPledgeSlideLabel.hText(.body)
+                        .foregroundColor(getLabelColor)
+                        .frame(maxWidth: .infinity)
+                        .opacity(didFinished ? 0 : labelOpacity)
+                }
             }
-            .frame(maxWidth: .infinity)
-            .opacity(didFinished ? 0 : labelOpacity)
-            .animation(shouldAnimate && labelOpacity == 1 ? .easeInOut : nil)
         }
         .frame(height: 58)
         .frame(maxWidth: .infinity)
@@ -110,7 +108,6 @@ struct DidAcceptPledgeNotifier: View {
     var dragOffsetX: CGFloat
     let onConfirmAction: (() -> Void)?
     @Binding var hasNotifiedStore: Bool
-    @PresentableStore var store: ClaimsStore
     var body: some View {
         GeometryReader { geo in
             Color.clear.onReceive(
@@ -120,7 +117,6 @@ struct DidAcceptPledgeNotifier: View {
                     hasNotifiedStore = true
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
                         onConfirmAction?()
-                        store.send(.didAcceptHonestyPledge)
                     }
                 }
             }
@@ -183,6 +179,7 @@ struct SlideToConfirm: View {
 }
 
 struct HonestyPledge: View {
+    @EnvironmentObject var router: Router
     let onConfirmAction: (() -> Void)?
 
     init(
@@ -210,8 +207,7 @@ struct HonestyPledge: View {
                 .padding(.bottom, 20)
 
                 hButton.LargeButton(type: .ghost) {
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    store.send(.dissmissNewClaimFlow)
+                    router.dismiss()
                 } content: {
                     L10n.generalCancelButton.hText(.body)
                         .foregroundColor(hTextColor.primary)
@@ -220,49 +216,6 @@ struct HonestyPledge: View {
             }
             .padding(.horizontal, 24)
             .fixedSize(horizontal: false, vertical: true)
-        }
-        .hDisableScroll
-    }
-}
-
-extension HonestyPledge {
-    static func journey<Next: JourneyPresentation>(
-        style: PresentationStyle,
-        @JourneyBuilder _ next: @escaping () -> Next
-    ) -> some JourneyPresentation {
-        HostingJourney(
-            ClaimsStore.self,
-            rootView: HonestyPledge(onConfirmAction: nil),
-            style: style,
-            options: [
-                .defaults, .blurredBackground,
-            ]
-        ) { action in
-            if case .didAcceptHonestyPledge = action {
-                next()
-            }
-        }
-        .withDismissButton
-    }
-}
-
-extension HonestyPledge {
-    @ViewBuilder
-    static func journey(from origin: ClaimsOrigin) -> some View {
-        HonestyPledge {
-            let profileStore: ProfileStore = globalPresentableStoreContainer.get()
-            if profileStore.state.pushNotificationCurrentStatus() != .authorized {
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                store.send(.navigationAction(action: .openNotificationsPermissionScreen))
-            } else {
-                let vc = UIApplication.shared.getTopViewController()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                    vc?.sheetPresentationController?.presentedViewController.view.alpha = 0
-                }
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                store.send(.navigationAction(action: .dismissPreSubmitScreensAndStartClaim(origin: origin)))
-
-            }
         }
         .hDisableScroll
     }

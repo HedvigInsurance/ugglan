@@ -56,17 +56,12 @@ public enum SubmitClaimsNavigationAction: ActionProtocol, Hashable {
     case openPhoneNumberScreen(model: FlowClaimPhoneNumberStepModel)
     case openDateOfOccurrencePlusLocationScreen(options: SubmitClaimOption)
     case openAudioRecordingScreen
-    case openLocationPicker
     case openSuccessScreen
     case openSingleItemScreen
     case openSummaryScreen
     case openSummaryEditScreen
-    case openDamagePickerScreen
-    case openModelPicker
-    case openBrandPicker
-    case openPriceInput
+    //    case openModelPicker
     case openCheckoutNoRepairScreen
-    case openCheckoutTransferringScreen
     case openFailureSceen
     case openUpdateAppScreen
     case openNotificationsPermissionScreen
@@ -77,11 +72,6 @@ public enum SubmitClaimsNavigationAction: ActionProtocol, Hashable {
     case openDeflectScreen
     case openConfirmEmergencyScreen
     case openFileUploadScreen
-    case openFilesFor(endPoint: String, files: [File])
-    case dismissFileUploadScreen
-    case openInfoScreen(title: String?, description: String?)
-    case dismissScreen
-    case dismissPreSubmitScreensAndStartClaim(origin: ClaimsOrigin)
 
     public struct SubmitClaimOption: OptionSet, ActionProtocol, Hashable {
         public let rawValue: UInt

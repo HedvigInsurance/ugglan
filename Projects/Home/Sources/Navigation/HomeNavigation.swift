@@ -42,6 +42,17 @@ public class HomeNavigationViewModel: ObservableObject {
         public var isNewOfferPresented = false
     }
 
+    public struct FileUrlModel: Identifiable, Equatable {
+        public var id: String?
+        public var url: URL
+
+        public init(
+            url: URL
+        ) {
+            self.url = url
+        }
+    }
+
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
