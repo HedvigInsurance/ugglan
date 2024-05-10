@@ -13,6 +13,7 @@ struct HomeBottomScrollView: View {
     @StateObject var scrollVM: InfoCardScrollViewModel
 
     @EnvironmentObject var navigationVm: HomeNavigationViewModel
+    @EnvironmentObject var paymentVm: PaymentsNavigationViewModel
 
     init(memberId: String) {
         self.vm = HomeButtonScrollViewModel(memberId: memberId)

@@ -34,6 +34,7 @@ struct MainNavigationJourney: App {
     @StateObject var vm = MainNavigationViewModel()
     @StateObject var homeNavigationVm = HomeNavigationViewModel()
     @StateObject var profileNavigationVm = ProfileNavigationViewModel()
+    @StateObject var paymentsNavigationVm = PaymentsNavigationViewModel()
     @StateObject var router = Router()
     @StateObject var foreverRouter = Router()
     @StateObject var paymentsRouter = Router()
@@ -82,6 +83,7 @@ struct MainNavigationJourney: App {
             }
         }
         .environmentObject(homeNavigationVm)
+        .environmentObject(paymentsNavigationVm)
         .detent(
             presented: $homeNavigationVm.isSubmitClaimPresented,
             style: .height
@@ -98,8 +100,9 @@ struct MainNavigationJourney: App {
                     .embededInNavigation(options: [.navigationType(type: .large)])
             }
         }
-        .modally(
-            item: $homeNavigationVm.isEditCoInsuredPresented
+        .detent(
+            item: $homeNavigationVm.isEditCoInsuredPresented,
+            style: .height
         ) { config in
             EditCoInsuredNavigation(
                 config: config,
@@ -128,7 +131,7 @@ struct MainNavigationJourney: App {
                 switch redirectType {
                 case .moveFlow:
                     MovingFlowNavigation()
-                case let .editCoInsured(config, hasMissingAlert, isMissingAlertAction):
+                case let .editCoInsured(config, _, _):
                     getEditCoInsuredView(config: config)
                 case let .editCoInuredSelectInsurance(configs, _):
                     EditCoInsuredSelectInsuranceNavigation(
@@ -145,6 +148,9 @@ struct MainNavigationJourney: App {
                             )
                         }
                     )
+                case .connectPayment:
+                    /* TODO: FIX. GET EMPTY VIEW THAT IS NOT DISMISSED */
+                    let _ = paymentsNavigationVm.isConnectPaymentPresented = .init(setUpType: .initial)
                 }
             })
             .environmentObject(homeNavigationVm)
@@ -232,7 +238,7 @@ struct MainNavigationJourney: App {
     }
 
     var paymentsTab: some View {
-        PaymentsNavigation(redirect: { redirectType in
+        PaymentsNavigation(paymentsNavigationVm: paymentsNavigationVm) { redirectType in
             switch redirectType {
             case .forever:
                 ForeverNavigation(useOwnNavigation: false)
@@ -243,7 +249,7 @@ struct MainNavigationJourney: App {
                         openUrl(url: url)
                     }
             }
-        })
+        }
         .environmentObject(paymentsRouter)
         .tabItem {
             Image(

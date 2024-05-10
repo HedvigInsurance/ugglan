@@ -2,7 +2,6 @@ import Chat
 import Contracts
 import EditCoInsured
 import EditCoInsuredShared
-import Payment
 import Presentation
 import SafariServices
 import SwiftUI
@@ -64,7 +63,7 @@ public struct HelpCenterNavigation<Content: View>: View {
             presented: $helpCenterVm.quickActions.isConnectPaymentsPresented,
             style: .large
         ) {
-            PaymentsView()
+            redirect(.connectPayment)
         }
         .detent(
             item: $helpCenterVm.quickActions.isEditCoInsuredMissingContractPresented,
@@ -272,6 +271,7 @@ public struct HelpCenterNavigation<Content: View>: View {
 public enum HelpCenterRedirectType {
     case travelInsurance(redirect: (HelpCenterRedirectType) -> Void)
     case moveFlow
+    case connectPayment
     case editCoInsured(
         config: InsuredPeopleConfig,
         showMissingAlert: Bool,
