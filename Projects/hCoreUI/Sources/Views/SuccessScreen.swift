@@ -171,15 +171,6 @@ struct SuccessScreenWithCustomBottom_Previews: PreviewProvider {
             }
     }
 }
-extension SuccessScreen {
-    public static func journey(with title: String) -> some JourneyPresentation {
-        HostingJourney(
-            rootView: SuccessScreen(title: title),
-            options: [.prefersNavigationBarHidden(true)]
-        )
-        .hidesBackButton
-    }
-}
 
 private struct EnvironmentHSuccessBottomAttachedView: EnvironmentKey {
     static let defaultValue: AnyView? = nil
