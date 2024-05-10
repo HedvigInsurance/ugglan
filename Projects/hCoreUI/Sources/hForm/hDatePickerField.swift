@@ -116,7 +116,7 @@ public struct hDatePickerField: View {
                 }
             }
             .modifier(hFontModifier(style: size == .large ? .title3 : .standard))
-            .foregroundColor(hTextColor.primary)
+            .foregroundColor(foregroundColor)
             Spacer()
         }
     }

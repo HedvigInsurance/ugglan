@@ -57,7 +57,6 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
                 state.dateOfOccurenceStep
             }
         ) { dateOfOccurenceStep in
-
             if let dateOfOccurrenceStep = dateOfOccurenceStep {
                 hDatePickerField(
                     config: .init(

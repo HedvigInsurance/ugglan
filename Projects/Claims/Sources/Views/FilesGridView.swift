@@ -10,7 +10,7 @@ import hCoreUI
 struct FilesGridView: View {
     @ObservedObject var vm: FileGridViewModel
     @PresentableStore private var store: ClaimsStore
-    @EnvironmentObject var homeNavigationVm: HomeNavigationViewModel
+    @State private var fileModel: HomeNavigationViewModel.FileUrlModel?
 
     private let adaptiveColumn = [
         GridItem(.flexible(), spacing: 8),
@@ -58,15 +58,23 @@ struct FilesGridView: View {
                 .transition(.scale.combined(with: .opacity))
             }
         }
+        .detent(
+            item: $fileModel,
+            style: .large
+        ) { model in
+            DocumentPreview(url: model.url)
+                .withDismissButton()
+                .embededInNavigation()
+        }
     }
 
     @MainActor
     func show(file: File) {
         switch file.source {
         case let .localFile(url, _):
-            homeNavigationVm.isFilePresented = .init(url: url)
+            fileModel = .init(url: url)
         case .url(let url):
-            homeNavigationVm.isFilePresented = .init(url: url)
+            fileModel = .init(url: url)
         }
     }
 }
