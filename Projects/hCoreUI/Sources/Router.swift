@@ -210,6 +210,12 @@ extension View {
             vc.navigationItem.titleView = titleView.getTitleView()
         }
     }
+
+    public var enableModalInPresentation: some View {
+        self.introspectViewController { vc in
+            vc.isModalInPresentation = true
+        }
+    }
 }
 
 public protocol TitleView {

@@ -34,6 +34,7 @@ struct MainNavigationJourney: App {
     @StateObject var vm = MainNavigationViewModel()
     @StateObject var homeNavigationVm = HomeNavigationViewModel()
     @StateObject var profileNavigationVm = ProfileNavigationViewModel()
+    @StateObject var paymentsNavigationVm = PaymentsNavigationViewModel()
     @StateObject var router = Router()
     @StateObject var foreverRouter = Router()
     @StateObject var paymentsRouter = Router()
@@ -82,6 +83,7 @@ struct MainNavigationJourney: App {
             }
         }
         .environmentObject(homeNavigationVm)
+        .environmentObject(paymentsNavigationVm)
         .detent(
             presented: $homeNavigationVm.isSubmitClaimPresented,
             style: .height,
@@ -180,6 +182,9 @@ struct MainNavigationJourney: App {
                             )
                         }
                     )
+                case .connectPayment:
+                    /* TODO: FIX. GET EMPTY VIEW THAT IS NOT DISMISSED */
+                    let _ = paymentsNavigationVm.isConnectPaymentPresented = .init(setUpType: .initial)
                 }
             })
             .environmentObject(homeNavigationVm)
@@ -267,7 +272,7 @@ struct MainNavigationJourney: App {
     }
 
     var paymentsTab: some View {
-        PaymentsNavigation(redirect: { redirectType in
+        PaymentsNavigation(paymentsNavigationVm: paymentsNavigationVm) { redirectType in
             switch redirectType {
             case .forever:
                 ForeverNavigation(useOwnNavigation: false)
@@ -278,7 +283,7 @@ struct MainNavigationJourney: App {
                         openUrl(url: url)
                     }
             }
-        })
+        }
         .environmentObject(paymentsRouter)
         .tabItem {
             Image(
