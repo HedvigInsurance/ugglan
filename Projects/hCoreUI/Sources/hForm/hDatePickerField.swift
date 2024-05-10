@@ -351,10 +351,10 @@ struct hDatePickerField_Previews: PreviewProvider {
     }
 }
 
-public class ReferenceAction {
+class ReferenceAction {
     var execute: () -> (Void)
 
-    public init(
+    init(
         execute: @escaping () -> Void
     ) {
         self.execute = execute

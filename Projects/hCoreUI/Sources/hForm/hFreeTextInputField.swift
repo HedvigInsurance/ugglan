@@ -2,7 +2,7 @@ import Flow
 import SwiftUI
 import hCore
 
-public class hFreeTextInputFieldNavigationViewModel: ObservableObject {
+class hFreeTextInputFieldNavigationViewModel: ObservableObject {
     @Published var isFieldPresented: FreeTextInputViewModel?
 }
 
@@ -146,12 +146,12 @@ public struct hFreeTextInputField: View {
     }
 }
 
-public struct FreeTextInputViewModel: Equatable, Identifiable {
-    public static func == (lhs: FreeTextInputViewModel, rhs: FreeTextInputViewModel) -> Bool {
+struct FreeTextInputViewModel: Equatable, Identifiable {
+    static func == (lhs: FreeTextInputViewModel, rhs: FreeTextInputViewModel) -> Bool {
         return lhs.id == rhs.id
     }
 
-    public var id: String?
+    var id: String?
 
     fileprivate let continueAction: ReferenceAction
     fileprivate let cancelAction: ReferenceAction
@@ -159,7 +159,7 @@ public struct FreeTextInputViewModel: Equatable, Identifiable {
     let maxCharacters = 140
     let infoCardText: String?
 
-    public init(
+    init(
         continueAction: ReferenceAction,
         cancelAction: ReferenceAction,
         value: Binding<String>,
