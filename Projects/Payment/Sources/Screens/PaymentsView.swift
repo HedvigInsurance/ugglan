@@ -103,6 +103,7 @@ public struct PaymentsView: View {
                 }
                 hSection {
                     ConnectPaymentCardView()
+                        .environmentObject(paymentNavigationVm.connectPaymentVm)
                 }
                 if let status = state.paymentData?.status, status != .upcoming {
                     hSection {
@@ -184,7 +185,7 @@ public struct PaymentsView: View {
                             InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
                         }
                         hButton.LargeButton(type: .secondary) {
-                            paymentNavigationVm.isConnectPaymentPresented = .init(setUpType: nil)
+                            paymentNavigationVm.connectPaymentVm.connectPaymentModel = .init(setUpType: nil)
                         } content: {
                             hText(statusData.connectButtonTitle)
                         }

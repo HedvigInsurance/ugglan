@@ -6,9 +6,8 @@ import hCoreUI
 
 public struct ConnectPaymentCardView: View {
     @PresentableStore var store: PaymentStore
-    @EnvironmentObject var connectPaymentsVm: PaymentsNavigationViewModel
+    @EnvironmentObject var connectPaymentVm: ConnectPaymentViewModel
     @EnvironmentObject var router: Router
-
     public init() {}
     public var body: some View {
         PresentableStoreLens(
@@ -55,12 +54,11 @@ public struct ConnectPaymentCardView: View {
                     .init(
                         buttonTitle: L10n.PayInExplainer.buttonText,
                         buttonAction: {
-                            connectPaymentsVm.isConnectPaymentPresented = .init(setUpType: .initial)
+                            connectPaymentVm.connectPaymentModel = .init(setUpType: .initial)
                         }
                     )
                 ]
             )
         }
     }
-
 }

@@ -10,14 +10,11 @@ import hCoreUI
 
 struct HomeBottomScrollView: View {
     @ObservedObject private var vm: HomeButtonScrollViewModel
-    @StateObject var scrollVM: InfoCardScrollViewModel
-
+    @StateObject var scrollVM: InfoCardScrollViewModel = .init(spacing: 16, zoomFactor: 0.9, itemsCount: 0)
     @EnvironmentObject var navigationVm: HomeNavigationViewModel
-    @EnvironmentObject var paymentVm: PaymentsNavigationViewModel
 
     init(memberId: String) {
         self.vm = HomeButtonScrollViewModel(memberId: memberId)
-        self._scrollVM = StateObject(wrappedValue: .init(spacing: 16, zoomFactor: 0.9, itemsCount: 0))
     }
 
     var body: some View {
@@ -28,6 +25,7 @@ struct HomeBottomScrollView: View {
                 switch content.id {
                 case .payment:
                     ConnectPaymentCardView()
+                        .environmentObject(navigationVm.connectPaymentVm)
                 case .renewal:
                     RenewalCardView()
                 case .deletedView:
