@@ -83,7 +83,7 @@ struct MainNavigationJourney: App {
             }
         }
         .environmentObject(homeNavigationVm)
-        .environmentObject(paymentsNavigationVm)
+        .handleConnectPayment(with: homeNavigationVm.connectPaymentVm)
         .detent(
             presented: $homeNavigationVm.isSubmitClaimPresented,
             style: .height,
@@ -182,9 +182,6 @@ struct MainNavigationJourney: App {
                             )
                         }
                     )
-                case .connectPayment:
-                    /* TODO: FIX. GET EMPTY VIEW THAT IS NOT DISMISSED */
-                    let _ = paymentsNavigationVm.isConnectPaymentPresented = .init(setUpType: .initial)
                 }
             })
             .environmentObject(homeNavigationVm)

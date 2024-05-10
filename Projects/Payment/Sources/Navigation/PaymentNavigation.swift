@@ -6,22 +6,9 @@ import hCoreUI
 public class PaymentsNavigationViewModel: ObservableObject {
 
     public init() {}
-
+    var connectPaymentVm = ConnectPaymentViewModel()
     @Published public var isAddCampaignPresented = false
-    @Published public var isConnectPaymentPresented: SetupTypeNavigationModel?
     @Published public var isDeleteCampaignPresented: Discount?
-}
-
-public struct SetupTypeNavigationModel: Equatable, Identifiable {
-
-    public init(
-        setUpType: SetupType?
-    ) {
-        self.setUpType = setUpType
-    }
-
-    public var id: String?
-    var setUpType: SetupType?
 }
 
 public struct PaymentsNavigation<Content: View>: View {
@@ -86,36 +73,7 @@ public struct PaymentsNavigation<Content: View>: View {
             DeleteCampaignView(vm: .init(discount: discount))
                 .embededInNavigation(options: .navigationType(type: .large))
         }
-        .detent(
-            item: $paymentsNavigationVm.isConnectPaymentPresented,
-            style: .large
-        ) { setupTypeModel in
-            let featureFlags: FeatureFlags = Dependencies.shared.resolve()
-            switch featureFlags.paymentType {
-            case .adyen:
-                EmptyView()
-                    .onAppear {
-                        Task {
-                            let paymentServcice: AdyenService = Dependencies.shared.resolve()
-                            do {
-                                let url = try await paymentServcice.getAdyenUrl()
-                                router.push(PaymentsRouterAction.openUrl(url: url))
-                            } catch {
-                                //we are not so concern about this
-                            }
-                        }
-                    }
-
-            case .trustly:
-                DirectDebitSetup()
-                    .configureTitle(
-                        setupTypeModel.setUpType == .replacement
-                            ? L10n.PayInIframeInApp.connectPayment : L10n.PayInIframePostSign.title
-                    )
-                    .embededInNavigation(options: .navigationType(type: .large))
-            }
-
-        }
+        .handleConnectPayment(with: paymentsNavigationVm.connectPaymentVm)
     }
 }
 
