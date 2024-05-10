@@ -124,9 +124,8 @@ struct MainNavigationJourney: App {
                 missingContractConfig: config
             )
         }
-        .detent(
-            presented: $homeNavigationVm.isHelpCenterPresented,
-            style: .height
+        .fullScreenCover(
+            isPresented: $homeNavigationVm.isHelpCenterPresented
         ) {
             HelpCenterNavigation(redirect: { redirectType in
                 switch redirectType {
