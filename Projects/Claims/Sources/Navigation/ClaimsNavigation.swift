@@ -315,6 +315,7 @@ public struct ClaimsNavigation: View {
     private func openFileUploadScreen() -> some View {
         let store: SubmitClaimStore = globalPresentableStoreContainer.get()
         return SubmitClaimFilesUploadScreen(model: store.state.fileUploadStep!)
+            .resetProgressToPreviousValueOnDismiss
             .addDismissClaimsFlow()
     }
 
