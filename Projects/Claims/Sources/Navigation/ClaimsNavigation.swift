@@ -406,14 +406,12 @@ public struct ClaimsNavigation: View {
                     }
                 }
                 claimsNavigationVm.isDamagePickerPresented = false
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    store.send(
-                        .submitDamage(
-                            damage: damages
-                        )
+                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                store.send(
+                    .setSingleItemDamage(
+                        damages: damages
                     )
-                }
+                )
             },
             onCancel: {
                 router.dismiss()

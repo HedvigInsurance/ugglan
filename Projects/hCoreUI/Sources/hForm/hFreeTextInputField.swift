@@ -1,7 +1,10 @@
 import Flow
-import Presentation
 import SwiftUI
 import hCore
+
+class hFreeTextInputFieldNavigationViewModel: ObservableObject {
+    @Published var isFieldPresented: FreeTextInputViewModel?
+}
 
 public struct hFreeTextInputField: View {
     private var placeholder: String
@@ -12,6 +15,9 @@ public struct hFreeTextInputField: View {
     @State private var disposeBag = DisposeBag()
     private let onContinue: (_ text: String) -> Void
     private let infoCardText: String?
+
+    @StateObject var freeTextInputNavigationModel = hFreeTextInputFieldNavigationViewModel()
+    @EnvironmentObject var router: Router
 
     public var shouldMoveLabel: Binding<Bool> {
         Binding(
@@ -42,6 +48,14 @@ public struct hFreeTextInputField: View {
             }
             .hWithoutFixedHeight
         }
+        .detent(
+            item: $freeTextInputNavigationModel.isFieldPresented,
+            style: .height
+        ) { freeTextPickerVm in
+            freeTextInputView(vm: freeTextPickerVm)
+                .embededInNavigation(options: .largeNavigationBar)
+                .configureTitle(placeholder)
+        }
     }
 
     private func showFreeTextField() {
@@ -50,52 +64,29 @@ public struct hFreeTextInputField: View {
 
         value = selectedValue ?? ""
 
-        let view = freeTextInputView(
+        freeTextInputNavigationModel.isFieldPresented = .init(
             continueAction: continueAction,
             cancelAction: cancelAction,
             value: $value,
             infoCardText: infoCardText
         )
 
-        let journey = HostingJourney(
-            rootView: view,
-            style: .detented(.scrollViewContentSize),
-            options: [.largeNavigationBar, .blurredBackground]
-        )
-        //        .configureTitle(placeholder)
-
-        let freeTextFieldJourney = journey.addConfiguration { presenter in
-            continueAction.execute = {
-                self.onContinue(value)
-                presenter.dismisser(JourneyError.cancelled)
-            }
-            cancelAction.execute = {
-                presenter.dismisser(JourneyError.cancelled)
-            }
+        continueAction.execute = {
+            self.onContinue(value)
+            router.dismiss()
         }
-        let vc = UIApplication.shared.getTopViewController()
-        if let vc {
-            disposeBag += vc.present(freeTextFieldJourney)
+        cancelAction.execute = {
+            router.dismiss()
         }
     }
 
     private struct freeTextInputView: View {
-        fileprivate let continueAction: ReferenceAction
-        fileprivate let cancelAction: ReferenceAction
-        @Binding fileprivate var value: String
-        private let maxCharacters = 140
-        private let infoCardText: String?
+        private let vm: FreeTextInputViewModel
 
-        public init(
-            continueAction: ReferenceAction,
-            cancelAction: ReferenceAction,
-            value: Binding<String>,
-            infoCardText: String? = nil
+        init(
+            vm: FreeTextInputViewModel
         ) {
-            self.continueAction = continueAction
-            self.cancelAction = cancelAction
-            self._value = value
-            self.infoCardText = infoCardText
+            self.vm = vm
         }
 
         public var body: some View {
@@ -104,12 +95,12 @@ public struct hFreeTextInputField: View {
                     VStack {
                         hTextField(
                             masking: Masking(type: .none),
-                            value: $value,
+                            value: vm.$value,
                             placeholder: L10n.textInputFieldPlaceholder
                         )
                         .hTextFieldOptions([.useLineBreak, .minimumHeight(height: 96)])
                         Spacer()
-                        hText("\(value.count)/\(maxCharacters)", style: .standardSmall)
+                        hText("\(vm.value.count)/\(vm.maxCharacters)", style: .standardSmall)
                             .foregroundColor(getTextColor)
                             .frame(maxWidth: .infinity, alignment: .trailing)
                     }
@@ -119,7 +110,7 @@ public struct hFreeTextInputField: View {
                         Squircle.default()
                             .fill(hFillColor.opaqueOne)
                     )
-                    if let infoCardText {
+                    if let infoCardText = vm.infoCardText {
                         InfoCard(text: infoCardText, type: .info)
                     }
                 }
@@ -128,13 +119,13 @@ public struct hFreeTextInputField: View {
             .hFormAttachToBottom {
                 VStack(spacing: 8) {
                     hButton.LargeButton(type: .primary) {
-                        continueAction.execute()
+                        vm.continueAction.execute()
                     } content: {
                         hText(L10n.generalSaveButton)
                     }
-                    .disabled(value.count > maxCharacters)
+                    .disabled(vm.value.count > vm.maxCharacters)
                     hButton.LargeButton(type: .ghost) {
-                        cancelAction.execute()
+                        vm.cancelAction.execute()
                     } content: {
                         hText(L10n.generalCancelButton)
                     }
@@ -146,12 +137,38 @@ public struct hFreeTextInputField: View {
 
         @hColorBuilder
         var getTextColor: some hColor {
-            if value.count < maxCharacters {
+            if vm.value.count < vm.maxCharacters {
                 hTextColor.tertiary
             } else {
                 hSignalColor.redElement
             }
         }
+    }
+}
+
+struct FreeTextInputViewModel: Equatable, Identifiable {
+    static func == (lhs: FreeTextInputViewModel, rhs: FreeTextInputViewModel) -> Bool {
+        return lhs.id == rhs.id
+    }
+
+    var id: String?
+
+    fileprivate let continueAction: ReferenceAction
+    fileprivate let cancelAction: ReferenceAction
+    @Binding fileprivate var value: String
+    let maxCharacters = 140
+    let infoCardText: String?
+
+    init(
+        continueAction: ReferenceAction,
+        cancelAction: ReferenceAction,
+        value: Binding<String>,
+        infoCardText: String? = nil
+    ) {
+        self.continueAction = continueAction
+        self.cancelAction = cancelAction
+        self._value = value
+        self.infoCardText = infoCardText
     }
 }
 

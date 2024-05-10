@@ -23,10 +23,8 @@ struct LocationView: View {
             onSelected: { selectedLocation in
                 if let object = selectedLocation.first?.0 {
                     claimsNavigationVm.isLocationPickerPresented = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                        store.send(.setNewLocation(location: object))
-                    }
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    store.send(.setNewLocation(location: object))
                 }
             },
             onCancel: {
