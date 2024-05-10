@@ -3,6 +3,10 @@ import Presentation
 import SwiftUI
 import hCore
 
+public class hDatePickerFieldNavigationModel: ObservableObject {
+    @Published var isDatePickerPresented: DatePickerViewModel?
+}
+
 public struct hDatePickerField: View {
     private let config: HDatePickerFieldConfig
     private let onUpdate: (_ date: Date) -> Void
@@ -19,6 +23,9 @@ public struct hDatePickerField: View {
     private var placeholderText: String?
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hFieldSize) var size
+
+    @StateObject var datePickerNavigationModel = hDatePickerFieldNavigationModel()
+    @EnvironmentObject var router: Router
 
     public var shouldMoveLabel: Binding<Bool> {
         Binding(
@@ -87,6 +94,13 @@ public struct hDatePickerField: View {
             }
         }
         .disabled(!isEnabled)
+        .detent(
+            item: $datePickerNavigationModel.isDatePickerPresented,
+            style: .height
+        ) { datePickerVm in
+            DatePickerView(vm: datePickerVm)
+                .embededInNavigation(options: .largeNavigationBar)
+        }
     }
 
     private func getValueLabel() -> some View {
@@ -119,34 +133,22 @@ public struct hDatePickerField: View {
 
     private func showDatePicker() {
         let continueAction = ReferenceAction {}
-        let cancelAction = ReferenceAction {}
         if let initialySelectedValue = config.initialySelectedValue, selectedDate == nil {
             date = initialySelectedValue
         }
-        let view = DatePickerView(
+
+        datePickerNavigationModel.isDatePickerPresented = .init(
             continueAction: continueAction,
-            cancelAction: cancelAction,
+            cancelAction: {
+                router.dismiss()
+            },
             date: $date,
             config: config
         )
-        let journey = HostingJourney(
-            rootView: view,
-            style: .detented(.scrollViewContentSize),
-            options: [.largeNavigationBar, .blurredBackground]
-        )
 
-        let calendarJourney = journey.addConfiguration { presenter in
-            continueAction.execute = {
-                self.onContinue(date)
-                presenter.dismisser(JourneyError.cancelled)
-            }
-            cancelAction.execute = {
-                presenter.dismisser(JourneyError.cancelled)
-            }
-        }
-        let vc = UIApplication.shared.getTopViewController()
-        if let vc {
-            disposeBag += vc.present(calendarJourney)
+        continueAction.execute = {
+            self.onContinue(date)
+            router.dismiss()
         }
     }
 
@@ -182,7 +184,12 @@ public struct hDatePickerField: View {
     }
 }
 
-public struct DatePickerView: View {
+public struct DatePickerViewModel: Equatable, Identifiable {
+    public static func == (lhs: DatePickerViewModel, rhs: DatePickerViewModel) -> Bool {
+        return lhs.id == rhs.id
+    }
+
+    public var id: String?
     let continueAction: ReferenceAction
     let cancelAction: ReferenceAction
     @Binding var date: Date
@@ -190,12 +197,16 @@ public struct DatePickerView: View {
 
     init(
         continueAction: ReferenceAction,
-        cancelAction: ReferenceAction,
+        cancelAction: @escaping () -> Void,
         date: Binding<Date>,
         config: hDatePickerField.HDatePickerFieldConfig
     ) {
         self.continueAction = continueAction
-        self.cancelAction = cancelAction
+
+        self.cancelAction = .init(execute: {
+            cancelAction()
+        })
+
         self._date = date
         self.config = config
     }
@@ -215,12 +226,22 @@ public struct DatePickerView: View {
         self._date = date
         self.config = config
     }
+}
+
+public struct DatePickerView: View {
+    let vm: DatePickerViewModel
+
+    public init(
+        vm: DatePickerViewModel
+    ) {
+        self.vm = vm
+    }
 
     public var body: some View {
         hForm {
             hSection {
                 HStack {
-                    if config.showAsList ?? false {
+                    if vm.config.showAsList ?? false {
                         datePicker
                             .datePickerStyle(.wheel)
                             .padding(.trailing, 23)
@@ -238,10 +259,10 @@ public struct DatePickerView: View {
         .hFormAttachToBottom {
             VStack {
                 hButton.LargeButton(type: .primary) {
-                    continueAction.execute()
+                    vm.continueAction.execute()
                 } content: {
                     hText(
-                        config.buttonText ?? L10n.generalSaveButton,
+                        vm.config.buttonText ?? L10n.generalSaveButton,
                         style: .body
                     )
                     .foregroundColor(hTextColor.negative)
@@ -250,7 +271,7 @@ public struct DatePickerView: View {
                 .padding([.leading, .trailing], 16)
 
                 hButton.LargeButton(type: .ghost) {
-                    cancelAction.execute()
+                    vm.cancelAction.execute()
                 } content: {
                     hText(
                         L10n.generalCancelButton,
@@ -264,8 +285,8 @@ public struct DatePickerView: View {
         .toolbar {
             ToolbarItem(placement: .principal) {
                 VStack {
-                    hText(config.title)
-                    if let subtitle = date.displayDateDDMMMYYYYFormat, !(config.showAsList ?? false) {
+                    hText(vm.config.title)
+                    if let subtitle = vm.date.displayDateDDMMMYYYYFormat, !(vm.config.showAsList ?? false) {
                         hText(subtitle).foregroundColor(hTextColor.secondary)
                     }
                 }
@@ -274,33 +295,33 @@ public struct DatePickerView: View {
     }
 
     private var datePicker: some View {
-        let minDate = config.minDate
-        let maxDate = config.maxDate
+        let minDate = vm.config.minDate
+        let maxDate = vm.config.maxDate
         if let minDate, let maxDate {
             return DatePicker(
                 "",
-                selection: self.$date.animation(.easeInOut(duration: 0.2)),
+                selection: self.vm.$date.animation(.easeInOut(duration: 0.2)),
                 in: minDate...maxDate,
                 displayedComponents: [.date]
             )
         } else if let minDate {
             return DatePicker(
                 "",
-                selection: self.$date.animation(.easeInOut(duration: 0.2)),
+                selection: self.vm.$date.animation(.easeInOut(duration: 0.2)),
                 in: minDate...,
                 displayedComponents: [.date]
             )
         } else if let maxDate {
             return DatePicker(
                 "",
-                selection: self.$date.animation(.easeInOut(duration: 0.2)),
+                selection: self.vm.$date.animation(.easeInOut(duration: 0.2)),
                 in: ...maxDate,
                 displayedComponents: [.date]
             )
         } else {
             return DatePicker(
                 "",
-                selection: self.$date.animation(.easeInOut(duration: 0.2)),
+                selection: self.vm.$date.animation(.easeInOut(duration: 0.2)),
                 displayedComponents: [.date]
             )
         }
@@ -331,7 +352,7 @@ struct hDatePickerField_Previews: PreviewProvider {
     }
 }
 
-class ReferenceAction {
+public class ReferenceAction {
     var execute: () -> (Void)
 
     public init(
