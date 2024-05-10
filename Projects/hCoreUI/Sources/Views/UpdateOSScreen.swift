@@ -19,11 +19,3 @@ public struct UpdateOSScreen: View {
 #Preview{
     UpdateOSScreen()
 }
-
-extension UpdateOSScreen {
-    public static var journey: some JourneyPresentation {
-        HostingJourney(
-            rootView: UpdateOSScreen()
-        )
-    }
-}
