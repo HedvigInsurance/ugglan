@@ -14,7 +14,11 @@ struct ConnectPayment: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .detent(item: $vm.connectPaymentModel, style: .large) { setupTypeModel in
+            .detent(
+                item: $vm.connectPaymentModel,
+                style: .large,
+                options: .constant([.disableDismissOnScroll, .withoutGrabber])
+            ) { setupTypeModel in
                 let featureFlags: FeatureFlags = Dependencies.shared.resolve()
                 switch featureFlags.paymentType {
                 case .adyen:
