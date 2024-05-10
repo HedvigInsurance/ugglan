@@ -82,13 +82,6 @@ struct MainNavigationJourney: App {
             }
         }
         .environmentObject(homeNavigationVm)
-        .fullScreenCover(
-            item: $homeNavigationVm.isFilePresented
-        ) { urlModel in
-            DocumentPreview(url: urlModel.url)
-                .withDismissButton()
-                .embededInNavigation()
-        }
         .detent(
             presented: $homeNavigationVm.isSubmitClaimPresented,
             style: .height,
