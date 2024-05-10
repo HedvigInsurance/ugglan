@@ -41,8 +41,6 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
                     context: newClaimContext
                 )
             }
-        case let .submitDamage(damages):
-            send(.setSingleItemDamage(damages: damages))
         case let .singleItemRequest(purchasePrice):
             await executeAsync(loadingType: .postSingleItem) {
                 try await self.submitClaimService.singleItemRequest(
