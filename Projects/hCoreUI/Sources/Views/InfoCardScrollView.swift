@@ -83,6 +83,7 @@ public class InfoCardScrollViewModel: NSObject, ObservableObject, UIScrollViewDe
     @Published var calcOffset: CGFloat = 0
     @Published var scrollViewHeight: CGFloat = 0
     @Published var itemsCount: CGFloat = 0
+
     let spacing: CGFloat
     let cardWidth: CGFloat
     let cardWithSpacing: CGFloat

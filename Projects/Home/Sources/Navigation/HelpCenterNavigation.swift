@@ -2,6 +2,7 @@ import Chat
 import Contracts
 import EditCoInsured
 import EditCoInsuredShared
+import Payment
 import Presentation
 import SafariServices
 import SwiftUI
@@ -12,9 +13,8 @@ import hCoreUI
 
 public class HelpCenterNavigationViewModel: ObservableObject {
     @Published var quickActions = QuickActions()
-
+    var connectPaymentsVm = ConnectPaymentViewModel()
     struct QuickActions {
-        var isConnectPaymentsPresented = false
         var isTravelCertificatePresented = false
         var isChangeAddressPresented = false
         var isEditCoInsuredSelectContractPresented: CoInsuredConfigModel?
@@ -39,7 +39,6 @@ public struct HelpCenterNavigation<Content: View>: View {
     @PresentableStore private var store: HomeStore
     @ViewBuilder var redirect: (_ type: HelpCenterRedirectType) -> Content
     @StateObject var router = Router()
-
     public init(@ViewBuilder redirect: @escaping (_ type: HelpCenterRedirectType) -> Content) {
         self.redirect = redirect
     }
@@ -59,12 +58,6 @@ public struct HelpCenterNavigation<Content: View>: View {
             }
         }
         .ignoresSafeArea()
-        .detent(
-            presented: $helpCenterVm.quickActions.isConnectPaymentsPresented,
-            style: .large
-        ) {
-            redirect(.connectPayment)
-        }
         .detent(
             item: $helpCenterVm.quickActions.isEditCoInsuredMissingContractPresented,
             style: .height
@@ -178,13 +171,14 @@ public struct HelpCenterNavigation<Content: View>: View {
                 )
             }
         )
+        .handleConnectPayment(with: helpCenterVm.connectPaymentsVm)
         .environmentObject(helpCenterVm)
     }
 
     private func handle(quickAction: QuickAction) {
         switch quickAction {
         case .connectPayments:
-            helpCenterVm.quickActions.isConnectPaymentsPresented = true
+            helpCenterVm.connectPaymentsVm.connectPaymentModel = .init(setUpType: nil)
         case .travelInsurance:
             helpCenterVm.quickActions.isTravelCertificatePresented = true
         case .changeAddress:
@@ -271,7 +265,6 @@ public struct HelpCenterNavigation<Content: View>: View {
 public enum HelpCenterRedirectType {
     case travelInsurance(redirect: (HelpCenterRedirectType) -> Void)
     case moveFlow
-    case connectPayment
     case editCoInsured(
         config: InsuredPeopleConfig,
         showMissingAlert: Bool,

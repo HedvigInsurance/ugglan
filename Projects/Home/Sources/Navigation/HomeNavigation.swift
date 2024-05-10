@@ -1,6 +1,7 @@
 import Contracts
 import EditCoInsuredShared
 import Foundation
+import Payment
 import SwiftUI
 import hCore
 import hCoreUI
@@ -44,4 +45,6 @@ public class HomeNavigationViewModel: ObservableObject {
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
+
+    public var connectPaymentVm = ConnectPaymentViewModel()
 }
