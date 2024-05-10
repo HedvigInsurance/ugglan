@@ -83,7 +83,6 @@ struct MainNavigationJourney: App {
             }
         }
         .environmentObject(homeNavigationVm)
-        .environmentObject(paymentsNavigationVm)
         .handleConnectPayment(with: homeNavigationVm.connectPaymentVm)
         .detent(
             presented: $homeNavigationVm.isSubmitClaimPresented,

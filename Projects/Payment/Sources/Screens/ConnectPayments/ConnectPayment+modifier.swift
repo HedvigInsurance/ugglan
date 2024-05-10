@@ -43,7 +43,6 @@ struct ConnectPayment: ViewModifier {
 
 public class ConnectPaymentViewModel: ObservableObject {
     @Published public var connectPaymentModel: SetupTypeNavigationModel?
-
     public init() {
 
     }
