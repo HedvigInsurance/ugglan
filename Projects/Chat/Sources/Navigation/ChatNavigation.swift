@@ -5,7 +5,7 @@ import hCoreUI
 public class ChatNavigationViewModel: ObservableObject {
     @Published var isFilePresented: FileUrlModel?
 
-    struct FileUrlModel: Identifiable {
+    struct FileUrlModel: Identifiable, Equatable {
         public var id: String?
         var url: URL
     }
@@ -29,8 +29,9 @@ public struct ChatNavigation: View {
                 .withDismissButton()
         }
         .environmentObject(chatNavigationViewModel)
-        .fullScreenCover(
-            item: $chatNavigationViewModel.isFilePresented
+        .detent(
+            item: $chatNavigationViewModel.isFilePresented,
+            style: .large
         ) { urlModel in
             DocumentPreview(url: urlModel.url)
                 .withDismissButton()
