@@ -177,12 +177,12 @@ public struct ClaimsNavigation: View {
         ) { infoViewModel in
             openInfoView(model: infoViewModel)
         }
-        .fullScreenCover(
-            isPresented: $claimsNavigationVm.isCheckoutTransferringPresented
+        .modally(
+            presented: $claimsNavigationVm.isCheckoutTransferringPresented
         ) {
             openCheckoutTransferringScreen()
         }
-        .fullScreenCover(
+        .modally(
             item: $claimsNavigationVm.isClaimFilesPresented
         ) { claimsFileModel in
             openFileScreen(model: claimsFileModel)
@@ -315,6 +315,7 @@ public struct ClaimsNavigation: View {
     private func openFileUploadScreen() -> some View {
         let store: SubmitClaimStore = globalPresentableStoreContainer.get()
         return SubmitClaimFilesUploadScreen(model: store.state.fileUploadStep!)
+            .resetProgressToPreviousValueOnDismiss
             .addDismissClaimsFlow()
     }
 
@@ -350,34 +351,10 @@ public struct ClaimsNavigation: View {
     }
 
     private func openLocationScreen() -> some View {
-        CheckboxPickerScreen<ClaimFlowLocationOptionModel>(
-            items: {
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                return store.state.locationStep?.options
-                    .compactMap({ (object: $0, displayName: .init(title: $0.displayName)) }) ?? []
-            }(),
-            preSelectedItems: {
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                if let value = store.state.locationStep?.getSelectedOption() {
-                    return [value]
-                }
-                return []
-            },
-            onSelected: { selectedLocation in
-                if let object = selectedLocation.first?.0 {
-                    claimsNavigationVm.isLocationPickerPresented = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                        store.send(.setNewLocation(location: object))
-                    }
-                }
-            },
-            onCancel: {
-                router.dismiss()
-            },
-            singleSelect: true
-        )
-        .configureTitle(L10n.Claims.Incident.Screen.location)
+        LocationView()
+            .environmentObject(claimsNavigationVm)
+            .navigationTitle(L10n.Claims.Incident.Screen.location)
+
     }
 
     private func openBrandPickerScreen() -> some View {

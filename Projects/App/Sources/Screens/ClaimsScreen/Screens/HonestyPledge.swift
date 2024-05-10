@@ -1,7 +1,5 @@
 import Claims
 import Combine
-import Foundation
-import Presentation
 import Profile
 import SwiftUI
 import hCore
@@ -110,7 +108,6 @@ struct DidAcceptPledgeNotifier: View {
     var dragOffsetX: CGFloat
     let onConfirmAction: (() -> Void)?
     @Binding var hasNotifiedStore: Bool
-    @PresentableStore var store: ClaimsStore
     var body: some View {
         GeometryReader { geo in
             Color.clear.onReceive(
@@ -120,7 +117,6 @@ struct DidAcceptPledgeNotifier: View {
                     hasNotifiedStore = true
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
                         onConfirmAction?()
-                        store.send(.didAcceptHonestyPledge)
                     }
                 }
             }
@@ -183,6 +179,7 @@ struct SlideToConfirm: View {
 }
 
 struct HonestyPledge: View {
+    @EnvironmentObject var router: Router
     let onConfirmAction: (() -> Void)?
 
     init(
@@ -210,8 +207,7 @@ struct HonestyPledge: View {
                 .padding(.bottom, 20)
 
                 hButton.LargeButton(type: .ghost) {
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    store.send(.dissmissNewClaimFlow)
+                    router.dismiss()
                 } content: {
                     L10n.generalCancelButton.hText(.body)
                         .foregroundColor(hTextColor.primary)
