@@ -183,7 +183,7 @@ public struct hDatePickerField: View {
     }
 }
 
-public struct DatePickerViewModel: Equatable, Identifiable {
+public class DatePickerViewModel: ObservableObject, Equatable, Identifiable {
     public static func == (lhs: DatePickerViewModel, rhs: DatePickerViewModel) -> Bool {
         return lhs.id == rhs.id
     }
@@ -192,6 +192,11 @@ public struct DatePickerViewModel: Equatable, Identifiable {
     let continueAction: ReferenceAction
     let cancelAction: ReferenceAction
     @Binding var date: Date
+    @Published var dateSelected: Date {
+        didSet {
+            date = dateSelected
+        }
+    }
     let config: hDatePickerField.HDatePickerFieldConfig
 
     init(
@@ -206,6 +211,7 @@ public struct DatePickerViewModel: Equatable, Identifiable {
             cancelAction()
         })
 
+        self.dateSelected = date.wrappedValue
         self._date = date
         self.config = config
     }
@@ -223,12 +229,13 @@ public struct DatePickerViewModel: Equatable, Identifiable {
             cancelAction()
         })
         self._date = date
+        self.dateSelected = date.wrappedValue
         self.config = config
     }
 }
 
 public struct DatePickerView: View {
-    let vm: DatePickerViewModel
+    @ObservedObject var vm: DatePickerViewModel
 
     public init(
         vm: DatePickerViewModel
@@ -285,7 +292,7 @@ public struct DatePickerView: View {
             ToolbarItem(placement: .principal) {
                 VStack {
                     hText(vm.config.title)
-                    if let subtitle = vm.date.displayDateDDMMMYYYYFormat, !(vm.config.showAsList ?? false) {
+                    if let subtitle = vm.dateSelected.displayDateDDMMMYYYYFormat, !(vm.config.showAsList ?? false) {
                         hText(subtitle).foregroundColor(hTextColor.secondary)
                     }
                 }
@@ -299,28 +306,28 @@ public struct DatePickerView: View {
         if let minDate, let maxDate {
             return DatePicker(
                 "",
-                selection: self.vm.$date.animation(.easeInOut(duration: 0.2)),
+                selection: $vm.dateSelected.animation(.easeInOut(duration: 0.2)),
                 in: minDate...maxDate,
                 displayedComponents: [.date]
             )
         } else if let minDate {
             return DatePicker(
                 "",
-                selection: self.vm.$date.animation(.easeInOut(duration: 0.2)),
+                selection: $vm.dateSelected.animation(.easeInOut(duration: 0.2)),
                 in: minDate...,
                 displayedComponents: [.date]
             )
         } else if let maxDate {
             return DatePicker(
                 "",
-                selection: self.vm.$date.animation(.easeInOut(duration: 0.2)),
+                selection: $vm.dateSelected.animation(.easeInOut(duration: 0.2)),
                 in: ...maxDate,
                 displayedComponents: [.date]
             )
         } else {
             return DatePicker(
                 "",
-                selection: self.vm.$date.animation(.easeInOut(duration: 0.2)),
+                selection: $vm.dateSelected,
                 displayedComponents: [.date]
             )
         }
