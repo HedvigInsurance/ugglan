@@ -1,8 +1,8 @@
 if [ -z "$CI" ]; then
-    TMPDIR=/tmp/swiftgen-6.4.0
+    TMPDIR=/tmp/swiftgen-6.6.3
 else
     mkdir build
-    TMPDIR=build/swiftgen-6.4.0
+    TMPDIR=build/swiftgen-6.6.3
 fi
 
 mkdir Projects/hCoreUI/Sources/Derived
@@ -21,7 +21,7 @@ fi
 
 mkdir $TMPDIR
 
-curl -o $TMPDIR/swiftgen.zip -L https://github.com/SwiftGen/SwiftGen/releases/download/6.4.0/swiftgen-6.4.0.zip
+curl -o $TMPDIR/swiftgen.zip -L https://github.com/SwiftGen/SwiftGen/releases/download/6.6.3/swiftgen-6.6.3.zip
 
 unzip $TMPDIR/swiftgen.zip -d $TMPDIR
 
