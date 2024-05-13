@@ -165,8 +165,10 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
                 navigation?.setViewControllers(newVCs, animated: true)
             }
         }
-        navigation.onDeinit = { [weak router] in
+        navigation.onDeinit = { [weak navigation, weak router] in
             router?.builders.removeAll()
+            let presentingVC = navigation?.presentedViewController
+            let ss = ""
         }
 
         router.onDismiss = { [weak navigation] in
