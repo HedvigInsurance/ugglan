@@ -10,6 +10,7 @@ public class TerminateContractsOctopus: TerminateContractsService {
             input: OctopusGraphQL.FlowTerminationStartInput(contractId: contractId),
             context: nil
         )
+        // TODO: return it when we have it from the BE
         //        return try await mutation.execute(\.flowTerminationStart.fragments.flowTerminationFragment.currentStep)
         let suboptions = [
             TerminationFlowSurveyStepModelOption(
