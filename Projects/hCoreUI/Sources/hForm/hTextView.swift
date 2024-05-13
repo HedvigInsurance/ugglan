@@ -7,13 +7,15 @@ import hCore
 
 public struct hTextView: View {
     private let placeholder: String
-    private let selectedValue: String
     private let required: Bool
     private let maxCharacters: Int
     @State private var height: CGFloat = 50
     @Environment(\.hTextFieldError) var errorMessage
     @State private var value: String = ""
     @State private var disposeBag = DisposeBag()
+    @State private var selectedValue: String = ""
+    @State private var popoverHeight: CGFloat = 0
+
     private let onContinue: (_ text: String) -> Void
     public init(
         selectedValue: String,
@@ -32,13 +34,12 @@ public struct hTextView: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             ZStack(alignment: .topTrailing) {
-                ZStack {
-                    HeroAnimationStartView()
+                HeroAnimationStartView {
                     hSection {
-                        VStack {
+                        VStack(spacing: 0) {
                             SwiftUITextView(
                                 placeholder: placeholder,
-                                text: .constant(selectedValue),
+                                text: $selectedValue,
                                 becomeFirstResponder: false,
                                 disabled: true,
                                 height: $height
@@ -54,6 +55,8 @@ public struct hTextView: View {
                     .padding(.horizontal, -16)
                     .sectionContainerStyle(.opaque)
                 }
+                .id(UUID().uuidString)
+                .frame(height: height + 52)
                 if errorMessage != nil {
                     hCoreUIAssets.warningTriangleFilled.view
                         .foregroundColor(hSignalColor.amberElement)
@@ -95,7 +98,8 @@ public struct hTextView: View {
                 cancelAction: cancelAction,
                 value: $value,
                 placeholder: placeholder,
-                maxCharacters: maxCharacters
+                maxCharacters: maxCharacters,
+                height: $popoverHeight
             )
         }
 
@@ -112,6 +116,8 @@ public struct hTextView: View {
 
         let freeTextFieldJourney = journey.addConfiguration { presenter in
             continueAction.execute = {
+                self.selectedValue = value
+                self.height = popoverHeight
                 self.value = value
                 self.onContinue(value)
                 presenter.dismisser(JourneyError.cancelled)
@@ -133,16 +139,21 @@ public struct hTextView: View {
         VStack {
             hForm {}
                 .hFormAttachToBottom {
-                    hSection {
-                        hTextView(
-                            selectedValue: valuee,
-                            placeholder: "placeholder",
-                            required: true,
-                            maxCharacters: 140
-                        ) { value in
-                            valuee = value
+                    VStack(spacing: 0) {
+                        Rectangle().frame(height: 20)
+                        hSection {
+                            hTextView(
+                                selectedValue: valuee,
+                                placeholder: "placeholder",
+                                required: true,
+                                maxCharacters: 140
+                            ) { value in
+                                valuee = value
+                            }
                         }
+                        Rectangle().frame(height: 20)
                     }
+
                 }
         }
     }
@@ -154,20 +165,22 @@ private struct FreeTextInputView: View {
     fileprivate let continueAction: ReferenceAction
     fileprivate let cancelAction: ReferenceAction
     @Binding fileprivate var value: String
-    @State private var height: CGFloat = 0
+    @Binding private var height: CGFloat
     @State var showButtons = false
     public init(
         continueAction: ReferenceAction,
         cancelAction: ReferenceAction,
         value: Binding<String>,
         placeholder: String,
-        maxCharacters: Int
+        maxCharacters: Int,
+        height: Binding<CGFloat>
     ) {
         self.continueAction = continueAction
         self.cancelAction = cancelAction
         self._value = value
         self.placeholder = placeholder
         self.maxCharacters = maxCharacters
+        self._height = height
     }
 
     public var body: some View {
@@ -200,9 +213,7 @@ private struct FreeTextInputView: View {
                                     hText(L10n.generalCancelButton)
                                 }
                                 hButton.MediumButton(type: .primary) {
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak continueAction] in
-                                        continueAction?.execute()
-                                    }
+                                    continueAction.execute()
                                 } content: {
                                     hText(L10n.generalSaveButton)
                                 }
@@ -217,8 +228,9 @@ private struct FreeTextInputView: View {
             }
         }
         .onAppear {
-            withAnimation(.easeInOut(duration: 0.4).delay(0.4)) {
-                self.showButtons = true
+
+            withAnimation(.easeInOut(duration: 0.3).delay(0.5)) {
+                showButtons = true
             }
         }
     }
@@ -264,10 +276,10 @@ private struct SwiftUITextView: UIViewRepresentable {
 
     internal func updateUIView(_ uiView: UIView, context: Context) {
         if let textView = uiView.subviews.first as? TextView {
-            if !textView.isFirstResponder {
+            if disabled {
                 textView.setText(text: text)
+                textView.updateHeight()
             }
-            textView.updateHeight()
         }
         let schema = UITraitCollection.current.userInterfaceStyle
         uiView.backgroundColor = hFillColor.opaqueOne.colorFor(.init(schema)!, .base).color.uiColor()
@@ -310,9 +322,7 @@ private class TextView: UITextView, UITextViewDelegate {
         self.setText(text: inputText.wrappedValue)
         self.isUserInteractionEnabled = !disabled
         if becomeFirstResponder {
-            //            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {[weak self] in
             self.becomeFirstResponder()
-            //            }
         }
         updateHeight()
     }
@@ -336,10 +346,13 @@ private class TextView: UITextView, UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
         inputText = textView.text
         self.textColor = getTextColor()
-        self.updateHeight()
+        updateHeight()
     }
 
     func setText(text: String) {
+        if disabled {
+            let ss = text
+        }
         let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
         if text.isEmpty {
             self.text = placeholder
@@ -379,7 +392,10 @@ private class TextView: UITextView, UITextViewDelegate {
     func updateHeight() {
         DispatchQueue.main.async { [weak self] in guard let self = self else { return }
             withAnimation {
-                self.height = self.sizeThatFits(.init(width: self.frame.width, height: .infinity)).height + 12
+                let newHeight = self.sizeThatFits(.init(width: self.frame.width, height: .infinity)).height + 12
+                if self.frame.width > 0 {
+                    self.height = newHeight
+                }
             }
         }
     }
