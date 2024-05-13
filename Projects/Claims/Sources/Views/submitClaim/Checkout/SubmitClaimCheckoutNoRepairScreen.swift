@@ -5,6 +5,7 @@ import hGraphQL
 
 public struct SubmitClaimCheckoutNoRepairScreen: View {
     @PresentableStore var store: SubmitClaimStore
+    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
 
     public init() {}
 
@@ -24,7 +25,7 @@ public struct SubmitClaimCheckoutNoRepairScreen: View {
                         InfoCard(text: L10n.claimsCheckoutNotice, type: .info)
                         hButton.LargeButton(type: .primary) {
                             store.send(.singleItemCheckoutRequest)
-                            store.send(.navigationAction(action: .openCheckoutTransferringScreen))
+                            claimsNavigationVm.isCheckoutTransferringPresented = true
                         } content: {
                             hText(
                                 L10n.Claims.Payout.Button.label(

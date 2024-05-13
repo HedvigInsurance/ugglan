@@ -5,6 +5,7 @@ import hCoreUI
 
 struct DeleteCampaignView: View {
     @ObservedObject private var vm: DeleteCampaignViewModel
+    @EnvironmentObject var router: Router
 
     init(vm: DeleteCampaignViewModel) {
         self.vm = vm
@@ -40,7 +41,7 @@ struct DeleteCampaignView: View {
                                 .hButtonIsLoading(vm.isLoading)
 
                                 hButton.LargeButton(type: .ghost) {
-                                    vm.cancel()
+                                    router.dismiss()
                                 } content: {
                                     hText(L10n.generalCancelButton)
                                 }
@@ -67,6 +68,9 @@ struct DeleteCampaignView: View {
                 }
             }
         }
+        .task {
+            vm.router = router
+        }
     }
 }
 
@@ -77,6 +81,7 @@ class DeleteCampaignViewModel: ObservableObject {
     @Published var codeRemoved = false
     @Published var isLoading = false
     @Published var error: String? = nil
+    var router: Router?
 
     init(discount: Discount) {
         self.discount = discount
@@ -103,7 +108,7 @@ class DeleteCampaignViewModel: ObservableObject {
                 codeRemoved = true
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
-                self?.store.send(.navigation(to: .goBack))
+                self?.router?.dismiss()
             }
         } catch let ex {
             withAnimation {
@@ -114,10 +119,6 @@ class DeleteCampaignViewModel: ObservableObject {
         withAnimation {
             isLoading = false
         }
-    }
-
-    func cancel() {
-        store.send(.navigation(to: .goBack))
     }
 
     var getTitleParts: [String] {
@@ -141,22 +142,5 @@ struct DeleteCampaignView_Previews: PreviewProvider {
                 )
             )
         )
-    }
-}
-
-extension DeleteCampaignView {
-    static func journeyWith(discount: Discount) -> some JourneyPresentation {
-        HostingJourney(
-            PaymentStore.self,
-            rootView: DeleteCampaignView(vm: .init(discount: discount)),
-            style: .detented(.scrollViewContentSize),
-            options: [.largeNavigationBar, .blurredBackground]
-        ) { action in
-            if case let .navigation(navigateTo) = action {
-                if case .goBack = navigateTo {
-                    PopJourney()
-                }
-            }
-        }
     }
 }

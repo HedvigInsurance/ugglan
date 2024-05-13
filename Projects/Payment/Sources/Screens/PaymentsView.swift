@@ -6,6 +6,9 @@ import hGraphQL
 
 public struct PaymentsView: View {
     @PresentableStore var store: PaymentStore
+    @EnvironmentObject var router: Router
+    @EnvironmentObject var paymentNavigationVm: PaymentsNavigationViewModel
+
     public init() {
         let store: PaymentStore = globalPresentableStoreContainer.get()
         store.send(.load)
@@ -85,13 +88,7 @@ public struct PaymentsView: View {
                         }
                         .withEmptyAccessory
                         .onTap {
-                            store.send(
-                                .navigation(
-                                    to: .openPaymentDetails(
-                                        data: upcomingPayment
-                                    )
-                                )
-                            )
+                            router.push(upcomingPayment)
                         }
                     }
                 } else {
@@ -106,6 +103,7 @@ public struct PaymentsView: View {
                 }
                 hSection {
                     ConnectPaymentCardView()
+                        .environmentObject(paymentNavigationVm.connectPaymentVm)
                 }
                 if let status = state.paymentData?.status, status != .upcoming {
                     hSection {
@@ -130,7 +128,7 @@ public struct PaymentsView: View {
         }
         .withChevronAccessory
         .onTap {
-            store.send(.navigation(to: .openDiscounts))
+            router.push(PaymentsRouterAction.discounts)
         }
         .hWithoutHorizontalPadding
         .dividerInsets(.all, 0)
@@ -149,7 +147,7 @@ public struct PaymentsView: View {
         }
         .withChevronAccessory
         .onTap {
-            store.send(.navigation(to: .openHistory))
+            router.push(PaymentsRouterAction.history)
         }
         .hWithoutHorizontalPadding
         .dividerInsets(.all, 0)
@@ -187,7 +185,7 @@ public struct PaymentsView: View {
                             InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
                         }
                         hButton.LargeButton(type: .secondary) {
-                            store.send(.navigation(to: .openConnectPayments))
+                            paymentNavigationVm.connectPaymentVm.connectPaymentModel = .init(setUpType: nil)
                         } content: {
                             hText(statusData.connectButtonTitle)
                         }

@@ -1,4 +1,5 @@
 import Apollo
+import Combine
 import Flow
 import Presentation
 import SwiftUI
@@ -8,7 +9,7 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
     @Inject var fileUploaderClient: FileUploaderClient
     @Inject var fetchEntrypointsService: hFetchEntrypointsService
     @Inject var submitClaimService: SubmitClaimService
-
+    var progressCancellable: AnyCancellable?
     public override func effects(
         _ getState: @escaping () -> SubmitClaimsState,
         _ action: SubmitClaimsAction
@@ -40,8 +41,6 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
                     context: newClaimContext
                 )
             }
-        case let .submitDamage(damages):
-            send(.setSingleItemDamage(damages: damages))
         case let .singleItemRequest(purchasePrice):
             await executeAsync(loadingType: .postSingleItem) {
                 try await self.submitClaimService.singleItemRequest(

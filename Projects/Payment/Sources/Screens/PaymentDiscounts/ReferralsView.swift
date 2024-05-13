@@ -21,17 +21,6 @@ struct ReferralsView: View {
     }
 }
 
-extension ReferralsView {
-    static var journey: some JourneyPresentation {
-        let store: PaymentStore = globalPresentableStoreContainer.get()
-        let referrals = store.state.paymentDiscountsData?.referralsData.referrals ?? []
-        return HostingJourney(
-            rootView: ReferralsView(referrals: referrals)
-        )
-        .configureTitle(L10n.foreverReferralListLabel)
-    }
-}
-
 struct ReferralsView_Previews: PreviewProvider {
     static var previews: some View {
         ReferralsView(

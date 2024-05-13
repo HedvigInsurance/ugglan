@@ -5,7 +5,6 @@ import hCore
 import hGraphQL
 
 public indirect enum ClaimsAction: ActionProtocol, Hashable {
-    case didAcceptHonestyPledge
     case submitNewClaim(from: ClaimsOrigin)
     case fetchClaims
     case setClaims(claims: [ClaimModel])

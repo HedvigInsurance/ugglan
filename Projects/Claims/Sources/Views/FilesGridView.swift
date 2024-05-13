@@ -1,5 +1,6 @@
 import Flow
 import Foundation
+import Home
 import Kingfisher
 import SafariServices
 import SwiftUI
@@ -9,6 +10,8 @@ import hCoreUI
 struct FilesGridView: View {
     @ObservedObject var vm: FileGridViewModel
     @PresentableStore private var store: ClaimsStore
+    @State private var fileModel: HomeNavigationViewModel.FileUrlModel?
+
     private let adaptiveColumn = [
         GridItem(.flexible(), spacing: 8),
         GridItem(.flexible(), spacing: 8),
@@ -20,7 +23,7 @@ struct FilesGridView: View {
             ForEach(vm.files, id: \.id) { file in
                 ZStack(alignment: Alignment(horizontal: .trailing, vertical: .top)) {
                     FileView(file: file) {
-                        vm.show(file: file)
+                        show(file: file)
                     }
                     .aspectRatio(1, contentMode: .fit)
                     .cornerRadius(12)
@@ -54,6 +57,24 @@ struct FilesGridView: View {
                 }
                 .transition(.scale.combined(with: .opacity))
             }
+        }
+        .detent(
+            item: $fileModel,
+            style: .large
+        ) { model in
+            DocumentPreview(url: model.url)
+                .withDismissButton()
+                .embededInNavigation()
+        }
+    }
+
+    @MainActor
+    func show(file: File) {
+        switch file.source {
+        case let .localFile(url, _):
+            fileModel = .init(url: url)
+        case .url(let url):
+            fileModel = .init(url: url)
         }
     }
 }
@@ -100,20 +121,6 @@ class FileGridViewModel: ObservableObject {
         )
 
         UIApplication.shared.getTopViewController()?.present(alert, animated: true, completion: nil)
-    }
-
-    @MainActor
-    func show(file: File) {
-        if let topVC = UIApplication.shared.getTopViewController() {
-            switch file.source {
-            case let .localFile(url, _):
-                let preview = DocumentPreview(url: url)
-                disposeBag += topVC.present(preview.journey)
-            case .url(let url):
-                let preview = DocumentPreview(url: url)
-                disposeBag += topVC.present(preview.journey)
-            }
-        }
     }
 
     func update(options: ClaimFilesViewModel.ClaimFilesViewOptions) {

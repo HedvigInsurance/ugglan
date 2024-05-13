@@ -49,25 +49,6 @@ struct HelpCenterQuestionView: View {
     }
 }
 
-extension HelpCenterQuestionView {
-    static func journey(question: Question, title: String?) -> some JourneyPresentation {
-        HostingJourney(
-            HomeStore.self,
-            rootView: HelpCenterQuestionView(
-                question: question
-            )
-        ) { action in
-            if case .openFreeTextChat = action {
-                DismissJourney()
-            } else if case .dismissHelpCenter = action {
-                DismissJourney()
-            }
-        }
-        .configureTitle(title ?? "")
-        .withJourneyDismissButton
-    }
-}
-
 #Preview{
     HelpCenterQuestionView(
         question: Question(

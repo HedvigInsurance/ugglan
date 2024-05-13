@@ -109,6 +109,11 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                             wantsGrabber: options.contains(.withoutGrabber) ? false : true,
                             viewController: vc
                         )
+                        if options.contains(.disableDismissOnScroll) {
+                            vc.isModalInPresentation = true
+                        } else {
+                            vc.isModalInPresentation = false
+                        }
                         vc.transitioningDelegate = delegate
                         vc.modalPresentationStyle = .custom
 
@@ -201,6 +206,7 @@ public struct DetentPresentationOption: OptionSet {
     public static let alwaysOpenOnTop = DetentPresentationOption(rawValue: 1 << 0)
     public static let replaceCurrent = DetentPresentationOption(rawValue: 1 << 1)
     public static let withoutGrabber = DetentPresentationOption(rawValue: 1 << 2)
+    public static let disableDismissOnScroll = DetentPresentationOption(rawValue: 1 << 3)
 
     public init(rawValue: UInt) {
         self.rawValue = rawValue

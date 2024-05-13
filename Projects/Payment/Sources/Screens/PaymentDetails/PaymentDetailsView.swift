@@ -7,6 +7,8 @@ struct PaymentDetailsView: View {
     private let data: PaymentData
     @PresentableStore var store: PaymentStore
     @State var expandedContracts: [String] = []
+    @EnvironmentObject var router: Router
+
     init(data: PaymentData) {
         self.data = data
     }
@@ -151,7 +153,8 @@ struct PaymentDetailsView: View {
                         switch action {
                         case .viewAddedToPayment:
                             if let nextPayment = data.addedToThePayment?.first {
-                                store.send(.navigation(to: .openPaymentDetails(data: nextPayment)))
+                                //                                store.send(.navigation(to: .openPaymentDetails(data: nextPayment)))
+                                router.push(nextPayment)
                             }
                         }
                     }
@@ -311,23 +314,5 @@ struct PaymentDetails_Previews: PreviewProvider {
             addedToThePayment: nil
         )
         return PaymentDetailsView(data: data)
-    }
-}
-
-extension PaymentDetailsView {
-    static func journey(with paymentData: PaymentData) -> some JourneyPresentation {
-        HostingJourney(
-            PaymentStore.self,
-            rootView: PaymentDetailsView(data: paymentData)
-        ) { action in
-            if case let .navigation(navigateTo) = action {
-                if case .goBack = navigateTo {
-                    PopJourney()
-                } else if case let .openPaymentDetails(data) = navigateTo {
-                    PaymentDetailsView.journey(with: data)
-                }
-            }
-        }
-        .configureTitleView(paymentData)
     }
 }

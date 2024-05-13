@@ -72,29 +72,11 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             }
         } else if notificationType == "CONNECT_DIRECT_DEBIT" {
             performPostLoggedIn {
-                self.window.rootViewController?
-                    .present(
-                        DirectDebitSetup(
-                            setupType: .initial
-                        )
-                        .journey()
-                    )
-                    .onValue({ _ in
-
-                    })
+                /* TODO: ADD PUSH NOTIFICATIONS */
             }
         } else if notificationType == "PAYMENT_FAILED" {
             performPostLoggedIn {
-                self.window.rootViewController?
-                    .present(
-                        DirectDebitSetup(
-                            setupType: .replacement
-                        )
-                        .journey()
-                    )
-                    .onValue({ _ in
-
-                    })
+                /* TODO: ADD PUSH NOTIFICATIONS */
             }
         } else if notificationType == "OPEN_FOREVER_TAB" {
             performPostLoggedIn {

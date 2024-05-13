@@ -29,17 +29,26 @@ enum ForeverRouterActions {
 }
 
 public struct ForeverNavigation: View {
-    @StateObject var router = Router()
+    @EnvironmentObject var router: Router
     @StateObject var foreverNavigationVm = ForeverNavigationViewModel()
+    let useOwnNavigation: Bool
 
-    public init() {}
+    public init(useOwnNavigation: Bool) {
+        self.useOwnNavigation = useOwnNavigation
+    }
 
     public var body: some View {
-        RouterHost(router: router) {
-            ForeverView()
-                .configureTitle(L10n.ReferralsInfoSheet.headline)
+        Group {
+            if useOwnNavigation {
+                RouterHost(router: router) {
+                    ForeverView()
+                        .configureTitle(L10n.ReferralsInfoSheet.headline)
+                }
+            } else {
+                ForeverView()
+                    .configureTitle(L10n.ReferralsInfoSheet.headline)
+            }
         }
-        .environmentObject(foreverNavigationVm)
         .detent(
             presented: $foreverNavigationVm.isChangeCodePresented,
             style: .height
@@ -59,9 +68,11 @@ public struct ForeverNavigation: View {
                 .configureTitle(L10n.changeAddressAddBuilding)
                 .embededInNavigation(options: [.navigationType(type: .large)])
         }
+        .environmentObject(foreverNavigationVm)
+
     }
 }
 
 #Preview{
-    ForeverNavigation()
+    ForeverNavigation(useOwnNavigation: true)
 }

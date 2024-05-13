@@ -4,23 +4,6 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-extension Market {
-    @JourneyBuilder
-    public static var languageAndMarketPicker: some JourneyPresentation {
-        HostingJourney(
-            MarketStore.self,
-            rootView: LanguageAndMarketPickerView(),
-            style: .detented(.scrollViewContentSize),
-            options: [.largeNavigationBar, .blurredBackground]
-        ) { action in
-            if case .dismissPicker = action {
-                PopJourney()
-            }
-        }
-        .configureTitle(L10n.loginMarketPickerPreferences)
-    }
-}
-
 public struct LanguageAndMarketPickerView: View {
     @StateObject private var vm = LanguageAndMarketPickerViewModel()
     @EnvironmentObject var router: Router

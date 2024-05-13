@@ -1,95 +1,13 @@
+import Combine
+import Foundation
 import Kingfisher
 import SwiftUI
 import hCore
-
-public struct SubmitClaimDeflectScreen: View {
-    private let isEmergencyStep: Bool
-    private let openChat: () -> Void
-
-    private let partners: [Partner]
-    private let config: FlowClaimDeflectConfig?
-
-    public init(
-        openChat: @escaping () -> Void,
-
-        isEmergencyStep: Bool?,
-        partners: [Partner],
-        config: FlowClaimDeflectConfig?
-    ) {
-        self.isEmergencyStep = isEmergencyStep ?? false
-        self.openChat = openChat
-
-        self.partners = partners
-        self.config = config
-    }
-
-    public var body: some View {
-        hForm {
-            VStack(spacing: 16) {
-                hSection {
-                    let type: InfoCardType = isEmergencyStep ? .attention : .info
-                    InfoCard(text: config?.infoText ?? "", type: type)
-                }
-                if isEmergencyStep {
-                    ForEach(partners, id: \.id) { partner in
-                        ClaimEmergencyContactCard(
-                            imageUrl: partner.imageUrl,
-                            label: config?.cardText ?? "",
-                            phoneNumber: partner.phoneNumber,
-                            cardTitle: config?.cardTitle ?? "",
-                            footnote: L10n.submitClaimGlobalAssistanceFootnote
-                        )
-                    }
-                } else {
-                    let title =
-                        partners.count == 1 ? L10n.submitClaimPartnerSingularTitle : L10n.submitClaimPartnerTitle
-
-                    VStack(spacing: 8) {
-                        ForEach(Array((partners).enumerated()), id: \.element) { index, partner in
-                            ClaimContactCard(
-                                imageUrl: partner.imageUrl,
-                                url: partner.url ?? "",
-                                phoneNumber: partner.phoneNumber,
-                                title: index == 0 ? title : nil,
-                                config: config
-                            )
-                        }
-                    }
-                }
-
-                hSection {
-                    VStack(alignment: .leading, spacing: 8) {
-                        hText(config?.infoSectionTitle ?? "")
-                        hText(config?.infoSectionText ?? "")
-                            .foregroundColor(hTextColor.secondary)
-                    }
-                }
-                .padding(.top, 8)
-                .sectionContainerStyle(.transparent)
-
-                VStack(spacing: 4) {
-                    ForEach(config?.questions ?? [], id: \.question) { question in
-                        withAnimation(.easeOut) {
-                            InfoExpandableView(
-                                title: question.question,
-                                text: question.answer
-                            )
-                        }
-                    }
-                }
-                .padding(.top, 8)
-
-                SupportView(openChat: openChat)
-                    .padding(.vertical, 56)
-            }
-            .padding(.top, 8)
-        }
-    }
-}
+import hCoreUI
 
 struct ClaimContactCard: View {
-    private let config: FlowClaimDeflectConfig?
-
+    @PresentableStore var store: SubmitClaimStore
+    var model: FlowClaimDeflectStepModel
     var title: String?
     var imageUrl: String?
     var url: String?
@@ -100,15 +18,13 @@ struct ClaimContactCard: View {
         url: String,
         phoneNumber: String?,
         title: String? = nil,
-
-        config: FlowClaimDeflectConfig?
+        model: FlowClaimDeflectStepModel?
     ) {
         self.imageUrl = imageUrl
         self.url = url
         self.phoneNumber = phoneNumber
         self.title = title
-
-        self.config = config
+        self.model = model ?? .init(id: .Unknown, isEmergencyStep: false)
     }
 
     var body: some View {
@@ -121,8 +37,8 @@ struct ClaimContactCard: View {
                     hText(title)
                     Spacer()
                     InfoViewHolder(
-                        title: config?.infoViewTitle ?? "",
-                        description: config?.infoViewText ?? ""
+                        title: model.config?.infoViewTitle ?? "",
+                        description: model.config?.infoViewText ?? ""
                     )
                 }
             })
@@ -147,7 +63,7 @@ struct ClaimContactCard: View {
                     .padding(.vertical, 16)
             }
 
-            hText(config?.cardText ?? "")
+            hText(model.config?.cardText ?? "")
                 .fixedSize()
                 .multilineTextAlignment(.center)
                 .foregroundColor(hTextColor.tertiary)
@@ -166,7 +82,7 @@ struct ClaimContactCard: View {
                         }
                     }
                 } content: {
-                    hText(config?.buttonText ?? "")
+                    hText(model.config?.buttonText ?? "")
                         .multilineTextAlignment(.center)
                         .foregroundColor(hTextColor.primary)
                         .colorScheme(.light)
@@ -179,6 +95,7 @@ struct ClaimContactCard: View {
 }
 
 struct ClaimEmergencyContactCard: View {
+    @PresentableStore var store: SubmitClaimStore
     var cardTitle: String?
     var footnote: String?
     var imageUrl: String?
@@ -260,26 +177,30 @@ struct ClaimEmergencyContactCard: View {
     }
 }
 
-struct SupportView: View {
-    let openChat: () -> Void
+struct ClaimContactCard_Previews: PreviewProvider {
+    static var previews: some View {
+        Localization.Locale.currentLocale = .en_SE
+        return VStack {
+            ClaimContactCard(
+                imageUrl: "",
+                url: "BUTTON TEXT",
+                phoneNumber: "",
+                model: nil
+            )
+            ClaimContactCard(
+                imageUrl: "",
+                url: "BUTTON TEXT",
+                phoneNumber: "",
+                model: nil
+            )
+            ClaimContactCard(
+                imageUrl: "",
+                url: "VERY LONG BUTTON TEXT VERY LONG BUTTON TEXT VERY LONG BUTTON TEXT",
+                phoneNumber: "",
+                model: nil
+            )
 
-    var body: some View {
-        VStack(spacing: 24) {
-            VStack(spacing: 0) {
-                hText(L10n.submitClaimNeedHelpTitle)
-                    .foregroundColor(hTextColor.primaryTranslucent)
-                hText(L10n.submitClaimNeedHelpLabel)
-                    .foregroundColor(hTextColor.secondary)
-                    .multilineTextAlignment(.center)
-            }
-            hButton.MediumButton(type: .primary) {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    openChat()
-                }
-            } content: {
-                hText(L10n.CrossSell.Info.faqChatButton)
-            }
-            .fixedSize(horizontal: true, vertical: true)
         }
+
     }
 }

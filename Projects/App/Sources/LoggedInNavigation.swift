@@ -19,11 +19,15 @@ import hCore
 import hCoreUI
 
 struct LoggedInNavigation: View {
+
     @StateObject private var vm = LoggedInNavigationViewModel()
     @StateObject private var homeNavigationVm = HomeNavigationViewModel()
     @StateObject private var profileNavigationVm = ProfileNavigationViewModel()
+    @StateObject private var paymentsNavigationVm = PaymentsNavigationViewModel()
+    @StateObject private var router = Router()
+    @StateObject private var foreverRouter = Router()
+    @StateObject private var paymentsRouter = Router()
     @EnvironmentObject private var mainNavigationVm: MainNavigationViewModel
-    @StateObject var router = Router()
     var body: some View {
         TabView(selection: $vm.selectedTab) {
             Group {
@@ -64,12 +68,13 @@ struct LoggedInNavigation: View {
             }
         }
         .environmentObject(homeNavigationVm)
+        .handleConnectPayment(with: homeNavigationVm.connectPaymentVm)
         .detent(
             presented: $homeNavigationVm.isSubmitClaimPresented,
-            style: .height
+            style: .height,
+            options: .constant(.withoutGrabber)
         ) {
-            HonestyPledge(onConfirmAction: {})
-                .embededInNavigation()
+            ClaimsJourneyMain(from: .generic)
         }
         .detent(
             item: $homeNavigationVm.document,
@@ -80,8 +85,9 @@ struct LoggedInNavigation: View {
                     .embededInNavigation(options: [.navigationType(type: .large)])
             }
         }
-        .modally(
-            item: $homeNavigationVm.isEditCoInsuredPresented
+        .detent(
+            item: $homeNavigationVm.isEditCoInsuredPresented,
+            style: .height
         ) { config in
             EditCoInsuredNavigation(
                 config: config,
@@ -105,12 +111,14 @@ struct LoggedInNavigation: View {
                 missingContractConfig: config
             )
         }
-        .modally(presented: $homeNavigationVm.isHelpCenterPresented) {
+        .fullScreenCover(
+            isPresented: $homeNavigationVm.isHelpCenterPresented
+        ) {
             HelpCenterNavigation(redirect: { redirectType in
                 switch redirectType {
                 case .moveFlow:
                     MovingFlowNavigation()
-                case let .editCoInsured(config, hasMissingAlert, isMissingAlertAction):
+                case let .editCoInsured(config, _, _):
                     getEditCoInsuredView(config: config)
                 case let .editCoInuredSelectInsurance(configs, _):
                     EditCoInsuredSelectInsuranceNavigation(
@@ -124,6 +132,38 @@ struct LoggedInNavigation: View {
                         openCoInsured: {
                             redirectType(
                                 .editCoInsured(config: .init(), showMissingAlert: false, isMissingAlertAction: { _ in })
+                            )
+                        }
+                    )
+                case .deflect:
+                    let model: FlowClaimDeflectStepModel? = {
+                        let store: HomeStore = globalPresentableStoreContainer.get()
+                        let quickActions = store.state.quickActions
+                        if let sickAbroadPartners = quickActions.first(where: { $0.sickAboardPartners != nil })?
+                            .sickAboardPartners
+                        {
+                            return FlowClaimDeflectStepModel(
+                                id: .FlowClaimDeflectEmergencyStep,
+                                partners: sickAbroadPartners.compactMap({
+                                    .init(
+                                        id: "",
+                                        imageUrl: $0.imageUrl,
+                                        url: "",
+                                        phoneNumber: $0.phoneNumber
+                                    )
+                                }),
+                                isEmergencyStep: true
+                            )
+                        }
+                        return nil
+                    }()
+
+                    SubmitClaimDeflectScreen(
+                        model: model,
+                        openChat: {
+                            NotificationCenter.default.post(
+                                name: .openChat,
+                                object: ChatTopicWrapper(topic: nil, onTop: true)
                             )
                         }
                     )
@@ -149,9 +189,8 @@ struct LoggedInNavigation: View {
             style: .large,
             options: $homeNavigationVm.openChatOptions,
             content: { openChat in
-                ChatScreen(vm: .init(topicType: openChat.topic))
-                    .navigationTitle(L10n.chatTitle)
-                    .embededInNavigation()
+                let options = homeNavigationVm.openChatOptions
+                ChatNavigation(openChat: openChat)
             }
         )
         .tabItem {
@@ -164,7 +203,7 @@ struct LoggedInNavigation: View {
     var contractsTab: some View {
         ContractsNavigation { redirectType in
             switch redirectType {
-            case let .editCoInsured(editCoInsuredConfig, hasMissingAlert, isMissingAlert):
+            case let .editCoInsured(editCoInsuredConfig, _, _):
                 getEditCoInsuredView(config: editCoInsuredConfig)
             case .chat:
                 ChatScreen(vm: .init(topicType: nil))
@@ -184,26 +223,8 @@ struct LoggedInNavigation: View {
                             homeStore.send(.fetchQuickActions)
                         case .chat:
                             NotificationCenter.default.post(name: .openChat, object: nil)
-                        case .openFeedback(let url):
-                            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                            contractStore.send(.fetchContracts)
-                            let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                            homeStore.send(.fetchQuickActions)
-                            var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
-                            if urlComponent?.scheme == nil {
-                                urlComponent?.scheme = "https"
-                            }
-                            let schema = urlComponent?.scheme
-                            if let finalUrl = urlComponent?.url {
-                                if schema == "https" || schema == "http" {
-                                    let vc = SFSafariViewController(url: finalUrl)
-                                    vc.modalPresentationStyle = .pageSheet
-                                    vc.preferredControlTintColor = .brand(.primaryText())
-                                    UIApplication.shared.getTopViewController()?.present(vc, animated: true)
-                                } else {
-                                    UIApplication.shared.open(url)
-                                }
-                            }
+                        case let .openFeedback(url):
+                            openUrl(url: url)
                         }
                     }
                 )
@@ -220,7 +241,8 @@ struct LoggedInNavigation: View {
     }
 
     var foreverTab: some View {
-        ForeverNavigation()
+        ForeverNavigation(useOwnNavigation: true)
+            .environmentObject(foreverRouter)
             .tabItem {
                 Image(
                     uiImage: vm.selectedTab == 2 ? hCoreUIAssets.foreverTabActive.image : hCoreUIAssets.foreverTab.image
@@ -231,15 +253,27 @@ struct LoggedInNavigation: View {
     }
 
     var paymentsTab: some View {
-        PaymentsView()
-            .tabItem {
-                Image(
-                    uiImage: vm.selectedTab == 3
-                        ? hCoreUIAssets.paymentsTabActive.image : hCoreUIAssets.paymentsTab.image
-                )
-                hText(L10n.tabPaymentsTitle)
+        PaymentsNavigation(paymentsNavigationVm: paymentsNavigationVm) { redirectType in
+            switch redirectType {
+            case .forever:
+                ForeverNavigation(useOwnNavigation: false)
+                    .toolbar(.hidden, for: .tabBar)
+            case let .openUrl(url):
+                EmptyView()
+                    .onAppear {
+                        openUrl(url: url)
+                    }
             }
-            .tag(3)
+        }
+        .environmentObject(paymentsRouter)
+        .tabItem {
+            Image(
+                uiImage: vm.selectedTab == 3
+                    ? hCoreUIAssets.paymentsTabActive.image : hCoreUIAssets.paymentsTab.image
+            )
+            hText(L10n.tabPaymentsTitle)
+        }
+        .tag(3)
     }
 
     var profileTab: some View {
@@ -294,9 +328,7 @@ struct LoggedInNavigation: View {
                 )
                 .environmentObject(profileNavigationVm)
             case .pickLanguage:
-                PickLanguage { [weak profileNavigationVm, weak vm, weak mainNavigationVm] _ in
-                    let store: ProfileStore = globalPresentableStoreContainer.get()
-
+                PickLanguage { [weak profileNavigationVm, weak mainNavigationVm, weak vm] _ in
                     //show loading screen since we everything needs to be updated
                     mainNavigationVm?.hasLaunchFinished = false
                     profileNavigationVm?.isLanguagePickerPresented = false
@@ -385,33 +417,30 @@ struct LoggedInNavigation: View {
             }
         }
     }
+
+    private func openUrl(url: URL) {
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        contractStore.send(.fetchContracts)
+        let homeStore: HomeStore = globalPresentableStoreContainer.get()
+        homeStore.send(.fetchQuickActions)
+        var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        if urlComponent?.scheme == nil {
+            urlComponent?.scheme = "https"
+        }
+        let schema = urlComponent?.scheme
+        if let finalUrl = urlComponent?.url {
+            if schema == "https" || schema == "http" {
+                let vc = SFSafariViewController(url: finalUrl)
+                vc.modalPresentationStyle = .pageSheet
+                vc.preferredControlTintColor = .brand(.primaryText())
+                UIApplication.shared.getTopViewController()?.present(vc, animated: true)
+            } else {
+                UIApplication.shared.open(url)
+            }
+        }
+    }
 }
 
 class LoggedInNavigationViewModel: ObservableObject {
     @Published var selectedTab = 0
 }
-
-//
-//<<<<<<< HEAD
-//=======
-//                }
-//                .tint(hTextColor.primary)
-//            } else {
-//                ProgressView()
-//            }
-//        }
-//    }
-//
-//
-//
-//    private func checkForAlert() {
-//        Task {
-//            homeNavigationVm.isEditCoInsuredPresented = nil
-//            homeNavigationVm.isEditCoInsuredSelectContractPresented = nil
-//            homeNavigationVm.isMissingEditCoInsuredAlertPresented = nil
-//            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-//            await contractStore.sendAsync(.fetchContracts)
-//            let missingContract = contractStore.state.activeContracts.first { contract in
-//                if contract.upcomingChangedAgreement != nil {
-//                    return false
-//>>>>>>> improvement/navigation/main
