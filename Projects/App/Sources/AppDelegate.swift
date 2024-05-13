@@ -223,7 +223,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 DispatchQueue.main.async {
                     ApplicationState.preserveState(.notLoggedIn)
                     ApplicationContext.shared.hasFinishedBootstrapping = true
-                    //                    Launch.shared.completeAnimationCallbacker.callAll()
                     self?.logout()
                     let toast = Toast(
                         symbol: .icon(hCoreUIAssets.infoIconFilled.image),
@@ -242,7 +241,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         DefaultStyling.installCustom()
 
         UNUserNotificationCenter.current().delegate = self
-        let store: UgglanStore = globalPresentableStoreContainer.get()
         observeNotificationsSettings()
         return true
     }
