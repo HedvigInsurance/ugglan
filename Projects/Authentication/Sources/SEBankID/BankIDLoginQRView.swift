@@ -1,15 +1,13 @@
 import Combine
-import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
 
 public struct BankIDLoginQRView: View {
-    @PresentableStore var store: AuthenticationStore
     @StateObject var vm = BandIDViewModel()
     @EnvironmentObject var router: Router
-    @StateObject var otpVM = OTPState()
+    @EnvironmentObject var otpVM: OTPState
 
     private var onStartDemoMode: () async -> Void
     public init(onStartDemoMode: @escaping () async -> Void) {
@@ -107,20 +105,6 @@ public struct BankIDLoginQRView: View {
         .onAppear {
             vm.router = router
             vm.onAppear()
-        }
-        .routerDestination(for: AuthentificationRouterType.self) { type in
-            switch type {
-            case .emailLogin:
-                OTPEntryView()
-                    .environmentObject(otpVM)
-                    .withDismissButton()
-            case .otpCodeEntry:
-                OTPCodeEntryView()
-                    .environmentObject(otpVM)
-                    .withDismissButton()
-            case let .error(message):
-                LoginErrorView(message: message)
-            }
         }
     }
 }

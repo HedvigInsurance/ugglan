@@ -18,7 +18,6 @@ public struct ProfileView: View {
             secondaryButton: .destructive(Text(L10n.logoutAlertActionConfirm)) {
                 ApplicationState.preserveState(.notLoggedIn)
                 ApplicationState.state = .notLoggedIn
-                store.send(.logout)
             }
         )
     }

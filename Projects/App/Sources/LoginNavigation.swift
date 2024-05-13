@@ -19,6 +19,7 @@ import hCoreUI
 struct LoginNavigation: View {
     @ObservedObject var vm: NotLoggedViewModel
     @StateObject private var router = Router()
+    @StateObject private var otpState = OTPState()
     var body: some View {
         RouterHost(router: router, options: .navigationBarHidden) {
             NotLoggedInView(vm: vm)
@@ -30,12 +31,34 @@ struct LoginNavigation: View {
 
         }
         .detent(presented: $vm.showLogin, style: .large) {
-            BankIDLoginQRView {
-                let store: UgglanStore = globalPresentableStoreContainer.get()
-                await store.sendAsync(.setIsDemoMode(to: true))
-                ApolloClient.initAndRegisterClient()
+            Group {
+                switch Localization.Locale.currentLocale.market {
+                case .no, .dk:
+                    OTPEntryView()
+                case .se:
+                    BankIDLoginQRView {
+                        let store: UgglanStore = globalPresentableStoreContainer.get()
+                        await store.sendAsync(.setIsDemoMode(to: true))
+                        ApolloClient.initAndRegisterClient()
+                    }
+                }
             }
+            .environmentObject(otpState)
             .withDismissButton()
+            .routerDestination(for: AuthentificationRouterType.self) { type in
+                switch type {
+                case .emailLogin:
+                    OTPEntryView()
+                        .environmentObject(otpState)
+                        .withDismissButton()
+                case .otpCodeEntry:
+                    OTPCodeEntryView()
+                        .environmentObject(otpState)
+                        .withDismissButton()
+                case let .error(message):
+                    LoginErrorView(message: message)
+                }
+            }
             .embededInNavigation()
         }
     }

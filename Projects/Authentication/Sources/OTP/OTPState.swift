@@ -12,7 +12,7 @@ public class OTPState: ObservableObject {
     @Published var maskedEmail: String? = nil
     @Published var canResendAt: Date? = nil
 
-    init(
+    public init(
         isLoading: Bool = false,
         isResending: Bool = false,
         resendUrl: URL? = nil,

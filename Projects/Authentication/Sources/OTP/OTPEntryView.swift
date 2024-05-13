@@ -2,11 +2,13 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct OTPEntryView: View {
+public struct OTPEntryView: View {
     @StateObject private var vm: OTPEntryViewModel = .init()
     @EnvironmentObject var otpVM: OTPState
     @EnvironmentObject var router: Router
-    var body: some View {
+    public init() {}
+
+    public var body: some View {
         hForm {
             hSection {
                 VStack(spacing: 50) {
@@ -23,7 +25,6 @@ struct OTPEntryView: View {
                         vm.onSubmit(otpState: otpVM)
                     }
                     .hTextFieldError(otpVM.otpInputErrorMessage)
-                    .presentableStoreLensAnimation(.default)
                 }
             }
         }
@@ -37,7 +38,6 @@ struct OTPEntryView: View {
                 .hButtonIsLoading(otpVM.isLoading)
             }
             .disabled(!vm.masking.isValid(text: otpVM.input))
-            .presentableStoreLensAnimation(.default)
         }
         .sectionContainerStyle(.transparent)
         .onAppear {

@@ -5,7 +5,8 @@ import hCoreUI
 public struct OTPCodeEntryView: View {
     @StateObject private var vm = OTPCodeEntryViewModel()
     @EnvironmentObject var otpVM: OTPState
-    @PresentableStore var store: AuthenticationStore
+
+    public init() {}
 
     public var body: some View {
         hForm {
@@ -58,7 +59,6 @@ public struct OTPCodeEntryView: View {
                         ResendOTPCode(otpVM: otpVM)
                             .environmentObject(otpVM)
                     }
-                    .presentableStoreLensAnimation(.default)
                 }
             }
             .background(
@@ -85,7 +85,6 @@ public struct OTPCodeEntryView: View {
 }
 
 class OTPCodeEntryViewModel: ObservableObject {
-    @PresentableStore private var store: AuthenticationStore
     @Inject private var service: AuthentificationService
     @hTextFieldFocusState var focusCodeField: Bool? = true
 

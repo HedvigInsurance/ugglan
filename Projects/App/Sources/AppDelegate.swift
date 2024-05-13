@@ -55,8 +55,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         bag.dispose()
         let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
         ugglanStore.send(.setIsDemoMode(to: false))
-        let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
-        authenticationStore.send(.logout)
+        Task {
+            let authenticationService: AuthentificationService = Dependencies.shared.resolve()
+            do {
+                try await authenticationService.logout()
+            } catch _ {
+
+            }
+        }
         ApolloClient.deleteToken()
         clearData()
     }

@@ -17,7 +17,6 @@ public indirect enum ProfileAction: ActionProtocol, Hashable {
     case fetchMemberDetails
 
     case sendAccountDeleteRequest(details: MemberDetails)
-    case logout
 
     case setPushNotificationStatus(status: Int?)
     case setPushNotificationsTo(date: Date?)

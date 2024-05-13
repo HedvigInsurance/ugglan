@@ -1,4 +1,3 @@
-import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
@@ -66,7 +65,6 @@ public struct OpenEmailClientButton: View {
         self._hasAcceptedAlert = hasAcceptedAlert ?? .constant(true)
         self.hasPressedButton = hasPressedButton
         self.buttonSize = buttonSize ?? .primary
-        let store: AuthenticationStore = globalPresentableStoreContainer.get()
         emailClients = {
             let appleURLString = addEmailUrlComponents(baseUrl: "mailto:?")
             let gmailURLString = addEmailUrlComponents(baseUrl: "googlegmail:///co?")

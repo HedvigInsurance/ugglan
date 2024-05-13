@@ -7,7 +7,6 @@ import hCore
 import hGraphQL
 
 struct Impersonate {
-    @PresentableStore var authenticationStore: AuthenticationStore
     @Inject var authentificationService: AuthentificationService
     private func getAuthorizationCode(from url: URL) -> String? {
         guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }

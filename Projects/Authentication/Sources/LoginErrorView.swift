@@ -2,10 +2,15 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct LoginErrorView: View {
+public struct LoginErrorView: View {
     let message: String
     @EnvironmentObject var router: Router
-    var body: some View {
+
+    public init(message: String) {
+        self.message = message
+    }
+
+    public var body: some View {
         GenericErrorView(
             description: message,
             buttons: .init(
