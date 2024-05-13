@@ -17,7 +17,7 @@ import hCore
 import hCoreUI
 
 struct LoginNavigation: View {
-    @StateObject var vm = NotLoggedViewModel()
+    @ObservedObject var vm: NotLoggedViewModel
     @StateObject private var router = Router()
     var body: some View {
         RouterHost(router: router, options: .navigationBarHidden) {
@@ -132,6 +132,7 @@ public class NotLoggedViewModel: ObservableObject {
     @Published var viewState: ViewState = .loading
     @Published var showLanguagePicker = false
     @Published var showLogin = false
+    let router = Router()
     var onLoad: () -> Void = {}
     var cancellables = Set<AnyCancellable>()
 

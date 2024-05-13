@@ -33,7 +33,6 @@ struct Impersonate {
         do {
             try await authentificationService.exchange(code: authorizationCode)
             ApplicationState.preserveState(.impersonation)
-            authenticationStore.send(.navigationAction(action: .impersonation))
         } catch let ex {
 
         }

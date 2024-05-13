@@ -105,10 +105,8 @@ public struct BankIDLoginQRView: View {
             }
         }
         .onAppear {
+            vm.router = router
             vm.onAppear()
-            vm.onSuccess = { [weak router] in
-                router?.dismiss()
-            }
         }
         .routerDestination(for: AuthentificationRouterType.self) { type in
             switch type {
@@ -120,6 +118,8 @@ public struct BankIDLoginQRView: View {
                 OTPCodeEntryView()
                     .environmentObject(otpVM)
                     .withDismissButton()
+            case let .error(message):
+                LoginErrorView(message: message)
             }
         }
     }
@@ -136,9 +136,8 @@ class BandIDViewModel: ObservableObject {
     @Inject var authentificationService: AuthentificationService
     private var cancellables = Set<AnyCancellable>()
     private var observeLoginTask: AnyCancellable?
-    var onSuccess: () -> Void
+    var router: Router?
     init() {
-        onSuccess = {}
         checkIfCanOpenBankId()
     }
 
@@ -147,7 +146,7 @@ class BandIDViewModel: ObservableObject {
             observeLoginTask = Task { @MainActor [weak self] in
                 do {
                     try await self?.authentificationService
-                        .startSeBankId { newStatus in
+                        .startSeBankId { [weak self] newStatus in
                             DispatchQueue.main.async {
                                 switch newStatus {
                                 case .started(let code):
@@ -157,14 +156,13 @@ class BandIDViewModel: ObservableObject {
                                 case .completed:
                                     ApplicationState.preserveState(.loggedIn)
                                     ApplicationState.state = .loggedIn
-                                    self?.onSuccess()
+                                    self?.router?.dismiss()
                                 }
                             }
                         }
                 } catch let error {
                     self?.seBankIdState = .init()
-                    let store: AuthenticationStore = globalPresentableStoreContainer.get()
-                    store.send(.loginFailure(message: error.localizedDescription))
+                    self?.router?.push(AuthentificationRouterType.error(message: error.localizedDescription))
                 }
             }
             .eraseToAnyCancellable()
@@ -265,7 +263,8 @@ struct BankIDLoginQR_Previews: PreviewProvider {
     }
 }
 
-enum AuthentificationRouterType {
+public enum AuthentificationRouterType: Hashable {
     case emailLogin
     case otpCodeEntry
+    case error(message: String)
 }

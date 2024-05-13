@@ -120,11 +120,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func handleURL(url: URL) {
-        if url.relativePath.contains("login-failure") {
-            let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
-            authenticationStore.send(.loginFailure(message: nil))
-        }
-
         let impersonate = Impersonate()
         if impersonate.canImpersonate(with: url) {
             let store: UgglanStore = globalPresentableStoreContainer.get()

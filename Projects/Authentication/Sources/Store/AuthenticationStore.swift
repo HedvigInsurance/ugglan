@@ -23,9 +23,7 @@ public final class AuthenticationStore: StateStore<AuthenticationState, Authenti
         if case .logout = action {
             do {
                 try await authentificationService.logout()
-                send(.logoutSuccess)
             } catch _ {
-                send(.logoutFailure)
             }
         }
     }

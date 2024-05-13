@@ -1,3 +1,4 @@
+import Authentication
 import Contracts
 import EditCoInsured
 import EditCoInsuredShared
@@ -28,14 +29,14 @@ struct MainNavigationJourney: App {
                     case .impersonation:
                         ImpersonationSettings()
                     default:
-                        LoginNavigation()
+                        LoginNavigation(vm: vm.notLoggedInVm)
                     }
                 } else {
                     ProgressView()
                 }
             }
             .onOpenURL { url in
-                appDelegate.handleURL(url: url)
+                handle(url: url)
             }
             .onChange(of: state) { value in
                 vm.state = state
@@ -43,31 +44,17 @@ struct MainNavigationJourney: App {
         }
     }
 
-    private func openUrl(url: URL) {
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        contractStore.send(.fetchContracts)
-        let homeStore: HomeStore = globalPresentableStoreContainer.get()
-        homeStore.send(.fetchQuickActions)
-        var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
-        if urlComponent?.scheme == nil {
-            urlComponent?.scheme = "https"
+    private func handle(url: URL) {
+        if url.relativePath.contains("login-failure") {
+            vm.notLoggedInVm.router.push(AuthentificationRouterType.error(message: L10n.authenticationBankidLoginError))
         }
-        let schema = urlComponent?.scheme
-        if let finalUrl = urlComponent?.url {
-            if schema == "https" || schema == "http" {
-                let vc = SFSafariViewController(url: finalUrl)
-                vc.modalPresentationStyle = .pageSheet
-                vc.preferredControlTintColor = .brand(.primaryText())
-                UIApplication.shared.getTopViewController()?.present(vc, animated: true)
-            } else {
-                UIApplication.shared.open(url)
-            }
-        }
+        appDelegate.handleURL(url: url)
     }
 }
 
 class MainNavigationViewModel: ObservableObject {
     @Published var hasLaunchFinished = false
+    let notLoggedInVm = NotLoggedViewModel()
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Published var stateToShow = ApplicationState.currentState ?? .notLoggedIn
     var state: ApplicationState.Screen = ApplicationState.currentState ?? .notLoggedIn {
