@@ -39,27 +39,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return window
     }()
 
-    //    func presentMainJourney() {
-    //        ApolloClient.cache = InMemoryNormalizedCache()
-    //
-    //        // remove all persisted state
-    //        globalPresentableStoreContainer.deletePersistanceContainer()
-    //
-    //        // create new store container to remove all old store instances
-    //        globalPresentableStoreContainer = PresentableStoreContainer()
-    //
-    //        self.setupSession()
-    //        //        self.bag += self.window.present(AppJourney.main)
-    //        ApolloClient.initAndRegisterClient()
-    //        UIView.transition(
-    //            with: self.window,
-    //            duration: 0.3,
-    //            options: .transitionCrossDissolve,
-    //            animations: {},
-    //            completion: { _ in }
-    //        )
-    //    }
-
     private func clearData() {
         ApolloClient.cache = InMemoryNormalizedCache()
 
@@ -69,7 +48,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // create new store container to remove all old store instances
         globalPresentableStoreContainer = PresentableStoreContainer()
 
-        //self.bag += self.window.present(AppJourney.main)
         ApolloClient.initAndRegisterClient()
     }
 
