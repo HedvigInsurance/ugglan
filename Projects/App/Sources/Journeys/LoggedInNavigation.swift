@@ -42,6 +42,12 @@ struct LoggedInNavigation: View {
             profileTab
         }
         .tint(hTextColor.primary)
+        .detent(
+            presented: $vm.isTravelInsurancePresented,
+            style: .large
+        ) {
+            TravelCertificateNavigation(infoButtonPlacement: .leading, useOwnNavigation: false, openCoInsured: {})
+        }
     }
 
     var homeTab: some View {
@@ -415,6 +421,8 @@ class LoggedInNavigationViewModel: ObservableObject {
     let homeNavigationVm = HomeNavigationViewModel()
     let helpCenterNavigationVm = HelpCenterNavigationViewModel()
 
+    @Published var isTravelInsurancePresented = true
+
     init() {
         NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) { notification in
             let deepLinkUrl = notification.object as? URL
@@ -463,13 +471,16 @@ class LoggedInNavigationViewModel: ObservableObject {
                 UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
                 self.selectedTab = 3
             case .travelCertificate:
-                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
-                self.selectedTab = 0
-                /* TODO: NOT SURE IF WE SHOULD REDIRECT TO HELP CENTER HERE? */
-                self.homeNavigationVm.isHelpCenterPresented = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                    self.helpCenterNavigationVm.quickActions.isTravelCertificatePresented = true
-                }
+                //                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
+
+                self.isTravelInsurancePresented = true
+
+            //                self.selectedTab = 0
+            /* TODO: NOT SURE IF WE SHOULD REDIRECT TO HELP CENTER HERE? */
+            //                self.homeNavigationVm.isHelpCenterPresented = true
+            //                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            //                    self.helpCenterNavigationVm.quickActions.isTravelCertificatePresented = true
+            //                }
             case .helpCenter:
                 UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
                 self.selectedTab = 0
