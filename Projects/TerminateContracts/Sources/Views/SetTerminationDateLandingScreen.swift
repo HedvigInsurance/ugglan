@@ -227,29 +227,6 @@ class SetTerminationDateLandingScreenViewModel: ObservableObject {
             }
             .store(in: &cancellables)
 
-        terminationStore.stateSignal.plain().publisher
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-
-            } receiveValue: { [weak self] state in
-                let isDeletion: Bool? = {
-                    if state.terminationDeleteStep != nil {
-                        return true
-                    }
-                    if state.terminationDateStep != nil {
-                        return false
-                    }
-                    return nil
-                }()
-                withAnimation {
-                    self?.isDeletion = isDeletion
-                    self?.titleText =
-                        isDeletion ?? false ? L10n.terminationFlowConfirmInformation : L10n.terminationDateText
-                }
-            }
-            .store(in: &cancellables)
-
         Publishers.CombineLatest3($terminationDate, $isDeletion, $hasAgreedToTerms)
             .receive(on: RunLoop.main)
             .sink { _ in
@@ -261,6 +238,22 @@ class SetTerminationDateLandingScreenViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellables)
+
+        isDeletion = {
+
+            if terminationStore.state.terminationDeleteStep != nil {
+                return true
+            }
+            if terminationStore.state.terminationDateStep != nil {
+                return false
+            }
+            return nil
+        }()
+        withAnimation {
+            self.isDeletion = isDeletion
+            self.titleText =
+                isDeletion ?? false ? L10n.terminationFlowConfirmInformation : L10n.terminationDateText
+        }
     }
 }
 

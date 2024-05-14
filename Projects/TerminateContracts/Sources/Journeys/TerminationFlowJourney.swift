@@ -6,19 +6,30 @@ import hCoreUI
 import hGraphQL
 
 public class TerminationFlowJourney {
-
     @JourneyBuilder
-    public static func start(
-        for configs: [TerminationConfirmConfig],
+    public static func getInitalScreen(
+        for action: TerminationContractAction,
         onDismissing: @escaping (_ success: Bool) -> Void
     ) -> some JourneyPresentation {
         GroupJourney {
-            if configs.count == 1, let config = configs.first {
-                openSetTerminationDateLandingScreen(config: config, style: .modally(presentationStyle: .overFullScreen))
-            } else {
-                openSelectInsuranceScreen(configs: configs)
+            if case let .navigationAction(navigationAction) = action {
+                if case .openTerminationFailScreen = navigationAction {
+                    TerminationFlowJourney.openTerminationFailScreen()
+                } else if case .openTerminationUpdateAppScreen = navigationAction {
+                    TerminationFlowJourney.openUpdateAppTerminationScreen()
+                } else if case let .openSelectInsuranceScreen(configs) = navigationAction {
+                    openSelectInsuranceScreen(configs: configs)
+                } else if case let .openSetTerminationDateLandingScreen(config) = navigationAction {
+                    openSetTerminationDateLandingScreen(
+                        config: config,
+                        style: .modally(presentationStyle: .overFullScreen)
+                    )
+                } else if case let .openTerminationSurveyStep(options) = navigationAction {
+                    openSurveyScreen(options: options)
+                }
             }
         }
+        .setStyle(.modally(presentationStyle: .overFullScreen))
         .onAction(TerminationContractStore.self) { action, pre in
             if case let .dismissTerminationFlow(success) = action {
                 pre.viewController.dismiss(animated: true) {
@@ -59,6 +70,12 @@ public class TerminationFlowJourney {
                 openSelectInsuranceScreen(configs: configs)
             } else if case let .openSetTerminationDateLandingScreen(config) = navigationAction {
                 openSetTerminationDateLandingScreen(config: config)
+            } else if case let .openTerminationSurveyStep(options) = navigationAction {
+                openSurveyScreen(options: options)
+            } else if case .openRedirectAction = navigationAction {
+                DismissJourney()
+            } else if case .openRedirectUrl = navigationAction {
+                DismissJourney()
             }
         }
     }
@@ -146,10 +163,6 @@ public class TerminationFlowJourney {
                     getScreen(for: action)
                 }
             }
-        }
-        .onPresent {
-            let store: TerminationContractStore = globalPresentableStoreContainer.get()
-            store.send(.startTermination(config: config))
         }
         .withJourneyDismissButton
     }
@@ -301,7 +314,7 @@ public class TerminationFlowJourney {
                             contractExposureName: selectedContract.contractExposureName,
                             activeFrom: selectedContract.activeFrom
                         )
-                        store.send(.navigationAction(action: .openSetTerminationDateLandingScreen(with: config)))
+                        store.send(.startTermination(config: config))
                     }
                 },
                 singleSelect: true,
@@ -314,6 +327,7 @@ public class TerminationFlowJourney {
                 title: .init(.small, .title3, L10n.terminationFlowTitle, alignment: .leading),
                 subTitle: .init(.small, .title3, L10n.terminationFlowBody)
             )
+            .trackLoading(TerminationContractStore.self, action: .getInitialStep)
             .hUseColoredCheckbox
             .hFieldSize(.small)
             .toolbar {
@@ -326,6 +340,19 @@ public class TerminationFlowJourney {
             style: .modally(presentationStyle: .overFullScreen)
         ) { action in
             getScreen(for: action)
+        }
+        .withJourneyDismissButton
+    }
+
+    private static func openSurveyScreen(options: [TerminationFlowSurveyStepModelOption]) -> some JourneyPresentation {
+        return HostingJourney(
+            TerminationContractStore.self,
+            rootView: TerminationSurveyScreen(vm: .init(options: options))
+        ) {
+            action in
+            if case let .navigationAction(navigationAction) = action {
+                getScreen(for: action)
+            }
         }
         .withJourneyDismissButton
     }

@@ -20,7 +20,6 @@ extension AppDelegate {
         bag += ApplicationContext.shared.$isLoggedIn.atOnce().filter(predicate: { $0 })
             .onValue { _ in
                 let client: NotificationClient = Dependencies.shared.resolve()
-
                 let deviceTokenString = deviceToken.reduce("", { $0 + String(format: "%02X", $1) })
                 client.register(for: deviceTokenString)
             }

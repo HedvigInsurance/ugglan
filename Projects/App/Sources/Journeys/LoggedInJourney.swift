@@ -75,19 +75,33 @@ extension AppJourney {
             case let .openCrossSellingWebUrl(url):
                 AppJourney.urlHandledBySystem(url: url)
             case let .startNewTermination(contract):
-                TerminationFlowJourney.start(
-                    for: [
-                        contract.asTerminationConfirmConfig
-                    ]
-                ) { success in
-                    if success {
-                        guard let tabBar = UIApplication.shared.getRootViewController() as? UITabBarController else {
-                            return
+                ContinueJourney()
+                    .onPresent {
+                        let disposeBag = DisposeBag()
+                        let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                        disposeBag += store.actionSignal.onValue { action in
+                            if case let .navigationAction(navigationAction) = action {
+                                let vc = TerminationFlowJourney.getInitalScreen(for: action) { success in
+                                    if success {
+                                        guard
+                                            let tabBar = UIApplication.shared.getRootViewController()
+                                                as? UITabBarController
+                                        else {
+                                            return
+                                        }
+                                        guard let navigation = tabBar.selectedViewController as? UINavigationController
+                                        else { return }
+                                        navigation.popToRootViewController(animated: true)
+                                    }
+                                }
+                                if let topView = UIApplication.shared.getTopViewController() {
+                                    disposeBag += topView.present(vc)
+                                }
+                                disposeBag.dispose()
+                            }
                         }
-                        guard let navigation = tabBar.selectedViewController as? UINavigationController else { return }
-                        navigation.popToRootViewController(animated: true)
+                        store.send(.startTermination(config: contract.asTerminationConfirmConfig))
                     }
-                }
             case let .handleCoInsured(config, fromInfoCard):
                 EditCoInsuredJourney.handleOpenEditCoInsured(for: config, fromInfoCard: fromInfoCard)
                     .onDismiss {
@@ -371,6 +385,31 @@ extension JourneyPresentation {
                 AppJourney.configureURL(url: url)
             } else if case .goToFreeTextChat = action {
                 AppJourney.freeTextChat().withDismissButton
+            }
+        }
+        .onAction(TerminationContractStore.self) { action, pre in
+            if case let .navigationAction(navigationAction) = action {
+                if case let .openRedirectAction(redirectAction) = navigationAction {
+                    switch redirectAction {
+                    case .updateAddress:
+                        let vc = UIApplication.shared.getTopViewController()
+                        if let deepLink = DeepLink.getUrl(from: .moveContract), let vc = vc?.presentingViewController {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                                UIApplication.shared.appDelegate.handleDeepLink(
+                                    deepLink,
+                                    fromVC: vc
+                                )
+                            }
+                        }
+                    }
+                } else if case let .openRedirectUrl(redirectUrl) = navigationAction {
+                    let vc = UIApplication.shared.getTopViewController()
+                    if let deepLink = DeepLink.getUrl(from: .moveContract), let vc = vc?.presentingViewController {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                            AppJourney.openUrl(url: redirectUrl)
+                        }
+                    }
+                }
             }
         }
     }

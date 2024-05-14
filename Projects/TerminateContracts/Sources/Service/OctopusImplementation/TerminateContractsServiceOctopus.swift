@@ -10,7 +10,63 @@ public class TerminateContractsOctopus: TerminateContractsService {
             input: OctopusGraphQL.FlowTerminationStartInput(contractId: contractId),
             context: nil
         )
-        return try await mutation.execute(\.flowTerminationStart.fragments.flowTerminationFragment.currentStep)
+        // TODO: return it when we have it from the BE
+        //        return try await mutation.execute(\.flowTerminationStart.fragments.flowTerminationFragment.currentStep)
+        let suboptions = [
+            TerminationFlowSurveyStepModelOption(
+                id: "optionId3",
+                title: "Option title 3",
+                suggestion: nil,
+                feedBack: .init(
+                    id: "feedbackId",
+                    isRequired: true
+                ),
+                subOptions: nil
+            )
+        ]
+        let options = [
+            TerminationFlowSurveyStepModelOption(
+                id: "optionId",
+                title: "Option title",
+                suggestion: .action(
+                    action: .init(
+                        id: "actionId",
+                        action: .updateAddress
+                    )
+                ),
+                feedBack: nil,
+                subOptions: suboptions
+            ),
+            .init(
+                id: "option44",
+                title: "Option with url",
+                suggestion: .redirect(
+                    redirect: .init(
+                        id: "idOfRedirect",
+                        url: "https://www.hedvig.com",
+                        description: "Description",
+                        buttonTitle: "Button title"
+                    )
+                ),
+                feedBack: nil,
+                subOptions: nil
+            ),
+            .init(
+                id: "optionId2",
+                title: "Option title 2",
+                suggestion: nil,
+                feedBack: .init(
+                    id: "feedbackId",
+                    isRequired: true
+                ),
+                subOptions: nil
+            ),
+        ]
+
+        return .init(
+            context: "",
+            action: .stepModelAction(action: .setTerminationSurveyStep(model: .init(id: "id", options: options)))
+        )
     }
 
     public func sendTerminationDate(
@@ -32,6 +88,10 @@ public class TerminateContractsOctopus: TerminateContractsService {
             input: GraphQLNullable(optionalValue: store.state.terminationDeleteStep?.returnDeltionInput())
         )
         return try await mutation.execute(\.flowTerminationDeletionNext.fragments.flowTerminationFragment.currentStep)
+    }
+
+    public func sendSurvey(option: String, inputData: String?) async throws -> TerminateStepResponse {
+        return .init(context: "", action: .dismissTerminationFlow(afterCancellationFinished: false))
     }
 }
 
