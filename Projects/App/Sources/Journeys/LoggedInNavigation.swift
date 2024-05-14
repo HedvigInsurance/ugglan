@@ -42,11 +42,69 @@ struct LoggedInNavigation: View {
             profileTab
         }
         .tint(hTextColor.primary)
-        .detent(
-            presented: $vm.isTravelInsurancePresented,
-            style: .large
+        .fullScreenCover(
+            isPresented: $vm.isTravelInsurancePresented
         ) {
-            TravelCertificateNavigation(infoButtonPlacement: .leading, useOwnNavigation: false, openCoInsured: {})
+            TravelCertificateNavigation(
+                infoButtonPlacement: .leading,
+                useOwnNavigation: true,
+                openCoInsured: {
+                    vm.getEditCoInsuredView(config: .init())
+                }
+            )
+        }
+        .fullScreenCover(
+            isPresented: $vm.isMoveContractPresented
+        ) {
+            MovingFlowNavigation()
+        }
+        .fullScreenCover(
+            isPresented: $vm.isCancelInsurancePresented
+        ) {
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+
+            let contractsConfig: [TerminationConfirmConfig] = contractStore.state.activeContracts
+                .filter({ $0.canTerminate })
+                .map({
+                    $0.asTerminationConfirmConfig
+                })
+
+            TerminationFlowNavigation(
+                configs: contractsConfig,
+                isFlowPresented: { dismissType in
+                    switch dismissType {
+                    case .done:
+                        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                        contractStore.send(.fetchContracts)
+                        let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                        homeStore.send(.fetchQuickActions)
+                    case .chat:
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                            NotificationCenter.default.post(name: .openChat, object: nil)
+                        }
+                    case let .openFeedback(url):
+                        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                        contractStore.send(.fetchContracts)
+                        let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                        homeStore.send(.fetchQuickActions)
+                        var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+                        if urlComponent?.scheme == nil {
+                            urlComponent?.scheme = "https"
+                        }
+                        let schema = urlComponent?.scheme
+                        if let finalUrl = urlComponent?.url {
+                            if schema == "https" || schema == "http" {
+                                let vc = SFSafariViewController(url: finalUrl)
+                                vc.modalPresentationStyle = .pageSheet
+                                vc.preferredControlTintColor = .brand(.primaryText())
+                                UIApplication.shared.getTopViewController()?.present(vc, animated: true)
+                            } else {
+                                UIApplication.shared.open(url)
+                            }
+                        }
+                    }
+                }
+            )
         }
     }
 
@@ -422,6 +480,8 @@ class LoggedInNavigationViewModel: ObservableObject {
     let helpCenterNavigationVm = HelpCenterNavigationViewModel()
 
     @Published var isTravelInsurancePresented = false
+    @Published var isMoveContractPresented = false
+    @Published var isCancelInsurancePresented = false
 
     init() {
         NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) { notification in
@@ -471,16 +531,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                 UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
                 self.selectedTab = 3
             case .travelCertificate:
-                //                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
-
                 self.isTravelInsurancePresented = true
-
-            //                self.selectedTab = 0
-            /* TODO: NOT SURE IF WE SHOULD REDIRECT TO HELP CENTER HERE? */
-            //                self.homeNavigationVm.isHelpCenterPresented = true
-            //                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-            //                    self.helpCenterNavigationVm.quickActions.isTravelCertificatePresented = true
-            //                }
             case .helpCenter:
                 UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
                 self.selectedTab = 0
@@ -488,17 +539,9 @@ class LoggedInNavigationViewModel: ObservableObject {
                     self.homeNavigationVm.isHelpCenterPresented = true
                 }
             case .moveContract:
-                /* TODO: NOT SURE IF WE SHOULD REDIRECT TO HELP CENTER HERE? */
-                self.homeNavigationVm.isHelpCenterPresented = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                    self.helpCenterNavigationVm.quickActions.isChangeAddressPresented = true
-                }
+                self.isMoveContractPresented = true
             case .terminateContract:
-                /* TODO: NOT SURE IF WE SHOULD REDIRECT TO HELP CENTER HERE? */
-                self.homeNavigationVm.isHelpCenterPresented = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                    self.helpCenterNavigationVm.quickActions.isCancellationPresented = true
-                }
+                self.isCancelInsurancePresented = true
             case .openChat:
                 NotificationCenter.default.post(name: .openChat, object: nil)
             case nil:
