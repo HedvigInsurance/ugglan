@@ -77,56 +77,63 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
             .introspectViewController(customize: { vc in
                 presentationViewModel.rootVC = vc
             })
-            .onChange(of: presented) { newValue in
-                if newValue {
-                    var withDelay = false
-                    if options.contains(.replaceCurrent) {
-                        if let vc = presentationViewModel.rootVC?.presentingViewController {
-                            presentationViewModel.rootVC?.dismiss(animated: true)
-                            presentationViewModel.rootVC = vc
-                            withDelay = true
-                        }
-                    } else if !options.contains(.alwaysOpenOnTop) {
-                        if let presentedVC = presentationViewModel.rootVC?.presentedViewController {
-                            presentedVC.dismiss(animated: true)
-                            withDelay = true
-                        }
-                    }
+            .onAppear {
+                handle(isPresent: presented)
+            }
+            .onChange(of: presented) { isPresent in
+                handle(isPresent: isPresent)
+            }
+    }
 
-                    DispatchQueue.main.asyncAfter(deadline: .now() + (withDelay ? 0.8 : 0)) {
-                        let vcToPresent: UIViewController? = {
-                            if options.contains(.alwaysOpenOnTop) {
-                                return UIApplication.shared.getTopViewController()
-                            }
-                            return presentationViewModel.rootVC ?? UIApplication.shared.getTopViewController()
-
-                        }()
-                        let content = self.content()
-                        let vc = hHostingController(rootView: content, contentName: "\(Content.self)")
-                        let delegate = DetentedTransitioningDelegate(
-                            detents: style.asDetent(),
-                            options: [.blurredBackground],
-                            wantsGrabber: options.contains(.withoutGrabber) ? false : true,
-                            viewController: vc
-                        )
-                        if options.contains(.disableDismissOnScroll) {
-                            vc.isModalInPresentation = true
-                        } else {
-                            vc.isModalInPresentation = false
-                        }
-                        vc.transitioningDelegate = delegate
-                        vc.modalPresentationStyle = .custom
-
-                        vc.onDeinit = {
-                            presented = false
-                        }
-                        presentationViewModel.presentingVC = vc
-                        vcToPresent?.present(vc, animated: true)
-                    }
-                } else {
-                    presentationViewModel.presentingVC?.dismiss(animated: true)
+    private func handle(isPresent: Bool) {
+        if isPresent {
+            var withDelay = false
+            if options.contains(.replaceCurrent) {
+                if let vc = presentationViewModel.rootVC?.presentingViewController {
+                    presentationViewModel.rootVC?.dismiss(animated: true)
+                    presentationViewModel.rootVC = vc
+                    withDelay = true
+                }
+            } else if !options.contains(.alwaysOpenOnTop) {
+                if let presentedVC = presentationViewModel.rootVC?.presentedViewController {
+                    presentedVC.dismiss(animated: true)
+                    withDelay = true
                 }
             }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + (withDelay ? 0.8 : 0)) {
+                let vcToPresent: UIViewController? = {
+                    if options.contains(.alwaysOpenOnTop) {
+                        return UIApplication.shared.getTopViewController()
+                    }
+                    return presentationViewModel.rootVC ?? UIApplication.shared.getTopViewController()
+
+                }()
+                let content = self.content()
+                let vc = hHostingController(rootView: content, contentName: "\(Content.self)")
+                let delegate = DetentedTransitioningDelegate(
+                    detents: style.asDetent(),
+                    options: [.blurredBackground],
+                    wantsGrabber: options.contains(.withoutGrabber) ? false : true,
+                    viewController: vc
+                )
+                if options.contains(.disableDismissOnScroll) {
+                    vc.isModalInPresentation = true
+                } else {
+                    vc.isModalInPresentation = false
+                }
+                vc.transitioningDelegate = delegate
+                vc.modalPresentationStyle = .custom
+
+                vc.onDeinit = {
+                    presented = false
+                }
+                presentationViewModel.presentingVC = vc
+                vcToPresent?.present(vc, animated: true)
+            }
+        } else {
+            presentationViewModel.presentingVC?.dismiss(animated: true)
+        }
     }
 }
 

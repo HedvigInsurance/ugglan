@@ -421,7 +421,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     let homeNavigationVm = HomeNavigationViewModel()
     let helpCenterNavigationVm = HelpCenterNavigationViewModel()
 
-    @Published var isTravelInsurancePresented = true
+    @Published var isTravelInsurancePresented = false
 
     init() {
         NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) { notification in
