@@ -75,7 +75,7 @@ public struct ClaimsNavigation: View {
                     case .uploadFiles:
                         openFileUploadScreen()
                     case .checkOutNoRepair:
-                        openCheckoutNoRepairScreen()
+                        openCheckoutScreen()
                     }
                 }
                 .routerDestination(
@@ -122,7 +122,7 @@ public struct ClaimsNavigation: View {
                         router.push(ClaimsRouterActions.emergencySelect)
                     case .openFileUploadScreen:
                         router.push(ClaimsRouterActions.uploadFiles)
-                    case .openCheckoutNoRepairScreen:
+                    case .openClaimCheckoutScreen:
                         router.push(ClaimsRouterActions.checkOutNoRepair)
                     case .openSuccessScreen:
                         router.push(ClaimsRouterActionsWithoutBackButton.success)
@@ -319,8 +319,8 @@ public struct ClaimsNavigation: View {
             .addDismissClaimsFlow()
     }
 
-    private func openCheckoutNoRepairScreen() -> some View {
-        SubmitClaimCheckoutNoRepairScreen()
+    private func openCheckoutScreen() -> some View {
+        SubmitClaimCheckoutScreen()
             .resetProgressToPreviousValueOnDismiss
             .addDismissClaimsFlow()
             .configureTitle(L10n.Claims.Payout.Summary.title)

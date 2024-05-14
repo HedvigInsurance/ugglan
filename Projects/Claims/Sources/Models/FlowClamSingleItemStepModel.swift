@@ -17,6 +17,39 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
     var selectedItemModel: String?
     var selectedItemProblems: [String]?
     let defaultItemProblems: [String]?
+    let purchasePriceApplicable: Bool
+
+    init(
+        id: String,
+        availableItemBrandOptions: [ClaimFlowItemBrandOptionModel],
+        availableItemModelOptions: [ClaimFlowItemModelOptionModel],
+        availableItemProblems: [ClaimFlowItemProblemOptionModel],
+        customName: String? = nil,
+        prefferedCurrency: String?,
+        purchaseDate: String? = nil,
+        purchasePrice: Double? = nil,
+        currencyCode: String?,
+        selectedItemBrand: String? = nil,
+        selectedItemModel: String? = nil,
+        selectedItemProblems: [String]? = nil,
+        defaultItemProblems: [String]?,
+        purchasePriceApplicable: Bool
+    ) {
+        self.id = id
+        self.availableItemBrandOptions = availableItemBrandOptions
+        self.availableItemModelOptions = availableItemModelOptions
+        self.availableItemProblems = availableItemProblems
+        self.customName = customName
+        self.prefferedCurrency = prefferedCurrency
+        self.purchaseDate = purchaseDate
+        self.purchasePrice = purchasePrice
+        self.currencyCode = currencyCode
+        self.selectedItemBrand = selectedItemBrand
+        self.selectedItemModel = selectedItemModel
+        self.selectedItemProblems = selectedItemProblems
+        self.defaultItemProblems = defaultItemProblems
+        self.purchasePriceApplicable = purchasePriceApplicable
+    }
 
     init(
         with data: OctopusGraphQL.FlowClaimSingleItemStepFragment
@@ -35,6 +68,7 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
         self.currencyCode = data.purchasePrice?.currencyCode.rawValue
         self.selectedItemBrand = data.selectedItemBrand
         self.selectedItemModel = data.selectedItemModel
+        self.purchasePriceApplicable = data.purchasePriceApplicable
 
         if self.selectedItemModel == nil && self.customName == nil {
             let currentDeviceName = UIDevice.modelName.lowercased()
@@ -176,6 +210,18 @@ public struct ClaimFlowItemModelOptionModel: Codable, Equatable, Hashable {
     let itemBrandId: String
     let itemTypeId: String
     let itemModelId: String
+
+    init(
+        displayName: String,
+        itemBrandId: String,
+        itemTypeId: String,
+        itemModelId: String
+    ) {
+        self.displayName = displayName
+        self.itemBrandId = itemBrandId
+        self.itemTypeId = itemTypeId
+        self.itemModelId = itemModelId
+    }
 
     init(
         with model: OctopusGraphQL.FlowClaimSingleItemStepFragment.AvailableItemModel

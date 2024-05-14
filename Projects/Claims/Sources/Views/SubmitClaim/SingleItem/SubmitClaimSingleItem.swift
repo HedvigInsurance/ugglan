@@ -46,7 +46,9 @@ public struct SubmitClaimSingleItem: View {
         VStack(spacing: 4) {
             displayBrandAndModelField(singleItemStep: singleItemStep)
             displayDateField(claim: singleItemStep)
-            displayPurchasePriceField(claim: singleItemStep)
+            if let singleItemStep, singleItemStep.purchasePriceApplicable {
+                displayPurchasePriceField(claim: singleItemStep)
+            }
             displayDamageField(claim: singleItemStep)
         }
         InfoCard(text: L10n.claimsSingleItemNoticeLabel, type: .info)
