@@ -17,6 +17,151 @@ import TravelCertificate
 import hCore
 import hCoreUI
 
+class MainNavigationViewModel: ObservableObject {
+    @Published var selectedTab = 0
+    @Published var hasLaunchFinished = false
+    let contractsNavigationVm = ContractsNavigationViewModel()
+    let paymentsNavigationVm = PaymentsNavigationViewModel()
+    let profileNavigationVm = ProfileNavigationViewModel()
+    let homeNavigationVm = HomeNavigationViewModel()
+    let helpCenterNavigationVm = HelpCenterNavigationViewModel()
+
+    init() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.hasLaunchFinished = true
+        }
+
+        NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) { notification in
+            let deepLinkUrl = notification.object as? URL
+            self.handleDeepLinks(deepLinkUrl: deepLinkUrl)
+        }
+    }
+
+    private func handleDeepLinks(deepLinkUrl: URL?) {
+        if let url = deepLinkUrl {
+            let deepLink = DeepLink.getType(from: url)
+            switch deepLink {
+            case .forever:
+                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
+                self.selectedTab = 2
+            case .directDebit:
+                self.paymentsNavigationVm.connectPaymentVm.connectPaymentModel = .init(setUpType: nil)
+            case .profile:
+                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
+                self.selectedTab = 4
+            case .insurances:
+                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
+                self.selectedTab = 1
+            case .home:
+                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
+                self.selectedTab = 0
+            case .sasEuroBonus:
+                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
+                self.selectedTab = 4
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    self.contractsNavigationVm.contractsRouter.popToRoot()
+                    self.profileNavigationVm.profileRouter.push(ProfileRedirectType.euroBonus)
+                }
+            case .contract:
+                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
+                self.selectedTab = 1
+                let contractId = self.getContractId(from: url)
+
+                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                if let contractId, let contract: Contract = contractStore.state.contractForId(contractId) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        self.contractsNavigationVm.contractsRouter.popToRoot()
+                        self.contractsNavigationVm.contractsRouter.push(contract)
+                    }
+                }
+            case .payments:
+                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
+                self.selectedTab = 3
+            case .travelCertificate:
+                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
+                self.selectedTab = 0
+                /* TODO: NOT SURE IF WE SHOULD REDIRECT TO HELP CENTER HERE? */
+                self.homeNavigationVm.isHelpCenterPresented = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                    self.helpCenterNavigationVm.quickActions.isTravelCertificatePresented = true
+                }
+            case .helpCenter:
+                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
+                self.selectedTab = 0
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    self.homeNavigationVm.isHelpCenterPresented = true
+                }
+            case .moveContract:
+                /* TODO: NOT SURE IF WE SHOULD REDIRECT TO HELP CENTER HERE? */
+                self.homeNavigationVm.isHelpCenterPresented = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                    self.helpCenterNavigationVm.quickActions.isChangeAddressPresented = true
+                }
+            case .terminateContract:
+                /* TODO: NOT SURE IF WE SHOULD REDIRECT TO HELP CENTER HERE? */
+                self.homeNavigationVm.isHelpCenterPresented = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                    self.helpCenterNavigationVm.quickActions.isCancellationPresented = true
+                }
+            case .openChat:
+                NotificationCenter.default.post(name: .openChat, object: nil)
+            case nil:
+                break
+            }
+        }
+    }
+
+    private func getContractId(from url: URL) -> String? {
+        guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
+        guard let queryItems = urlComponents.queryItems else { return nil }
+        return queryItems.first(where: { $0.name == "contractId" })?.value
+    }
+
+    func checkForAlert() {
+        Task {
+            homeNavigationVm.isEditCoInsuredPresented = nil
+            homeNavigationVm.isEditCoInsuredSelectContractPresented = nil
+            homeNavigationVm.isMissingEditCoInsuredAlertPresented = nil
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+            await contractStore.sendAsync(.fetchContracts)
+            let missingContract = contractStore.state.activeContracts.first { contract in
+                if contract.upcomingChangedAgreement != nil {
+                    return false
+                } else {
+                    return contract.coInsured
+                        .first(where: { coInsured in
+                            coInsured.hasMissingInfo && contract.terminationDate == nil
+                        }) != nil
+                }
+            }
+
+            if let missingContract {
+                let missingContractConfig = InsuredPeopleConfig(contract: missingContract, fromInfoCard: false)
+                homeNavigationVm.isMissingEditCoInsuredAlertPresented = missingContractConfig
+            }
+        }
+    }
+
+    @ViewBuilder
+    func getEditCoInsuredView(
+        config: InsuredPeopleConfig
+    ) -> some View {
+        EditCoInsuredNavigation(
+            config: config,
+            checkForAlert: checkForAlert
+        )
+    }
+
+    func getMissingCoInsuredAlertView(
+        missingContractConfig: InsuredPeopleConfig
+    ) -> some View {
+        EditCoInsuredAlertNavigation(
+            config: missingContractConfig,
+            checkForAlert: checkForAlert
+        )
+    }
+}
+
 struct HomeTab: View {
     @ObservedObject var homeNavigationVm: HomeNavigationViewModel
     let mainNavigationVm: MainNavigationViewModel
@@ -170,151 +315,6 @@ struct HomeTab: View {
                 let options = homeNavigationVm.openChatOptions
                 ChatNavigation(openChat: openChat)
             }
-        )
-    }
-}
-
-class MainNavigationViewModel: ObservableObject {
-    @Published var selectedTab = 0
-    @Published var hasLaunchFinished = false
-    let contractsNavigationVm = ContractsNavigationViewModel()
-    let paymentsNavigationVm = PaymentsNavigationViewModel()
-    let profileNavigationVm = ProfileNavigationViewModel()
-    let homeNavigationVm = HomeNavigationViewModel()
-    let helpCenterNavigationVm = HelpCenterNavigationViewModel()
-
-    init() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.hasLaunchFinished = true
-        }
-
-        NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) { notification in
-            let deepLinkUrl = notification.object as? URL
-            self.handleDeepLinks(deepLinkUrl: deepLinkUrl)
-        }
-    }
-
-    private func handleDeepLinks(deepLinkUrl: URL?) {
-        if let url = deepLinkUrl {
-            let deepLink = DeepLink.getType(from: url)
-            switch deepLink {
-            case .forever:
-                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
-                self.selectedTab = 2
-            case .directDebit:
-                self.paymentsNavigationVm.connectPaymentVm.connectPaymentModel = .init(setUpType: nil)
-            case .profile:
-                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
-                self.selectedTab = 4
-            case .insurances:
-                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
-                self.selectedTab = 1
-            case .home:
-                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
-                self.selectedTab = 0
-            case .sasEuroBonus:
-                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
-                self.selectedTab = 4
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                    self.contractsNavigationVm.contractsRouter.popToRoot()
-                    self.profileNavigationVm.profileRouter.push(ProfileRedirectType.euroBonus)
-                }
-            case .contract:
-                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
-                self.selectedTab = 1
-                let contractId = self.getContractId(from: url)
-
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                if let contractId, let contract: Contract = contractStore.state.contractForId(contractId) {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                        self.contractsNavigationVm.contractsRouter.popToRoot()
-                        self.contractsNavigationVm.contractsRouter.push(contract)
-                    }
-                }
-            case .payments:
-                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
-                self.selectedTab = 3
-            case .travelCertificate:
-                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
-                self.selectedTab = 0
-                /* TODO: NOT SURE IF WE SHOULD REDIRECT TO HELP CENTER HERE? */
-                self.homeNavigationVm.isHelpCenterPresented = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                    self.helpCenterNavigationVm.quickActions.isTravelCertificatePresented = true
-                }
-            case .helpCenter:
-                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
-                self.selectedTab = 0
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                    self.homeNavigationVm.isHelpCenterPresented = true
-                }
-            case .moveContract:
-                /* TODO: NOT SURE IF WE SHOULD REDIRECT TO HELP CENTER HERE? */
-                self.homeNavigationVm.isHelpCenterPresented = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                    self.helpCenterNavigationVm.quickActions.isChangeAddressPresented = true
-                }
-            case .terminateContract:
-                /* TODO: NOT SURE IF WE SHOULD REDIRECT TO HELP CENTER HERE? */
-                self.homeNavigationVm.isHelpCenterPresented = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                    self.helpCenterNavigationVm.quickActions.isCancellationPresented = true
-                }
-            case .openChat:
-                NotificationCenter.default.post(name: .openChat, object: nil)
-            case nil:
-                break
-            }
-        }
-    }
-
-    private func getContractId(from url: URL) -> String? {
-        guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
-        guard let queryItems = urlComponents.queryItems else { return nil }
-        return queryItems.first(where: { $0.name == "contractId" })?.value
-    }
-
-    func checkForAlert() {
-        Task {
-            homeNavigationVm.isEditCoInsuredPresented = nil
-            homeNavigationVm.isEditCoInsuredSelectContractPresented = nil
-            homeNavigationVm.isMissingEditCoInsuredAlertPresented = nil
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-            await contractStore.sendAsync(.fetchContracts)
-            let missingContract = contractStore.state.activeContracts.first { contract in
-                if contract.upcomingChangedAgreement != nil {
-                    return false
-                } else {
-                    return contract.coInsured
-                        .first(where: { coInsured in
-                            coInsured.hasMissingInfo && contract.terminationDate == nil
-                        }) != nil
-                }
-            }
-
-            if let missingContract {
-                let missingContractConfig = InsuredPeopleConfig(contract: missingContract, fromInfoCard: false)
-                homeNavigationVm.isMissingEditCoInsuredAlertPresented = missingContractConfig
-            }
-        }
-    }
-
-    @ViewBuilder
-    func getEditCoInsuredView(
-        config: InsuredPeopleConfig
-    ) -> some View {
-        EditCoInsuredNavigation(
-            config: config,
-            checkForAlert: checkForAlert
-        )
-    }
-
-    func getMissingCoInsuredAlertView(
-        missingContractConfig: InsuredPeopleConfig
-    ) -> some View {
-        EditCoInsuredAlertNavigation(
-            config: missingContractConfig,
-            checkForAlert: checkForAlert
         )
     }
 }
