@@ -78,13 +78,6 @@ public struct ProfileNavigation<Content: View>: View {
                     .embededInNavigation(options: .navigationType(type: .large))
             }
         )
-        //        .detent(
-        //            presented: $profileNavigationViewModel.isEuroBonusPresented,
-        //            style: .large,
-        //            content: {
-        //                EuroBonusNavigation()
-        //            }
-        //        )
         .fullScreenCover(
             isPresented: $profileNavigationViewModel.isDeleteAccountAlreadyRequestedPresented
         ) {
