@@ -118,10 +118,17 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
             }
             return hNavigationController()
         }()
+        let controller = hHostingController(
+            rootView: initialView().environmentObject(router),
+            contentName: "\(Screen.self)"
+        )
         navigation.setViewControllers(
-            [hHostingController(rootView: initialView().environmentObject(router), contentName: "\(Screen.self)")],
+            [controller],
             animated: false
         )
+        if options.contains(.navigationBarHidden) {
+            navigation.setNavigationBarHidden(true, animated: true)
+        }
         router.onPush = { [weak router, weak navigation] options, view, name in
             guard let router = router else { return nil }
             let vc = hHostingController(rootView: view.environmentObject(router), contentName: name)

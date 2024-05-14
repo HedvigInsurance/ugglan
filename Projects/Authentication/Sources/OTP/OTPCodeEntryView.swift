@@ -4,8 +4,9 @@ import hCoreUI
 
 public struct OTPCodeEntryView: View {
     @StateObject private var vm = OTPCodeEntryViewModel()
-    @ObservedObject var otpVM: OTPState
-    @PresentableStore var store: AuthenticationStore
+    @EnvironmentObject var otpVM: OTPState
+
+    public init() {}
 
     public var body: some View {
         hForm {
@@ -56,9 +57,8 @@ public struct OTPCodeEntryView: View {
                         }
 
                         ResendOTPCode(otpVM: otpVM)
-                            .environmentObject(store.otpState)
+                            .environmentObject(otpVM)
                     }
-                    .presentableStoreLensAnimation(.default)
                 }
             }
             .background(
@@ -72,6 +72,7 @@ public struct OTPCodeEntryView: View {
         }
         .hFormAttachToBottom {
             OpenEmailClientButton()
+                .environmentObject(otpVM)
         }
         .overlay(
             OTPCodeLoadingOverlay(otpVM: otpVM)
@@ -84,7 +85,6 @@ public struct OTPCodeEntryView: View {
 }
 
 class OTPCodeEntryViewModel: ObservableObject {
-    @PresentableStore private var store: AuthenticationStore
     @Inject private var service: AuthentificationService
     @hTextFieldFocusState var focusCodeField: Bool? = true
 
@@ -102,7 +102,8 @@ class OTPCodeEntryViewModel: ObservableObject {
                     if let service = self?.service, let otpState = otpState {
                         let code = try await service.submit(otpState: otpState)
                         try await service.exchange(code: code)
-                        self?.store.send(.navigationAction(action: .authSuccess))
+                        let generator = UINotificationFeedbackGenerator()
+                        generator.notificationOccurred(.success)
                     }
                 } catch let error {
                     otpState?.codeErrorMessage = error.localizedDescription

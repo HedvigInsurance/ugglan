@@ -1,4 +1,3 @@
-import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
@@ -52,7 +51,7 @@ public struct OpenEmailClientButton: View {
     private var hasPressedButton: (() -> Void)?
     @Binding private var hasAcceptedAlert: Bool
     private let buttonSize: OpenEmailButtonType
-    @ObservedObject var otpVM: OTPState
+    @EnvironmentObject var otpVM: OTPState
 
     public init(
         options: EmailOptions? = nil,
@@ -66,8 +65,6 @@ public struct OpenEmailClientButton: View {
         self._hasAcceptedAlert = hasAcceptedAlert ?? .constant(true)
         self.hasPressedButton = hasPressedButton
         self.buttonSize = buttonSize ?? .primary
-        let store: AuthenticationStore = globalPresentableStoreContainer.get()
-        otpVM = store.otpState
         emailClients = {
             let appleURLString = addEmailUrlComponents(baseUrl: "mailto:?")
             let gmailURLString = addEmailUrlComponents(baseUrl: "googlegmail:///co?")
