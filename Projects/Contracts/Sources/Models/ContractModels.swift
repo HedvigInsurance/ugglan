@@ -571,3 +571,23 @@ extension Contract {
         )
     }
 }
+
+extension Sequence where Iterator.Element == Contract {
+    public var hasMissingCoInsured: Bool {
+        let contractsWithMissingCoInsured =
+            self
+            .filter { contract in
+                if !contract.supportsCoInsured {
+                    return false
+                } else if contract.coInsured.isEmpty {
+                    return false
+                } else if contract.terminationDate != nil {
+                    return false
+                } else {
+                    return contract.coInsured.first(where: { $0.hasMissingData }) != nil
+                }
+            }
+        let show = !contractsWithMissingCoInsured.isEmpty
+        return show
+    }
+}
