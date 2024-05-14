@@ -11,6 +11,8 @@ public class ProfileNavigationViewModel: ObservableObject {
     @Published public var isEditCoInsuredSelectContractPresented: CoInsuredConfigModel?
     @Published public var isEditCoInsuredPresented: InsuredPeopleConfig?
 
+    public let profileRouter = Router()
+
     public init() {}
 }
 
@@ -22,7 +24,6 @@ public enum ProfileNavigationDismissAction {
 
 public struct ProfileNavigation<Content: View>: View {
     @ViewBuilder var redirect: (_ type: ProfileRedirectType) -> Content
-    @StateObject var router = Router()
     @ObservedObject var profileNavigationViewModel: ProfileNavigationViewModel
 
     public init(
@@ -34,7 +35,7 @@ public struct ProfileNavigation<Content: View>: View {
     }
 
     public var body: some View {
-        RouterHost(router: router) {
+        RouterHost(router: profileNavigationViewModel.profileRouter) {
             ProfileView()
                 .routerDestination(for: ProfileRedirectType.self) { redirectType in
                     switch redirectType {
@@ -77,6 +78,13 @@ public struct ProfileNavigation<Content: View>: View {
                     .embededInNavigation(options: .navigationType(type: .large))
             }
         )
+        //        .detent(
+        //            presented: $profileNavigationViewModel.isEuroBonusPresented,
+        //            style: .large,
+        //            content: {
+        //                EuroBonusNavigation()
+        //            }
+        //        )
         .fullScreenCover(
             isPresented: $profileNavigationViewModel.isDeleteAccountAlreadyRequestedPresented
         ) {

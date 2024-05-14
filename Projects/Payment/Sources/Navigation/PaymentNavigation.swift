@@ -6,7 +6,7 @@ import hCoreUI
 public class PaymentsNavigationViewModel: ObservableObject {
 
     public init() {}
-    var connectPaymentVm = ConnectPaymentViewModel()
+    public var connectPaymentVm = ConnectPaymentViewModel()
     @Published public var isAddCampaignPresented = false
     @Published public var isDeleteCampaignPresented: Discount?
 }

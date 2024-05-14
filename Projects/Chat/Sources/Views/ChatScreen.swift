@@ -11,7 +11,6 @@ public struct ChatScreen: View {
     @State var infoViewHeight: CGFloat = 0
     @State var infoViewWidth: CGFloat = 0
     @StateObject var chatScrollViewDelegate = ChatScrollViewDelegate()
-    @PresentableStore private var store: ChatStore
 
     public init(
         vm: ChatScreenViewModel
@@ -134,7 +133,7 @@ public struct ChatScreen: View {
                             linkColor: hSignalColor.blueText,
                             linkUnderlineStyle: .single
                         ) { url in
-                            store.send(.navigation(action: .linkClicked(url: url)))
+                            NotificationCenter.default.post(name: .openDeepLink, object: url)
                         }
                     )
                 }

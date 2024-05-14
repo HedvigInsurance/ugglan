@@ -7,15 +7,19 @@ import hCore
 import hCoreUI
 
 public struct ContractsNavigation<Content: View>: View {
-    @StateObject var contractsNavigationVm = ContractsNavigationViewModel()
+    @ObservedObject var contractsNavigationVm: ContractsNavigationViewModel
     @ViewBuilder var redirect: (_ type: RedirectType) -> Content
-    @StateObject var router = Router()
-    public init(@ViewBuilder redirect: @escaping (_ type: RedirectType) -> Content) {
+
+    public init(
+        contractsNavigationVm: ContractsNavigationViewModel,
+        @ViewBuilder redirect: @escaping (_ type: RedirectType) -> Content
+    ) {
+        self.contractsNavigationVm = contractsNavigationVm
         self.redirect = redirect
     }
 
     public var body: some View {
-        RouterHost(router: router) {
+        RouterHost(router: contractsNavigationVm.contractsRouter) {
             Contracts(showTerminated: false)
                 .environmentObject(contractsNavigationVm)
                 .configureTitle(L10n.InsurancesTab.title)
@@ -106,6 +110,8 @@ public struct ContractsNavigation<Content: View>: View {
 
 public class ContractsNavigationViewModel: ObservableObject {
     public init() {}
+
+    public let contractsRouter = Router()
 
     @Published public var insurableLimit: InsurableLimits?
     @Published public var document: Document?

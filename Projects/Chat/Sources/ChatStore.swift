@@ -9,15 +9,8 @@ public struct ChatState: StateProtocol {
 }
 
 public enum ChatAction: ActionProtocol {
-    case setAllowNewMessages(allow: Bool)
     case setLastMessageDate(date: Date)
     case checkPushNotificationStatus
-    case navigation(action: ChatNavigationAction)
-}
-
-public enum ChatNavigationAction: ActionProtocol {
-    case linkClicked(url: URL)
-    case closeChat
 }
 
 final public class ChatStore: StateStore<ChatState, ChatAction> {
@@ -31,8 +24,6 @@ final public class ChatStore: StateStore<ChatState, ChatAction> {
         switch action {
         case .checkPushNotificationStatus:
             newState.askedForPushNotificationsPermission = true
-        case let .setAllowNewMessages(allow):
-            newState.allowNewMessageToast = allow
         default:
             break
         }

@@ -30,7 +30,7 @@ struct ConnectPayment: ViewModifier {
                                     let url = try await paymentServcice.getAdyenUrl()
                                     router.push(PaymentsRouterAction.openUrl(url: url))
                                 } catch {
-                                    //we are not so concern about this
+                                    //we are not so concerned about this
                                 }
                             }
                         }
@@ -49,9 +49,7 @@ struct ConnectPayment: ViewModifier {
 
 public class ConnectPaymentViewModel: ObservableObject {
     @Published public var connectPaymentModel: SetupTypeNavigationModel?
-    public init() {
-
-    }
+    public init() {}
 }
 
 public struct SetupTypeNavigationModel: Equatable, Identifiable {

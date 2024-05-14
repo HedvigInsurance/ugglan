@@ -12,17 +12,20 @@ import hCore
 import hCoreUI
 
 public class HelpCenterNavigationViewModel: ObservableObject {
-    @Published var quickActions = QuickActions()
+
+    public init() {}
+
+    @Published public var quickActions = QuickActions()
     var connectPaymentsVm = ConnectPaymentViewModel()
-    struct QuickActions {
-        var isTravelCertificatePresented = false
-        var isChangeAddressPresented = false
+    public struct QuickActions {
+        public var isTravelCertificatePresented = false
+        public var isChangeAddressPresented = false
         var isEditCoInsuredSelectContractPresented: CoInsuredConfigModel?
 
         var isEditCoInsuredPresented: InsuredPeopleConfig?
         var isEditCoInsuredMissingContractPresented: InsuredPeopleConfig?
 
-        var isCancellationPresented = false
+        public var isCancellationPresented = false
         var isFirstVetPresented = false
         var isSickAbroadPresented = false
     }
@@ -34,12 +37,18 @@ public class HelpCenterNavigationViewModel: ObservableObject {
 }
 
 public struct HelpCenterNavigation<Content: View>: View {
-    @StateObject private var helpCenterVm = HelpCenterNavigationViewModel()
+    @ObservedObject var helpCenterVm: HelpCenterNavigationViewModel
+
     @EnvironmentObject private var homeVm: HomeNavigationViewModel
     @PresentableStore private var store: HomeStore
     @ViewBuilder var redirect: (_ type: HelpCenterRedirectType) -> Content
     @StateObject var router = Router()
-    public init(@ViewBuilder redirect: @escaping (_ type: HelpCenterRedirectType) -> Content) {
+
+    public init(
+        helpCenterVm: HelpCenterNavigationViewModel,
+        @ViewBuilder redirect: @escaping (_ type: HelpCenterRedirectType) -> Content
+    ) {
+        self.helpCenterVm = helpCenterVm
         self.redirect = redirect
     }
 
@@ -243,5 +252,5 @@ public enum HelpCenterRedirectType {
 }
 
 #Preview{
-    HelpCenterNavigation<EmptyView>(redirect: { _ in })
+    HelpCenterNavigation<EmptyView>(helpCenterVm: .init(), redirect: { _ in })
 }

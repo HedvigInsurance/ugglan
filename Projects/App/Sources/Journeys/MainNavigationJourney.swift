@@ -17,59 +17,15 @@ import TravelCertificate
 import hCore
 import hCoreUI
 
-class MainNavigationViewModel: ObservableObject {
-    @Published var selectedTab = 0
-    @Published var hasLaunchFinished = false
+struct HomeTab: View {
+    @ObservedObject var homeNavigationVm: HomeNavigationViewModel
+    let mainNavigationVm: MainNavigationViewModel
+    @StateObject var homeRouter = Router()
 
-    init() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.hasLaunchFinished = true
-        }
-    }
-}
-
-@main
-struct MainNavigationJourney: App {
-    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    @StateObject var vm = MainNavigationViewModel()
-    @StateObject var homeNavigationVm = HomeNavigationViewModel()
-    @StateObject var profileNavigationVm = ProfileNavigationViewModel()
-    @StateObject var paymentsNavigationVm = PaymentsNavigationViewModel()
-    @StateObject var router = Router()
-    @StateObject var foreverRouter = Router()
-    @StateObject var paymentsRouter = Router()
-    var body: some Scene {
-        WindowGroup {
-            if vm.hasLaunchFinished {
-                TabView(selection: $vm.selectedTab) {
-                    Group {
-                        homeTab
-                        contractsTab
-
-                        let store: ContractStore = globalPresentableStoreContainer.get()
-                        if !store.state.activeContracts.allSatisfy({ $0.isNonPayingMember })
-                            || store.state.activeContracts.isEmpty
-                        {
-                            foreverTab
-                        }
-
-                        //                if Dependencies.featureFlags().isPaymentScreenEnabled {
-                        paymentsTab
-                        //                }
-                        profileTab
-                    }
-                }
-                .tint(hTextColor.primary)
-            } else {
-                ProgressView()
-            }
-        }
-    }
-
-    var homeTab: some View {
+    var body: some View {
         let claims = Claims()
 
-        return RouterHost(router: router) {
+        return RouterHost(router: homeRouter) {
             HomeView(
                 claimsContent: claims,
                 memberId: {
@@ -106,7 +62,7 @@ struct MainNavigationJourney: App {
         ) { config in
             EditCoInsuredNavigation(
                 config: config,
-                checkForAlert: checkForAlert
+                checkForAlert: mainNavigationVm.checkForAlert
             )
         }
         .detent(
@@ -115,75 +71,82 @@ struct MainNavigationJourney: App {
         ) { configs in
             EditCoInsuredSelectInsuranceNavigation(
                 configs: configs.configs,
-                checkForAlert: checkForAlert
+                checkForAlert: mainNavigationVm.checkForAlert
             )
         }
         .detent(
             item: $homeNavigationVm.isMissingEditCoInsuredAlertPresented,
             style: .height
         ) { config in
-            getMissingCoInsuredAlertView(
+            mainNavigationVm.getMissingCoInsuredAlertView(
                 missingContractConfig: config
             )
         }
         .fullScreenCover(
             isPresented: $homeNavigationVm.isHelpCenterPresented
         ) {
-            HelpCenterNavigation(redirect: { redirectType in
-                switch redirectType {
-                case .moveFlow:
-                    MovingFlowNavigation()
-                case let .editCoInsured(config, _, _):
-                    getEditCoInsuredView(config: config)
-                case let .editCoInuredSelectInsurance(configs, _):
-                    EditCoInsuredSelectInsuranceNavigation(
-                        configs: configs,
-                        checkForAlert: checkForAlert
-                    )
-                case let .travelInsurance(redirectType):
-                    TravelCertificateNavigation(
-                        infoButtonPlacement: .leading,
-                        useOwnNavigation: true,
-                        openCoInsured: {
-                            redirectType(
-                                .editCoInsured(config: .init(), showMissingAlert: false, isMissingAlertAction: { _ in })
-                            )
-                        }
-                    )
-                case .deflect:
-                    let model: FlowClaimDeflectStepModel? = {
-                        let store: HomeStore = globalPresentableStoreContainer.get()
-                        let quickActions = store.state.quickActions
-                        if let sickAbroadPartners = quickActions.first(where: { $0.sickAboardPartners != nil })?
-                            .sickAboardPartners
-                        {
-                            return FlowClaimDeflectStepModel(
-                                id: .FlowClaimDeflectEmergencyStep,
-                                partners: sickAbroadPartners.compactMap({
-                                    .init(
-                                        id: "",
-                                        imageUrl: $0.imageUrl,
-                                        url: "",
-                                        phoneNumber: $0.phoneNumber
+            HelpCenterNavigation(
+                helpCenterVm: mainNavigationVm.helpCenterNavigationVm,
+                redirect: { redirectType in
+                    switch redirectType {
+                    case .moveFlow:
+                        MovingFlowNavigation()
+                    case let .editCoInsured(config, _, _):
+                        mainNavigationVm.getEditCoInsuredView(config: config)
+                    case let .editCoInuredSelectInsurance(configs, _):
+                        EditCoInsuredSelectInsuranceNavigation(
+                            configs: configs,
+                            checkForAlert: mainNavigationVm.checkForAlert
+                        )
+                    case let .travelInsurance(redirectType):
+                        TravelCertificateNavigation(
+                            infoButtonPlacement: .leading,
+                            useOwnNavigation: true,
+                            openCoInsured: {
+                                redirectType(
+                                    .editCoInsured(
+                                        config: .init(),
+                                        showMissingAlert: false,
+                                        isMissingAlertAction: { _ in }
                                     )
-                                }),
-                                isEmergencyStep: true
-                            )
-                        }
-                        return nil
-                    }()
+                                )
+                            }
+                        )
+                    case .deflect:
+                        let model: FlowClaimDeflectStepModel? = {
+                            let store: HomeStore = globalPresentableStoreContainer.get()
+                            let quickActions = store.state.quickActions
+                            if let sickAbroadPartners = quickActions.first(where: { $0.sickAboardPartners != nil })?
+                                .sickAboardPartners
+                            {
+                                return FlowClaimDeflectStepModel(
+                                    id: .FlowClaimDeflectEmergencyStep,
+                                    partners: sickAbroadPartners.compactMap({
+                                        .init(
+                                            id: "",
+                                            imageUrl: $0.imageUrl,
+                                            url: "",
+                                            phoneNumber: $0.phoneNumber
+                                        )
+                                    }),
+                                    isEmergencyStep: true
+                                )
+                            }
+                            return nil
+                        }()
 
-                    SubmitClaimDeflectScreen(
-                        model: model,
-                        openChat: {
-                            NotificationCenter.default.post(
-                                name: .openChat,
-                                object: ChatTopicWrapper(topic: nil, onTop: true)
-                            )
-                        }
-                    )
+                        SubmitClaimDeflectScreen(
+                            model: model,
+                            openChat: {
+                                NotificationCenter.default.post(
+                                    name: .openChat,
+                                    object: ChatTopicWrapper(topic: nil, onTop: true)
+                                )
+                            }
+                        )
+                    }
                 }
-            })
+            )
             .environmentObject(homeNavigationVm)
         }
         .detent(
@@ -208,18 +171,208 @@ struct MainNavigationJourney: App {
                 ChatNavigation(openChat: openChat)
             }
         )
-        .tabItem {
-            Image(uiImage: vm.selectedTab == 0 ? hCoreUIAssets.homeTabActive.image : hCoreUIAssets.homeTab.image)
-            hText(L10n.tabHomeTitle)
+    }
+}
+
+class MainNavigationViewModel: ObservableObject {
+    @Published var selectedTab = 0
+    @Published var hasLaunchFinished = false
+    let contractsNavigationVm = ContractsNavigationViewModel()
+    let paymentsNavigationVm = PaymentsNavigationViewModel()
+    let profileNavigationVm = ProfileNavigationViewModel()
+    let homeNavigationVm = HomeNavigationViewModel()
+    let helpCenterNavigationVm = HelpCenterNavigationViewModel()
+
+    init() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.hasLaunchFinished = true
         }
-        .tag(0)
+
+        NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) { notification in
+            let deepLinkUrl = notification.object as? URL
+            self.handleDeepLinks(deepLinkUrl: deepLinkUrl)
+        }
+    }
+
+    private func handleDeepLinks(deepLinkUrl: URL?) {
+        if let url = deepLinkUrl {
+            let deepLink = DeepLink.getType(from: url)
+            switch deepLink {
+            case .forever:
+                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
+                self.selectedTab = 2
+            case .directDebit:
+                self.paymentsNavigationVm.connectPaymentVm.connectPaymentModel = .init(setUpType: nil)
+            case .profile:
+                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
+                self.selectedTab = 4
+            case .insurances:
+                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
+                self.selectedTab = 1
+            case .home:
+                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
+                self.selectedTab = 0
+            case .sasEuroBonus:
+                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
+                self.selectedTab = 4
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    self.contractsNavigationVm.contractsRouter.popToRoot()
+                    self.profileNavigationVm.profileRouter.push(ProfileRedirectType.euroBonus)
+                }
+            case .contract:
+                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
+                self.selectedTab = 1
+                let contractId = self.getContractId(from: url)
+
+                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                if let contractId, let contract: Contract = contractStore.state.contractForId(contractId) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        self.contractsNavigationVm.contractsRouter.popToRoot()
+                        self.contractsNavigationVm.contractsRouter.push(contract)
+                    }
+                }
+            case .payments:
+                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
+                self.selectedTab = 3
+            case .travelCertificate:
+                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
+                self.selectedTab = 0
+                /* TODO: NOT SURE IF WE SHOULD REDIRECT TO HELP CENTER HERE? */
+                self.homeNavigationVm.isHelpCenterPresented = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                    self.helpCenterNavigationVm.quickActions.isTravelCertificatePresented = true
+                }
+            case .helpCenter:
+                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
+                self.selectedTab = 0
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    self.homeNavigationVm.isHelpCenterPresented = true
+                }
+            case .moveContract:
+                /* TODO: NOT SURE IF WE SHOULD REDIRECT TO HELP CENTER HERE? */
+                self.homeNavigationVm.isHelpCenterPresented = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                    self.helpCenterNavigationVm.quickActions.isChangeAddressPresented = true
+                }
+            case .terminateContract:
+                /* TODO: NOT SURE IF WE SHOULD REDIRECT TO HELP CENTER HERE? */
+                self.homeNavigationVm.isHelpCenterPresented = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                    self.helpCenterNavigationVm.quickActions.isCancellationPresented = true
+                }
+            case .openChat:
+                NotificationCenter.default.post(name: .openChat, object: nil)
+            case nil:
+                break
+            }
+        }
+    }
+
+    private func getContractId(from url: URL) -> String? {
+        guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
+        guard let queryItems = urlComponents.queryItems else { return nil }
+        return queryItems.first(where: { $0.name == "contractId" })?.value
+    }
+
+    func checkForAlert() {
+        Task {
+            homeNavigationVm.isEditCoInsuredPresented = nil
+            homeNavigationVm.isEditCoInsuredSelectContractPresented = nil
+            homeNavigationVm.isMissingEditCoInsuredAlertPresented = nil
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+            await contractStore.sendAsync(.fetchContracts)
+            let missingContract = contractStore.state.activeContracts.first { contract in
+                if contract.upcomingChangedAgreement != nil {
+                    return false
+                } else {
+                    return contract.coInsured
+                        .first(where: { coInsured in
+                            coInsured.hasMissingInfo && contract.terminationDate == nil
+                        }) != nil
+                }
+            }
+
+            if let missingContract {
+                let missingContractConfig = InsuredPeopleConfig(contract: missingContract, fromInfoCard: false)
+                homeNavigationVm.isMissingEditCoInsuredAlertPresented = missingContractConfig
+            }
+        }
+    }
+
+    @ViewBuilder
+    func getEditCoInsuredView(
+        config: InsuredPeopleConfig
+    ) -> some View {
+        EditCoInsuredNavigation(
+            config: config,
+            checkForAlert: checkForAlert
+        )
+    }
+
+    func getMissingCoInsuredAlertView(
+        missingContractConfig: InsuredPeopleConfig
+    ) -> some View {
+        EditCoInsuredAlertNavigation(
+            config: missingContractConfig,
+            checkForAlert: checkForAlert
+        )
+    }
+}
+
+@main
+struct MainNavigationJourney: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @StateObject var vm = MainNavigationViewModel()
+    @StateObject var foreverRouter = Router()
+    @StateObject var paymentsRouter = Router()
+
+    var body: some Scene {
+        WindowGroup {
+            Group {
+                if vm.hasLaunchFinished {
+                    TabView(selection: $vm.selectedTab) {
+                        Group {
+                            homeTab
+
+                            contractsTab
+                            let store: ContractStore = globalPresentableStoreContainer.get()
+                            if !store.state.activeContracts.allSatisfy({ $0.isNonPayingMember })
+                                || store.state.activeContracts.isEmpty
+                            {
+                                foreverTab
+                            }
+
+                            //                if Dependencies.featureFlags().isPaymentScreenEnabled {
+                            paymentsTab
+                            //                }
+                            profileTab
+                        }
+                    }
+                    .tint(hTextColor.primary)
+                } else {
+                    ProgressView()
+                }
+            }
+            .onOpenURL { url in
+                NotificationCenter.default.post(name: .openDeepLink, object: url)
+            }
+        }
+    }
+
+    var homeTab: some View {
+        HomeTab(homeNavigationVm: vm.homeNavigationVm, mainNavigationVm: vm)
+            .tabItem {
+                Image(uiImage: vm.selectedTab == 0 ? hCoreUIAssets.homeTabActive.image : hCoreUIAssets.homeTab.image)
+                hText(L10n.tabHomeTitle)
+            }
+            .tag(0)
     }
 
     var contractsTab: some View {
-        ContractsNavigation { redirectType in
+        ContractsNavigation(contractsNavigationVm: vm.contractsNavigationVm) { redirectType in
             switch redirectType {
             case let .editCoInsured(editCoInsuredConfig, _, _):
-                getEditCoInsuredView(config: editCoInsuredConfig)
+                vm.getEditCoInsuredView(config: editCoInsuredConfig)
             case .chat:
                 ChatScreen(vm: .init(topicType: nil))
             case .movingFlow:
@@ -268,7 +421,7 @@ struct MainNavigationJourney: App {
     }
 
     var paymentsTab: some View {
-        PaymentsNavigation(paymentsNavigationVm: paymentsNavigationVm) { redirectType in
+        PaymentsNavigation(paymentsNavigationVm: vm.paymentsNavigationVm) { redirectType in
             switch redirectType {
             case .forever:
                 ForeverNavigation(useOwnNavigation: false)
@@ -292,7 +445,7 @@ struct MainNavigationJourney: App {
     }
 
     var profileTab: some View {
-        ProfileNavigation(profileNavigationViewModel: profileNavigationVm) { redirectType in
+        ProfileNavigation(profileNavigationViewModel: vm.profileNavigationVm) { redirectType in
             switch redirectType {
             case .travelCertificate:
                 TravelCertificateNavigation(
@@ -306,11 +459,11 @@ struct MainNavigationJourney: App {
                                 InsuredPeopleConfig(contract: $0, fromInfoCard: true)
                             })
                         if contractsSupportingCoInsured.count > 1 {
-                            profileNavigationVm.isEditCoInsuredSelectContractPresented = .init(
+                            vm.profileNavigationVm.isEditCoInsuredSelectContractPresented = .init(
                                 configs: contractsSupportingCoInsured
                             )
                         } else if let config = contractsSupportingCoInsured.first {
-                            profileNavigationVm.isEditCoInsuredPresented = config
+                            vm.profileNavigationVm.isEditCoInsuredPresented = config
                         }
                     }
                 )
@@ -326,7 +479,7 @@ struct MainNavigationJourney: App {
                 DeleteAccountView(
                     vm: model,
                     dismissAction: { profileDismissAction in
-                        profileNavigationVm.isDeleteAccountPresented = nil
+                        vm.profileNavigationVm.isDeleteAccountPresented = nil
                         switch profileDismissAction {
                         case .openChat:
                             withAnimation {
@@ -341,9 +494,9 @@ struct MainNavigationJourney: App {
                         }
                     }
                 )
-                .environmentObject(profileNavigationVm)
+                .environmentObject(vm.profileNavigationVm)
             case .pickLanguage:
-                PickLanguage { [weak profileNavigationVm, weak vm] _ in
+                PickLanguage { [weak profileNavigationVm = vm.profileNavigationVm, weak vm] _ in
                     //show loading screen since we everything needs to be updated
                     vm?.hasLaunchFinished = false
                     profileNavigationVm?.isLanguagePickerPresented = false
@@ -353,7 +506,7 @@ struct MainNavigationJourney: App {
                         vm?.hasLaunchFinished = true
                         vm?.selectedTab = 0
                     }
-                } onCancel: { [weak profileNavigationVm] in
+                } onCancel: { [weak profileNavigationVm = vm.profileNavigationVm] in
                     profileNavigationVm?.isLanguagePickerPresented = false
                 }
             case .deleteRequestLoading:
@@ -372,10 +525,10 @@ struct MainNavigationJourney: App {
             case let .editCoInuredSelectInsurance(configs):
                 EditCoInsuredSelectInsuranceNavigation(
                     configs: configs,
-                    checkForAlert: checkForAlert
+                    checkForAlert: vm.checkForAlert
                 )
             case let .editCoInsured(config):
-                getEditCoInsuredView(config: config)
+                vm.getEditCoInsuredView(config: config)
             default:
                 EmptyView()
             }
@@ -387,50 +540,6 @@ struct MainNavigationJourney: App {
             hText(L10n.ProfileTab.title)
         }
         .tag(4)
-    }
-
-    @ViewBuilder
-    private func getEditCoInsuredView(
-        config: InsuredPeopleConfig
-    ) -> some View {
-        EditCoInsuredNavigation(
-            config: config,
-            checkForAlert: checkForAlert
-        )
-    }
-
-    private func getMissingCoInsuredAlertView(
-        missingContractConfig: InsuredPeopleConfig
-    ) -> some View {
-        EditCoInsuredAlertNavigation(
-            config: missingContractConfig,
-            checkForAlert: checkForAlert
-        )
-    }
-
-    private func checkForAlert() {
-        Task {
-            homeNavigationVm.isEditCoInsuredPresented = nil
-            homeNavigationVm.isEditCoInsuredSelectContractPresented = nil
-            homeNavigationVm.isMissingEditCoInsuredAlertPresented = nil
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-            await contractStore.sendAsync(.fetchContracts)
-            let missingContract = contractStore.state.activeContracts.first { contract in
-                if contract.upcomingChangedAgreement != nil {
-                    return false
-                } else {
-                    return contract.coInsured
-                        .first(where: { coInsured in
-                            coInsured.hasMissingInfo && contract.terminationDate == nil
-                        }) != nil
-                }
-            }
-
-            if let missingContract {
-                let missingContractConfig = InsuredPeopleConfig(contract: missingContract, fromInfoCard: false)
-                homeNavigationVm.isMissingEditCoInsuredAlertPresented = missingContractConfig
-            }
-        }
     }
 
     private func openUrl(url: URL) {
