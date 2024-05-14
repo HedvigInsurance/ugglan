@@ -209,17 +209,7 @@ class HomeButtonScrollViewModel: ObservableObject {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         contractStore.stateSignal.plain()
             .map({
-                $0.activeContracts
-                    .filter { contract in
-                        if contract.coInsured.isEmpty {
-                            return false
-                        } else {
-                            return contract.coInsured.filter({ !$0.hasMissingData && contract.terminationDate == nil })
-                                .isEmpty
-                        }
-                    }
-                    .filter({ $0.supportsCoInsured })
-                    .isEmpty == false
+                $0.activeContracts.hasMissingCoInsured
             })
             .distinct()
             .publisher
@@ -229,17 +219,7 @@ class HomeButtonScrollViewModel: ObservableObject {
             })
             .store(in: &cancellables)
 
-        let show =
-            contractStore.state.activeContracts
-            .filter { contract in
-                if contract.coInsured.isEmpty {
-                    return false
-                } else {
-                    return contract.coInsured.filter({ !$0.hasMissingData && contract.terminationDate == nil }).isEmpty
-                }
-            }
-            .filter({ $0.supportsCoInsured })
-            .isEmpty == false
+        let show = contractStore.state.activeContracts.hasMissingCoInsured
         handleItem(.missingCoInsured, with: show)
     }
 
