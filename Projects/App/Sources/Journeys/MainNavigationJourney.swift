@@ -57,7 +57,7 @@ struct MainNavigationJourney: App {
 class MainNavigationViewModel: ObservableObject {
     @Published var hasLaunchFinished = false
     lazy var notLoggedInVm = NotLoggedViewModel()
-    lazy var loggedInVm = LoggedInNavigationViewModel()
+    var loggedInVm = LoggedInNavigationViewModel()
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Published var stateToShow = ApplicationState.currentState ?? .notLoggedIn
     var state: ApplicationState.Screen = ApplicationState.currentState ?? .notLoggedIn {
