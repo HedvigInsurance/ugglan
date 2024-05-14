@@ -34,7 +34,7 @@ public class ClaimJourneys {
                 openSummaryScreen().addDismissClaimsFlow().configureTitle(L10n.Claims.Summary.Screen.title)
             } else if case .openDamagePickerScreen = navigationAction {
                 openDamagePickerScreen().configureTitle(L10n.Claims.Item.Screen.Damage.button)
-            } else if case .openCheckoutNoRepairScreen = navigationAction {
+            } else if case .openClaimCheckoutScreen = navigationAction {
                 openCheckoutNoRepairScreen().addDismissClaimsFlow()
                     .configureTitle(L10n.Claims.Payout.Summary.title)
             } else if case .openFailureSceen = navigationAction {
@@ -433,7 +433,7 @@ public class ClaimJourneys {
     private static func openCheckoutNoRepairScreen() -> some JourneyPresentation {
         HostingJourney(
             SubmitClaimStore.self,
-            rootView: SubmitClaimCheckoutNoRepairScreen()
+            rootView: SubmitClaimCheckoutScreen()
         ) {
             action in
             if case .navigationAction(.openCheckoutTransferringScreen) = action {
