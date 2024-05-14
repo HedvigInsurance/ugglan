@@ -1,6 +1,4 @@
 import Foundation
-import Presentation
-import hCore
 
 public class OTPState: ObservableObject {
     @Published var isLoading = false
@@ -14,7 +12,7 @@ public class OTPState: ObservableObject {
     @Published var maskedEmail: String? = nil
     @Published var canResendAt: Date? = nil
 
-    init(
+    public init(
         isLoading: Bool = false,
         isResending: Bool = false,
         resendUrl: URL? = nil,
@@ -50,15 +48,4 @@ public class OTPState: ObservableObject {
         maskedEmail = nil
         canResendAt = nil
     }
-}
-
-struct SEBankIDState {
-    var autoStartToken: String? = nil
-    var liveQrCodeData: String? = nil
-    var liveQrCodeDate: Date? = nil
-    public init() {}
-}
-
-public struct AuthenticationState: StateProtocol {
-    public init() {}
 }

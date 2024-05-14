@@ -1,7 +1,9 @@
 import Foundation
+import SwiftUI
 import hGraphQL
 
 public struct ApplicationState {
+    @AppStorage(key) public static var state: ApplicationState.Screen = .notLoggedIn
     public enum Screen: String {
         case onboardingChat, offer, loggedIn, languagePicker, notLoggedIn, onboarding, impersonation
 
@@ -10,7 +12,7 @@ public struct ApplicationState {
         public func isOneOf(_ possibilities: Set<Self>) -> Bool { possibilities.contains(self) }
     }
 
-    private static let key = "applicationState"
+    public static let key = "applicationState"
 
     public static func preserveState(_ screen: Screen) { UserDefaults.standard.set(screen.rawValue, forKey: key) }
 

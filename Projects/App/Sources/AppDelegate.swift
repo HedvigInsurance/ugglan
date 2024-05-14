@@ -39,7 +39,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return window
     }()
 
-    func presentMainJourney() {
+    private func clearData() {
         ApolloClient.cache = InMemoryNormalizedCache()
 
         // remove all persisted state
@@ -48,27 +48,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // create new store container to remove all old store instances
         globalPresentableStoreContainer = PresentableStoreContainer()
 
-        self.setupSession()
-        //        self.bag += self.window.present(AppJourney.main)
         ApolloClient.initAndRegisterClient()
-        UIView.transition(
-            with: self.window,
-            duration: 0.3,
-            options: .transitionCrossDissolve,
-            animations: {},
-            completion: { _ in }
-        )
     }
 
     func logout() {
         bag.dispose()
         let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
         ugglanStore.send(.setIsDemoMode(to: false))
-        let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
-        authenticationStore.send(.logout)
-        ApplicationContext.shared.$isLoggedIn.value = false
+        Task {
+            let authenticationService: AuthentificationService = Dependencies.shared.resolve()
+            do {
+                try await authenticationService.logout()
+            } catch _ {
+
+            }
+        }
         ApolloClient.deleteToken()
-        self.presentMainJourney()
+        clearData()
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
@@ -129,17 +125,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
-    func application(_: UIApplication, open url: URL, sourceApplication _: String?, annotation _: Any) -> Bool {
-        if url.relativePath.contains("login-failure") {
-            let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
-            authenticationStore.send(.loginFailure(message: nil))
-        }
-
+    func handleURL(url: URL) {
         let impersonate = Impersonate()
         if impersonate.canImpersonate(with: url) {
-            impersonate.impersonate(with: url)
-        }
+            let store: UgglanStore = globalPresentableStoreContainer.get()
+            store.send(.setIsDemoMode(to: false))
+            Task {
+                setupSession()
+                await impersonate.impersonate(with: url)
 
+            }
+
+        }
+        if let rootView = window.rootViewController {
+            self.handleDeepLink(url, fromVC: rootView)
+        }
+    }
+
+    func application(_: UIApplication, open url: URL, sourceApplication _: String?, annotation _: Any) -> Bool {
+        handleURL(url: url)
         return false
     }
 
@@ -215,23 +219,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         log.info("Starting app")
 
         UIApplication.shared.registerForRemoteNotifications()
+        forceLogoutHook = { [weak self] in
+            if ApplicationState.currentState != .notLoggedIn {
+                DispatchQueue.main.async {
+                    ApplicationState.preserveState(.notLoggedIn)
+                    ApplicationContext.shared.hasFinishedBootstrapping = true
+                    self?.logout()
+                    let toast = Toast(
+                        symbol: .icon(hCoreUIAssets.infoIconFilled.image),
+                        body: L10n.forceLogoutMessageTitle,
+                        textColor: .brand(.secondaryText),
+                        backgroundColor: .brand(.opaqueFillOne, style: .dark),
+                        symbolColor: .brand(.secondaryText)
+                    )
+                    Toasts.shared.displayToast(toast: toast)
+                }
+            }
+        }
 
         window.rootViewController = UIViewController()
         window.makeKeyAndVisible()
-
         DefaultStyling.installCustom()
 
         UNUserNotificationCenter.current().delegate = self
-        let store: UgglanStore = globalPresentableStoreContainer.get()
-        setupExperiments()
         observeNotificationsSettings()
         return true
-    }
-
-    private func setupExperiments() {
-        self.setupFeatureFlags(onComplete: { success in
-            DispatchQueue.main.async {
-            }
-        })
     }
 }
