@@ -93,7 +93,8 @@ extension Contracts {
     public static func journey<ResultJourney: JourneyPresentation>(
         showTerminated: Bool = false,
         @JourneyBuilder resultJourney: @escaping (_ result: ContractsResult) -> ResultJourney,
-        openDetails: Bool = true
+        openDetails: Bool = true,
+        isContractsMissingInfo: Bool
     ) -> some JourneyPresentation {
         HostingJourney(
             ContractStore.self,
@@ -105,7 +106,8 @@ extension Contracts {
                 Self.journey(
                     showTerminated: true,
                     resultJourney: resultJourney,
-                    openDetails: false
+                    openDetails: false,
+                    isContractsMissingInfo: isContractsMissingInfo
                 )
             } else if case .openContractDetailErrorScreen = action {
                 ContractDetail(id: "", title: "").contractDetailErrorJourney
@@ -154,6 +156,6 @@ extension Contracts {
             showTerminated
                 ? L10n.InsurancesTab.cancelledInsurancesTitle : L10n.InsurancesTab.yourInsurances
         )
-        .configureContractsTabBarItem
+        .configureContractsTabBarItem(isContractsMissingInfo: isContractsMissingInfo)
     }
 }

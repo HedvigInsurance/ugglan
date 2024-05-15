@@ -99,7 +99,8 @@ public enum ProfileResult {
 
 extension ProfileView {
     public static func journey<ResultJourney: JourneyPresentation>(
-        @JourneyBuilder resultJourney: @escaping (_ result: ProfileResult) -> ResultJourney
+        @JourneyBuilder resultJourney: @escaping (_ result: ProfileResult) -> ResultJourney,
+        isProfileMissingInfo: Bool
     ) -> some JourneyPresentation {
         HostingJourney(
             ProfileStore.self,
@@ -154,10 +155,16 @@ extension ProfileView {
             }
         }
         .configureTitle(L10n.profileTitle)
-        .configureTabBarItem(
-            title: L10n.ProfileTab.title,
-            image: hCoreUIAssets.profileTab.image,
-            selectedImage: hCoreUIAssets.profileTabActive.image
+        .configureTabBarItemWithDot(
+            ProfileStore.self,
+            tabBarItem: UITabBarItem(
+                title: L10n.ProfileTab.title,
+                image: hCoreUIAssets.profileTab.image,
+                selectedImage: hCoreUIAssets.profileTabActive.image
+            ),
+            showDot: { state in
+                return isProfileMissingInfo
+            }
         )
     }
 }

@@ -119,7 +119,7 @@ public struct ForeverView: View {
 }
 
 extension ForeverView {
-    public static func journey() -> some JourneyPresentation {
+    public static func journey(isForeverInfoMissing: Bool) -> some JourneyPresentation {
         HostingJourney(
             ForeverStore.self,
             rootView: ForeverView()
@@ -133,10 +133,16 @@ extension ForeverView {
             }
         }
         .configureTitle(L10n.ReferralsInfoSheet.headline)
-        .configureTabBarItem(
-            title: L10n.tabReferralsTitle,
-            image: hCoreUIAssets.foreverTab.image,
-            selectedImage: hCoreUIAssets.foreverTabActive.image
+        .configureTabBarItemWithDot(
+            ForeverStore.self,
+            tabBarItem: UITabBarItem(
+                title: L10n.tabReferralsTitle,
+                image: hCoreUIAssets.foreverTab.image,
+                selectedImage: hCoreUIAssets.foreverTabActive.image
+            ),
+            showDot: { state in
+                return isForeverInfoMissing
+            }
         )
     }
 

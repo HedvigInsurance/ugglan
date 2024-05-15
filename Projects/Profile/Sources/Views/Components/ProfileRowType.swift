@@ -1,4 +1,5 @@
 import Foundation
+import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
@@ -29,7 +30,15 @@ enum ProfileRowType {
         case .appInfo:
             return hCoreUIAssets.infoIcon.image
         case .settings:
-            return hCoreUIAssets.settingsIcon.image
+            let store: ProfileStore = globalPresentableStoreContainer.get()
+
+            // if push notifications are activated
+            if store.state.pushNotificationCurrentStatus() == .authorized {
+                return hCoreUIAssets.settingsIcon.image
+            }
+
+            // else if push notifications are not activated
+            return hCoreUIAssets.settingsIconNotification.image
         case let .eurobonus(hasEnteredNumber):
             if hasEnteredNumber {
                 return hCoreUIAssets.euroBonusWithValueRowIcon.image

@@ -15,6 +15,7 @@ public struct ContractRow: View {
     let masterInceptionDate: String?
 
     let onClick: (() -> Void)?
+    let missingInfo: Bool
 
     public init(
         image: UIImage?,
@@ -24,7 +25,8 @@ public struct ContractRow: View {
         activeFrom: String? = nil,
         activeInFuture: Bool? = nil,
         masterInceptionDate: String? = nil,
-        onClick: (() -> Void)? = nil
+        onClick: (() -> Void)? = nil,
+        missingInfo: Bool
     ) {
         self.image = image
         self.terminationMessage = terminationMessage
@@ -36,6 +38,7 @@ public struct ContractRow: View {
         self.masterInceptionDate = masterInceptionDate
 
         self.onClick = onClick
+        self.missingInfo = missingInfo
     }
 
     public var body: some View {
@@ -52,7 +55,8 @@ public struct ContractRow: View {
                 terminationMessage: terminationMessage,
                 activeFrom: activeFrom,
                 activeInFuture: activeInFuture,
-                masterInceptionDate: masterInceptionDate
+                masterInceptionDate: masterInceptionDate,
+                missingInfo: missingInfo
             )
         )
         .background(
@@ -75,6 +79,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     let activeFrom: String?
     let activeInFuture: Bool?
     let masterInceptionDate: String?
+    let missingInfo: Bool
 
     public init(
         image: UIImage?,
@@ -84,7 +89,8 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
 
         activeFrom: String? = nil,
         activeInFuture: Bool? = nil,
-        masterInceptionDate: String? = nil
+        masterInceptionDate: String? = nil,
+        missingInfo: Bool
     ) {
         self.image = image
         self.contractDisplayName = contractDisplayName
@@ -94,6 +100,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         self.activeFrom = activeFrom
         self.activeInFuture = activeInFuture
         self.masterInceptionDate = masterInceptionDate
+        self.missingInfo = missingInfo
     }
 
     @ViewBuilder var background: some View {
@@ -128,6 +135,14 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 0) {
+                if missingInfo {
+                    HStack(spacing: 4) {
+                        Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
+                            .foregroundColor(hSignalColor.amberElement)
+                        hText("Missing information!")
+                            .foregroundColor(hTextColor.negative)
+                    }
+                }
                 if let terminationMessage {
                     StatusPill(text: terminationMessage).padding(.trailing, 4)
                 } else if let activeFrom {
@@ -192,6 +207,7 @@ private struct StatusPill: View {
         image: hCoreUIAssets.pillowHome.image,
         terminationMessage: "",
         contractDisplayName: "",
-        contractExposureName: ""
+        contractExposureName: "",
+        missingInfo: false
     )
 }

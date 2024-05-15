@@ -209,7 +209,7 @@ struct PaymentsView_Previews: PreviewProvider {
 }
 
 extension PaymentsView {
-    public func journey(schema: String) -> some JourneyPresentation {
+    public func journey(schema: String, isPaymentsMissingInfo: Bool) -> some JourneyPresentation {
         HostingJourney(
             PaymentStore.self,
             rootView: self
@@ -225,10 +225,16 @@ extension PaymentsView {
             }
         }
         .configureTitle(L10n.myPaymentTitle)
-        .configureTabBarItem(
-            title: L10n.tabPaymentsTitle,
-            image: hCoreUIAssets.paymentsTab.image,
-            selectedImage: hCoreUIAssets.paymentsTab.image
+        .configureTabBarItemWithDot(
+            PaymentStore.self,
+            tabBarItem: UITabBarItem(
+                title: L10n.tabPaymentsTitle,
+                image: hCoreUIAssets.paymentsTab.image,
+                selectedImage: hCoreUIAssets.paymentsTab.image
+            ),
+            showDot: { state in
+                return isPaymentsMissingInfo
+            }
         )
     }
 

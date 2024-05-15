@@ -49,6 +49,10 @@ extension ContractTable: View {
 
                         }
                         ForEach(contracts, id: \.id) { contract in
+
+                            let missingInfo =
+                                contract.nbOfMissingCoInsuredWithoutTermination > 0 && contract.showEditCoInsuredInfo
+
                             ContractRow(
                                 image: contract.pillowType?.bgImage,
                                 terminationMessage: contract.terminationMessage,
@@ -64,7 +68,8 @@ extension ContractTable: View {
                                             title: contract.currentAgreement?.productVariant.displayName ?? ""
                                         )
                                     )
-                                }
+                                },
+                                missingInfo: missingInfo
                             )
                             .fixedSize(horizontal: false, vertical: true)
                             .padding(.bottom, 8)

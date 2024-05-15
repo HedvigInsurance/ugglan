@@ -66,53 +66,64 @@ extension AppJourney {
     }
 
     fileprivate static var contractsTab: some JourneyPresentation {
-        Contracts.journey { result in
-            switch result {
-            case .movingFlow:
-                AppJourney.movingFlow()
-            case .openFreeTextChat:
-                AppJourney.freeTextChat().withDismissButton
-            case let .openCrossSellingWebUrl(url):
-                AppJourney.urlHandledBySystem(url: url)
-            case let .startNewTermination(contract):
-                TerminationFlowJourney.start(
-                    for: [
-                        contract.asTerminationConfirmConfig
-                    ]
-                ) { success in
-                    if success {
-                        guard let tabBar = UIApplication.shared.getRootViewController() as? UITabBarController else {
-                            return
+
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        let isContractsMissingInfo = !store.state.activeContracts
+            .filter({ $0.nbOfMissingCoInsuredWithoutTermination > 0 && $0.showEditCoInsuredInfo }).isEmpty
+
+        return
+            Contracts.journey(
+                resultJourney: { result in
+                    switch result {
+                    case .movingFlow:
+                        AppJourney.movingFlow()
+                    case .openFreeTextChat:
+                        AppJourney.freeTextChat().withDismissButton
+                    case let .openCrossSellingWebUrl(url):
+                        AppJourney.urlHandledBySystem(url: url)
+                    case let .startNewTermination(contract):
+                        TerminationFlowJourney.start(
+                            for: [
+                                contract.asTerminationConfirmConfig
+                            ]
+                        ) { success in
+                            if success {
+                                guard let tabBar = UIApplication.shared.getRootViewController() as? UITabBarController
+                                else {
+                                    return
+                                }
+                                guard let navigation = tabBar.selectedViewController as? UINavigationController else {
+                                    return
+                                }
+                                navigation.popToRootViewController(animated: true)
+                            }
                         }
-                        guard let navigation = tabBar.selectedViewController as? UINavigationController else { return }
-                        navigation.popToRootViewController(animated: true)
+                    case let .handleCoInsured(config, fromInfoCard):
+                        EditCoInsuredJourney.handleOpenEditCoInsured(for: config, fromInfoCard: fromInfoCard)
+                            .onDismiss {
+                                let store: ContractStore = globalPresentableStoreContainer.get()
+                                store.send(.fetch)
+                            }
+                    case let .openMissingCoInsuredAlert(config):
+                        EditCoInsuredJourney.openMissingCoInsuredAlert(config: config)
+                            .onDismiss {
+                                store.send(.fetch)
+                            }
                     }
+                },
+                isContractsMissingInfo: isContractsMissingInfo
+            )
+            .makeTabSelected(UgglanStore.self) { action in
+                if case .makeTabActive(let deepLink) = action {
+                    return deepLink == .insurances
+                } else {
+                    return false
                 }
-            case let .handleCoInsured(config, fromInfoCard):
-                EditCoInsuredJourney.handleOpenEditCoInsured(for: config, fromInfoCard: fromInfoCard)
-                    .onDismiss {
-                        let store: ContractStore = globalPresentableStoreContainer.get()
-                        store.send(.fetch)
-                    }
-            case let .openMissingCoInsuredAlert(config):
-                EditCoInsuredJourney.openMissingCoInsuredAlert(config: config)
-                    .onDismiss {
-                        let store: ContractStore = globalPresentableStoreContainer.get()
-                        store.send(.fetch)
-                    }
             }
-        }
-        .makeTabSelected(UgglanStore.self) { action in
-            if case .makeTabActive(let deepLink) = action {
-                return deepLink == .insurances
-            } else {
-                return false
-            }
-        }
     }
 
     fileprivate static var foreverTab: some JourneyPresentation {
-        ForeverView.journey()
+        ForeverView.journey(isForeverInfoMissing: true)
             .makeTabSelected(UgglanStore.self) { action in
                 if case .makeTabActive(let deepLink) = action {
                     return deepLink == .forever
@@ -123,7 +134,10 @@ extension AppJourney {
     }
 
     fileprivate static var paymentTab: some JourneyPresentation {
-        PaymentsView().journey(schema: "")
+        let store: PaymentStore = globalPresentableStoreContainer.get()
+        let isPaymentsMissingInfo = store.state.paymentStatusData?.status != .active
+
+        return PaymentsView().journey(schema: "", isPaymentsMissingInfo: isPaymentsMissingInfo)
             .makeTabSelected(UgglanStore.self) { action in
                 if case .makeTabActive(let deepLink) = action {
                     return deepLink == .payments
@@ -136,31 +150,38 @@ extension AppJourney {
     fileprivate static var profileTab: some JourneyPresentation {
         let store: PaymentStore = globalPresentableStoreContainer.get()
         store.send(.setSchema(schema: Bundle.main.urlScheme ?? ""))
+
+        let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+        let isProfileMissingInfo = profileStore.state.pushNotificationCurrentStatus() != .authorized
+
         return
-            ProfileView.journey { result in
-                switch result {
-                case .resetAppLanguage:
-                    ContinueJourney()
-                        .onPresent {
-                            UIApplication.shared.appDelegate.bag += UIApplication.shared.appDelegate.window.present(
-                                AppJourney.main
-                            )
-                        }
-                case .openChat:
-                    AppJourney.freeTextChat().withDismissButton
-                case .logout:
-                    ContinueJourney()
-                        .onPresent {
-                            UIApplication.shared.appDelegate.logout()
-                        }
-                case .registerForPushNotifications:
-                    ContinueJourney()
-                        .onPresent {
-                            _ = UIApplication.shared.appDelegate
-                                .registerForPushNotifications()
-                        }
-                }
-            }
+            ProfileView.journey(
+                resultJourney: { result in
+                    switch result {
+                    case .resetAppLanguage:
+                        ContinueJourney()
+                            .onPresent {
+                                UIApplication.shared.appDelegate.bag += UIApplication.shared.appDelegate.window.present(
+                                    AppJourney.main
+                                )
+                            }
+                    case .openChat:
+                        AppJourney.freeTextChat().withDismissButton
+                    case .logout:
+                        ContinueJourney()
+                            .onPresent {
+                                UIApplication.shared.appDelegate.logout()
+                            }
+                    case .registerForPushNotifications:
+                        ContinueJourney()
+                            .onPresent {
+                                _ = UIApplication.shared.appDelegate
+                                    .registerForPushNotifications()
+                            }
+                    }
+                },
+                isProfileMissingInfo: isProfileMissingInfo
+            )
             .makeTabSelected(UgglanStore.self) { action in
                 if case .makeTabActive(let deepLink) = action {
                     return deepLink == .profile || deepLink == .sasEuroBonus

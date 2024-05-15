@@ -115,6 +115,9 @@ public struct ContractDetail: View {
         if let contract = store.state.contractForId(id) {
             hForm {
                 hSection {
+                    let missingInfo =
+                        contract.nbOfMissingCoInsuredWithoutTermination > 0 && contract.showEditCoInsuredInfo
+
                     ContractRow(
                         image: contract.pillowType?.bgImage,
                         terminationMessage: contract.terminationMessage,
@@ -122,7 +125,8 @@ public struct ContractDetail: View {
                         contractExposureName: contract.exposureDisplayName,
                         activeFrom: contract.upcomingChangedAgreement?.activeFrom,
                         activeInFuture: contract.activeInFuture,
-                        masterInceptionDate: contract.masterInceptionDate
+                        masterInceptionDate: contract.masterInceptionDate,
+                        missingInfo: missingInfo
                     )
                     Picker("View", selection: $context.selected) {
                         ForEach(ContractDetailsViews.allCases) { view in

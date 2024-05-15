@@ -219,7 +219,7 @@ extension PaymentsDiscountsRootView {
         ) { action in
             if case let .navigation(navigateTo) = action {
                 if case .openForever = navigateTo {
-                    ForeverView.journey()
+                    ForeverView.journey(isForeverInfoMissing: true)
                         .hidesBottomBarWhenPushed
                 } else if case .openAddCampaing = navigateTo {
                     AddCampaingCodeView.journey

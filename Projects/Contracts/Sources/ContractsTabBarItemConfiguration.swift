@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 extension JourneyPresentation {
-    var configureContractsTabBarItem: some JourneyPresentation {
+    func configureContractsTabBarItem(isContractsMissingInfo: Bool) -> some JourneyPresentation {
         configureTabBarItemWithDot(
             ContractStore.self,
             tabBarItem: UITabBarItem(
@@ -13,7 +13,7 @@ extension JourneyPresentation {
                 selectedImage: hCoreUIAssets.contractTabActive.image
             )
         ) { state in
-            state.hasUnseenCrossSell
+            isContractsMissingInfo
         }
     }
 }
