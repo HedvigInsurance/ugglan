@@ -47,9 +47,14 @@ public struct SubmitClaimAudioRecordingScreen: View {
             HevigMainLogoAnimation(progress: $progress)
                 .modifier(TrackLoading(SubmitClaimStore.self, .postAudioRecording, $isLoading))
                 .onChange(of: isLoading) { isLoading in
-                    withAnimation(.easeInOut(duration: 1)) {
-                        progress = isLoading ? 1 : 0
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        withAnimation(.linear(duration: 10)) {
+                            progress = isLoading ? 1 : 0
+                        }
                     }
+                    let vc = UIApplication.shared.getTopViewControllerNavigation()
+                    vc?.setNavigationBarHidden(isLoading, animated: true)
+
                 }
         }
     }
@@ -422,11 +427,13 @@ struct HevigMainLogoAnimation: View {
             BackgroundBlurView()
                 .ignoresSafeArea()
             VStack(spacing: 24) {
+                Spacer()
                 HevigLogoAnimation()
+                Spacer()
                 VStack(spacing: 12) {
-                    ProgressView(value: progress, total: 1)
+                    ProgressView(value: progress)
                         .tint(hTextColor.primary)
-                        .frame(width: UIScreen.main.bounds.width * 0.53)
+                        .padding(.horizontal, 50)
                     HevigTextAnimation(
                         displayItems: [
                             "We are working on it ...",
@@ -439,7 +446,6 @@ struct HevigMainLogoAnimation: View {
                 }
             }
         }
-
     }
 }
 struct HevigLogoAnimation: View {
@@ -448,7 +454,7 @@ struct HevigLogoAnimation: View {
         hCoreUIAssets.bigPillowBlack.view
             .resizable()
             .scaledToFit()
-            .frame(width: 100, height: 100)
+            .frame(width: 200, height: 200)
             .scaleEffect(isAnimating ? 1.05 : 1)
             .animation(foreverAnimation, value: isAnimating)
             .onAppear {
@@ -457,8 +463,10 @@ struct HevigLogoAnimation: View {
     }
 
     var foreverAnimation: Animation {
-        Animation.spring(duration: 0.6, bounce: 0.9, blendDuration: 1)
+        Animation
+            .spring(duration: 0.6, bounce: 0.9, blendDuration: 0.1)
             .repeatForever()
+
     }
 }
 
