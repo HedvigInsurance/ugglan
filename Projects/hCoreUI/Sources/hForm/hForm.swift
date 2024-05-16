@@ -473,8 +473,10 @@ public struct BackgroundView: UIViewRepresentable {
     }
 }
 
-struct BackgroundBlurView: UIViewRepresentable {
-    func makeUIView(context: Context) -> UIView {
+public struct BackgroundBlurView: UIViewRepresentable {
+
+    public init() {}
+    public func makeUIView(context: Context) -> UIView {
         let view = UIVisualEffectView(effect: UIBlurEffect(style: .light))
         view.subviews.forEach { subview in
             subview.backgroundColor = UIColor.clear
@@ -482,7 +484,7 @@ struct BackgroundBlurView: UIViewRepresentable {
         return view
     }
 
-    func updateUIView(_ uiView: UIView, context: Context) {}
+    public func updateUIView(_ uiView: UIView, context: Context) {}
 }
 
 private struct EnvironmentHObserveKeyboard: EnvironmentKey {

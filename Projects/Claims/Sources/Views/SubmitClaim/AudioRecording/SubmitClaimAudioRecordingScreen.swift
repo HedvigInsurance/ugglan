@@ -17,7 +17,14 @@ public struct SubmitClaimAudioRecordingScreen: View {
     @State var inputText: String = ""
     @State var inputTextError: String?
     @State var animateField: Bool = false
-
+    @State var progress: CGFloat = 0
+    @State var isLoading = false {
+        didSet {
+            withAnimation(.easeInOut(duration: 10)) {
+                progress = isLoading ? 1 : 0
+            }
+        }
+    }
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     let onSubmit: (_ url: URL) -> Void
@@ -35,12 +42,16 @@ public struct SubmitClaimAudioRecordingScreen: View {
     }
 
     public var body: some View {
-        if isAudioInput {
-            audioInputForm
-                .claimErrorTrackerFor([.postAudioRecording])
-        } else {
-            textInputForm
-                .claimErrorTrackerFor([.postAudioRecording])
+        ZStack {
+            if isAudioInput {
+                audioInputForm
+                    .claimErrorTrackerFor([.postAudioRecording])
+            } else {
+                textInputForm
+                    .claimErrorTrackerFor([.postAudioRecording])
+            }
+            HevigMainLogoAnimation(progress: $progress)
+                .modifier(TrackLoading(SubmitClaimStore.self, .postAudioRecording, $isLoading))
         }
     }
 
@@ -321,23 +332,23 @@ public struct SubmitClaimAudioRecordingScreen: View {
     }
 }
 
-struct SubmitClaimAudioRecordingScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        SubmitClaimAudioRecordingScreen(url: nil)
-            .onAppear {
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                let graphQL = OctopusGraphQL.FlowClaimAudioRecordingStepFragment(
-                    _dataDict:
-                        .init(
-                            data: [:],
-                            fulfilledFragments: .init()
-                        )
-                )
-                let model = FlowClaimAudioRecordingStepModel(with: graphQL)
-                store.send(.stepModelAction(action: .setAudioStep(model: model)))
-            }
-    }
-}
+//struct SubmitClaimAudioRecordingScreen_Previews: PreviewProvider {
+//    static var previews: some View {
+//        SubmitClaimAudioRecordingScreen(url: nil)
+//            .onAppear {
+//                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+//                let graphQL = OctopusGraphQL.FlowClaimAudioRecordingStepFragment(
+//                    _dataDict:
+//                        .init(
+//                            data: [:],
+//                            fulfilledFragments: .init()
+//                        )
+//                )
+//                let model = FlowClaimAudioRecordingStepModel(with: graphQL)
+//                store.send(.stepModelAction(action: .setAudioStep(model: model)))
+//            }
+//    }
+//}
 
 struct CustomTextViewRepresentable: UIViewRepresentable {
     let placeholder: String
@@ -401,6 +412,150 @@ private class CustomTextView: UITextView, UITextViewDelegate {
         if text.isEmpty {
             textView.text = placeholder
             textView.textColor = UIColor.lightGray
+        }
+    }
+}
+
+struct HevigMainLogoAnimation: View {
+    @Binding var progress: CGFloat
+    var body: some View {
+        ZStack {
+            BackgroundBlurView()
+                .ignoresSafeArea()
+            VStack(spacing: 24) {
+                HevigLogoAnimation()
+                VStack(spacing: 12) {
+                    ProgressView(value: progress)
+                        .tint(hTextColor.primary)
+                        .frame(width: UIScreen.main.bounds.width * 0.53)
+                    HevigTextAnimation(
+                        displayItems: [
+                            "We are working on it ...",
+                            "Backend magic ✨🧙🏽",
+                            "🤓 😝 🙃 😁 👩🏽‍🦳 👨🏼‍🎤",
+                        ],
+                        delay: 3
+                    )
+                    .padding(.horizontal, 50)
+                }
+            }
+        }
+
+    }
+}
+struct HevigLogoAnimation: View {
+    @State private var isAnimating = false
+    var body: some View {
+        hCoreUIAssets.bigPillowBlack.view
+            .resizable()
+            .scaledToFit()
+            .frame(width: 100, height: 100)
+            .scaleEffect(isAnimating ? 1.05 : 1)
+            .animation(foreverAnimation, value: isAnimating)
+            .onAppear {
+                isAnimating = true
+            }
+    }
+
+    var foreverAnimation: Animation {
+        Animation.spring(duration: 0.6, bounce: 0.9, blendDuration: 1)
+            .repeatForever()
+    }
+}
+
+struct HevigTextAnimation: View {
+    let displayItems: [String]
+    let delay: CGFloat
+    @State private var index = 0
+    @State private var text: String = ""
+    var body: some View {
+        hText(text)
+            .onAppear {
+                setInitialText()
+            }
+            .multilineTextAlignment(.center)
+    }
+
+    private func setInitialText() {
+        text = displayItems.first ?? ""
+        setNext()
+    }
+
+    private func setNext() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+            index = (displayItems.count > index + 1) ? index + 1 : 0
+
+            withAnimation(.spring(duration: 0.6, bounce: 0.4, blendDuration: 0.1)) {
+                text = displayItems[index]
+            }
+            setNext()
+        }
+    }
+}
+
+struct HevigLogoAnimation_Previews: PreviewProvider {
+    @State static var progress: CGFloat = 0
+    static var previews: some View {
+        HevigMainLogoAnimation(progress: $progress)
+            .onAppear {
+                withAnimation(.easeInOut(duration: 10)) {
+                    progress = 1
+                }
+            }
+    }
+}
+
+struct TrackLoading<StoreType: StoreLoading & Store>: ViewModifier {
+    @PresentableStore var store: StoreType
+    let actions: [StoreType.Loading]
+    @Binding var isLoading: Bool
+    public init(
+        _ type: StoreType.Type,
+        _ action: StoreType.Loading,
+        _ loading: Binding<Bool>
+    ) {
+        self.actions = [action]
+        self._isLoading = loading
+    }
+    func body(content: Content) -> some View {
+        content
+            .opacity(isLoading ? 1 : 0)
+            .onReceive(
+                store.loadingSignal
+                    .plain()
+                    .publisher
+            ) { value in
+                handle(allActions: value)
+            }
+            .onAppear {
+                handle(allActions: store.loadingSignal.value)
+            }
+    }
+
+    func handle(allActions: [StoreType.Loading: LoadingState<String>]) {
+        let actions = allActions.filter({ self.actions.contains($0.key) })
+        if actions.count > 0 {
+            if actions.filter({ $0.value == .loading }).count > 0 {
+                changeState(to: true, presentError: false)
+            } else {
+                var tempError = ""
+                for action in actions {
+                    switch action.value {
+                    case .error(let error):
+                        tempError = error
+                    default:
+                        break
+                    }
+                }
+                changeState(to: false, presentError: true, error: tempError)
+            }
+        } else {
+            changeState(to: false, presentError: false, error: nil)
+        }
+    }
+    private func changeState(to isLoading: Bool, presentError: Bool, error: String? = nil) {
+        withAnimation {
+            self.isLoading = isLoading
         }
     }
 }
