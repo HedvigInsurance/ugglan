@@ -18,13 +18,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
     @State var inputTextError: String?
     @State var animateField: Bool = false
     @State var progress: CGFloat = 0
-    @State var isLoading = false {
-        didSet {
-            withAnimation(.easeInOut(duration: 10)) {
-                progress = isLoading ? 1 : 0
-            }
-        }
-    }
+    @State var isLoading = false
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     let onSubmit: (_ url: URL) -> Void
@@ -52,6 +46,11 @@ public struct SubmitClaimAudioRecordingScreen: View {
             }
             HevigMainLogoAnimation(progress: $progress)
                 .modifier(TrackLoading(SubmitClaimStore.self, .postAudioRecording, $isLoading))
+                .onChange(of: isLoading) { isLoading in
+                    withAnimation(.easeInOut(duration: 1)) {
+                        progress = isLoading ? 1 : 0
+                    }
+                }
         }
     }
 
@@ -425,7 +424,7 @@ struct HevigMainLogoAnimation: View {
             VStack(spacing: 24) {
                 HevigLogoAnimation()
                 VStack(spacing: 12) {
-                    ProgressView(value: progress)
+                    ProgressView(value: progress, total: 1)
                         .tint(hTextColor.primary)
                         .frame(width: UIScreen.main.bounds.width * 0.53)
                     HevigTextAnimation(
