@@ -10,8 +10,9 @@ struct OnboardingScreen: View {
     let image: Image?
     let isNotification: Bool?
     let isFinalScreen: Bool
+    let isFirstScreen: Bool
 
-    @State var notificationText = "turn on notifications"
+    @State var notificationText = "Turn on notifications"
 
     var cancellables = Set<AnyCancellable>()
 
@@ -26,6 +27,7 @@ struct OnboardingScreen: View {
         image: Image? = nil,
         isNotification: Bool? = nil,
         currentIndex: Binding<Int>,
+        isFirstScreen: Bool? = false,
         isFinalScreen: Bool? = false
     ) {
         self.description = description
@@ -33,6 +35,7 @@ struct OnboardingScreen: View {
         self.image = image
         self.isNotification = isNotification
         self._currentIndex = currentIndex
+        self.isFirstScreen = isFirstScreen ?? false
         self.isFinalScreen = isFinalScreen ?? false
     }
 
@@ -40,59 +43,82 @@ struct OnboardingScreen: View {
         hForm {
             hSection {
                 VStack(spacing: 24) {
-                    VStack(spacing: 24) {
-                        HStack {
-                            if let image {
+                    HStack {
+                        if let image {
+
+                            if isFirstScreen {
                                 image
                                     .resizable()
                                     .scaledToFit()
-                            } else if let isNotification, isNotification {
+                            } else {
+                                ZStack {
+                                    Image(uiImage: hCoreUIAssets.onboardingBackground.image)
+                                        .resizable()
+                                        .scaledToFit()
+
+                                    image
+                                }
+                            }
+                        } else if let isNotification, isNotification {
+                            ZStack {
+                                Image(uiImage: hCoreUIAssets.onboardingBackgroundSmall.image)
+                                    .resizable()
+                                    .scaledToFit()
+
                                 Toggle("", isOn: .constant(true))
                                     .frame(width: 23)
                             }
                         }
-                        //                        .border(hBorderColor.translucentOne, width: 1)
-                        .clipShape(Squircle.default())
-                        .hShadow()
+                    }
+                    .clipShape(Squircle.default())
+                    .hShadow()
 
-                        VStack(alignment: .leading, spacing: 16) {
-                            hText(description)
-                                .foregroundColor(hTextColor.secondary)
-                                .frame(maxWidth: .infinity, alignment: .leading)
+                    VStack(alignment: .leading, spacing: 72) {
+                        hText(description)
+                            .foregroundColor(hTextColor.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
 
-                            if isNotification ?? false {
-                                HStack {
-                                    hText(notificationText)
-                                        .foregroundColor(hTextColor.secondary)
-                                    Spacer()
-                                    Toggle(
-                                        isOn: $vm.pushNotificationsIsOn,
-                                        label: {
-                                        }
-                                    )
-                                }
+                        if isNotification ?? false {
+                            HStack {
+                                hText(notificationText)
+                                    .fixedSize()
+                                    .foregroundColor(hTextColor.secondary)
+                                Spacer()
+
+                                Toggle(
+                                    isOn: $vm.pushNotificationsIsOn,
+                                    label: {
+                                    }
+                                )
+                                .frame(maxWidth: .infinity, alignment: .trailing)
+                                .scaleEffect(0.5)
                             }
                         }
-                    }
-
-                    HStack {
-                        hPagerDotsBinded(currentIndex: $currentIndex, totalCount: totalAmountOfPages)
-                            .padding(.leading, 138)
-
-                        Spacer()
-
-                        hButton.SmallButton(type: .primary) {
-                            onNextClick()
-                        } content: {
-                            hText(isFinalScreen ? "Done" : "Next")
-                        }
-                        .fixedSize()
                     }
                 }
             }
             .sectionContainerStyle(.transparent)
         }
-        //        .padding(.top, -24)
+        .hDisableScroll
+        .hFormAttachToBottom {
+            hSection {
+                HStack {
+                    hPagerDotsBinded(currentIndex: $currentIndex, totalCount: totalAmountOfPages)
+                        .padding(.leading, 138)
+
+                    Spacer()
+
+                    hButton.SmallButton(type: .primary) {
+                        onNextClick()
+                    } content: {
+                        hText(isFinalScreen ? "Done" : "Next")
+                    }
+                    .fixedSize()
+                }
+            }
+            .sectionContainerStyle(.transparent)
+            .padding(.top, 18)
+        }
         .onUpdate(of: vm.pushNotificationsIsOn) { newValue in
             if newValue {
                 notificationText = "Notifications turned on"
@@ -136,7 +162,8 @@ extension OnboardingScreen {
                     store.send(.openOnboardingInsurance)
                 },
                 image: { Image(uiImage: hCoreUIAssets.welcomeToHedvig.image) }(),
-                currentIndex: .constant(0)
+                currentIndex: .constant(0),
+                isFirstScreen: true
             ),
             style: .detented(.scrollViewContentSize),
             //            style: .modally(presentationStyle: .overFullScreen),
@@ -147,7 +174,7 @@ extension OnboardingScreen {
             }
         }
         .configureTitle("Welcome to the Hedvig-app")
-        .withDismissButton
+        .addDismissOnboardingFlow
     }
 
     static var openInsuranceScreen: some JourneyPresentation {
@@ -163,7 +190,7 @@ extension OnboardingScreen {
                 image: {
                     Image(uiImage: hCoreUIAssets.onboardingBackground.image)
                 }(),
-                currentIndex: .constant(1)
+                currentIndex: .constant(0)
             )
         ) { action in
             if case .openOnboardingDocuments = action {
@@ -171,7 +198,12 @@ extension OnboardingScreen {
             }
         }
         .configureTitle("Edit, move or buy more insurance")
-        .withDismissButton
+        .withJourneyDismissButtonWithConfirmation(
+            withTitle: "fff",
+            andBody: "ffrf",
+            andCancelText: "ff",
+            andConfirmText: "rdf"
+        )
     }
 
     static var openDocumentsScreen: some JourneyPresentation {
@@ -187,7 +219,7 @@ extension OnboardingScreen {
                 image: {
                     Image(uiImage: hCoreUIAssets.appleLogo.image)
                 }(),
-                currentIndex: .constant(3)
+                currentIndex: .constant(1)
             )
         ) { action in
             if case .openOnboardingPayments = action {
@@ -195,7 +227,7 @@ extension OnboardingScreen {
             }
         }
         .configureTitle("Your documents are ready")
-        .withDismissButton
+        .addDismissOnboardingFlow
     }
 
     static var openPaymentsScreen: some JourneyPresentation {
@@ -209,9 +241,9 @@ extension OnboardingScreen {
                     store.send(.openOnboardingMakeClaim)
                 },
                 image: {
-                    Image(uiImage: hCoreUIAssets.appleLogo.image)
+                    Image(uiImage: hCoreUIAssets.onboardingPayments.image)
                 }(),
-                currentIndex: .constant(3)
+                currentIndex: .constant(1)
             )
         ) { action in
             if case .openOnboardingMakeClaim = action {
@@ -219,7 +251,7 @@ extension OnboardingScreen {
             }
         }
         .configureTitle("Full control of your payments")
-        .withDismissButton
+        .addDismissOnboardingFlow
     }
 
     static var openMakeClaimsScreen: some JourneyPresentation {
@@ -227,15 +259,15 @@ extension OnboardingScreen {
             HomeStore.self,
             rootView: OnboardingScreen(
                 description:
-                    "Make a claim from the home screen",
+                    "See your history, next charge or change bank. All with a few taps.",
                 onNextClick: {
                     let store: HomeStore = globalPresentableStoreContainer.get()
                     store.send(.openOnboardingFollowClaim)
                 },
                 image: {
-                    Image(uiImage: hCoreUIAssets.appleLogo.image)
+                    Image(uiImage: hCoreUIAssets.onboardingMakeClaim.image)
                 }(),
-                currentIndex: .constant(3)
+                currentIndex: .constant(2)
             )
         ) { action in
             if case .openOnboardingFollowClaim = action {
@@ -243,7 +275,7 @@ extension OnboardingScreen {
             }
         }
         .configureTitle("Make a claim from the home screen")
-        .withDismissButton
+        .addDismissOnboardingFlow
     }
 
     static var openFollowClaimsScreen: some JourneyPresentation {
@@ -251,7 +283,7 @@ extension OnboardingScreen {
             HomeStore.self,
             rootView: OnboardingScreen(
                 description:
-                    "Follow and update your claim",
+                    "See your history, next charge or change bank. All with a few taps.",
                 onNextClick: {
                     let store: HomeStore = globalPresentableStoreContainer.get()
                     store.send(.openOnboardingGetHelp)
@@ -259,7 +291,7 @@ extension OnboardingScreen {
                 image: {
                     Image(uiImage: hCoreUIAssets.appleLogo.image)
                 }(),
-                currentIndex: .constant(3)
+                currentIndex: .constant(2)
             )
         ) { action in
             if case .openOnboardingGetHelp = action {
@@ -267,7 +299,7 @@ extension OnboardingScreen {
             }
         }
         .configureTitle("Follow and update your claim")
-        .withDismissButton
+        .addDismissOnboardingFlow
     }
 
     static var openGetHelpScreen: some JourneyPresentation {
@@ -275,13 +307,13 @@ extension OnboardingScreen {
             HomeStore.self,
             rootView: OnboardingScreen(
                 description:
-                    "Follow and update your claim",
+                    "See your history, next charge or change bank. All with a few taps.",
                 onNextClick: {
                     let store: HomeStore = globalPresentableStoreContainer.get()
                     store.send(.openOnboardingNotifications)
                 },
                 image: {
-                    Image(uiImage: hCoreUIAssets.appleLogo.image)
+                    Image(uiImage: hCoreUIAssets.onboardingNavigationElements.image)
                 }(),
                 currentIndex: .constant(3)
             )
@@ -291,31 +323,28 @@ extension OnboardingScreen {
             }
         }
         .configureTitle("Get help, the way you like")
-        .withDismissButton
+        .addDismissOnboardingFlow
     }
 
     static var openNotificationsScreen: some JourneyPresentation {
         return HostingJourney(
             HomeStore.self,
             rootView: OnboardingScreen(
-                description: "Turn on push notifications and make sure your email and phone number is up to date.",
+                description: "Don’t forget app messages or important updates of your insurances.",
                 onNextClick: {
                     let store: HomeStore = globalPresentableStoreContainer.get()
                     store.send(.openOnboardingContact)
                 },
                 isNotification: true,
-                currentIndex: .constant(2)
+                currentIndex: .constant(3)
             )
-            //            .onUpdate(of: vm.pushNotificationsIsOn) { newValue in
-            //                print("notifications updated")
-            //            }
         ) { action in
             if case .openOnboardingContact = action {
                 openContactScreen
             }
         }
         .configureTitle("Turn on notifications")
-        .withDismissButton
+        .addDismissOnboardingFlow
     }
 
     static var openContactScreen: some JourneyPresentation {
@@ -323,15 +352,15 @@ extension OnboardingScreen {
             HomeStore.self,
             rootView: OnboardingScreen(
                 description:
-                    "Follow and update your claim",
+                    "See your history, next charge or change bank. All with a few taps.",
                 onNextClick: {
                     let store: HomeStore = globalPresentableStoreContainer.get()
                     store.send(.openOnboardingForever)
                 },
                 image: {
-                    Image(uiImage: hCoreUIAssets.appleLogo.image)
+                    Image(uiImage: hCoreUIAssets.onboardingContact.image)
                 }(),
-                currentIndex: .constant(3)
+                currentIndex: .constant(4)
             )
         ) { action in
             if case .openOnboardingForever = action {
@@ -339,7 +368,7 @@ extension OnboardingScreen {
             }
         }
         .configureTitle("Keep your contact details up to date")
-        .withDismissButton
+        .addDismissOnboardingFlow
     }
 
     static var openForeverScreen: some JourneyPresentation {
@@ -353,9 +382,9 @@ extension OnboardingScreen {
                     store.send(.openOnboardingFinish)
                 },
                 image: {
-                    Image(uiImage: hCoreUIAssets.appleLogo.image)
+                    Image(uiImage: hCoreUIAssets.onboardingForever.image)
                 }(),
-                currentIndex: .constant(3)
+                currentIndex: .constant(4)
             )
         ) { action in
             if case .openOnboardingFinish = action {
@@ -363,7 +392,7 @@ extension OnboardingScreen {
             }
         }
         .configureTitle("Hedvig Forever")
-        .withDismissButton
+        .addDismissOnboardingFlow
     }
 
     static var openFinishScreen: some JourneyPresentation {
@@ -377,9 +406,9 @@ extension OnboardingScreen {
                     store.send(.dismissOnboardingFlow)
                 },
                 image: {
-                    Image(uiImage: hCoreUIAssets.appleLogo.image)
+                    Image(uiImage: hCoreUIAssets.onboardingCelebration.image)
                 }(),
-                currentIndex: .constant(3),
+                currentIndex: .constant(5),
                 isFinalScreen: true
             )
         ) { action in
@@ -388,7 +417,19 @@ extension OnboardingScreen {
             }
         }
         .configureTitle("That’s a wrap")
-        .withDismissButton
+        .addDismissOnboardingFlow
+    }
+}
+
+extension JourneyPresentation {
+    var addDismissOnboardingFlow: some JourneyPresentation {
+        self.withJourneyDismissButtonWithConfirmation(
+            withTitle: L10n.General.areYouSure,
+            andBody:
+                "If you proceed you will exit the onboarding. If you need any further help you can find answer to most questions in the help center.",
+            andCancelText: L10n.General.no,
+            andConfirmText: L10n.General.yes
+        )
     }
 }
 
@@ -397,9 +438,10 @@ extension OnboardingScreen {
         description:
             "Your digital service assistant where you can manage your insurance from the comfort of your sofa. \n\nLet us show you what you can do",
         onNextClick: {},
-        image: {
-            Image(uiImage: hCoreUIAssets.onboardingOneTap.image)
-        }(),
+        //        image: {
+        //            Image(uiImage: hCoreUIAssets.onboardingOneTap.image)
+        //        }(),
+        isNotification: true,
         currentIndex: .constant(0)
         //        customView: {
         //            let view = HStack {
