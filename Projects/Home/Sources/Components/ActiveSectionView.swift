@@ -21,7 +21,7 @@ struct ActiveSectionView<Claims: View>: View {
                 hText(L10n.HomeTab.welcomeTitleWithoutName, style: .title1)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
-                //                claimsContent
+                //                                claimsContent
             }
             .sectionContainerStyle(.transparent)
         }

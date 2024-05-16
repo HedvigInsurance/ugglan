@@ -263,7 +263,9 @@ extension HomeView {
             } else if case let .goToURL(url) = action {
                 resultJourney(.goToURL(url: url))
             } else if case .openOnboarding = action {
-                OnboardingScreen<EmptyView>.journey
+                OnboardingScreen.start
+            } else if case .registerForPushNotifications = action {
+                resultJourney(.registerForPushNotifications)
             }
         }
         .configureTabBarItem(
@@ -283,6 +285,7 @@ public enum HomeResult {
     case goToQuickAction(quickAction: QuickAction)
     case goToURL(url: URL)
     case dismissHelpCenter
+    case registerForPushNotifications
 }
 
 struct Active_Preview: PreviewProvider {

@@ -47,6 +47,9 @@ extension AppJourney {
                     AppJourney.configureURL(url: url)
                 case .dismissHelpCenter:
                     DismissJourney()
+                case .registerForPushNotifications:
+                    let _ = UIApplication.shared.appDelegate.registerForPushNotifications().sink()
+                    ContinueJourney()
                 }
             }
             .makeTabSelected(UgglanStore.self) { action in

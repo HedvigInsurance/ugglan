@@ -72,14 +72,20 @@ public enum HomeAction: ActionProtocol {
     case dismissHelpCenter
 
     case openOnboarding
-    case openOnboardingGetHelp
-    case openOnboardingNotifications
+    case openOnboardingInsurance
     case openOnboardingDocuments
-    case openOnboardingInvite
+    case openOnboardingNotifications
+    case openOnboardingPayments
     case openOnboardingMakeClaim
-    case openOnboardingLayBack
+    case openOnboardingFollowClaim
+    case openOnboardingGetHelp
+    case openOnboardingContact
+    case openOnboardingForever
+    case openOnboardingFinish
+    case dismissOnboardingFlow
 
     case setOnBoarding(has: Bool)
+    case registerForPushNotifications
 }
 
 public enum FutureStatus: Codable, Equatable {
