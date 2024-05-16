@@ -70,7 +70,7 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
         self.selectedItemModel = data.selectedItemModel
         self.purchasePriceApplicable = data.purchasePriceApplicable
 
-        if self.selectedItemModel == nil && self.customName == nil {
+        if self.selectedItemBrand == nil && self.selectedItemModel == nil && self.customName == nil {
             let currentDeviceName = UIDevice.modelName.lowercased()
             if let matchingModelWithCurrentDevice = self.availableItemModelOptions.first(where: {
                 let name = $0.displayName.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
