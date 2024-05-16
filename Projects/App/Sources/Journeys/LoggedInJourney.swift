@@ -123,7 +123,11 @@ extension AppJourney {
     }
 
     fileprivate static var foreverTab: some JourneyPresentation {
-        ForeverView.journey(isForeverInfoMissing: true)
+
+        let store: ForeverStore = globalPresentableStoreContainer.get()
+        store.send(.setForeverDataMissing(isMissing: true))
+
+        return ForeverView.journey(isForeverInfoMissing: true)
             .makeTabSelected(UgglanStore.self) { action in
                 if case .makeTabActive(let deepLink) = action {
                     return deepLink == .forever

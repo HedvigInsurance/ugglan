@@ -8,6 +8,7 @@ import hCore
 import hCoreUI
 
 public struct HomeState: StateProtocol {
+    public var hasSeenOnboarding: Bool = false
     public var memberContractState: MemberContractState = .loading
     public var futureStatus: FutureStatus = .none
     public var contracts: [Contract] = []
@@ -69,6 +70,16 @@ public enum HomeAction: ActionProtocol {
     case goToQuickAction(QuickAction)
     case goToURL(url: URL)
     case dismissHelpCenter
+
+    case openOnboarding
+    case openOnboardingGetHelp
+    case openOnboardingNotifications
+    case openOnboardingDocuments
+    case openOnboardingInvite
+    case openOnboardingMakeClaim
+    case openOnboardingLayBack
+
+    case setOnBoarding(has: Bool)
 }
 
 public enum FutureStatus: Codable, Equatable {
@@ -183,6 +194,8 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         case let .setHasSentOrRecievedAtLeastOneMessage(hasSent):
             newState.hasSentOrRecievedAtLeastOneMessage = hasSent
             setToolbarTypes(&newState)
+        case let .setOnBoarding(bool):
+            newState.hasSeenOnboarding = bool
         default:
             break
         }

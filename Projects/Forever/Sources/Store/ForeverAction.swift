@@ -10,6 +10,8 @@ public indirect enum ForeverAction: ActionProtocol {
     case showInfoSheet(discount: String)
     case closeInfoSheet
     case showShareSheetOnly(code: String, discount: String)
+
+    case setForeverDataMissing(isMissing: Bool)
 }
 
 public enum ForeverLoadingType: LoadingProtocol {

@@ -49,8 +49,9 @@ extension ChangeCodeView {
             if case .showChangeCodeSuccess = action {
                 SuccessScreen.journey(with: L10n.ReferralsChange.codeChanged)
                     .onPresent {
+                        let store: ForeverStore = globalPresentableStoreContainer.get()
+                        store.send(.setForeverDataMissing(isMissing: false))
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                            let store: ForeverStore = globalPresentableStoreContainer.get()
                             store.send(.dismissChangeCodeDetail)
                         }
                     }

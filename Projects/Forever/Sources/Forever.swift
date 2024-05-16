@@ -120,7 +120,11 @@ public struct ForeverView: View {
 
 extension ForeverView {
     public static func journey(isForeverInfoMissing: Bool) -> some JourneyPresentation {
-        HostingJourney(
+
+        let store: ForeverStore = globalPresentableStoreContainer.get()
+        store.send(.setForeverDataMissing(isMissing: true))
+
+        return HostingJourney(
             ForeverStore.self,
             rootView: ForeverView()
         ) { action in
@@ -141,7 +145,7 @@ extension ForeverView {
                 selectedImage: hCoreUIAssets.foreverTabActive.image
             ),
             showDot: { state in
-                return isForeverInfoMissing
+                return state.isForeverDataMissing
             }
         )
     }

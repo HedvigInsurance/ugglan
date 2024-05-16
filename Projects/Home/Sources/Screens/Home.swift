@@ -18,6 +18,8 @@ public struct HomeView<Claims: View>: View {
     var claimsContent: Claims
     var memberId: String
 
+    @State var hasSeenOnBoarding = false
+
     public init(
         claimsContent: Claims,
         memberId: @escaping () -> String
@@ -65,6 +67,14 @@ extension HomeView {
         .hFormMergeBottomViewWithContentIfNeeded
         .onAppear {
             fetch()
+
+            //            if store.state.hasSeenOnboarding {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                store.send(.openOnboarding)
+                store.send(.setOnBoarding(has: true))
+                hasSeenOnBoarding = true
+            }
+            //            }
         }
     }
     @ViewBuilder
@@ -89,7 +99,10 @@ extension HomeView {
                 switch vm.memberContractState {
                 case .active:
                     VStack(spacing: 16) {
-                        HomeBottomScrollView(memberId: memberId)
+                        if hasSeenOnBoarding {
+                            HomeBottomScrollView(memberId: memberId)
+                        }
+
                         VStack(spacing: 8) {
                             startAClaimButton
                             openHelpCenter
@@ -249,6 +262,8 @@ extension HomeView {
                 resultJourney(.goToQuickAction(quickAction: quickAction))
             } else if case let .goToURL(url) = action {
                 resultJourney(.goToURL(url: url))
+            } else if case .openOnboarding = action {
+                OnboardingScreen<EmptyView>.journey
             }
         }
         .configureTabBarItem(
