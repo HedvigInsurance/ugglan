@@ -10,7 +10,7 @@ struct OnboardingScreen: View {
     let image: Image?
     let isNotification: Bool?
     let isFinalScreen: Bool
-    let isFirstScreen: Bool
+    let addBackgroundImage: Bool
 
     @State var notificationText = "Turn on notifications"
 
@@ -27,15 +27,15 @@ struct OnboardingScreen: View {
         image: Image? = nil,
         isNotification: Bool? = nil,
         currentIndex: Binding<Int>,
-        isFirstScreen: Bool? = false,
-        isFinalScreen: Bool? = false
+        isFinalScreen: Bool? = false,
+        addBackgroundImage: Bool? = false
     ) {
         self.description = description
         self.onNextClick = onNextClick
         self.image = image
         self.isNotification = isNotification
         self._currentIndex = currentIndex
-        self.isFirstScreen = isFirstScreen ?? false
+        self.addBackgroundImage = addBackgroundImage ?? false
         self.isFinalScreen = isFinalScreen ?? false
     }
 
@@ -45,18 +45,19 @@ struct OnboardingScreen: View {
                 VStack(spacing: 24) {
                     HStack {
                         if let image {
-
-                            if isFirstScreen {
+                            if !addBackgroundImage {
                                 image
                                     .resizable()
                                     .scaledToFit()
                             } else {
-                                ZStack {
+                                ZStack(alignment: .center) {
                                     Image(uiImage: hCoreUIAssets.onboardingBackground.image)
                                         .resizable()
                                         .scaledToFit()
 
                                     image
+                                        .resizable()
+                                        .scaledToFit()
                                 }
                             }
                         } else if let isNotification, isNotification {
@@ -91,7 +92,6 @@ struct OnboardingScreen: View {
                                     }
                                 )
                                 .frame(maxWidth: .infinity, alignment: .trailing)
-                                .scaleEffect(0.5)
                             }
                         }
                     }
@@ -162,11 +162,9 @@ extension OnboardingScreen {
                     store.send(.openOnboardingInsurance)
                 },
                 image: { Image(uiImage: hCoreUIAssets.welcomeToHedvig.image) }(),
-                currentIndex: .constant(0),
-                isFirstScreen: true
+                currentIndex: .constant(0)
             ),
             style: .detented(.scrollViewContentSize),
-            //            style: .modally(presentationStyle: .overFullScreen),
             options: [.largeNavigationBar, .blurredBackground]
         ) { action in
             if case .openOnboardingInsurance = action {
@@ -188,7 +186,7 @@ extension OnboardingScreen {
                     store.send(.openOnboardingDocuments)
                 },
                 image: {
-                    Image(uiImage: hCoreUIAssets.onboardingBackground.image)
+                    Image(uiImage: hCoreUIAssets.onboardingInsurance.image)
                 }(),
                 currentIndex: .constant(0)
             )
@@ -211,15 +209,16 @@ extension OnboardingScreen {
             HomeStore.self,
             rootView: OnboardingScreen(
                 description:
-                    "See your insurance certificate, generate travel certificate or green cards.",
+                    "See your insurance certificate or generate travel certificates.",
                 onNextClick: {
                     let store: HomeStore = globalPresentableStoreContainer.get()
                     store.send(.openOnboardingPayments)
                 },
                 image: {
-                    Image(uiImage: hCoreUIAssets.appleLogo.image)
+                    Image(uiImage: hCoreUIAssets.onboardingDocument.image)
                 }(),
-                currentIndex: .constant(1)
+                currentIndex: .constant(1),
+                addBackgroundImage: true
             )
         ) { action in
             if case .openOnboardingPayments = action {
@@ -259,7 +258,7 @@ extension OnboardingScreen {
             HomeStore.self,
             rootView: OnboardingScreen(
                 description:
-                    "See your history, next charge or change bank. All with a few taps.",
+                    "Directly from the home screen, without any paperwork.",
                 onNextClick: {
                     let store: HomeStore = globalPresentableStoreContainer.get()
                     store.send(.openOnboardingFollowClaim)
@@ -267,7 +266,8 @@ extension OnboardingScreen {
                 image: {
                     Image(uiImage: hCoreUIAssets.onboardingMakeClaim.image)
                 }(),
-                currentIndex: .constant(2)
+                currentIndex: .constant(1),
+                addBackgroundImage: true
             )
         ) { action in
             if case .openOnboardingFollowClaim = action {
@@ -283,13 +283,13 @@ extension OnboardingScreen {
             HomeStore.self,
             rootView: OnboardingScreen(
                 description:
-                    "See your history, next charge or change bank. All with a few taps.",
+                    "Chat or add documents right from the claims card on your home screen.",
                 onNextClick: {
                     let store: HomeStore = globalPresentableStoreContainer.get()
                     store.send(.openOnboardingGetHelp)
                 },
                 image: {
-                    Image(uiImage: hCoreUIAssets.appleLogo.image)
+                    Image(uiImage: hCoreUIAssets.onboardingClaimsCard.image)
                 }(),
                 currentIndex: .constant(2)
             )
@@ -307,7 +307,7 @@ extension OnboardingScreen {
             HomeStore.self,
             rootView: OnboardingScreen(
                 description:
-                    "See your history, next charge or change bank. All with a few taps.",
+                    "Chat is our fastest way to get help. You can also reach us over email and phone.",
                 onNextClick: {
                     let store: HomeStore = globalPresentableStoreContainer.get()
                     store.send(.openOnboardingNotifications)
@@ -315,7 +315,7 @@ extension OnboardingScreen {
                 image: {
                     Image(uiImage: hCoreUIAssets.onboardingNavigationElements.image)
                 }(),
-                currentIndex: .constant(3)
+                currentIndex: .constant(2)
             )
         ) { action in
             if case .openOnboardingNotifications = action {
@@ -336,7 +336,7 @@ extension OnboardingScreen {
                     store.send(.openOnboardingContact)
                 },
                 isNotification: true,
-                currentIndex: .constant(3)
+                currentIndex: .constant(2)
             )
         ) { action in
             if case .openOnboardingContact = action {
@@ -352,7 +352,7 @@ extension OnboardingScreen {
             HomeStore.self,
             rootView: OnboardingScreen(
                 description:
-                    "See your history, next charge or change bank. All with a few taps.",
+                    "Got a new phone number or email address. Update it in profile tab.",
                 onNextClick: {
                     let store: HomeStore = globalPresentableStoreContainer.get()
                     store.send(.openOnboardingForever)
@@ -360,7 +360,7 @@ extension OnboardingScreen {
                 image: {
                     Image(uiImage: hCoreUIAssets.onboardingContact.image)
                 }(),
-                currentIndex: .constant(4)
+                currentIndex: .constant(3)
             )
         ) { action in
             if case .openOnboardingForever = action {
@@ -384,7 +384,7 @@ extension OnboardingScreen {
                 image: {
                     Image(uiImage: hCoreUIAssets.onboardingForever.image)
                 }(),
-                currentIndex: .constant(4)
+                currentIndex: .constant(3)
             )
         ) { action in
             if case .openOnboardingFinish = action {
@@ -406,9 +406,9 @@ extension OnboardingScreen {
                     store.send(.dismissOnboardingFlow)
                 },
                 image: {
-                    Image(uiImage: hCoreUIAssets.onboardingCelebration.image)
+                    Image(uiImage: hCoreUIAssets.onboardingFinal.image)
                 }(),
-                currentIndex: .constant(5),
+                currentIndex: .constant(4),
                 isFinalScreen: true
             )
         ) { action in
@@ -438,26 +438,10 @@ extension JourneyPresentation {
         description:
             "Your digital service assistant where you can manage your insurance from the comfort of your sofa. \n\nLet us show you what you can do",
         onNextClick: {},
-        //        image: {
-        //            Image(uiImage: hCoreUIAssets.onboardingOneTap.image)
-        //        }(),
-        isNotification: true,
+        image: {
+            Image(uiImage: hCoreUIAssets.onboardingOneTap.image)
+        }(),
+        //        isNotification: true,
         currentIndex: .constant(0)
-        //        customView: {
-        //            let view = HStack {
-        //                hText("Turn on notifications")
-        //                    .foregroundColor(hTextColor.secondary)
-        //                Spacer()
-        //                Toggle(
-        //                    isOn: .constant(true),
-        //                    label: {
-        //                    }
-        //                )
-        //                .frame(width: 28, height: 18)
-        //            }
-        //
-        //            return view
-        //        },
-        //        isNotification: true
     )
 }
