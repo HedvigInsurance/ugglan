@@ -74,6 +74,8 @@ public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, 
             newState.pushNotificationsSnoozeDate = date
         case let .isTravelCertificateEnabled(hasTravelCertificates):
             newState.hasTravelCertificates = hasTravelCertificates
+        case let .setProfileInfoMissing(isMissing):
+            newState.isProfileInfoMissing = isMissing
         default:
             break
         }

@@ -72,7 +72,10 @@ extension HomeView {
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                 store.send(.openOnboarding)
                 store.send(.setOnBoarding(has: true))
-                hasSeenOnBoarding = true
+
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    hasSeenOnBoarding = true
+                }
             }
             //            }
         }

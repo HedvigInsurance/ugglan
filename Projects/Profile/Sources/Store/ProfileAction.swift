@@ -41,6 +41,8 @@ public indirect enum ProfileAction: ActionProtocol, Hashable {
     case setPushNotificationStatus(status: Int?)
     case setPushNotificationsTo(date: Date?)
 
+    case setProfileInfoMissing(isMissing: Bool)
+
     case registerForPushNotifications
     case goToURL(url: URL)
 

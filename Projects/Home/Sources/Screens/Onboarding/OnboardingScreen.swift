@@ -121,7 +121,9 @@ struct OnboardingScreen: View {
         }
         .onUpdate(of: vm.pushNotificationsIsOn) { newValue in
             if newValue {
-                notificationText = "Notifications turned on"
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                    notificationText = "Notifications turned on"
+                }
             }
         }
     }
@@ -196,12 +198,7 @@ extension OnboardingScreen {
             }
         }
         .configureTitle("Edit, move or buy more insurance")
-        .withJourneyDismissButtonWithConfirmation(
-            withTitle: "fff",
-            andBody: "ffrf",
-            andCancelText: "ff",
-            andConfirmText: "rdf"
-        )
+        .addDismissOnboardingFlow
     }
 
     static var openDocumentsScreen: some JourneyPresentation {

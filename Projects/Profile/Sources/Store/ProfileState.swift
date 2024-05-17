@@ -16,6 +16,8 @@ public struct ProfileState: StateProtocol {
 
     var hasTravelCertificates: Bool = false
 
+    public var isProfileInfoMissing: Bool = true
+
     var showTravelCertificate: Bool {
         let flags: FeatureFlags = Dependencies.shared.resolve()
         return flags.isTravelInsuranceEnabled && (hasTravelCertificates || canCreateTravelInsurance)

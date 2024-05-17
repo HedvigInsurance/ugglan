@@ -48,6 +48,8 @@ extension AppJourney {
                 case .dismissHelpCenter:
                     DismissJourney()
                 case .registerForPushNotifications:
+                    let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+                    let _ = profileStore.send(.setProfileInfoMissing(isMissing: false))
                     let _ = UIApplication.shared.appDelegate.registerForPushNotifications().sink()
                     ContinueJourney()
                 }
@@ -160,6 +162,7 @@ extension AppJourney {
 
         let profileStore: ProfileStore = globalPresentableStoreContainer.get()
         let isProfileMissingInfo = profileStore.state.pushNotificationCurrentStatus() != .authorized
+        profileStore.send(.setProfileInfoMissing(isMissing: isProfileMissingInfo))
 
         return
             ProfileView.journey(
@@ -186,8 +189,7 @@ extension AppJourney {
                                     .registerForPushNotifications()
                             }
                     }
-                },
-                isProfileMissingInfo: isProfileMissingInfo
+                }
             )
             .makeTabSelected(UgglanStore.self) { action in
                 if case .makeTabActive(let deepLink) = action {

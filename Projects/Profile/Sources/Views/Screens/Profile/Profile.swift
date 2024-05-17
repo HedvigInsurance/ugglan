@@ -99,8 +99,7 @@ public enum ProfileResult {
 
 extension ProfileView {
     public static func journey<ResultJourney: JourneyPresentation>(
-        @JourneyBuilder resultJourney: @escaping (_ result: ProfileResult) -> ResultJourney,
-        isProfileMissingInfo: Bool
+        @JourneyBuilder resultJourney: @escaping (_ result: ProfileResult) -> ResultJourney
     ) -> some JourneyPresentation {
         HostingJourney(
             ProfileStore.self,
@@ -163,7 +162,7 @@ extension ProfileView {
                 selectedImage: hCoreUIAssets.profileTabActive.image
             ),
             showDot: { state in
-                return isProfileMissingInfo
+                return state.isProfileInfoMissing
             }
         )
     }
