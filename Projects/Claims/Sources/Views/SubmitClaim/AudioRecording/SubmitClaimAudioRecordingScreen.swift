@@ -47,10 +47,15 @@ public struct SubmitClaimAudioRecordingScreen: View {
             HevigMainLogoAnimation(progress: $progress)
                 .modifier(TrackLoading(SubmitClaimStore.self, .postAudioRecording, $isLoading))
                 .onChange(of: isLoading) { isLoading in
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                        withAnimation(.linear(duration: 10)) {
-                            progress = isLoading ? 1 : 0
+                    if isLoading {
+                        Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) { timer in
+                            progress += 0.001
+                            if progress == 1 {
+                                timer.invalidate()
+                            }
                         }
+                    } else {
+                        progress = 0
                     }
                     let vc = UIApplication.shared.getTopViewControllerNavigation()
                     vc?.setNavigationBarHidden(isLoading, animated: true)
@@ -431,7 +436,7 @@ struct HevigMainLogoAnimation: View {
                 HevigLogoAnimation()
                 Spacer()
                 VStack(spacing: 12) {
-                    ProgressView(value: progress)
+                    ProgressView(value: progress, total: 1)
                         .tint(hTextColor.primary)
                         .padding(.horizontal, 50)
                     HevigTextAnimation(
@@ -504,11 +509,6 @@ struct HevigLogoAnimation_Previews: PreviewProvider {
     @State static var progress: CGFloat = 0
     static var previews: some View {
         HevigMainLogoAnimation(progress: $progress)
-            .onAppear {
-                withAnimation(.easeInOut(duration: 10)) {
-                    progress = 1
-                }
-            }
     }
 }
 
