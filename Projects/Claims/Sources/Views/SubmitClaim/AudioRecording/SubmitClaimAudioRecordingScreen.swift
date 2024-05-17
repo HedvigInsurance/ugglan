@@ -52,6 +52,11 @@ public struct SubmitClaimAudioRecordingScreen: View {
                             progress += 0.001
                             if progress == 1 {
                                 timer.invalidate()
+                            } else {
+                                if !isLoading {
+                                    progress = 0
+                                    timer.invalidate()
+                                }
                             }
                         }
                     } else {
