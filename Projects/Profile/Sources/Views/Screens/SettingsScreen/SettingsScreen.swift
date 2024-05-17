@@ -44,6 +44,7 @@ struct SettingsScreen: View {
                             }
                         )
                     }
+                    MemberSubscriptionPreferenceView()
                 }
                 NotificationsCardView()
                     .padding(.vertical, 16)

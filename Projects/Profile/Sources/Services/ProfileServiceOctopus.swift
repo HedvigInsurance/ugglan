@@ -93,6 +93,14 @@ public class ProfileServiceOctopus: ProfileService {
         }
         return partnerData
     }
+
+    public func updateSubscriptionPreference(to subscribed: Bool) async throws {
+        let mutation = OctopusGraphQL.MemberUpdateSubscriptionPreferenceMutation(
+            subscribe: GraphQLNullable(booleanLiteral: subscribed)
+        )
+        let data = try await octopus.client.perform(mutation: mutation)
+    }
+
 }
 
 extension PartnerData {
