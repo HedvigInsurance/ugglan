@@ -8,7 +8,7 @@ struct MemberSubscriptionPreferenceView: View {
     var body: some View {
         hFloatingField(
             value: vm.unsubscribedMembers?.first(where: { $0 == vm.memberId }) == nil ? "Subscribed" : "Unsubscribed",
-            placeholder: "Recieve offers over email",
+            placeholder: "Email preferences",
             onTap: {
                 Task {
                     await vm.toogleSubscription()
@@ -45,7 +45,7 @@ private class MemberSubscriptionPreferenceViewModel: ObservableObject {
                         .image
                 ),
                 body: (isUnsubscribed ?? false)
-                    ? "Subscribed to recieve offers over email" : "Unsubscribed from recieve offers over email"
+                    ? "Subscribed to recieving offers over email" : "Unsubscribed from recieving offers over email"
             )
             Toasts.shared.displayToast(toast: toast)
             withAnimation {
