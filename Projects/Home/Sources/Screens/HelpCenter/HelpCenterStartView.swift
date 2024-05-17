@@ -48,11 +48,11 @@ public struct HelpCenterStartView: View {
                                 .foregroundColor(hTextColor.secondary)
                         }
                         if let showSearchResults = vm.showSearchResults {
-                            if let searchResultsQuickActions =
-                                vm.searchResultsQuickActions {
-                                displayResultsInQuickActions(let: searchResultsQuickActions)
-                            }
                             if showSearchResults {
+                                if let searchResultsQuickActions =
+                                    vm.searchResultsQuickActions {
+                                    displayResultsInQuickActions(let: searchResultsQuickActions)
+                                }
                                 if let searchResultsQuestions = vm.searchResultsQuestions {
                                     SearchResultsInQuestions(
                                         questions: searchResultsQuestions,
