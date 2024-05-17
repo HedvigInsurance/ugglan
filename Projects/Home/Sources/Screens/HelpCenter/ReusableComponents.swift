@@ -176,15 +176,19 @@ struct SearchResultsInQuestions: View {
                     .sectionContainerStyle(.transparent)
                     .padding(.leading, 2)
                 }
-            } else {
-                VStack(
-                    alignment: /*@START_MENU_TOKEN@*/ .center /*@END_MENU_TOKEN@*/,
-                    content: {
-                        Text("Nothing found, sorry!")
-                    }
-                )
             }
         }
+    }
+}
+
+struct NothingFound: View {
+    var body: some View {
+        VStack(
+            alignment: /*@START_MENU_TOKEN@*/ .center /*@END_MENU_TOKEN@*/,
+            content: {
+                Text("Nothing found, sorry!")
+            }
+        )
     }
 }
 

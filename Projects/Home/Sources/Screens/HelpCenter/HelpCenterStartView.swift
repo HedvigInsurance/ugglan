@@ -47,13 +47,23 @@ public struct HelpCenterStartView: View {
                             hCoreUIAssets.search.view
                                 .foregroundColor(hTextColor.secondary)
                         }
-                        //todo: show results in quick actions
-                        if let searchResults = vm.searchResultsQuestions {
-                            SearchResultsInQuestions(
-                                questions: searchResults,
-                                questionType: .commonQuestions,
-                                source: .homeView
-                            )
+                        if let showSearchResults = vm.showSearchResults {
+                            if let searchResultsQuickActions =
+                                vm.searchResultsQuickActions {
+                                displayResultsInQuickActions(let: searchResultsQuickActions)
+                            }
+                            if showSearchResults {
+                                if let searchResultsQuestions = vm.searchResultsQuestions {
+                                    SearchResultsInQuestions(
+                                        questions: searchResultsQuestions,
+                                        questionType: .commonQuestions,
+                                        source: .homeView
+                                    )
+                                }
+                            }
+                            else {
+                                NothingFound()
+                            }
                         } else {
                             displayQuickActions()
                             displayCommonTopics()
@@ -87,6 +97,48 @@ public struct HelpCenterStartView: View {
                     .padding(.bottom, 4)
 
                 ForEach(vm.store.state.quickActions, id: \.displayTitle) { quickAction in
+                    hSection {
+                        hRow {
+                            VStack(alignment: .leading, spacing: 0) {
+                                hText(quickAction.displayTitle)
+                                hText(quickAction.displaySubtitle, style: .standardSmall)
+                                    .foregroundColor(hTextColor.secondary)
+
+                            }
+
+                            Spacer()
+                        }
+                        .withChevronAccessory
+                        .verticalPadding(12)
+                        .onTap {
+                            log.addUserAction(
+                                type: .click,
+                                name: "help center quick action",
+                                attributes: ["action": quickAction.id]
+                            )
+                            Task {
+                                vm.store.send(.goToQuickAction(quickAction))
+                            }
+                        }
+                    }
+                    .withoutHorizontalPadding
+                    .sectionContainerStyle(.opaque)
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func displayResultsInQuickActions(
+        `let` quickActions: [QuickAction]
+    ) -> some View {
+        if !quickActions.isEmpty {
+            VStack(alignment: .leading, spacing: 4) {
+
+                HelpCenterPill(title: L10n.hcQuickActionsTitle, color: .green)
+                    .padding(.bottom, 4)
+
+                ForEach(quickActions, id: \.displayTitle) { quickAction in
                     hSection {
                         hRow {
                             VStack(alignment: .leading, spacing: 0) {
@@ -298,6 +350,7 @@ class HelpCenterStartViewModel: ObservableObject {
     @Published var focusState: Bool? = false
     @Published var searchResultsQuestions: [Question]?
     @Published var searchResultsQuickActions: [QuickAction]?
+    @Published var showSearchResults: Bool?  = nil
     let allQuestions: [Question]
 
     init(helpCenterModel: HelpCenterModel) {
@@ -324,10 +377,17 @@ class HelpCenterStartViewModel: ObservableObject {
         if !inputText.isEmpty {
             let trimmedQuery: String =
                 inputText.lowercased().trimmingCharacters(in: .whitespaces)
-            searchResultsQuestions = searchInQuestionsByQuery(query: trimmedQuery)
-            searchResultsQuickActions = searchInQuickActionsByQuery(query: trimmedQuery)
+            let questions = searchInQuestionsByQuery(query: trimmedQuery)
+            let actions = searchInQuickActionsByQuery(query: trimmedQuery)
+            searchResultsQuestions = questions
+            searchResultsQuickActions = actions
+            showSearchResults = if (questions.isEmpty && actions.isEmpty) {
+                false
+            } else { true }
         } else {
             searchResultsQuestions = nil
+            searchResultsQuickActions = nil
+            showSearchResults = nil
         }
     }
 
