@@ -16,7 +16,11 @@ public class TerminateContractsDemoService: TerminateContractsService {
         return .init(context: "", action: .dismissTerminationFlow(afterCancellationFinished: false))
     }
 
-    public func sendSurvey(option: String, inputData: String?) async throws -> TerminateStepResponse {
+    public func sendSurvey(
+        terminationContext: String,
+        option: String,
+        inputData: String?
+    ) async throws -> TerminateStepResponse {
         return .init(context: "", action: .dismissTerminationFlow(afterCancellationFinished: false))
     }
 }

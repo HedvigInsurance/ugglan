@@ -13,6 +13,7 @@ fragment FlowTerminationFragment on Flow {
 	...FlowTerminationDeletionFragment
 	...FlowTerminationFailedFragment
 	...FlowTerminationSuccessFragment
+	...FlowTerminationSurveyStepFragment
   }
 }
 
@@ -35,4 +36,48 @@ fragment FlowTerminationSuccessFragment on FlowTerminationSuccessStep{
      id
      terminationDate
      surveyUrl
+}
+
+fragment FlowTerminationSurveyStepFragment on FlowTerminationSurveyStep {
+     id
+     options {
+      ...FlowTerminationSurveyStepOptionFragment
+      subOptions {
+        ...FlowTerminationSurveyStepOptionFragment
+        subOptions {
+          ...FlowTerminationSurveyStepOptionFragment
+          subOptions {
+            ...FlowTerminationSurveyStepOptionFragment
+          }
+        }
+      }
+     }
+}
+
+fragment FlowTerminationSurveyStepOptionFragment on FlowTerminationSurveyOption {
+      id
+      title
+      feedBack {
+        ...FlowTerminationSurveyOptionFeedbackFragment
+      }
+      suggestion {
+        ...FlowTerminationSurveyOptionSuggestionFragment
+      }
+}
+
+fragment FlowTerminationSurveyOptionSuggestionFragment on FlowTerminationSurveyOptionSuggestion {
+         ... on FlowTerminationSurveyOptionSuggestionAction {
+           action
+         }
+         ... on FlowTerminationSurveyOptionSuggestionRedirect {
+           url
+           description
+           buttonTitle
+         }
+         id
+}
+
+fragment FlowTerminationSurveyOptionFeedbackFragment on FlowTerminationSurveyOptionFeedback {
+         id
+         isRequired
 }
