@@ -12,10 +12,7 @@ public struct HelpCenterStartView: View {
     public init(
         helpCenterModel: HelpCenterModel
     ) {
-        self.vm = .init(
-            helpCenterModel: helpCenterModel
-        )
-        // self._vm = .init(initialValue: .init(helpCenterModel: helpCenterModel, store))
+        self.vm = .init(helpCenterModel: helpCenterModel)
     }
 
     public var body: some View {
@@ -81,6 +78,7 @@ public struct HelpCenterStartView: View {
             }
         }
         .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hFillColor.opaqueOne))
+        .hFormObserveKeyboard
         .edgesIgnoringSafeArea(.bottom)
         .dismissKeyboard()
         .onChange(of: vm.inputText) { _ in
