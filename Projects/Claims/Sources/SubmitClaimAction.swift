@@ -65,7 +65,7 @@ public enum SubmitClaimsNavigationAction: ActionProtocol, Hashable {
     case openModelPicker
     case openBrandPicker
     case openPriceInput
-    case openCheckoutNoRepairScreen
+    case openClaimCheckoutScreen
     case openCheckoutTransferringScreen
     case openFailureSceen
     case openUpdateAppScreen
@@ -157,7 +157,7 @@ extension ClaimsStepModelAction {
         case .setSummaryStep:
             return .openSummaryScreen
         case .setSingleItemCheckoutStep:
-            return .openCheckoutNoRepairScreen
+            return .openClaimCheckoutScreen
         case .setSuccessStep:
             return .openSuccessScreen
         case .setFailedStep:
