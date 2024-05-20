@@ -25,7 +25,6 @@ fragment FlowTerminationDateStepFragment on FlowTerminationDateStep{
 
 fragment FlowTerminationDeletionFragment on FlowTerminationDeletionStep{
 	id
-	disclaimer
 }
 
 fragment FlowTerminationFailedFragment on FlowTerminationFailedStep{
@@ -35,7 +34,6 @@ fragment FlowTerminationFailedFragment on FlowTerminationFailedStep{
 fragment FlowTerminationSuccessFragment on FlowTerminationSuccessStep{
      id
      terminationDate
-     surveyUrl
 }
 
 fragment FlowTerminationSurveyStepFragment on FlowTerminationSurveyStep {
