@@ -12,7 +12,8 @@ public class SubmitClaimServiceOctopus: SubmitClaimService {
     public func startClaim(entrypointId: String?, entrypointOptionId: String?) async throws -> SubmitClaimStepResponse {
         let startInput = OctopusGraphQL.FlowClaimStartInput(
             entrypointId: GraphQLNullable(optionalValue: entrypointId),
-            entrypointOptionId: GraphQLNullable(optionalValue: entrypointOptionId)
+            entrypointOptionId: GraphQLNullable(optionalValue: entrypointOptionId),
+            supportedSteps: GraphQLNullable(optionalValue: supportedSteps())
         )
         let mutation = OctopusGraphQL.FlowClaimStartMutation(input: startInput, context: GraphQLNullable.none)
         return try await mutation.execute(\.flowClaimStart.fragments.flowClaimFragment.currentStep)
@@ -172,6 +173,29 @@ public class SubmitClaimServiceOctopus: SubmitClaimService {
         let input = OctopusGraphQL.FlowClaimFileUploadInput(fileIds: ids)
         let mutation = OctopusGraphQL.FlowClaimFileUploadNextMutation(input: input, context: context)
         return try await mutation.execute(\.flowClaimFileUploadNext.fragments.flowClaimFragment.currentStep)
+    }
+
+    private func supportedSteps() -> [OctopusGraphQL.ID] {
+        return [
+            OctopusGraphQL.Objects.FlowClaimDateOfOccurrenceStep.typename,
+            OctopusGraphQL.Objects.FlowClaimDateOfOccurrencePlusLocationStep.typename,
+            OctopusGraphQL.Objects.FlowClaimLocationStep.typename,
+            OctopusGraphQL.Objects.FlowClaimAudioRecordingStep.typename,
+            OctopusGraphQL.Objects.FlowClaimContractSelectStep.typename,
+            OctopusGraphQL.Objects.FlowClaimFileUploadStep.typename,
+            OctopusGraphQL.Objects.FlowClaimPhoneNumberStep.typename,
+            OctopusGraphQL.Objects.FlowClaimSummaryStep.typename,
+            OctopusGraphQL.Objects.FlowClaimSingleItemStep.typename,
+            OctopusGraphQL.Objects.FlowClaimConfirmEmergencyStep.typename,
+            OctopusGraphQL.Objects.FlowClaimSingleItemCheckoutStep.typename,
+            OctopusGraphQL.Objects.FlowClaimSuccessStep.typename,
+            OctopusGraphQL.Objects.FlowClaimDeflectEirStep.typename,
+            OctopusGraphQL.Objects.FlowClaimDeflectEmergencyStep.typename,
+            OctopusGraphQL.Objects.FlowClaimDeflectGlassDamageStep.typename,
+            OctopusGraphQL.Objects.FlowClaimDeflectPestsStep.typename,
+            OctopusGraphQL.Objects.FlowClaimDeflectTowingStep.typename,
+            OctopusGraphQL.Objects.FlowClaimFailedStep.typename,
+        ]
     }
 }
 
