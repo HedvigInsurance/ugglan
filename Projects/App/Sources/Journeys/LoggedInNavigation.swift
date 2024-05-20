@@ -86,25 +86,7 @@ struct LoggedInNavigation: View {
                             NotificationCenter.default.post(name: .openChat, object: nil)
                         }
                     case let .openFeedback(url):
-                        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                        contractStore.send(.fetchContracts)
-                        let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                        homeStore.send(.fetchQuickActions)
-                        var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
-                        if urlComponent?.scheme == nil {
-                            urlComponent?.scheme = "https"
-                        }
-                        let schema = urlComponent?.scheme
-                        if let finalUrl = urlComponent?.url {
-                            if schema == "https" || schema == "http" {
-                                let vc = SFSafariViewController(url: finalUrl)
-                                vc.modalPresentationStyle = .pageSheet
-                                vc.preferredControlTintColor = .brand(.primaryText())
-                                UIApplication.shared.getTopViewController()?.present(vc, animated: true)
-                            } else {
-                                UIApplication.shared.open(url)
-                            }
-                        }
+                        vm.openUrl(url: url)
                     }
                 }
             )
@@ -151,7 +133,7 @@ struct LoggedInNavigation: View {
                         case .chat:
                             NotificationCenter.default.post(name: .openChat, object: nil)
                         case let .openFeedback(url):
-                            openUrl(url: url)
+                            vm.openUrl(url: url)
                         }
                     }
                 )
@@ -188,7 +170,7 @@ struct LoggedInNavigation: View {
             case let .openUrl(url):
                 EmptyView()
                     .onAppear {
-                        openUrl(url: url)
+                        vm.openUrl(url: url)
                     }
             }
         }
@@ -299,28 +281,6 @@ struct LoggedInNavigation: View {
             hText(L10n.ProfileTab.title)
         }
         .tag(4)
-    }
-
-    private func openUrl(url: URL) {
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        contractStore.send(.fetchContracts)
-        let homeStore: HomeStore = globalPresentableStoreContainer.get()
-        homeStore.send(.fetchQuickActions)
-        var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
-        if urlComponent?.scheme == nil {
-            urlComponent?.scheme = "https"
-        }
-        let schema = urlComponent?.scheme
-        if let finalUrl = urlComponent?.url {
-            if schema == "https" || schema == "http" {
-                let vc = SFSafariViewController(url: finalUrl)
-                vc.modalPresentationStyle = .pageSheet
-                vc.preferredControlTintColor = .brand(.primaryText())
-                UIApplication.shared.getTopViewController()?.present(vc, animated: true)
-            } else {
-                UIApplication.shared.open(url)
-            }
-        }
     }
 }
 
@@ -498,6 +458,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isMoveContractPresented = false
     @Published var isCancelInsurancePresented = false
     @Published var isEuroBonusPresented = false
+    @Published var isUrlPresented: URL?
 
     init() {
         NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) { notification in
@@ -556,7 +517,7 @@ class LoggedInNavigationViewModel: ObservableObject {
             case .openChat:
                 NotificationCenter.default.post(name: .openChat, object: nil)
             case nil:
-                break
+                openUrl(url: url)
             }
         }
     }
@@ -609,5 +570,27 @@ class LoggedInNavigationViewModel: ObservableObject {
             config: missingContractConfig,
             checkForAlert: checkForAlert
         )
+    }
+
+    public func openUrl(url: URL) {
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        contractStore.send(.fetchContracts)
+        let homeStore: HomeStore = globalPresentableStoreContainer.get()
+        homeStore.send(.fetchQuickActions)
+        var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        if urlComponent?.scheme == nil {
+            urlComponent?.scheme = "https"
+        }
+        let schema = urlComponent?.scheme
+        if let finalUrl = urlComponent?.url {
+            if schema == "https" || schema == "http" {
+                let vc = SFSafariViewController(url: finalUrl)
+                vc.modalPresentationStyle = .pageSheet
+                vc.preferredControlTintColor = .brand(.primaryText())
+                UIApplication.shared.getTopViewController()?.present(vc, animated: true)
+            } else {
+                UIApplication.shared.open(url)
+            }
+        }
     }
 }
