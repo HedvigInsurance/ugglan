@@ -106,6 +106,11 @@ struct LoggedInNavigation: View {
                 }
             )
         }
+        .fullScreenCover(
+            isPresented: $vm.isEuroBonusPresented
+        ) {
+            EuroBonusNavigation(useOwnNavigation: true)
+        }
     }
 
     var homeTab: some View {
@@ -482,6 +487,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isTravelInsurancePresented = false
     @Published var isMoveContractPresented = false
     @Published var isCancelInsurancePresented = false
+    @Published var isEuroBonusPresented = false
 
     init() {
         NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) { notification in
@@ -509,12 +515,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                 UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
                 self.selectedTab = 0
             case .sasEuroBonus:
-                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
-                self.selectedTab = 4
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                    self.contractsNavigationVm.contractsRouter.popToRoot()
-                    self.profileNavigationVm.profileRouter.push(ProfileRedirectType.euroBonus)
-                }
+                self.isEuroBonusPresented = true
             case .contract:
                 UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
                 self.selectedTab = 1

@@ -51,7 +51,7 @@ public struct ProfileNavigation<Content: View>: View {
                         SettingsScreen()
                             .configureTitle(L10n.EmbarkOnboardingMoreOptions.settingsLabel)
                     case .euroBonus:
-                        EuroBonusNavigation()
+                        EuroBonusNavigation(useOwnNavigation: false)
                     default:
                         EmptyView()
                     }
