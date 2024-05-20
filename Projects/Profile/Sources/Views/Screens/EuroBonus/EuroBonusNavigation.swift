@@ -26,13 +26,14 @@ public struct EuroBonusNavigation: View {
             if useOwnNavigation {
                 RouterHost(router: router) {
                     EuroBonusView()
+                        .configureTitle(L10n.SasIntegration.title)
                         .withDismissButton()
                 }
             } else {
                 EuroBonusView()
+                    .configureTitle(L10n.SasIntegration.title)
             }
         }
-        .configureTitle(L10n.SasIntegration.title)
         .environmentObject(euroBonusNavigationViewModel)
         .detent(
             presented: $euroBonusNavigationViewModel.isChangeEuroBonusPresented,
