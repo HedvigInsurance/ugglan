@@ -104,6 +104,9 @@ public struct HelpCenterNavigation<Content: View>: View {
             style: .large
         ) {
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
+                .configureTitle(QuickAction.firstVet(partners: []).displayTitle)
+                .withDismissButton()
+                .embededInNavigation(options: .navigationType(type: .large))
         }
         .detent(
             presented: $helpCenterVm.quickActions.isSickAbroadPresented,

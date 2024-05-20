@@ -42,8 +42,9 @@ struct LoggedInNavigation: View {
             profileTab
         }
         .tint(hTextColor.primary)
-        .fullScreenCover(
-            isPresented: $vm.isTravelInsurancePresented
+        .modally(
+            presented: $vm.isTravelInsurancePresented,
+            options: .constant(.alwaysOpenOnTop)
         ) {
             TravelCertificateNavigation(
                 infoButtonPlacement: .leading,
@@ -53,13 +54,15 @@ struct LoggedInNavigation: View {
                 }
             )
         }
-        .fullScreenCover(
-            isPresented: $vm.isMoveContractPresented
+        .modally(
+            presented: $vm.isMoveContractPresented,
+            options: .constant(.alwaysOpenOnTop)
         ) {
             MovingFlowNavigation()
         }
-        .fullScreenCover(
-            isPresented: $vm.isCancelInsurancePresented
+        .modally(
+            presented: $vm.isCancelInsurancePresented,
+            options: .constant(.alwaysOpenOnTop)
         ) {
             let contractStore: ContractStore = globalPresentableStoreContainer.get()
 
@@ -106,8 +109,9 @@ struct LoggedInNavigation: View {
                 }
             )
         }
-        .fullScreenCover(
-            isPresented: $vm.isEuroBonusPresented
+        .modally(
+            presented: $vm.isEuroBonusPresented,
+            options: .constant(.alwaysOpenOnTop)
         ) {
             EuroBonusNavigation(useOwnNavigation: true)
         }
@@ -447,6 +451,9 @@ struct HomeTab: View {
                                 )
                             }
                         )
+                        .configureTitle(model?.id.title ?? "")
+                        .withDismissButton()
+                        .embededInNavigation(options: .navigationType(type: .large))
                     }
                 }
             )
@@ -458,6 +465,9 @@ struct HomeTab: View {
         ) {
             let store: HomeStore = globalPresentableStoreContainer.get()
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
+                .configureTitle(QuickAction.firstVet(partners: []).displayTitle)
+                .withDismissButton()
+                .embededInNavigation(options: .navigationType(type: .large))
         }
         .detent(
             presented: $homeNavigationVm.navBarItems.isNewOfferPresented,
