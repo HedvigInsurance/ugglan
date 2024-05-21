@@ -86,9 +86,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         restorationHandler _: @escaping ([UIUserActivityRestoring]?) -> Void
     ) -> Bool {
         guard let url = userActivity.webpageURL else { return false }
-        if let rootVC = window.rootViewController {
-            self.handleDeepLink(url, fromVC: rootVC)
-        }
+        NotificationCenter.default.post(name: .openDeepLink, object: url)
         return true
     }
 
@@ -135,10 +133,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 await impersonate.impersonate(with: url)
 
             }
-
-        }
-        if let rootView = window.rootViewController {
-            self.handleDeepLink(url, fromVC: rootView)
         }
     }
 

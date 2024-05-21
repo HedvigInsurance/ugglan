@@ -11,35 +11,52 @@ enum EuroBonusRouterType {
 }
 
 public struct EuroBonusNavigation: View {
-    @EnvironmentObject var router: Router
+    @StateObject var router = Router()
+    private let useOwnNavigation: Bool
     @StateObject var euroBonusNavigationViewModel = EuroBonusNavigationViewModel()
 
+    public init(
+        useOwnNavigation: Bool
+    ) {
+        self.useOwnNavigation = useOwnNavigation
+    }
+
     public var body: some View {
-        EuroBonusView()
-            .configureTitle(L10n.SasIntegration.title)
-            .environmentObject(euroBonusNavigationViewModel)
-            .detent(
-                presented: $euroBonusNavigationViewModel.isChangeEuroBonusPresented,
-                style: .height
-            ) {
-                ChangeEuroBonusView()
-                    .configureTitle(L10n.SasIntegration.enterYourNumber)
-                    .routerDestination(for: EuroBonusRouterType.self, options: [.hidesBackButton]) { routerType in
-                        switch routerType {
-                        case .successChangeEuroBonus:
-                            SuccessScreen(title: L10n.SasIntegration.eurobonusConnected)
-                                .onAppear {
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                        router.dismiss()
-                                    }
-                                }
-                        }
-                    }
-                    .embededInNavigation(options: .navigationType(type: .large))
+        Group {
+            if useOwnNavigation {
+                RouterHost(router: router) {
+                    EuroBonusView()
+                        .configureTitle(L10n.SasIntegration.title)
+                        .withDismissButton()
+                }
+            } else {
+                EuroBonusView()
+                    .configureTitle(L10n.SasIntegration.title)
             }
+        }
+        .environmentObject(euroBonusNavigationViewModel)
+        .detent(
+            presented: $euroBonusNavigationViewModel.isChangeEuroBonusPresented,
+            style: .height
+        ) {
+            ChangeEuroBonusView()
+                .configureTitle(L10n.SasIntegration.enterYourNumber)
+                .routerDestination(for: EuroBonusRouterType.self, options: [.hidesBackButton]) { routerType in
+                    switch routerType {
+                    case .successChangeEuroBonus:
+                        SuccessScreen(title: L10n.SasIntegration.eurobonusConnected)
+                            .onAppear {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                    router.dismiss()
+                                }
+                            }
+                    }
+                }
+                .embededInNavigation(options: .navigationType(type: .large))
+        }
     }
 }
 
 #Preview{
-    EuroBonusNavigation()
+    EuroBonusNavigation(useOwnNavigation: false)
 }

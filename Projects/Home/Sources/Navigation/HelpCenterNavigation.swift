@@ -11,7 +11,7 @@ import TravelCertificate
 import hCore
 import hCoreUI
 
-public class HelpCenterNavigationViewModel: ObservableObject {
+class HelpCenterNavigationViewModel: ObservableObject {
     @Published var quickActions = QuickActions()
     var connectPaymentsVm = ConnectPaymentViewModel()
     struct QuickActions {
@@ -27,19 +27,23 @@ public class HelpCenterNavigationViewModel: ObservableObject {
         var isSickAbroadPresented = false
     }
 
-    public struct ChatTopicModel: Identifiable, Equatable {
-        public var id: String?
+    struct ChatTopicModel: Identifiable, Equatable {
+        var id: String?
         var topic: ChatTopicType?
     }
 }
 
 public struct HelpCenterNavigation<Content: View>: View {
-    @StateObject private var helpCenterVm = HelpCenterNavigationViewModel()
+    @StateObject var helpCenterVm = HelpCenterNavigationViewModel()
+
     @EnvironmentObject private var homeVm: HomeNavigationViewModel
     @PresentableStore private var store: HomeStore
     @ViewBuilder var redirect: (_ type: HelpCenterRedirectType) -> Content
     @StateObject var router = Router()
-    public init(@ViewBuilder redirect: @escaping (_ type: HelpCenterRedirectType) -> Content) {
+
+    public init(
+        @ViewBuilder redirect: @escaping (_ type: HelpCenterRedirectType) -> Content
+    ) {
         self.redirect = redirect
     }
 
@@ -95,6 +99,9 @@ public struct HelpCenterNavigation<Content: View>: View {
             style: .large
         ) {
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
+                .configureTitle(QuickAction.firstVet(partners: []).displayTitle)
+                .withDismissButton()
+                .embededInNavigation(options: .navigationType(type: .large))
         }
         .detent(
             presented: $helpCenterVm.quickActions.isSickAbroadPresented,

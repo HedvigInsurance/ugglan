@@ -48,8 +48,7 @@ struct MessageView: View {
                         linkUnderlineStyle: .thick,
                         maxWidth: 300,
                         onUrlClicked: { url in
-                            let store: ChatStore = globalPresentableStoreContainer.get()
-                            store.send(.navigation(action: .linkClicked(url: url)))
+                            NotificationCenter.default.post(name: .openDeepLink, object: url)
                         }
                     )
                 )
@@ -62,8 +61,7 @@ struct MessageView: View {
             case let .deepLink(url):
                 if let type = DeepLink.getType(from: url) {
                     Button {
-                        let store: ChatStore = globalPresentableStoreContainer.get()
-                        store.send(.navigation(action: .linkClicked(url: url)))
+                        NotificationCenter.default.post(name: .openDeepLink, object: url)
                     } label: {
                         Text(type.title(displayText: url.contractName ?? type.importantText))
                             .multilineTextAlignment(.leading)
@@ -78,8 +76,7 @@ struct MessageView: View {
                             linkUnderlineStyle: .thick,
                             maxWidth: 300,
                             onUrlClicked: { url in
-                                let store: ChatStore = globalPresentableStoreContainer.get()
-                                store.send(.navigation(action: .linkClicked(url: url)))
+                                NotificationCenter.default.post(name: .openDeepLink, object: url)
                             }
                         )
                     )
@@ -110,8 +107,7 @@ struct LinkView: View {
                     linkUnderlineStyle: .thick,
                     maxWidth: 300,
                     onUrlClicked: { url in
-                        let store: ChatStore = globalPresentableStoreContainer.get()
-                        store.send(.navigation(action: .linkClicked(url: url)))
+                        NotificationCenter.default.post(name: .openDeepLink, object: url)
                     }
                 )
             )
@@ -130,8 +126,7 @@ struct LinkView: View {
                         .multilineTextAlignment(.leading)
                         .fixedSize(horizontal: false, vertical: true)
                     hButton.MediumButton(type: .primaryAlt) {
-                        let store: ChatStore = globalPresentableStoreContainer.get()
-                        store.send(.navigation(action: .linkClicked(url: vm.url)))
+                        NotificationCenter.default.post(name: .openDeepLink, object: vm.url)
                     } content: {
                         hText(L10n.ImportantMessage.readMore)
                     }

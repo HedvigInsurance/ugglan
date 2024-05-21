@@ -46,28 +46,25 @@ public class ChatScreenViewModel: ObservableObject {
             AskForRating().askAccordingToTheNumberOfSessions()
         }
         log.addUserAction(type: .click, name: "Chat open", error: nil, attributes: nil)
-        let store: ChatStore = globalPresentableStoreContainer.get()
-        storeActionSignal = store.actionSignal.publisher
-            .sink(receiveValue: { [weak self] action in guard let self = self else { return }
-                if case let .navigation(navigationAction) = action {
-                    if case let .linkClicked(url) = navigationAction {
-                        if let deepLink = DeepLink.getType(from: url), deepLink == .helpCenter {
-                            log.addUserAction(
-                                type: .custom,
-                                name: "Help center opened from the chat",
-                                error: nil,
-                                attributes: ["haveSentAMessage": self.haveSentAMessage]
-                            )
-                        }
-                    }
+        NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) {
+            [weak self] notification in guard let self = self else { return }
+            if let deepLinkUrl = notification.object as? URL {
+                if let deepLink = DeepLink.getType(from: deepLinkUrl), deepLink == .helpCenter {
+                    log.addUserAction(
+                        type: .custom,
+                        name: "Help center opened from the chat",
+                        error: nil,
+                        attributes: ["haveSentAMessage": self.haveSentAMessage]
+                    )
                 }
             }
-            )
+        }
     }
 
     deinit {
         let fileUploadManager = FileUploadManager()
         fileUploadManager.resetuploadFilesPath()
+        NotificationCenter.default.removeObserver(self)
     }
 
     @MainActor

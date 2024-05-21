@@ -117,6 +117,7 @@ public struct AppInfoView: View {
             },
             buttonSize: .secondary
         )
+        .environmentObject(OTPState())
         .alert(isPresented: $showSubmitBugAlert) {
             Alert(
                 title: Text(L10n.AppInfo.SubmitBug.warning),

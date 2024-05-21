@@ -17,7 +17,7 @@ struct ConnectPayment: ViewModifier {
             .detent(
                 item: $vm.connectPaymentModel,
                 style: .large,
-                options: .constant([.disableDismissOnScroll, .withoutGrabber])
+                options: .constant([.disableDismissOnScroll, .withoutGrabber, .alwaysOpenOnTop])
             ) { setupTypeModel in
                 let featureFlags: FeatureFlags = Dependencies.shared.resolve()
                 switch featureFlags.paymentType {
@@ -30,7 +30,7 @@ struct ConnectPayment: ViewModifier {
                                     let url = try await paymentServcice.getAdyenUrl()
                                     router.push(PaymentsRouterAction.openUrl(url: url))
                                 } catch {
-                                    //we are not so concern about this
+                                    //we are not so concerned about this
                                 }
                             }
                         }
@@ -49,9 +49,7 @@ struct ConnectPayment: ViewModifier {
 
 public class ConnectPaymentViewModel: ObservableObject {
     @Published public var connectPaymentModel: SetupTypeNavigationModel?
-    public init() {
-
-    }
+    public init() {}
 }
 
 public struct SetupTypeNavigationModel: Equatable, Identifiable {
@@ -62,6 +60,6 @@ public struct SetupTypeNavigationModel: Equatable, Identifiable {
         self.setUpType = setUpType
     }
 
-    public var id: String?
+    public var id: String = UUID().uuidString
     var setUpType: SetupType?
 }

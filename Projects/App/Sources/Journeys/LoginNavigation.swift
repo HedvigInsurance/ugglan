@@ -4,13 +4,6 @@ import Authentication
 import Combine
 import Foundation
 import Market
-//
-//  NotLoggedInNavigation.swift
-//  Ugglan
-//
-//  Created by Sladan Nimcevic on 2024-04-25.
-//  Copyright © 2024 Hedvig. All rights reserved.
-//
 import Presentation
 import SwiftUI
 import hCore
@@ -160,7 +153,6 @@ public class NotLoggedViewModel: ObservableObject {
     var cancellables = Set<AnyCancellable>()
 
     init() {
-        ApplicationState.preserveState(.notLoggedIn)
         Localization.Locale.$currentLocale
             .distinct()
             .plain()

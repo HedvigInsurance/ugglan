@@ -34,6 +34,7 @@ struct HelpCenterQuestionView: View {
                                     linkColor: hTextColor.primary,
                                     linkUnderlineStyle: .single
                                 ) { url in
+                                    NotificationCenter.default.post(name: .openDeepLink, object: url)
                                 }
                             )
                         }

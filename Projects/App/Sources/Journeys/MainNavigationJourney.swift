@@ -12,6 +12,7 @@ import Profile
 import SafariServices
 import SwiftUI
 import hCore
+import hCoreUI
 
 @main
 struct MainNavigationJourney: App {
@@ -24,7 +25,7 @@ struct MainNavigationJourney: App {
                 if vm.hasLaunchFinished {
                     switch vm.stateToShow {
                     case .loggedIn:
-                        LoggedInNavigation()
+                        LoggedInNavigation(vm: vm.loggedInVm)
                             .environmentObject(vm)
                     case .impersonation:
                         ImpersonationSettings()
@@ -48,13 +49,15 @@ struct MainNavigationJourney: App {
         if url.relativePath.contains("login-failure") {
             vm.notLoggedInVm.router.push(AuthentificationRouterType.error(message: L10n.authenticationBankidLoginError))
         }
+        NotificationCenter.default.post(name: .openDeepLink, object: url)
         appDelegate.handleURL(url: url)
     }
 }
 
 class MainNavigationViewModel: ObservableObject {
     @Published var hasLaunchFinished = false
-    let notLoggedInVm = NotLoggedViewModel()
+    lazy var notLoggedInVm = NotLoggedViewModel()
+    var loggedInVm = LoggedInNavigationViewModel()
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Published var stateToShow = ApplicationState.currentState ?? .notLoggedIn
     var state: ApplicationState.Screen = ApplicationState.currentState ?? .notLoggedIn {

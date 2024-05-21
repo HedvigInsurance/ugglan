@@ -51,8 +51,6 @@ public struct FirstVetView: View {
                 hText(L10n.generalCloseButton)
             }
         }
-        //        .navigationTitle(L10n.hcQuickActionsFirstvetTitle)
-        .navigationBarTitle("test")
         .navigationBarTitleDisplayMode(.inline)
     }
 }
