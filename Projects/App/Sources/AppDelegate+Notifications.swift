@@ -4,6 +4,7 @@ import Contracts
 import CoreDependencies
 import Flow
 import Foundation
+import Home
 import Payment
 import Presentation
 import Profile
@@ -93,8 +94,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             self.performPushAction(notificationType: notificationType, userInfo: userInfo)
         }
 
-        let store: ChatStore = globalPresentableStoreContainer.get()
-        if store.state.allowNewMessageToast { Toasts.shared.displayToast(toast: toast) }
+        if !HomeNavigationViewModel.isChatPresented { Toasts.shared.displayToast(toast: toast) }
     }
 }
 

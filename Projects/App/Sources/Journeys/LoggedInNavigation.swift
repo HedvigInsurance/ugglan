@@ -463,6 +463,9 @@ struct HomeTab: View {
                 }
             )
         }
+        .onChange(of: homeNavigationVm.openChat) { newValue in
+            HomeNavigationViewModel.isChatPresented = newValue != nil
+        }
     }
 }
 
