@@ -21,8 +21,16 @@ public class ChatScreenViewModel: ObservableObject {
     private let topicType: ChatTopicType?
     private var haveSentAMessage = false
     private var storeActionSignal: AnyCancellable?
-    public init(topicType: ChatTopicType?) {
+
+    private var onCheckPushNotifications: () -> Void
+
+    public init(
+        topicType: ChatTopicType?,
+        onCheckPushNotifications: @escaping () -> Void
+    ) {
         self.topicType = topicType
+        self.onCheckPushNotifications = onCheckPushNotifications
+
         chatInputVm.sendMessage = { [weak self] message in
             Task { [weak self] in
                 await self?.send(message: message)
@@ -166,6 +174,7 @@ public class ChatScreenViewModel: ObservableObject {
         let store: ChatStore = globalPresentableStoreContainer.get()
         if !store.state.askedForPushNotificationsPermission {
             store.send(.checkPushNotificationStatus)
+            onCheckPushNotifications()
         }
         withAnimation {
             messages.insert(message, at: 0)

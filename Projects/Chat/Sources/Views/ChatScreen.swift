@@ -154,7 +154,7 @@ public struct ChatScreen: View {
             client
         }
     )
-    return ChatScreen(vm: .init(topicType: nil))
+    return ChatScreen(vm: .init(topicType: nil, onCheckPushNotifications: {}))
 }
 
 class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {

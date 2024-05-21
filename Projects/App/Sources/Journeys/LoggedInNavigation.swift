@@ -115,7 +115,7 @@ struct LoggedInNavigation: View {
             case let .editCoInsured(editCoInsuredConfig, _, _):
                 vm.getEditCoInsuredView(config: editCoInsuredConfig)
             case .chat:
-                ChatScreen(vm: .init(topicType: nil))
+                ChatScreen(vm: .init(topicType: nil, onCheckPushNotifications: {}))
             case .movingFlow:
                 MovingFlowNavigation()
             case let .pdf(document):
@@ -440,9 +440,30 @@ struct HomeTab: View {
             style: .large,
             options: $homeNavigationVm.openChatOptions,
             content: { openChat in
-                ChatNavigation(openChat: openChat)
+                ChatNavigation(
+                    openChat: openChat,
+                    onCheckPushNotifications: {
+                        let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+                        let status = profileStore.state.pushNotificationCurrentStatus()
+                        if case .notDetermined = status {
+                            loggedInVm.isAskForPushNotificationsPresented = true
+                        }
+                    }
+                )
             }
         )
+        .detent(
+            presented: $loggedInVm.isAskForPushNotificationsPresented,
+            style: .large,
+            options: .constant([.alwaysOpenOnTop, .withoutGrabber])
+        ) {
+            AskForPushnotifications(
+                text: L10n.chatActivateNotificationsBody,
+                onActionExecuted: {
+                    loggedInVm.isAskForPushNotificationsPresented = false
+                }
+            )
+        }
     }
 }
 
@@ -458,6 +479,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isMoveContractPresented = false
     @Published var isCancelInsurancePresented = false
     @Published var isEuroBonusPresented = false
+    @Published var isAskForPushNotificationsPresented = false
     @Published var isUrlPresented: URL?
 
     init() {
