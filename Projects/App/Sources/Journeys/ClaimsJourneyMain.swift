@@ -34,6 +34,7 @@ public struct ClaimsJourneyMain: View {
                                 claimsNavigationVm.isClaimsFlowPresented = true
                             }
                         )
+                        .hUseOnPush
                     }
                 }
         }
