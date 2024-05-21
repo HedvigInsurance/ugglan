@@ -472,23 +472,23 @@ class LoggedInNavigationViewModel: ObservableObject {
             let deepLink = DeepLink.getType(from: url)
             switch deepLink {
             case .forever:
-                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
+                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 self.selectedTab = 2
             case .directDebit:
-                self.paymentsNavigationVm.connectPaymentVm.connectPaymentModel = .init(setUpType: nil)
+                self.homeNavigationVm.connectPaymentVm.connectPaymentModel = .init(setUpType: nil)
             case .profile:
-                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
+                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 self.selectedTab = 4
             case .insurances:
-                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
+                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 self.selectedTab = 1
             case .home:
-                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
+                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 self.selectedTab = 0
             case .sasEuroBonus:
                 self.isEuroBonusPresented = true
             case .contract:
-                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
+                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 self.selectedTab = 1
                 let contractId = self.getContractId(from: url)
 
@@ -500,12 +500,12 @@ class LoggedInNavigationViewModel: ObservableObject {
                     }
                 }
             case .payments:
-                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
+                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 self.selectedTab = 3
             case .travelCertificate:
                 self.isTravelInsurancePresented = true
             case .helpCenter:
-                UIApplication.shared.getRootViewController()?.presentedViewController?.dismiss(animated: true)
+                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 self.selectedTab = 0
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                     self.homeNavigationVm.isHelpCenterPresented = true
