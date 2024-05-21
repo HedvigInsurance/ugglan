@@ -469,8 +469,7 @@ class LoggedInNavigationViewModel: ObservableObject {
         NotificationCenter.default.addObserver(forName: .registerForPushNotifications, object: nil, queue: nil) {
             notification in
             // register for push notifications
-            let _ = UIApplication.shared.appDelegate
-                .registerForPushNotifications()
+            UIApplication.shared.appDelegate.registerForPushNotifications {}
         }
     }
 

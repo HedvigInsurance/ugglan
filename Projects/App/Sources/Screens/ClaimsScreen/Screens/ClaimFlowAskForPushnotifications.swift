@@ -39,8 +39,7 @@ struct AskForPushnotifications: View {
                     current.getNotificationSettings(completionHandler: { settings in
                         DispatchQueue.main.async {
                             UIApplication.shared.appDelegate
-                                .registerForPushNotifications()
-                                .onValue { status in
+                                .registerForPushNotifications {
                                     onActionExecuted()
                                 }
                         }
