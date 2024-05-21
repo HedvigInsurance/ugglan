@@ -63,7 +63,7 @@ public enum SubmitClaimsNavigationAction: ActionProtocol, Hashable {
     case openCheckoutTransferringScreen
     case openFailureSceen
     case openUpdateAppScreen
-    case openNotificationsPermissionScreen
+    //    case openNotificationsPermissionScreen
     case openSelectContractScreen
     case openTriagingGroupScreen
     case openTriagingEntrypointScreen

@@ -1,6 +1,8 @@
 import Claims
 import Presentation
+import Profile
 import SwiftUI
+import hCore
 import hCoreUI
 
 private class ClaimsJourneyMainNavigationViewModel: ObservableObject {
@@ -9,17 +11,31 @@ private class ClaimsJourneyMainNavigationViewModel: ObservableObject {
 
 public struct ClaimsJourneyMain: View {
     var from: ClaimsOrigin
-    @StateObject var router = Router()
+    @StateObject var claimsRouter = Router()
     @StateObject private var claimsNavigationVm = ClaimsJourneyMainNavigationViewModel()
     @State var shouldHideHonestyPledge = false
+
     public var body: some View {
-        RouterHost(router: router) {
+        RouterHost(router: claimsRouter) {
             honestyPledge(from: from)
                 .onDisappear {
                     let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
                     claimsStore.send(.fetchClaims)
                 }
                 .hidden($shouldHideHonestyPledge)
+                .routerDestination(
+                    for: ClaimsRouterActionsWithoutBackButton.self,
+                    options: .hidesBackButton
+                ) { destination in
+                    if destination == .askForPushNotifications {
+                        AskForPushnotifications(
+                            text: L10n.claimsActivateNotificationsBody,
+                            onActionExecuted: {
+                                claimsNavigationVm.isClaimsFlowPresented = true
+                            }
+                        )
+                    }
+                }
         }
         .fullScreenCover(
             isPresented: $claimsNavigationVm.isClaimsFlowPresented
@@ -31,15 +47,19 @@ public struct ClaimsJourneyMain: View {
         }
         .onChange(of: claimsNavigationVm.isClaimsFlowPresented) { presented in
             if !presented {
-                router.dismiss()
+                claimsRouter.dismiss()
             }
         }
     }
 
     func honestyPledge(from origin: ClaimsOrigin) -> some View {
         HonestyPledge(onConfirmAction: {
-            claimsNavigationVm.isClaimsFlowPresented = true
-            /* TODO: ADD PUSH NOTIFICATION */
+            let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+            if profileStore.state.pushNotificationCurrentStatus() != .authorized {
+                claimsRouter.push(ClaimsRouterActionsWithoutBackButton.askForPushNotifications)
+            } else {
+                claimsNavigationVm.isClaimsFlowPresented = true
+            }
         })
     }
 }

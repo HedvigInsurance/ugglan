@@ -465,6 +465,13 @@ class LoggedInNavigationViewModel: ObservableObject {
             let deepLinkUrl = notification.object as? URL
             self.handleDeepLinks(deepLinkUrl: deepLinkUrl)
         }
+
+        NotificationCenter.default.addObserver(forName: .registerForPushNotifications, object: nil, queue: nil) {
+            notification in
+            // register for push notifications
+            let _ = UIApplication.shared.appDelegate
+                .registerForPushNotifications()
+        }
     }
 
     private func handleDeepLinks(deepLinkUrl: URL?) {
