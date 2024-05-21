@@ -11,33 +11,30 @@ import TravelCertificate
 import hCore
 import hCoreUI
 
-public class HelpCenterNavigationViewModel: ObservableObject {
-
-    public init() {}
-
-    @Published public var quickActions = QuickActions()
+class HelpCenterNavigationViewModel: ObservableObject {
+    @Published var quickActions = QuickActions()
     var connectPaymentsVm = ConnectPaymentViewModel()
-    public struct QuickActions {
-        public var isTravelCertificatePresented = false
-        public var isChangeAddressPresented = false
+    struct QuickActions {
+        var isTravelCertificatePresented = false
+        var isChangeAddressPresented = false
         var isEditCoInsuredSelectContractPresented: CoInsuredConfigModel?
 
         var isEditCoInsuredPresented: InsuredPeopleConfig?
         var isEditCoInsuredMissingContractPresented: InsuredPeopleConfig?
 
-        public var isCancellationPresented = false
+        var isCancellationPresented = false
         var isFirstVetPresented = false
         var isSickAbroadPresented = false
     }
 
-    public struct ChatTopicModel: Identifiable, Equatable {
-        public var id: String?
+    struct ChatTopicModel: Identifiable, Equatable {
+        var id: String?
         var topic: ChatTopicType?
     }
 }
 
 public struct HelpCenterNavigation<Content: View>: View {
-    @ObservedObject var helpCenterVm: HelpCenterNavigationViewModel
+    @StateObject var helpCenterVm = HelpCenterNavigationViewModel()
 
     @EnvironmentObject private var homeVm: HomeNavigationViewModel
     @PresentableStore private var store: HomeStore
@@ -45,10 +42,8 @@ public struct HelpCenterNavigation<Content: View>: View {
     @StateObject var router = Router()
 
     public init(
-        helpCenterVm: HelpCenterNavigationViewModel,
         @ViewBuilder redirect: @escaping (_ type: HelpCenterRedirectType) -> Content
     ) {
-        self.helpCenterVm = helpCenterVm
         self.redirect = redirect
     }
 
@@ -255,5 +250,5 @@ public enum HelpCenterRedirectType {
 }
 
 #Preview{
-    HelpCenterNavigation<EmptyView>(helpCenterVm: .init(), redirect: { _ in })
+    HelpCenterNavigation<EmptyView>(redirect: { _ in })
 }

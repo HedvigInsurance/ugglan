@@ -353,7 +353,6 @@ struct HomeTab: View {
             isPresented: $homeNavigationVm.isHelpCenterPresented
         ) {
             HelpCenterNavigation(
-                helpCenterVm: loggedInVm.helpCenterNavigationVm,
                 redirect: { redirectType in
                     switch redirectType {
                     case .moveFlow:
@@ -452,7 +451,6 @@ class LoggedInNavigationViewModel: ObservableObject {
     let paymentsNavigationVm = PaymentsNavigationViewModel()
     let profileNavigationVm = ProfileNavigationViewModel()
     let homeNavigationVm = HomeNavigationViewModel()
-    let helpCenterNavigationVm = HelpCenterNavigationViewModel()
 
     @Published var isTravelInsurancePresented = false
     @Published var isMoveContractPresented = false
