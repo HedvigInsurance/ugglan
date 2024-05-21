@@ -24,6 +24,7 @@ struct TerminationSurveyScreen: View {
             )
             .hFormIgnoreKeyboard()
             .hDisableScroll
+            .hFormMergeBottomViewWithContentIfNeeded
             .hFormAttachToBottom {
                 hSection {
                     VStack(spacing: 16) {
@@ -57,8 +58,8 @@ struct TerminationSurveyScreen: View {
 
                             }
                         }
-                        hButton.LargeButton(type: .primary) {
-                            vm.continueClicked()
+                        hButton.LargeButton(type: .primary) { [weak vm] in
+                            vm?.continueClicked()
                         } content: {
                             hText(L10n.generalContinueButton)
                         }
@@ -166,11 +167,15 @@ class SurveyScreenViewModel: ObservableObject {
     }
 
     func continueClicked() {
-        if let subOptions = selectedOption?.subOptions {
+        if let subOptions = selectedOption?.subOptions, !subOptions.isEmpty {
             store.send(.navigationAction(action: .openTerminationSurveyStep(options: subOptions)))
         } else if let selectedOption {
             store.send(.submitSurvey(option: selectedOption.id, feedback: selectedFeedBackViewModel?.text))
         }
+    }
+
+    deinit {
+        let ss = ""
     }
 }
 
