@@ -129,7 +129,7 @@ public struct hColorScheme<LightInnerHColor: hColor, DarkInnerHColor: hColor>: h
     }
 
     public var body: some View {
-        color
+        color.ignoresSafeArea()
     }
 }
 

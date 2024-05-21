@@ -102,6 +102,7 @@ public struct hTextView: View {
                 height: $popoverHeight
             )
         }
+        .background(hBackgroundColor.primary)
 
         let journey = HostingJourney(
             rootView: view,
