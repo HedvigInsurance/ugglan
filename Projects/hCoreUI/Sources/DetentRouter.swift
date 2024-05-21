@@ -38,6 +38,12 @@ where SwiftUIContent: View, Item: Identifiable & Equatable {
                 }
             }
         }
+        .onAppear {
+            if let item = item {
+                itemToRenderFrom = item
+            }
+            present = item != nil
+        }
         .onChange(of: item) { newValue in
             if let item = item {
                 itemToRenderFrom = item

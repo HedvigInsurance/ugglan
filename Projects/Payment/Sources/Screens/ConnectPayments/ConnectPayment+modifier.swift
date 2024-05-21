@@ -17,7 +17,7 @@ struct ConnectPayment: ViewModifier {
             .detent(
                 item: $vm.connectPaymentModel,
                 style: .large,
-                options: .constant([.disableDismissOnScroll, .withoutGrabber])
+                options: .constant([.disableDismissOnScroll, .withoutGrabber, .alwaysOpenOnTop])
             ) { setupTypeModel in
                 let featureFlags: FeatureFlags = Dependencies.shared.resolve()
                 switch featureFlags.paymentType {
@@ -60,6 +60,6 @@ public struct SetupTypeNavigationModel: Equatable, Identifiable {
         self.setUpType = setUpType
     }
 
-    public var id: String?
+    public var id: String = UUID().uuidString
     var setUpType: SetupType?
 }
