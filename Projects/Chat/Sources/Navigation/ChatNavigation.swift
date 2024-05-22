@@ -1,3 +1,4 @@
+import Combine
 import Presentation
 import SwiftUI
 import hCore
@@ -12,6 +13,7 @@ public class ChatNavigationViewModel: ObservableObject {
         var url: URL
     }
 
+    private var toastPublisher: AnyCancellable?
     @MainActor
     func checkForPushNotificationStatus() async {
         let settings = await UNUserNotificationCenter.current().notificationSettings()
@@ -19,7 +21,29 @@ public class ChatNavigationViewModel: ObservableObject {
         case .notDetermined:
             self.isAskForPushNotificationsPresented = true
         case .denied:
-            break  //TODO: ADD TOASTER
+            func createToast() -> Toast {
+                let schema = UITraitCollection.current.userInterfaceStyle
+                return Toast(
+                    symbol: .icon(hCoreUIAssets.infoIconFilled.image),
+                    body: L10n.chatToastPushNotificationsTitle,
+                    infoText: L10n.pushNotificationsAlertActionOk,
+                    textColor: hSignalColor.blueText.colorFor(schema == .dark ? .dark : .light, .base).color
+                        .uiColor(),
+                    backgroundColor: hSignalColor.blueFill.colorFor(schema == .dark ? .dark : .light, .base)
+                        .color
+                        .uiColor(),
+                    symbolColor: hSignalColor.blueElement.colorFor(schema == .dark ? .dark : .light, .base)
+                        .color
+                        .uiColor(),
+                    duration: 6
+                )
+            }
+
+            let toast = createToast()
+            toastPublisher = toast.onTap.publisher.sink { _ in
+                NotificationCenter.default.post(name: .registerForPushNotifications, object: nil)
+            }
+            Toasts.shared.displayToast(toast: toast)
         default:
             break
         }
