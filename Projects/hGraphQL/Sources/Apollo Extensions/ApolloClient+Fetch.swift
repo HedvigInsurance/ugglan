@@ -134,7 +134,7 @@ extension ApolloClient {
                 queue: queue
             ) { result in
                 switch result {
-                case let .success(result):
+            case let .success(result):
                     if let errors = result.errors {
                         logGraphQLError(error: .graphQLError(errors: errors))
                         inCont.resume(throwing: GraphQLError.graphQLError(errors: errors))

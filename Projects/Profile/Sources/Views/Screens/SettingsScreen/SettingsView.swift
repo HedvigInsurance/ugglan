@@ -5,7 +5,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct SettingsScreen: View {
+struct SettingsView: View {
     @PresentableStore var store: ProfileStore
     init() {
         store.send(.fetchMemberDetails)
@@ -44,7 +44,7 @@ struct SettingsScreen: View {
                             }
                         )
                     }
-                    MemberSubscriptionPreferenceView()
+                    MemberSubscriptionPreferenceView(vm: store.memberSubscriptionPreferenceViewModel)
                 }
                 NotificationsCardView()
                     .padding(.vertical, 16)
@@ -87,8 +87,8 @@ struct SettingsScreen: View {
     }
 }
 
-struct SettingsScreen_Previews: PreviewProvider {
+struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsScreen()
+        SettingsView()
     }
 }
