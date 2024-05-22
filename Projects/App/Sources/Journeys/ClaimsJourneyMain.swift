@@ -32,9 +32,9 @@ public struct ClaimsJourneyMain: View {
                             text: L10n.claimsActivateNotificationsBody,
                             onActionExecuted: {
                                 claimsNavigationVm.isClaimsFlowPresented = true
-                            }
+                            },
+                            wrapWithForm: true
                         )
-                        .hUseOnPush
                     }
                 }
         }

@@ -9,20 +9,22 @@ struct AskForPushnotifications: View {
     let onActionExecuted: () -> Void
     let text: String
     let pushNotificationStatus: UNAuthorizationStatus
-    @Environment(\.hUseOnPush) var usePush
+    let wrapWithForm: Bool
 
     init(
         text: String,
-        onActionExecuted: @escaping () -> Void
+        onActionExecuted: @escaping () -> Void,
+        wrapWithForm: Bool = false
     ) {
         let store: ProfileStore = globalPresentableStoreContainer.get()
         self.pushNotificationStatus = store.state.pushNotificationCurrentStatus()
         self.text = text
         self.onActionExecuted = onActionExecuted
+        self.wrapWithForm = wrapWithForm
     }
 
     var body: some View {
-        if usePush {
+        if wrapWithForm {
             hForm {
                 mainContent
             }
@@ -77,23 +79,6 @@ struct AskForPushnotifications: View {
         .background(
             BackgroundView().ignoresSafeArea()
         )
-    }
-}
-
-private struct EnvironmentHUseOnPush: EnvironmentKey {
-    static let defaultValue: Bool = false
-}
-
-extension EnvironmentValues {
-    public var hUseOnPush: Bool {
-        get { self[EnvironmentHUseOnPush.self] }
-        set { self[EnvironmentHUseOnPush.self] = newValue }
-    }
-}
-
-extension View {
-    public var hUseOnPush: some View {
-        self.environment(\.hUseOnPush, true)
     }
 }
 
