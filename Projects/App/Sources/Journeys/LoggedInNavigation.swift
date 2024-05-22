@@ -115,7 +115,7 @@ struct LoggedInNavigation: View {
             case let .editCoInsured(editCoInsuredConfig, _, _):
                 vm.getEditCoInsuredView(config: editCoInsuredConfig)
             case .chat:
-                ChatScreen(vm: .init(topicType: nil, onCheckPushNotifications: {}))
+                ChatScreen(vm: .init(topicType: nil))
             case .movingFlow:
                 MovingFlowNavigation()
             case let .pdf(document):

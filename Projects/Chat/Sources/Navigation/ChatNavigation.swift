@@ -27,7 +27,7 @@ public struct ChatNavigation: View {
 
     public var body: some View {
         RouterHost(router: router, options: .navigationType(type: .large)) {
-            ChatScreen(vm: .init(topicType: openChat.topic, onCheckPushNotifications: onCheckPushNotifications))
+            ChatScreen(vm: .init(topicType: openChat.topic))
                 .navigationTitle(L10n.chatTitle)
                 .withDismissButton()
         }
