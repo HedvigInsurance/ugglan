@@ -439,30 +439,16 @@ struct HomeTab: View {
             style: .large,
             options: $homeNavigationVm.openChatOptions,
             content: { openChat in
-                ChatNavigation(
-                    openChat: openChat,
-                    onCheckPushNotifications: {
-                        let profileStore: ProfileStore = globalPresentableStoreContainer.get()
-                        let status = profileStore.state.pushNotificationCurrentStatus()
-                        if case .notDetermined = status {
-                            loggedInVm.isAskForPushNotificationsPresented = true
+                ChatNavigation(openChat: openChat) { type, onDone in
+                    AskForPushnotifications(
+                        text: L10n.chatActivateNotificationsBody,
+                        onActionExecuted: {
+                            onDone()
                         }
-                    }
-                )
+                    )
+                }
             }
         )
-        .detent(
-            presented: $loggedInVm.isAskForPushNotificationsPresented,
-            style: .large,
-            options: .constant([.alwaysOpenOnTop, .withoutGrabber])
-        ) {
-            AskForPushnotifications(
-                text: L10n.chatActivateNotificationsBody,
-                onActionExecuted: {
-                    loggedInVm.isAskForPushNotificationsPresented = false
-                }
-            )
-        }
         .onChange(of: homeNavigationVm.openChat) { newValue in
             HomeNavigationViewModel.isChatPresented = newValue != nil
         }
@@ -480,7 +466,6 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isMoveContractPresented = false
     @Published var isCancelInsurancePresented = false
     @Published var isEuroBonusPresented = false
-    @Published var isAskForPushNotificationsPresented = false
     @Published var isUrlPresented: URL?
 
     init() {

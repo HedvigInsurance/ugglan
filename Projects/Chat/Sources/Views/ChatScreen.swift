@@ -11,6 +11,7 @@ public struct ChatScreen: View {
     @State var infoViewHeight: CGFloat = 0
     @State var infoViewWidth: CGFloat = 0
     @StateObject var chatScrollViewDelegate = ChatScrollViewDelegate()
+    @EnvironmentObject var chatNavigationVm: ChatNavigationViewModel
 
     public init(
         vm: ChatScreenViewModel
@@ -31,6 +32,9 @@ public struct ChatScreen: View {
         .findScrollView({ sv in
             sv.delegate = chatScrollViewDelegate
         })
+        .task {
+            vm.chatNavigationVm = chatNavigationVm
+        }
     }
 
     @ViewBuilder
