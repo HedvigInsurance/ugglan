@@ -40,9 +40,19 @@ public struct hForm<Content: View>: View, KeyboardReadable {
     public var body: some View {
         ZStack(alignment: .bottom) {
             if hDisableScroll {
-                getScrollView().clipped()
+                if self.hFormIgnoreKeyboard {
+                    getScrollView().clipped()
+                        .ignoresSafeArea(.keyboard)
+                } else {
+                    getScrollView().clipped()
+                }
             } else {
-                getScrollView()
+                if self.hFormIgnoreKeyboard {
+                    getScrollView()
+                        .ignoresSafeArea(.keyboard)
+                } else {
+                    getScrollView()
+                }
             }
             if mergeBottomViewWithContent {
                 Color.clear

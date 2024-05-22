@@ -102,6 +102,7 @@ public struct hTextView: View {
                 height: $popoverHeight
             )
         }
+        .background(hBackgroundColor.primary)
 
         let journey = HostingJourney(
             rootView: view,
@@ -138,9 +139,61 @@ public struct hTextView: View {
     return VStack(spacing: 4) {
         VStack {
             hForm {}
+                .hFormTitle(title: .init(.standard, .standardLarge, "TITLE"))
+                .hFormMergeBottomViewWithContentIfNeeded
                 .hFormAttachToBottom {
-                    VStack(spacing: 0) {
+                    VStack(spacing: 20) {
                         Rectangle().frame(height: 20)
+                        hSection {
+                            hTextView(
+                                selectedValue: valuee,
+                                placeholder: "placeholder",
+                                required: true,
+                                maxCharacters: 140
+                            ) { value in
+                                valuee = value
+                            }
+                        }
+                        hSection {
+                            hTextView(
+                                selectedValue: valuee,
+                                placeholder: "placeholder",
+                                required: true,
+                                maxCharacters: 140
+                            ) { value in
+                                valuee = value
+                            }
+                        }
+                        hSection {
+                            hTextView(
+                                selectedValue: valuee,
+                                placeholder: "placeholder",
+                                required: true,
+                                maxCharacters: 140
+                            ) { value in
+                                valuee = value
+                            }
+                        }
+                        hSection {
+                            hTextView(
+                                selectedValue: valuee,
+                                placeholder: "placeholder",
+                                required: true,
+                                maxCharacters: 140
+                            ) { value in
+                                valuee = value
+                            }
+                        }
+                        hSection {
+                            hTextView(
+                                selectedValue: valuee,
+                                placeholder: "placeholder",
+                                required: true,
+                                maxCharacters: 140
+                            ) { value in
+                                valuee = value
+                            }
+                        }
                         hSection {
                             hTextView(
                                 selectedValue: valuee,
@@ -309,16 +362,6 @@ private class TextView: UITextView, UITextViewDelegate {
         self.font = Fonts.fontFor(style: .standard)
         self.backgroundColor = .clear
         self.layer.cornerRadius = 12
-        let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
-        let doneButton = UIBarButtonItem(
-            barButtonSystemItem: .done,
-            target: self,
-            action: #selector(handleDoneButtonTap)
-        )
-        let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        toolbar.setItems([space, doneButton], animated: false)
-
-        self.inputAccessoryView = toolbar
         self.setText(text: inputText.wrappedValue)
         self.isUserInteractionEnabled = !disabled
         if becomeFirstResponder {

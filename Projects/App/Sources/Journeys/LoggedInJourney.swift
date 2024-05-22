@@ -392,9 +392,9 @@ extension JourneyPresentation {
                 if case let .openRedirectAction(redirectAction) = navigationAction {
                     switch redirectAction {
                     case .updateAddress:
-                        let vc = UIApplication.shared.getTopViewController()
-                        if let deepLink = DeepLink.getUrl(from: .moveContract), let vc = vc?.presentingViewController {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                            let vc = UIApplication.shared.getTopViewController()
+                            if let deepLink = DeepLink.getUrl(from: .moveContract), let vc = vc {
                                 UIApplication.shared.appDelegate.handleDeepLink(
                                     deepLink,
                                     fromVC: vc
@@ -403,11 +403,8 @@ extension JourneyPresentation {
                         }
                     }
                 } else if case let .openRedirectUrl(redirectUrl) = navigationAction {
-                    let vc = UIApplication.shared.getTopViewController()
-                    if let deepLink = DeepLink.getUrl(from: .moveContract), let vc = vc?.presentingViewController {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                            AppJourney.openUrl(url: redirectUrl)
-                        }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                        AppJourney.openUrl(url: redirectUrl)
                     }
                 }
             }

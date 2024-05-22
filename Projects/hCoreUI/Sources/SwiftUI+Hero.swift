@@ -29,8 +29,7 @@ public struct HeroAnimationDestinationView<Content: View>: UIViewRepresentable {
 
     public func makeUIView(context: Context) -> UIView {
         let view = UIView()
-        view.backgroundColor = hBackgroundColor.primary
-            .colorFor(.init(UITraitCollection.current.userInterfaceStyle) ?? .light, .base).color.uiColor()
+        view.backgroundColor = .clear
         view.hero.id = "heroId"
         view.heroModifiers = [.spring(stiffness: 250, damping: 25)]
         view.layer.cornerRadius = 12

@@ -182,20 +182,7 @@ public class TerminationFlowJourney {
                     primaryButton: .init(buttonAction: {
                         let store: TerminationContractStore = globalPresentableStoreContainer.get()
                         store.send(.dismissTerminationFlow(afterCancellationFinished: true))
-                    }),
-                    ghostButton: .init(
-                        buttonTitle: L10n.terminationFlowShareFeedback,
-                        buttonAction: {
-                            log.addUserAction(type: .click, name: "terminationSurvey")
-                            let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                            if let surveyToURL = URL(string: store.state.successStep?.surveyUrl) {
-                                store.send(.dismissTerminationFlow(afterCancellationFinished: true))
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                                    store.send(.goToUrl(url: surveyToURL))
-                                }
-                            }
-                        }
-                    )
+                    })
                 ),
                 icon: .circularTick
             )
