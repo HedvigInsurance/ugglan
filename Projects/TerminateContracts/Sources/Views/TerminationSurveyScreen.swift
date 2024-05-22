@@ -173,10 +173,6 @@ class SurveyScreenViewModel: ObservableObject {
             store.send(.submitSurvey(option: selectedOption.id, feedback: selectedFeedBackViewModel?.text))
         }
     }
-
-    deinit {
-        let ss = ""
-    }
 }
 
 #Preview{
