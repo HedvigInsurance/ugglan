@@ -234,20 +234,6 @@ extension DefaultStyling {
     }
 
     public static func installCustom() {
-        customNavigationController = { options in
-            if options.contains(.preffersLargerNavigationBar) {
-                return hNavigationControllerWithLargerNavBar()
-            } else {
-                let additionalHeight: CGFloat? = {
-                    if options.contains(.withAdditionalSpaceForProgressBar) {
-                        return 4
-                    }
-                    return nil
-                }()
-                return hNavigationController(additionalHeight: additionalHeight)
-            }
-        }
-
         ListTableView.appearance().backgroundColor = .brand(.primaryBackground())
 
         for view in [FormScrollView.self, FormTableView.self] {

@@ -1,4 +1,3 @@
-import Flow
 import Foundation
 import Presentation
 import Profile
@@ -18,7 +17,7 @@ extension AppDelegate {
         let optionalDictionary: [String: String?] = [
             "memberId": memberId,
             "appVersion": Bundle.main.appVersion,
-            "market": Localization.Locale.currentLocale.market.rawValue,
+            "market": Localization.Locale.currentLocale.value.market.rawValue,
             "osVersion": UIDevice.current.systemVersion,
         ]
 
@@ -27,22 +26,24 @@ extension AppDelegate {
     }
 
     private func observeUpdate() {
-        featureFlagsBag.dispose()
-        featureFlagsBag += Localization.Locale.$currentLocale
-            .atOnce()
-            .distinct()
-            .onValue { locale in
-                DispatchQueue.main.async {
-                    Dependencies.featureFlags().updateContext(context: self.getContext)
-                }
-            }
-
-        let profileStore: ProfileStore = globalPresentableStoreContainer.get()
-        featureFlagsBag += profileStore.stateSignal
-            .map({ $0.memberDetails?.id })
-            .distinct()
-            .onValue { memberId in
+        featureFlagsCancellables.removeAll()
+        Localization.Locale.currentLocale
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { locale in
                 Dependencies.featureFlags().updateContext(context: self.getContext)
             }
+            .store(in: &featureFlagsCancellables)
+
+        let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+        profileStore.stateSignal
+            .map({ $0.memberDetails?.id })
+            .distinct()
+            .plain()
+            .publisher
+            .sink { memberId in
+                Dependencies.featureFlags().updateContext(context: self.getContext)
+            }
+            .store(in: &featureFlagsCancellables)
     }
 }

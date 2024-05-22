@@ -204,7 +204,7 @@ class HomeVM: ObservableObject {
 
 struct Active_Preview: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.value = .en_SE
 
         return HomeView(
             claimsContent: Text(""),
@@ -228,7 +228,7 @@ struct Active_Preview: PreviewProvider {
 
 struct ActiveInFuture_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.value = .en_SE
         return HomeView(
             claimsContent: Text(""),
             memberId: {
@@ -252,7 +252,7 @@ struct ActiveInFuture_Previews: PreviewProvider {
 
 struct TerminatedToday_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.value = .en_SE
         return HomeView(
             claimsContent: Text(""),
             memberId: {
@@ -275,7 +275,7 @@ struct TerminatedToday_Previews: PreviewProvider {
 
 struct Terminated_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.value = .en_SE
         return HomeView(
             claimsContent: Text(""),
             memberId: {
@@ -298,7 +298,7 @@ struct Terminated_Previews: PreviewProvider {
 
 struct Deleted_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.value = .en_SE
         return HomeView(
             claimsContent: Text(""),
             memberId: {

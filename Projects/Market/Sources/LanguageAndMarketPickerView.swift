@@ -123,7 +123,7 @@ struct LanguageAndMarketPickerView_Previews: PreviewProvider {
 
 class LanguageAndMarketPickerViewModel: ObservableObject {
     @Published var selectedLocale = Localization.Locale.currentLocale
-    @Published var selectedLocaleCode: String? = Localization.Locale.currentLocale.rawValue
+    @Published var selectedLocaleCode: String? = Localization.Locale.currentLocale.value.rawValue
 
     @Published var selectedMarket: Market
     @Published var selectedMarketCode: String?
@@ -155,14 +155,16 @@ class LanguageAndMarketPickerViewModel: ObservableObject {
         selectedMarketCode = store.state.market.rawValue
         $selectedLocaleCode.sink { [weak self] selectedLocaleCode in
             if let selectedLocaleCode, let locale = Localization.Locale(rawValue: selectedLocaleCode) {
-                self?.selectedLocale = locale
+                self?.selectedLocale.value = locale
             }
         }
         .store(in: &cancellables)
         $selectedMarketCode.sink { [weak self] selectedMarketCode in
             if let selectedMarketCode, let market = Market(rawValue: selectedMarketCode) {
                 self?.selectedMarket = market
-                if let currentSelectedLocale = market.languages.first(where: { $0 == Localization.Locale.currentLocale }
+                if let currentSelectedLocale = market.languages.first(where: {
+                    $0 == Localization.Locale.currentLocale.value
+                }
                 ) {
                     self?.selectedLocaleCode = currentSelectedLocale.rawValue
                 } else {
@@ -177,7 +179,7 @@ class LanguageAndMarketPickerViewModel: ObservableObject {
     func save() {
         let store: MarketStore = globalPresentableStoreContainer.get()
         store.send(.selectMarket(market: selectedMarket))
-        store.send(.selectLanguage(language: selectedLocale.rawValue))
+        store.send(.selectLanguage(language: selectedLocale.value.rawValue))
     }
 }
 

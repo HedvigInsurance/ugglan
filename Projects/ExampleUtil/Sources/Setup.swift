@@ -5,6 +5,6 @@ import hCore
 
 extension UIApplication {
     public func setup() {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.value = .en_SE
     }
 }

@@ -42,7 +42,7 @@ struct FutureSectionInfoView: View {
 
 struct ActiveInFutureView_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.value = .en_SE
         return VStack {
             FutureSectionInfoView()
                 .onAppear {
@@ -68,7 +68,7 @@ struct ActiveInFutureView_Previews: PreviewProvider {
 
 struct PendingSwitchableView_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.value = .en_SE
         return VStack {
             FutureSectionInfoView()
                 .onAppear {
@@ -88,7 +88,7 @@ struct PendingSwitchableView_Previews: PreviewProvider {
 
 struct PendingNonSwitchableView_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.value = .en_SE
         return VStack {
             FutureSectionInfoView()
                 .onAppear {

@@ -3,7 +3,7 @@ import Presentation
 import hCore
 
 public struct MarketState: StateProtocol {
-    public var market: Market = .fromLocalization(Localization.Locale.currentLocale.market)
+    public var market: Market = .fromLocalization(Localization.Locale.currentLocale.value.market)
 
     public init() {}
 }
@@ -24,10 +24,10 @@ public final class MarketStore: StateStore<MarketState, MarketAction> {
     ) async {
         switch action {
         case let .selectMarket(market):
-            Localization.Locale.currentLocale = market.preferredLanguage
+            Localization.Locale.currentLocale.value = market.preferredLanguage
         case let .selectLanguage(language):
             if let language = Localization.Locale(rawValue: language) {
-                Localization.Locale.currentLocale = language
+                Localization.Locale.currentLocale.value = language
             }
         default:
             break

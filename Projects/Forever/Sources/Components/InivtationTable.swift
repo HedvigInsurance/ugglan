@@ -124,7 +124,7 @@ struct InvitationTable_Previews: PreviewProvider {
     @PresentableStore static var store: ForeverStore
 
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.value = .en_SE
         return InvitationTable()
             .onAppear {
                 store.send(
@@ -175,7 +175,7 @@ struct InvitationRow_Previews: PreviewProvider {
 
     static var previews: some View {
 
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.value = .en_SE
         return hSection {
             InvitationRow(row: mockRow, invitedYou: false)
             InvitationRow(row: mockRow2, invitedYou: false)

@@ -44,7 +44,7 @@ public class ProfileServiceOctopus: ProfileService {
     }
 
     public func updateLanguage() async throws {
-        let locale = Localization.Locale.currentLocale
+        let locale = Localization.Locale.currentLocale.value
         let mutation = OctopusGraphQL.MemberUpdateLanguageMutation(input: .init(ietfLanguageTag: locale.lprojCode))
         do {
             _ = try await self.octopus.client.perform(

@@ -81,7 +81,7 @@ public struct SubmitClaimDeflectScreen: View {
 }
 
 #Preview{
-    Localization.Locale.currentLocale = .en_SE
+    Localization.Locale.currentLocale.value = .en_SE
     let model = FlowClaimDeflectStepModel(
         id: .FlowClaimDeflectEmergencyStep,
         partners: [

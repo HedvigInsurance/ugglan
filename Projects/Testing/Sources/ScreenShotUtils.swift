@@ -8,7 +8,7 @@ import hCore
 import hCoreUI
 
 public func setupScreenShotTests() {
-    Localization.Locale.currentLocale = .en_SE
+    Localization.Locale.currentLocale.value = .en_SE
     DefaultStyling.installCustom()
     ApplicationContext.shared.hasFinishedBootstrapping = true
     UIView.setAnimationsEnabled(false)

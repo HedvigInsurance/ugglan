@@ -2,6 +2,7 @@ import Apollo
 import Authentication
 import Chat
 import Claims
+import Combine
 import Contracts
 import CoreDependencies
 import DatadogLogs
@@ -31,7 +32,8 @@ import hGraphQL
 //@UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     let bag = DisposeBag()
-    let featureFlagsBag = DisposeBag()
+    var localeCancellable: AnyCancellable?
+    var featureFlagsCancellables = Set<AnyCancellable>()
     let window: UIWindow = {
         var window = UIWindow(frame: UIScreen.main.bounds)
         window.rootViewController = UIViewController()
@@ -51,7 +53,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func logout() {
-        bag.dispose()
         let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
         ugglanStore.send(.setIsDemoMode(to: false))
         Task {
@@ -170,14 +171,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return InterceptingURLSessionClient()
         }
         setupAnalyticsAndTracking()
-        bag += Localization.Locale.$currentLocale
-            .onValue { locale in
+        localeCancellable = Localization.Locale.currentLocale
+            .sink(receiveValue: { locale in
                 ApplicationState.setPreferredLocale(locale)
                 ApolloClient.acceptLanguageHeader = locale.acceptLanguageHeader
-            }
+            })
 
         ApolloClient.bundle = Bundle.main
-        ApolloClient.acceptLanguageHeader = Localization.Locale.currentLocale.acceptLanguageHeader
+        ApolloClient.acceptLanguageHeader = Localization.Locale.currentLocale.value.acceptLanguageHeader
         AskForRating().registerSession()
         setupDebugger()
     }
@@ -186,7 +187,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        Localization.Locale.currentLocale = ApplicationState.preferredLocale
+        Localization.Locale.currentLocale.value = ApplicationState.preferredLocale
         setupSession()
         TokenRefresher.shared.onRefresh = { token in
             let authService: AuthentificationService = Dependencies.shared.resolve()

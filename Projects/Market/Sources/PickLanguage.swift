@@ -9,8 +9,8 @@ public struct PickLanguage: View {
     let onCancel: (() -> Void)?
     @PresentableStore var store: MarketStore
 
-    @State var currentLocale: Localization.Locale = .currentLocale
-    @State var code: String? = Localization.Locale.currentLocale.lprojCode
+    @State var currentLocale: Localization.Locale = .currentLocale.value
+    @State var code: String? = Localization.Locale.currentLocale.value.lprojCode
 
     public init(
         currentMarket: Market
@@ -67,7 +67,7 @@ public struct PickLanguage: View {
                 VStack(spacing: 8) {
                     if let onSave {
                         hButton.LargeButton(type: .primary) {
-                            Localization.Locale.currentLocale = currentLocale
+                            Localization.Locale.currentLocale.value = currentLocale
                             onSave(currentLocale.code)
                             store.send(.dismissPicker)
                         } content: {
@@ -90,7 +90,7 @@ public struct PickLanguage: View {
         .onChange(of: code) { newValue in
             if let locale = Localization.Locale.allCases.first(where: { $0.lprojCode == newValue }) {
                 if onSave == nil {
-                    Localization.Locale.currentLocale = locale
+                    Localization.Locale.currentLocale.value = locale
                 }
                 currentLocale = locale
             }

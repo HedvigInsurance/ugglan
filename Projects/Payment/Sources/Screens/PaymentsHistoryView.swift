@@ -114,7 +114,7 @@ class PaymentsHistoryViewModel: ObservableObject {
 
 struct PaymentHistoryView_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .sv_SE
+        Localization.Locale.currentLocale.value = .sv_SE
         Dependencies.shared.add(module: Module { () -> hPaymentService in hPaymentServiceDemo() })
         return PaymentHistoryView(vm: .init())
     }

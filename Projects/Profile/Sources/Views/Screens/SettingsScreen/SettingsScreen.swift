@@ -18,7 +18,7 @@ struct SettingsScreen: View {
             hSection {
                 VStack(spacing: 4) {
                     hFloatingField(
-                        value: Localization.Locale.currentLocale.displayName,
+                        value: Localization.Locale.currentLocale.value.displayName,
                         placeholder: L10n.settingsLanguageTitle,
                         onTap: {
                             profileNavigationVm.isLanguagePickerPresented = true

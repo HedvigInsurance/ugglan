@@ -150,7 +150,7 @@ struct RenewalCardView_Previews: PreviewProvider {
     @PresentableStore static var store: HomeStore
 
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.value = .en_SE
         return RenewalCardView()
             .onAppear {
                 let state = MemberContractState.active

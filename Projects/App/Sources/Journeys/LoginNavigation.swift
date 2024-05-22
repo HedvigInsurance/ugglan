@@ -25,7 +25,7 @@ struct LoginNavigation: View {
         }
         .detent(presented: $vm.showLogin, style: .large) {
             Group {
-                switch Localization.Locale.currentLocale.market {
+                switch Localization.Locale.currentLocale.value.market {
                 case .no, .dk:
                     OTPEntryView()
                 case .se:
@@ -142,7 +142,7 @@ public class NotLoggedViewModel: ObservableObject {
     @Published var blurHash: String = ""
     @Published var imageURL: String = ""
     @Published var bootStrapped: Bool = false
-    @Published var locale: Localization.Locale = .currentLocale
+    @Published var locale: Localization.Locale = .currentLocale.value
     @Published var title: String = L10n.MarketLanguageScreen.title
     @Published var buttonText: String = L10n.MarketLanguageScreen.continueButtonText
     @Published var viewState: ViewState = .loading
@@ -153,11 +153,9 @@ public class NotLoggedViewModel: ObservableObject {
     var cancellables = Set<AnyCancellable>()
 
     init() {
-        Localization.Locale.$currentLocale
-            .distinct()
-            .plain()
-            .delay(by: 0.1)
-            .publisher
+        Localization.Locale.currentLocale
+            .removeDuplicates()
+            .delay(for: 0.1, scheduler: RunLoop.main)
             .receive(on: RunLoop.main)
             .sink { [weak self] value in
                 self?.title = L10n.MarketLanguageScreen.title

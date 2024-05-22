@@ -17,7 +17,7 @@ public struct GeneralDatePicker: View {
         hForm {
             hSection {
                 getDatePicker
-                    .environment(\.locale, Locale.init(identifier: Localization.Locale.currentLocale.rawValue))
+                    .environment(\.locale, Locale.init(identifier: Localization.Locale.currentLocale.value.rawValue))
                     .datePickerStyle(.graphical)
                     .padding(.horizontal, 16)
                     .padding([.top], 5)

@@ -22,7 +22,7 @@ struct ImpersonationSettings: View {
                             marketStore.send(.selectMarket(market: realMarket))
                         }
                         marketStore.send(.selectLanguage(language: locale.rawValue))
-                        Localization.Locale.currentLocale = locale
+                        Localization.Locale.currentLocale.value = locale
                         state = .loggedIn
                     }
                 }
