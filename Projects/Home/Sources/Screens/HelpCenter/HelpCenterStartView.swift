@@ -9,6 +9,8 @@ import hGraphQL
 public struct HelpCenterStartView: View {
     @ObservedObject var vm: HelpCenterStartViewModel
     @PresentableStore var store: HomeStore
+    @State var vc: UIViewController?
+
     public init(
         helpCenterModel: HelpCenterModel
     ) {
@@ -20,48 +22,21 @@ public struct HelpCenterStartView: View {
             VStack(spacing: 0) {
                 hSection {
                     VStack(spacing: 40) {
-                        Image(uiImage: hCoreUIAssets.bigPillowBlack.image)
-                            .resizable()
-                            .frame(width: 160, height: 160)
-                            .padding(.bottom, 26)
-                            .padding(.top, 39)
-
-                        VStack(alignment: .leading, spacing: 8) {
-                            hText(vm.helpCenterModel.title)
-                            hText(vm.helpCenterModel.description)
-                                .foregroundColor(hTextColor.secondary)
-                        }
-
-                        hFloatingTextField(
-                            masking: Masking(type: .none),
-                            value: $vm.inputText,
-                            equals: $vm.focusState,
-                            focusValue: true,
-                            placeholder: "Search"
-                        )
-                        .hFieldSize(.small)
-                        .hFieldAttachToLeft {
-                            hCoreUIAssets.search.view
-                                .foregroundColor(hTextColor.secondary)
-                        }
-                        if let showSearchResults = vm.showSearchResults {
-                            if showSearchResults {
-                                if let searchResultsQuickActions =
-                                    vm.searchResultsQuickActions {
-                                    displayResultsInQuickActions(let: searchResultsQuickActions)
-                                }
-                                if let searchResultsQuestions = vm.searchResultsQuestions {
-                                    SearchResultsInQuestions(
-                                        questions: searchResultsQuestions,
-                                        questionType: .commonQuestions,
-                                        source: .homeView
-                                    )
-                                }
-                            }
-                            else {
-                                NothingFound()
-                            }
+                        if vm.searchInProgress {
+                            displayQuickActions()
+                            displayCommonTopics()
                         } else {
+                            Image(uiImage: hCoreUIAssets.bigPillowBlack.image)
+                                .resizable()
+                                .frame(width: 160, height: 160)
+                                .padding(.bottom, 26)
+                                .padding(.top, 39)
+
+                            VStack(alignment: .leading, spacing: 8) {
+                                hText(vm.helpCenterModel.title)
+                                hText(vm.helpCenterModel.description)
+                                    .foregroundColor(hTextColor.secondary)
+                            }
                             displayQuickActions()
                             displayCommonTopics()
                             QuestionsItems(
@@ -83,6 +58,12 @@ public struct HelpCenterStartView: View {
         .dismissKeyboard()
         .onChange(of: vm.inputText) { _ in
             vm.startSearch()
+        }
+        //        .searchable(text: $vm.inputText)
+
+        .introspectViewController { vc in
+            vc.navigationItem.searchController = vm.searchController
+            vc.definesPresentationContext = true
         }
     }
 
@@ -125,7 +106,7 @@ public struct HelpCenterStartView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private func displayResultsInQuickActions(
         `let` quickActions: [QuickAction]
@@ -324,7 +305,7 @@ extension HelpCenterStartView {
 
             ),
             style: .modally(presentationStyle: .overFullScreen),
-            options: [.largeNavigationBar, .blurredBackground]
+            options: [.defaults]
         ) { action in
             if case .openFreeTextChat = action {
                 DismissJourney()
@@ -341,16 +322,44 @@ extension HelpCenterStartView {
     }
 }
 
-class HelpCenterStartViewModel: ObservableObject {
+extension HelpCenterStartViewModel: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        withAnimation {
+            searchInProgress = searchController.isActive
+        }
+    }
+}
+
+extension HelpCenterStartViewModel: UISearchControllerDelegate {
+    func didPresentSearchController(_ searchController: UISearchController) {
+        let button = searchController.searchBar.subviews.first?.subviews.last?.subviews.last as? UIButton
+        let hColor = hTextColor.primary
+        let color = UIColor(
+            light: hColor.colorFor(.light, .base).color.uiColor(),
+            dark: hColor.colorFor(.dark, .base).color.uiColor()
+        )
+        button?.setTitleColor(color, for: .normal)
+    }
+}
+
+class HelpCenterStartViewModel: NSObject, ObservableObject {
     var helpCenterModel: HelpCenterModel
     @PresentableStore var store: HomeStore
     @Published var inputText = ""
     @Published var focusState: Bool? = false
     @Published var searchResultsQuestions: [Question]?
     @Published var searchResultsQuickActions: [QuickAction]?
-    @Published var showSearchResults: Bool?  = nil
+    @Published var searchInProgress = false
     let allQuestions: [Question]
-
+    lazy var searchController: UISearchController = {
+        let searchController = UISearchController(searchResultsController: nil)
+        searchController.delegate = self
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = L10n.searchPlaceholder
+        searchController.obscuresBackgroundDuringPresentation = false
+        return searchController
+    }()
     init(helpCenterModel: HelpCenterModel) {
         allQuestions = [
             PaymentsQuestions.q1,
@@ -379,13 +388,9 @@ class HelpCenterStartViewModel: ObservableObject {
             let actions = searchInQuickActionsByQuery(query: trimmedQuery)
             searchResultsQuestions = questions
             searchResultsQuickActions = actions
-            showSearchResults = if (questions.isEmpty && actions.isEmpty) {
-                false
-            } else { true }
         } else {
             searchResultsQuestions = nil
             searchResultsQuickActions = nil
-            showSearchResults = nil
         }
     }
 
