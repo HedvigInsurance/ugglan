@@ -164,7 +164,7 @@ extension TerminationFlowSurveyStepModelOption {
         with data: OctopusGraphQL.FlowTerminationSurveyStepOptionFragment,
         subOptions: [TerminationFlowSurveyStepModelOption]
     ) {
-        id = data.id.rawValue
+        id = data.id
         title = data.title
         suggestion = data.suggestion?.fragments.flowTerminationSurveyOptionSuggestionFragment.asSuggestion
         feedBack = data.feedBack?.fragments.flowTerminationSurveyOptionFeedbackFragment.asFeedback
