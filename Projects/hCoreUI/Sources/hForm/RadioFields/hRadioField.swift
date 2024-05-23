@@ -29,13 +29,7 @@ public struct hRadioField<Content: View>: View {
         HStack(spacing: 0) {
             content
             Spacer()
-            Circle()
-                .strokeBorder(
-                    RadioFieldsColors().getBorderColor(isSelected: id == selected),
-                    lineWidth: id == selected ? 0 : 1.5
-                )
-                .background(Circle().foregroundColor(RadioFieldsColors().getFillColor(isSelected: id == selected)))
-                .frame(width: 24, height: 24)
+            hRadioOptionSelectedView(selectedValue: $selected, value: id)
         }
         .padding(.vertical, size == .large ? 11 : 8)
         .frame(minHeight: size == .large ? 72 : 40)

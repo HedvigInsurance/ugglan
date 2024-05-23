@@ -52,17 +52,8 @@ public struct hRadioOptionField: View {
     func getCheckBox(texts: [String]) -> some View {
         ForEach(texts, id: \.self) { text in
             HStack(spacing: 8) {
-                Circle()
-                    .strokeBorder(
-                        RadioFieldsColors().getBorderColor(isSelected: text == value),
-                        lineWidth: text == value ? 0 : 1.5
-                    )
-                    .background(
-                        Circle().foregroundColor(RadioFieldsColors().getFillColor(isSelected: text == value))
-                    )
-                    .frame(width: 24, height: 24)
-
                 Text(text)
+                hRadioOptionSelectedView(selectedValue: $value, value: text)
             }
             .onTapGesture {
                 ImpactGenerator.soft()
@@ -81,12 +72,92 @@ public struct hRadioOptionField: View {
 }
 
 struct hRadioOptionField_Previews: PreviewProvider {
+    @State static var value: String? = "id"
+    @State static var error: String?
     static var previews: some View {
-        @State var value: String? = "test"
-        hForm {
-            VStack {
-                hRadioOptionField(value: $value, placeholder: "Was your bike locked?", useAnimation: true)
+        VStack {
+            hRadioField(
+                id: "id",
+                content: {
+                    hText("id")
+                },
+                selected: $value,
+                error: $error,
+                useAnimation: true
+            )
+            hRadioField(
+                id: "id2",
+                content: {
+                    hText("id2")
+                },
+                selected: $value,
+                error: $error,
+                useAnimation: true
+            )
+        }
+        .hUseColoredCheckbox
+    }
+}
+
+struct hRadioOptionSelectedView: View {
+    @Environment(\.hUseColoredCheckbox) var coloredCheckBox
+    @Binding var selectedValue: String?
+    let value: String
+
+    init(selectedValue: Binding<String?>, value: String) {
+        self._selectedValue = selectedValue
+        self.value = value
+    }
+
+    var body: some View {
+        Group {
+            Circle()
+                .strokeBorder(
+                    hRadioOptionSelectedView.getBorderColor(isSelected: selectedValue == value),
+                    lineWidth: selectedValue == value ? 0 : 1.5
+                )
+                .background(
+                    ZStack {
+                        Circle()
+                            .foregroundColor(
+                                hRadioOptionSelectedView.getFillColor(
+                                    isSelected: selectedValue == value,
+                                    coloredCheckBox: coloredCheckBox
+                                )
+                            )
+                        Circle().fill()
+                            .frame(width: shouldHaveMiddleCutted() ? 8 : 0, height: shouldHaveMiddleCutted() ? 8 : 0)
+                            .blendMode(.destinationOut)
+                    }
+                    .compositingGroup()
+                )
+        }
+        .frame(width: 24, height: 24)
+    }
+
+    private func shouldHaveMiddleCutted() -> Bool {
+        selectedValue == value && coloredCheckBox
+    }
+
+    @hColorBuilder
+    static func getFillColor(isSelected: Bool, coloredCheckBox: Bool) -> some hColor {
+        if isSelected {
+            if coloredCheckBox {
+                hSignalColor.greenElement
+            } else {
+                hTextColor.primary
             }
+        } else {
+            hFillColor.opaqueOne
+        }
+    }
+
+    @hColorBuilder
+    static func getBorderColor(isSelected: Bool) -> some hColor {
+        if isSelected {
+            hTextColor.primary
+        } else {
+            hBorderColor.opaqueTwo
         }
     }
 }

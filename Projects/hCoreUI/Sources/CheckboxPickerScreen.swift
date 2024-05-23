@@ -296,7 +296,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             Spacer()
-            checkBox(isSelected: isSelected)
+            checkBox(isSelected: isSelected, item, itemDisplayName)
         }
     }
 
@@ -321,37 +321,33 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         }
     }
 
-    func checkBox(isSelected: Bool) -> some View {
+    func checkBox(isSelected: Bool, _ item: T?, _ itemDisplayName: String?) -> some View {
         Group {
             if singleSelect ?? false {
                 ZStack {
-                    Circle()
-                        .strokeBorder(
-                            RadioFieldsColors().getBorderColor(isSelected: isSelected),
-                            lineWidth: isSelected ? 0 : 1.5
-                        )
-                        .background(Circle().foregroundColor(getFillColor(isSelected: isSelected)))
-
-                    if isSelected && coloredCheckBox {
-                        Circle()
-                            .strokeBorder(
-                                RadioFieldsColors().getBorderColor(isSelected: isSelected),
-                                lineWidth: isSelected ? 0 : 1.5
-                            )
-                            .background(Circle().foregroundColor(hFillColor.opaqueOne))
-                            .frame(height: 8)
-                    }
+                    let isSelected =
+                        selectedItems.first(where: { $0 == item }) != nil || (manualInput && itemDisplayName != nil)
+                    let displayName = items.first(where: { $0.object == item })?.displayName
+                    hRadioOptionSelectedView(
+                        selectedValue: .constant(isSelected ? displayName?.title : nil),
+                        value: displayName?.title ?? ""
+                    )
                 }
             } else {
                 ZStack {
                     RoundedRectangle(cornerRadius: 8)
                         .strokeBorder(
-                            RadioFieldsColors().getBorderColor(isSelected: isSelected),
+                            hRadioOptionSelectedView.getBorderColor(isSelected: isSelected),
                             lineWidth: isSelected ? 0 : 1.5
                         )
                         .background(
                             RoundedRectangle(cornerRadius: 8)
-                                .foregroundColor(getFillColor(isSelected: isSelected))
+                                .foregroundColor(
+                                    hRadioOptionSelectedView.getFillColor(
+                                        isSelected: isSelected,
+                                        coloredCheckBox: coloredCheckBox
+                                    )
+                                )
                         )
 
                     if isSelected {
@@ -362,19 +358,6 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             }
         }
         .frame(width: 24, height: 24)
-    }
-
-    @hColorBuilder
-    func getFillColor(isSelected: Bool) -> some hColor {
-        if isSelected {
-            if coloredCheckBox {
-                hSignalColor.greenElement
-            } else {
-                hTextColor.primary
-            }
-        } else {
-            hFillColor.opaqueOne
-        }
     }
 
     public struct CheckboxInfoCard {
