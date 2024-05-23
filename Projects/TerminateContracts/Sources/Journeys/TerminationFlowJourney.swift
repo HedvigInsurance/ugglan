@@ -170,19 +170,7 @@ public class TerminationFlowJourney {
                         let store: TerminationContractStore = globalPresentableStoreContainer.get()
                         store.send(.dismissTerminationFlow(afterCancellationFinished: true))
                     }),
-                    ghostButton: .init(
-                        buttonTitle: L10n.terminationFlowShareFeedback,
-                        buttonAction: {
-                            log.addUserAction(type: .click, name: "terminationSurvey")
-                            let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                            if let surveyToURL = URL(string: store.state.successStep?.surveyUrl) {
-                                store.send(.dismissTerminationFlow(afterCancellationFinished: true))
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                                    store.send(.goToUrl(url: surveyToURL))
-                                }
-                            }
-                        }
-                    )
+                    ghostButton: getSurveyButton()
                 ),
                 icon: .circularTick
             )
@@ -195,6 +183,20 @@ public class TerminationFlowJourney {
             @PresentableStore var store: TerminationContractStore
             store.send(.dismissTerminationFlow(afterCancellationFinished: true))
         }
+    }
+
+    private static func getSurveyButton() -> SuccessScreenButtonConfig.SuccessScreenButton? {
+        let store: TerminationContractStore = globalPresentableStoreContainer.get()
+        if let surveyToURL = URL(string: store.state.successStep?.surveyUrl) {
+            return .init(buttonTitle: L10n.terminationFlowShareFeedback) {
+                let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                store.send(.dismissTerminationFlow(afterCancellationFinished: true))
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    store.send(.goToUrl(url: surveyToURL))
+                }
+            }
+        }
+        return nil
     }
 
     private static func openTerminationFailScreen() -> some JourneyPresentation {
