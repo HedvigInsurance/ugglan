@@ -28,7 +28,6 @@ import hGraphQL
     #endif
 #endif
 
-//@UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     let bag = DisposeBag()
     let featureFlagsBag = DisposeBag()
