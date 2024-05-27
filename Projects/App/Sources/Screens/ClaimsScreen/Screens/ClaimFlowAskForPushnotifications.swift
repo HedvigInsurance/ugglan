@@ -9,17 +9,31 @@ struct AskForPushnotifications: View {
     let onActionExecuted: () -> Void
     let text: String
     let pushNotificationStatus: UNAuthorizationStatus
+    let wrapWithForm: Bool
+
     init(
         text: String,
-        onActionExecuted: @escaping () -> Void
+        onActionExecuted: @escaping () -> Void,
+        wrapWithForm: Bool = false
     ) {
         let store: ProfileStore = globalPresentableStoreContainer.get()
         self.pushNotificationStatus = store.state.pushNotificationCurrentStatus()
         self.text = text
         self.onActionExecuted = onActionExecuted
+        self.wrapWithForm = wrapWithForm
     }
 
     var body: some View {
+        if wrapWithForm {
+            hForm {
+                mainContent
+            }
+        } else {
+            mainContent
+        }
+    }
+
+    var mainContent: some View {
         hSection {
             VStack(spacing: 24) {
                 Spacer()
@@ -39,8 +53,7 @@ struct AskForPushnotifications: View {
                     current.getNotificationSettings(completionHandler: { settings in
                         DispatchQueue.main.async {
                             UIApplication.shared.appDelegate
-                                .registerForPushNotifications()
-                                .onValue { status in
+                                .registerForPushNotifications {
                                     onActionExecuted()
                                 }
                         }

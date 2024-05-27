@@ -31,7 +31,6 @@ import hGraphQL
 //@UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     let bag = DisposeBag()
-    let deepLinkDisposeBag = DisposeBag()
     let featureFlagsBag = DisposeBag()
     let window: UIWindow = {
         var window = UIWindow(frame: UIScreen.main.bounds)
@@ -90,37 +89,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
 
-    func registerForPushNotifications() -> Future<Void> {
-        Future { completion in
-            UNUserNotificationCenter.current()
-                .getNotificationSettings { settings in
-                    let store: ProfileStore = globalPresentableStoreContainer.get()
-                    store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
-                    guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
-                        return
-                    }
-                    if settings.authorizationStatus == .denied {
-                        DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
-                    }
+    func registerForPushNotifications(completed: @escaping () -> Void) {
+        UNUserNotificationCenter.current()
+            .getNotificationSettings { settings in
+                let store: ProfileStore = globalPresentableStoreContainer.get()
+                store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+                guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+                    return
                 }
+                if settings.authorizationStatus == .denied {
+                    DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
+                }
+            }
 
-            let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
-            UNUserNotificationCenter.current()
-                .requestAuthorization(
-                    options: authOptions,
-                    completionHandler: { _, _ in
+        let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+        UNUserNotificationCenter.current()
+            .requestAuthorization(
+                options: authOptions,
+                completionHandler: { _, _ in
+                    UNUserNotificationCenter.current()
+                        .getNotificationSettings { settings in
+                            let store: ProfileStore = globalPresentableStoreContainer.get()
+                            store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+                        }
+                    completed()
+                }
+            )
 
-                        UNUserNotificationCenter.current()
-                            .getNotificationSettings { settings in
-                                let store: ProfileStore = globalPresentableStoreContainer.get()
-                                store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
-                            }
-                        completion(.success)
-                    }
-                )
-
-            return NilDisposer()
-        }
     }
 
     func handleURL(url: URL) {

@@ -4,6 +4,7 @@ import Contracts
 import CoreDependencies
 import Flow
 import Foundation
+import Home
 import Payment
 import Presentation
 import Profile
@@ -52,48 +53,12 @@ extension AppDelegate {
 }
 
 extension AppDelegate: UNUserNotificationCenterDelegate {
-    fileprivate func performPostLoggedIn(work: @escaping () -> Void) {
-        bag += ApplicationContext.shared.$isLoggedIn.atOnce().filter { $0 }
-            .onFirstValue { _ in
-                work()
-            }
-    }
-
     fileprivate func performPushAction(notificationType: String, userInfo: [AnyHashable: Any]) {
-        if notificationType == "NEW_MESSAGE" {
-            performPostLoggedIn {
-                let store: UgglanStore = globalPresentableStoreContainer.get()
-                store.send(.openChat)
-            }
-        } else if notificationType == "REFERRAL_SUCCESS" || notificationType == "REFERRALS_ENABLED" {
-            performPostLoggedIn {
-                let store: UgglanStore = globalPresentableStoreContainer.get()
-                store.send(.makeTabActive(deeplink: .forever))
-            }
-        } else if notificationType == "CONNECT_DIRECT_DEBIT" {
-            performPostLoggedIn {
-                /* TODO: ADD PUSH NOTIFICATIONS */
-            }
-        } else if notificationType == "PAYMENT_FAILED" {
-            performPostLoggedIn {
-                /* TODO: ADD PUSH NOTIFICATIONS */
-            }
-        } else if notificationType == "OPEN_FOREVER_TAB" {
-            performPostLoggedIn {
-                let store: UgglanStore = globalPresentableStoreContainer.get()
-                store.send(.makeTabActive(deeplink: .forever))
-            }
-        } else if notificationType == "OPEN_INSURANCE_TAB" {
-            performPostLoggedIn {
-                let store: UgglanStore = globalPresentableStoreContainer.get()
-                store.send(.makeTabActive(deeplink: .insurances))
-            }
-        } else if notificationType == "CROSS_SELL" {
-            performPostLoggedIn {
-                let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
-                ugglanStore.send(.makeTabActive(deeplink: .insurances))
-            }
-        }
+        NotificationCenter.default.post(
+            name: .handlePushNotification,
+            object: PushNotificationType(rawValue: notificationType),
+            userInfo: userInfo
+        )
     }
 
     func userNotificationCenter(
@@ -129,7 +94,17 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             self.performPushAction(notificationType: notificationType, userInfo: userInfo)
         }
 
-        let store: ChatStore = globalPresentableStoreContainer.get()
-        if store.state.allowNewMessageToast { Toasts.shared.displayToast(toast: toast) }
+        if !HomeNavigationViewModel.isChatPresented { Toasts.shared.displayToast(toast: toast) }
     }
+}
+
+enum PushNotificationType: String {
+    case NEW_MESSAGE
+    case REFERRAL_SUCCESS
+    case REFERRALS_ENABLED
+    case CONNECT_DIRECT_DEBIT
+    case PAYMENT_FAILED
+    case OPEN_FOREVER_TAB
+    case OPEN_INSURANCE_TAB
+    case CROSS_SELL
 }

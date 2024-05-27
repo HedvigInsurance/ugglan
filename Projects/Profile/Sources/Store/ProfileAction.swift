@@ -21,8 +21,6 @@ public indirect enum ProfileAction: ActionProtocol, Hashable {
     case setPushNotificationStatus(status: Int?)
     case setPushNotificationsTo(date: Date?)
 
-    case registerForPushNotifications
-
     case updateLanguage
 }
 

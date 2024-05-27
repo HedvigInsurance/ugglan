@@ -1,4 +1,10 @@
 import Foundation
 import SwiftUI
 
-extension UIApplication { var appDelegate: AppDelegate { UIApplication.shared.delegate as! AppDelegate } }
+extension UIApplication {
+    var appDelegate: AppDelegate { SharedAppDelegate.appDelegate }
+}
+
+private class SharedAppDelegate {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) static var appDelegate
+}

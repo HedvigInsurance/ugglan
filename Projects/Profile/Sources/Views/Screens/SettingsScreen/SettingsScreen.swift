@@ -41,7 +41,8 @@ struct SettingsScreen: View {
                                     }
                                     DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
                                 } else {
-                                    store.send(.registerForPushNotifications)
+                                    NotificationCenter.default.post(name: .registerForPushNotifications, object: nil)
+
                                 }
                             }
                         )

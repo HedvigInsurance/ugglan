@@ -439,9 +439,19 @@ struct HomeTab: View {
             style: .large,
             options: $homeNavigationVm.openChatOptions,
             content: { openChat in
-                ChatNavigation(openChat: openChat)
+                ChatNavigation(openChat: openChat) { type, onDone in
+                    AskForPushnotifications(
+                        text: L10n.chatActivateNotificationsBody,
+                        onActionExecuted: {
+                            onDone()
+                        }
+                    )
+                }
             }
         )
+        .onChange(of: homeNavigationVm.openChat) { newValue in
+            HomeNavigationViewModel.isChatPresented = newValue != nil
+        }
     }
 }
 
@@ -462,6 +472,39 @@ class LoggedInNavigationViewModel: ObservableObject {
         NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) { notification in
             let deepLinkUrl = notification.object as? URL
             self.handleDeepLinks(deepLinkUrl: deepLinkUrl)
+        }
+
+        NotificationCenter.default.addObserver(forName: .registerForPushNotifications, object: nil, queue: nil) {
+            notification in
+            // register for push notifications
+            UIApplication.shared.appDelegate.registerForPushNotifications {}
+        }
+
+        NotificationCenter.default.addObserver(forName: .handlePushNotification, object: nil, queue: nil) {
+            notification in
+            if let object = notification.object as? PushNotificationType {
+                switch object {
+                case .NEW_MESSAGE:
+                    NotificationCenter.default.post(name: .openChat, object: nil)
+                case .REFERRAL_SUCCESS, .REFERRALS_ENABLED:
+                    UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+                    self.selectedTab = 2
+                case .CONNECT_DIRECT_DEBIT:
+                    self.homeNavigationVm.connectPaymentVm.connectPaymentModel = .init(setUpType: nil)
+                case .PAYMENT_FAILED:
+                    UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+                    self.selectedTab = 3
+                case .OPEN_FOREVER_TAB:
+                    UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+                    self.selectedTab = 2
+                case .OPEN_INSURANCE_TAB:
+                    UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+                    self.selectedTab = 1
+                case .CROSS_SELL:
+                    UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+                    self.selectedTab = 1
+                }
+            }
         }
     }
 

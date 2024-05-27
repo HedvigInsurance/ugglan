@@ -29,10 +29,11 @@ enum ClaimsRouterActions: Hashable {
     case checkOutNoRepair
 }
 
-enum ClaimsRouterActionsWithoutBackButton {
+public enum ClaimsRouterActionsWithoutBackButton {
     case success
     case failure
     case updateApp
+    case askForPushNotifications
 }
 
 public struct ClaimsNavigation: View {
@@ -89,6 +90,8 @@ public struct ClaimsNavigation: View {
                         openSuccessScreen()
                     case .updateApp:
                         openUpdateAppScreen()
+                    default:
+                        EmptyView()
                     }
                 }
         }

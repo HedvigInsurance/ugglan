@@ -150,11 +150,17 @@ class PresentationViewModel: ObservableObject {
 
 public class hHostingController<Content: View>: UIHostingController<Content> {
     var onViewWillLayoutSubviews: () -> Void = {}
+    var onViewDidLayoutSubviews: () -> Void = {}
     var onDeinit: () -> Void = {}
     private let contentName: String
     public init(rootView: Content, contentName: String) {
         self.contentName = contentName
         super.init(rootView: rootView)
+    }
+
+    public override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        onViewDidLayoutSubviews()
     }
 
     public override func viewWillLayoutSubviews() {

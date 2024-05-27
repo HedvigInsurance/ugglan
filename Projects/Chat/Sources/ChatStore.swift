@@ -5,7 +5,6 @@ import hCore
 public struct ChatState: StateProtocol {
     public init() {}
     @Transient(defaultValue: false) var askedForPushNotificationsPermission: Bool
-    @Transient(defaultValue: true) public var allowNewMessageToast: Bool
 }
 
 public enum ChatAction: ActionProtocol {
