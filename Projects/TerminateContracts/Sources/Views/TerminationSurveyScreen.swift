@@ -70,7 +70,7 @@ struct TerminationSurveyScreen: View {
                 .sectionContainerStyle(.transparent)
             }
             .trackLoading(TerminationContractStore.self, action: .sendSurvey)
-            .hUseColoredCheckbox
+            .hUseNewDesign
     }
 
     @ViewBuilder

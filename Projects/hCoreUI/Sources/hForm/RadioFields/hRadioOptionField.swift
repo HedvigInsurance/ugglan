@@ -95,12 +95,12 @@ struct hRadioOptionField_Previews: PreviewProvider {
                 useAnimation: true
             )
         }
-        .hUseColoredCheckbox
+        .hUseNewDesign
     }
 }
 
 struct hRadioOptionSelectedView: View {
-    @Environment(\.hUseColoredCheckbox) var coloredCheckBox
+    @Environment(\.hUseNewDesign) var hUseNewDesign
     @Binding var selectedValue: String?
     let value: String
 
@@ -122,7 +122,7 @@ struct hRadioOptionSelectedView: View {
                             .foregroundColor(
                                 hRadioOptionSelectedView.getFillColor(
                                     isSelected: selectedValue == value,
-                                    coloredCheckBox: coloredCheckBox
+                                    coloredCheckBox: hUseNewDesign
                                 )
                             )
                         Circle().fill()
@@ -136,7 +136,7 @@ struct hRadioOptionSelectedView: View {
     }
 
     private func shouldHaveMiddleCutted() -> Bool {
-        selectedValue == value && coloredCheckBox
+        selectedValue == value && hUseNewDesign
     }
 
     @hColorBuilder

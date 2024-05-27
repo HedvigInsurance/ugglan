@@ -315,7 +315,7 @@ public class TerminationFlowJourney {
                 subTitle: .init(.small, .title3, L10n.terminationFlowBody)
             )
             .trackLoading(TerminationContractStore.self, action: .getInitialStep)
-            .hUseColoredCheckbox
+            .hUseNewDesign
             .hFieldSize(.small)
             .toolbar {
                 ToolbarItem(

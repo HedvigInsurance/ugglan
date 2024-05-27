@@ -34,7 +34,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     @Environment(\.hButtonIsLoading) var isLoading
     @Environment(\.hCheckboxPickerBottomAttachedView) var bottomAttachedView
     @Environment(\.hIncludeManualInput) var includeManualInput
-    @Environment(\.hUseColoredCheckbox) var coloredCheckBox
+    @Environment(\.hUseNewDesign) var hUseNewDesign
 
     @State var manualBrandName: String = ""
     @State var manualInput: Bool = false
@@ -345,7 +345,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                                 .foregroundColor(
                                     hRadioOptionSelectedView.getFillColor(
                                         isSelected: isSelected,
-                                        coloredCheckBox: coloredCheckBox
+                                        coloredCheckBox: hUseNewDesign
                                     )
                                 )
                         )
@@ -477,19 +477,19 @@ extension View {
     }
 }
 
-private struct EnvironmentHUseColoredCheckbox: EnvironmentKey {
+private struct EnvironmentHUseNewDesign: EnvironmentKey {
     static let defaultValue: Bool = false
 }
 
 extension EnvironmentValues {
-    public var hUseColoredCheckbox: Bool {
-        get { self[EnvironmentHUseColoredCheckbox.self] }
-        set { self[EnvironmentHUseColoredCheckbox.self] = newValue }
+    public var hUseNewDesign: Bool {
+        get { self[EnvironmentHUseNewDesign.self] }
+        set { self[EnvironmentHUseNewDesign.self] = newValue }
     }
 }
 
 extension View {
-    public var hUseColoredCheckbox: some View {
-        self.environment(\.hUseColoredCheckbox, true)
+    public var hUseNewDesign: some View {
+        self.environment(\.hUseNewDesign, true)
     }
 }
