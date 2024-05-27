@@ -65,7 +65,7 @@ struct TerminationSurveyScreen: View {
                         }
                         .disabled(!vm.continueEnabled)
                     }
-
+                    .padding(.bottom, 16)
                 }
                 .sectionContainerStyle(.transparent)
             }
@@ -236,7 +236,7 @@ struct TerminationFlowSurveyStepFeedBackView: View {
             selectedValue: vm.text,
             placeholder: L10n.terminationSurveyFeedbackHint,
             required: vm.required,
-            maxCharacters: 140
+            maxCharacters: 2000
         ) { [weak vm] text in guard let vm else { return }
             vm.error = vm.required && text.isEmpty ? L10n.terminationSurveyFeedbackInfo : nil
             vm.text = text

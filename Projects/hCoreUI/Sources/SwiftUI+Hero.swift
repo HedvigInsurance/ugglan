@@ -7,9 +7,8 @@ public struct HeroAnimationStartView<Content: View>: UIViewRepresentable {
     public func makeUIView(context: Context) -> UIView {
         let vc = UIHostingController(rootView: content())
         vc.view.backgroundColor = .clear
-        vc.view.backgroundColor = .clear
-        vc.view.hero.id = "heroId"
-        vc.view.heroModifiers = [.spring(stiffness: 250, damping: 25)]
+        vc.view.hero.id = "mainHeroId"
+        vc.view.heroModifiers = [.spring(stiffness: 250, damping: 25), .fade]
         vc.view.layer.cornerRadius = 12
         return vc.view
     }
@@ -30,8 +29,8 @@ public struct HeroAnimationDestinationView<Content: View>: UIViewRepresentable {
     public func makeUIView(context: Context) -> UIView {
         let view = UIView()
         view.backgroundColor = .clear
-        view.hero.id = "heroId"
-        view.heroModifiers = [.spring(stiffness: 250, damping: 25)]
+        view.hero.id = "mainHeroId"
+        view.heroModifiers = [.spring(stiffness: 250, damping: 25), .fade]
         view.layer.cornerRadius = 12
         let vc = UIHostingController(rootView: content())
         vc.view.backgroundColor = .clear

@@ -53,7 +53,7 @@ struct SetTerminationDateLandingScreen: View {
                         }
                         .sectionContainerStyle(.transparent)
                     }
-                    .padding(.top, 16)
+                    .padding(.vertical, 16)
                 }
         }
     }
