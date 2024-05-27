@@ -28,10 +28,6 @@ public class Router: ObservableObject {
         return onPush?([], AnyView(view), "\(T.self)")
     }
 
-    //    func pop(vc: UIViewController) {
-    //        onPopVC?(vc)
-    //    }
-
     public func pop<T>(_ hash: T.Type) {
         if let index = routes.lastIndex(of: "\(hash.self)") {
             self.routes.remove(at: index)

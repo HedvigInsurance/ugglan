@@ -365,7 +365,6 @@ extension DefaultStyling {
         if #available(iOS 15.0, *) {
             UITabBar.appearance().scrollEdgeAppearance = scrollEdgeAppearance
         }
-        //        UITabBar.appearance().unselectedItemTintColor = UIColor.brand(.primaryText()).withAlphaComponent(0.4)
         UITabBar.appearance().unselectedItemTintColor = .red
         UITabBar.appearance().tintColor = .brand(.primaryText())
         UITabBar.appearance().backgroundColor = tabBarBackgroundColor
