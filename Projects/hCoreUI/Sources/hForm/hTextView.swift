@@ -59,6 +59,7 @@ public struct hTextView: View {
                         .padding(.bottom, 8)
                     }
                     .hSectionMinimumPadding
+                    .padding(.horizontal, -16)
                     .sectionContainerStyle(.opaque)
                 }
                 .id(UUID().uuidString)
@@ -365,6 +366,7 @@ private struct SwiftUITextView: UIViewRepresentable {
         }
         textView.updateHeight()
         view.hero.id = "HeroId"
+        view.heroModifiers = [.spring(stiffness: 250, damping: 25), .fade]
 
         return view
     }
