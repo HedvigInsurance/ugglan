@@ -64,6 +64,7 @@ enum QuestionType: String {
     case commonQuestions
     case allQuestions
     case relatedQuestions
+    case searchQuestions
 
     var title: String {
         switch self {
@@ -73,6 +74,8 @@ enum QuestionType: String {
             return L10n.hcAllQuestionTitle
         case .relatedQuestions:
             return L10n.hcRelatedQuestionsTitle
+        case .searchQuestions:
+            return L10n.hcQuestionsTitle
         }
     }
 }
@@ -103,7 +106,7 @@ struct QuestionsItems: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             switch questionType {
-            case .commonQuestions:
+            case .commonQuestions, .searchQuestions:
                 HelpCenterPill(title: questionType.title, color: .blue)
             case .allQuestions:
                 HelpCenterPill(title: questionType.title, color: .purple)
