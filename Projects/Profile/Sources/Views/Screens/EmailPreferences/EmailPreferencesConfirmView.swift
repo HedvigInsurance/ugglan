@@ -9,12 +9,13 @@ struct EmailPreferencesConfirmView: View {
     var body: some View {
         GenericErrorView(
             title: L10n.General.areYouSure,
-            description: L10n.SettingsScreen.unsubscribeDescription,
+            description: vm.isUnsubscribed
+                ? L10n.SettingsScreen.subscribeDescription : L10n.SettingsScreen.unsubscribeDescription,
             icon: .triangle,
             buttons: .init(
                 actionButtonAttachedToBottom:
                     .init(
-                        buttonTitle: L10n.SettingsScreen.confirmUnsubscribe,
+                        buttonTitle: vm.isUnsubscribed ? L10n.General.yes : L10n.SettingsScreen.confirmUnsubscribe,
                         buttonAction: {
                             Task {
                                 await vm.toogleSubscription()
@@ -47,7 +48,8 @@ extension EmailPreferencesConfirmView {
         return HostingJourney(
             ProfileStore.self,
             rootView: EmailPreferencesConfirmView(vm: store.memberSubscriptionPreferenceViewModel),
-            style: .detented(.scrollViewContentSize)
+            style: .detented(.scrollViewContentSize),
+            options: [.defaults, .blurredBackground]
         ) { action in
             if case .dismissConfirmEmailPreferences = action {
                 PopJourney()

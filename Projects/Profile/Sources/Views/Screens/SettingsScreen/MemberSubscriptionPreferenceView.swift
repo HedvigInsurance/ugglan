@@ -38,14 +38,8 @@ class MemberSubscriptionPreferenceViewModel: ObservableObject {
     }
 
     func onEmailPreferencesButtonTap() {
-        if isUnsubscribed {
-            Task {
-                await toogleSubscription()
-            }
-        } else {
-            let store: ProfileStore = globalPresentableStoreContainer.get()
-            store.send(.showConfirmEmailPreferences)
-        }
+        let store: ProfileStore = globalPresentableStoreContainer.get()
+        store.send(.showConfirmEmailPreferences)
     }
 
     func updateUnsubscibed() {
