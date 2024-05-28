@@ -25,9 +25,10 @@ public struct LanguageAndMarketPickerView: View {
 
                 ForEach(LanguageAndMarketPicker.allCases) { panel in
                     if vm.selected == panel {
-                        viewFor(view: panel)
-                            .transition(.asymmetric(insertion: vm.insertion, removal: vm.removal))
-                            .animation(.easeInOut(duration: 0.4))
+                        withAnimation(.easeInOut(duration: 0.4)) {
+                            viewFor(view: panel)
+                                .transition(.asymmetric(insertion: vm.insertion, removal: vm.removal))
+                        }
                     }
                 }
                 .padding(.top, 8)
@@ -42,8 +43,10 @@ public struct LanguageAndMarketPickerView: View {
                         .foregroundColor(hTextColor.tertiary)
 
                     hButton.LargeButton(type: .primary) {
-                        vm.save()
-                        router.dismiss()
+                        Task {
+                            await vm.save()
+                            router.dismiss()
+                        }
                     } content: {
                         hText(L10n.generalSaveButton)
                     }
@@ -167,17 +170,16 @@ class LanguageAndMarketPickerViewModel: ObservableObject {
                     self?.selectedLocaleCode = currentSelectedLocale.rawValue
                 } else {
                     self?.selectedLocaleCode = market.preferredLanguage.rawValue
-
                 }
             }
         }
         .store(in: &cancellables)
     }
 
-    func save() {
+    func save() async {
         let store: MarketStore = globalPresentableStoreContainer.get()
-        store.send(.selectMarket(market: selectedMarket))
-        store.send(.selectLanguage(language: selectedLocale.rawValue))
+        await store.sendAsync(.selectMarket(market: selectedMarket))
+        await store.sendAsync(.selectLanguage(language: self.selectedLocale.rawValue))
     }
 }
 
