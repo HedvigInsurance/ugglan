@@ -14,12 +14,12 @@ import hCoreUI
 class HelpCenterNavigationViewModel: ObservableObject {
     @Published var quickActions = QuickActions()
     var connectPaymentsVm = ConnectPaymentViewModel()
+    var editCoInsuredVm = EditCoInsuredViewModel()
+
     struct QuickActions {
         var isTravelCertificatePresented = false
         var isChangeAddressPresented = false
-        var isEditCoInsuredSelectContractPresented: CoInsuredConfigModel?
 
-        var isEditCoInsuredPresented: InsuredPeopleConfig?
         var isEditCoInsuredMissingContractPresented: InsuredPeopleConfig?
 
         var isCancellationPresented = false
@@ -63,38 +63,6 @@ public struct HelpCenterNavigation<Content: View>: View {
         }
         .ignoresSafeArea()
         .detent(
-            item: $helpCenterVm.quickActions.isEditCoInsuredMissingContractPresented,
-            style: .height
-        ) { config in
-            redirect(
-                .editCoInsured(
-                    config: config,
-                    showMissingAlert: true,
-                    isMissingAlertAction: { isMissing in
-                    }
-                )
-            )
-        }
-        .detent(
-            item: $helpCenterVm.quickActions.isEditCoInsuredSelectContractPresented,
-            style: .height
-        ) { configs in
-            redirect(
-                .editCoInuredSelectInsurance(
-                    configs: configs.configs,
-                    isMissingAlertAction: { [weak helpCenterVm] missingContract in
-                        helpCenterVm?.quickActions.isEditCoInsuredSelectContractPresented = nil
-                        helpCenterVm?.quickActions.isEditCoInsuredMissingContractPresented = missingContract
-                    }
-                )
-            )
-        }
-        .fullScreenCover(
-            item: $helpCenterVm.quickActions.isEditCoInsuredPresented
-        ) { config in
-            getEditCoInsuredView(config: config)
-        }
-        .detent(
             presented: $helpCenterVm.quickActions.isFirstVetPresented,
             style: .large
         ) {
@@ -113,14 +81,7 @@ public struct HelpCenterNavigation<Content: View>: View {
             isPresented: $helpCenterVm.quickActions.isTravelCertificatePresented,
             content: {
                 redirect(
-                    .travelInsurance(redirect: { redirectType in
-                        switch redirectType {
-                        case let .editCoInsured(config, _, _):
-                            handle(quickAction: .editCoInsured)
-                        default:
-                            break
-                        }
-                    })
+                    .travelInsurance
                 )
             }
         )
@@ -179,6 +140,7 @@ public struct HelpCenterNavigation<Content: View>: View {
             }
         )
         .handleConnectPayment(with: helpCenterVm.connectPaymentsVm)
+        .handleEditCoInsured(with: helpCenterVm.editCoInsuredVm)
         .environmentObject(helpCenterVm)
     }
 
@@ -204,29 +166,16 @@ public struct HelpCenterNavigation<Content: View>: View {
                     InsuredPeopleConfig(contract: $0, fromInfoCard: true)
                 })
 
-            if contractsSupportingCoInsured.count > 1 {
-                helpCenterVm.quickActions.isEditCoInsuredSelectContractPresented = .init(
-                    configs: contractsSupportingCoInsured
-                )
+            if contractsSupportingCoInsured.count > 0 {
+                helpCenterVm.editCoInsuredVm.editCoInsuredModelDetent = .init(contractsSupportingCoInsured: {
+                    return contractsSupportingCoInsured
+                })
             } else {
-                helpCenterVm.quickActions.isEditCoInsuredPresented = contractsSupportingCoInsured.first
+                helpCenterVm.editCoInsuredVm.editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
+                    return contractsSupportingCoInsured
+                })
             }
         }
-    }
-
-    private func getEditCoInsuredView(config: InsuredPeopleConfig) -> some View {
-        redirect(
-            .editCoInsured(
-                config: config,
-                showMissingAlert: false,
-                isMissingAlertAction: { [weak helpCenterVm] missingContract in
-                    helpCenterVm?.quickActions.isEditCoInsuredPresented = nil
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        helpCenterVm?.quickActions.isEditCoInsuredMissingContractPresented = missingContract
-                    }
-                }
-            )
-        )
     }
 
     private func getSubmitClaimDeflectScreen() -> some View {
@@ -235,18 +184,9 @@ public struct HelpCenterNavigation<Content: View>: View {
 }
 
 public enum HelpCenterRedirectType {
-    case travelInsurance(redirect: (HelpCenterRedirectType) -> Void)
+    case travelInsurance
     case moveFlow
     case deflect
-    case editCoInsured(
-        config: InsuredPeopleConfig,
-        showMissingAlert: Bool,
-        isMissingAlertAction: (InsuredPeopleConfig) -> Void
-    )
-    case editCoInuredSelectInsurance(
-        configs: [InsuredPeopleConfig],
-        isMissingAlertAction: (InsuredPeopleConfig) -> Void
-    )
 }
 
 #Preview{

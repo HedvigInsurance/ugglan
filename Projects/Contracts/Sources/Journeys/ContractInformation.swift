@@ -59,10 +59,15 @@ struct ContractInformationView: View {
                                         if onlyCoInsured(contract)
                                             && Dependencies.featureFlags().isEditCoInsuredEnabled
                                         {
-                                            contractsNavigationVm.editCoInsuredConfig = .init(
-                                                contract: contract,
-                                                fromInfoCard: false
-                                            )
+                                            contractsNavigationVm.editCoInsuredVm.editCoInsuredModelFullScreen = .init(
+                                                contractsSupportingCoInsured: {
+                                                    let contract: InsuredPeopleConfig = .init(
+                                                        contract: contract,
+                                                        fromInfoCard: false
+                                                    )
+                                                    return [contract]
+                                                })
+
                                         } else {
                                             contractsNavigationVm.changeYourInformationContract = contract
                                         }
@@ -200,7 +205,11 @@ struct ContractInformationView: View {
         )
         .onTapGesture {
             if contract.showEditCoInsuredInfo && coInsured.terminatesOn == nil {
-                contractsNavigationVm.editCoInsuredConfig = .init(contract: contract, fromInfoCard: false)
+                contractsNavigationVm.editCoInsuredVm.editCoInsuredModelFullScreen = .init(
+                    contractsSupportingCoInsured: {
+                        let contract: InsuredPeopleConfig = .init(contract: contract, fromInfoCard: false)
+                        return [contract]
+                    })
             }
         }
     }
@@ -362,7 +371,10 @@ public struct CoInsuredInfoView: View {
                 .init(
                     buttonTitle: L10n.contractCoinsuredMissingAddInfo,
                     buttonAction: {
-                        contractsNavigationVm.editCoInsuredConfig = config
+                        contractsNavigationVm.editCoInsuredVm.editCoInsuredModelFullScreen = .init(
+                            contractsSupportingCoInsured: {
+                                return [config]
+                            })
                     }
                 )
             ])

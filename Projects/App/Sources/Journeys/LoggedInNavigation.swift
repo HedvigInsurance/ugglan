@@ -50,7 +50,15 @@ struct LoggedInNavigation: View {
                 infoButtonPlacement: .leading,
                 useOwnNavigation: true,
                 openCoInsured: {
-                    vm.getEditCoInsuredView(config: .init())
+                    vm.editCoInsuredVm.editCoInsuredModelDetent = .init(contractsSupportingCoInsured: {
+                        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                        let contractsSupportingCoInsured = contractStore.state.activeContracts
+                            .filter({ $0.showEditCoInsuredInfo })
+                            .compactMap({
+                                InsuredPeopleConfig(contract: $0, fromInfoCard: true)
+                            })
+                        return contractsSupportingCoInsured
+                    })
                 }
             )
         }
@@ -112,8 +120,6 @@ struct LoggedInNavigation: View {
     var contractsTab: some View {
         ContractsNavigation(contractsNavigationVm: vm.contractsNavigationVm) { redirectType in
             switch redirectType {
-            case let .editCoInsured(editCoInsuredConfig, _, _):
-                vm.getEditCoInsuredView(config: editCoInsuredConfig)
             case .chat:
                 ChatScreen(vm: .init(topicType: nil))
             case .movingFlow:
@@ -139,6 +145,7 @@ struct LoggedInNavigation: View {
                 )
             }
         }
+        .handleEditCoInsured(with: vm.contractsNavigationVm.editCoInsuredVm)
         .tabItem {
             Image(
                 uiImage: vm.selectedTab == 1
@@ -199,12 +206,15 @@ struct LoggedInNavigation: View {
                             .compactMap({
                                 InsuredPeopleConfig(contract: $0, fromInfoCard: true)
                             })
+
                         if contractsSupportingCoInsured.count > 1 {
-                            vm.profileNavigationVm.isEditCoInsuredSelectContractPresented = .init(
-                                configs: contractsSupportingCoInsured
-                            )
-                        } else if let config = contractsSupportingCoInsured.first {
-                            vm.profileNavigationVm.isEditCoInsuredPresented = config
+                            vm.editCoInsuredVm.editCoInsuredModelDetent = .init(contractsSupportingCoInsured: {
+                                return contractsSupportingCoInsured
+                            })
+                        } else {
+                            vm.editCoInsuredVm.editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
+                                return contractsSupportingCoInsured
+                            })
                         }
                     }
                 )
@@ -263,17 +273,11 @@ struct LoggedInNavigation: View {
                         }
                     }
                 )
-            case let .editCoInuredSelectInsurance(configs):
-                EditCoInsuredSelectInsuranceNavigation(
-                    configs: configs,
-                    checkForAlert: vm.checkForAlert
-                )
-            case let .editCoInsured(config):
-                vm.getEditCoInsuredView(config: config)
             default:
                 EmptyView()
             }
         }
+        .handleEditCoInsured(with: vm.editCoInsuredVm)
         .tabItem {
             Image(
                 uiImage: vm.selectedTab == 4 ? hCoreUIAssets.profileTabActive.image : hCoreUIAssets.profileTab.image
@@ -307,6 +311,7 @@ struct HomeTab: View {
         }
         .environmentObject(homeNavigationVm)
         .handleConnectPayment(with: homeNavigationVm.connectPaymentVm)
+        .handleEditCoInsured(with: homeNavigationVm.editCoInsuredVm)
         .detent(
             presented: $homeNavigationVm.isSubmitClaimPresented,
             style: .height,
@@ -323,32 +328,6 @@ struct HomeTab: View {
                     .embededInNavigation(options: [.navigationType(type: .large)])
             }
         }
-        .detent(
-            item: $homeNavigationVm.isEditCoInsuredPresented,
-            style: .height
-        ) { config in
-            EditCoInsuredNavigation(
-                config: config,
-                checkForAlert: loggedInVm.checkForAlert
-            )
-        }
-        .detent(
-            item: $homeNavigationVm.isEditCoInsuredSelectContractPresented,
-            style: .height
-        ) { configs in
-            EditCoInsuredSelectInsuranceNavigation(
-                configs: configs.configs,
-                checkForAlert: loggedInVm.checkForAlert
-            )
-        }
-        .detent(
-            item: $homeNavigationVm.isMissingEditCoInsuredAlertPresented,
-            style: .height
-        ) { config in
-            loggedInVm.getMissingCoInsuredAlertView(
-                missingContractConfig: config
-            )
-        }
         .fullScreenCover(
             isPresented: $homeNavigationVm.isHelpCenterPresented
         ) {
@@ -357,25 +336,21 @@ struct HomeTab: View {
                     switch redirectType {
                     case .moveFlow:
                         MovingFlowNavigation()
-                    case let .editCoInsured(config, _, _):
-                        loggedInVm.getEditCoInsuredView(config: config)
-                    case let .editCoInuredSelectInsurance(configs, _):
-                        EditCoInsuredSelectInsuranceNavigation(
-                            configs: configs,
-                            checkForAlert: loggedInVm.checkForAlert
-                        )
-                    case let .travelInsurance(redirectType):
+                    case .travelInsurance:
                         TravelCertificateNavigation(
                             infoButtonPlacement: .leading,
                             useOwnNavigation: true,
                             openCoInsured: {
-                                redirectType(
-                                    .editCoInsured(
-                                        config: .init(),
-                                        showMissingAlert: false,
-                                        isMissingAlertAction: { _ in }
-                                    )
-                                )
+                                loggedInVm.editCoInsuredVm.editCoInsuredModelDetent = .init(
+                                    contractsSupportingCoInsured: {
+                                        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                                        let contractsSupportingCoInsured = contractStore.state.activeContracts
+                                            .filter({ $0.showEditCoInsuredInfo })
+                                            .compactMap({
+                                                InsuredPeopleConfig(contract: $0, fromInfoCard: true)
+                                            })
+                                        return contractsSupportingCoInsured
+                                    })
                             }
                         )
                     case .deflect:
@@ -467,6 +442,8 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isCancelInsurancePresented = false
     @Published var isEuroBonusPresented = false
     @Published var isUrlPresented: URL?
+
+    public var editCoInsuredVm = EditCoInsuredViewModel()
 
     init() {
         NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) { notification in
@@ -567,50 +544,6 @@ class LoggedInNavigationViewModel: ObservableObject {
         guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
         guard let queryItems = urlComponents.queryItems else { return nil }
         return queryItems.first(where: { $0.name == "contractId" })?.value
-    }
-
-    func checkForAlert() {
-        Task {
-            homeNavigationVm.isEditCoInsuredPresented = nil
-            homeNavigationVm.isEditCoInsuredSelectContractPresented = nil
-            homeNavigationVm.isMissingEditCoInsuredAlertPresented = nil
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-            await contractStore.sendAsync(.fetchContracts)
-            let missingContract = contractStore.state.activeContracts.first { contract in
-                if contract.upcomingChangedAgreement != nil {
-                    return false
-                } else {
-                    return contract.coInsured
-                        .first(where: { coInsured in
-                            coInsured.hasMissingInfo && contract.terminationDate == nil
-                        }) != nil
-                }
-            }
-
-            if let missingContract {
-                let missingContractConfig = InsuredPeopleConfig(contract: missingContract, fromInfoCard: false)
-                homeNavigationVm.isMissingEditCoInsuredAlertPresented = missingContractConfig
-            }
-        }
-    }
-
-    @ViewBuilder
-    func getEditCoInsuredView(
-        config: InsuredPeopleConfig
-    ) -> some View {
-        EditCoInsuredNavigation(
-            config: config,
-            checkForAlert: checkForAlert
-        )
-    }
-
-    func getMissingCoInsuredAlertView(
-        missingContractConfig: InsuredPeopleConfig
-    ) -> some View {
-        EditCoInsuredAlertNavigation(
-            config: missingContractConfig,
-            checkForAlert: checkForAlert
-        )
     }
 
     public func openUrl(url: URL) {
