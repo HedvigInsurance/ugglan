@@ -5,17 +5,21 @@ import hCoreUI
 
 struct MemberSubscriptionPreferenceView: View {
     @ObservedObject var vm: MemberSubscriptionPreferenceViewModel
+    @Inject var featureFlags: FeatureFlags
+    @ViewBuilder
     var body: some View {
-        hFloatingField(
-            value: vm.isUnsubscribed ? L10n.General.unsubscribed : L10n.General.subscribed,
-            placeholder: L10n.SettingsScreen.emailPreferences,
-            onTap: {
-                vm.onEmailPreferencesButtonTap()
+        if featureFlags.emailPreferencesEnabled {
+            hFloatingField(
+                value: vm.isUnsubscribed ? L10n.General.unsubscribed : L10n.General.subscribed,
+                placeholder: L10n.SettingsScreen.emailPreferences,
+                onTap: {
+                    vm.onEmailPreferencesButtonTap()
+                }
+            )
+            .disabled(vm.isLoading)
+            .task {
+                vm.setMemberId()
             }
-        )
-        .disabled(vm.isLoading)
-        .task {
-            vm.setMemberId()
         }
     }
 }
