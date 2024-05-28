@@ -10,7 +10,6 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     @Environment(\.hFieldSize) var size
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hFieldRightAttachedView) var rightAttachedView
-    @Environment(\.hFieldLeftAttachedView) var leftAttachedView
     @Namespace private var animationNamespace
     @State private var animationEnabled: Bool = true
     private var masking: Masking
@@ -353,10 +352,6 @@ private struct EnvironmentHFieldAttachedView: EnvironmentKey {
     static let defaultValue: AnyView? = nil
 }
 
-private struct EnvironmentHFieldAttachedLeftView: EnvironmentKey {
-    static let defaultValue: AnyView? = nil
-}
-
 extension EnvironmentValues {
     public var hFieldRightAttachedView: AnyView? {
         get { self[EnvironmentHFieldAttachedView.self] }
@@ -364,22 +359,9 @@ extension EnvironmentValues {
     }
 }
 
-extension EnvironmentValues {
-    public var hFieldLeftAttachedView: AnyView? {
-        get { self[EnvironmentHFieldAttachedLeftView.self] }
-        set { self[EnvironmentHFieldAttachedLeftView.self] = newValue }
-    }
-}
-
 extension View {
     public func hFieldAttachToRight<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         self.environment(\.hFieldRightAttachedView, AnyView(content()))
-    }
-}
-
-extension View {
-    public func hFieldAttachToLeft<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        self.environment(\.hFieldLeftAttachedView, AnyView(content()))
     }
 }
 

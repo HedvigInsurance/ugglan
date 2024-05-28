@@ -191,7 +191,6 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                                     ),
                                     animated: true
                                 )
-                                //                                }
                             }
                         }
 
