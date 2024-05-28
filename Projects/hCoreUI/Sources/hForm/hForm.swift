@@ -41,7 +41,8 @@ public struct hForm<Content: View>: View, KeyboardReadable {
         ZStack(alignment: .bottom) {
             if hDisableScroll {
                 if self.hFormIgnoreKeyboard {
-                    getScrollView().clipped()
+                    getScrollView()
+                        .clipped()
                         .ignoresSafeArea(.keyboard)
                 } else {
                     getScrollView().clipped()
@@ -166,7 +167,6 @@ public struct hForm<Content: View>: View, KeyboardReadable {
             Color.clear
                 .frame(height: mergeBottomWithContentIfNeeded ? 0 : bottomAttachedViewHeight)
         }
-
         .modifier(
             ForceScrollViewIndicatorInset(insetBottom: mergeBottomWithContentIfNeeded ? 0 : bottomAttachedViewHeight)
         )

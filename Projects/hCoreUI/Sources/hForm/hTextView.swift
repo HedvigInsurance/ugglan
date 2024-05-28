@@ -51,19 +51,14 @@ public struct hTextView: View {
                                 inEdit: .constant(false)
                             )
                             .frame(height: height + 12)
-                            hText("\(selectedValue.count)/\(maxCharacters)", style: .standardSmall)
-                                .foregroundColor(getTextColor)
-                                .frame(maxWidth: .infinity, alignment: .trailing)
-                                .padding(.horizontal, 16)
                         }
-                        .padding(.bottom, 8)
                     }
                     .hSectionMinimumPadding
                     .padding(.horizontal, -16)
                     .sectionContainerStyle(.opaque)
                 }
                 .id(UUID().uuidString)
-                .frame(height: height + 52)
+                .frame(height: height + 36)
                 if errorMessage != nil {
                     hCoreUIAssets.warningTriangleFilled.view
                         .foregroundColor(hSignalColor.amberElement)
