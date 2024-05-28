@@ -143,58 +143,6 @@ struct QuestionsItems: View {
     }
 }
 
-struct SearchResultsInQuestions: View {
-    let questions: [Question]
-    let questionType: QuestionType
-    let source: HelpViewSource
-    @PresentableStore var store: HomeStore
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            if !questions.isEmpty {
-                HelpCenterPill(title: "Results in questions", color: .blue)
-                VStack(alignment: .leading, spacing: 4) {
-                    hSection(questions, id: \.self) { item in
-                        hRow {
-                            hText(item.question)
-                                .fixedSize(horizontal: false, vertical: true)
-                            Spacer()
-                        }
-                        .withChevronAccessory
-                        .onTap {
-                            let attributes: [String: String] = [
-                                "question": item.questionEn,
-                                "answer": item.answer,
-                                "sourcePath": source.title,
-                                "questionType": questionType.rawValue,
-                            ]
-                            log.info("question clicked", error: nil, attributes: ["helpCenter": attributes])
-                            store.send(.openHelpCenterQuestionView(question: item))
-                        }
-                        .hWithoutHorizontalPadding
-                        .hWithoutDividerPadding
-                    }
-                    .withoutHorizontalPadding
-                    .hSectionMinimumPadding
-                    .sectionContainerStyle(.transparent)
-                    .padding(.leading, 2)
-                }
-            }
-        }
-    }
-}
-
-struct NothingFound: View {
-    var body: some View {
-        VStack(
-            alignment: /*@START_MENU_TOKEN@*/ .center /*@END_MENU_TOKEN@*/,
-            content: {
-                Text("Nothing found, sorry!")
-            }
-        )
-    }
-}
-
 struct SupportView: View {
     let topic: ChatTopicType?
     @PresentableStore var store: HomeStore
