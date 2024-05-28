@@ -53,7 +53,6 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
 
     public var body: some View {
         HStack(spacing: 8) {
-            leftAttachedView
             VStack {
                 VStack(alignment: .leading, spacing: 0) {
                     HStack {
