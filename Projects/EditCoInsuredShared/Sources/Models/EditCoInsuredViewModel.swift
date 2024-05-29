@@ -5,7 +5,13 @@ public class EditCoInsuredViewModel: ObservableObject {
     @Published public var editCoInsuredModelFullScreen: EditCoInsuredNavigationModel?
     @Published public var editCoInsuredModelMissingAlert: InsuredPeopleConfig?
 
-    public init() {}
+    public var redirect: (_ type: EditCoInsuredRedirectType) -> Void
+
+    public init(
+        redirect: @escaping (_ type: EditCoInsuredRedirectType) -> Void
+    ) {
+        self.redirect = redirect
+    }
 }
 
 public struct EditCoInsuredNavigationModel: Equatable, Identifiable {
@@ -18,4 +24,8 @@ public struct EditCoInsuredNavigationModel: Equatable, Identifiable {
     }
 
     public var id: String = UUID().uuidString
+}
+
+public enum EditCoInsuredRedirectType: Hashable {
+    case checkForAlert
 }

@@ -40,16 +40,7 @@ struct HomeBottomScrollView: View {
                     }
                 case .missingCoInsured:
                     CoInsuredInfoHomeView {
-                        navigationVm.editCoInsuredVm.editCoInsuredModelDetent = .init(contractsSupportingCoInsured: {
-                            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                            let contractsSupportingCoInsured = contractStore.state.activeContracts
-                                .filter({ $0.showEditCoInsuredInfo })
-                                .compactMap({
-                                    InsuredPeopleConfig(contract: $0, fromInfoCard: true)
-                                })
-
-                            return contractsSupportingCoInsured
-                        })
+                        navigationVm.handleEditCoInsured = true
                     }
                 case .terminated:
                     InfoCard(text: L10n.HomeTab.terminatedBody, type: .info)

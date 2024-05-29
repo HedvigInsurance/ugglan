@@ -11,10 +11,9 @@ import TravelCertificate
 import hCore
 import hCoreUI
 
-class HelpCenterNavigationViewModel: ObservableObject {
+public class HelpCenterNavigationViewModel: ObservableObject {
     @Published var quickActions = QuickActions()
     var connectPaymentsVm = ConnectPaymentViewModel()
-    var editCoInsuredVm = EditCoInsuredViewModel()
 
     struct QuickActions {
         var isTravelCertificatePresented = false
@@ -27,6 +26,7 @@ class HelpCenterNavigationViewModel: ObservableObject {
         var isSickAbroadPresented = false
     }
 
+    public init() {}
     struct ChatTopicModel: Identifiable, Equatable {
         var id: String?
         var topic: ChatTopicType?
@@ -35,15 +35,18 @@ class HelpCenterNavigationViewModel: ObservableObject {
 
 public struct HelpCenterNavigation<Content: View>: View {
     @StateObject var helpCenterVm = HelpCenterNavigationViewModel()
-
     @EnvironmentObject private var homeVm: HomeNavigationViewModel
     @PresentableStore private var store: HomeStore
     @ViewBuilder var redirect: (_ type: HelpCenterRedirectType) -> Content
     @StateObject var router = Router()
 
+    var editCoInsuredHandling: () -> Void
+
     public init(
+        editCoInsuredHandling: @escaping () -> Void,
         @ViewBuilder redirect: @escaping (_ type: HelpCenterRedirectType) -> Content
     ) {
+        self.editCoInsuredHandling = editCoInsuredHandling
         self.redirect = redirect
     }
 
@@ -140,7 +143,6 @@ public struct HelpCenterNavigation<Content: View>: View {
             }
         )
         .handleConnectPayment(with: helpCenterVm.connectPaymentsVm)
-        .handleEditCoInsured(with: helpCenterVm.editCoInsuredVm)
         .environmentObject(helpCenterVm)
     }
 
@@ -159,22 +161,7 @@ public struct HelpCenterNavigation<Content: View>: View {
         case .sickAbroad:
             helpCenterVm.quickActions.isSickAbroadPresented = true
         case .editCoInsured:
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-            let contractsSupportingCoInsured = contractStore.state.activeContracts
-                .filter({ $0.showEditCoInsuredInfo })
-                .compactMap({
-                    InsuredPeopleConfig(contract: $0, fromInfoCard: true)
-                })
-
-            if contractsSupportingCoInsured.count > 0 {
-                helpCenterVm.editCoInsuredVm.editCoInsuredModelDetent = .init(contractsSupportingCoInsured: {
-                    return contractsSupportingCoInsured
-                })
-            } else {
-                helpCenterVm.editCoInsuredVm.editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
-                    return contractsSupportingCoInsured
-                })
-            }
+            editCoInsuredHandling()
         }
     }
 
@@ -190,5 +177,5 @@ public enum HelpCenterRedirectType {
 }
 
 #Preview{
-    HelpCenterNavigation<EmptyView>(redirect: { _ in })
+    HelpCenterNavigation(editCoInsuredHandling: {}, redirect: { _ in })
 }

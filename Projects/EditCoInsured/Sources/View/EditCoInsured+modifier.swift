@@ -1,4 +1,3 @@
-import Contracts
 import EditCoInsuredShared
 import Foundation
 import Presentation
@@ -23,8 +22,9 @@ struct EditCoInsured: ViewModifier {
                 if contractsSupportingCoInsured.count > 1 {
                     EditCoInsuredSelectInsuranceNavigation(
                         configs: contractsSupportingCoInsured,
-                        //                        checkForAlert: loggedInVm.checkForAlert
-                        checkForAlert: {}
+                        checkForAlert: {
+                            checkForAlert()
+                        }
                     )
 
                 } else {
@@ -51,7 +51,9 @@ struct EditCoInsured: ViewModifier {
         if let contract = coInsuredModel.contractsSupportingCoInsured.first {
             EditCoInsuredNavigation(
                 config: contract,
-                checkForAlert: checkForAlert
+                checkForAlert: {
+                    checkForAlert()
+                }
             )
         }
     }
@@ -61,34 +63,17 @@ struct EditCoInsured: ViewModifier {
     ) -> some View {
         EditCoInsuredAlertNavigation(
             config: missingContractConfig,
-            checkForAlert: checkForAlert
+            checkForAlert: {
+                checkForAlert()
+            }
         )
     }
 
     func checkForAlert() {
-        Task {
-            vm.editCoInsuredModelDetent = nil
-            vm.editCoInsuredModelFullScreen = nil
-            vm.editCoInsuredModelMissingAlert = nil
+        vm.editCoInsuredModelDetent = nil
+        vm.editCoInsuredModelFullScreen = nil
+        vm.editCoInsuredModelMissingAlert = nil
 
-            /* TODO: MOVE THIS TO UGGLAN? */
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-            await contractStore.sendAsync(.fetchContracts)
-            let missingContract = contractStore.state.activeContracts.first { contract in
-                if contract.upcomingChangedAgreement != nil {
-                    return false
-                } else {
-                    return contract.coInsured
-                        .first(where: { coInsured in
-                            coInsured.hasMissingInfo && contract.terminationDate == nil
-                        }) != nil
-                }
-            }
-
-            if let missingContract {
-                let missingContractConfig = InsuredPeopleConfig(contract: missingContract, fromInfoCard: false)
-                vm.editCoInsuredModelMissingAlert = missingContractConfig
-            }
-        }
+        vm.redirect(.checkForAlert)
     }
 }

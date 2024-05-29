@@ -1,7 +1,6 @@
 import Chat
 import Claims
 import Contracts
-import EditCoInsured
 import EditCoInsuredShared
 import Forever
 import Foundation
@@ -50,15 +49,7 @@ struct LoggedInNavigation: View {
                 infoButtonPlacement: .leading,
                 useOwnNavigation: true,
                 openCoInsured: {
-                    vm.editCoInsuredVm.editCoInsuredModelDetent = .init(contractsSupportingCoInsured: {
-                        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                        let contractsSupportingCoInsured = contractStore.state.activeContracts
-                            .filter({ $0.showEditCoInsuredInfo })
-                            .compactMap({
-                                InsuredPeopleConfig(contract: $0, fromInfoCard: true)
-                            })
-                        return contractsSupportingCoInsured
-                    })
+                    vm.handleEditCoInsured()
                 }
             )
         }
@@ -200,22 +191,7 @@ struct LoggedInNavigation: View {
                     infoButtonPlacement: .trailing,
                     useOwnNavigation: false,
                     openCoInsured: {
-                        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                        let contractsSupportingCoInsured = contractStore.state.activeContracts
-                            .filter({ $0.showEditCoInsuredInfo })
-                            .compactMap({
-                                InsuredPeopleConfig(contract: $0, fromInfoCard: true)
-                            })
-
-                        if contractsSupportingCoInsured.count > 1 {
-                            vm.editCoInsuredVm.editCoInsuredModelDetent = .init(contractsSupportingCoInsured: {
-                                return contractsSupportingCoInsured
-                            })
-                        } else {
-                            vm.editCoInsuredVm.editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
-                                return contractsSupportingCoInsured
-                            })
-                        }
+                        vm.handleEditCoInsured()
                     }
                 )
             case let .deleteAccount(memberDetails):
@@ -310,8 +286,10 @@ struct HomeTab: View {
             }
         }
         .environmentObject(homeNavigationVm)
+        .onUpdate(of: homeNavigationVm.handleEditCoInsured) { newValue in
+            loggedInVm.handleEditCoInsured()
+        }
         .handleConnectPayment(with: homeNavigationVm.connectPaymentVm)
-        .handleEditCoInsured(with: homeNavigationVm.editCoInsuredVm)
         .detent(
             presented: $homeNavigationVm.isSubmitClaimPresented,
             style: .height,
@@ -332,6 +310,9 @@ struct HomeTab: View {
             isPresented: $homeNavigationVm.isHelpCenterPresented
         ) {
             HelpCenterNavigation(
+                editCoInsuredHandling: {
+                    loggedInVm.handleEditCoInsured()
+                },
                 redirect: { redirectType in
                     switch redirectType {
                     case .moveFlow:
@@ -341,16 +322,7 @@ struct HomeTab: View {
                             infoButtonPlacement: .leading,
                             useOwnNavigation: true,
                             openCoInsured: {
-                                loggedInVm.editCoInsuredVm.editCoInsuredModelDetent = .init(
-                                    contractsSupportingCoInsured: {
-                                        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                                        let contractsSupportingCoInsured = contractStore.state.activeContracts
-                                            .filter({ $0.showEditCoInsuredInfo })
-                                            .compactMap({
-                                                InsuredPeopleConfig(contract: $0, fromInfoCard: true)
-                                            })
-                                        return contractsSupportingCoInsured
-                                    })
+                                loggedInVm.handleEditCoInsured()
                             }
                         )
                     case .deflect:
@@ -391,6 +363,7 @@ struct HomeTab: View {
                     }
                 }
             )
+            .handleEditCoInsured(with: loggedInVm.editCoInsuredVm)
             .environmentObject(homeNavigationVm)
         }
         .detent(
@@ -432,7 +405,12 @@ struct HomeTab: View {
 
 class LoggedInNavigationViewModel: ObservableObject {
     @Published var selectedTab = 0
-    let contractsNavigationVm = ContractsNavigationViewModel()
+    let contractsNavigationVm = ContractsNavigationViewModel(
+        editCoInsuredVm: EditCoInsuredViewModel { type in
+            checkForEditCoInsuredAlert(type: type)
+        }
+    )
+
     let paymentsNavigationVm = PaymentsNavigationViewModel()
     let profileNavigationVm = ProfileNavigationViewModel()
     let homeNavigationVm = HomeNavigationViewModel()
@@ -443,7 +421,9 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isEuroBonusPresented = false
     @Published var isUrlPresented: URL?
 
-    public var editCoInsuredVm = EditCoInsuredViewModel()
+    public var editCoInsuredVm = EditCoInsuredViewModel { type in
+        checkForEditCoInsuredAlert(type: type)
+    }
 
     init() {
         NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) { notification in
@@ -480,6 +460,49 @@ class LoggedInNavigationViewModel: ObservableObject {
                 case .CROSS_SELL:
                     UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                     self.selectedTab = 1
+                }
+            }
+        }
+    }
+
+    func handleEditCoInsured() {
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        let contractsSupportingCoInsured = contractStore.state.activeContracts
+            .filter({ $0.showEditCoInsuredInfo && $0.nbOfMissingCoInsuredWithoutTermination > 0 })
+            .compactMap({
+                InsuredPeopleConfig(contract: $0, fromInfoCard: true)
+            })
+
+        if contractsSupportingCoInsured.count > 1 {
+            editCoInsuredVm.editCoInsuredModelDetent = .init(contractsSupportingCoInsured: {
+                return contractsSupportingCoInsured
+            })
+        } else {
+            editCoInsuredVm.editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
+                return contractsSupportingCoInsured
+            })
+        }
+    }
+
+    static func checkForEditCoInsuredAlert(type: EditCoInsuredRedirectType) {
+        switch type {
+        case .checkForAlert:
+            Task {
+                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                await contractStore.sendAsync(.fetchContracts)
+                let missingContract = contractStore.state.activeContracts.first { contract in
+                    if contract.upcomingChangedAgreement != nil {
+                        return false
+                    } else {
+                        return contract.coInsured
+                            .first(where: { coInsured in
+                                coInsured.hasMissingInfo && contract.terminationDate == nil
+                            }) != nil
+                    }
+                }
+
+                if let missingContract {
+                    let missingContractConfig = InsuredPeopleConfig(contract: missingContract, fromInfoCard: false)
                 }
             }
         }

@@ -83,8 +83,6 @@ public struct ContractsNavigation<Content: View>: View {
 }
 
 public class ContractsNavigationViewModel: ObservableObject {
-    public init() {}
-
     public let contractsRouter = Router()
 
     @Published public var insurableLimit: InsurableLimits?
@@ -94,7 +92,13 @@ public class ContractsNavigationViewModel: ObservableObject {
     @Published public var insuranceUpdate: Contract?
     @Published public var isChangeAddressPresented = false
 
-    public var editCoInsuredVm = EditCoInsuredViewModel()
+    public var editCoInsuredVm: EditCoInsuredViewModel
+
+    public init(
+        editCoInsuredVm: EditCoInsuredViewModel
+    ) {
+        self.editCoInsuredVm = editCoInsuredVm
+    }
 }
 
 public enum RedirectType {
