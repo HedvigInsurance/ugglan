@@ -25,7 +25,10 @@ public class TerminationFlowJourney {
                         style: .modally(presentationStyle: .overFullScreen)
                     )
                 } else if case let .openTerminationSurveyStep(options) = navigationAction {
-                    openSurveyScreen(options: options)
+                    openSurveyScreen(
+                        options: options,
+                        withInfo: true
+                    )
                 }
             }
         }
@@ -331,10 +334,22 @@ public class TerminationFlowJourney {
         .withJourneyDismissButton
     }
 
-    private static func openSurveyScreen(options: [TerminationFlowSurveyStepModelOption]) -> some JourneyPresentation {
+    private static func openSurveyScreen(
+        options: [TerminationFlowSurveyStepModelOption],
+        withInfo: Bool = false
+    ) -> some JourneyPresentation {
         return HostingJourney(
             TerminationContractStore.self,
             rootView: TerminationSurveyScreen(vm: .init(options: options))
+                .toolbar {
+                    ToolbarItem(
+                        placement: .topBarLeading
+                    ) {
+                        if withInfo {
+                            tabBarInfoView
+                        }
+                    }
+                }
         ) {
             action in
             if case let .navigationAction(navigationAction) = action {
