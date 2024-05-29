@@ -503,6 +503,7 @@ class LoggedInNavigationViewModel: ObservableObject {
 
                 if let missingContract {
                     let missingContractConfig = InsuredPeopleConfig(contract: missingContract, fromInfoCard: false)
+                    editCoInsuredVm.editCoInsuredModelMissingAlert = missingContractConfig
                 }
             }
         }
