@@ -18,9 +18,6 @@ public class HelpCenterNavigationViewModel: ObservableObject {
     struct QuickActions {
         var isTravelCertificatePresented = false
         var isChangeAddressPresented = false
-
-        var isEditCoInsuredMissingContractPresented: InsuredPeopleConfig?
-
         var isCancellationPresented = false
         var isFirstVetPresented = false
         var isSickAbroadPresented = false
