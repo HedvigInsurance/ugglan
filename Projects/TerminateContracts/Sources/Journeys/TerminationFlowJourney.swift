@@ -319,6 +319,7 @@ public class TerminationFlowJourney {
             )
             .trackLoading(TerminationContractStore.self, action: .getInitialStep)
             .hUseNewDesign
+            .hDisableScroll
             .hFieldSize(.small)
             .toolbar {
                 ToolbarItem(

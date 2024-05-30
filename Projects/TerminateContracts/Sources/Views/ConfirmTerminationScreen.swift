@@ -40,9 +40,10 @@ struct ConfirmTerminationScreen: View {
                             store?.send(.goBack)
                         }
                     )
-                )
+                ),
+                attachContentToTheBottom: true
             )
-            .hWithLargeIcon
+            .hUseLightMode
             .hExtraTopPadding
         }
         .hDisableScroll

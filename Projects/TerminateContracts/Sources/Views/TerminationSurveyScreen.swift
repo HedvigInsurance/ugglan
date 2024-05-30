@@ -86,6 +86,7 @@ struct TerminationSurveyScreen: View {
                         }
                     )
                 ])
+                .hButtonIsLoading(false)
         case .redirect(let redirect):
             InfoCard(text: redirect.description, type: .campaign)
                 .buttons([
@@ -98,6 +99,7 @@ struct TerminationSurveyScreen: View {
                         }
                     )
                 ])
+                .hButtonIsLoading(false)
         }
     }
 }
