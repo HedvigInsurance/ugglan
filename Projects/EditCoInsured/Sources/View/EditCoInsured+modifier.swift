@@ -75,7 +75,7 @@ struct EditCoInsured: ViewModifier {
         vm.editCoInsuredModelMissingAlert = nil
 
         Task {
-            let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
+            let store: EditCoInsuredSharedStore = globalPresentableStoreContainer.get()
             await store.sendAsync(.fetchContracts)
 
             let missingContract = store.state.activeContracts.first { contract in

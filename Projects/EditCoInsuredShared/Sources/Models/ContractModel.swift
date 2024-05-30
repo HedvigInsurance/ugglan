@@ -1,8 +1,7 @@
-import EditCoInsuredShared
 import hGraphQL
 
 public struct Contract: Codable, Hashable, Equatable, Identifiable {
-    init(
+    public init(
         contract: OctopusGraphQL.ContractFragment,
         firstName: String,
         lastName: String,
@@ -94,7 +93,7 @@ public struct Agreement: Codable, Hashable {
 public struct ProductVariant: Codable, Hashable {
     public let displayName: String
 
-    init(
+    public init(
         displayName: String
     ) {
         self.displayName = displayName

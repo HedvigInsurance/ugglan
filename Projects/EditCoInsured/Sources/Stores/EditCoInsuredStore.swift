@@ -1,4 +1,5 @@
 import Apollo
+import EditCoInsuredShared
 import Foundation
 import Presentation
 import hCore
@@ -20,35 +21,27 @@ public final class EditCoInsuredStore: LoadingStateStore<
             do {
                 try await self.editCoInsuredService.sendMidtermChangeIntentCommit(commitId: commitId)
                 self.removeLoading(for: .postCoInsured)
-                send(.fetchContracts)
+
+                let editCoinsuredSharedStore: EditCoInsuredSharedStore = globalPresentableStoreContainer.get()
+                editCoinsuredSharedStore.send(.fetchContracts)
+
                 AskForRating().askForReview()
             } catch {
                 self.setError(L10n.General.errorBody, for: .postCoInsured)
             }
-        case .fetchContracts:
-            do {
-                let data = try await self.editCoInsuredService.fetchContracts()
-                send(.setActiveContracts(contracts: data))
-            } catch {
-                self.setError(L10n.General.errorBody, for: .fetchContracts)
-            }
-
         default:
             break
         }
     }
 
     public override func reduce(_ state: EditCoInsuredState, _ action: EditCoInsuredAction) -> EditCoInsuredState {
-        var newState = state
         switch action {
         case .performCoInsuredChanges:
             setLoading(for: .postCoInsured)
-        case let .setActiveContracts(contracts):
-            newState.activeContracts = contracts
         default:
             break
         }
-        return newState
+        return state
     }
 }
 

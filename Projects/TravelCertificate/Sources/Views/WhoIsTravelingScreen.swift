@@ -78,7 +78,7 @@ class WhoIsTravelingViewModel: ObservableObject {
     var isPolicyHolderIncluded = true
     @Published var isLoading = false
     @Published var error: String?
-    let contract: Contract?
+    let contract: Contracts.Contract?
     init(specification: TravelInsuranceContractSpecification) {
         self.specification = specification
 

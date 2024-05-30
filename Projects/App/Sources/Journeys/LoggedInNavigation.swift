@@ -49,7 +49,7 @@ struct LoggedInNavigation: View {
                 infoButtonPlacement: .leading,
                 useOwnNavigation: true,
                 openCoInsured: {
-                    vm.handleEditCoInsured()
+                    vm.editCoInsuredVm.start()
                 }
             )
         }
@@ -191,7 +191,7 @@ struct LoggedInNavigation: View {
                     infoButtonPlacement: .trailing,
                     useOwnNavigation: false,
                     openCoInsured: {
-                        vm.handleEditCoInsured()
+                        vm.editCoInsuredVm.start()
                     }
                 )
             case let .deleteAccount(memberDetails):
@@ -287,7 +287,7 @@ struct HomeTab: View {
         }
         .environmentObject(homeNavigationVm)
         .onUpdate(of: homeNavigationVm.handleEditCoInsured) { newValue in
-            loggedInVm.handleEditCoInsured()
+            loggedInVm.editCoInsuredVm.start()
         }
         .handleConnectPayment(with: homeNavigationVm.connectPaymentVm)
         .detent(
@@ -311,7 +311,7 @@ struct HomeTab: View {
         ) {
             HelpCenterNavigation(
                 editCoInsuredHandling: {
-                    loggedInVm.handleEditCoInsured()
+                    loggedInVm.editCoInsuredVm.start()
                 },
                 redirect: { redirectType in
                     switch redirectType {
@@ -322,7 +322,7 @@ struct HomeTab: View {
                             infoButtonPlacement: .leading,
                             useOwnNavigation: true,
                             openCoInsured: {
-                                loggedInVm.handleEditCoInsured()
+                                loggedInVm.editCoInsuredVm.start()
                             }
                         )
                     case .deflect:
@@ -458,25 +458,6 @@ class LoggedInNavigationViewModel: ObservableObject {
         }
     }
 
-    func handleEditCoInsured() {
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        let contractsSupportingCoInsured = contractStore.state.activeContracts
-            .filter({ $0.showEditCoInsuredInfo && $0.nbOfMissingCoInsuredWithoutTermination > 0 })
-            .compactMap({
-                InsuredPeopleConfig(contract: $0, fromInfoCard: true)
-            })
-
-        if contractsSupportingCoInsured.count > 1 {
-            editCoInsuredVm.editCoInsuredModelDetent = .init(contractsSupportingCoInsured: {
-                return contractsSupportingCoInsured
-            })
-        } else {
-            editCoInsuredVm.editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
-                return contractsSupportingCoInsured
-            })
-        }
-    }
-
     private func handleDeepLinks(deepLinkUrl: URL?) {
         if let url = deepLinkUrl {
             let deepLink = DeepLink.getType(from: url)
@@ -503,7 +484,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                 let contractId = self.getContractId(from: url)
 
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                if let contractId, let contract: Contract = contractStore.state.contractForId(contractId) {
+                if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                         self.contractsNavigationVm.contractsRouter.popToRoot()
                         self.contractsNavigationVm.contractsRouter.push(contract)
