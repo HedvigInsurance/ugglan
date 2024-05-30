@@ -50,15 +50,16 @@ public struct hTextView: View {
                                 numberOfLines: $numberOfLines,
                                 inEdit: .constant(false)
                             )
-                            .frame(height: height + 12)
+                            .frame(height: max(height, 48))
                         }
                     }
                     .hSectionMinimumPadding
-                    .padding(.horizontal, -16)
+                    .padding(.top, 12)
+                    .padding(.bottom, 40)
                     .sectionContainerStyle(.opaque)
                 }
+
                 .id(UUID().uuidString)
-                .frame(height: height + 36)
                 if errorMessage != nil {
                     hCoreUIAssets.warningTriangleFilled.view
                         .foregroundColor(hSignalColor.amberElement)
@@ -105,9 +106,9 @@ public struct hTextView: View {
                 height: $popoverHeight,
                 numberOfLines: $popoverNumberOfLines
             )
+            .colorScheme(.dark)
         }
-        .background(hBackgroundColor.primary)
-
+        .colorScheme(.dark)
         let journey = HostingJourney(
             rootView: view,
             style: .modally(presentationStyle: .overFullScreen),
@@ -116,15 +117,12 @@ public struct hTextView: View {
         )
         .enableHero
         .addConfiguration { presenter in
-            presenter.viewController.view.backgroundColor = .clear
+            presenter.viewController.view.backgroundColor = .brand(.primaryBackground(true))
         }
 
         let freeTextFieldJourney = journey.addConfiguration { presenter in
             continueAction.execute = {
                 self.selectedValue = value
-
-                print("NEW HEIGHT IS \(self.height) \(popoverHeight)")
-                print("NEW HEIGHT IS \(self.numberOfLines) \(self.popoverNumberOfLines)")
                 if numberOfLines != popoverNumberOfLines {
                     let lineHeight = abs(Double(popoverHeight - height) / Double(popoverNumberOfLines - numberOfLines))
                     let spacing = height - Double(numberOfLines) * lineHeight
@@ -256,7 +254,8 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
 
     public var body: some View {
         ZStack(alignment: .top) {
-            BackgroundView().ignoresSafeArea()
+            //            BackgroundView(negative: true).ignoresSafeArea()
+            Color.clear.ignoresSafeArea()
             VStack(spacing: 8) {
                 hSection {
                     VStack {
@@ -339,6 +338,7 @@ private struct SwiftUITextView: UIViewRepresentable {
     @Binding var width: CGFloat
     @Binding var numberOfLines: Int
     @Binding var inEdit: Bool
+    @Environment(\.colorScheme) var colorScheme
     internal func makeUIView(context: Context) -> UIView {
         let view = UIView()
         view.backgroundColor = .clear
@@ -356,9 +356,9 @@ private struct SwiftUITextView: UIViewRepresentable {
         view.layer.cornerRadius = 12
         view.addSubview(textView)
         textView.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(16)
-            make.trailing.equalToSuperview().offset(-16)
-            make.top.equalToSuperview().offset(12)
+            make.leading.equalToSuperview().offset(-6)
+            make.trailing.equalToSuperview()
+            make.top.equalToSuperview()
             make.bottom.equalToSuperview()
         }
         textView.updateHeight()
@@ -374,9 +374,9 @@ private struct SwiftUITextView: UIViewRepresentable {
                 textView.setText(text: text)
                 textView.updateHeight()
             }
+            textView.colorSchema = colorScheme
         }
-        let schema = UITraitCollection.current.userInterfaceStyle
-        uiView.backgroundColor = hFillColor.opaqueOne.colorFor(.init(schema)!, .base).color.uiColor()
+        uiView.backgroundColor = hFillColor.opaqueOne.colorFor(.init(.init(colorScheme))!, .base).color.uiColor()
 
     }
 }
@@ -389,7 +389,12 @@ private class TextView: UITextView, UITextViewDelegate {
     @Binding private var width: CGFloat
     @Binding private var numberOfLines: Int
     @Binding private var inEdit: Bool
+    var colorSchema: ColorScheme = .light {
+        didSet {
+            self.textColor = getTextColor()
 
+        }
+    }
     init(
         placeholder: String,
         inputText: Binding<String>,
@@ -407,6 +412,7 @@ private class TextView: UITextView, UITextViewDelegate {
         self._numberOfLines = numberOfLines
         self._width = width
         self._inEdit = inEdit
+
         super.init(frame: .zero, textContainer: nil)
         self.textContainerInset = .init(horizontalInset: 0, verticalInset: 0)
         self.delegate = self
@@ -418,11 +424,7 @@ private class TextView: UITextView, UITextViewDelegate {
         self.textContainer.maximumNumberOfLines = disabled ? 3 : 0
         self.textContainer.lineBreakMode = .byTruncatingTail
         if becomeFirstResponder {
-            UIView.setAnimationsEnabled(false)
-            self.becomeFirstResponder()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                UIView.setAnimationsEnabled(true)
-            }
+            //            self.becomeFirstResponder()
         }
 
         updateHeight()
@@ -480,11 +482,10 @@ private class TextView: UITextView, UITextViewDelegate {
     }
 
     private func getTextColor() -> UIColor {
-        let schema = UITraitCollection.current.userInterfaceStyle
         if text.isEmpty || placeholder == text {
-            return hTextColor.tertiary.colorFor(.init(schema)!, .base).color.uiColor()
+            return hTextColor.tertiary.colorFor(.init(.init(colorSchema))!, .base).color.uiColor()
         } else {
-            return hTextColor.primary.colorFor(.init(schema)!, .base).color.uiColor()
+            return hTextColor.primary.colorFor(.init(.init(colorSchema))!, .base).color.uiColor()
         }
     }
 

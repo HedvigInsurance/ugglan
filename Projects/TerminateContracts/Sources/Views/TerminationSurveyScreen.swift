@@ -39,6 +39,7 @@ struct TerminationSurveyScreen: View {
                                             },
                                             selected: $vm.selected
                                         )
+                                        .hFieldSize(.medium)
                                         .zIndex(1)
                                         if let suggestion = option.suggestion, option.id == vm.selectedOption?.id {
                                             buildInfo(for: suggestion)
@@ -51,7 +52,6 @@ struct TerminationSurveyScreen: View {
                                             TerminationFlowSurveyStepFeedBackView(
                                                 vm: feedBack
                                             )
-                                            .matchedGeometryEffect(id: "feedBack", in: animationNamespace)
                                         }
                                     }
                                 }
