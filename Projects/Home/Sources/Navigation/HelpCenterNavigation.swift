@@ -14,6 +14,7 @@ import hCoreUI
 public class HelpCenterNavigationViewModel: ObservableObject {
     @Published var quickActions = QuickActions()
     var connectPaymentsVm = ConnectPaymentViewModel()
+    public var editCoInsuredVm = EditCoInsuredViewModel()
 
     struct QuickActions {
         var isTravelCertificatePresented = false
@@ -31,19 +32,17 @@ public class HelpCenterNavigationViewModel: ObservableObject {
 }
 
 public struct HelpCenterNavigation<Content: View>: View {
-    @StateObject var helpCenterVm = HelpCenterNavigationViewModel()
+    @ObservedObject var helpCenterVm: HelpCenterNavigationViewModel
     @EnvironmentObject private var homeVm: HomeNavigationViewModel
     @PresentableStore private var store: HomeStore
     @ViewBuilder var redirect: (_ type: HelpCenterRedirectType) -> Content
     @StateObject var router = Router()
 
-    var editCoInsuredHandling: () -> Void
-
     public init(
-        editCoInsuredHandling: @escaping () -> Void,
+        helpCenterVm: HelpCenterNavigationViewModel,
         @ViewBuilder redirect: @escaping (_ type: HelpCenterRedirectType) -> Content
     ) {
-        self.editCoInsuredHandling = editCoInsuredHandling
+        self.helpCenterVm = helpCenterVm
         self.redirect = redirect
     }
 
@@ -158,7 +157,7 @@ public struct HelpCenterNavigation<Content: View>: View {
         case .sickAbroad:
             helpCenterVm.quickActions.isSickAbroadPresented = true
         case .editCoInsured:
-            editCoInsuredHandling()
+            helpCenterVm.editCoInsuredVm.start()
         }
     }
 
@@ -174,5 +173,5 @@ public enum HelpCenterRedirectType {
 }
 
 #Preview{
-    HelpCenterNavigation(editCoInsuredHandling: {}, redirect: { _ in })
+    HelpCenterNavigation(helpCenterVm: .init(), redirect: { _ in })
 }

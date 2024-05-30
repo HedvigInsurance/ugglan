@@ -10,7 +10,6 @@ struct WhoIsTravelingScreen: View {
     @ObservedObject var vm: WhoIsTravelingViewModel
     @EnvironmentObject var router: Router
     @EnvironmentObject var travelCertificateNavigationVm: TravelCertificateNavigationViewModel
-    var openCoInsured: () -> Void
 
     var body: some View {
         CheckboxPickerScreen<CoInsuredModel>(
@@ -47,7 +46,7 @@ struct WhoIsTravelingScreen: View {
                             buttonAction: {
                                 router.dismiss()
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                                    openCoInsured()
+                                    travelCertificateNavigationVm.editCoInsuredVm.start()
                                 }
                             }
                         )
@@ -135,8 +134,7 @@ struct WhoIsTravelingView_Previews: PreviewProvider {
                         email: "email",
                         fullName: "full name"
                     )
-                ),
-            openCoInsured: {}
+                )
         )
     }
 }

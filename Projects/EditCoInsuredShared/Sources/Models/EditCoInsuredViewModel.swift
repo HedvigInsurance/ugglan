@@ -8,25 +8,31 @@ public class EditCoInsuredViewModel: ObservableObject {
 
     public init() {}
 
-    public func start() {
+    public func start(fromContract: InsuredPeopleConfig? = nil) {
         Task {
             let store: EditCoInsuredSharedStore = globalPresentableStoreContainer.get()
             await store.sendAsync(.fetchContracts)
 
-            let contractsSupportingCoInsured = store.state.activeContracts
-                .filter({ $0.showEditCoInsuredInfo && $0.nbOfMissingCoInsuredWithoutTermination > 0 })
-                .compactMap({
-                    InsuredPeopleConfig(contract: $0, fromInfoCard: true)
-                })
-
-            if contractsSupportingCoInsured.count > 1 {
-                editCoInsuredModelDetent = .init(contractsSupportingCoInsured: {
-                    return contractsSupportingCoInsured
+            if let contract = fromContract {
+                editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
+                    return [contract]
                 })
             } else {
-                editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
-                    return contractsSupportingCoInsured
-                })
+                let contractsSupportingCoInsured = store.state.activeContracts
+                    .filter({ $0.showEditCoInsuredInfo && $0.nbOfMissingCoInsuredWithoutTermination > 0 })
+                    .compactMap({
+                        InsuredPeopleConfig(contract: $0, fromInfoCard: true)
+                    })
+
+                if contractsSupportingCoInsured.count > 1 {
+                    editCoInsuredModelDetent = .init(contractsSupportingCoInsured: {
+                        return contractsSupportingCoInsured
+                    })
+                } else {
+                    editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
+                        return contractsSupportingCoInsured
+                    })
+                }
             }
         }
     }

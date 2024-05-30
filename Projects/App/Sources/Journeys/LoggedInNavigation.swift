@@ -46,12 +46,11 @@ struct LoggedInNavigation: View {
             options: .constant(.alwaysOpenOnTop)
         ) {
             TravelCertificateNavigation(
+                vm: vm.travelCertificateNavigationVm,
                 infoButtonPlacement: .leading,
-                useOwnNavigation: true,
-                openCoInsured: {
-                    vm.editCoInsuredVm.start()
-                }
+                useOwnNavigation: true
             )
+            .handleEditCoInsured(with: vm.travelCertificateNavigationVm.editCoInsuredVm)
         }
         .modally(
             presented: $vm.isMoveContractPresented,
@@ -188,12 +187,11 @@ struct LoggedInNavigation: View {
             switch redirectType {
             case .travelCertificate:
                 TravelCertificateNavigation(
+                    vm: vm.travelCertificateNavigationVm,
                     infoButtonPlacement: .trailing,
-                    useOwnNavigation: false,
-                    openCoInsured: {
-                        vm.editCoInsuredVm.start()
-                    }
+                    useOwnNavigation: false
                 )
+                .handleEditCoInsured(with: vm.travelCertificateNavigationVm.editCoInsuredVm)
             case let .deleteAccount(memberDetails):
                 let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
                 let contractsStore: ContractStore = globalPresentableStoreContainer.get()
@@ -253,7 +251,6 @@ struct LoggedInNavigation: View {
                 EmptyView()
             }
         }
-        .handleEditCoInsured(with: vm.editCoInsuredVm)
         .tabItem {
             Image(
                 uiImage: vm.selectedTab == 4 ? hCoreUIAssets.profileTabActive.image : hCoreUIAssets.profileTab.image
@@ -286,10 +283,8 @@ struct HomeTab: View {
             }
         }
         .environmentObject(homeNavigationVm)
-        .onUpdate(of: homeNavigationVm.handleEditCoInsured) { newValue in
-            loggedInVm.editCoInsuredVm.start()
-        }
         .handleConnectPayment(with: homeNavigationVm.connectPaymentVm)
+        .handleEditCoInsured(with: homeNavigationVm.editCoInsuredVm)
         .detent(
             presented: $homeNavigationVm.isSubmitClaimPresented,
             style: .height,
@@ -310,60 +305,56 @@ struct HomeTab: View {
             isPresented: $homeNavigationVm.isHelpCenterPresented
         ) {
             HelpCenterNavigation(
-                editCoInsuredHandling: {
-                    loggedInVm.editCoInsuredVm.start()
-                },
-                redirect: { redirectType in
-                    switch redirectType {
-                    case .moveFlow:
-                        MovingFlowNavigation()
-                    case .travelInsurance:
-                        TravelCertificateNavigation(
-                            infoButtonPlacement: .leading,
-                            useOwnNavigation: true,
-                            openCoInsured: {
-                                loggedInVm.editCoInsuredVm.start()
-                            }
-                        )
-                    case .deflect:
-                        let model: FlowClaimDeflectStepModel? = {
-                            let store: HomeStore = globalPresentableStoreContainer.get()
-                            let quickActions = store.state.quickActions
-                            if let sickAbroadPartners = quickActions.first(where: { $0.sickAboardPartners != nil })?
-                                .sickAboardPartners
-                            {
-                                return FlowClaimDeflectStepModel(
-                                    id: .FlowClaimDeflectEmergencyStep,
-                                    partners: sickAbroadPartners.compactMap({
-                                        .init(
-                                            id: "",
-                                            imageUrl: $0.imageUrl,
-                                            url: "",
-                                            phoneNumber: $0.phoneNumber
-                                        )
-                                    }),
-                                    isEmergencyStep: true
-                                )
-                            }
-                            return nil
-                        }()
+                helpCenterVm: loggedInVm.helpCenterVm
+            ) { redirectType in
+                switch redirectType {
+                case .moveFlow:
+                    MovingFlowNavigation()
+                case .travelInsurance:
+                    TravelCertificateNavigation(
+                        vm: loggedInVm.travelCertificateNavigationVm,
+                        infoButtonPlacement: .leading,
+                        useOwnNavigation: true
+                    )
+                    .handleEditCoInsured(with: loggedInVm.travelCertificateNavigationVm.editCoInsuredVm)
+                case .deflect:
+                    let model: FlowClaimDeflectStepModel? = {
+                        let store: HomeStore = globalPresentableStoreContainer.get()
+                        let quickActions = store.state.quickActions
+                        if let sickAbroadPartners = quickActions.first(where: { $0.sickAboardPartners != nil })?
+                            .sickAboardPartners
+                        {
+                            return FlowClaimDeflectStepModel(
+                                id: .FlowClaimDeflectEmergencyStep,
+                                partners: sickAbroadPartners.compactMap({
+                                    .init(
+                                        id: "",
+                                        imageUrl: $0.imageUrl,
+                                        url: "",
+                                        phoneNumber: $0.phoneNumber
+                                    )
+                                }),
+                                isEmergencyStep: true
+                            )
+                        }
+                        return nil
+                    }()
 
-                        SubmitClaimDeflectScreen(
-                            model: model,
-                            openChat: {
-                                NotificationCenter.default.post(
-                                    name: .openChat,
-                                    object: ChatTopicWrapper(topic: nil, onTop: true)
-                                )
-                            }
-                        )
-                        .configureTitle(model?.id.title ?? "")
-                        .withDismissButton()
-                        .embededInNavigation(options: .navigationType(type: .large))
-                    }
+                    SubmitClaimDeflectScreen(
+                        model: model,
+                        openChat: {
+                            NotificationCenter.default.post(
+                                name: .openChat,
+                                object: ChatTopicWrapper(topic: nil, onTop: true)
+                            )
+                        }
+                    )
+                    .configureTitle(model?.id.title ?? "")
+                    .withDismissButton()
+                    .embededInNavigation(options: .navigationType(type: .large))
                 }
-            )
-            .handleEditCoInsured(with: loggedInVm.editCoInsuredVm)
+            }
+            .handleEditCoInsured(with: loggedInVm.helpCenterVm.editCoInsuredVm)
             .environmentObject(homeNavigationVm)
         }
         .detent(
@@ -409,14 +400,14 @@ class LoggedInNavigationViewModel: ObservableObject {
     let paymentsNavigationVm = PaymentsNavigationViewModel()
     let profileNavigationVm = ProfileNavigationViewModel()
     let homeNavigationVm = HomeNavigationViewModel()
+    let helpCenterVm = HelpCenterNavigationViewModel()
+    let travelCertificateNavigationVm = TravelCertificateNavigationViewModel()
 
     @Published var isTravelInsurancePresented = false
     @Published var isMoveContractPresented = false
     @Published var isCancelInsurancePresented = false
     @Published var isEuroBonusPresented = false
     @Published var isUrlPresented: URL?
-
-    public var editCoInsuredVm = EditCoInsuredViewModel()
 
     init() {
         NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) { notification in

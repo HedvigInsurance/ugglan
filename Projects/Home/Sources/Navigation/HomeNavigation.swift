@@ -54,5 +54,5 @@ public class HomeNavigationViewModel: ObservableObject {
     }
 
     public var connectPaymentVm = ConnectPaymentViewModel()
-    @Published public var handleEditCoInsured: Bool?
+    public var editCoInsuredVm = EditCoInsuredViewModel()
 }

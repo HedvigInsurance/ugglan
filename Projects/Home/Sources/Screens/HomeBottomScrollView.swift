@@ -40,7 +40,7 @@ struct HomeBottomScrollView: View {
                     }
                 case .missingCoInsured:
                     CoInsuredInfoHomeView {
-                        navigationVm.handleEditCoInsured = true
+                        navigationVm.editCoInsuredVm.start()
                     }
                 case .terminated:
                     InfoCard(text: L10n.HomeTab.terminatedBody, type: .info)
