@@ -147,14 +147,14 @@ struct SetTerminationDateLandingScreen: View {
                                 Spacer()
                                 if vm.hasAgreedToTerms {
                                     HStack {
-                                        Image(uiImage: hCoreUIAssets.tick.image)
+                                        hCoreUIAssets.tick.view
                                             .foregroundColor(
                                                 hColorScheme(light: hTextColor.negative, dark: hTextColor.primary)
                                             )
                                     }
                                     .frame(width: 24, height: 24)
                                     .background(
-                                        Squircle.default()
+                                        RoundedRectangle(cornerRadius: 6)
                                             .fill(hSignalColor.greenElement)
                                     )
                                 } else {
