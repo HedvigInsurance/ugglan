@@ -6,7 +6,7 @@ public enum EditCoInsuredAction: ActionProtocol, Hashable {
     case performCoInsuredChanges(commitId: String)
 
     case fetchContracts
-    case goToFreeTextChat
+    case setActiveContracts(contracts: [Contract])
 }
 
 public enum EditCoInsuredLoadingAction: LoadingProtocol {

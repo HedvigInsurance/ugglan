@@ -6,4 +6,6 @@ import hGraphQL
 
 public struct EditCoInsuredState: StateProtocol {
     public init() {}
+
+    public var activeContracts: [Contract] = []
 }

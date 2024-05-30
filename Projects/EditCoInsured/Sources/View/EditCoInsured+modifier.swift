@@ -74,6 +74,25 @@ struct EditCoInsured: ViewModifier {
         vm.editCoInsuredModelFullScreen = nil
         vm.editCoInsuredModelMissingAlert = nil
 
-        vm.redirect(.checkForAlert)
+        Task {
+            let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
+            await store.sendAsync(.fetchContracts)
+
+            let missingContract = store.state.activeContracts.first { contract in
+                if contract.upcomingChangedAgreement != nil {
+                    return false
+                } else {
+                    return contract.coInsured
+                        .first(where: { coInsured in
+                            coInsured.hasMissingInfo && contract.terminationDate == nil
+                        }) != nil
+                }
+            }
+
+            if let missingContract {
+                let missingContractConfig = InsuredPeopleConfig(contract: missingContract, fromInfoCard: false)
+                vm.editCoInsuredModelMissingAlert = missingContractConfig
+            }
+        }
     }
 }

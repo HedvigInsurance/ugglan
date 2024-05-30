@@ -92,13 +92,9 @@ public class ContractsNavigationViewModel: ObservableObject {
     @Published public var insuranceUpdate: Contract?
     @Published public var isChangeAddressPresented = false
 
-    public var editCoInsuredVm: EditCoInsuredViewModel
+    public var editCoInsuredVm = EditCoInsuredViewModel()
 
-    public init(
-        editCoInsuredVm: EditCoInsuredViewModel
-    ) {
-        self.editCoInsuredVm = editCoInsuredVm
-    }
+    public init() {}
 }
 
 public enum RedirectType {

@@ -405,12 +405,7 @@ struct HomeTab: View {
 
 class LoggedInNavigationViewModel: ObservableObject {
     @Published var selectedTab = 0
-    let contractsNavigationVm = ContractsNavigationViewModel(
-        editCoInsuredVm: EditCoInsuredViewModel { type in
-            checkForEditCoInsuredAlert(type: type)
-        }
-    )
-
+    let contractsNavigationVm = ContractsNavigationViewModel()
     let paymentsNavigationVm = PaymentsNavigationViewModel()
     let profileNavigationVm = ProfileNavigationViewModel()
     let homeNavigationVm = HomeNavigationViewModel()
@@ -421,9 +416,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isEuroBonusPresented = false
     @Published var isUrlPresented: URL?
 
-    public var editCoInsuredVm = EditCoInsuredViewModel { type in
-        checkForEditCoInsuredAlert(type: type)
-    }
+    public var editCoInsuredVm = EditCoInsuredViewModel()
 
     init() {
         NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) { notification in
@@ -481,31 +474,6 @@ class LoggedInNavigationViewModel: ObservableObject {
             editCoInsuredVm.editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
                 return contractsSupportingCoInsured
             })
-        }
-    }
-
-    static func checkForEditCoInsuredAlert(type: EditCoInsuredRedirectType) {
-        switch type {
-        case .checkForAlert:
-            Task {
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                await contractStore.sendAsync(.fetchContracts)
-                let missingContract = contractStore.state.activeContracts.first { contract in
-                    if contract.upcomingChangedAgreement != nil {
-                        return false
-                    } else {
-                        return contract.coInsured
-                            .first(where: { coInsured in
-                                coInsured.hasMissingInfo && contract.terminationDate == nil
-                            }) != nil
-                    }
-                }
-
-                if let missingContract {
-                    let missingContractConfig = InsuredPeopleConfig(contract: missingContract, fromInfoCard: false)
-                    editCoInsuredVm.editCoInsuredModelMissingAlert = missingContractConfig
-                }
-            }
         }
     }
 
