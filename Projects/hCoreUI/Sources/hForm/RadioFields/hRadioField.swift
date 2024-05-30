@@ -48,18 +48,6 @@ public struct hRadioField<Content: View>: View {
                 }
             }
         }
-        .background {
-            GeometryReader { geo in
-                Color.clear
-                    .onAppear {
-                        print("NEW HEIGHT IS \(geo.size.height)")
-                    }
-                    .onChange(of: geo.size.height) { newValue in
-                        print("NEW HEIGHT IS \(newValue)")
-
-                    }
-            }
-        }
     }
 }
 
