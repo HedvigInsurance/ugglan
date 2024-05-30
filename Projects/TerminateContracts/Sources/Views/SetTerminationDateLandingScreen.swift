@@ -162,7 +162,7 @@ struct SetTerminationDateLandingScreen: View {
                                         .fill(hBackgroundColor.clear)
                                         .frame(width: 24, height: 24)
                                         .overlay(
-                                            RoundedRectangle(cornerRadius: .defaultCornerRadius)
+                                            RoundedRectangle(cornerRadius: 6)
                                                 .strokeBorder(
                                                     hColorScheme(
                                                         light: hBorderColor.translucentTwo,
