@@ -114,7 +114,7 @@ extension ProfileView {
             } else if case let .openAppSettings(animated) = action {
                 HostingJourney(
                     ProfileStore.self,
-                    rootView: SettingsScreen(),
+                    rootView: SettingsView(),
                     options: animated ? [.defaults] : [.defaults, .unanimated]
                 ) { action in
                     if case let .deleteAccount(details) = action {
@@ -133,9 +133,11 @@ extension ProfileView {
                         .journey
                         .onAction(ProfileStore.self) { action in
                             if case .closeLanguagePicker = action {
-                                DismissJourney()
+                                PopJourney()
                             }
                         }
+                    } else if case .showConfirmEmailPreferences = action {
+                        EmailPreferencesConfirmView.journey
                     }
                 }
                 .configureTitle(L10n.Profile.AppSettingsSection.Row.headline)
