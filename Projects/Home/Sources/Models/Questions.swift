@@ -16,115 +16,115 @@ extension Sequence where Iterator.Element: QuestionProtocol {
 }
 
 enum PaymentsQuestions: CaseIterable {
-    case q1
-    case q2
-    case q3
-    case q4
-    case q5
-    case q6
-    case q7
-    case q8
-    case q9
-    case q10
-    case q11
-    case q12
-    case q13
-    case q14
+    case paymentsQuestion1
+    case paymentsQuestion2
+    case paymentsQuestion3
+    case paymentsQuestion4
+    case paymentsQuestion5
+    case paymentsQuestion6
+    case paymentsQuestion7
+    case paymentsQuestion8
+    case paymentsQuestion9
+    case paymentsQuestion10
+    case paymentsQuestion11
+    case paymentsQuestion12
+    case paymentsQuestion13
+    case paymentsQuestion14
 
     var question: Question {
         switch self {
-        case .q1:
+        case .paymentsQuestion1:
             return .init(
                 question: L10n.hcPaymentsQ01,
                 questionEn: L10n.hcPaymentsQ01_en,
                 answer: L10n.hcPaymentsA01,
                 topicType: .payments
             )
-        case .q2:
+        case .paymentsQuestion2:
             return .init(
                 question: L10n.hcPaymentsQ02,
                 questionEn: L10n.hcPaymentsQ02_en,
                 answer: L10n.hcPaymentsA02,
                 topicType: .payments
             )
-        case .q3:
+        case .paymentsQuestion3:
             return .init(
                 question: L10n.hcPaymentsQ03,
                 questionEn: L10n.hcPaymentsQ03_en,
                 answer: L10n.hcPaymentsA03,
                 topicType: .payments
             )
-        case .q4:
+        case .paymentsQuestion4:
             return .init(
                 question: L10n.hcPaymentsQ04,
                 questionEn: L10n.hcPaymentsQ04_en,
                 answer: L10n.hcPaymentsA04,
                 topicType: .payments
             )
-        case .q5:
+        case .paymentsQuestion5:
             return .init(
                 question: L10n.hcPaymentsQ05,
                 questionEn: L10n.hcPaymentsQ05_en,
                 answer: L10n.hcPaymentsA05,
                 topicType: .payments
             )
-        case .q6:
+        case .paymentsQuestion6:
             return .init(
                 question: L10n.hcPaymentsQ06,
                 questionEn: L10n.hcPaymentsQ06_en,
                 answer: L10n.hcPaymentsA06,
                 topicType: .payments
             )
-        case .q7:
+        case .paymentsQuestion7:
             return .init(
                 question: L10n.hcPaymentsQ07,
                 questionEn: L10n.hcPaymentsQ07_en,
                 answer: L10n.hcPaymentsA07,
                 topicType: .payments
             )
-        case .q8:
+        case .paymentsQuestion8:
             return .init(
                 question: L10n.hcPaymentsQ08,
                 questionEn: L10n.hcPaymentsQ08_en,
                 answer: L10n.hcPaymentsA08,
                 topicType: .payments
             )
-        case .q9:
+        case .paymentsQuestion9:
             return .init(
                 question: L10n.hcPaymentsQ09,
                 questionEn: L10n.hcPaymentsQ09_en,
                 answer: L10n.hcPaymentsA09,
                 topicType: .payments
             )
-        case .q10:
+        case .paymentsQuestion10:
             return .init(
                 question: L10n.hcPaymentsQ10,
                 questionEn: L10n.hcPaymentsQ10_en,
                 answer: L10n.hcPaymentsA10,
                 topicType: .payments
             )
-        case .q11:
+        case .paymentsQuestion11:
             return .init(
                 question: L10n.hcPaymentsQ11,
                 questionEn: L10n.hcPaymentsQ11_en,
                 answer: L10n.hcPaymentsA11,
                 topicType: .payments
             )
-        case .q12:
+        case .paymentsQuestion12:
             return .init(
                 question: L10n.hcPaymentsQ12,
                 questionEn: L10n.hcPaymentsQ12_en,
                 answer: L10n.hcPaymentsA12,
                 topicType: .payments
             )
-        case .q13:
+        case .paymentsQuestion13:
             return .init(
                 question: L10n.hcPaymentsQ13,
                 questionEn: L10n.hcPaymentsQ13_en,
                 answer: L10n.hcPaymentsA13,
                 topicType: .payments
             )
-        case .q14:
+        case .paymentsQuestion14:
             return .init(
                 question: L10n.hcPaymentsQ14,
                 questionEn: L10n.hcPaymentsQ14_en,
@@ -141,7 +141,7 @@ extension PaymentsQuestions: QuestionProtocol {
     }
 
     static func common() -> [PaymentsQuestions] {
-        return [.q1, .q2, .q3]
+        return [.paymentsQuestion1, .paymentsQuestion2, .paymentsQuestion3]
     }
 
     static func others() -> [PaymentsQuestions] {
@@ -155,43 +155,43 @@ extension PaymentsQuestions: QuestionProtocol {
 }
 
 enum ClaimsQuestions: CaseIterable {
-    case q1
-    case q2
-    case q3
-    case q4
-    case q5
-    case q6
-    case q7
-    case q8
-    case q9
-    case q10
-    case q11
-    case q12
+    case claimsQuestion1
+    case claimsQuestion2
+    case claimsQuestion3
+    case claimsQuestion4
+    case claimsQuestion5
+    case claimsQuestion6
+    case claimsQuestion7
+    case claimsQuestion8
+    case claimsQuestion9
+    case claimsQuestion10
+    case claimsQuestion11
+    case claimsQuestion12
 
     var question: Question {
         switch self {
-        case .q1:
+        case .claimsQuestion1:
             return .init(
                 question: L10n.hcClaimsQ01,
                 questionEn: L10n.hcClaimsQ01_en,
                 answer: L10n.hcClaimsA01,
                 topicType: .claims
             )
-        case .q2:
+        case .claimsQuestion2:
             return .init(
                 question: L10n.hcClaimsQ02,
                 questionEn: L10n.hcClaimsQ02_en,
                 answer: L10n.hcClaimsA02,
                 topicType: .claims
             )
-        case .q3:
+        case .claimsQuestion3:
             return .init(
                 question: L10n.hcClaimsQ03,
                 questionEn: L10n.hcClaimsQ03_en,
                 answer: L10n.hcClaimsA03,
                 topicType: .claims
             )
-        case .q4:
+        case .claimsQuestion4:
             return .init(
                 question: L10n.hcClaimsQ04,
                 questionEn: L10n.hcClaimsQ04_en,
@@ -199,56 +199,56 @@ enum ClaimsQuestions: CaseIterable {
                 topicType: .claims
             )
 
-        case .q5:
+        case .claimsQuestion5:
             return .init(
                 question: L10n.hcClaimsQ05,
                 questionEn: L10n.hcClaimsQ05_en,
                 answer: L10n.hcClaimsA05,
                 topicType: .claims
             )
-        case .q6:
+        case .claimsQuestion6:
             return .init(
                 question: L10n.hcClaimsQ06,
                 questionEn: L10n.hcClaimsQ06_en,
                 answer: L10n.hcClaimsA06,
                 topicType: .claims
             )
-        case .q7:
+        case .claimsQuestion7:
             return .init(
                 question: L10n.hcClaimsQ07,
                 questionEn: L10n.hcClaimsQ07_en,
                 answer: L10n.hcClaimsA07,
                 topicType: .claims
             )
-        case .q8:
+        case .claimsQuestion8:
             return .init(
                 question: L10n.hcClaimsQ08,
                 questionEn: L10n.hcClaimsQ08_en,
                 answer: L10n.hcClaimsA08,
                 topicType: .claims
             )
-        case .q9:
+        case .claimsQuestion9:
             return .init(
                 question: L10n.hcClaimsQ09,
                 questionEn: L10n.hcClaimsQ09_en,
                 answer: L10n.hcClaimsA09,
                 topicType: .claims
             )
-        case .q10:
+        case .claimsQuestion10:
             return .init(
                 question: L10n.hcClaimsQ10,
                 questionEn: L10n.hcClaimsQ10_en,
                 answer: L10n.hcClaimsA10,
                 topicType: .claims
             )
-        case .q11:
+        case .claimsQuestion11:
             return .init(
                 question: L10n.hcClaimsQ11,
                 questionEn: L10n.hcClaimsQ11_en,
                 answer: L10n.hcClaimsA11,
                 topicType: .claims
             )
-        case .q12:
+        case .claimsQuestion12:
             return .init(
                 question: L10n.hcClaimsQ12,
                 questionEn: L10n.hcClaimsQ12_en,
@@ -265,7 +265,7 @@ extension ClaimsQuestions: QuestionProtocol {
     }
 
     static func common() -> [ClaimsQuestions] {
-        return [.q1, .q2, .q3]
+        return [.claimsQuestion1, .claimsQuestion2, .claimsQuestion3]
     }
 
     static func others() -> [ClaimsQuestions] {
@@ -279,30 +279,30 @@ extension ClaimsQuestions: QuestionProtocol {
 }
 
 enum CoverageQuestions: CaseIterable {
-    case q1
-    case q2
-    case q3
-    case q4
-    case q5
-    case q6
-    case q7
-    case q8
-    case q9
-    case q10
-    case q11
-    case q12
-    case q13
-    case q14
-    case q15
-    case q17
-    case q18
-    case q19
-    case q20
-    case q21
-    case q22
+    case coverageQuestion1
+    case coverageQuestion2
+    case coverageQuestion3
+    case coverageQuestion4
+    case coverageQuestion5
+    case coverageQuestion6
+    case coverageQuestion7
+    case coverageQuestion8
+    case coverageQuestion9
+    case coverageQuestion10
+    case coverageQuestion11
+    case coverageQuestion12
+    case coverageQuestion13
+    case coverageQuestion14
+    case coverageQuestion15
+    case coverageQuestion17
+    case coverageQuestion18
+    case coverageQuestion19
+    case coverageQuestion20
+    case coverageQuestion21
+    case coverageQuestion22
     var question: Question {
         switch self {
-        case .q1:
+        case .coverageQuestion1:
             return .init(
                 question: L10n.hcCoverageQ01,
                 questionEn: L10n.hcCoverageQ01_en,
@@ -310,140 +310,140 @@ enum CoverageQuestions: CaseIterable {
                 topicType: .coverage
             )
 
-        case .q2:
+        case .coverageQuestion2:
             return .init(
                 question: L10n.hcCoverageQ02,
                 questionEn: L10n.hcCoverageQ02_en,
                 answer: L10n.hcCoverageA02,
                 topicType: .coverage
             )
-        case .q3:
+        case .coverageQuestion3:
             return .init(
                 question: L10n.hcCoverageQ03,
                 questionEn: L10n.hcCoverageQ03_en,
                 answer: L10n.hcCoverageA03,
                 topicType: .coverage
             )
-        case .q4:
+        case .coverageQuestion4:
             return .init(
                 question: L10n.hcCoverageQ04,
                 questionEn: L10n.hcCoverageQ04_en,
                 answer: L10n.hcCoverageA04,
                 topicType: .coverage
             )
-        case .q5:
+        case .coverageQuestion5:
             return .init(
                 question: L10n.hcCoverageQ05,
                 questionEn: L10n.hcCoverageQ05_en,
                 answer: L10n.hcCoverageA05,
                 topicType: .coverage
             )
-        case .q6:
+        case .coverageQuestion6:
             return .init(
                 question: L10n.hcCoverageQ06,
                 questionEn: L10n.hcCoverageQ06_en,
                 answer: L10n.hcCoverageA06,
                 topicType: .coverage
             )
-        case .q7:
+        case .coverageQuestion7:
             return .init(
                 question: L10n.hcCoverageQ07,
                 questionEn: L10n.hcCoverageQ07_en,
                 answer: L10n.hcCoverageA07,
                 topicType: .coverage
             )
-        case .q8:
+        case .coverageQuestion8:
             return .init(
                 question: L10n.hcCoverageQ08,
                 questionEn: L10n.hcCoverageQ08_en,
                 answer: L10n.hcCoverageA08,
                 topicType: .coverage
             )
-        case .q9:
+        case .coverageQuestion9:
             return .init(
                 question: L10n.hcCoverageQ09,
                 questionEn: L10n.hcCoverageQ09_en,
                 answer: L10n.hcCoverageA09,
                 topicType: .coverage
             )
-        case .q10:
+        case .coverageQuestion10:
             return .init(
                 question: L10n.hcCoverageQ10,
                 questionEn: L10n.hcCoverageQ10_en,
                 answer: L10n.hcCoverageA10,
                 topicType: .coverage
             )
-        case .q11:
+        case .coverageQuestion11:
             return .init(
                 question: L10n.hcCoverageQ11,
                 questionEn: L10n.hcCoverageQ11_en,
                 answer: L10n.hcCoverageA11,
                 topicType: .coverage
             )
-        case .q12:
+        case .coverageQuestion12:
             return .init(
                 question: L10n.hcCoverageQ12,
                 questionEn: L10n.hcCoverageQ12_en,
                 answer: L10n.hcCoverageA12,
                 topicType: .coverage
             )
-        case .q13:
+        case .coverageQuestion13:
             return .init(
                 question: L10n.hcCoverageQ13,
                 questionEn: L10n.hcCoverageQ13_en,
                 answer: L10n.hcCoverageA13,
                 topicType: .coverage
             )
-        case .q14:
+        case .coverageQuestion14:
             return .init(
                 question: L10n.hcCoverageQ14,
                 questionEn: L10n.hcCoverageQ14_en,
                 answer: L10n.hcCoverageA14,
                 topicType: .coverage
             )
-        case .q15:
+        case .coverageQuestion15:
             return .init(
                 question: L10n.hcCoverageQ15,
                 questionEn: L10n.hcCoverageQ15_en,
                 answer: L10n.hcCoverageA15,
                 topicType: .coverage
             )
-        case .q17:
+        case .coverageQuestion17:
             return .init(
                 question: L10n.hcCoverageQ17,
                 questionEn: L10n.hcCoverageQ17_en,
                 answer: L10n.hcCoverageA17,
                 topicType: .coverage
             )
-        case .q18:
+        case .coverageQuestion18:
             return .init(
                 question: L10n.hcCoverageQ18,
                 questionEn: L10n.hcCoverageQ18_en,
                 answer: L10n.hcCoverageA18,
                 topicType: .coverage
             )
-        case .q19:
+        case .coverageQuestion19:
             return .init(
                 question: L10n.hcCoverageQ19,
                 questionEn: L10n.hcCoverageQ19_en,
                 answer: L10n.hcCoverageA19,
                 topicType: .coverage
             )
-        case .q20:
+        case .coverageQuestion20:
             return .init(
                 question: L10n.hcCoverageQ20,
                 questionEn: L10n.hcCoverageQ20_en,
                 answer: L10n.hcCoverageA20,
                 topicType: .coverage
             )
-        case .q21:
+        case .coverageQuestion21:
             return .init(
                 question: L10n.hcCoverageQ21,
                 questionEn: L10n.hcCoverageQ21_en,
                 answer: L10n.hcCoverageA21,
                 topicType: .coverage
             )
-        case .q22:
+        case .coverageQuestion22:
             return .init(
                 question: L10n.hcCoverageQ22,
                 questionEn: L10n.hcCoverageQ22_en,
@@ -460,7 +460,7 @@ extension CoverageQuestions: QuestionProtocol {
     }
 
     static func common() -> [CoverageQuestions] {
-        return [.q1, .q2, .q3]
+        return [.coverageQuestion1, .coverageQuestion2, .coverageQuestion3]
     }
 
     static func others() -> [CoverageQuestions] {
@@ -474,82 +474,82 @@ extension CoverageQuestions: QuestionProtocol {
 }
 
 enum InsuranceQuestions: CaseIterable {
-    case q1
-    case q2
-    case q3
-    case q4
-    case q5
-    case q6
-    case q7
-    case q8
-    case q9
-    case q10
+    case insuranceQuestion1
+    case insuranceQuestion2
+    case insuranceQuestion3
+    case insuranceQuestion4
+    case insuranceQuestion5
+    case insuranceQuestion6
+    case insuranceQuestion7
+    case insuranceQuestion8
+    case insuranceQuestion9
+    case insuranceQuestion10
     var question: Question {
         switch self {
-        case .q1:
+        case .insuranceQuestion1:
             return .init(
                 question: L10n.hcInsuranceQ01,
                 questionEn: L10n.hcInsuranceQ01_en,
                 answer: L10n.hcInsuranceA01,
                 topicType: .myInsurance
             )
-        case .q2:
+        case .insuranceQuestion2:
             return .init(
                 question: L10n.hcInsuranceQ02,
                 questionEn: L10n.hcInsuranceQ02_en,
                 answer: L10n.hcInsuranceA02,
                 topicType: .myInsurance
             )
-        case .q3:
+        case .insuranceQuestion3:
             return .init(
                 question: L10n.hcInsuranceQ03,
                 questionEn: L10n.hcInsuranceQ03_en,
                 answer: L10n.hcInsuranceA03,
                 topicType: .myInsurance
             )
-        case .q4:
+        case .insuranceQuestion4:
             return .init(
                 question: L10n.hcInsuranceQ04,
                 questionEn: L10n.hcInsuranceQ04_en,
                 answer: L10n.hcInsuranceA04,
                 topicType: .myInsurance
             )
-        case .q5:
+        case .insuranceQuestion5:
             return .init(
                 question: L10n.hcInsuranceQ05,
                 questionEn: L10n.hcInsuranceQ05_en,
                 answer: L10n.hcInsuranceA05,
                 topicType: .myInsurance
             )
-        case .q6:
+        case .insuranceQuestion6:
             return .init(
                 question: L10n.hcInsuranceQ06,
                 questionEn: L10n.hcInsuranceQ06_en,
                 answer: L10n.hcInsuranceA06,
                 topicType: .myInsurance
             )
-        case .q7:
+        case .insuranceQuestion7:
             return .init(
                 question: L10n.hcInsuranceQ07,
                 questionEn: L10n.hcInsuranceQ07_en,
                 answer: L10n.hcInsuranceA07,
                 topicType: .myInsurance
             )
-        case .q8:
+        case .insuranceQuestion8:
             return .init(
                 question: L10n.hcInsuranceQ08,
                 questionEn: L10n.hcInsuranceQ08_en,
                 answer: L10n.hcInsuranceA08,
                 topicType: .myInsurance
             )
-        case .q9:
+        case .insuranceQuestion9:
             return .init(
                 question: L10n.hcInsuranceQ09,
                 questionEn: L10n.hcInsuranceQ09_en,
                 answer: L10n.hcInsuranceA09,
                 topicType: .myInsurance
             )
-        case .q10:
+        case .insuranceQuestion10:
             return .init(
                 question: L10n.hcInsuranceQ10,
                 questionEn: L10n.hcInsuranceQ10_en,
@@ -566,7 +566,7 @@ extension InsuranceQuestions: QuestionProtocol {
     }
 
     static func common() -> [InsuranceQuestions] {
-        return [.q1, .q2, .q3]
+        return [.insuranceQuestion1, .insuranceQuestion2, .insuranceQuestion3]
     }
 
     static func others() -> [InsuranceQuestions] {
@@ -580,34 +580,34 @@ extension InsuranceQuestions: QuestionProtocol {
 }
 
 enum OtherQuestions: CaseIterable {
-    case q1
-    case q2
-    case q3
-    case q4
+    case otherQuestion1
+    case otherQuestion2
+    case otherQuestion3
+    case otherQuestion4
     var question: Question {
         switch self {
-        case .q1:
+        case .otherQuestion1:
             return .init(
                 question: L10n.hcOtherQ01,
                 questionEn: L10n.hcOtherQ01_en,
                 answer: L10n.hcOtherA01,
                 topicType: nil
             )
-        case .q2:
+        case .otherQuestion2:
             return .init(
                 question: L10n.hcOtherQ02,
                 questionEn: L10n.hcOtherQ02_en,
                 answer: L10n.hcOtherA02,
                 topicType: nil
             )
-        case .q3:
+        case .otherQuestion3:
             return .init(
                 question: L10n.hcOtherQ03,
                 questionEn: L10n.hcOtherQ03_en,
                 answer: L10n.hcOtherA03,
                 topicType: nil
             )
-        case .q4:
+        case .otherQuestion4:
             return .init(
                 question: L10n.hcOtherQ04,
                 questionEn: L10n.hcOtherQ04_en,
@@ -624,7 +624,7 @@ extension OtherQuestions: QuestionProtocol {
     }
 
     static func common() -> [OtherQuestions] {
-        return [.q1, .q2, .q3]
+        return [.otherQuestion1, .otherQuestion2, .otherQuestion3]
     }
 
     static func others() -> [OtherQuestions] {

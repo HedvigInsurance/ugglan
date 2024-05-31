@@ -71,11 +71,14 @@ public struct HelpCenterStartView: View {
         .hFormObserveKeyboard
         .edgesIgnoringSafeArea(.bottom)
         .dismissKeyboard()
-        .introspectViewController(customize: { vc in
-            vc.navigationItem.hidesSearchBarWhenScrolling = false
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak vc] in
-                vc?.navigationItem.hidesSearchBarWhenScrolling = true
+        .introspectViewController(customize: { [weak vm] vc in
+            if !(vm?.didSetInitialSearchAppearance ?? false) {
+                vc.navigationItem.hidesSearchBarWhenScrolling = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak vc] in
+                    vc?.navigationItem.hidesSearchBarWhenScrolling = true
 
+                }
+                vm?.didSetInitialSearchAppearance = true
             }
         })
         .introspectViewController { vc in
@@ -199,11 +202,11 @@ public struct HelpCenterStartView: View {
 extension HelpCenterStartView {
     public static var journey: some JourneyPresentation {
         let commonQuestions: [Question] = [
-            ClaimsQuestions.q1.question,
-            InsuranceQuestions.q5.question,
-            PaymentsQuestions.q1.question,
-            InsuranceQuestions.q3.question,
-            InsuranceQuestions.q1.question,
+            ClaimsQuestions.claimsQuestion1.question,
+            InsuranceQuestions.insuranceQuestion5.question,
+            PaymentsQuestions.paymentsQuestion1.question,
+            InsuranceQuestions.insuranceQuestion3.question,
+            InsuranceQuestions.insuranceQuestion1.question,
         ]
         return HostingJourney(
             HomeStore.self,
@@ -302,7 +305,7 @@ extension HelpCenterStartViewModel: UISearchControllerDelegate {
 class HelpCenterStartViewModel: NSObject, ObservableObject {
     var helpCenterModel: HelpCenterModel
     @PresentableStore var store: HomeStore
-
+    var didSetInitialSearchAppearance = false
     @Published var quickActions: [QuickAction] = []
 
     //search part
@@ -316,7 +319,6 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
         let searchController = UISearchController(searchResultsController: nil)
         searchController.delegate = self
         searchController.searchResultsUpdater = self
-        searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = L10n.searchPlaceholder
         searchController.obscuresBackgroundDuringPresentation = false
         return searchController
