@@ -3,19 +3,29 @@ import Foundation
 import SwiftUI
 
 public protocol KeyboardReadable {
-    var keyboardPublisher: AnyPublisher<Bool, Never> { get }
+    var keyboardPublisher: AnyPublisher<CGFloat?, Never> { get }
 }
 
 extension KeyboardReadable {
-    public var keyboardPublisher: AnyPublisher<Bool, Never> {
+    public var keyboardPublisher: AnyPublisher<CGFloat?, Never> {
         Publishers.Merge(
             NotificationCenter.default
                 .publisher(for: UIResponder.keyboardWillShowNotification)
-                .map { _ in true },
+                .map { data in
+                    if let keyboardFrame: NSValue = data.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
+                    {
+                        let keyboardRectangle = keyboardFrame.cgRectValue
+                        let keyboardHeight = keyboardRectangle.height
+                        return keyboardHeight
+                    }
+                    return nil
+                },
 
             NotificationCenter.default
                 .publisher(for: UIResponder.keyboardWillHideNotification)
-                .map { _ in false }
+                .map { _ in
+                    return nil
+                }
         )
         .eraseToAnyPublisher()
     }

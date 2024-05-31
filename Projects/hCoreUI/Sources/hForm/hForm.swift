@@ -195,19 +195,24 @@ public struct hForm<Content: View>: View, KeyboardReadable {
             }
             if hObserveKeyboard {
                 cancellable = keyboardPublisher.sink { _ in
-                } receiveValue: { [weak scrollView] selected in
-                    if selected {
+                } receiveValue: { [weak scrollView] keyboardHeight in
+                    if let keyboardHeight {
                         if let view = UIResponder.currentFirstResponder as? UIView {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak scrollView] in
                                 guard let scrollView = scrollView else { return }
                                 let pointToCheck = CGPoint(x: 0, y: view.frame.size.height)
                                 let positionToMove = view.convert(pointToCheck, to: scrollView).y
-                                if positionToMove > self.contentHeight - bottomAttachedViewHeight {
-                                    scrollView.scrollRectToVisible(
-                                        .init(x: 0, y: positionToMove + bottomAttachedViewHeight, width: 5, height: 5),
-                                        animated: true
-                                    )
-                                }
+
+                                let moveTo = positionToMove + bottomAttachedViewHeight + keyboardHeight
+                                scrollView.scrollRectToVisible(
+                                    .init(
+                                        x: 0,
+                                        y: moveTo,
+                                        width: view.frame.width,
+                                        height: view.frame.height
+                                    ),
+                                    animated: true
+                                )
                             }
                         }
 

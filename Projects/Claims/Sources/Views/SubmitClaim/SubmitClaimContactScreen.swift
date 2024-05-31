@@ -47,8 +47,8 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
                 .sectionContainerStyle(.transparent)
             }
             .claimErrorTrackerFor([.postContractSelect])
-            .onReceive(keyboardPublisher) { newIsKeyboardEnabled in
-                vm.keyboardEnabled = newIsKeyboardEnabled
+            .onReceive(keyboardPublisher) { keyboardHeight in
+                vm.keyboardEnabled = keyboardHeight != nil
             }
     }
 }
