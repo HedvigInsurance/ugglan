@@ -72,6 +72,12 @@ struct CoInusuredInput: View {
                 } else {
                     addCoInsuredFields
                 }
+                if vm.showInfoForMissingSSN {
+                    hSection {
+                        InfoCard(text: L10n.coinsuredWithoutSsnInfo, type: .attention)
+                    }
+                    .sectionContainerStyle(.transparent)
+                }
                 hSection {
                     HStack {
                         if vm.actionType == .delete {
@@ -381,8 +387,13 @@ struct CoInusuredInput: View {
             .contentShape(Rectangle())
             .onChange(
                 of: vm.noSSN,
-                perform: { newValue in
+                perform: { value in
                     vm.SSN = ""
+                    if !value {
+                        withAnimation {
+                            vm.showInfoForMissingSSN = false
+                        }
+                    }
                 }
             )
             .padding(.vertical, 12)
@@ -449,6 +460,7 @@ public class CoInusuredInputViewModel: ObservableObject {
     @Published var nameFetchedFromSSN: Bool = false
     @Published var isLoading: Bool = false
     @Published var enterManually: Bool = false
+    @Published var showInfoForMissingSSN = false
     @Published var SSN: String
     @Published var birthday: String
     @Published var type: CoInsuredInputType?
@@ -524,14 +536,22 @@ public class CoInusuredInputViewModel: ObservableObject {
         } catch let exception {
             if let exception = exception as? EditCoInsuredError {
                 switch exception {
-                case .missingSSN, .serviceError:
-                    self.enterManually = true
-                case .otherError:
+                case .missingSSN:
+                    withAnimation {
+                        self.noSSN = true
+                        self.enterManually = true
+                        self.showInfoForMissingSSN = true
+                    }
+                case .otherError, .serviceError:
                     self.enterManually = false
+                    withAnimation {
+                        self.SSNError = exception.localizedDescription
+                    }
                 }
-            }
-            withAnimation {
-                self.SSNError = exception.localizedDescription
+            } else {
+                withAnimation {
+                    self.SSNError = exception.localizedDescription
+                }
             }
         }
         withAnimation {
