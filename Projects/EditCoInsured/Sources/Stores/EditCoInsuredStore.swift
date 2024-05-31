@@ -21,10 +21,6 @@ public final class EditCoInsuredStore: LoadingStateStore<
             do {
                 try await self.editCoInsuredService.sendMidtermChangeIntentCommit(commitId: commitId)
                 self.removeLoading(for: .postCoInsured)
-
-                let editCoinsuredSharedStore: EditCoInsuredSharedStore = globalPresentableStoreContainer.get()
-                editCoinsuredSharedStore.send(.fetchContracts)
-
                 AskForRating().askForReview()
             } catch {
                 self.setError(L10n.General.errorBody, for: .postCoInsured)

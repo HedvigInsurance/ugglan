@@ -1,24 +1,27 @@
 import Foundation
-import Presentation
+import hCore
 
 public class EditCoInsuredViewModel: ObservableObject {
     @Published public var editCoInsuredModelDetent: EditCoInsuredNavigationModel?
     @Published public var editCoInsuredModelFullScreen: EditCoInsuredNavigationModel?
     @Published public var editCoInsuredModelMissingAlert: InsuredPeopleConfig?
 
+    @Inject public var editCoInsuredSharedService: EditCoInsuredSharedService
+
     public init() {}
 
     public func start(fromContract: InsuredPeopleConfig? = nil) {
+
         Task {
-            let store: EditCoInsuredSharedStore = globalPresentableStoreContainer.get()
-            await store.sendAsync(.fetchContracts)
+            let activeContracts = try await editCoInsuredSharedService.fetchContracts()
 
             if let contract = fromContract {
                 editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
                     return [contract]
                 })
             } else {
-                let contractsSupportingCoInsured = store.state.activeContracts
+                let contractsSupportingCoInsured =
+                    activeContracts
                     .filter({ $0.showEditCoInsuredInfo && $0.nbOfMissingCoInsuredWithoutTermination > 0 })
                     .compactMap({
                         InsuredPeopleConfig(contract: $0, fromInfoCard: true)

@@ -1,6 +1,5 @@
 import EditCoInsuredShared
 import Foundation
-import Presentation
 import SwiftUI
 
 extension View {
@@ -75,10 +74,9 @@ struct EditCoInsured: ViewModifier {
         vm.editCoInsuredModelMissingAlert = nil
 
         Task {
-            let store: EditCoInsuredSharedStore = globalPresentableStoreContainer.get()
-            await store.sendAsync(.fetchContracts)
+            let activeContracts = try await vm.editCoInsuredSharedService.fetchContracts()
 
-            let missingContract = store.state.activeContracts.first { contract in
+            let missingContract = activeContracts.first { contract in
                 if contract.upcomingChangedAgreement != nil {
                     return false
                 } else {
