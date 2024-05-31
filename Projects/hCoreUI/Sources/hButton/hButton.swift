@@ -11,14 +11,25 @@ struct LargeButtonModifier: ViewModifier {
 }
 
 struct MediumButtonModifier: ViewModifier {
+    @Environment(\.hUseNewDesign) var hUseNewDesign
     func body(content: Content) -> some View {
-        hSection {
-            content
-                .frame(maxHeight: 40)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 8)
+        if hUseNewDesign {
+            hSection {
+                content
+                    .padding(.top, 7)
+                    .padding(.bottom, 9)
+                    .frame(maxWidth: .infinity)
+            }
+            .sectionContainerStyle(.transparent)
+        } else {
+            hSection {
+                content
+                    .frame(maxHeight: 40)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+            }
+            .sectionContainerStyle(.transparent)
         }
-        .sectionContainerStyle(.transparent)
     }
 }
 
@@ -56,7 +67,7 @@ struct ButtonFilledStandardBackground: View {
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
     var configuration: SwiftUI.ButtonStyle.Configuration
-
+    @Environment(\.hUseNewDesign) var hUseNewDesign
     var body: some View {
         switch hButtonConfigurationType {
         case .primary:
@@ -79,7 +90,14 @@ struct ButtonFilledStandardBackground: View {
             if configuration.isPressed {
                 hButtonColor.secondaryHover
             } else if isEnabled {
-                hFillColor.translucentOne
+                if hUseNewDesign {
+                    hColorScheme(
+                        light: Color(hexString: "#121212").opacity(0.045),
+                        dark: Color(hexString: "#FAFAFA").opacity(0.13)
+                    )
+                } else {
+                    hFillColor.translucentOne
+                }
             } else {
                 hButtonColor.secondaryDisabled
             }
@@ -299,6 +317,7 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         @Environment(\.hButtonFilledStyle) var hButtonFilledStyle
         @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
         @Environment(\.hUseLightMode) var hUseLightMode
+        @Environment(\.hUseNewDesign) var hUseNewDesign
 
         var configuration: Configuration
 
@@ -306,7 +325,11 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
             switch hButtonConfigurationType {
             case .primary:
                 if isEnabled {
-                    hTextColor.negative
+                    if hUseNewDesign {
+                        hTextColor.primary.inverted
+                    } else {
+                        hTextColor.negative
+                    }
                 } else {
                     hTextColor.disabled
                 }
@@ -318,7 +341,11 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
                 }
             case .secondary, .ghost:
                 if isEnabled {
-                    hTextColor.primary
+                    if hUseNewDesign {
+                        hTextColor.primary
+                    } else {
+                        hTextColor.primary
+                    }
                 } else {
                     hTextColor.disabled
                 }
@@ -438,90 +465,10 @@ struct ButtonOutlinedStyle: SwiftUI.ButtonStyle {
         }
         .buttonSizeModifier(size)
         .background(Color.clear)
-        //        .overlay(configuration.isPressed ? hOverlayColor.pressed : nil)
         .clipShape(Squircle.default())
         .modifier(OverlayModifier(configuration: configuration))
         .modifier(OpacityModifier())
         .contentShape(Rectangle())
-    }
-}
-
-struct LargeButtonTextStyle: SwiftUI.ButtonStyle {
-    struct Label: View {
-        var configuration: Configuration
-
-        var body: some View {
-            LoaderOrContent(color: hTextColor.primary) {
-                configuration.label
-                    .foregroundColor(hTextColor.primary)
-                    .environment(\.defaultHTextStyle, .standard)
-            }
-        }
-    }
-
-    struct OpacityModifier: ViewModifier {
-        @Environment(\.isEnabled) var isEnabled
-
-        func body(content: Content) -> some View {
-            content.opacity(isEnabled ? 1 : 0.2)
-        }
-    }
-
-    func makeBody(configuration: Configuration) -> some View {
-        VStack {
-            Label(configuration: configuration).contentShape(Rectangle())
-        }
-        .modifier(LargeButtonModifier())
-        .background(Color.clear)
-        .overlay(configuration.isPressed ? getPressedColor : nil)
-        .clipShape(Squircle.default())
-        .modifier(OpacityModifier())
-        .contentShape(Rectangle())
-    }
-
-    @hColorBuilder
-    var getPressedColor: some hColor {
-        hButtonColor.secondaryHover
-    }
-}
-
-struct SmallButtonTextStyle: SwiftUI.ButtonStyle {
-
-    struct Label: View {
-        var configuration: Configuration
-
-        var body: some View {
-            LoaderOrContent(color: hTextColor.primary) {
-                configuration.label
-                    .foregroundColor(hTextColor.primary)
-                    .environment(\.defaultHTextStyle, .standard)
-            }
-        }
-    }
-
-    struct OpacityModifier: ViewModifier {
-        @Environment(\.isEnabled) var isEnabled
-
-        func body(content: Content) -> some View {
-            content.opacity(isEnabled ? 1 : 0.2)
-        }
-    }
-
-    func makeBody(configuration: Configuration) -> some View {
-        VStack {
-            Label(configuration: configuration).contentShape(Rectangle())
-        }
-        .modifier(SmallButtonModifier())
-        .background(hGrayscaleColor.greyScale25)
-        .overlay(configuration.isPressed ? getPressedColor : nil)
-        .clipShape(Squircle.default())
-        .modifier(OpacityModifier())
-        .contentShape(Rectangle())
-    }
-
-    @hColorBuilder
-    var getPressedColor: some hColor {
-        hButtonColor.secondaryHover
     }
 }
 

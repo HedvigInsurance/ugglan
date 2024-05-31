@@ -36,13 +36,13 @@ struct ConfirmTerminationScreen: View {
                         ),
                     dismissButton: .init(
                         buttonTitle: L10n.generalCloseButton,
-                        buttonAction: {
-                            store.send(.goBack)
+                        buttonAction: { [weak store] in
+                            store?.send(.goBack)
                         }
                     )
-                )
+                ),
+                attachContentToTheBottom: true
             )
-            .hWithLargeIcon
             .hExtraTopPadding
         }
         .hDisableScroll

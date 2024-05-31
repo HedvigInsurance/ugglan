@@ -30,3 +30,44 @@ extension KeyboardReadable {
         .eraseToAnyPublisher()
     }
 }
+
+public protocol KeyboardReadableHeight {
+    var keyboardHeightPublisher: AnyPublisher<CGFloat?, Never> { get }
+}
+
+extension KeyboardReadableHeight {
+    public var keyboardHeightPublisher: AnyPublisher<CGFloat?, Never> {
+        Publishers.Merge3(
+            NotificationCenter.default
+                .publisher(for: UIResponder.keyboardWillShowNotification)
+                .map { data in
+                    if let keyboardFrame: NSValue = data.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
+                    {
+                        let keyboardRectangle = keyboardFrame.cgRectValue
+                        let keyboardHeight = keyboardRectangle.height
+                        return keyboardHeight
+                    }
+                    return nil
+                },
+
+            NotificationCenter.default
+                .publisher(for: UIResponder.keyboardWillHideNotification)
+                .map { _ in
+                    return nil
+                },
+
+            NotificationCenter.default
+                .publisher(for: UIResponder.keyboardWillChangeFrameNotification)
+                .map { data in
+                    if let keyboardFrame: NSValue = data.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
+                    {
+                        let keyboardRectangle = keyboardFrame.cgRectValue
+                        let keyboardHeight = keyboardRectangle.height
+                        return keyboardHeight
+                    }
+                    return nil
+                }
+        )
+        .eraseToAnyPublisher()
+    }
+}

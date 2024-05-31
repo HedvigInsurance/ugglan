@@ -33,6 +33,20 @@ public class TerminateContractsOctopus: TerminateContractsService {
         )
         return try await mutation.execute(\.flowTerminationDeletionNext.fragments.flowTerminationFragment.currentStep)
     }
+
+    public func sendSurvey(
+        terminationContext: String,
+        option: String,
+        inputData: String?
+    ) async throws -> TerminateStepResponse {
+        let input = OctopusGraphQL.FlowTerminationSurveyDataInput(
+            optionId: option,
+            text: GraphQLNullable.init(optionalValue: inputData)
+        )
+        let data = OctopusGraphQL.FlowTerminationSurveyInput(data: input)
+        let mutation = OctopusGraphQL.FlowTerminationSurveyNextMutation(input: data, context: terminationContext)
+        return try await mutation.execute(\.flowTerminationSurveyNext.fragments.flowTerminationFragment.currentStep)
+    }
 }
 
 protocol Into {
@@ -50,6 +64,8 @@ extension OctopusGraphQL.FlowTerminationFragment.CurrentStep: Into {
             return .stepModelAction(action: .setFailedStep(model: .init(with: step)))
         } else if let step = self.asFlowTerminationSuccessStep?.fragments.flowTerminationSuccessFragment {
             return .stepModelAction(action: .setSuccessStep(model: .init(with: step)))
+        } else if let step = self.asFlowTerminationSurveyStep?.fragments.flowTerminationSurveyStepFragment {
+            return .stepModelAction(action: .setTerminationSurveyStep(model: .init(with: step)))
         } else {
             return .navigationAction(action: .openTerminationUpdateAppScreen)
         }
@@ -91,5 +107,106 @@ extension OctopusGraphQL.FlowTerminationDateNextMutation.Data: TerminationStepCo
 extension OctopusGraphQL.FlowTerminationDeletionNextMutation.Data: TerminationStepContext {
     func getContext() -> String {
         return self.flowTerminationDeletionNext.context
+    }
+}
+
+extension OctopusGraphQL.FlowTerminationSurveyNextMutation.Data: TerminationStepContext {
+    func getContext() -> String {
+        return self.flowTerminationSurveyNext.context
+    }
+}
+
+extension TerminationFlowSurveyStepModel {
+    init(with data: OctopusGraphQL.FlowTerminationSurveyStepFragment) {
+        var options = [TerminationFlowSurveyStepModelOption]()
+        for layer1 in data.options {
+            var subOptions = [TerminationFlowSurveyStepModelOption]()
+            layer1.subOptions?
+                .forEach({ subOption in
+                    var subSubOptions = [TerminationFlowSurveyStepModelOption]()
+                    subOption.subOptions?
+                        .forEach({ subSubOption in
+                            var subSubSubOptions = [TerminationFlowSurveyStepModelOption]()
+                            subSubOption.subOptions?
+                                .forEach({ subSubOption in
+                                    subSubSubOptions.append(
+                                        .init(
+                                            with: subSubOption.fragments.flowTerminationSurveyStepOptionFragment,
+                                            subOptions: []
+                                        )
+                                    )
+                                })
+                            subSubOptions.append(
+                                .init(
+                                    with: subSubOption.fragments.flowTerminationSurveyStepOptionFragment,
+                                    subOptions: subSubSubOptions
+                                )
+                            )
+                        })
+                    subOptions.append(
+                        .init(
+                            with: subOption.fragments.flowTerminationSurveyStepOptionFragment,
+                            subOptions: subSubOptions
+                        )
+                    )
+                })
+            let stepOptionFragment = layer1.fragments.flowTerminationSurveyStepOptionFragment
+            options.append(.init(with: stepOptionFragment, subOptions: subOptions))
+        }
+        id = data.id
+        self.options = options
+    }
+}
+
+extension TerminationFlowSurveyStepModelOption {
+
+    init(
+        with data: OctopusGraphQL.FlowTerminationSurveyStepOptionFragment,
+        subOptions: [TerminationFlowSurveyStepModelOption]
+    ) {
+        id = data.id
+        title = data.title
+        suggestion = data.suggestion?.fragments.flowTerminationSurveyOptionSuggestionFragment.asSuggestion
+        feedBack = data.feedBack?.fragments.flowTerminationSurveyOptionFeedbackFragment.asFeedback
+        self.subOptions = subOptions
+    }
+}
+extension OctopusGraphQL.FlowTerminationSurveyOptionSuggestionFragment {
+    var asSuggestion: TerminationFlowSurveyStepSuggestion? {
+        if let optionActionSuggestion = self.asFlowTerminationSurveyOptionSuggestionAction,
+            let action = optionActionSuggestion.action.asFlowTerminationSurveyRedirectAction
+        {
+            return .action(action: .init(id: optionActionSuggestion.id, action: action))
+        } else if let optionRedirectSuggestion = self.asFlowTerminationSurveyOptionSuggestionRedirect {
+            return .redirect(
+                redirect: .init(
+                    id: optionRedirectSuggestion.id,
+                    url: optionRedirectSuggestion.url,
+                    description: optionRedirectSuggestion.description,
+                    buttonTitle: optionRedirectSuggestion.buttonTitle
+                )
+            )
+        }
+        return nil
+    }
+}
+
+extension GraphQLEnum<OctopusGraphQL.FlowTerminationSurveyRedirectAction> {
+    var asFlowTerminationSurveyRedirectAction: FlowTerminationSurveyRedirectAction? {
+        switch self {
+        case .case(let t):
+            switch t {
+            case .updateAddress:
+                return .updateAddress
+            }
+        case .unknown(let string):
+            return nil
+        }
+    }
+}
+
+extension OctopusGraphQL.FlowTerminationSurveyOptionFeedbackFragment {
+    var asFeedback: TerminationFlowSurveyStepFeedback? {
+        .init(id: self.id, isRequired: self.isRequired)
     }
 }

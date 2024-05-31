@@ -31,10 +31,10 @@ struct EmailPreferencesConfirmView: View {
                 )
             )
         )
-        .hWithLargeIcon
         .hExtraTopPadding
         .hDisableScroll
         .hButtonIsLoading(vm.isLoading)
+        .hUseNewDesign
     }
 }
 

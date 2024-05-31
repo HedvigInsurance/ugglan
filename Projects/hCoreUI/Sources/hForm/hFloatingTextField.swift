@@ -345,6 +345,7 @@ extension View {
 public enum hFieldSize: Hashable {
     case small
     case large
+    case medium
 }
 
 private struct EnvironmentHFieldAttachedView: EnvironmentKey {

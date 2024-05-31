@@ -7,36 +7,46 @@ public struct GenericErrorView: View {
     private let useForm: Bool
     private let icon: ErrorIconType
     private let buttons: ErrorViewButtonConfig
+    private let attachContentToTheBottom: Bool
     @Environment(\.hWithoutTitle) var withoutTitle
     @Environment(\.hExtraBottomPadding) var extraBottomPadding
     @Environment(\.hExtraTopPadding) var extraTopPadding
-    @Environment(\.hWithLargeIcon) var useLargeIcon
+    @Environment(\.hUseNewDesign) var hUseNewDesign
 
     public init(
         title: String? = nil,
         description: String? = L10n.General.errorBody,
         useForm: Bool = true,
         icon: ErrorIconType = .triangle,
-        buttons: ErrorViewButtonConfig
+        buttons: ErrorViewButtonConfig,
+        attachContentToTheBottom: Bool = false
     ) {
         self.title = title
         self.description = description
         self.useForm = useForm
         self.icon = icon
         self.buttons = buttons
+        self.attachContentToTheBottom = attachContentToTheBottom
     }
 
     public var body: some View {
         if useForm {
             hForm {
-                content
-                    .padding(.bottom, 32)
-                    .padding(.top, extraTopPadding ? 32 : 0)
+                if !attachContentToTheBottom {
+                    content
+                        .padding(.bottom, 32)
+                        .padding(.top, extraTopPadding ? 32 : 0)
+                }
             }
             .hFormContentPosition(.center)
             .hFormAttachToBottom {
                 hSection {
                     VStack(spacing: 8) {
+                        if attachContentToTheBottom {
+                            content
+                                .padding(.bottom, 40)
+                                .padding(.top, extraTopPadding ? 32 : 0)
+                        }
                         if let actionButton = buttons.actionButtonAttachedToBottom {
                             hButton.LargeButton(type: .primary) {
                                 actionButton.buttonAction()
@@ -62,15 +72,16 @@ public struct GenericErrorView: View {
     }
 
     private var content: some View {
-        let imageDimension: CGFloat = useLargeIcon ? 40 : 24
+        let imageDimension: CGFloat = hUseNewDesign ? 40 : 24
         return VStack(spacing: 16) {
             switch icon {
             case .triangle:
-                Image(uiImage: hCoreUIAssets.warningTriangleFilled.image)
+                hCoreUIAssets.warningTriangleFilled.view
+                    .resizable()
                     .frame(width: imageDimension, height: imageDimension)
                     .foregroundColor(hSignalColor.amberElement)
             case .circle:
-                Image(uiImage: hCoreUIAssets.infoIconFilled.image)
+                hCoreUIAssets.infoIconFilled.view
                     .resizable()
                     .frame(width: imageDimension, height: imageDimension)
                     .foregroundColor(hSignalColor.blueElement)
@@ -186,23 +197,6 @@ extension EnvironmentValues {
 extension GenericErrorView {
     public var hExtraBottomPadding: some View {
         self.environment(\.hExtraBottomPadding, true)
-    }
-}
-
-private struct EnvironmenthWithLargeIcon: EnvironmentKey {
-    static let defaultValue: Bool = false
-}
-
-extension EnvironmentValues {
-    public var hWithLargeIcon: Bool {
-        get { self[EnvironmenthWithLargeIcon.self] }
-        set { self[EnvironmenthWithLargeIcon.self] = newValue }
-    }
-}
-
-extension GenericErrorView {
-    public var hWithLargeIcon: some View {
-        self.environment(\.hWithLargeIcon, true)
     }
 }
 
