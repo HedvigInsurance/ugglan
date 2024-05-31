@@ -32,6 +32,10 @@ public indirect enum ProfileAction: ActionProtocol, Hashable {
     case deleteAccount(details: MemberDetails)
     case deleteAccountAlreadyRequested
     case sendAccountDeleteRequest(details: MemberDetails)
+
+    case showConfirmEmailPreferences
+    case dismissConfirmEmailPreferences
+
     case makeTabActive(deeplink: DeepLink)
 
     case openChat

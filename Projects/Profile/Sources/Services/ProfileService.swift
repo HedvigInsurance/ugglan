@@ -8,6 +8,7 @@ public protocol ProfileService {
     func update(email: String) async throws -> String
     func update(phone: String) async throws -> String
     func update(eurobonus: String) async throws -> PartnerData
+    func updateSubscriptionPreference(to subscribed: Bool) async throws
 }
 
 enum ProfileError: Error {
