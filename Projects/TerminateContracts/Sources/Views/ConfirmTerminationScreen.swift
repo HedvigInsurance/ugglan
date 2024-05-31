@@ -43,7 +43,6 @@ struct ConfirmTerminationScreen: View {
                 ),
                 attachContentToTheBottom: true
             )
-            .hUseLightMode
             .hExtraTopPadding
         }
         .hDisableScroll
