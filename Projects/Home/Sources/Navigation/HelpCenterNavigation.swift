@@ -1,6 +1,5 @@
 import Chat
 import Contracts
-import EditCoInsured
 import EditCoInsuredShared
 import Payment
 import Presentation

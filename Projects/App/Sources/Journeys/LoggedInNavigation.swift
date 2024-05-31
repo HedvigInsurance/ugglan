@@ -1,7 +1,6 @@
 import Chat
 import Claims
 import Contracts
-import EditCoInsuredShared
 import Forever
 import Foundation
 import Home
