@@ -24,7 +24,7 @@ struct TerminationSurveyScreen: View {
             )
             .hFormIgnoreKeyboard()
             .hDisableScroll
-            .hFormMergeBottomViewWithContentIfNeeded
+            .hFormIgnoreScrollOffsetChanges
             .hFormAttachToBottom {
                 hSection {
                     VStack(spacing: 16) {

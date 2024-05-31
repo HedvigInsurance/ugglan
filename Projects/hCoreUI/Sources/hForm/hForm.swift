@@ -26,9 +26,13 @@ public struct hForm<Content: View>: View, KeyboardReadable {
     @Environment(\.hFormIgnoreKeyboard) var hFormIgnoreKeyboard
     @Environment(\.hFormBottomBackgroundStyle) var bottomBackgroundStyle
     @Environment(\.hObserveKeyboard) var hObserveKeyboard
+    @Environment(\.hIgnoreScrollOffsetChanges) var hIgnoreScrollOffsetChanges
+
     @Environment(\.colorScheme) private var colorScheme
     @State var lastTimeChangedMergeBottomViewWithContent = Date()
     @State var cancellable: AnyCancellable?
+    @State var additionalContentOffset: CGFloat = 0
+    @State var vc: UIViewController?
     var content: Content
     @Namespace private var animation
     public init(
@@ -168,13 +172,21 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                 .frame(height: mergeBottomWithContentIfNeeded ? 0 : bottomAttachedViewHeight)
         }
         .modifier(
-            ForceScrollViewIndicatorInset(insetBottom: mergeBottomWithContentIfNeeded ? 0 : bottomAttachedViewHeight)
+            ForceScrollViewIndicatorInset(
+                insetBottom: mergeBottomWithContentIfNeeded ? 0 : bottomAttachedViewHeight
+            )
+        )
+        .modifier(
+            ForceScrollViewTopInset(
+                addedContentOffset: $additionalContentOffset,
+                shouldFollow: hIgnoreScrollOffsetChanges
+            )
         )
         .findScrollView { scrollView in
             if mergeBottomWithContentIfNeeded {
                 self.scrollView = scrollView
             }
-            scrollView.viewController?.setContentScrollView(scrollView)
+            scrollView.viewController?.setContentScrollView(scrollView, for: .top)
 
             if hDisableScroll || additionalSpaceFromTop > 0 {
                 scrollView.bounces = false
@@ -233,6 +245,9 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                 }
             }
         )
+        .onChange(of: additionalContentOffset) { newValue in
+            recalculateHeight()
+        }
     }
 
     @hColorBuilder
@@ -246,7 +261,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
         if contentHeight <= maxContentHeight {
             additionalSpaceFromTop = {
                 switch contentPosition {
-                case .top: return 0
+                case .top: return additionalContentOffset
                 case .center: return (maxContentHeight - contentHeight) / 2
                 case .bottom: return scrollViewHeight - bottomAttachedViewHeight - contentHeight
                 }
@@ -268,7 +283,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
             }
         }
 
-        let animated = self.additionalSpaceFromTop != additionalSpaceFromTop
+        let animated = self.additionalSpaceFromTop != additionalSpaceFromTop && additionalContentOffset == 0
         if animated {
             withAnimation {
                 self.additionalSpaceFromTop = additionalSpaceFromTop
@@ -277,7 +292,6 @@ public struct hForm<Content: View>: View, KeyboardReadable {
         } else {
             self.additionalSpaceFromTop = additionalSpaceFromTop
             self.mergeBottomViewWithContent = shouldMergeContent
-
         }
     }
 }
@@ -509,5 +523,22 @@ extension EnvironmentValues {
 extension View {
     public var hFormObserveKeyboard: some View {
         self.environment(\.hObserveKeyboard, true)
+    }
+}
+
+private struct EnvironmentHIgnoreScrollOffsetChanges: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    public var hIgnoreScrollOffsetChanges: Bool {
+        get { self[EnvironmentHIgnoreScrollOffsetChanges.self] }
+        set { self[EnvironmentHIgnoreScrollOffsetChanges.self] = newValue }
+    }
+}
+
+extension View {
+    public var hFormIgnoreScrollOffsetChanges: some View {
+        self.environment(\.hIgnoreScrollOffsetChanges, true)
     }
 }

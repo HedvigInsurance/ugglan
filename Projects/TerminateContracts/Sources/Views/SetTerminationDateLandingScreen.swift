@@ -86,7 +86,7 @@ struct SetTerminationDateLandingScreen: View {
                             }
                         )
                         .hFieldTrailingView {
-                            Image(uiImage: hCoreUIAssets.lockSmall.image)
+                            hCoreUIAssets.lockSmall.view
                                 .frame(width: 24, height: 24)
                         }
                         .hFontSize(.standard)
@@ -114,8 +114,10 @@ struct SetTerminationDateLandingScreen: View {
                     )
                     .hFontSize(.standard)
                     .hFieldTrailingView {
-                        Image(uiImage: hCoreUIAssets.chevronDownSmall.image)
+                        hCoreUIAssets.chevronDownSmall.view
+                            .frame(width: 24, height: 24)
                     }
+                    .hUseNewDesign
                 }
             }
         }
