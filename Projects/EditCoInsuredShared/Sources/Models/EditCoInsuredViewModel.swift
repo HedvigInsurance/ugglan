@@ -11,7 +11,7 @@ public class EditCoInsuredViewModel: ObservableObject {
 
     public init() {}
 
-    public func start(fromContract: InsuredPeopleConfig? = nil) {
+    public func start(fromContract: InsuredPeopleConfig? = nil, forMissingCoInsured: Bool = false) {
 
         Task { @MainActor in
             let activeContracts = try await editCoInsuredSharedService.fetchContracts()
@@ -23,7 +23,10 @@ public class EditCoInsuredViewModel: ObservableObject {
             } else {
                 let contractsSupportingCoInsured =
                     activeContracts
-                    .filter({ $0.showEditCoInsuredInfo && $0.nbOfMissingCoInsuredWithoutTermination > 0 })
+                    .filter({
+                        $0.showEditCoInsuredInfo
+                            && ($0.nbOfMissingCoInsuredWithoutTermination > 0 || !forMissingCoInsured)
+                    })
                     .compactMap({
                         InsuredPeopleConfig(contract: $0, fromInfoCard: true)
                     })
@@ -40,6 +43,7 @@ public class EditCoInsuredViewModel: ObservableObject {
             }
         }
     }
+
     public func checkForAlert() {
         editCoInsuredModelDetent = nil
         editCoInsuredModelFullScreen = nil
