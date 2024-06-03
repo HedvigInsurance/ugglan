@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 import hCore
 
@@ -5,7 +6,7 @@ public class EditCoInsuredViewModel: ObservableObject {
     @Published public var editCoInsuredModelDetent: EditCoInsuredNavigationModel?
     @Published public var editCoInsuredModelFullScreen: EditCoInsuredNavigationModel?
     @Published public var editCoInsuredModelMissingAlert: InsuredPeopleConfig?
-
+    public static var updatedCoInsuredForContractId = PassthroughSubject<String?, Never>()
     @Inject public var editCoInsuredSharedService: EditCoInsuredSharedService
 
     public init() {}
@@ -36,6 +37,31 @@ public class EditCoInsuredViewModel: ObservableObject {
                         return contractsSupportingCoInsured
                     })
                 }
+            }
+        }
+    }
+    public func checkForAlert() {
+        editCoInsuredModelDetent = nil
+        editCoInsuredModelFullScreen = nil
+        editCoInsuredModelMissingAlert = nil
+
+        Task { @MainActor in
+            let activeContracts = try await editCoInsuredSharedService.fetchContracts()
+            let missingContract = activeContracts.first { contract in
+                if contract.upcomingChangedAgreement != nil {
+                    return false
+                } else {
+                    return contract.coInsured
+                        .first(where: { coInsured in
+                            coInsured.hasMissingInfo && contract.terminationDate == nil
+                        }) != nil
+                }
+            }
+            try await Task.sleep(nanoseconds: 400_000_000)
+
+            if let missingContract {
+                let missingContractConfig = InsuredPeopleConfig(contract: missingContract, fromInfoCard: false)
+                editCoInsuredModelMissingAlert = missingContractConfig
             }
         }
     }

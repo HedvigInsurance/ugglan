@@ -1,6 +1,8 @@
 import Chat
 import Claims
+import Combine
 import Contracts
+import EditCoInsuredShared
 import Forever
 import Foundation
 import Home
@@ -390,6 +392,8 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isEuroBonusPresented = false
     @Published var isUrlPresented: URL?
 
+    private var updateCoInsuredCancellable: AnyCancellable?
+
     init() {
         NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) { notification in
             let deepLinkUrl = notification.object as? URL
@@ -428,6 +432,16 @@ class LoggedInNavigationViewModel: ObservableObject {
                 }
             }
         }
+
+        updateCoInsuredCancellable = EditCoInsuredViewModel.updatedCoInsuredForContractId
+            .receive(on: RunLoop.main)
+            .sink { contractId in
+                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                contractStore.send(.fetchContracts)
+
+                let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                homeStore.send(.fetchQuickActions)
+            }
     }
 
     private func handleDeepLinks(deepLinkUrl: URL?) {
