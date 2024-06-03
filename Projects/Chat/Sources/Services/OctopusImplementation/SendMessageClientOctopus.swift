@@ -4,7 +4,7 @@ import hGraphQL
 
 public class SendMessagesClientOctopus: SendMessageClient {
     @Inject var octopus: hOctopus
-    @Inject var chatFileUploaderClient: ChatFileUploaderClient
+    var chatFileUploaderClient = ChatFileUploaderService()
 
     public init() {}
 

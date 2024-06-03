@@ -19,7 +19,7 @@ struct ChangeCodeView: View {
 
 class ChangeCodeViewModel: ObservableObject {
     let inputVm: TextInputViewModel
-    @Inject var foreverService: ForeverService
+    @Inject var foreverService: ForeverClient
     var router: Router?
 
     init() {

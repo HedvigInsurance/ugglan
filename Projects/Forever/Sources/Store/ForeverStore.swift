@@ -5,7 +5,7 @@ import SwiftUI
 import hCore
 
 public final class ForeverStore: LoadingStateStore<ForeverState, ForeverAction, ForeverLoadingType> {
-    @Inject var foreverService: ForeverService
+    @Inject var foreverService: ForeverClient
 
     public override func effects(
         _ getState: @escaping () -> ForeverState,

@@ -2,8 +2,7 @@ import Foundation
 import hCore
 import hGraphQL
 
-public class ForeverServiceOctopus: ForeverService {
-
+public class ForeverClientOctopus: ForeverClient {
     @Inject var octopus: hOctopus
     public init() {}
 
