@@ -104,7 +104,7 @@ public struct PaymentHistoryView: View {
 }
 
 class PaymentsHistoryViewModel: ObservableObject {
-    @Inject private var paymentService: hPaymentService
+    private var paymentService = hPaymentService()
 
     init() {
         let store: PaymentStore = globalPresentableStoreContainer.get()
@@ -115,7 +115,7 @@ class PaymentsHistoryViewModel: ObservableObject {
 struct PaymentHistoryView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .sv_SE
-        Dependencies.shared.add(module: Module { () -> hPaymentService in hPaymentServiceDemo() })
+        Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
         return PaymentHistoryView(vm: .init())
     }
 }

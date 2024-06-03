@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol hPaymentService {
+public protocol hPaymentClient {
     func getPaymentData() async throws -> PaymentData?
     func getPaymentStatusData() async throws -> PaymentStatusData
     func getPaymentDiscountsData() async throws -> PaymentDiscountsData

@@ -1,7 +1,7 @@
 import Foundation
 import hCore
 
-public class hPaymentServiceDemo: hPaymentService {
+public class hPaymentClientDemo: hPaymentClient {
     public init() {}
     public func getPaymentData() async throws -> PaymentData? {
         try await Task.sleep(nanoseconds: 1_000_000_000)
