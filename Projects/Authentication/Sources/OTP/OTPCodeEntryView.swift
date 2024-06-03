@@ -85,7 +85,7 @@ public struct OTPCodeEntryView: View {
 }
 
 class OTPCodeEntryViewModel: ObservableObject {
-    @Inject private var service: AuthentificationService
+    private var authenticationService = AuthenticationService()
     @hTextFieldFocusState var focusCodeField: Bool? = true
 
     func check(otpState: OTPState) {
@@ -99,7 +99,7 @@ class OTPCodeEntryViewModel: ObservableObject {
             Task { @MainActor [weak self, weak otpState] in
                 otpState?.isLoading = true
                 do {
-                    if let service = self?.service, let otpState = otpState {
+                    if let service = self?.authenticationService, let otpState = otpState {
                         let code = try await service.submit(otpState: otpState)
                         try await service.exchange(code: code)
                         let generator = UINotificationFeedbackGenerator()

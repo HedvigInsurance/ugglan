@@ -48,7 +48,7 @@ public struct OTPEntryView: View {
 }
 
 class OTPEntryViewModel: ObservableObject {
-    @Inject var authorizationService: AuthentificationService
+    var authenticationService = AuthenticationService()
     @hTextFieldFocusState var focusInputField = false
     weak var router: Router?
     var masking: Masking {
@@ -79,7 +79,7 @@ class OTPEntryViewModel: ObservableObject {
         otpState.isLoading = true
         Task { @MainActor [weak self, weak otpState] in
             do {
-                if let otpState = otpState, let data = try await self?.authorizationService.start(with: otpState) {
+                if let otpState = otpState, let data = try await self?.authenticationService.start(with: otpState) {
                     otpState.code = ""
                     otpState.verifyUrl = data.verifyUrl
                     otpState.resendUrl = data.resendUrl

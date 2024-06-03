@@ -4,18 +4,44 @@ import authlib
 import hCore
 import hGraphQL
 
-public protocol AuthentificationService {
-    func submit(otpState: OTPState) async throws -> String
-    func start(with otpState: OTPState) async throws -> (verifyUrl: URL, resendUrl: URL, maskedEmail: String?)
-    func resend(otp otpState: OTPState) async throws
-    func startSeBankId(updateStatusTo: @escaping (_: ObserveStatusResponseType) -> Void) async throws
-    func logout() async throws
-    func exchange(code: String) async throws
-    func exchange(refreshToken: String) async throws
+public class AuthenticationService {
+    @Inject var service: AuthenticationClient
+
+    public init() {}
+
+    func submit(otpState: OTPState) async throws -> String {
+        log.info("AuthenticationService: submit", error: nil, attributes: nil)
+        return try await service.submit(otpState: otpState)
+    }
+
+    func start(with otpState: OTPState) async throws -> (verifyUrl: URL, resendUrl: URL, maskedEmail: String?) {
+        log.info("AuthenticationService: start", error: nil, attributes: nil)
+        return try await service.start(with: otpState)
+    }
+
+    func resend(otp otpState: OTPState) async throws {
+        log.info("AuthenticationService: resend", error: nil, attributes: nil)
+    }
+
+    func startSeBankId(updateStatusTo: @escaping (_: ObserveStatusResponseType) -> Void) async throws {
+        log.info("AuthenticationService: startSeBankId", error: nil, attributes: nil)
+        return try await service.startSeBankId(updateStatusTo: updateStatusTo)
+    }
+
+    func logout() async throws {
+        log.info("AuthenticationService: logout", error: nil, attributes: nil)
+    }
+
+    public func exchange(code: String) async throws {
+        log.info("AuthenticationService: exchange", error: nil, attributes: nil)
+    }
+
+    func exchange(refreshToken: String) async throws {
+        log.info("AuthenticationService: exchange", error: nil, attributes: nil)
+    }
 }
 
-final public class AuthentificationServiceAuthLib: AuthentificationService {
-
+final public class AuthenticationClientAuthLib: AuthenticationClient {
     public init() {}
 
     lazy private var networkAuthRepository: NetworkAuthRepository = {
@@ -226,17 +252,6 @@ final public class AuthentificationServiceAuthLib: AuthentificationService {
             throw AuthError.refreshFailed
         }
     }
-
-}
-
-extension Localization.Locale.Market {
-    fileprivate var asOtpMarket: OtpMarket {
-        switch self {
-        case .no: return .no
-        case .se: return .se
-        case .dk: return .dk
-        }
-    }
 }
 
 public enum ObserveStatusResponseType {
@@ -251,6 +266,26 @@ enum AuthentificationError: Error {
     case resendOtpFailed
     case loginFailure(message: String?)
     case logoutFailure
+}
+
+extension hGraphQL.Environment {
+    fileprivate var authEnvironment: AuthEnvironment {
+        switch self {
+        case .staging: return .staging
+        case .production: return .production
+        case .custom(_, _, _, _): return .staging
+        }
+    }
+}
+
+extension Localization.Locale.Market {
+    fileprivate var asOtpMarket: OtpMarket {
+        switch self {
+        case .no: return .no
+        case .se: return .se
+        case .dk: return .dk
+        }
+    }
 }
 
 extension AuthentificationError: LocalizedError {
@@ -271,16 +306,6 @@ extension authlib.AuthTokenResultError {
         case .backendErrorResponse(let error): return error.message
         case .iOError(let ioError): return ioError.message
         case .unknownError(let unknownError): return unknownError.message
-        }
-    }
-}
-
-extension hGraphQL.Environment {
-    fileprivate var authEnvironment: AuthEnvironment {
-        switch self {
-        case .staging: return .staging
-        case .production: return .production
-        case .custom(_, _, _, _): return .staging
         }
     }
 }

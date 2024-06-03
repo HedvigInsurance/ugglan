@@ -53,7 +53,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
         ugglanStore.send(.setIsDemoMode(to: false))
         Task {
-            let authenticationService: AuthentificationService = Dependencies.shared.resolve()
+            let authenticationService: AuthenticationClient = Dependencies.shared.resolve()
             do {
                 try await authenticationService.logout()
             } catch _ {
@@ -187,7 +187,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
         setupSession()
         TokenRefresher.shared.onRefresh = { token in
-            let authService: AuthentificationService = Dependencies.shared.resolve()
+            let authService: AuthenticationClient = Dependencies.shared.resolve()
             try await authService.exchange(refreshToken: token)
         }
         let config = Logger.Configuration(

@@ -19,8 +19,8 @@ import hGraphQL
 
 extension ApolloClient {
     public static func initAndRegisterClient() {
-        let authorizationService = AuthentificationServiceAuthLib()
-        Dependencies.shared.add(module: Module { () -> AuthentificationService in authorizationService })
+        let authorizationService = AuthenticationClientAuthLib()
+        Dependencies.shared.add(module: Module { () -> AuthenticationClient in authorizationService })
         let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
         if ugglanStore.state.isDemoMode {
             let featureFlags = FeatureFlagsDemo()
