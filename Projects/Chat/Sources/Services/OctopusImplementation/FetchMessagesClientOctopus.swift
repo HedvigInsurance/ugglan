@@ -2,6 +2,15 @@ import Foundation
 import hCore
 import hGraphQL
 
+public class FetchMessagesService {
+    @Inject var service: FetchMessagesClient
+
+    public func get(_ next: String?) async throws -> ChatData {
+        log.info("FetchMessagesService: get", error: nil, attributes: nil)
+        return try await service.get(next)
+    }
+}
+
 public class FetchMessagesClientOctopus: FetchMessagesClient {
     @Inject var octopus: hOctopus
     public init() {}

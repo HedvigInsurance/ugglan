@@ -12,8 +12,8 @@ public class ChatScreenViewModel: ObservableObject {
     @Published var scrollToMessage: Message?
     @Published var banner: Markdown?
     @Published var chatInputVm: ChatInputViewModel = .init()
-    @Inject private var fetchMessagesClient: FetchMessagesClient
-    @Inject private var sendMessageClient: SendMessageClient
+    private var fetchMessagesClient = FetchMessagesService()
+    private var sendMessageClient = SendMessagesService()
     private var addedMessagesIds: [String] = []
     private var nextUntil: String?
     private var hasNext: Bool?
