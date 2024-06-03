@@ -5,8 +5,9 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct SettingsScreen: View {
+struct SettingsView: View {
     @PresentableStore var store: ProfileStore
+    @StateObject var memberSubscriptionPreferenceVm = MemberSubscriptionPreferenceViewModel()
     @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
 
     init() {
@@ -47,6 +48,8 @@ struct SettingsScreen: View {
                             }
                         )
                     }
+                    MemberSubscriptionPreferenceView(vm: memberSubscriptionPreferenceVm)
+                        .environmentObject(profileNavigationVm)
                 }
                 NotificationsCardView()
                     .padding(.vertical, 16)
@@ -89,8 +92,8 @@ struct SettingsScreen: View {
     }
 }
 
-struct SettingsScreen_Previews: PreviewProvider {
+struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsScreen()
+        SettingsView()
     }
 }

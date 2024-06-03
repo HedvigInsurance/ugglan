@@ -129,7 +129,7 @@ public struct hColorScheme<LightInnerHColor: hColor, DarkInnerHColor: hColor>: h
     }
 
     public var body: some View {
-        color
+        color.ignoresSafeArea()
     }
 }
 
@@ -851,7 +851,7 @@ public struct hGrayscaleTranslucent {
     public static var greyScaleTranslucent700: some hColor {
         return hColorScheme(
             light: Color(hexString: "#121212").opacity(0.595),
-            dark: Color(hexString: "#FAFAFA").opacity(0.415)
+            dark: Color(hexString: "#FAFAFA").opacity(0.7)
         )
     }
 

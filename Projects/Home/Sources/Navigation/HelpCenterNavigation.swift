@@ -13,7 +13,8 @@ import hCoreUI
 public class HelpCenterNavigationViewModel: ObservableObject {
     @Published var quickActions = QuickActions()
     var connectPaymentsVm = ConnectPaymentViewModel()
-    public var editCoInsuredVm = EditCoInsuredViewModel()
+    public let editCoInsuredVm = EditCoInsuredViewModel()
+    let terminateInsuranceVm = TerminateInsuranceViewModel()
 
     struct QuickActions {
         var isTravelCertificatePresented = false
@@ -47,9 +48,12 @@ public struct HelpCenterNavigation<Content: View>: View {
 
     public var body: some View {
         RouterHost(router: router) {
-            HelpCenterStartView { quickAction in
-                handle(quickAction: quickAction)
-            }
+            HelpCenterStartView(
+                onQuickAction: { quickAction in
+                    handle(quickAction: quickAction)
+                },
+                helpCenterModel: HelpCenterModel.getDefault()
+            )
             .navigationTitle(L10n.hcTitle)
             .withDismissButton()
             .routerDestination(for: Question.self) { question in
@@ -89,55 +93,88 @@ public struct HelpCenterNavigation<Content: View>: View {
                 redirect(.moveFlow)
             }
         )
-        .fullScreenCover(
-            isPresented: $helpCenterVm.quickActions.isCancellationPresented,
-            content: {
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
-
-                let contractsConfig: [TerminationConfirmConfig] = contractStore.state.activeContracts
-                    .filter({ $0.canTerminate })
-                    .map({
-                        $0.asTerminationConfirmConfig
-                    })
-                TerminationFlowNavigation(
-                    configs: contractsConfig,
-                    isFlowPresented: { dismissType in
-                        switch dismissType {
-                        case .done:
-                            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                            contractStore.send(.fetchContracts)
-                            let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                            homeStore.send(.fetchQuickActions)
-                        case .chat:
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                                NotificationCenter.default.post(name: .openChat, object: nil)
-                            }
-                        case let .openFeedback(url):
-                            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                            contractStore.send(.fetchContracts)
-                            let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                            homeStore.send(.fetchQuickActions)
-                            var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
-                            if urlComponent?.scheme == nil {
-                                urlComponent?.scheme = "https"
-                            }
-                            let schema = urlComponent?.scheme
-                            if let finalUrl = urlComponent?.url {
-                                if schema == "https" || schema == "http" {
-                                    let vc = SFSafariViewController(url: finalUrl)
-                                    vc.modalPresentationStyle = .pageSheet
-                                    vc.preferredControlTintColor = .brand(.primaryText())
-                                    UIApplication.shared.getTopViewController()?.present(vc, animated: true)
-                                } else {
-                                    UIApplication.shared.open(url)
-                                }
-                            }
-                        }
-                    }
-                )
-            }
-        )
+        //        .fullScreenCover(
+        //            isPresented: $helpCenterVm.quickActions.isCancellationPresented,
+        //            content: {
+        //                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        //
+        //                let contractsConfig: [TerminationConfirmConfig] = contractStore.state.activeContracts
+        //                    .filter({ $0.canTerminate })
+        //                    .map({
+        //                        $0.asTerminationConfirmConfig
+        //                    })
+        //                TerminationFlowNavigation(
+        //                    configs: contractsConfig,
+        //                    isFlowPresented: { dismissType in
+        //                        switch dismissType {
+        //                        case .done:
+        //                            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        //                            contractStore.send(.fetchContracts)
+        //                            let homeStore: HomeStore = globalPresentableStoreContainer.get()
+        //                            homeStore.send(.fetchQuickActions)
+        //                        case .chat:
+        //                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+        //                                NotificationCenter.default.post(name: .openChat, object: nil)
+        //                            }
+        //                        case let .openFeedback(url):
+        //                            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        //                            contractStore.send(.fetchContracts)
+        //                            let homeStore: HomeStore = globalPresentableStoreContainer.get()
+        //                            homeStore.send(.fetchQuickActions)
+        //                            var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        //                            if urlComponent?.scheme == nil {
+        //                                urlComponent?.scheme = "https"
+        //                            }
+        //                            let schema = urlComponent?.scheme
+        //                            if let finalUrl = urlComponent?.url {
+        //                                if schema == "https" || schema == "http" {
+        //                                    let vc = SFSafariViewController(url: finalUrl)
+        //                                    vc.modalPresentationStyle = .pageSheet
+        //                                    vc.preferredControlTintColor = .brand(.primaryText())
+        //                                    UIApplication.shared.getTopViewController()?.present(vc, animated: true)
+        //                                } else {
+        //                                    UIApplication.shared.open(url)
+        //                                }
+        //                            }
+        //                        }
+        //                    }
+        //                )
+        //            }
+        //        )
         .handleConnectPayment(with: helpCenterVm.connectPaymentsVm)
+        .handleTerminateInsurance(vm: helpCenterVm.terminateInsuranceVm) { dismissType in
+            switch dismissType {
+            case .done:
+                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                contractStore.send(.fetchContracts)
+                let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                homeStore.send(.fetchQuickActions)
+            case .chat:
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    NotificationCenter.default.post(name: .openChat, object: nil)
+                }
+            case let .openFeedback(url):
+                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                contractStore.send(.fetchContracts)
+                let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                homeStore.send(.fetchQuickActions)
+                var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
+                if urlComponent?.scheme == nil {
+                    urlComponent?.scheme = "https"
+                }
+                let schema = urlComponent?.scheme
+                if let finalUrl = urlComponent?.url {
+                    if schema == "https" || schema == "http" {
+                        let vc = SFSafariViewController(url: finalUrl)
+                        vc.modalPresentationStyle = .pageSheet
+                        vc.preferredControlTintColor = .brand(.primaryText())
+                        UIApplication.shared.getTopViewController()?.present(vc, animated: true)
+                    } else {
+                        UIApplication.shared.open(url)
+                    }
+                }
+            }
+        }
         .environmentObject(helpCenterVm)
     }
 
@@ -150,7 +187,15 @@ public struct HelpCenterNavigation<Content: View>: View {
         case .changeAddress:
             helpCenterVm.quickActions.isChangeAddressPresented = true
         case .cancellation:
-            helpCenterVm.quickActions.isCancellationPresented = true
+            //            helpCenterVm.quickActions.isCancellationPresented = true
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+
+            let contractsConfig: [TerminationConfirmConfig] = contractStore.state.activeContracts
+                .filter({ $0.canTerminate })
+                .map({
+                    $0.asTerminationConfirmConfig
+                })
+            helpCenterVm.terminateInsuranceVm.start(with: contractsConfig)
         case .firstVet:
             helpCenterVm.quickActions.isFirstVetPresented = true
         case .sickAbroad:

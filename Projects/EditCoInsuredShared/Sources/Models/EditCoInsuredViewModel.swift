@@ -12,7 +12,7 @@ public class EditCoInsuredViewModel: ObservableObject {
 
     public func start(fromContract: InsuredPeopleConfig? = nil) {
 
-        Task {
+        Task { @MainActor in
             let activeContracts = try await editCoInsuredSharedService.fetchContracts()
 
             if let contract = fromContract {

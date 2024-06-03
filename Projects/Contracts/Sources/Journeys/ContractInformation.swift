@@ -319,12 +319,14 @@ struct ContractInformationView: View {
                     hSection {
                         hButton.LargeButton(type: .ghost) {
                             if let contract {
-                                contractsNavigationVm.terminationContract = contract
+                                let config = TerminationConfirmConfig(contract: contract)
+                                contractsNavigationVm.terminateInsuranceVm.start(with: [config])
                             }
                         } content: {
                             hText(L10n.terminationButton, style: .body)
                                 .foregroundColor(hTextColor.secondary)
                         }
+                        .trackLoading(TerminationContractStore.self, action: .getInitialStep)
                     }
                     .sectionContainerStyle(.transparent)
                 }

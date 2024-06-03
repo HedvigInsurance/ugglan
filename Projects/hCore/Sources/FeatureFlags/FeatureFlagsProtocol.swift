@@ -17,6 +17,8 @@ public protocol FeatureFlags {
     func setup(with context: [String: String], onComplete: @escaping (_ success: Bool) -> Void)
     func updateContext(context: [String: String])
     var osVersionTooLow: Bool { get set }
+    var emailPreferencesEnabled: Bool { get set }
+
 }
 
 public enum PaymentType {

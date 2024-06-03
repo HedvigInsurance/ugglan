@@ -44,6 +44,15 @@ public final class TerminationContractStore: LoadingStateStore<
                 let terminateStepResponse = data[1] as! TerminateStepResponse
                 return terminateStepResponse
             }
+        case let .submitSurvey(option, feedback):
+            return await executeAsFiniteSignal(loadingType: .sendSurvey) { [weak self] in
+                try await self?.terminateContractsService
+                    .sendSurvey(
+                        terminationContext: terminationContext,
+                        option: option,
+                        inputData: feedback
+                    )
+            }
         default:
             break
         }
@@ -59,6 +68,7 @@ public final class TerminationContractStore: LoadingStateStore<
             newState.currentTerminationContext = nil
             newState.terminationDateStep = nil
             newState.terminationDeleteStep = nil
+            newState.terminationSurveyStep = nil
             newState.successStep = nil
             newState.failedStep = nil
             newState.config = config
@@ -68,8 +78,14 @@ public final class TerminationContractStore: LoadingStateStore<
             switch step {
             case let .setTerminationDateStep(model):
                 newState.terminationDateStep = model
+                if let config = newState.config {
+                    send(.navigationAction(action: .openSetTerminationDateLandingScreen(with: config)))
+                }
             case let .setTerminationDeletion(model):
                 newState.terminationDeleteStep = model
+                if let config = newState.config {
+                    send(.navigationAction(action: .openSetTerminationDateLandingScreen(with: config)))
+                }
             case let .setSuccessStep(model):
                 newState.successStep = model
                 log.info("termination success", attributes: ["contractId": newState.config?.contractId])
@@ -78,6 +94,9 @@ public final class TerminationContractStore: LoadingStateStore<
                 log.info("termination failed", attributes: ["contractId": newState.config?.contractId])
                 newState.failedStep = model
                 send(.navigationAction(action: .openTerminationFailScreen))
+            case let .setTerminationSurveyStep(model):
+                newState.terminationSurveyStep = model
+                send(.navigationAction(action: .openTerminationSurveyStep(options: model.options)))
             }
         case let .setTerminationDate(terminationDate):
             newState.terminationDateStep?.date = terminationDate
