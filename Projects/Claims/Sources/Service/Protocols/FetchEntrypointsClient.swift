@@ -1,5 +1,5 @@
 import Foundation
 
-public protocol hFetchEntrypointsService {
+public protocol hFetchEntrypointsClient {
     func get() async throws -> [ClaimEntryPointGroupResponseModel]
 }

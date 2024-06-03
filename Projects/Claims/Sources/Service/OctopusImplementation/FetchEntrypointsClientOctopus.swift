@@ -2,7 +2,7 @@ import Foundation
 import hCore
 import hGraphQL
 
-public class FetchEntrypointsServiceOctopus: hFetchEntrypointsService {
+public class FetchEntrypointsClientOctopus: hFetchEntrypointsClient {
     @Inject var octopus: hOctopus
 
     public init() {}

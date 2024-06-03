@@ -7,8 +7,8 @@ import hCore
 
 public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, SubmitClaimsAction, ClaimsLoadingType> {
     @Inject var fileUploaderClient: FileUploaderClient
-    @Inject var fetchEntrypointsService: hFetchEntrypointsService
-    @Inject var submitClaimService: SubmitClaimService
+    @Inject var fetchEntrypointsService: hFetchEntrypointsClient
+    @Inject var submitClaimService: SubmitClaimClient
     var progressCancellable: AnyCancellable?
     public override func effects(
         _ getState: @escaping () -> SubmitClaimsState,

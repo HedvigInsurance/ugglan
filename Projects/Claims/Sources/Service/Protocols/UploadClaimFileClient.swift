@@ -1,7 +1,7 @@
 import Foundation
 import hCore
 
-public protocol hClaimFileUploadService {
+public protocol hClaimFileUploadClient {
     func upload(
         endPoint: String,
         files: [File],

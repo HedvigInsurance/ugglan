@@ -2,7 +2,21 @@ import Foundation
 import hCore
 import hGraphQL
 
-public class FetchClaimServiceOctopus: hFetchClaimService {
+public class hFetchClaimService {
+    @Inject var service: hFetchClaimClient
+
+    public func get() async throws -> [ClaimModel] {
+        log.info("hFetchClaimService: get", error: nil, attributes: nil)
+        return try await service.get()
+    }
+
+    public func getFiles() async throws -> [String: [File]] {
+        log.info("hFetchClaimService: getFiles", error: nil, attributes: nil)
+        return try await service.getFiles()
+    }
+}
+
+public class FetchClaimClientOctopus: hFetchClaimClient {
     @Inject var octopus: hOctopus
 
     public init() {}

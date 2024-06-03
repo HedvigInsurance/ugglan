@@ -1,7 +1,7 @@
 import Foundation
 import hCore
 
-public class hClaimFileUploadServiceDemo: hClaimFileUploadService {
+public class hClaimFileUploadClientDemo: hClaimFileUploadClient {
     public init() {}
     public func upload(
         endPoint: String,

@@ -5,7 +5,7 @@ import Presentation
 import hCore
 import hGraphQL
 
-public class SubmitClaimServiceOctopus: SubmitClaimService {
+public class SubmitClaimClientOctopus: SubmitClaimClient {
     public init() {}
     @PresentableStore var store: SubmitClaimStore
 

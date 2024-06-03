@@ -5,7 +5,20 @@ import SwiftUI
 import hCore
 import hGraphQL
 
-extension NetworkClient: hClaimFileUploadService {
+public class hClaimFileUploadService {
+    @Inject var service: hClaimFileUploadClient
+
+    public func upload(
+        endPoint: String,
+        files: [File],
+        withProgress: ((_ progress: Double) -> Void)?
+    ) async throws -> [ClaimFileUploadResponse] {
+        log.info("hClaimFileUploadService: upload", error: nil, attributes: nil)
+        return try await service.upload(endPoint: endPoint, files: files, withProgress: withProgress)
+    }
+}
+
+extension NetworkClient: hClaimFileUploadClient {
     public func upload(
         endPoint: String,
         files: [File],

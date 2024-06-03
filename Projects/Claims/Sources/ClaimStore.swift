@@ -7,7 +7,7 @@ import hCoreUI
 import hGraphQL
 
 public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
-    @Inject var fetchClaimService: hFetchClaimService
+    @Inject var fetchClaimService: hFetchClaimClient
 
     public override func effects(_ getState: @escaping () -> ClaimsState, _ action: ClaimsAction) async {
         switch action {
