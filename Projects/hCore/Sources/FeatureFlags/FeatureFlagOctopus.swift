@@ -26,7 +26,7 @@ public class FeatureFlagsUnleash: FeatureFlags {
     public var isHelpCenterEnabled: Bool = false
     public var isSubmitClaimEnabled: Bool = true
     public var osVersionTooLow: Bool = false
-
+    public var emailPreferencesEnabled: Bool = false
     public func setup(with context: [String: String], onComplete: @escaping (_ success: Bool) -> Void) {
         unleashClient?.unsubscribe(name: "ready")
         unleashClient?.unsubscribe(name: "update")
@@ -69,6 +69,7 @@ public class FeatureFlagsUnleash: FeatureFlags {
 
     private func startUnleash() {
         log.info("Started loading unleash experiments")
+        emailPreferencesEnabled = Localization.Locale.currentLocale.market == .se
         unleashClient?
             .start(
                 true,

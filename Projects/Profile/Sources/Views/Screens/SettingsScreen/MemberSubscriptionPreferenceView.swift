@@ -1,0 +1,128 @@
+import Presentation
+import SwiftUI
+import hCore
+import hCoreUI
+
+struct MemberSubscriptionPreferenceView: View {
+    @ObservedObject var vm: MemberSubscriptionPreferenceViewModel
+    @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
+    @Inject var featureFlags: FeatureFlags
+    @ViewBuilder
+    var body: some View {
+        if featureFlags.emailPreferencesEnabled {
+            hFloatingField(
+                value: vm.isUnsubscribed ? L10n.General.unsubscribed : L10n.General.subscribed,
+                placeholder: L10n.SettingsScreen.emailPreferences,
+                onTap: {
+                    vm.onEmailPreferencesButtonTap()
+                }
+            )
+            .disabled(vm.isLoading)
+            .task { [weak vm] in
+                vm?.setMemberId()
+                vm?.profileNavigationViewModel = profileNavigationVm
+            }
+            .detent(
+                presented: $profileNavigationVm.isConfirmEmailPreferencesPresented,
+                style: .height,
+                content: {
+                    EmailPreferencesConfirmView(vm: vm)
+                        .environmentObject(profileNavigationVm)
+                }
+            )
+        }
+    }
+
+}
+
+class MemberSubscriptionPreferenceViewModel: ObservableObject {
+    @Published var memberId: String = ""
+    @Published var isLoading = false
+    @Published var isUnsubscribed = false
+    private static let userDefaultsKey = "unsubscribedMembers"
+    @Published var unsubscribedMembers = UserDefaults.standard.array(forKey: userDefaultsKey) as? [String]
+    @Inject var profileService: ProfileService
+    var profileNavigationViewModel: ProfileNavigationViewModel?
+    init() {}
+
+    func setMemberId() {
+        let store: ProfileStore = globalPresentableStoreContainer.get()
+        memberId = store.state.memberDetails?.id ?? ""
+        updateUnsubscibed()
+
+    }
+
+    func onEmailPreferencesButtonTap() {
+        profileNavigationViewModel?.isConfirmEmailPreferencesPresented = true
+    }
+
+    func updateUnsubscibed() {
+        isUnsubscribed = unsubscribedMembers?.first(where: { $0 == memberId }) != nil
+    }
+
+    @MainActor
+    func toogleSubscription() async {
+        withAnimation {
+            isLoading = true
+        }
+
+        let store: ProfileStore = globalPresentableStoreContainer.get()
+        let memberId = store.state.memberDetails?.id ?? ""
+        do {
+            try await profileService.updateSubscriptionPreference(to: isUnsubscribed)
+            let toast = Toast(
+                symbol: .icon(
+                    hCoreUIAssets
+                        .circularCheckmark
+                        .image
+                ),
+                body: (isUnsubscribed)
+                    ? L10n.SettingsScreen.subscribedMessage : L10n.SettingsScreen.unsubscribedMessage
+            )
+            Toasts.shared.displayToast(toast: toast)
+            withAnimation {
+                if let unsubscribedMembers = unsubscribedMembers {
+                    if let index = unsubscribedMembers.firstIndex(of: memberId) {
+                        var unsubscribedMembers = self.unsubscribedMembers
+                        unsubscribedMembers?.remove(at: index)
+                        UserDefaults.standard.set(
+                            unsubscribedMembers,
+                            forKey: MemberSubscriptionPreferenceViewModel.userDefaultsKey
+                        )
+                        self.unsubscribedMembers = unsubscribedMembers
+                        updateUnsubscibed()
+                    } else {
+                        var unsubscribedMembers = self.unsubscribedMembers
+                        unsubscribedMembers?.append(memberId)
+                        UserDefaults.standard.set(
+                            unsubscribedMembers,
+                            forKey: MemberSubscriptionPreferenceViewModel.userDefaultsKey
+                        )
+                        self.unsubscribedMembers = unsubscribedMembers
+                        updateUnsubscibed()
+                    }
+                } else {
+                    let unsubscribedMembers = [memberId]
+                    UserDefaults.standard.set(
+                        unsubscribedMembers,
+                        forKey: MemberSubscriptionPreferenceViewModel.userDefaultsKey
+                    )
+                    self.unsubscribedMembers = unsubscribedMembers
+                    updateUnsubscibed()
+                }
+            }
+
+        } catch let ex {
+            let ss = ""
+        }
+
+        withAnimation {
+            isLoading = false
+        }
+
+    }
+}
+
+private struct UnsubscribedMembers {
+
+}

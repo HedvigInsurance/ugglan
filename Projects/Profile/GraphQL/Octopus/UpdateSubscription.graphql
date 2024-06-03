@@ -1,0 +1,5 @@
+mutation MemberUpdateSubscriptionPreference($subscribe: Boolean) {
+  memberUpdateSubscriptionPreference(subscribe: $subscribe) {
+    message
+  }
+}

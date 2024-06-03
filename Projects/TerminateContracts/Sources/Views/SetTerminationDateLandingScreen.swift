@@ -54,7 +54,7 @@ struct SetTerminationDateLandingScreen: View {
                         }
                         .sectionContainerStyle(.transparent)
                     }
-                    .padding(.top, 16)
+                    .padding(.vertical, 16)
                 }
         }
     }
@@ -87,7 +87,7 @@ struct SetTerminationDateLandingScreen: View {
                             }
                         )
                         .hFieldTrailingView {
-                            Image(uiImage: hCoreUIAssets.lockSmall.image)
+                            hCoreUIAssets.lockSmall.view
                                 .frame(width: 24, height: 24)
                         }
                         .hFontSize(.standard)
@@ -115,8 +115,10 @@ struct SetTerminationDateLandingScreen: View {
                     )
                     .hFontSize(.standard)
                     .hFieldTrailingView {
-                        Image(uiImage: hCoreUIAssets.chevronDownSmall.image)
+                        hCoreUIAssets.chevronDownSmall.view
+                            .frame(width: 24, height: 24)
                     }
+                    .hUseNewDesign
                 }
             }
         }
@@ -148,14 +150,14 @@ struct SetTerminationDateLandingScreen: View {
                                 Spacer()
                                 if vm.hasAgreedToTerms {
                                     HStack {
-                                        Image(uiImage: hCoreUIAssets.tick.image)
+                                        hCoreUIAssets.tick.view
                                             .foregroundColor(
                                                 hColorScheme(light: hTextColor.negative, dark: hTextColor.primary)
                                             )
                                     }
                                     .frame(width: 24, height: 24)
                                     .background(
-                                        Squircle.default()
+                                        RoundedRectangle(cornerRadius: 6)
                                             .fill(hSignalColor.greenElement)
                                     )
                                 } else {
@@ -164,7 +166,7 @@ struct SetTerminationDateLandingScreen: View {
                                         .frame(width: 24, height: 24)
                                         .overlay(
                                             withAnimation(.easeInOut) {
-                                                RoundedRectangle(cornerRadius: .defaultCornerRadius)
+                                                RoundedRectangle(cornerRadius: 6)
                                                     .strokeBorder(
                                                         hColorScheme(
                                                             light: hBorderColor.translucentTwo,
@@ -229,29 +231,6 @@ class SetTerminationDateLandingScreenViewModel: ObservableObject {
             }
             .store(in: &cancellables)
 
-        terminationStore.stateSignal.plain().publisher
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .sink { _ in
-
-            } receiveValue: { [weak self] state in
-                let isDeletion: Bool? = {
-                    if state.terminationDeleteStep != nil {
-                        return true
-                    }
-                    if state.terminationDateStep != nil {
-                        return false
-                    }
-                    return nil
-                }()
-                withAnimation {
-                    self?.isDeletion = isDeletion
-                    self?.titleText =
-                        isDeletion ?? false ? L10n.terminationFlowConfirmInformation : L10n.terminationDateText
-                }
-            }
-            .store(in: &cancellables)
-
         Publishers.CombineLatest3($terminationDate, $isDeletion, $hasAgreedToTerms)
             .receive(on: RunLoop.main)
             .sink { _ in
@@ -263,6 +242,22 @@ class SetTerminationDateLandingScreenViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellables)
+
+        isDeletion = {
+
+            if terminationStore.state.terminationDeleteStep != nil {
+                return true
+            }
+            if terminationStore.state.terminationDateStep != nil {
+                return false
+            }
+            return nil
+        }()
+        withAnimation {
+            self.isDeletion = isDeletion
+            self.titleText =
+                isDeletion ?? false ? L10n.terminationFlowConfirmInformation : L10n.terminationDateText
+        }
     }
 }
 

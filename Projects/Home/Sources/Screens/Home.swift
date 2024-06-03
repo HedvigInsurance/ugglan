@@ -61,6 +61,7 @@ extension HomeView {
                 bottomContent
             }
         }
+        .hFormIgnoreKeyboard()
         .sectionContainerStyle(.transparent)
         .hFormContentPosition(.center)
         .hFormMergeBottomViewWithContentIfNeeded

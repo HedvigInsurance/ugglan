@@ -9,13 +9,15 @@ import hCoreUI
 public struct ContractsNavigation<Content: View>: View {
     @ObservedObject var contractsNavigationVm: ContractsNavigationViewModel
     @ViewBuilder var redirect: (_ type: RedirectType) -> Content
-
+    var redirectAction: (_ action: RedirectAction) -> Void
     public init(
         contractsNavigationVm: ContractsNavigationViewModel,
-        @ViewBuilder redirect: @escaping (_ type: RedirectType) -> Content
+        @ViewBuilder redirect: @escaping (_ type: RedirectType) -> Content,
+        redirectAction: @escaping (_ type: RedirectAction) -> Void
     ) {
         self.contractsNavigationVm = contractsNavigationVm
         self.redirect = redirect
+        self.redirectAction = redirectAction
     }
 
     public var body: some View {
@@ -98,12 +100,9 @@ public struct ContractsNavigation<Content: View>: View {
                 )
             )
         }
-        .fullScreenCover(item: $contractsNavigationVm.terminationContract) { contract in
-            redirect(
-                .cancellation(
-                    contractConfig: .init(contract: contract)
-                )
-            )
+        .handleTerminateInsurance(vm: contractsNavigationVm.terminateInsuranceVm) { dismissType in
+            redirectAction(.termination(action: dismissType))
+            contractsNavigationVm.contractsRouter.popToRoot()
         }
     }
 }
@@ -112,10 +111,9 @@ public class ContractsNavigationViewModel: ObservableObject {
     public init() {}
 
     public let contractsRouter = Router()
-
+    let terminateInsuranceVm = TerminateInsuranceViewModel()
     @Published public var insurableLimit: InsurableLimits?
     @Published public var document: Document?
-    @Published public var terminationContract: Contract?
     @Published public var editCoInsuredConfig: InsuredPeopleConfig?
     @Published public var editCoInsuredMissingAlert: InsuredPeopleConfig?
     @Published public var changeYourInformationContract: Contract?
@@ -132,7 +130,10 @@ public enum RedirectType {
     case chat
     case movingFlow
     case pdf(document: Document)
-    case cancellation(contractConfig: TerminationConfirmConfig)
+}
+
+public enum RedirectAction {
+    case termination(action: DismissTerminationAction)
 }
 
 enum ContractsRouterType {
