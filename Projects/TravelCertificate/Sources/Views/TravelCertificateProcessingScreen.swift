@@ -53,7 +53,8 @@ struct TravelCertificateProcessingScreen: View {
 }
 
 class ProcessingViewModel: ObservableObject {
-    @Inject private var service: TravelInsuranceClient
+    var service = TravelInsuranceService()
+
     @Published var isLoading = true
     @Published var error: String?
     @Published var downloadUrl: URL?

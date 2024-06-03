@@ -2,6 +2,25 @@ import Foundation
 import hCore
 import hGraphQL
 
+public class TravelInsuranceService {
+    @Inject var service: TravelInsuranceClient
+
+    public func getSpecifications() async throws -> [TravelInsuranceContractSpecification] {
+        log.info("TravelInsuranceService: getSpecifications", error: nil, attributes: nil)
+        return try await service.getSpecifications()
+    }
+
+    public func submitForm(dto: TravenInsuranceFormDTO) async throws -> URL {
+        log.info("TravelInsuranceClient: submitForm", error: nil, attributes: nil)
+        return try await service.submitForm(dto: dto)
+    }
+
+    public func getList() async throws -> (list: [TravelCertificateModel], canAddTravelInsurance: Bool) {
+        log.info("TravelInsuranceService: getList", error: nil, attributes: nil)
+        return try await service.getList()
+    }
+}
+
 public class TravelInsuranceClientOctopus: TravelInsuranceClient {
     @Inject var octopus: hOctopus
 

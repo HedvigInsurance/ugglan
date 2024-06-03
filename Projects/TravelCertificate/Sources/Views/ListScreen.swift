@@ -99,7 +99,7 @@ public struct ListScreen: View {
 }
 
 class ListScreenViewModel: ObservableObject {
-    @Inject var service: TravelInsuranceClient
+    var service = TravelInsuranceService()
 
     @Published var list: [TravelCertificateModel] = []
     @Published var canCreateTravelInsurance: Bool = false
