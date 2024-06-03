@@ -40,9 +40,9 @@ struct ConfirmTerminationScreen: View {
                             terminationNavigationVm.isConfirmTerminationPresented = false
                         }
                     )
-                )
+                ),
+                attachContentToTheBottom: true
             )
-            .hWithLargeIcon
             .hExtraTopPadding
         }
         .hDisableScroll

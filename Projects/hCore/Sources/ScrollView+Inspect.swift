@@ -72,6 +72,9 @@ extension View {
 
 public struct ForceScrollViewIndicatorInset: ViewModifier {
     @State var scrollView: UIScrollView?
+    @State var defaultContentOffset: CGFloat = 0
+    @State var addedContentOffset: CGFloat = 0
+
     var insetBottom: CGFloat
 
     public init(
@@ -88,14 +91,68 @@ public struct ForceScrollViewIndicatorInset: ViewModifier {
         return Just(CGPoint.zero).eraseToAnyPublisher()
     }
 
+    var boundsYPublisher: AnyPublisher<CGRect, Never> {
+        if let scrollView = scrollView, scrollView.superview != nil {
+            return scrollView.publisher(for: \.bounds).eraseToAnyPublisher()
+        }
+
+        return Just(CGRect.zero).eraseToAnyPublisher()
+    }
+
+    public func body(content: Content) -> some View {
+        content.findScrollView { scrollView in
+            self.scrollView = scrollView
+            scrollView.viewController?.setContentScrollView(scrollView, for: .top)
+        }
+        .onReceive(contentOffsetPublisher) { value in
+            scrollView?.verticalScrollIndicatorInsets.bottom =
+                insetBottom + (scrollView?.adjustedContentInset.bottom ?? 0)
+        }
+        .onReceive(boundsYPublisher) { value in
+            if defaultContentOffset == 0 {
+                defaultContentOffset = value.origin.y
+            }
+            if defaultContentOffset != 0 {
+                addedContentOffset = value.origin.y - defaultContentOffset
+            }
+        }
+    }
+}
+
+public struct ForceScrollViewTopInset: ViewModifier {
+    @State var scrollView: UIScrollView?
+    @State var defaultContentOffset: CGFloat = 0
+    @Binding var addedContentOffset: CGFloat
+    let shouldFollow: Bool
+
+    public init(addedContentOffset: Binding<CGFloat>, shouldFollow: Bool) {
+        self._addedContentOffset = addedContentOffset
+        self.shouldFollow = shouldFollow
+    }
+
+    var boundsYPublisher: AnyPublisher<CGRect, Never> {
+        if let scrollView = scrollView, scrollView.superview != nil {
+            return scrollView.publisher(for: \.bounds).eraseToAnyPublisher()
+        }
+
+        return Just(CGRect.zero).eraseToAnyPublisher()
+    }
+
     public func body(content: Content) -> some View {
         content.findScrollView { scrollView in
             self.scrollView = scrollView
             scrollView.viewController?.setContentScrollView(scrollView)
         }
-        .onReceive(contentOffsetPublisher) { _ in
-            scrollView?.verticalScrollIndicatorInsets.bottom =
-                insetBottom + (scrollView?.adjustedContentInset.bottom ?? 0)
+        .onReceive(boundsYPublisher) { value in
+            if !shouldFollow {
+                return
+            }
+            if defaultContentOffset == 0 {
+                defaultContentOffset = value.origin.y
+            }
+            if defaultContentOffset != 0 {
+                addedContentOffset = value.origin.y - defaultContentOffset
+            }
         }
     }
 }
