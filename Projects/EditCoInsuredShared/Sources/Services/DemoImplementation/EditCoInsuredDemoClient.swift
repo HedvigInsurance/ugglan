@@ -2,7 +2,7 @@ import Foundation
 import hCore
 import hGraphQL
 
-public class EditCoInsuredDemoClient: EditCoInsuredSharedService {
+public class EditCoInsuredDemoClient: EditCoInsuredSharedClient {
     public func fetchContracts() async throws -> [Contract] {
         return [
             Contract(

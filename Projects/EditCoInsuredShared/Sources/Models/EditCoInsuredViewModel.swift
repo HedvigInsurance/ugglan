@@ -6,7 +6,7 @@ public class EditCoInsuredViewModel: ObservableObject {
     @Published public var editCoInsuredModelFullScreen: EditCoInsuredNavigationModel?
     @Published public var editCoInsuredModelMissingAlert: InsuredPeopleConfig?
 
-    @Inject public var editCoInsuredSharedService: EditCoInsuredSharedService
+    public var editCoInsuredSharedService = EditCoInsuredSharedService()
 
     public init() {}
 

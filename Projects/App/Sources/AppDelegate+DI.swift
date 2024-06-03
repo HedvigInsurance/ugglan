@@ -56,7 +56,7 @@ extension ApolloClient {
             let foreverService = ForeverServiceOctopus()
             let profileService = ProfileServiceOctopus()
             let editCoInsuredService = EditCoInsuredServiceOctopus()
-            let editCoInsuredSharedService = EditCoInsuredSharedServiceOctopus()
+            let editCoInsuredSharedService = EditCoInsuredSharedClientOctopus()
             let homeService = HomeServiceOctopus()
             let terminateContractsService = TerminateContractsOctopus()
             let fetchContractsService = FetchContractsServiceOctopus()
@@ -87,7 +87,7 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> ProfileService in profileService })
                 Dependencies.shared.add(module: Module { () -> EditCoInsuredService in editCoInsuredService })
                 Dependencies.shared.add(
-                    module: Module { () -> EditCoInsuredSharedService in editCoInsuredSharedService }
+                    module: Module { () -> EditCoInsuredSharedClient in editCoInsuredSharedService }
                 )
                 Dependencies.shared.add(module: Module { () -> HomeService in homeService })
                 Dependencies.shared.add(module: Module { () -> TerminateContractsService in terminateContractsService })
@@ -114,7 +114,7 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> ProfileService in profileService })
                 Dependencies.shared.add(module: Module { () -> EditCoInsuredService in editCoInsuredService })
                 Dependencies.shared.add(
-                    module: Module { () -> EditCoInsuredSharedService in editCoInsuredSharedService }
+                    module: Module { () -> EditCoInsuredSharedClient in editCoInsuredSharedService }
                 )
                 Dependencies.shared.add(module: Module { () -> HomeService in homeService })
                 Dependencies.shared.add(module: Module { () -> TerminateContractsService in terminateContractsService })
