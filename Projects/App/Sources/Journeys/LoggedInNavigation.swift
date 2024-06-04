@@ -274,7 +274,7 @@ struct HomeTab: View {
     var body: some View {
         let claims = Claims()
 
-        return RouterHost(router: homeRouter) {
+        return RouterHost(router: homeRouter, tracking: self) {
             HomeView(
                 claimsContent: claims,
                 memberId: {
@@ -302,7 +302,6 @@ struct HomeTab: View {
         ) { document in
             if let url = URL(string: document.url) {
                 PDFPreview(document: .init(url: url, title: document.displayName))
-                    .embededInNavigation(options: [.navigationType(type: .large)])
             }
         }
         .detent(
@@ -472,7 +471,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                     UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                     self.selectedTab = 2
                 case .CONNECT_DIRECT_DEBIT:
-                    self.homeNavigationVm.connectPaymentVm.connectPaymentModel = .init(setUpType: nil)
+                    self.homeNavigationVm.connectPaymentVm.set(for: nil)
                 case .PAYMENT_FAILED:
                     UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                     self.selectedTab = 3
@@ -498,7 +497,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 self.selectedTab = 2
             case .directDebit:
-                self.homeNavigationVm.connectPaymentVm.connectPaymentModel = .init(setUpType: nil)
+                self.homeNavigationVm.connectPaymentVm.set(for: nil)
             case .profile:
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 self.selectedTab = 4
@@ -622,5 +621,11 @@ class LoggedInNavigationViewModel: ObservableObject {
                 UIApplication.shared.open(url)
             }
         }
+    }
+}
+
+extension HomeTab: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        return "HomeView"
     }
 }

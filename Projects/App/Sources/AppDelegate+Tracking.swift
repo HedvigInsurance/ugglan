@@ -159,6 +159,7 @@ extension String {
             "CAMViewfinderViewController",
             "UIDocumentBrowserViewController",
             "Navigation>",
+            "Navigation<",
         ]
 
         for element in array {

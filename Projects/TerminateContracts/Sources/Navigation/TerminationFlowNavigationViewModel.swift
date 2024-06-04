@@ -33,7 +33,7 @@ struct TerminationFlowNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(router: vm.router) {
+        RouterHost(router: vm.router, tracking: initialStep) {
             getView(for: initialStep)
                 .routerDestination(for: [TerminationFlowSurveyStepModelOption].self) { options in
                     TerminationSurveyScreen(vm: .init(options: options))
@@ -421,6 +421,16 @@ struct TerminationFlowActionWrapper: Identifiable, Equatable {
 enum TerminationFlowActions: Hashable {
     case router(action: TerminationFlowRouterActions)
     case final(action: TerminationFlowFinalRouterActions)
+}
+extension TerminationFlowActions: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .router(let action):
+            return action.nameForTracking
+        case .final(let action):
+            return action.nameForTracking
+        }
+    }
 }
 
 enum TerminationFlowRouterActions: Hashable {

@@ -10,7 +10,7 @@ struct AskForPushNotifications: View {
     let text: String
     let pushNotificationStatus: UNAuthorizationStatus
     let wrapWithForm: Bool
-    
+
     init(
         text: String,
         onActionExecuted: @escaping () -> Void,
@@ -22,7 +22,7 @@ struct AskForPushNotifications: View {
         self.onActionExecuted = onActionExecuted
         self.wrapWithForm = wrapWithForm
     }
-    
+
     var body: some View {
         if wrapWithForm {
             hForm {
@@ -32,7 +32,7 @@ struct AskForPushNotifications: View {
             mainContent
         }
     }
-    
+
     var mainContent: some View {
         hSection {
             VStack(spacing: 24) {
@@ -62,7 +62,7 @@ struct AskForPushNotifications: View {
                     hText(L10n.claimsActivateNotificationsCta, style: .body)
                 }
                 .fixedSize()
-                
+
                 Spacer()
                 hButton.LargeButton(type: .ghost) {
                     onActionExecuted()
@@ -85,7 +85,7 @@ struct AskForPushNotifications: View {
 struct AskForPushnotifications_Previews: PreviewProvider {
     static var previews: some View {
         AskForPushNotifications(text: "TEXT") {
-            
+
         }
     }
 }

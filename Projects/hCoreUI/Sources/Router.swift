@@ -76,20 +76,23 @@ struct Builderrr<Content: View> {
 public struct RouterHost<Screen: View>: View {
     let router: Router
     let options: RouterOptions
+    let tracking: TrackingViewNameProtocol?
     @ViewBuilder var initialView: () -> Screen
 
     public init(
         router: Router,
         options: RouterOptions = [],
+        tracking: TrackingViewNameProtocol? = nil,
         @ViewBuilder initial: @escaping () -> Screen
     ) {
         self.initialView = initial
         self.router = router
         self.options = options
+        self.tracking = tracking
     }
 
     public var body: some View {
-        RouterWrappedValue(router: router, options: options, initial: initialView)
+        RouterWrappedValue(router: router, options: options, tracking: tracking, initial: initialView)
             .ignoresSafeArea()
             .environmentObject(router)
     }
@@ -99,16 +102,18 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
 
     let router: Router
     let options: RouterOptions
-
+    let tracking: TrackingViewNameProtocol?
     var initialView: () -> Screen
 
     init(
         router: Router,
         options: RouterOptions = [],
+        tracking: TrackingViewNameProtocol?,
         @ViewBuilder initial: @escaping () -> Screen
     ) {
         self.initialView = initial
         self.router = router
+        self.tracking = tracking
         self.options = options
     }
 
@@ -123,7 +128,7 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
         }()
         let controller = hHostingController(
             rootView: initialView().environmentObject(router),
-            contentName: "\(Screen.self)"
+            contentName: tracking?.nameForTracking ?? "\(Screen.self)"
         )
         navigation.setViewControllers(
             [controller],
@@ -207,16 +212,18 @@ public struct ViewRouterOptions: OptionSet {
 }
 
 extension View {
-    public func embededInNavigation(options: RouterOptions = []) -> some View {
-        modifier(EmbededInNavigation(options: options))
+    public func embededInNavigation(options: RouterOptions = [], tracking: TrackingViewNameProtocol? = nil) -> some View
+    {
+        return modifier(EmbededInNavigation(options: options, tracking: tracking))
     }
 }
 
 private struct EmbededInNavigation: ViewModifier {
     @StateObject var router = Router()
     let options: RouterOptions
+    let tracking: TrackingViewNameProtocol?
     func body(content: Content) -> some View {
-        return RouterHost(router: router, options: options) {
+        return RouterHost(router: router, options: options, tracking: tracking) {
             content
                 .environmentObject(router)
         }

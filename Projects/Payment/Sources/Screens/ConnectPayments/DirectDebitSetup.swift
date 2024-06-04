@@ -289,6 +289,8 @@ public struct DirectDebitSetup: View {
                 dismissButton
             }
         }
+        .embededInNavigation(options: .navigationType(type: .large), tracking: self)
+
     }
 
     private var dismissButton: some View {
@@ -326,4 +328,11 @@ public enum SetupType: Equatable {
     case initial
     case preOnboarding(monthlyNetCost: MonetaryAmount?)
     case replacement, postOnboarding
+}
+
+extension DirectDebitSetup: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        return .init(describing: DirectDebitSetup.self)
+    }
+
 }

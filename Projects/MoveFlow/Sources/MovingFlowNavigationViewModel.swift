@@ -104,7 +104,6 @@ public struct MovingFlowNavigation: View {
             style: .large
         ) { document in
             PDFPreview(document: .init(url: document.url, title: document.title))
-                .embededInNavigation(options: .navigationType(type: .large))
         }
     }
 

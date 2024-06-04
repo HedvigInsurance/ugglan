@@ -19,6 +19,43 @@ public class EditCoInsuredNavigationViewModel: ObservableObject {
 public enum EditCoInsuredScreenType {
     case newInsurance
     case none
+
+    func getTrackingType(for config: InsuredPeopleConfig) -> EditCoInsuredScreenTrackingType {
+        switch self {
+        case .newInsurance:
+            return .newInsurance
+        case .none:
+            if config.numberOfMissingCoInsuredWithoutTermination > 0 {
+                if config.fromInfoCard {
+                    return .newInsurance
+                } else {
+                    return .removeCoInsured
+                }
+            } else if config.numberOfMissingCoInsuredWithoutTermination > 0 {
+                return .newInsurance
+            } else {
+                return .insuredPeople
+            }
+        }
+    }
+}
+
+enum EditCoInsuredScreenTrackingType: TrackingViewNameProtocol {
+
+    case newInsurance
+    case removeCoInsured
+    case insuredPeople
+
+    var nameForTracking: String {
+        switch self {
+        case .newInsurance:
+            return .init(describing: InsuredPeopleNewScreen.self)
+        case .removeCoInsured:
+            return .init(describing: RemoveCoInsuredScreen.self)
+        case .insuredPeople:
+            return .init(describing: InsuredPeopleScreen.self)
+        }
+    }
 }
 
 public struct EditCoInsuredNavigation: View {
@@ -42,7 +79,11 @@ public struct EditCoInsuredNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(router: router, options: .navigationType(type: .large)) {
+        RouterHost(
+            router: router,
+            options: .navigationType(type: .large),
+            tracking: openSpecificScreen.getTrackingType(for: config)
+        ) {
             if openSpecificScreen == .newInsurance {
                 openNewInsuredPeopleScreen()
             } else if openSpecificScreen == .none {

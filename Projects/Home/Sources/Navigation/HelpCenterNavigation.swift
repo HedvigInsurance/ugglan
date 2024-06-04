@@ -222,7 +222,7 @@ public struct HelpCenterNavigation<Content: View>: View {
     private func handle(quickAction: QuickAction) {
         switch quickAction {
         case .connectPayments:
-            helpCenterVm.connectPaymentsVm.connectPaymentModel = .init(setUpType: nil)
+            helpCenterVm.connectPaymentsVm.set(for: nil)
         case .travelInsurance:
             helpCenterVm.quickActions.isTravelCertificatePresented = true
         case .changeAddress:

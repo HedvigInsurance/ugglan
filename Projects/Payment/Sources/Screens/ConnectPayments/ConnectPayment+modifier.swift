@@ -10,49 +10,47 @@ extension View {
 
 struct ConnectPayment: ViewModifier {
     @ObservedObject var vm: ConnectPaymentViewModel
-    @EnvironmentObject var router: Router
 
     func body(content: Content) -> some View {
         content
             .detent(
-                item: $vm.connectPaymentModel,
+                item: $vm.setupTypeNavigationModel,
                 style: .large,
                 options: .constant([.disableDismissOnScroll, .withoutGrabber, .alwaysOpenOnTop])
             ) { setupTypeModel in
-                let featureFlags: FeatureFlags = Dependencies.shared.resolve()
-                switch featureFlags.paymentType {
-                case .adyen:
-                    EmptyView()
-                        .onAppear {
-                            Task {
-                                let paymentServcice: AdyenService = Dependencies.shared.resolve()
-                                do {
-                                    let url = try await paymentServcice.getAdyenUrl()
-                                    router.push(PaymentsRouterAction.openUrl(url: url))
-                                } catch {
-                                    //we are not so concerned about this
-                                }
-                            }
-                        }
-
-                case .trustly:
-                    DirectDebitSetup()
-                        .configureTitle(
-                            setupTypeModel.setUpType == .replacement
-                                ? L10n.PayInIframeInApp.connectPayment : L10n.PayInIframePostSign.title
-                        )
-                        .embededInNavigation(options: .navigationType(type: .large))
-                }
+                DirectDebitSetup()
+                    .configureTitle(
+                        setupTypeModel.setUpType == .replacement
+                            ? L10n.PayInIframeInApp.connectPayment : L10n.PayInIframePostSign.title
+                    )
             }
     }
 }
 
 public class ConnectPaymentViewModel: ObservableObject {
-    @Published public var connectPaymentModel: SetupTypeNavigationModel?
+    @Published var setupTypeNavigationModel: SetupTypeNavigationModel?
     public init() {}
+    private let paymentServcice: AdyenService = Dependencies.shared.resolve()
+
+    public func set(for setupType: SetupType?) {
+        Task { @MainActor [weak self] in
+            let featureFlags: FeatureFlags = Dependencies.shared.resolve()
+            switch featureFlags.paymentType {
+            case .adyen:
+                do {
+                    let url = try await self?.paymentServcice.getAdyenUrl()
+                    NotificationCenter.default.post(name: .openDeepLink, object: url)
+                } catch {
+                    //we are not so concerned about this
+                }
+            case .trustly:
+                self?.setupTypeNavigationModel = .init(setUpType: setupType)
+            }
+        }
+    }
 }
 
-public struct SetupTypeNavigationModel: Equatable, Identifiable {
+struct SetupTypeNavigationModel: Equatable, Identifiable {
 
     public init(
         setUpType: SetupType?
@@ -60,6 +58,6 @@ public struct SetupTypeNavigationModel: Equatable, Identifiable {
         self.setUpType = setUpType
     }
 
-    public var id: String = UUID().uuidString
-    var setUpType: SetupType?
+    public let id: String = UUID().uuidString
+    let setUpType: SetupType?
 }

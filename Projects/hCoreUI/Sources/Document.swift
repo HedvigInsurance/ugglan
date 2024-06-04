@@ -51,7 +51,7 @@ public struct PDFPreview: View {
         }
         .navigationTitle(vm.document.title)
         .navigationBarTitleDisplayMode(.inline)
-        .embededInNavigation()
+        .embededInNavigation(tracking: self)
         .withDismissButton()
     }
 
@@ -175,4 +175,11 @@ private class DocumentView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+}
+
+extension PDFPreview: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        return .init(describing: PDFPreview.self)
+    }
+
 }
