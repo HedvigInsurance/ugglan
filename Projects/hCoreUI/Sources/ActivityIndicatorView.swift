@@ -105,12 +105,6 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
         self.content = content
         self.showLoading = showLoading
         self.retryActions = retryActions
-        let store: StoreType = globalPresentableStoreContainer.get()
-        if let state = handle(allActions: store.loadingSignal.value) {
-            _isLoading = State(initialValue: state.isLoading)
-            _error = State(initialValue: state.error ?? "")
-            _presentError = State(initialValue: state.presentError)
-        }
     }
 
     public var body: some View {
@@ -141,6 +135,14 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
                 .publisher
         ) { value in
             handle(allActions: value)
+        }
+        .onAppear {
+            let store: StoreType = globalPresentableStoreContainer.get()
+            if let state = handle(allActions: store.loadingSignal.value) {
+                isLoading = state.isLoading
+                error = state.error ?? ""
+                presentError = state.presentError
+            }
         }
     }
 
@@ -369,12 +371,7 @@ public struct LoadingViewWithGenericError<Content: View, StoreType: StoreLoading
         self.content = content
         self.showLoading = showLoading
         self.bottomAction = bottomAction
-        let store: StoreType = globalPresentableStoreContainer.get()
-        if let state = handle(allActions: store.loadingSignal.value) {
-            _isLoading = State(initialValue: state.isLoading)
-            _error = State(initialValue: state.error ?? "")
-            _presentError = State(initialValue: state.presentError)
-        }
+
     }
 
     public var body: some View {
@@ -410,6 +407,14 @@ public struct LoadingViewWithGenericError<Content: View, StoreType: StoreLoading
                 .publisher
         ) { value in
             handle(allActions: value)
+        }
+        .onAppear {
+            let store: StoreType = globalPresentableStoreContainer.get()
+            if let state = handle(allActions: store.loadingSignal.value) {
+                isLoading = state.isLoading
+                error = state.error ?? ""
+                presentError = state.presentError
+            }
         }
     }
 

@@ -51,7 +51,6 @@ public struct ProductVariant: Codable, Hashable {
         guard let data else { return nil }
         self.init(data: data)
     }
-
 }
 
 public struct Contract: Codable, Hashable, Equatable, Identifiable {
@@ -538,6 +537,7 @@ public struct TermsAndConditions: Identifiable, Codable, Hashable {
     public let url: String
 }
 
+/* TODO: USE THE ONE IN EDIT CO-INSURED PROJECT? */
 extension InsuredPeopleConfig {
     public init(
         contract: Contract,
@@ -545,6 +545,7 @@ extension InsuredPeopleConfig {
     ) {
         let store: ContractStore = globalPresentableStoreContainer.get()
         self.init(
+            id: contract.id,
             contractCoInsured: contract.coInsured,
             contractId: contract.id,
             activeFrom: contract.upcomingChangedAgreement?.activeFrom,

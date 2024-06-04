@@ -24,11 +24,6 @@ public class HomeNavigationViewModel: ObservableObject {
 
     @Published public var isSubmitClaimPresented = false
     @Published public var isHelpCenterPresented = false
-    @Published public var isMissingEditCoInsuredAlertPresented: InsuredPeopleConfig?
-
-    // scroll view cards
-    @Published public var isEditCoInsuredSelectContractPresented: CoInsuredConfigModel?
-    @Published public var isEditCoInsuredPresented: InsuredPeopleConfig?
 
     //claim details
     @Published public var document: InsuranceTerm? = nil
@@ -59,4 +54,5 @@ public class HomeNavigationViewModel: ObservableObject {
     }
 
     public var connectPaymentVm = ConnectPaymentViewModel()
+    public var editCoInsuredVm = EditCoInsuredViewModel()
 }

@@ -7,12 +7,7 @@ public class ProfileNavigationViewModel: ObservableObject {
     @Published public var isDeleteAccountPresented: MemberDetails?
     @Published var isDeleteAccountAlreadyRequestedPresented = false
     @Published public var isLanguagePickerPresented = false
-
-    @Published public var isEditCoInsuredSelectContractPresented: CoInsuredConfigModel?
-    @Published public var isEditCoInsuredPresented: InsuredPeopleConfig?
-
     @Published public var isConfirmEmailPreferencesPresented = false
-
     public let profileRouter = Router()
 
     public init() {}
@@ -85,27 +80,6 @@ public struct ProfileNavigation<Content: View>: View {
         ) {
             redirect(.deleteRequestLoading)
         }
-        .detent(
-            item: $profileNavigationViewModel.isEditCoInsuredSelectContractPresented,
-            style: .height
-        ) { configs in
-            redirect(
-                .editCoInuredSelectInsurance(
-                    configs: configs.configs
-                )
-            )
-        }
-        .fullScreenCover(
-            item: $profileNavigationViewModel.isEditCoInsuredPresented
-        ) { config in
-            getEditCoInsuredView(config: config)
-        }
-    }
-
-    private func getEditCoInsuredView(config: InsuredPeopleConfig) -> some View {
-        redirect(
-            .editCoInsured(config: config)
-        )
     }
 }
 
@@ -119,5 +93,4 @@ public enum ProfileRedirectType: Hashable {
     case deleteRequestLoading
     case pickLanguage
     case editCoInsured(config: InsuredPeopleConfig)
-    case editCoInuredSelectInsurance(configs: [InsuredPeopleConfig])
 }

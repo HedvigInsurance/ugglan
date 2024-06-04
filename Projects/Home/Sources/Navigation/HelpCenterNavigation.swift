@@ -1,6 +1,5 @@
 import Chat
 import Contracts
-import EditCoInsured
 import EditCoInsuredShared
 import Payment
 import Presentation
@@ -11,23 +10,21 @@ import TravelCertificate
 import hCore
 import hCoreUI
 
-class HelpCenterNavigationViewModel: ObservableObject {
+public class HelpCenterNavigationViewModel: ObservableObject {
     @Published var quickActions = QuickActions()
     var connectPaymentsVm = ConnectPaymentViewModel()
+    public let editCoInsuredVm = EditCoInsuredViewModel()
     let terminateInsuranceVm = TerminateInsuranceViewModel()
+
     struct QuickActions {
         var isTravelCertificatePresented = false
         var isChangeAddressPresented = false
-        var isEditCoInsuredSelectContractPresented: CoInsuredConfigModel?
-
-        var isEditCoInsuredPresented: InsuredPeopleConfig?
-        var isEditCoInsuredMissingContractPresented: InsuredPeopleConfig?
-
         var isCancellationPresented = false
         var isFirstVetPresented = false
         var isSickAbroadPresented = false
     }
 
+    public init() {}
     struct ChatTopicModel: Identifiable, Equatable {
         var id: String?
         var topic: ChatTopicType?
@@ -35,16 +32,17 @@ class HelpCenterNavigationViewModel: ObservableObject {
 }
 
 public struct HelpCenterNavigation<Content: View>: View {
-    @StateObject var helpCenterVm = HelpCenterNavigationViewModel()
-
+    @ObservedObject var helpCenterVm: HelpCenterNavigationViewModel
     @EnvironmentObject private var homeVm: HomeNavigationViewModel
     @PresentableStore private var store: HomeStore
     @ViewBuilder var redirect: (_ type: HelpCenterRedirectType) -> Content
     @StateObject var router = Router()
 
     public init(
+        helpCenterVm: HelpCenterNavigationViewModel,
         @ViewBuilder redirect: @escaping (_ type: HelpCenterRedirectType) -> Content
     ) {
+        self.helpCenterVm = helpCenterVm
         self.redirect = redirect
     }
 
@@ -67,38 +65,6 @@ public struct HelpCenterNavigation<Content: View>: View {
         }
         .ignoresSafeArea()
         .detent(
-            item: $helpCenterVm.quickActions.isEditCoInsuredMissingContractPresented,
-            style: .height
-        ) { config in
-            redirect(
-                .editCoInsured(
-                    config: config,
-                    showMissingAlert: true,
-                    isMissingAlertAction: { isMissing in
-                    }
-                )
-            )
-        }
-        .detent(
-            item: $helpCenterVm.quickActions.isEditCoInsuredSelectContractPresented,
-            style: .height
-        ) { configs in
-            redirect(
-                .editCoInuredSelectInsurance(
-                    configs: configs.configs,
-                    isMissingAlertAction: { [weak helpCenterVm] missingContract in
-                        helpCenterVm?.quickActions.isEditCoInsuredSelectContractPresented = nil
-                        helpCenterVm?.quickActions.isEditCoInsuredMissingContractPresented = missingContract
-                    }
-                )
-            )
-        }
-        .fullScreenCover(
-            item: $helpCenterVm.quickActions.isEditCoInsuredPresented
-        ) { config in
-            getEditCoInsuredView(config: config)
-        }
-        .detent(
             presented: $helpCenterVm.quickActions.isFirstVetPresented,
             style: .large
         ) {
@@ -117,14 +83,7 @@ public struct HelpCenterNavigation<Content: View>: View {
             isPresented: $helpCenterVm.quickActions.isTravelCertificatePresented,
             content: {
                 redirect(
-                    .travelInsurance(redirect: { redirectType in
-                        switch redirectType {
-                        case let .editCoInsured(config, _, _):
-                            handle(quickAction: .editCoInsured)
-                        default:
-                            break
-                        }
-                    })
+                    .travelInsurance
                 )
             }
         )
@@ -242,36 +201,8 @@ public struct HelpCenterNavigation<Content: View>: View {
         case .sickAbroad:
             helpCenterVm.quickActions.isSickAbroadPresented = true
         case .editCoInsured:
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-            let contractsSupportingCoInsured = contractStore.state.activeContracts
-                .filter({ $0.showEditCoInsuredInfo })
-                .compactMap({
-                    InsuredPeopleConfig(contract: $0, fromInfoCard: true)
-                })
-
-            if contractsSupportingCoInsured.count > 1 {
-                helpCenterVm.quickActions.isEditCoInsuredSelectContractPresented = .init(
-                    configs: contractsSupportingCoInsured
-                )
-            } else {
-                helpCenterVm.quickActions.isEditCoInsuredPresented = contractsSupportingCoInsured.first
-            }
+            helpCenterVm.editCoInsuredVm.start()
         }
-    }
-
-    private func getEditCoInsuredView(config: InsuredPeopleConfig) -> some View {
-        redirect(
-            .editCoInsured(
-                config: config,
-                showMissingAlert: false,
-                isMissingAlertAction: { [weak helpCenterVm] missingContract in
-                    helpCenterVm?.quickActions.isEditCoInsuredPresented = nil
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        helpCenterVm?.quickActions.isEditCoInsuredMissingContractPresented = missingContract
-                    }
-                }
-            )
-        )
     }
 
     private func getSubmitClaimDeflectScreen() -> some View {
@@ -280,20 +211,11 @@ public struct HelpCenterNavigation<Content: View>: View {
 }
 
 public enum HelpCenterRedirectType {
-    case travelInsurance(redirect: (HelpCenterRedirectType) -> Void)
+    case travelInsurance
     case moveFlow
     case deflect
-    case editCoInsured(
-        config: InsuredPeopleConfig,
-        showMissingAlert: Bool,
-        isMissingAlertAction: (InsuredPeopleConfig) -> Void
-    )
-    case editCoInuredSelectInsurance(
-        configs: [InsuredPeopleConfig],
-        isMissingAlertAction: (InsuredPeopleConfig) -> Void
-    )
 }
 
 #Preview{
-    HelpCenterNavigation<EmptyView>(redirect: { _ in })
+    HelpCenterNavigation(helpCenterVm: .init(), redirect: { _ in })
 }
