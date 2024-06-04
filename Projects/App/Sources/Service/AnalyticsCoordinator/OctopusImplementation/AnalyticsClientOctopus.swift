@@ -1,21 +1,22 @@
 import Apollo
 import DatadogCore
-import Foundation
 import SwiftUI
 import hCore
 import hGraphQL
 
-protocol AnalyticsService {
-    func fetchAndSetUserId()
-    func setWith(userId: String)
+public class AnalyticsService {
+    @Inject var service: AnalyticsClient
+
+    func fetchAndSetUserId() {
+        log.info("AnalyticsService: fetchAndSetUserId", error: nil, attributes: nil)
+    }
+
+    func setWith(userId: String) {
+        log.info("AnalyticsService: setWith", error: nil, attributes: nil)
+    }
 }
 
-struct AnalyticsServiceDemo: AnalyticsService {
-    func fetchAndSetUserId() {}
-    func setWith(userId: String) {}
-}
-
-struct AnalyticsServiceOctopus: AnalyticsService {
+struct AnalyticsClientOctopus: AnalyticsClient {
     @Inject private var octopus: hOctopus
 
     init() {}
