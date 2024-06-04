@@ -1,6 +1,6 @@
 import Foundation
 
-public class ProfileDemoService: ProfileService {
+public class ProfileClientDemo: ProfileClient {
     public func update(eurobonus: String) async throws -> PartnerData {
         return PartnerData(sas: .init(eligible: false, eurobonusNumber: nil))
     }

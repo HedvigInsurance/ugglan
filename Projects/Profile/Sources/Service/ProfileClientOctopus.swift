@@ -2,7 +2,46 @@ import Foundation
 import hCore
 import hGraphQL
 
-public class ProfileServiceOctopus: ProfileService {
+public class ProfileService {
+    @Inject var service: ProfileClient
+
+    public func getProfileState() async throws -> (memberData: MemberDetails, partnerData: PartnerData?) {
+        log.info("ProfileService: getProfileState", error: nil, attributes: nil)
+        return try await service.getProfileState()
+    }
+
+    public func getMemberDetails() async throws -> MemberDetails {
+        log.info("ProfileService: getMemberDetails", error: nil, attributes: nil)
+        return try await service.getMemberDetails()
+    }
+
+    public func postDeleteRequest() async throws {
+        log.info("ProfileService: postDeleteRequest", error: nil, attributes: nil)
+        return try await service.postDeleteRequest()
+    }
+
+    public func updateLanguage() async throws {
+        log.info("ProfileService: updateLanguage", error: nil, attributes: nil)
+        return try await service.updateLanguage()
+    }
+
+    func update(email: String) async throws -> String {
+        log.info("ProfileService: update(email)", error: nil, attributes: nil)
+        return try await service.update(email: email)
+    }
+
+    func update(phone: String) async throws -> String {
+        log.info("ProfileService: update(phone)", error: nil, attributes: nil)
+        return try await service.update(phone: phone)
+    }
+
+    func update(eurobonus: String) async throws -> PartnerData {
+        log.info("ProfileService: update(eurobonus)", error: nil, attributes: nil)
+        return try await service.update(eurobonus: eurobonus)
+    }
+}
+
+public class ProfileClientOctopus: ProfileClient {
     @Inject var octopus: hOctopus
 
     public init() {}
