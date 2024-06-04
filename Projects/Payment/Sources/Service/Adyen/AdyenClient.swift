@@ -4,11 +4,11 @@ import Foundation
 import hCore
 import hGraphQL
 
-public protocol AdyenService {
+public protocol AdyenClient {
     func getAdyenUrl() async throws -> URL
 }
 
-extension NetworkClient: AdyenService {
+extension NetworkClient: AdyenClient {
     public func getAdyenUrl() async throws -> URL {
         let request = try await AdyenRequest.getAuthorizationCode.asRequest()
         let (data, response) = try await self.sessionClient.data(for: request)

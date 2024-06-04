@@ -2,7 +2,7 @@ import Foundation
 import hCore
 import hGraphQL
 
-public class FetchContractsServiceOctopus: FetchContractsService {
+public class FetchContractsClientOctopus: FetchContractsClient {
     @Inject private var octopus: hOctopus
     public init() {}
     public func getContracts() async throws -> ContractsStack {

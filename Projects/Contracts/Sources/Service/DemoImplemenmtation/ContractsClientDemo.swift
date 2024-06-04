@@ -1,6 +1,6 @@
 import Foundation
 
-public class FetchContractsServiceDemo: FetchContractsService {
+public class FetchContractsClientDemo: FetchContractsClient {
     public init() {}
     public func getContracts() async throws -> ContractsStack {
         let variant = ProductVariant(

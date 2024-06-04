@@ -127,7 +127,7 @@ struct ForeverView_Previews: PreviewProvider {
         Localization.Locale.currentLocale = .en_SE
         return ForeverView()
             .onAppear {
-                Dependencies.shared.add(module: Module { () -> ForeverClient in ForeverDemoClient() })
+                Dependencies.shared.add(module: Module { () -> ForeverClient in ForeverClientDemo() })
             }
     }
 }

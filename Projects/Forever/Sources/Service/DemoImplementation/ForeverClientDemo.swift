@@ -1,4 +1,4 @@
-public class ForeverDemoClient: ForeverClient {
+public class ForeverClientDemo: ForeverClient {
     var code: String = "CODE"
     public init() {}
 

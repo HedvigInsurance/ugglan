@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol HomeService {
+public protocol HomeClient {
     func getImportantMessages() async throws -> [ImportantMessage]
     func getMemberState() async throws -> MemberState
     func getQuickActions() async throws -> [QuickAction]

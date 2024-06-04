@@ -1,4 +1,4 @@
-public protocol TerminateContractsService {
+public protocol TerminateContractsClient {
     func startTermination(contractId: String) async throws -> TerminateStepResponse
     func sendTerminationDate(
         inputDateToString: String,

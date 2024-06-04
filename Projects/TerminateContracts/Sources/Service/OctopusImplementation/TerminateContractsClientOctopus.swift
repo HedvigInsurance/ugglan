@@ -2,7 +2,7 @@ import Presentation
 import hCore
 import hGraphQL
 
-public class TerminateContractsOctopus: TerminateContractsService {
+public class TerminateContractsClientOctopus: TerminateContractsClient {
     public init() {}
 
     public func startTermination(contractId: String) async throws -> TerminateStepResponse {

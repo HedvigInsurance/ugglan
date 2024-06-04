@@ -1,6 +1,6 @@
 import Foundation
 
-public class HomeServiceDemo: HomeService {
+public class HomeClientDemo: HomeClient {
 
     public init() {}
 

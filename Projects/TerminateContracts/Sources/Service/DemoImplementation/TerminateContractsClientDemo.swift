@@ -1,6 +1,6 @@
 import hCore
 
-public class TerminateContractsDemoService: TerminateContractsService {
+public class TerminateContractsClientDemo: TerminateContractsClient {
     public func startTermination(contractId: String) async throws -> TerminateStepResponse {
         return .init(context: "", action: .navigationAction(action: .openTerminationSuccessScreen))
     }

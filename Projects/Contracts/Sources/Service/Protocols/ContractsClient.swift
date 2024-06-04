@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol FetchContractsService {
+public protocol FetchContractsClient {
     func getContracts() async throws -> ContractsStack
     func getCrossSell() async throws -> [CrossSell]
 }

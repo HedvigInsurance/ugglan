@@ -2,7 +2,7 @@ import Foundation
 import hCore
 import hGraphQL
 
-public class HomeServiceOctopus: HomeService {
+public class HomeClientOctopus: HomeClient {
     @Inject var octopus: hOctopus
     @Inject var featureFlags: FeatureFlags
     public init() {}
