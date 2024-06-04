@@ -55,7 +55,7 @@ extension ApolloClient {
             let moveFlowService = MoveFlowServiceOctopus()
             let foreverService = ForeverClientOctopus()
             let profileService = ProfileClientOctopus()
-            let editCoInsuredService = EditCoInsuredServiceOctopus()
+            let editCoInsuredService = EditCoInsuredClientOctopus()
             let editCoInsuredSharedService = EditCoInsuredSharedClientOctopus()
             let homeService = HomeServiceOctopus()
             let terminateContractsService = TerminateContractsOctopus()
@@ -85,7 +85,7 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> MoveFlowService in moveFlowService })
                 Dependencies.shared.add(module: Module { () -> ForeverClient in foreverService })
                 Dependencies.shared.add(module: Module { () -> ProfileClient in profileService })
-                Dependencies.shared.add(module: Module { () -> EditCoInsuredService in editCoInsuredService })
+                Dependencies.shared.add(module: Module { () -> EditCoInsuredClient in editCoInsuredService })
                 Dependencies.shared.add(
                     module: Module { () -> EditCoInsuredSharedClient in editCoInsuredSharedService }
                 )
@@ -112,7 +112,7 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> MoveFlowService in moveFlowService })
                 Dependencies.shared.add(module: Module { () -> ForeverClient in foreverService })
                 Dependencies.shared.add(module: Module { () -> ProfileClient in profileService })
-                Dependencies.shared.add(module: Module { () -> EditCoInsuredService in editCoInsuredService })
+                Dependencies.shared.add(module: Module { () -> EditCoInsuredClient in editCoInsuredService })
                 Dependencies.shared.add(
                     module: Module { () -> EditCoInsuredSharedClient in editCoInsuredSharedService }
                 )

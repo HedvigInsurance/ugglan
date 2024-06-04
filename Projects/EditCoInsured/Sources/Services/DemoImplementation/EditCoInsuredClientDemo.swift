@@ -3,7 +3,7 @@ import Foundation
 import hCore
 import hGraphQL
 
-public class EditCoInsuredDemoClient: EditCoInsuredService {
+public class EditCoInsuredClientDemo: EditCoInsuredClient {
     public func sendMidtermChangeIntentCommit(commitId: String) async throws {
     }
 
