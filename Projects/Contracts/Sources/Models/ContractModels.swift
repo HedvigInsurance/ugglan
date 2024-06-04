@@ -545,6 +545,7 @@ extension InsuredPeopleConfig {
     ) {
         let store: ContractStore = globalPresentableStoreContainer.get()
         self.init(
+            id: contract.id,
             contractCoInsured: contract.coInsured,
             contractId: contract.id,
             activeFrom: contract.upcomingChangedAgreement?.activeFrom,

@@ -7,6 +7,7 @@ public struct hRadioField<Content: View>: View {
     private let id: String
     private var useAnimation: Bool
     @Environment(\.hFieldSize) var size
+    @Environment(\.hUseNewDesign) var hUseNewDesign
     @Binding var selected: String?
     @Binding private var error: String?
     @State private var animate = false
@@ -29,16 +30,10 @@ public struct hRadioField<Content: View>: View {
         HStack(spacing: 0) {
             content
             Spacer()
-            Circle()
-                .strokeBorder(
-                    RadioFieldsColors().getBorderColor(isSelected: id == selected),
-                    lineWidth: id == selected ? 0 : 1.5
-                )
-                .background(Circle().foregroundColor(RadioFieldsColors().getFillColor(isSelected: id == selected)))
-                .frame(width: 24, height: 24)
+            hRadioOptionSelectedView(selectedValue: $selected, value: id)
         }
-        .padding(.vertical, size == .large ? 11 : 8)
-        .frame(minHeight: size == .large ? 72 : 40)
+        .padding(.top, hUseNewDesign ? size.topPaddingNewDesign : size.topPadding)
+        .padding(.bottom, hUseNewDesign ? size.bottomPaddingNewDesign : size.bottomPadding)
         .addFieldBackground(animate: $animate, error: $error)
         .addFieldError(animate: $animate, error: $error)
         .onTapGesture {
@@ -71,5 +66,59 @@ struct hRadioField_Previews: PreviewProvider {
                 useAnimation: true
             )
         }
+    }
+}
+
+extension hFieldSize {
+    fileprivate var minHeight: CGFloat {
+        switch self {
+        case .small:
+            return 40
+        case .large:
+            return 72
+        case .medium:
+            return 72
+        }
+    }
+
+    fileprivate var minHeightNewDesign: CGFloat {
+        switch self {
+        case .small:
+            return 56
+        case .large:
+            return 64
+        case .medium:
+            return 64
+        }
+    }
+
+    fileprivate var topPadding: CGFloat {
+        switch self {
+        case .small:
+            return 8
+        case .large:
+            return 11
+        case .medium:
+            return 11
+        }
+    }
+
+    fileprivate var topPaddingNewDesign: CGFloat {
+        switch self {
+        case .small:
+            return 15
+        case .large:
+            return 16
+        case .medium:
+            return 19
+        }
+    }
+
+    fileprivate var bottomPadding: CGFloat {
+        topPadding
+    }
+
+    fileprivate var bottomPaddingNewDesign: CGFloat {
+        topPaddingNewDesign + 2
     }
 }

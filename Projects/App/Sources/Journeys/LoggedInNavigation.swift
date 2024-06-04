@@ -1,6 +1,8 @@
 import Chat
 import Claims
+import Combine
 import Contracts
+import EditCoInsuredShared
 import Forever
 import Foundation
 import Home
@@ -57,36 +59,20 @@ struct LoggedInNavigation: View {
         ) {
             MovingFlowNavigation()
         }
-        .modally(
-            presented: $vm.isCancelInsurancePresented,
-            options: .constant(.alwaysOpenOnTop)
-        ) {
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-
-            let contractsConfig: [TerminationConfirmConfig] = contractStore.state.activeContracts
-                .filter({ $0.canTerminate })
-                .map({
-                    $0.asTerminationConfirmConfig
-                })
-
-            TerminationFlowNavigation(
-                configs: contractsConfig,
-                isFlowPresented: { dismissType in
-                    switch dismissType {
-                    case .done:
-                        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                        contractStore.send(.fetchContracts)
-                        let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                        homeStore.send(.fetchQuickActions)
-                    case .chat:
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                            NotificationCenter.default.post(name: .openChat, object: nil)
-                        }
-                    case let .openFeedback(url):
-                        vm.openUrl(url: url)
-                    }
+        .handleTerminateInsurance(vm: vm.terminateInsuranceVm) { dismissType in
+            switch dismissType {
+            case .done:
+                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                contractStore.send(.fetchContracts)
+                let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                homeStore.send(.fetchQuickActions)
+            case .chat:
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    NotificationCenter.default.post(name: .openChat, object: nil)
                 }
-            )
+            case let .openFeedback(url):
+                vm.openUrl(url: url)
+            }
         }
         .modally(
             presented: $vm.isEuroBonusPresented,
@@ -115,23 +101,21 @@ struct LoggedInNavigation: View {
                 MovingFlowNavigation()
             case let .pdf(document):
                 PDFPreview(document: .init(url: document.url, title: document.title))
-            case let .cancellation(contractConfig):
-                TerminationFlowNavigation(
-                    configs: [contractConfig],
-                    isFlowPresented: { cancelAction in
-                        switch cancelAction {
-                        case .done:
-                            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                            contractStore.send(.fetchContracts)
-                            let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                            homeStore.send(.fetchQuickActions)
-                        case .chat:
-                            NotificationCenter.default.post(name: .openChat, object: nil)
-                        case let .openFeedback(url):
-                            vm.openUrl(url: url)
-                        }
-                    }
-                )
+            }
+        } redirectAction: { action in
+            switch action {
+            case let .termination(terminateAction):
+                switch terminateAction {
+                case .done:
+                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                    contractStore.send(.fetchContracts)
+                    let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                    homeStore.send(.fetchQuickActions)
+                case .chat:
+                    NotificationCenter.default.post(name: .openChat, object: nil)
+                case let .openFeedback(url):
+                    vm.openUrl(url: url)
+                }
             }
         }
         .handleEditCoInsured(with: vm.contractsNavigationVm.editCoInsuredVm)
@@ -401,12 +385,14 @@ class LoggedInNavigationViewModel: ObservableObject {
     let homeNavigationVm = HomeNavigationViewModel()
     let helpCenterVm = HelpCenterNavigationViewModel()
     let travelCertificateNavigationVm = TravelCertificateNavigationViewModel()
+    let terminateInsuranceVm = TerminateInsuranceViewModel()
 
     @Published var isTravelInsurancePresented = false
     @Published var isMoveContractPresented = false
-    @Published var isCancelInsurancePresented = false
     @Published var isEuroBonusPresented = false
     @Published var isUrlPresented: URL?
+
+    private var updateCoInsuredCancellable: AnyCancellable?
 
     init() {
         NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) { notification in
@@ -446,6 +432,16 @@ class LoggedInNavigationViewModel: ObservableObject {
                 }
             }
         }
+
+        updateCoInsuredCancellable = EditCoInsuredViewModel.updatedCoInsuredForContractId
+            .receive(on: RunLoop.main)
+            .sink { contractId in
+                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                contractStore.send(.fetchContracts)
+
+                let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                homeStore.send(.fetchQuickActions)
+            }
     }
 
     private func handleDeepLinks(deepLinkUrl: URL?) {
@@ -494,7 +490,14 @@ class LoggedInNavigationViewModel: ObservableObject {
             case .moveContract:
                 self.isMoveContractPresented = true
             case .terminateContract:
-                self.isCancelInsurancePresented = true
+                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+
+                let contractsConfig: [TerminationConfirmConfig] = contractStore.state.activeContracts
+                    .filter({ $0.canTerminate })
+                    .map({
+                        $0.asTerminationConfirmConfig
+                    })
+                self.terminateInsuranceVm.start(with: contractsConfig)
             case .openChat:
                 NotificationCenter.default.post(name: .openChat, object: nil)
             case nil:

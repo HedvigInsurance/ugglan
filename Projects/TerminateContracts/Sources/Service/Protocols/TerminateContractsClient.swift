@@ -5,6 +5,11 @@ public protocol TerminateContractsClient {
         terminationContext: String
     ) async throws -> TerminateStepResponse
     func sendConfirmDelete(terminationContext: String) async throws -> TerminateStepResponse
+    func sendSurvey(
+        terminationContext: String,
+        option: String,
+        inputData: String?
+    ) async throws -> TerminateStepResponse
 }
 
 public struct TerminateStepResponse {

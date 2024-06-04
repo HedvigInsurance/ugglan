@@ -71,9 +71,9 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                 }
                 .padding(.vertical, shouldMoveLabel ? (size == .large ? 10 : 7.5) : 3)
             }
-            .addFieldBackground(animate: $animate, error: $error)
             rightAttachedView
         }
+        .addFieldBackground(animate: $animate, error: $error)
         .addFieldError(animate: $animate, error: $error)
         .onChange(of: vm.textField) { textField in
             textField?.delegate = observer
@@ -345,6 +345,7 @@ extension View {
 public enum hFieldSize: Hashable {
     case small
     case large
+    case medium
 }
 
 private struct EnvironmentHFieldAttachedView: EnvironmentKey {

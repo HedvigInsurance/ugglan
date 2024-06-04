@@ -56,9 +56,10 @@ public class EditCoInsuredClientOctopus: EditCoInsuredClient {
                 case .otherError:
                     throw EditCoInsuredError.otherError
                 }
+            } else if let exception = exception as? EditCoInsuredError {
+                throw exception
             } else {
                 throw EditCoInsuredError.otherError
-
             }
         }
     }

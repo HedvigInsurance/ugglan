@@ -7,7 +7,7 @@ public class ProfileNavigationViewModel: ObservableObject {
     @Published public var isDeleteAccountPresented: MemberDetails?
     @Published var isDeleteAccountAlreadyRequestedPresented = false
     @Published public var isLanguagePickerPresented = false
-
+    @Published public var isConfirmEmailPreferencesPresented = false
     public let profileRouter = Router()
 
     public init() {}
@@ -45,7 +45,7 @@ public struct ProfileNavigation<Content: View>: View {
                         AppInfoView()
                             .configureTitle(L10n.profileAppInfo)
                     case .settings:
-                        SettingsScreen()
+                        SettingsView()
                             .configureTitle(L10n.EmbarkOnboardingMoreOptions.settingsLabel)
                     case .euroBonus:
                         EuroBonusNavigation(useOwnNavigation: false)

@@ -21,6 +21,7 @@ public enum ExternalDependencies: CaseIterable {
     case svgkit
     case unleashProxyClientSwift
     case argumentParser
+    case hero
 
     public var isTestDependency: Bool { self == .snapshottesting }
 
@@ -37,6 +38,7 @@ public enum ExternalDependencies: CaseIterable {
 
     public func swiftPackages() -> [Package] {
         switch self {
+        case .hero: return [.package(url: "https://github.com/HeroTransitions/Hero", .upToNextMajor(from: "1.6.3"))]
         case .apollo: return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("1.9.0"))]
         case .flow:
             return [.package(url: "https://github.com/HedvigInsurance/Flow", .upToNextMajor(from: "1.8.10"))]
@@ -114,6 +116,7 @@ public enum ExternalDependencies: CaseIterable {
 
     public func targetDependencies() -> [TargetDependency] {
         switch self {
+        case .hero: return [.package(product: "Hero")]
         case .kingfisher: return [.package(product: "Kingfisher")]
         case .apollo: return [.package(product: "ApolloWebSocket"), .package(product: "Apollo")]
         case .flow: return [.package(product: "Flow")]

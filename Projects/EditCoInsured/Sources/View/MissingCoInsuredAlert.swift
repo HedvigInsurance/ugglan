@@ -43,6 +43,7 @@ public struct MissingCoInsuredAlert: View {
 #Preview{
     MissingCoInsuredAlert(
         config: .init(
+            id: UUID().uuidString,
             contractCoInsured: [],
             contractId: "id",
             activeFrom: nil,

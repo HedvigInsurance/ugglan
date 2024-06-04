@@ -344,8 +344,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
     /// removes hSection leading and trailing padding
     public var withoutHorizontalPadding: some View {
         self
-            .padding(.leading, horizontalSizeClass == .regular ? -60 : -16)
-            .padding(.trailing, horizontalSizeClass == .regular ? -60 : -16)
+            .padding(.horizontal, horizontalSizeClass == .regular ? -60 : -16)
     }
 
     public func withHeader<Header: View>(

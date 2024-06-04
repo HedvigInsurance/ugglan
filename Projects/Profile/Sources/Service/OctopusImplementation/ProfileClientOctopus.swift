@@ -39,6 +39,11 @@ public class ProfileService {
         log.info("ProfileService: update(eurobonus)", error: nil, attributes: nil)
         return try await service.update(eurobonus: eurobonus)
     }
+
+    func updateSubscriptionPreference(to subscribed: Bool) async throws {
+        log.info("ProfileService: updateSubscriptionPreference", error: nil, attributes: nil)
+        return try await service.updateSubscriptionPreference(to: subscribed)
+    }
 }
 
 public class ProfileClientOctopus: ProfileClient {
@@ -132,6 +137,14 @@ public class ProfileClientOctopus: ProfileClient {
         }
         return partnerData
     }
+
+    public func updateSubscriptionPreference(to subscribed: Bool) async throws {
+        let mutation = OctopusGraphQL.MemberUpdateSubscriptionPreferenceMutation(
+            subscribe: GraphQLNullable(booleanLiteral: subscribed)
+        )
+        let data = try await octopus.client.perform(mutation: mutation)
+    }
+
 }
 
 extension PartnerData {
