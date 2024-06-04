@@ -1,9 +1,12 @@
-import Foundation
 import hCore
 import hGraphQL
 
-protocol NotificationClient {
-    func register(for token: String)
+public class NotificationService {
+    @Inject var service: NotificationClient
+
+    func register(for token: String) {
+        log.info("EditCoInsuredService: sendMidtermChangeIntentCommit", error: nil, attributes: nil)
+    }
 }
 
 class NotificationClientOctopus: NotificationClient {
@@ -20,8 +23,4 @@ class NotificationClientOctopus: NotificationClient {
                 }
             })
     }
-}
-
-class NotificationClientDemo: NotificationClient {
-    func register(for token: String) {}
 }
