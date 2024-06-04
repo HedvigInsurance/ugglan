@@ -67,7 +67,7 @@ public enum SubmitClaimsNavigationAction: ActionProtocol, Hashable {
     case openTriagingGroupScreen
     case openTriagingEntrypointScreen
     case openTriagingOptionScreen
-    case openDeflectScreen
+    case openDeflectScreen(type: FlowClaimDeflectStepType)
     case openConfirmEmergencyScreen
     case openFileUploadScreen
 
@@ -161,7 +161,7 @@ extension ClaimsStepModelAction {
             case .Unknown:
                 return .openUpdateAppScreen
             default:
-                return .openDeflectScreen
+                return .openDeflectScreen(type: model.id)
             }
         case .setFileUploadStep:
             return .openFileUploadScreen

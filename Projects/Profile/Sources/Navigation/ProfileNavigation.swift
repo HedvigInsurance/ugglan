@@ -1,4 +1,5 @@
 import EditCoInsuredShared
+import Market
 import SwiftUI
 import hCore
 import hCoreUI
@@ -39,10 +40,8 @@ public struct ProfileNavigation<Content: View>: View {
     public var body: some View {
         RouterHost(router: profileNavigationViewModel.profileRouter) {
             ProfileView()
-                .routerDestination(for: ProfileRedirectType.self) { redirectType in
+                .routerDestination(for: ProfileRouterType.self) { redirectType in
                     switch redirectType {
-                    case .travelCertificate:
-                        redirect(.travelCertificate)
                     case .myInfo:
                         MyInfoView()
                             .configureTitle(L10n.profileMyInfoRowTitle)
@@ -54,6 +53,12 @@ public struct ProfileNavigation<Content: View>: View {
                             .configureTitle(L10n.EmbarkOnboardingMoreOptions.settingsLabel)
                     case .euroBonus:
                         EuroBonusNavigation(useOwnNavigation: false)
+                    }
+                }
+                .routerDestination(for: ProfileRedirectType.self) { redirectType in
+                    switch redirectType {
+                    case .travelCertificate:
+                        redirect(.travelCertificate)
                     default:
                         EmptyView()
                     }
@@ -109,15 +114,53 @@ public struct ProfileNavigation<Content: View>: View {
     }
 }
 
-public enum ProfileRedirectType: Hashable {
-    case travelCertificate
+public enum ProfileRouterType: Hashable {
     case myInfo
     case appInfo
     case settings
     case euroBonus
+}
+
+extension ProfileRouterType: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        switch self {
+        case .myInfo:
+            return .init(describing: MyInfoView.self)
+        case .appInfo:
+            return .init(describing: AppInfoView.self)
+        case .settings:
+            return .init(describing: SettingsView.self)
+        case .euroBonus:
+            return .init(describing: EuroBonusView.self)
+        }
+    }
+}
+
+public enum ProfileRedirectType: Hashable {
+    case travelCertificate
     case deleteAccount(memberDetails: MemberDetails)
     case deleteRequestLoading
     case pickLanguage
     case editCoInsured(config: InsuredPeopleConfig)
     case editCoInuredSelectInsurance(configs: [InsuredPeopleConfig])
+}
+
+extension ProfileRedirectType: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        switch self {
+        case .travelCertificate:
+            return "List screen"
+        case .deleteAccount(let memberDetails):
+            return .init(describing: DeleteAccountView.self)
+        case .deleteRequestLoading:
+            return .init(describing: DeleteRequestLoadingView.self)
+        case .pickLanguage:
+            return .init(describing: PickLanguage.self)
+        case .editCoInsured(let config):
+            return "Edit co inusred"
+        case .editCoInuredSelectInsurance(let configs):
+            return "Edit co inusred"
+        }
+    }
+
 }

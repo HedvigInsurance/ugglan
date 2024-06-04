@@ -2,6 +2,10 @@ import Foundation
 import SwiftUI
 import UIKit
 
+public protocol TrackingViewNameProtocol {
+    var nameForTracking: String { get }
+}
+
 public class Router: ObservableObject {
     private var routes = [AnyHashable]()
     fileprivate var onPush:
@@ -15,10 +19,13 @@ public class Router: ObservableObject {
     public init() {}
 
     var builders: [String: Builderrr<AnyView>] = [:]
-    public func push<T>(_ route: T) where T: Hashable {
+
+    var builders2: [String: ((AnyHashable) -> any View)] = [:]
+
+    public func push<T>(_ route: T) where T: Hashable & TrackingViewNameProtocol {
         let key = "\(T.self)"
         if let builder = builders[key], let view = builder.builder(route) {
-            _ = onPush?(builder.options, view, builder.contentName)
+            _ = onPush?(builder.options, view, route.nameForTracking)
             self.routes.append(key)
         }
     }

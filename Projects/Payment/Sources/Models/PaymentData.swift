@@ -1,6 +1,7 @@
 import Contracts
 import Foundation
 import hCore
+import hCoreUI
 import hGraphQL
 
 public struct PaymentData: Codable, Equatable, Hashable {
@@ -116,4 +117,10 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable {
 public struct AffectedInsurance: Codable, Equatable, Identifiable, Hashable {
     public let id: String
     let displayName: String
+}
+
+extension PaymentData: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        return .init(describing: PaymentDetailsView.self)
+    }
 }

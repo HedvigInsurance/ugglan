@@ -422,7 +422,7 @@ struct HomeTab: View {
             options: $homeNavigationVm.openChatOptions,
             content: { openChat in
                 ChatNavigation(openChat: openChat) { type, onDone in
-                    AskForPushnotifications(
+                    AskForPushNotifications(
                         text: L10n.chatActivateNotificationsBody,
                         onActionExecuted: {
                             onDone()
@@ -434,6 +434,7 @@ struct HomeTab: View {
         .onChange(of: homeNavigationVm.openChat) { newValue in
             HomeNavigationViewModel.isChatPresented = newValue != nil
         }
+
     }
 }
 

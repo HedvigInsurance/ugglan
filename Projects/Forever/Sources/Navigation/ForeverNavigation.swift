@@ -27,6 +27,15 @@ public class ForeverNavigationViewModel: ObservableObject {
 enum ForeverRouterActions {
     case success
 }
+extension ForeverRouterActions: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .success:
+            return .init(describing: SuccessScreen.self)
+        }
+    }
+
+}
 
 public struct ForeverNavigation: View {
     @EnvironmentObject var router: Router

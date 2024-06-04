@@ -140,6 +140,16 @@ enum ContractsRouterType {
     case terminatedContracts
 }
 
+extension ContractsRouterType: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .terminatedContracts:
+            return "Terminated Contracts"
+        }
+    }
+
+}
+
 extension TerminationConfirmConfig {
     public init(
         contract: Contract

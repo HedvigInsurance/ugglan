@@ -28,7 +28,8 @@ public struct ClaimsJourneyMain: View {
                     options: .hidesBackButton
                 ) { destination in
                     if destination == .askForPushNotifications {
-                        AskForPushnotifications(
+
+                        AskForPushNotifications(
                             text: L10n.claimsActivateNotificationsBody,
                             onActionExecuted: {
                                 claimsNavigationVm.isClaimsFlowPresented = true

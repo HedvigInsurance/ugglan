@@ -24,8 +24,32 @@ enum TravelCertificateRouterActions: Hashable {
     case startDate(specification: TravelInsuranceContractSpecification)
 }
 
+extension TravelCertificateRouterActions: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .whoIsTravelling(let specifiction):
+            return .init(describing: WhoIsTravelingScreen.self)
+        case .startDate(let specification):
+            return .init(describing: StartDateScreen.self)
+        }
+    }
+    
+    
+}
+
 enum TravelCertificateRouterActionsWithoutBackButton: Hashable {
     case processingScreen
+}
+
+extension TravelCertificateRouterActionsWithoutBackButton: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .processingScreen:
+            return .init(describing: TravelCertificateProcessingScreen.self)
+        }
+    }
+    
+    
 }
 
 public enum ListToolBarPlacement {

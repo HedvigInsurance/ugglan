@@ -10,6 +10,15 @@ enum EuroBonusRouterType {
     case successChangeEuroBonus
 }
 
+extension EuroBonusRouterType: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .successChangeEuroBonus:
+            return .init(describing: SuccessScreen.self)
+        }
+    }
+}
+
 public struct EuroBonusNavigation: View {
     @StateObject var router = Router()
     private let useOwnNavigation: Bool

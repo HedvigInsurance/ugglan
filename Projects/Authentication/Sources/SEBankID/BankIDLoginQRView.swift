@@ -252,3 +252,16 @@ public enum AuthentificationRouterType: Hashable {
     case otpCodeEntry
     case error(message: String)
 }
+
+extension AuthentificationRouterType: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        switch self {
+        case .emailLogin:
+            return .init(describing: OTPEntryView.self)
+        case .otpCodeEntry:
+            return .init(describing: OTPCodeEntryView.self)
+        case .error(let message):
+            return .init(describing: LoginErrorView.self)
+        }
+    }
+}

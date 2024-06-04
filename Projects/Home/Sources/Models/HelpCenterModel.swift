@@ -1,5 +1,6 @@
 import Foundation
 import hCore
+import hCoreUI
 import hGraphQL
 
 public struct HelpCenterModel: Codable, Equatable, Hashable {
@@ -48,5 +49,17 @@ public struct Question: Codable, Equatable, Hashable {
         self.answer = answer
         self.topicType = topicType
         self.relatedQuestions = relatedQuestions
+    }
+}
+
+extension Question: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        return .init(describing: HelpCenterQuestionView.self)
+    }
+}
+
+extension CommonTopic: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        return .init(describing: HelpCenterTopicView.self)
     }
 }

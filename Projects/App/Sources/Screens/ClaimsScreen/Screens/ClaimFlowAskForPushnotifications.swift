@@ -5,12 +5,12 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct AskForPushnotifications: View {
+struct AskForPushNotifications: View {
     let onActionExecuted: () -> Void
     let text: String
     let pushNotificationStatus: UNAuthorizationStatus
     let wrapWithForm: Bool
-
+    
     init(
         text: String,
         onActionExecuted: @escaping () -> Void,
@@ -22,7 +22,7 @@ struct AskForPushnotifications: View {
         self.onActionExecuted = onActionExecuted
         self.wrapWithForm = wrapWithForm
     }
-
+    
     var body: some View {
         if wrapWithForm {
             hForm {
@@ -32,7 +32,7 @@ struct AskForPushnotifications: View {
             mainContent
         }
     }
-
+    
     var mainContent: some View {
         hSection {
             VStack(spacing: 24) {
@@ -62,7 +62,7 @@ struct AskForPushnotifications: View {
                     hText(L10n.claimsActivateNotificationsCta, style: .body)
                 }
                 .fixedSize()
-
+                
                 Spacer()
                 hButton.LargeButton(type: .ghost) {
                     onActionExecuted()
@@ -84,8 +84,8 @@ struct AskForPushnotifications: View {
 
 struct AskForPushnotifications_Previews: PreviewProvider {
     static var previews: some View {
-        AskForPushnotifications(text: "TEXT") {
-
+        AskForPushNotifications(text: "TEXT") {
+            
         }
     }
 }

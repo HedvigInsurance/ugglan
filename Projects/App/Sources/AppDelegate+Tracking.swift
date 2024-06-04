@@ -100,8 +100,8 @@ public struct HedvigUIKitRUMViewsPredicate: UIKitRUMViewsPredicate {
         guard let viewName = viewController.getViewNameForRum else { return nil }
         var view = RUMView(name: viewName)
         view.path = viewName
-        print("VIEW NAME: \(viewName) ")
         return nil
+
         return view
     }
 
@@ -117,7 +117,13 @@ public struct HedvigUIKitRUMViewsPredicate: UIKitRUMViewsPredicate {
 extension UIViewController {
     fileprivate var getViewNameForRum: String? {
         let debugDescriptionName = self.debugDescription
-        return debugDescriptionName.getViewName()
+        if let valueToBeSent = debugDescriptionName.getViewName() {
+            print("VIEW NAME: --------------------------------------------------!")
+            print("VIEW NAME FROM : \(debugDescriptionName)")
+            print("VIEW NAME TO: \(valueToBeSent)")
+            return valueToBeSent
+        }
+        return nil
     }
 }
 
@@ -152,6 +158,7 @@ extension String {
             "CAMImagePickerCameraViewController",
             "CAMViewfinderViewController",
             "UIDocumentBrowserViewController",
+            "Navigation>",
         ]
 
         for element in array {
