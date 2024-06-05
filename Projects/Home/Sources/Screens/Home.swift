@@ -37,6 +37,9 @@ extension HomeView {
         store.send(.fetchQuickActions)
         store.send(.fetchChatNotifications)
         store.send(.fetchClaims)
+
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        contractStore.send(.fetch)
     }
 
     public var body: some View {

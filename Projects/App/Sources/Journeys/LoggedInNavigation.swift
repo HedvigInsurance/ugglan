@@ -355,6 +355,7 @@ struct HomeTab: View {
             style: .height
         ) {
             CrossSellingScreen()
+                .embededInNavigation(options: .navigationType(type: .large))
         }
         .detent(
             item: $homeNavigationVm.openChat,

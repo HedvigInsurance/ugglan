@@ -11,7 +11,7 @@ public struct CrossSellingScreen: View {
         hForm {
             CrossSellingStack(withHeader: false)
         }
-        .navigationTitle(L10n.InsuranceTab.CrossSells.title)
+        .configureTitle(L10n.InsuranceTab.CrossSells.title)
         .navigationBarTitleDisplayMode(.inline)
     }
 }
