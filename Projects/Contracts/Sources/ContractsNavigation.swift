@@ -28,6 +28,7 @@ public struct ContractsNavigation<Content: View>: View {
                 .routerDestination(for: Contract.self) { contract in
                     ContractDetail(id: contract.id)
                         .environmentObject(contractsNavigationVm)
+                        .configureTitle(contract.currentAgreement?.productVariant.displayName ?? "")
                 }
                 .routerDestination(for: ContractsRouterType.self) { type in
                     switch type {

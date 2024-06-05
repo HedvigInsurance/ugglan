@@ -302,7 +302,7 @@ struct ClaimDetailView_Previews: PreviewProvider {
 public class ClaimDetailViewModel: ObservableObject {
     @PresentableStore var store: ClaimsStore
     @Published var claim: ClaimModel
-    @Inject var claimService: hFetchClaimService
+    var claimService = hFetchClaimService()
     @Published var fetchFilesError: String?
     @Published var hasFiles = false
 

@@ -11,7 +11,7 @@ import hCoreUI
 import hGraphQL
 
 private class DirectDebitWebview: UIView {
-    @Inject var paymentService: hPaymentService
+    var paymentService = hPaymentService()
     @PresentableStore var paymentStore: PaymentStore
     private let resultSubject = PassthroughSubject<URL?, Never>()
     var cancellables = Set<AnyCancellable>()

@@ -6,6 +6,7 @@ import hCoreUI
 struct EmailPreferencesConfirmView: View {
     @ObservedObject var vm: MemberSubscriptionPreferenceViewModel
     @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
+
     @PresentableStore var store: ProfileStore
     var body: some View {
         GenericErrorView(
@@ -37,7 +38,6 @@ struct EmailPreferencesConfirmView: View {
         .hDisableScroll
         .hButtonIsLoading(vm.isLoading)
         .hUseNewDesign
-
     }
 }
 

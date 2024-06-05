@@ -30,7 +30,7 @@ struct ConnectPayment: ViewModifier {
 public class ConnectPaymentViewModel: ObservableObject {
     @Published var setupTypeNavigationModel: SetupTypeNavigationModel?
     public init() {}
-    private let paymentServcice: AdyenService = Dependencies.shared.resolve()
+    private let adyenClient: AdyenClient = Dependencies.shared.resolve()
 
     public func set(for setupType: SetupType?) {
         Task { @MainActor [weak self] in
@@ -38,7 +38,7 @@ public class ConnectPaymentViewModel: ObservableObject {
             switch featureFlags.paymentType {
             case .adyen:
                 do {
-                    let url = try await self?.paymentServcice.getAdyenUrl()
+                    let url = try await self?.adyenClient.getAdyenUrl()
                     NotificationCenter.default.post(name: .openDeepLink, object: url)
                 } catch {
                     //we are not so concerned about this

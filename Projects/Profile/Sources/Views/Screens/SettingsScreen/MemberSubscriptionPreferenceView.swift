@@ -6,6 +6,7 @@ import hCoreUI
 struct MemberSubscriptionPreferenceView: View {
     @ObservedObject var vm: MemberSubscriptionPreferenceViewModel
     @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
+
     @Inject var featureFlags: FeatureFlags
     @ViewBuilder
     var body: some View {
@@ -32,7 +33,6 @@ struct MemberSubscriptionPreferenceView: View {
             )
         }
     }
-
 }
 
 class MemberSubscriptionPreferenceViewModel: ObservableObject {
@@ -41,7 +41,7 @@ class MemberSubscriptionPreferenceViewModel: ObservableObject {
     @Published var isUnsubscribed = false
     private static let userDefaultsKey = "unsubscribedMembers"
     @Published var unsubscribedMembers = UserDefaults.standard.array(forKey: userDefaultsKey) as? [String]
-    @Inject var profileService: ProfileService
+    var profileService = ProfileService()
     var profileNavigationViewModel: ProfileNavigationViewModel?
     init() {}
 

@@ -470,7 +470,7 @@ public class CoInusuredInputViewModel: ObservableObject {
     @Published var actionType: CoInsuredAction
     let contractId: String
     let coInsuredModel: CoInsuredModel?
-    @Inject var editCoInsuredService: EditCoInsuredService
+    var editCoInsuredService = EditCoInsuredService()
 
     var showErrorView: Bool {
         SSNError != nil
@@ -581,7 +581,7 @@ public class IntentViewModel: ObservableObject {
     var fullName: String {
         return firstName + " " + lastName
     }
-    @Inject var editCoInsuredService: EditCoInsuredService
+    var editCoInsuredService = EditCoInsuredService()
 
     var showErrorViewForCoInsuredList: Bool {
         errorMessageForCoinsuredList != nil

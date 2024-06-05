@@ -12,8 +12,8 @@ public class ChatScreenViewModel: ObservableObject {
     @Published var scrollToMessage: Message?
     @Published var banner: Markdown?
     @Published var chatInputVm: ChatInputViewModel = .init()
-    @Inject private var fetchMessagesClient: FetchMessagesClient
-    @Inject private var sendMessageClient: SendMessageClient
+    private var fetchMessagesService = FetchMessagesService()
+    private var sendMessageService = SendMessagesService()
     private var addedMessagesIds: [String] = []
     private var nextUntil: String?
     private var hasNext: Bool?
@@ -87,7 +87,7 @@ public class ChatScreenViewModel: ObservableObject {
     @MainActor
     private func fetch(with next: String? = nil) async {
         do {
-            let chatData = try await fetchMessagesClient.get(next)
+            let chatData = try await fetchMessagesService.get(next)
             let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
             if !newMessages.isEmpty {
                 if next != nil {
@@ -156,7 +156,7 @@ public class ChatScreenViewModel: ObservableObject {
 
     private func sendToClient(message: Message) async {
         do {
-            let data = try await sendMessageClient.send(message: message, topic: topicType)
+            let data = try await sendMessageService.send(message: message, topic: topicType)
             if let remoteMessage = data.message {
                 await handleSuccessAdding(for: remoteMessage, to: message)
             }

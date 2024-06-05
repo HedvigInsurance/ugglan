@@ -165,16 +165,15 @@ struct SetTerminationDateLandingScreen: View {
                                         .fill(hBackgroundColor.clear)
                                         .frame(width: 24, height: 24)
                                         .overlay(
-                                            withAnimation(.easeInOut) {
-                                                RoundedRectangle(cornerRadius: 6)
-                                                    .strokeBorder(
-                                                        hColorScheme(
-                                                            light: hBorderColor.translucentTwo,
-                                                            dark: hGrayscaleTranslucent.greyScaleTranslucent300Light
-                                                        ),
-                                                        lineWidth: 2
-                                                    )
-                                            }
+                                            RoundedRectangle(cornerRadius: 6)
+                                                .strokeBorder(
+                                                    hColorScheme(
+                                                        light: hBorderColor.translucentTwo,
+                                                        dark: hGrayscaleTranslucent.greyScaleTranslucent300Light
+                                                    ),
+                                                    lineWidth: 2
+                                                )
+                                                .animation(.easeInOut)
                                         )
                                         .hUseLightMode
 

@@ -44,7 +44,7 @@ struct ResendOTPCode: View {
 }
 
 class ResendOTPCodeViewModel: ObservableObject {
-    @Inject private var service: AuthentificationService
+    private var authenticationService = AuthenticationService()
     @Published var canResendAtText: String = ""
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
@@ -68,7 +68,7 @@ class ResendOTPCodeViewModel: ObservableObject {
             otpState?.isResending = true
             do {
                 if let otpState {
-                    try await self?.service.resend(otp: otpState)
+                    try await self?.authenticationService.resend(otp: otpState)
                     otpState.code = ""
                     otpState.isLoading = false
                     otpState.codeErrorMessage = nil
