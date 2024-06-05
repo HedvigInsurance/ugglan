@@ -25,7 +25,7 @@ struct ConnectPayment: ViewModifier {
                     EmptyView()
                         .onAppear {
                             Task {
-                                let paymentServcice: AdyenService = Dependencies.shared.resolve()
+                                let paymentServcice: AdyenClient = Dependencies.shared.resolve()
                                 do {
                                     let url = try await paymentServcice.getAdyenUrl()
                                     router.push(PaymentsRouterAction.openUrl(url: url))

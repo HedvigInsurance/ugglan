@@ -117,7 +117,7 @@ class BandIDViewModel: ObservableObject {
     @Published var isLoading = true
     @Published var hasAlreadyOpenedBankId = false
     private var seBankIdState: SEBankIDState = .init()
-    @Inject var authentificationService: AuthentificationService
+    var authenticationService = AuthenticationService()
     private var cancellables = Set<AnyCancellable>()
     private var observeLoginTask: AnyCancellable?
     var router: Router?
@@ -129,7 +129,7 @@ class BandIDViewModel: ObservableObject {
         if seBankIdState.autoStartToken == nil {
             observeLoginTask = Task { @MainActor [weak self] in
                 do {
-                    try await self?.authentificationService
+                    try await self?.authenticationService
                         .startSeBankId { [weak self] newStatus in
                             DispatchQueue.main.async {
                                 switch newStatus {

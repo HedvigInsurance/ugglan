@@ -6,8 +6,8 @@ public class EditCoInsuredViewModel: ObservableObject {
     @Published public var editCoInsuredModelDetent: EditCoInsuredNavigationModel?
     @Published public var editCoInsuredModelFullScreen: EditCoInsuredNavigationModel?
     @Published public var editCoInsuredModelMissingAlert: InsuredPeopleConfig?
+    public var editCoInsuredSharedService = EditCoInsuredSharedService()
     public static var updatedCoInsuredForContractId = PassthroughSubject<String?, Never>()
-    @Inject public var editCoInsuredSharedService: EditCoInsuredSharedService
 
     public init() {}
 

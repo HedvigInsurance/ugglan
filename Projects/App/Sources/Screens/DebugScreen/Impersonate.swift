@@ -7,7 +7,8 @@ import hCore
 import hGraphQL
 
 struct Impersonate {
-    @Inject var authentificationService: AuthentificationService
+    var authenticationService = AuthenticationService()
+
     private func getAuthorizationCode(from url: URL) -> String? {
         guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
         guard let queryItems = urlComponents.queryItems else { return nil }
@@ -30,7 +31,7 @@ struct Impersonate {
     func impersonate(with url: URL) async {
         guard let authorizationCode = getAuthorizationCode(from: url) else { return }
         do {
-            try await authentificationService.exchange(code: authorizationCode)
+            try await authenticationService.exchange(code: authorizationCode)
             ApplicationState.preserveState(.impersonation)
         } catch let ex {
 

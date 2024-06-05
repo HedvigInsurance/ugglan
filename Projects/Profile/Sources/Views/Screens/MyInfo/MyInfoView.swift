@@ -121,7 +121,7 @@ public struct MyInfoView: View {
 }
 
 public class MyInfoViewModel: ObservableObject {
-    @Inject var profileService: ProfileService
+    var profileService = ProfileService()
     @PresentableStore var store: ProfileStore
     @Published var type: MyInfoViewEditType?
     @Published var phone: String = ""

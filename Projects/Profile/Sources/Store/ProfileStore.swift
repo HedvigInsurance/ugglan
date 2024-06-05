@@ -5,7 +5,7 @@ import Presentation
 import hCore
 
 public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, ProfileLoadingAction> {
-    @Inject var profileService: ProfileService
+    @Inject var profileService: ProfileClient
 
     public override func effects(
         _ getState: @escaping () -> ProfileState,

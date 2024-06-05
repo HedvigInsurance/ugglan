@@ -28,7 +28,7 @@ struct ChangeEuroBonusView_Previews: PreviewProvider {
 
 private class ChangeEurobonusViewModel: ObservableObject {
     let inputVm: TextInputViewModel
-    @Inject var profileService: ProfileService
+    var profileService = ProfileService()
     var router: Router?
 
     init() {

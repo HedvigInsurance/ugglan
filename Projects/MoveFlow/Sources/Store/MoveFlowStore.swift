@@ -5,7 +5,7 @@ import hCore
 import hCoreUI
 
 public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowAction, MoveFlowLoadingAction> {
-    @Inject var moveFlowService: MoveFlowService
+    @Inject var moveFlowService: MoveFlowClient
 
     var addressInputModel = AddressInputModel()
     var houseInformationInputModel = HouseInformationInputModel()
