@@ -6,7 +6,7 @@ import hCore
 import hGraphQL
 
 public class hClaimFileUploadService {
-    @Inject var service: hClaimFileUploadClient
+    @Inject var client: hClaimFileUploadClient
 
     public func upload(
         endPoint: String,
@@ -14,7 +14,7 @@ public class hClaimFileUploadService {
         withProgress: ((_ progress: Double) -> Void)?
     ) async throws -> [ClaimFileUploadResponse] {
         log.info("hClaimFileUploadService: upload", error: nil, attributes: nil)
-        return try await service.upload(endPoint: endPoint, files: files, withProgress: withProgress)
+        return try await client.upload(endPoint: endPoint, files: files, withProgress: withProgress)
     }
 }
 

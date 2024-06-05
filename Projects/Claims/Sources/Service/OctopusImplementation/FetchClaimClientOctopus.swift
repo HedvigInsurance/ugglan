@@ -3,16 +3,16 @@ import hCore
 import hGraphQL
 
 public class hFetchClaimService {
-    @Inject var service: hFetchClaimClient
+    @Inject var client: hFetchClaimClient
 
     public func get() async throws -> [ClaimModel] {
         log.info("hFetchClaimService: get", error: nil, attributes: nil)
-        return try await service.get()
+        return try await client.get()
     }
 
     public func getFiles() async throws -> [String: [File]] {
         log.info("hFetchClaimService: getFiles", error: nil, attributes: nil)
-        return try await service.getFiles()
+        return try await client.getFiles()
     }
 }
 

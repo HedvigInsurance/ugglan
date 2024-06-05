@@ -11,7 +11,7 @@ public class TravelInsuranceService {
     }
 
     public func submitForm(dto: TravenInsuranceFormDTO) async throws -> URL {
-        log.info("TravelInsuranceClient: submitForm", error: nil, attributes: nil)
+        log.info("TravelInsuranceClient: submitForm", error: nil, attributes: ["data": dto])
         return try await service.submitForm(dto: dto)
     }
 

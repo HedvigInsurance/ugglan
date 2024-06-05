@@ -3,11 +3,11 @@ import hCore
 import hGraphQL
 
 public class FetchMessagesService {
-    @Inject var service: FetchMessagesClient
+    @Inject var client: FetchMessagesClient
 
     public func get(_ next: String?) async throws -> ChatData {
         log.info("FetchMessagesService: get", error: nil, attributes: nil)
-        return try await service.get(next)
+        return try await client.get(next)
     }
 }
 

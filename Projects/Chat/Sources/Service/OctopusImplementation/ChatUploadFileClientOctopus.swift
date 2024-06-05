@@ -6,14 +6,14 @@ import hCore
 import hGraphQL
 
 public class ChatFileUploaderService {
-    @Inject var service: ChatFileUploaderClient
+    @Inject var client: ChatFileUploaderClient
 
     func upload(
         files: [File],
         withProgress: ((_ progress: Double) -> Void)?
     ) async throws -> [ChatUploadFileResponseModel] {
         log.info("ChatFileUploaderService: upload", error: nil, attributes: nil)
-        return try await service.upload(files: files, withProgress: withProgress)
+        return try await client.upload(files: files, withProgress: withProgress)
     }
 }
 

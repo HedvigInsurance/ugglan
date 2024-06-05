@@ -13,7 +13,7 @@ public class SendMessagesService {
 
 public class SendMessagesClientOctopus: SendMessageClient {
     @Inject var octopus: hOctopus
-    var chatFileUploaderClient = ChatFileUploaderService()
+    var chatFileUploaderService = ChatFileUploaderService()
 
     public init() {}
 
@@ -33,7 +33,7 @@ public class SendMessagesClientOctopus: SendMessageClient {
                 status: data.chatSendText.status?.message
             )
         case .file(let file):
-            let uploadResponse = try await chatFileUploaderClient.upload(files: [file]) { progress in
+            let uploadResponse = try await chatFileUploaderService.upload(files: [file]) { progress in
 
             }
             let token = uploadResponse.first?.uploadToken ?? ""

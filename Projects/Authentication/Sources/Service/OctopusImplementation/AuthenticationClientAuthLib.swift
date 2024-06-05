@@ -29,7 +29,7 @@ public class AuthenticationService {
         return try await client.startSeBankId(updateStatusTo: updateStatusTo)
     }
 
-    func logout() async throws {
+    public func logout() async throws {
         log.info("AuthenticationService: logout", error: nil, attributes: nil)
         try await client.logout()
     }
@@ -39,7 +39,7 @@ public class AuthenticationService {
         try await client.exchange(code: code)
     }
 
-    func exchange(refreshToken: String) async throws {
+    public func exchange(refreshToken: String) async throws {
         log.info("AuthenticationService: exchange refresh token", error: nil, attributes: nil)
         try await client.exchange(refreshToken: refreshToken)
     }

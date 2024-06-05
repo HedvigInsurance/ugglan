@@ -7,14 +7,14 @@ public protocol TravelInsuranceClient {
     func getList() async throws -> (list: [TravelCertificateModel], canAddTravelInsurance: Bool)
 }
 
-public struct TravenInsuranceFormDTO {
+public struct TravenInsuranceFormDTO: Encodable {
     let contractId: String
     let startDate: String
     let isMemberIncluded: Bool
     let coInsured: [CoInsuredDto]
     let email: String
 }
-public struct CoInsuredDto {
+public struct CoInsuredDto: Encodable {
     let fullName: String
     let personalNumber: String?
     let birthDate: String?

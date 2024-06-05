@@ -7,8 +7,8 @@ import hCore
 
 public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, SubmitClaimsAction, ClaimsLoadingType> {
     @Inject var fileUploaderClient: FileUploaderClient
-    @Inject var fetchEntrypointsService: hFetchEntrypointsClient
-    @Inject var submitClaimService: SubmitClaimClient
+    @Inject var fetchEntrypointsClient: hFetchEntrypointsClient
+    @Inject var submitClaimClient: SubmitClaimClient
     var progressCancellable: AnyCancellable?
     public override func effects(
         _ getState: @escaping () -> SubmitClaimsState,
@@ -20,22 +20,22 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             break
         case let .startClaimRequest(entrypointId, entrypointOptionId):
             await executeAsync(loadingType: .startClaim) {
-                try await self.submitClaimService.startClaim(
+                try await self.submitClaimClient.startClaim(
                     entrypointId: entrypointId,
                     entrypointOptionId: entrypointOptionId
                 )
             }
         case let .phoneNumberRequest(phoneNumberInput):
             await executeAsync(loadingType: .postPhoneNumber) {
-                try await self.submitClaimService.updateContact(phoneNumber: phoneNumberInput, context: newClaimContext)
+                try await self.submitClaimClient.updateContact(phoneNumber: phoneNumberInput, context: newClaimContext)
             }
         case .dateOfOccurrenceAndLocationRequest:
             await executeAsync(loadingType: .postDateOfOccurrenceAndLocation) {
-                try await self.submitClaimService.dateOfOccurrenceAndLocationRequest(context: newClaimContext)
+                try await self.submitClaimClient.dateOfOccurrenceAndLocationRequest(context: newClaimContext)
             }
         case let .submitAudioRecording(type):
             await executeAsync(loadingType: .postAudioRecording) {
-                try await self.submitClaimService.submitAudioRecording(
+                try await self.submitClaimClient.submitAudioRecording(
                     type: type,
                     fileUploaderClient: self.fileUploaderClient,
                     context: newClaimContext
@@ -43,23 +43,23 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             }
         case let .singleItemRequest(purchasePrice):
             await executeAsync(loadingType: .postSingleItem) {
-                try await self.submitClaimService.singleItemRequest(
+                try await self.submitClaimClient.singleItemRequest(
                     purchasePrice: purchasePrice,
                     context: newClaimContext
                 )
             }
         case .summaryRequest:
             await executeAsync(loadingType: .postSummary) {
-                try await self.submitClaimService.summaryRequest(context: newClaimContext)
+                try await self.submitClaimClient.summaryRequest(context: newClaimContext)
             }
         case .singleItemCheckoutRequest:
             await executeAsync(loadingType: .postSingleItemCheckout) {
-                try await self.submitClaimService.singleItemCheckoutRequest(context: newClaimContext)
+                try await self.submitClaimClient.singleItemCheckoutRequest(context: newClaimContext)
             }
 
         case let .contractSelectRequest(contractId):
             await executeAsync(loadingType: .postContractSelect) {
-                try await self.submitClaimService.contractSelectRequest(
+                try await self.submitClaimClient.contractSelectRequest(
                     contractId: contractId ?? "",
                     context: newClaimContext
                 )
@@ -67,21 +67,21 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
 
         case .fetchEntrypointGroups:
             do {
-                let data = try await self.fetchEntrypointsService.get()
+                let data = try await self.fetchEntrypointsClient.get()
                 send(.setClaimEntrypointGroupsForSelection(data))
             } catch {
                 setError(L10n.General.errorBody, for: .fetchClaimEntrypointGroups)
             }
         case let .emergencyConfirmRequest(isEmergency):
             await executeAsync(loadingType: .postConfirmEmergency) {
-                try await self.submitClaimService.emergencyConfirmRequest(
+                try await self.submitClaimClient.emergencyConfirmRequest(
                     isEmergency: isEmergency,
                     context: newClaimContext
                 )
             }
         case let .submitFileUpload(ids):
             await executeAsync(loadingType: .postUploadFiles) {
-                try await self.submitClaimService.submitFileUpload(ids: ids, context: newClaimContext)
+                try await self.submitClaimClient.submitFileUpload(ids: ids, context: newClaimContext)
             }
         default:
             break
