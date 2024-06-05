@@ -263,6 +263,7 @@ struct HomeTab: View {
             .routerDestination(for: ClaimModel.self) { claim in
                 ClaimDetailView(claim: claim)
                     .environmentObject(homeNavigationVm)
+                    .configureTitle(L10n.claimsYourClaim)
             }
         }
         .environmentObject(homeNavigationVm)
