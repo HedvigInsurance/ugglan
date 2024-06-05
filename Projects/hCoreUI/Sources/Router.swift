@@ -212,9 +212,12 @@ public struct ViewRouterOptions: OptionSet {
 }
 
 extension View {
-    public func embededInNavigation(options: RouterOptions = [], tracking: TrackingViewNameProtocol? = nil) -> some View
-    {
-        return modifier(EmbededInNavigation(options: options, tracking: tracking))
+    public func embededInNavigation(
+        router: Router? = nil,
+        options: RouterOptions = [],
+        tracking: TrackingViewNameProtocol? = nil
+    ) -> some View {
+        return modifier(EmbededInNavigation(options: options, tracking: tracking, router: router))
     }
 }
 
@@ -222,6 +225,14 @@ private struct EmbededInNavigation: ViewModifier {
     @StateObject var router = Router()
     let options: RouterOptions
     let tracking: TrackingViewNameProtocol?
+
+    init(options: RouterOptions, tracking: TrackingViewNameProtocol?, router: Router? = nil) {
+        if let router {
+            self._router = StateObject(wrappedValue: router)
+        }
+        self.options = options
+        self.tracking = tracking
+    }
     func body(content: Content) -> some View {
         return RouterHost(router: router, options: options, tracking: tracking) {
             content

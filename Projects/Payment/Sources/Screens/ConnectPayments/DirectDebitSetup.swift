@@ -248,8 +248,7 @@ struct DirectDebitSetupRepresentable: UIViewRepresentable {
 public struct DirectDebitSetup: View {
     @State var showCancelAlert: Bool = false
     @State var showErrorAlert: Bool = false
-    @EnvironmentObject var router: Router
-
+    @StateObject var router = Router()
     let setupType: SetupType
 
     public init(
@@ -289,7 +288,7 @@ public struct DirectDebitSetup: View {
                 dismissButton
             }
         }
-        .embededInNavigation(options: .navigationType(type: .large), tracking: self)
+        .embededInNavigation(router: router, options: .navigationType(type: .large), tracking: self)
 
     }
 
