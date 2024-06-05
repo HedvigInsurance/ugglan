@@ -29,6 +29,7 @@ public struct HelpCenterStartView: View {
                         if vm.searchInProgress {
                             VStack(spacing: 40) {
                                 displayQuickActions(from: vm.searchResultsQuickActions)
+
                                 if !vm.searchResultsQuestions.isEmpty {
                                     QuestionsItems(
                                         questions: vm.searchResultsQuestions,
@@ -156,9 +157,7 @@ public struct HelpCenterStartView: View {
                                 name: "help center quick action",
                                 attributes: ["action": quickAction.id]
                             )
-                            Task {
-                                vm.store.send(.goToQuickAction(quickAction))
-                            }
+                            onQuickAction(quickAction)
                         }
                     }
                     .withoutHorizontalPadding
@@ -196,37 +195,6 @@ public struct HelpCenterStartView: View {
             }
         }
     }
-}
-
-extension HelpCenterStartViewModel: UISearchResultsUpdating {
-    func updateSearchResults(for searchController: UISearchController) {
-        withAnimation {
-            searchInProgress = searchController.isActive
-            startSearch(for: searchController.searchBar.text ?? "")
-        }
-        updateColors()
-    }
-}
-
-extension HelpCenterStartViewModel: UISearchControllerDelegate {
-    func didPresentSearchController(_ searchController: UISearchController) {
-        updateColors()
-    }
-
-    func willPresentSearchController(_ searchController: UISearchController) {
-        updateColors()
-    }
-
-    func updateColors() {
-        let button = searchController.searchBar.subviews.first?.subviews.last?.subviews.last as? UIButton
-        let hColor = hTextColor.primary
-        let color = UIColor(
-            light: hColor.colorFor(.light, .base).color.uiColor(),
-            dark: hColor.colorFor(.dark, .base).color.uiColor()
-        )
-        button?.setTitleColor(color, for: .normal)
-    }
-
 }
 
 class HelpCenterStartViewModel: NSObject, ObservableObject {
@@ -308,6 +276,37 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
         }
         return results
     }
+}
+
+extension HelpCenterStartViewModel: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        withAnimation {
+            searchInProgress = searchController.isActive
+            startSearch(for: searchController.searchBar.text ?? "")
+        }
+        updateColors()
+    }
+}
+
+extension HelpCenterStartViewModel: UISearchControllerDelegate {
+    func didPresentSearchController(_ searchController: UISearchController) {
+        updateColors()
+    }
+
+    func willPresentSearchController(_ searchController: UISearchController) {
+        updateColors()
+    }
+
+    func updateColors() {
+        let button = searchController.searchBar.subviews.first?.subviews.last?.subviews.last as? UIButton
+        let hColor = hTextColor.primary
+        let color = UIColor(
+            light: hColor.colorFor(.light, .base).color.uiColor(),
+            dark: hColor.colorFor(.dark, .base).color.uiColor()
+        )
+        button?.setTitleColor(color, for: .normal)
+    }
+
 }
 
 #Preview{

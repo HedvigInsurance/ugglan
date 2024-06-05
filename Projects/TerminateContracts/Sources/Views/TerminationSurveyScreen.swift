@@ -7,6 +7,7 @@ struct TerminationSurveyScreen: View {
     @ObservedObject var vm: SurveyScreenViewModel
     @Namespace var animationNamespace
     @EnvironmentObject var terminationFlowNavigationViewModel: TerminationFlowNavigationViewModel
+
     @PresentableStore var store: TerminationContractStore
     var body: some View {
         hForm {}
