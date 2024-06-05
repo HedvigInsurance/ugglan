@@ -5,7 +5,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct AskForPushnotifications: View {
+struct AskForPushNotifications: View {
     let onActionExecuted: () -> Void
     let text: String
     let pushNotificationStatus: UNAuthorizationStatus
@@ -84,7 +84,7 @@ struct AskForPushnotifications: View {
 
 struct AskForPushnotifications_Previews: PreviewProvider {
     static var previews: some View {
-        AskForPushnotifications(text: "TEXT") {
+        AskForPushNotifications(text: "TEXT") {
 
         }
     }

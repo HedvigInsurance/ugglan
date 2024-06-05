@@ -16,29 +16,6 @@ class TerminationFlowNavigationViewModel: ObservableObject {
 
 }
 
-enum TerminationFlowActions: Hashable {
-    case router(action: TerminationFlowRouterActions)
-    case final(action: TerminationFlowFinalRouterActions)
-}
-
-enum TerminationFlowRouterActions: Hashable {
-    case selectInsurance(configs: [TerminationConfirmConfig])
-    case terminationDate(config: TerminationConfirmConfig)
-    case surveyStep(options: [TerminationFlowSurveyStepModelOption])
-}
-
-enum TerminationFlowFinalRouterActions: Hashable {
-    case success
-    case fail
-    case updateApp
-}
-
-public enum DismissTerminationAction {
-    case done
-    case chat
-    case openFeedback(url: URL)
-}
-
 struct TerminationFlowNavigation: View {
     @StateObject private var vm = TerminationFlowNavigationViewModel()
     let configs: [TerminationConfirmConfig]
@@ -56,10 +33,12 @@ struct TerminationFlowNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(router: vm.router) {
-            Group {
-                switch initialStep {
-                case let .router(action):
+        RouterHost(router: vm.router, tracking: initialStep) {
+            getView(for: initialStep)
+                .routerDestination(for: [TerminationFlowSurveyStepModelOption].self) { options in
+                    TerminationSurveyScreen(vm: .init(options: options))
+                }
+                .routerDestination(for: TerminationFlowRouterActions.self) { action in
                     switch action {
                     case let .terminationDate(config):
                         openSetTerminationDateLandingScreen(config: config, fromSelectInsurance: false)
@@ -68,7 +47,11 @@ struct TerminationFlowNavigation: View {
                     case let .selectInsurance(configs):
                         openSelectInsuranceScreen()
                     }
-                case let .final(action):
+                }
+                .routerDestination(
+                    for: TerminationFlowFinalRouterActions.self,
+                    options: .hidesBackButton
+                ) { action in
                     switch action {
                     case .success:
                         let store: TerminationContractStore = globalPresentableStoreContainer.get()
@@ -90,42 +73,6 @@ struct TerminationFlowNavigation: View {
                         openUpdateAppTerminationScreen()
                     }
                 }
-            }
-            .routerDestination(for: [TerminationFlowSurveyStepModelOption].self) { options in
-                TerminationSurveyScreen(vm: .init(options: options))
-            }
-            .routerDestination(for: TerminationFlowRouterActions.self) { action in
-                switch action {
-                case let .terminationDate(config):
-                    openSetTerminationDateLandingScreen(config: config, fromSelectInsurance: false)
-                case let .surveyStep(options):
-                    openSurveyScreen(options: options)
-                case let .selectInsurance(configs):
-                    openSelectInsuranceScreen()
-                }
-            }
-            .routerDestination(
-                for: TerminationFlowFinalRouterActions.self,
-                options: .hidesBackButton
-            ) { action in
-                switch action {
-                case .success:
-                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                    let terminationDate =
-                        store.state.successStep?.terminationDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-                    openTerminationSuccessScreen(isDeletion: store.state.isDeletion, terminationDate: terminationDate)
-                        .onAppear {
-                            vm.isProcessingPresented = false
-                        }
-                case .fail:
-                    openTerminationFailScreen()
-                        .onAppear {
-                            vm.isProcessingPresented = false
-                        }
-                case .updateApp:
-                    openUpdateAppTerminationScreen()
-                }
-            }
         }
         .environmentObject(vm)
         .onAppear { [weak vm] in
@@ -167,6 +114,42 @@ struct TerminationFlowNavigation: View {
         }
         .fullScreenCover(isPresented: $vm.isProcessingPresented) {
             openProgressScreen()
+        }
+    }
+
+    @ViewBuilder
+    private func getView(for action: TerminationFlowActions) -> some View {
+        switch action {
+        case let .router(action):
+            switch action {
+            case let .terminationDate(config):
+                openSetTerminationDateLandingScreen(config: config, fromSelectInsurance: false)
+            case let .surveyStep(options):
+                openSurveyScreen(options: options)
+            case let .selectInsurance(configs):
+                openSelectInsuranceScreen()
+            }
+        case let .final(action):
+            switch action {
+            case .success:
+                let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                let terminationDate =
+                    store.state.successStep?.terminationDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                openTerminationSuccessScreen(
+                    isDeletion: store.state.isDeletion,
+                    terminationDate: terminationDate
+                )
+                .onAppear {
+                    vm.isProcessingPresented = false
+                }
+            case .fail:
+                openTerminationFailScreen()
+                    .onAppear {
+                        vm.isProcessingPresented = false
+                    }
+            case .updateApp:
+                openUpdateAppTerminationScreen()
+            }
         }
     }
 
@@ -433,4 +416,63 @@ public class TerminateInsuranceViewModel: ObservableObject {
 struct TerminationFlowActionWrapper: Identifiable, Equatable {
     var id = UUID().uuidString
     let action: TerminationFlowActions
+}
+
+enum TerminationFlowActions: Hashable {
+    case router(action: TerminationFlowRouterActions)
+    case final(action: TerminationFlowFinalRouterActions)
+}
+extension TerminationFlowActions: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .router(let action):
+            return action.nameForTracking
+        case .final(let action):
+            return action.nameForTracking
+        }
+    }
+}
+
+enum TerminationFlowRouterActions: Hashable {
+    case selectInsurance(configs: [TerminationConfirmConfig])
+    case terminationDate(config: TerminationConfirmConfig)
+    case surveyStep(options: [TerminationFlowSurveyStepModelOption])
+}
+
+extension TerminationFlowRouterActions: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .selectInsurance:
+            return "Select Insurance"
+        case .terminationDate:
+            return .init(describing: SetTerminationDateLandingScreen.self)
+        case .surveyStep:
+            return .init(describing: TerminationSurveyScreen.self)
+        }
+    }
+}
+
+enum TerminationFlowFinalRouterActions: Hashable {
+    case success
+    case fail
+    case updateApp
+}
+
+extension TerminationFlowFinalRouterActions: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .success:
+            return .init(describing: SetTerminationDateLandingScreen.self)
+        case .fail:
+            return "Termination Fail Screen"
+        case .updateApp:
+            return .init(describing: UpdateAppScreen.self)
+        }
+    }
+}
+
+public enum DismissTerminationAction {
+    case done
+    case chat
+    case openFeedback(url: URL)
 }

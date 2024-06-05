@@ -83,9 +83,33 @@ public enum PaymentsRouterAction: Hashable {
     case openUrl(url: URL)
 }
 
+extension PaymentsRouterAction: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        switch self {
+        case .discounts:
+            return .init(describing: PaymentsDiscountsRootView.self)
+        case .history:
+            return .init(describing: PaymentHistoryView.self)
+        case .openUrl(let url):
+            return ""
+        }
+    }
+}
+
 public enum PaymentsRedirectType: Hashable {
     case forever
     case openUrl(url: URL)
+}
+
+extension PaymentsRedirectType: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        switch self {
+        case .forever:
+            return "Forever"
+        case .openUrl(let url):
+            return ""
+        }
+    }
 }
 
 #Preview{

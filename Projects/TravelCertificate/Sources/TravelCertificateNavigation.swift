@@ -25,10 +25,35 @@ struct TravelInsuranceSpecificationNavigationModel: Hashable, Identifiable {
 enum TravelCertificateRouterActions: Hashable {
     case whoIsTravelling(specifiction: TravelInsuranceContractSpecification)
     case startDate(specification: TravelInsuranceContractSpecification)
+    case list(specifications: [TravelInsuranceContractSpecification])
+}
+
+extension TravelCertificateRouterActions: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .whoIsTravelling:
+            return .init(describing: WhoIsTravelingScreen.self)
+        case .startDate:
+            return .init(describing: StartDateScreen.self)
+        case .list:
+            return .init(describing: ContractsScreen.self)
+        }
+    }
+
 }
 
 enum TravelCertificateRouterActionsWithoutBackButton: Hashable {
     case processingScreen
+}
+
+extension TravelCertificateRouterActionsWithoutBackButton: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .processingScreen:
+            return .init(describing: TravelCertificateProcessingScreen.self)
+        }
+    }
+
 }
 
 public enum ListToolBarPlacement {
@@ -69,7 +94,7 @@ public struct TravelCertificateNavigation: View {
     public var body: some View {
         Group {
             if useOwnNavigation {
-                RouterHost(router: router) {
+                RouterHost(router: router, tracking: TravelCertificateRouterActions.list(specifications: [])) {
                     getListScreen
                 }
             } else {
@@ -96,6 +121,8 @@ public struct TravelCertificateNavigation: View {
                         showWhoIsTravelingScreen(specification: specification)
                     case let .startDate(specification):
                         showStartDateScreen(specification: specification)
+                    case let .list(specifications):
+                        showContractsList(for: specifications)
                     }
                 }
                 .routerDestination(
@@ -107,7 +134,13 @@ public struct TravelCertificateNavigation: View {
                         openProcessingScreen()
                     }
                 }
-                .embededInNavigation()
+                .embededInNavigation(
+                    tracking: specificationModel.specification.count > 1
+                        ? TravelCertificateRouterActions.list(specifications: specificationModel.specification)
+                        : TravelCertificateRouterActions.startDate(
+                            specification: specificationModel.specification.first!
+                        )
+                )
         }
     }
 

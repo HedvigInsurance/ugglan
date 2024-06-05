@@ -592,3 +592,10 @@ extension Sequence where Iterator.Element == Contract {
         return show
     }
 }
+
+extension Contract: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        return .init(describing: ContractDetail.self)
+    }
+
+}

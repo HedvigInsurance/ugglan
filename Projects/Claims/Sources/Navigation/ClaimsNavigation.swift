@@ -23,10 +23,46 @@ enum ClaimsRouterActions: Hashable {
     case audioRecording
     case singleItem
     case summary
-    case deflect
+    case deflect(type: FlowClaimDeflectStepType)
     case emergencySelect
     case uploadFiles
     case checkOutNoRepair
+}
+
+extension ClaimsRouterActions: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .triagingEntrypoint:
+            return .init(describing: SelectClaimEntrypointType.self)
+        case .triagingOption:
+            return .init(describing: SelectClaimEntrypointOption.self)
+        case .dateOfOccurrancePlusLocation(let option):
+            return .init(describing: SubmitClaimOccurrencePlusLocationScreen.self)
+        case .selectContract:
+            return .init(describing: SelectContractScreen.self)
+        case .phoneNumber(let model):
+            return .init(describing: SubmitClaimContactScreen.self)
+        case .audioRecording:
+            return .init(describing: SubmitClaimAudioRecordingScreen.self)
+        case .singleItem:
+            return .init(describing: SubmitClaimSingleItem.self)
+        case .summary:
+            return .init(describing: SubmitClaimSummaryScreen.self)
+        case let .deflect(type):
+            if type == .FlowClaimDeflectEirStep {
+                return .init(describing: SubmitClaimCarScreen.self)
+            } else {
+                return .init(describing: SubmitClaimDeflectScreen.self)
+            }
+        case .emergencySelect:
+            return .init(describing: SumitClaimEmergencySelectScreen.self)
+        case .uploadFiles:
+            return .init(describing: SubmitClaimFilesUploadScreen.self)
+        case .checkOutNoRepair:
+            return .init(describing: SubmitClaimCheckoutScreen.self)
+        }
+    }
+
 }
 
 public enum ClaimsRouterActionsWithoutBackButton {
@@ -34,6 +70,21 @@ public enum ClaimsRouterActionsWithoutBackButton {
     case failure
     case updateApp
     case askForPushNotifications
+}
+
+extension ClaimsRouterActionsWithoutBackButton: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        switch self {
+        case .success:
+            return .init(describing: SubmitClaimSuccessScreen.self)
+        case .failure:
+            return "FailureScreen"
+        case .updateApp:
+            return .init(describing: UpdateAppScreen.self)
+        case .askForPushNotifications:
+            return "AskForPushNotifications"
+        }
+    }
 }
 
 public struct ClaimsNavigation: View {
@@ -119,8 +170,8 @@ public struct ClaimsNavigation: View {
                         router.push(ClaimsRouterActions.singleItem)
                     case .openSummaryScreen:
                         router.push(ClaimsRouterActions.summary)
-                    case .openDeflectScreen:
-                        router.push(ClaimsRouterActions.deflect)
+                    case let .openDeflectScreen(type):
+                        router.push(ClaimsRouterActions.deflect(type: type))
                     case .openConfirmEmergencyScreen:
                         router.push(ClaimsRouterActions.emergencySelect)
                     case .openFileUploadScreen:

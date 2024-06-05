@@ -248,8 +248,7 @@ struct DirectDebitSetupRepresentable: UIViewRepresentable {
 public struct DirectDebitSetup: View {
     @State var showCancelAlert: Bool = false
     @State var showErrorAlert: Bool = false
-    @EnvironmentObject var router: Router
-
+    @StateObject var router = Router()
     let setupType: SetupType
 
     public init(
@@ -289,6 +288,8 @@ public struct DirectDebitSetup: View {
                 dismissButton
             }
         }
+        .embededInNavigation(router: router, options: .navigationType(type: .large), tracking: self)
+
     }
 
     private var dismissButton: some View {
@@ -326,4 +327,11 @@ public enum SetupType: Equatable {
     case initial
     case preOnboarding(monthlyNetCost: MonetaryAmount?)
     case replacement, postOnboarding
+}
+
+extension DirectDebitSetup: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        return .init(describing: DirectDebitSetup.self)
+    }
+
 }

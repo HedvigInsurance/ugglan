@@ -185,7 +185,7 @@ public struct PaymentsView: View {
                             InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
                         }
                         hButton.LargeButton(type: .secondary) {
-                            paymentNavigationVm.connectPaymentVm.connectPaymentModel = .init(setUpType: nil)
+                            paymentNavigationVm.connectPaymentVm.set(for: nil)
                         } content: {
                             hText(statusData.connectButtonTitle)
                         }

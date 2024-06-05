@@ -15,9 +15,31 @@ enum MovingFlowRouterWithHiddenBackButtonActions {
     case processing
 }
 
+extension MovingFlowRouterWithHiddenBackButtonActions: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .processing:
+            return .init(describing: MovingFlowProcessingView.self)
+        }
+    }
+
+}
+
 enum MovingFlowRouterActions {
     case confirm
     case houseFill
+}
+
+extension MovingFlowRouterActions: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .confirm:
+            return .init(describing: MovingFlowConfirm.self)
+        case .houseFill:
+            return .init(describing: MovingFlowHouseView.self)
+        }
+    }
+
 }
 
 struct ExtraBuildingTypeNavigationModel: Identifiable, Equatable {
@@ -82,7 +104,6 @@ public struct MovingFlowNavigation: View {
             style: .large
         ) { document in
             PDFPreview(document: .init(url: document.url, title: document.title))
-                .embededInNavigation(options: .navigationType(type: .large))
         }
     }
 

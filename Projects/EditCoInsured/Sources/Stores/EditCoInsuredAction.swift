@@ -1,5 +1,6 @@
 import EditCoInsuredShared
 import Presentation
+import hCoreUI
 
 public enum EditCoInsuredAction: ActionProtocol, Hashable {
     case openEditCoInsured(config: InsuredPeopleConfig, fromInfoCard: Bool)
@@ -21,4 +22,10 @@ public enum CoInsuredAction: Codable, Identifiable {
     case delete
     case edit
     case add
+}
+
+extension CoInsuredAction: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        return .init(describing: SuccessScreen.self)
+    }
 }

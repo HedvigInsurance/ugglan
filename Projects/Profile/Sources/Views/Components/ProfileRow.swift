@@ -37,13 +37,13 @@ struct ProfileRow: View {
     func action() {
         switch row {
         case .myInfo:
-            router.push(ProfileRedirectType.myInfo)
+            router.push(ProfileRouterType.myInfo)
         case .appInfo:
-            router.push(ProfileRedirectType.appInfo)
+            router.push(ProfileRouterType.appInfo)
         case .settings:
-            router.push(ProfileRedirectType.settings)
+            router.push(ProfileRouterType.settings)
         case .eurobonus:
-            router.push(ProfileRedirectType.euroBonus)
+            router.push(ProfileRouterType.euroBonus)
         case .travelCertificate:
             router.push(ProfileRedirectType.travelCertificate)
         }

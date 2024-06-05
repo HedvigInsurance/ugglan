@@ -124,3 +124,17 @@ public enum HousingType: String, CaseIterable, Codable, Equatable, Hashable {
         }
     }
 }
+
+extension HousingType: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        switch self {
+        case .apartment:
+            return .init(describing: MovingFlowAddressView.self)
+        case .rental:
+            return .init(describing: MovingFlowAddressView.self)
+        case .house:
+            return .init(describing: MovingFlowAddressView.self)
+        }
+    }
+
+}

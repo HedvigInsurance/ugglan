@@ -27,11 +27,17 @@ private struct RouterDestinationModifier<D, C>: ViewModifier where D: Hashable, 
             .onAppear { [weak router] in
                 router?.builders["\(D.self)"] = .init(
                     builder: { item in
-                        AnyView(destination(item as! D))
+                        let view = destination(item as! D)
+                        print("DESTINATION IS \(view.self)")
+                        return AnyView(view)
                     },
                     contentName: "\(C.self)",
                     options: options
                 )
+                router?.builders2["\(D.self)"] = { item in
+                    let view = destination(item as! D)
+                    return view
+                }
             }
     }
 }

@@ -87,7 +87,6 @@ public class ContractsNavigationViewModel: ObservableObject {
     let terminateInsuranceVm = TerminateInsuranceViewModel()
     @Published public var insurableLimit: InsurableLimits?
     @Published public var document: Document?
-    @Published public var terminationContract: Contract?
     @Published public var editCoInsuredConfig: InsuredPeopleConfig?
     @Published public var editCoInsuredMissingAlert: InsuredPeopleConfig?
     @Published public var changeYourInformationContract: Contract?
@@ -111,6 +110,16 @@ public enum RedirectAction {
 
 enum ContractsRouterType {
     case terminatedContracts
+}
+
+extension ContractsRouterType: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .terminatedContracts:
+            return "Terminated Contracts"
+        }
+    }
+
 }
 
 extension TerminationConfirmConfig {

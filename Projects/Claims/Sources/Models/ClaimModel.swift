@@ -1,6 +1,7 @@
 import Contracts
 import Foundation
 import hCore
+import hCoreUI
 import hGraphQL
 
 public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
@@ -131,4 +132,11 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
             }
         }
     }
+}
+
+extension ClaimModel: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        return .init(describing: ClaimDetailView.self)
+    }
+
 }

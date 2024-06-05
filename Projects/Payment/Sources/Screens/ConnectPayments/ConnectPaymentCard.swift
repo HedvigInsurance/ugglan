@@ -54,7 +54,7 @@ public struct ConnectPaymentCardView: View {
                     .init(
                         buttonTitle: L10n.PayInExplainer.buttonText,
                         buttonAction: {
-                            connectPaymentVm.connectPaymentModel = .init(setUpType: .initial)
+                            connectPaymentVm.set(for: .initial)
                         }
                     )
                 ]
