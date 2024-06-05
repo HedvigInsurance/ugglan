@@ -41,7 +41,7 @@ class MemberSubscriptionPreferenceViewModel: ObservableObject {
     @Published var isUnsubscribed = false
     private static let userDefaultsKey = "unsubscribedMembers"
     @Published var unsubscribedMembers = UserDefaults.standard.array(forKey: userDefaultsKey) as? [String]
-    @Inject var profileService: ProfileService
+    var profileService = ProfileService()
     var profileNavigationViewModel: ProfileNavigationViewModel?
     init() {}
 

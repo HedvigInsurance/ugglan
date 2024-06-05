@@ -31,7 +31,7 @@ class AddCampaingCodeViewModel: ObservableObject {
     @Published var hideTitle: Bool = false
     var router: Router?
 
-    @Inject var campaignsService: hCampaignsService
+    var campaignsService = hCampaignService()
     @PresentableStore var store: PaymentStore
     init() {
         inputVm = TextInputViewModel(
@@ -73,7 +73,7 @@ class AddCampaingCodeViewModel: ObservableObject {
 
 struct AddCampaingCodeView_Previews: PreviewProvider {
     static var previews: some View {
-        Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsServiceDemo() })
+        Dependencies.shared.add(module: Module { () -> hCampaignClient in hCampaignClientDemo() })
         return AddCampaingCodeView()
     }
 }

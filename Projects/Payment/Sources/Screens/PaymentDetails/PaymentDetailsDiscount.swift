@@ -94,7 +94,7 @@ class PaymentDetailsDiscountViewModel: ObservableObject {
     let options: PaymentDetailsDiscountOptions
     let discount: Discount
     @PresentableStore private var store: PaymentStore
-    @Inject private var campaignsService: hCampaignsService
+    private var campaignService = hCampaignService()
 
     init(options: PaymentDetailsDiscountOptions, discount: Discount) {
         self.options = options
@@ -120,7 +120,7 @@ class PaymentDetailsDiscountViewModel: ObservableObject {
 
 struct PaymentDetailsDiscount_Previews: PreviewProvider {
     static var previews: some View {
-        Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsServiceDemo() })
+        Dependencies.shared.add(module: Module { () -> hCampaignClient in hCampaignClientDemo() })
         let discount: Discount = .init(
             id: "1",
             code: "231223",

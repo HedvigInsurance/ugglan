@@ -6,7 +6,7 @@ import hGraphQL
 
 public struct DeleteRequestLoadingView: View {
     @PresentableStore var store: ProfileStore
-    @Inject var profileService: ProfileService
+    var profileService = ProfileService()
 
     private var dismissAction: (ProfileNavigationDismissAction) -> Void
 

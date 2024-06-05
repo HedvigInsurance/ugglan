@@ -76,7 +76,7 @@ struct DeleteCampaignView: View {
 
 class DeleteCampaignViewModel: ObservableObject {
     let discount: Discount
-    @Inject private var campaignsService: hCampaignsService
+    private var campaignService = hCampaignService()
     @PresentableStore private var store: PaymentStore
     @Published var codeRemoved = false
     @Published var isLoading = false
@@ -101,7 +101,7 @@ class DeleteCampaignViewModel: ObservableObject {
 
         do {
             error = nil
-            try await campaignsService.remove(codeId: discount.id)
+            try await campaignService.remove(codeId: discount.id)
             store.send(.load)
             store.send(.fetchDiscountsData)
             withAnimation {

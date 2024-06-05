@@ -81,7 +81,7 @@ public enum HomeLoadingType: LoadingProtocol {
 }
 
 public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadingType> {
-    @Inject var homeService: HomeService
+    @Inject var homeService: HomeClient
 
     public override func effects(
         _ getState: @escaping () -> HomeState,
