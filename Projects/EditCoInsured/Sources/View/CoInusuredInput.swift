@@ -590,8 +590,11 @@ public class IntentViewModel: ObservableObject {
         errorMessageForInput != nil
     }
 
+    var contractId: String?
+
     @MainActor
     func getIntent(contractId: String, origin: GetIntentOrigin, coInsured: [CoInsuredModel]) async {
+        self.contractId = contractId
         withAnimation {
             self.isLoading = true
             self.errorMessageForInput = nil

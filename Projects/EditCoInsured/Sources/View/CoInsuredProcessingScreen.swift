@@ -1,3 +1,4 @@
+import EditCoInsuredShared
 import Presentation
 import SwiftUI
 import hCore
@@ -9,17 +10,14 @@ struct CoInsuredProcessingScreen: View {
     var showSuccessScreen: Bool
     @PresentableStore var store: EditCoInsuredStore
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+    @EnvironmentObject private var editCoInsuredViewModel: EditCoInsuredViewModel
     @StateObject var router = Router()
-    private var checkForMissingAlert: () -> Void
-
     init(
-        showSuccessScreen: Bool,
-        checkForMissingAlert: @escaping () -> Void
+        showSuccessScreen: Bool
     ) {
         self.showSuccessScreen = showSuccessScreen
         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         intentVm = store.intentViewModel
-        self.checkForMissingAlert = checkForMissingAlert
     }
 
     var body: some View {
@@ -34,7 +32,12 @@ struct CoInsuredProcessingScreen: View {
                     intentVm.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                 ),
                 onAppearLoadingView: {
-                    missingContractAlert()
+                    editCoInsuredNavigation.showProgressScreenWithSuccess = false
+                    editCoInsuredNavigation.showProgressScreenWithoutSuccess = false
+                    editCoInsuredNavigation.editCoInsuredConfig = nil
+                    editCoInsuredViewModel.checkForAlert()
+                    EditCoInsuredViewModel.updatedCoInsuredForContractId.send(intentVm.contractId)
+
                 },
                 onErrorCancelAction: {
                     router.dismiss()
@@ -52,16 +55,13 @@ struct CoInsuredProcessingScreen: View {
                 editCoInsuredNavigation.showProgressScreenWithSuccess = false
                 editCoInsuredNavigation.showProgressScreenWithoutSuccess = false
                 editCoInsuredNavigation.editCoInsuredConfig = nil
-                missingContractAlert()
+                editCoInsuredViewModel.checkForAlert()
+                EditCoInsuredViewModel.updatedCoInsuredForContractId.send(intentVm.contractId)
             } content: {
                 hText(L10n.generalDoneButton)
             }
         }
         .sectionContainerStyle(.transparent)
-    }
-
-    private func missingContractAlert() {
-        checkForMissingAlert()
     }
 }
 
@@ -72,7 +72,7 @@ class ProcessingViewModel: ObservableObject {
 
 struct SuccessScreen_Previews: PreviewProvider {
     static var previews: some View {
-        CoInsuredProcessingScreen(showSuccessScreen: true, checkForMissingAlert: {})
+        CoInsuredProcessingScreen(showSuccessScreen: true)
             .onAppear {
                 let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
                 store.setLoading(for: .postCoInsured)

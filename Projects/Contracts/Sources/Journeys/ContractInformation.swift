@@ -59,10 +59,12 @@ struct ContractInformationView: View {
                                         if onlyCoInsured(contract)
                                             && Dependencies.featureFlags().isEditCoInsuredEnabled
                                         {
-                                            contractsNavigationVm.editCoInsuredConfig = .init(
+                                            let contract: InsuredPeopleConfig = .init(
                                                 contract: contract,
                                                 fromInfoCard: false
                                             )
+
+                                            contractsNavigationVm.editCoInsuredVm.start(fromContract: contract)
                                         } else {
                                             contractsNavigationVm.changeYourInformationContract = contract
                                         }
@@ -200,7 +202,11 @@ struct ContractInformationView: View {
         )
         .onTapGesture {
             if contract.showEditCoInsuredInfo && coInsured.terminatesOn == nil {
-                contractsNavigationVm.editCoInsuredConfig = .init(contract: contract, fromInfoCard: false)
+                let contract: InsuredPeopleConfig = .init(
+                    contract: contract,
+                    fromInfoCard: false
+                )
+                contractsNavigationVm.editCoInsuredVm.start(fromContract: contract)
             }
         }
     }
@@ -364,7 +370,7 @@ public struct CoInsuredInfoView: View {
                 .init(
                     buttonTitle: L10n.contractCoinsuredMissingAddInfo,
                     buttonAction: {
-                        contractsNavigationVm.editCoInsuredConfig = config
+                        contractsNavigationVm.editCoInsuredVm.start(fromContract: config)
                     }
                 )
             ])

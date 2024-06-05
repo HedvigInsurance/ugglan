@@ -1,5 +1,7 @@
+import Foundation
+
 public struct InsuredPeopleConfig: Codable & Equatable & Hashable, Identifiable {
-    public var id: String?
+    public var id: String
     public var contractCoInsured: [CoInsuredModel]
     public var contractId: String
     public var activeFrom: String?
@@ -29,11 +31,12 @@ public struct InsuredPeopleConfig: Codable & Equatable & Hashable, Identifiable 
         self.holderSSN = nil
         self.preSelectedCoInsuredList = []
         self.contractDisplayName = ""
-
         self.fromInfoCard = false
+        self.id = UUID().uuidString
     }
 
     public init(
+        id: String,
         contractCoInsured: [CoInsuredModel],
         contractId: String,
         activeFrom: String?,
@@ -45,9 +48,9 @@ public struct InsuredPeopleConfig: Codable & Equatable & Hashable, Identifiable 
         holderFirstName: String,
         holderLastName: String,
         holderSSN: String?,
-
         fromInfoCard: Bool
     ) {
+        self.id = id
         self.contractCoInsured = contractCoInsured
         self.contractId = contractId
         self.activeFrom = activeFrom

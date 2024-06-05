@@ -63,16 +63,14 @@ public struct EditCoInsuredNavigation: View {
     @State var openSpecificScreen: EditCoInsuredScreenType
     @StateObject private var editCoInsuredNavigationVm = EditCoInsuredNavigationViewModel()
     @StateObject var router = Router()
-    var checkForAlert: () -> Void
+    @EnvironmentObject var editCoInsuredViewModel: EditCoInsuredViewModel
 
     public init(
         config: InsuredPeopleConfig,
-        openSpecificScreen: EditCoInsuredScreenType? = EditCoInsuredScreenType.none,
-        checkForAlert: @escaping () -> Void
+        openSpecificScreen: EditCoInsuredScreenType? = EditCoInsuredScreenType.none
     ) {
         self.config = config
         self.openSpecificScreen = openSpecificScreen ?? .none
-        self.checkForAlert = checkForAlert
 
         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         store.coInsuredViewModel.initializeCoInsured(with: config)
@@ -102,11 +100,9 @@ public struct EditCoInsuredNavigation: View {
         }
         .fullScreenCover(item: $editCoInsuredNavigationVm.editCoInsuredConfig) { config in
             EditCoInsuredNavigation(
-                config: config,
-                checkForAlert: {
-                    checkForAlert()
-                }
+                config: config
             )
+            .environmentObject(editCoInsuredViewModel)
         }
         .detent(
             item: $editCoInsuredNavigationVm.coInsuredInputModel,
@@ -124,11 +120,9 @@ public struct EditCoInsuredNavigation: View {
         }
         .modally(presented: $editCoInsuredNavigationVm.showProgressScreenWithSuccess) {
             openProgress(showSuccess: true)
-                .environmentObject(editCoInsuredNavigationVm)
         }
         .modally(presented: $editCoInsuredNavigationVm.showProgressScreenWithoutSuccess) {
             openProgress(showSuccess: false)
-                .environmentObject(editCoInsuredNavigationVm)
         }
         .modally(item: $editCoInsuredNavigationVm.isEditCoinsuredSelectPresented) { editConfig in
             let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
@@ -182,11 +176,10 @@ public struct EditCoInsuredNavigation: View {
 
     func openProgress(showSuccess: Bool) -> some View {
         CoInsuredProcessingScreen(
-            showSuccessScreen: showSuccess,
-            checkForMissingAlert: {
-                checkForAlert()
-            }
+            showSuccessScreen: showSuccess
         )
+        .environmentObject(editCoInsuredNavigationVm)
+        .environmentObject(editCoInsuredViewModel)
     }
 
     func openSuccessScreen(title: String) -> some View {
@@ -235,14 +228,12 @@ public struct EditCoInsuredSelectInsuranceNavigation: View {
     @StateObject var router = Router()
     @StateObject private var editCoInsuredSelectInsuranceNavigationVm =
         EditCoInsuredSelectInsuranceNavigationViewModel()
-    private var checkForAlert: () -> Void
+    @EnvironmentObject var editCoInsuredViewModel: EditCoInsuredViewModel
 
     public init(
-        configs: [InsuredPeopleConfig],
-        checkForAlert: @escaping () -> Void
+        configs: [InsuredPeopleConfig]
     ) {
         self.configs = configs
-        self.checkForAlert = checkForAlert
     }
 
     public var body: some View {
@@ -253,7 +244,8 @@ public struct EditCoInsuredSelectInsuranceNavigation: View {
             item: $editCoInsuredSelectInsuranceNavigationVm.editCoInsuredConfig,
             options: .constant(.replaceCurrent),
             content: { config in
-                EditCoInsuredNavigation(config: config, checkForAlert: checkForAlert)
+                EditCoInsuredNavigation(config: config)
+                    .environmentObject(editCoInsuredViewModel)
             }
         )
     }
@@ -298,14 +290,12 @@ public struct EditCoInsuredAlertNavigation: View {
     let config: InsuredPeopleConfig
     @StateObject var router = Router()
     @StateObject private var editCoInsuredAlertNavigationVm = EditCoInsuredAlertNavigationViewModel()
-    private var checkForAlert: () -> Void
+    @EnvironmentObject private var editCoInsuredViewModel: EditCoInsuredViewModel
 
     public init(
-        config: InsuredPeopleConfig,
-        checkForAlert: @escaping () -> Void
+        config: InsuredPeopleConfig
     ) {
         self.config = config
-        self.checkForAlert = checkForAlert
     }
 
     public var body: some View {
@@ -318,11 +308,9 @@ public struct EditCoInsuredAlertNavigation: View {
         ) { config in
             EditCoInsuredNavigation(
                 config: config,
-                openSpecificScreen: .newInsurance,
-                checkForAlert: {
-                    checkForAlert()
-                }
+                openSpecificScreen: .newInsurance
             )
+            .environmentObject(editCoInsuredViewModel)
         }
     }
 

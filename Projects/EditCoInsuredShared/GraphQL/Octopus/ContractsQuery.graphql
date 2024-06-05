@@ -1,0 +1,11 @@
+query Contracts {
+  currentMember {
+      firstName
+      lastName
+      ssn
+    activeContracts {
+        ...ContractFragment
+    }
+  }
+}
+

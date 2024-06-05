@@ -1,3 +1,4 @@
+import EditCoInsuredShared
 import Presentation
 import SwiftUI
 import hCore
@@ -60,10 +61,11 @@ struct EditContract: View {
                             case .coInsured:
                                 if Dependencies.featureFlags().isEditCoInsuredEnabled {
                                     if let contract {
-                                        contractsNavigationVm.editCoInsuredConfig = .init(
+                                        let configContract: InsuredPeopleConfig = .init(
                                             contract: contract,
                                             fromInfoCard: false
                                         )
+                                        contractsNavigationVm.editCoInsuredVm.start(fromContract: configContract)
                                     }
                                 } else {
                                     NotificationCenter.default.post(name: .openChat, object: nil)

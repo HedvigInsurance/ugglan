@@ -1,7 +1,7 @@
 import Chat
 import Claims
+import Combine
 import Contracts
-import EditCoInsured
 import EditCoInsuredShared
 import Forever
 import Foundation
@@ -47,12 +47,11 @@ struct LoggedInNavigation: View {
             options: .constant(.alwaysOpenOnTop)
         ) {
             TravelCertificateNavigation(
+                vm: vm.travelCertificateNavigationVm,
                 infoButtonPlacement: .leading,
-                useOwnNavigation: true,
-                openCoInsured: {
-                    vm.getEditCoInsuredView(config: .init())
-                }
+                useOwnNavigation: true
             )
+            .handleEditCoInsured(with: vm.travelCertificateNavigationVm.editCoInsuredVm)
         }
         .modally(
             presented: $vm.isMoveContractPresented,
@@ -96,8 +95,6 @@ struct LoggedInNavigation: View {
     var contractsTab: some View {
         ContractsNavigation(contractsNavigationVm: vm.contractsNavigationVm) { redirectType in
             switch redirectType {
-            case let .editCoInsured(editCoInsuredConfig, _, _):
-                vm.getEditCoInsuredView(config: editCoInsuredConfig)
             case .chat:
                 ChatScreen(vm: .init(topicType: nil))
             case .movingFlow:
@@ -121,6 +118,7 @@ struct LoggedInNavigation: View {
                 }
             }
         }
+        .handleEditCoInsured(with: vm.contractsNavigationVm.editCoInsuredVm)
         .tabItem {
             Image(
                 uiImage: vm.selectedTab == 1
@@ -172,24 +170,11 @@ struct LoggedInNavigation: View {
             switch redirectType {
             case .travelCertificate:
                 TravelCertificateNavigation(
+                    vm: vm.travelCertificateNavigationVm,
                     infoButtonPlacement: .trailing,
-                    useOwnNavigation: false,
-                    openCoInsured: {
-                        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                        let contractsSupportingCoInsured = contractStore.state.activeContracts
-                            .filter({ $0.showEditCoInsuredInfo })
-                            .compactMap({
-                                InsuredPeopleConfig(contract: $0, fromInfoCard: true)
-                            })
-                        if contractsSupportingCoInsured.count > 1 {
-                            vm.profileNavigationVm.isEditCoInsuredSelectContractPresented = .init(
-                                configs: contractsSupportingCoInsured
-                            )
-                        } else if let config = contractsSupportingCoInsured.first {
-                            vm.profileNavigationVm.isEditCoInsuredPresented = config
-                        }
-                    }
+                    useOwnNavigation: false
                 )
+                .handleEditCoInsured(with: vm.travelCertificateNavigationVm.editCoInsuredVm)
             case let .deleteAccount(memberDetails):
                 let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
                 let contractsStore: ContractStore = globalPresentableStoreContainer.get()
@@ -245,13 +230,6 @@ struct LoggedInNavigation: View {
                         }
                     }
                 )
-            case let .editCoInuredSelectInsurance(configs):
-                EditCoInsuredSelectInsuranceNavigation(
-                    configs: configs,
-                    checkForAlert: vm.checkForAlert
-                )
-            case let .editCoInsured(config):
-                vm.getEditCoInsuredView(config: config)
             default:
                 EmptyView()
             }
@@ -289,6 +267,7 @@ struct HomeTab: View {
         }
         .environmentObject(homeNavigationVm)
         .handleConnectPayment(with: homeNavigationVm.connectPaymentVm)
+        .handleEditCoInsured(with: homeNavigationVm.editCoInsuredVm)
         .detent(
             presented: $homeNavigationVm.isSubmitClaimPresented,
             style: .height,
@@ -304,99 +283,60 @@ struct HomeTab: View {
                 PDFPreview(document: .init(url: url, title: document.displayName))
             }
         }
-        .detent(
-            item: $homeNavigationVm.isEditCoInsuredPresented,
-            style: .height
-        ) { config in
-            EditCoInsuredNavigation(
-                config: config,
-                checkForAlert: loggedInVm.checkForAlert
-            )
-        }
-        .detent(
-            item: $homeNavigationVm.isEditCoInsuredSelectContractPresented,
-            style: .height
-        ) { configs in
-            EditCoInsuredSelectInsuranceNavigation(
-                configs: configs.configs,
-                checkForAlert: loggedInVm.checkForAlert
-            )
-        }
-        .detent(
-            item: $homeNavigationVm.isMissingEditCoInsuredAlertPresented,
-            style: .height
-        ) { config in
-            loggedInVm.getMissingCoInsuredAlertView(
-                missingContractConfig: config
-            )
-        }
         .fullScreenCover(
             isPresented: $homeNavigationVm.isHelpCenterPresented
         ) {
             HelpCenterNavigation(
-                redirect: { redirectType in
-                    switch redirectType {
-                    case .moveFlow:
-                        MovingFlowNavigation()
-                    case let .editCoInsured(config, _, _):
-                        loggedInVm.getEditCoInsuredView(config: config)
-                    case let .editCoInuredSelectInsurance(configs, _):
-                        EditCoInsuredSelectInsuranceNavigation(
-                            configs: configs,
-                            checkForAlert: loggedInVm.checkForAlert
-                        )
-                    case let .travelInsurance(redirectType):
-                        TravelCertificateNavigation(
-                            infoButtonPlacement: .leading,
-                            useOwnNavigation: true,
-                            openCoInsured: {
-                                redirectType(
-                                    .editCoInsured(
-                                        config: .init(),
-                                        showMissingAlert: false,
-                                        isMissingAlertAction: { _ in }
+                helpCenterVm: loggedInVm.helpCenterVm
+            ) { redirectType in
+                switch redirectType {
+                case .moveFlow:
+                    MovingFlowNavigation()
+                case .travelInsurance:
+                    TravelCertificateNavigation(
+                        vm: loggedInVm.travelCertificateNavigationVm,
+                        infoButtonPlacement: .leading,
+                        useOwnNavigation: true
+                    )
+                    .handleEditCoInsured(with: loggedInVm.travelCertificateNavigationVm.editCoInsuredVm)
+                case .deflect:
+                    let model: FlowClaimDeflectStepModel? = {
+                        let store: HomeStore = globalPresentableStoreContainer.get()
+                        let quickActions = store.state.quickActions
+                        if let sickAbroadPartners = quickActions.first(where: { $0.sickAboardPartners != nil })?
+                            .sickAboardPartners
+                        {
+                            return FlowClaimDeflectStepModel(
+                                id: .FlowClaimDeflectEmergencyStep,
+                                partners: sickAbroadPartners.compactMap({
+                                    .init(
+                                        id: "",
+                                        imageUrl: $0.imageUrl,
+                                        url: "",
+                                        phoneNumber: $0.phoneNumber
                                     )
-                                )
-                            }
-                        )
-                    case .deflect:
-                        let model: FlowClaimDeflectStepModel? = {
-                            let store: HomeStore = globalPresentableStoreContainer.get()
-                            let quickActions = store.state.quickActions
-                            if let sickAbroadPartners = quickActions.first(where: { $0.sickAboardPartners != nil })?
-                                .sickAboardPartners
-                            {
-                                return FlowClaimDeflectStepModel(
-                                    id: .FlowClaimDeflectEmergencyStep,
-                                    partners: sickAbroadPartners.compactMap({
-                                        .init(
-                                            id: "",
-                                            imageUrl: $0.imageUrl,
-                                            url: "",
-                                            phoneNumber: $0.phoneNumber
-                                        )
-                                    }),
-                                    isEmergencyStep: true
-                                )
-                            }
-                            return nil
-                        }()
+                                }),
+                                isEmergencyStep: true
+                            )
+                        }
+                        return nil
+                    }()
 
-                        SubmitClaimDeflectScreen(
-                            model: model,
-                            openChat: {
-                                NotificationCenter.default.post(
-                                    name: .openChat,
-                                    object: ChatTopicWrapper(topic: nil, onTop: true)
-                                )
-                            }
-                        )
-                        .configureTitle(model?.id.title ?? "")
-                        .withDismissButton()
-                        .embededInNavigation(options: .navigationType(type: .large))
-                    }
+                    SubmitClaimDeflectScreen(
+                        model: model,
+                        openChat: {
+                            NotificationCenter.default.post(
+                                name: .openChat,
+                                object: ChatTopicWrapper(topic: nil, onTop: true)
+                            )
+                        }
+                    )
+                    .configureTitle(model?.id.title ?? "")
+                    .withDismissButton()
+                    .embededInNavigation(options: .navigationType(type: .large))
                 }
-            )
+            }
+            .handleEditCoInsured(with: loggedInVm.helpCenterVm.editCoInsuredVm)
             .environmentObject(homeNavigationVm)
         }
         .detent(
@@ -443,11 +383,16 @@ class LoggedInNavigationViewModel: ObservableObject {
     let paymentsNavigationVm = PaymentsNavigationViewModel()
     let profileNavigationVm = ProfileNavigationViewModel()
     let homeNavigationVm = HomeNavigationViewModel()
+    let helpCenterVm = HelpCenterNavigationViewModel()
+    let travelCertificateNavigationVm = TravelCertificateNavigationViewModel()
     let terminateInsuranceVm = TerminateInsuranceViewModel()
+
     @Published var isTravelInsurancePresented = false
     @Published var isMoveContractPresented = false
     @Published var isEuroBonusPresented = false
     @Published var isUrlPresented: URL?
+
+    private var updateCoInsuredCancellable: AnyCancellable?
 
     init() {
         NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) { notification in
@@ -487,6 +432,16 @@ class LoggedInNavigationViewModel: ObservableObject {
                 }
             }
         }
+
+        updateCoInsuredCancellable = EditCoInsuredViewModel.updatedCoInsuredForContractId
+            .receive(on: RunLoop.main)
+            .sink { contractId in
+                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                contractStore.send(.fetchContracts)
+
+                let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                homeStore.send(.fetchQuickActions)
+            }
     }
 
     private func handleDeepLinks(deepLinkUrl: URL?) {
@@ -515,7 +470,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                 let contractId = self.getContractId(from: url)
 
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                if let contractId, let contract: Contract = contractStore.state.contractForId(contractId) {
+                if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                         self.contractsNavigationVm.contractsRouter.popToRoot()
                         self.contractsNavigationVm.contractsRouter.push(contract)
@@ -555,50 +510,6 @@ class LoggedInNavigationViewModel: ObservableObject {
         guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
         guard let queryItems = urlComponents.queryItems else { return nil }
         return queryItems.first(where: { $0.name == "contractId" })?.value
-    }
-
-    func checkForAlert() {
-        Task {
-            homeNavigationVm.isEditCoInsuredPresented = nil
-            homeNavigationVm.isEditCoInsuredSelectContractPresented = nil
-            homeNavigationVm.isMissingEditCoInsuredAlertPresented = nil
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-            await contractStore.sendAsync(.fetchContracts)
-            let missingContract = contractStore.state.activeContracts.first { contract in
-                if contract.upcomingChangedAgreement != nil {
-                    return false
-                } else {
-                    return contract.coInsured
-                        .first(where: { coInsured in
-                            coInsured.hasMissingInfo && contract.terminationDate == nil
-                        }) != nil
-                }
-            }
-
-            if let missingContract {
-                let missingContractConfig = InsuredPeopleConfig(contract: missingContract, fromInfoCard: false)
-                homeNavigationVm.isMissingEditCoInsuredAlertPresented = missingContractConfig
-            }
-        }
-    }
-
-    @ViewBuilder
-    func getEditCoInsuredView(
-        config: InsuredPeopleConfig
-    ) -> some View {
-        EditCoInsuredNavigation(
-            config: config,
-            checkForAlert: checkForAlert
-        )
-    }
-
-    func getMissingCoInsuredAlertView(
-        missingContractConfig: InsuredPeopleConfig
-    ) -> some View {
-        EditCoInsuredAlertNavigation(
-            config: missingContractConfig,
-            checkForAlert: checkForAlert
-        )
     }
 
     public func openUrl(url: URL) {

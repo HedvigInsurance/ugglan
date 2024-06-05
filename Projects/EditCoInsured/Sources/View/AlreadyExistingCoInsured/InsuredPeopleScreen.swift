@@ -209,6 +209,7 @@ struct InsuredPeopleScreen_Previews: PreviewProvider {
         let vm = InsuredPeopleNewScreenModel()
         let intentVm = IntentViewModel()
         let config = InsuredPeopleConfig(
+            id: UUID().uuidString,
             contractCoInsured: [],
             contractId: "",
             activeFrom: nil,

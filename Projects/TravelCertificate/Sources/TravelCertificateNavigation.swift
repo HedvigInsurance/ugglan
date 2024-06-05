@@ -1,3 +1,4 @@
+import EditCoInsuredShared
 import Flow
 import Foundation
 import Presentation
@@ -12,6 +13,8 @@ public class TravelCertificateNavigationViewModel: ObservableObject {
 
     var startDateViewModel: StartDateViewModel?
     var whoIsTravelingViewModel: WhoIsTravelingViewModel?
+
+    public var editCoInsuredVm = EditCoInsuredViewModel()
 }
 
 struct TravelInsuranceSpecificationNavigationModel: Hashable, Identifiable {
@@ -59,20 +62,19 @@ public enum ListToolBarPlacement {
 }
 
 public struct TravelCertificateNavigation: View {
-    @StateObject private var vm = TravelCertificateNavigationViewModel()
+    @ObservedObject var vm: TravelCertificateNavigationViewModel
     @StateObject var router = Router()
     private var infoButtonPlacement: ListToolBarPlacement
     private let useOwnNavigation: Bool
-    private let openCoInsured: () -> Void
 
     public init(
+        vm: TravelCertificateNavigationViewModel,
         infoButtonPlacement: ListToolBarPlacement,
-        useOwnNavigation: Bool,
-        openCoInsured: @escaping () -> Void
+        useOwnNavigation: Bool
     ) {
+        self.vm = vm
         self.infoButtonPlacement = infoButtonPlacement
         self.useOwnNavigation = useOwnNavigation
-        self.openCoInsured = openCoInsured
     }
 
     @ViewBuilder
@@ -180,11 +182,9 @@ public struct TravelCertificateNavigation: View {
     ) -> some View {
         vm.whoIsTravelingViewModel = WhoIsTravelingViewModel(specification: specification)
         return WhoIsTravelingScreen(
-            vm: vm.whoIsTravelingViewModel!,
-            openCoInsured: {
-                openCoInsured()
-            }
+            vm: vm.whoIsTravelingViewModel!
         )
+        .environmentObject(vm)
         .addDismissFlow()
     }
 
