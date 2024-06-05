@@ -65,7 +65,7 @@ public struct ForeverNavigation: View {
                             }
                     }
                 }
-                .configureTitle(L10n.changeAddressAddBuilding)
+                .configureTitle(L10n.ReferralsChange.changeCode)
                 .embededInNavigation(options: [.navigationType(type: .large)])
         }
         .environmentObject(foreverNavigationVm)
