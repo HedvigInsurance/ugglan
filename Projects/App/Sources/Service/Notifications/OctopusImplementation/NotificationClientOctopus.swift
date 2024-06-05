@@ -5,7 +5,8 @@ public class NotificationService {
     @Inject var service: NotificationClient
 
     func register(for token: String) {
-        log.info("EditCoInsuredService: sendMidtermChangeIntentCommit", error: nil, attributes: nil)
+        log.info("NotificationService: register for token", error: nil, attributes: nil)
+        service.register(for: token)
     }
 }
 
