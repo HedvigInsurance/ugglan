@@ -6,6 +6,7 @@ import hCoreUI
 struct MemberSubscriptionPreferenceView: View {
     @ObservedObject var vm: MemberSubscriptionPreferenceViewModel
     @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
+
     @Inject var featureFlags: FeatureFlags
     @ViewBuilder
     var body: some View {
@@ -32,7 +33,6 @@ struct MemberSubscriptionPreferenceView: View {
             )
         }
     }
-
 }
 
 class MemberSubscriptionPreferenceViewModel: ObservableObject {
