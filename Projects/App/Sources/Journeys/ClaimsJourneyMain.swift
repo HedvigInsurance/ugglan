@@ -39,8 +39,8 @@ public struct ClaimsJourneyMain: View {
                     }
                 }
         }
-        .fullScreenCover(
-            isPresented: $claimsNavigationVm.isClaimsFlowPresented
+        .modally(
+            presented: $claimsNavigationVm.isClaimsFlowPresented
         ) {
             ClaimsNavigation(origin: from)
                 .onAppear {

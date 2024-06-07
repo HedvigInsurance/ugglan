@@ -209,6 +209,7 @@ struct LoggedInNavigation: View {
                     mainNavigationVm?.hasLaunchFinished = false
                     profileNavigationVm?.isLanguagePickerPresented = false
                     //show home screen with updated langauge
+                    mainNavigationVm?.loggedInVm = .init()
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         mainNavigationVm?.hasLaunchFinished = true
                         vm?.selectedTab = 0
@@ -283,8 +284,8 @@ struct HomeTab: View {
                 PDFPreview(document: .init(url: url, title: document.displayName))
             }
         }
-        .fullScreenCover(
-            isPresented: $homeNavigationVm.isHelpCenterPresented
+        .modally(
+            presented: $homeNavigationVm.isHelpCenterPresented
         ) {
             HelpCenterNavigation(
                 helpCenterVm: loggedInVm.helpCenterVm

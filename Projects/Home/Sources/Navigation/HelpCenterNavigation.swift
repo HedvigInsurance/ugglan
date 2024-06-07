@@ -79,68 +79,20 @@ public struct HelpCenterNavigation<Content: View>: View {
         ) {
             getSubmitClaimDeflectScreen()
         }
-        .fullScreenCover(
-            isPresented: $helpCenterVm.quickActions.isTravelCertificatePresented,
+        .modally(
+            presented: $helpCenterVm.quickActions.isTravelCertificatePresented,
             content: {
                 redirect(
                     .travelInsurance
                 )
             }
         )
-        .fullScreenCover(
-            isPresented: $helpCenterVm.quickActions.isChangeAddressPresented,
+        .modally(
+            presented: $helpCenterVm.quickActions.isChangeAddressPresented,
             content: {
                 redirect(.moveFlow)
             }
         )
-        //        .fullScreenCover(
-        //            isPresented: $helpCenterVm.quickActions.isCancellationPresented,
-        //            content: {
-        //                let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        //
-        //                let contractsConfig: [TerminationConfirmConfig] = contractStore.state.activeContracts
-        //                    .filter({ $0.canTerminate })
-        //                    .map({
-        //                        $0.asTerminationConfirmConfig
-        //                    })
-        //                TerminationFlowNavigation(
-        //                    configs: contractsConfig,
-        //                    isFlowPresented: { dismissType in
-        //                        switch dismissType {
-        //                        case .done:
-        //                            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        //                            contractStore.send(.fetchContracts)
-        //                            let homeStore: HomeStore = globalPresentableStoreContainer.get()
-        //                            homeStore.send(.fetchQuickActions)
-        //                        case .chat:
-        //                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-        //                                NotificationCenter.default.post(name: .openChat, object: nil)
-        //                            }
-        //                        case let .openFeedback(url):
-        //                            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        //                            contractStore.send(.fetchContracts)
-        //                            let homeStore: HomeStore = globalPresentableStoreContainer.get()
-        //                            homeStore.send(.fetchQuickActions)
-        //                            var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
-        //                            if urlComponent?.scheme == nil {
-        //                                urlComponent?.scheme = "https"
-        //                            }
-        //                            let schema = urlComponent?.scheme
-        //                            if let finalUrl = urlComponent?.url {
-        //                                if schema == "https" || schema == "http" {
-        //                                    let vc = SFSafariViewController(url: finalUrl)
-        //                                    vc.modalPresentationStyle = .pageSheet
-        //                                    vc.preferredControlTintColor = .brand(.primaryText())
-        //                                    UIApplication.shared.getTopViewController()?.present(vc, animated: true)
-        //                                } else {
-        //                                    UIApplication.shared.open(url)
-        //                                }
-        //                            }
-        //                        }
-        //                    }
-        //                )
-        //            }
-        //        )
         .handleConnectPayment(with: helpCenterVm.connectPaymentsVm)
         .handleTerminateInsurance(vm: helpCenterVm.terminateInsuranceVm) { dismissType in
             switch dismissType {

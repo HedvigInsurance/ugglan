@@ -201,7 +201,7 @@ public struct ClaimsNavigation: View {
         }
         .detent(
             presented: $claimsNavigationVm.isBrandPickerPresented,
-            style: .height
+            style: .large
         ) {
             openBrandPickerScreen()
                 .routerDestination(

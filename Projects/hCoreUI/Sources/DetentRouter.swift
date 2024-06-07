@@ -7,18 +7,30 @@ extension View {
         presented: Binding<Bool>,
         style: DetentPresentationStyle,
         options: Binding<DetentPresentationOption> = .constant([]),
+        tracking: TrackingViewNameProtocol? = nil,
         @ViewBuilder content: @escaping () -> SwiftUIContent
     ) -> some View {
-        modifier(DetentSizeModifier(presented: presented, style: style, options: options, content: content))
+        modifier(
+            DetentSizeModifier(
+                presented: presented,
+                style: style,
+                options: options,
+                tracking: tracking,
+                content: content
+            )
+        )
     }
 
     public func detent<Item, Content>(
         item: Binding<Item?>,
         style: DetentPresentationStyle,
         options: Binding<DetentPresentationOption> = .constant([]),
+        tracking: TrackingViewNameProtocol? = nil,
         @ViewBuilder content: @escaping (Item) -> Content
     ) -> some View where Item: Identifiable & Equatable, Content: View {
-        return modifier(DetentSizeModifierModal(item: item, style: style, options: options, content: content))
+        return modifier(
+            DetentSizeModifierModal(item: item, style: style, options: options, tracking: tracking, content: content)
+        )
     }
 }
 
@@ -29,10 +41,12 @@ where SwiftUIContent: View, Item: Identifiable & Equatable {
     @State var present: Bool = false
     let style: DetentPresentationStyle
     @Binding var options: DetentPresentationOption
+    let tracking: TrackingViewNameProtocol?
+
     var content: (Item) -> SwiftUIContent
     func body(content: Content) -> some View {
         Group {
-            content.detent(presented: $present, style: style, options: $options) {
+            content.detent(presented: $present, style: style, options: $options, tracking: tracking) {
                 if let item = itemToRenderFrom {
                     self.content(item)
                 }
@@ -65,15 +79,18 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
     private let style: DetentPresentationStyle
     @Binding var options: DetentPresentationOption
     @StateObject private var presentationViewModel = PresentationViewModel()
+    let tracking: TrackingViewNameProtocol?
     init(
         presented: Binding<Bool>,
         style: DetentPresentationStyle,
         options: Binding<DetentPresentationOption>,
+        tracking: TrackingViewNameProtocol? = nil,
         @ViewBuilder content: @escaping () -> SwiftUIContent
     ) {
         _presented = presented
         self.content = content
         self.style = style
+        self.tracking = tracking
         self._options = options
     }
 
@@ -116,7 +133,10 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
 
                 }()
                 let content = self.content()
-                let vc = hHostingController(rootView: content, contentName: "\(Content.self)")
+                let vc = hHostingController(
+                    rootView: content,
+                    contentName: tracking?.nameForTracking ?? "\(Content.self)"
+                )
                 let delegate = DetentedTransitioningDelegate(
                     detents: style.asDetent(),
                     options: [.blurredBackground],
@@ -153,7 +173,7 @@ public class hHostingController<Content: View>: UIHostingController<Content> {
     var onViewDidLayoutSubviews: () -> Void = {}
     var onViewWillAppear: () -> Void = {}
     var onViewWillDisappear: () -> Void = {}
-
+    private let key = UUID().uuidString
     var onDeinit: () -> Void = {}
     private let contentName: String
     public init(rootView: Content, contentName: String) {
@@ -173,11 +193,17 @@ public class hHostingController<Content: View>: UIHostingController<Content> {
 
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        if let name = self.debugDescription.getViewName() {
+            logStartView(key, name)
+        }
         onViewWillAppear()
     }
 
     public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        if let name = self.debugDescription.getViewName() {
+            logStopView(key)
+        }
         onViewWillDisappear()
     }
     @MainActor required dynamic init?(coder aDecoder: NSCoder) {
@@ -244,3 +270,48 @@ public struct DetentPresentationOption: OptionSet {
     }
 
 }
+
+extension String {
+    fileprivate func getViewName() -> String? {
+        let removedModifiedContent = self.replacingOccurrences(of: "ModifiedContent<", with: "")
+        guard let firstElement = removedModifiedContent.split(separator: ",").first else { return nil }
+        let nameToLog = String(firstElement)
+        if !nameToLog.shouldBeLoggedAsView {
+            return nil
+        }
+        let elements = nameToLog.split(separator: "SizeModifier<")
+        if elements.count > 1, let lastElement = elements.last {
+            return String(lastElement).replacingOccurrences(of: "Optional<", with: "")
+                .replacingOccurrences(of: ">", with: "")
+        } else {
+            let elements = nameToLog.split(separator: ":")
+            if elements.count > 1, let firstElement = elements.first {
+                return String(firstElement).replacingOccurrences(of: "<", with: "")
+            }
+            return nameToLog
+        }
+    }
+    fileprivate var shouldBeLoggedAsView: Bool {
+
+        let array = [
+            String(describing: hNavigationController.self),
+            String(describing: hNavigationControllerWithLargerNavBar.self),
+            "EmbededInNavigation",
+            "PUPickerRemoteViewController",
+            "CAMImagePickerCameraViewController",
+            "CAMViewfinderViewController",
+            "UIDocumentBrowserViewController",
+            "Navigation",
+
+        ]
+        for element in array {
+            if self.contains(element) {
+                return false
+            }
+        }
+        return true
+    }
+}
+
+public var logStartView: ((_ key: String, _ name: String) -> Void)!
+public var logStopView: ((_ key: String) -> Void)!

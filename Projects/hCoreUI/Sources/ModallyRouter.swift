@@ -5,9 +5,10 @@ extension View {
     public func modally<SwiftUIContent: View>(
         presented: Binding<Bool>,
         options: Binding<DetentPresentationOption> = .constant([]),
+        tracking: TrackingViewNameProtocol? = nil,
         @ViewBuilder content: @escaping () -> SwiftUIContent
     ) -> some View {
-        modifier(ModallySizeModifier(presented: presented, options: options, content: content))
+        modifier(ModallySizeModifier(presented: presented, options: options, tracking: tracking, content: content))
     }
 
     public func modally<Item, Content>(
@@ -53,14 +54,17 @@ private struct ModallySizeModifier<SwiftUIContent>: ViewModifier where SwiftUICo
     @Binding var presented: Bool
     let content: () -> SwiftUIContent
     @Binding var options: DetentPresentationOption
+    let tracking: TrackingViewNameProtocol?
     @StateObject private var presentationViewModel = PresentationViewModel()
     init(
         presented: Binding<Bool>,
         options: Binding<DetentPresentationOption>,
+        tracking: TrackingViewNameProtocol?,
         @ViewBuilder content: @escaping () -> SwiftUIContent
     ) {
         _presented = presented
         self.content = content
+        self.tracking = tracking
         self._options = options
     }
 
@@ -103,7 +107,10 @@ private struct ModallySizeModifier<SwiftUIContent>: ViewModifier where SwiftUICo
 
                 }()
                 let content = self.content()
-                let vc = hHostingController(rootView: content, contentName: "\(Content.self)")
+                let vc = hHostingController(
+                    rootView: content,
+                    contentName: tracking?.nameForTracking ?? "\(Content.self)"
+                )
                 vc.modalPresentationStyle = .overFullScreen
                 vc.transitioningDelegate = .none
                 vc.onDeinit = {

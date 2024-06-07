@@ -98,7 +98,7 @@ public struct EditCoInsuredNavigation: View {
                 }
             }
         }
-        .fullScreenCover(item: $editCoInsuredNavigationVm.editCoInsuredConfig) { config in
+        .modally(item: $editCoInsuredNavigationVm.editCoInsuredConfig) { config in
             EditCoInsuredNavigation(
                 config: config
             )
@@ -183,12 +183,14 @@ public struct EditCoInsuredNavigation: View {
     }
 
     func openSuccessScreen(title: String) -> some View {
-        SuccessScreen(title: title)
-            .onAppear {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    editCoInsuredNavigationVm.coInsuredInputModel = nil
+        hForm {
+            SuccessScreen(title: title)
+                .onAppear {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        editCoInsuredNavigationVm.coInsuredInputModel = nil
+                    }
                 }
-            }
+        }
     }
 
     func openRemoveCoInsuredScreen() -> some View {

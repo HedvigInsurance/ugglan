@@ -1,6 +1,7 @@
 import EditCoInsuredShared
 import Foundation
 import SwiftUI
+import hCoreUI
 
 extension View {
     public func handleEditCoInsured(with vm: EditCoInsuredViewModel) -> some View {
@@ -15,7 +16,9 @@ struct EditCoInsured: ViewModifier {
         content
             .detent(
                 item: $vm.editCoInsuredModelDetent,
-                style: .height
+                style: .height,
+                tracking: vm.editCoInsuredModelDetent?.contractsSupportingCoInsured.count ?? 0 > 1
+                    ? InsuredPeopleConfigType.list : InsuredPeopleConfigType.oneItem
             ) { coInsuredModel in
                 let contractsSupportingCoInsured = coInsuredModel.contractsSupportingCoInsured
                 if contractsSupportingCoInsured.count > 1 {
@@ -28,7 +31,7 @@ struct EditCoInsured: ViewModifier {
                     getEditCoInsuredNavigation(coInsuredModel: coInsuredModel)
                 }
             }
-            .fullScreenCover(
+            .modally(
                 item: $vm.editCoInsuredModelFullScreen
             ) { coInsuredModel in
                 getEditCoInsuredNavigation(coInsuredModel: coInsuredModel)
@@ -60,5 +63,22 @@ struct EditCoInsured: ViewModifier {
             config: missingContractConfig
         )
         .environmentObject(vm)
+    }
+}
+
+//
+enum InsuredPeopleConfigType {
+    case oneItem
+    case list
+}
+
+extension InsuredPeopleConfigType: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        switch self {
+        case .oneItem:
+            return .init(describing: InsuredPeopleNewScreen.self)
+        case .list:
+            return .init(describing: CheckboxPickerScreen<InsuredPeopleConfig>.self)
+        }
     }
 }

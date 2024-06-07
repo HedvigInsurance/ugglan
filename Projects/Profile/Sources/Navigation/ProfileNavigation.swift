@@ -64,7 +64,8 @@ public struct ProfileNavigation<Content: View>: View {
         .detent(
             item: $profileNavigationViewModel.isDeleteAccountPresented,
             style: .height,
-            options: .constant(.withoutGrabber)
+            options: .constant(.withoutGrabber), 
+            tracking: ProfileRedirectType.deleteAccount(memberDetails: .init(id: "", firstName: "", lastName: "", phone: "", email: "", hasTravelCertificate: false))
         ) { memberDetails in
             redirect(
                 .deleteAccount(
@@ -75,14 +76,16 @@ public struct ProfileNavigation<Content: View>: View {
         .detent(
             presented: $profileNavigationViewModel.isLanguagePickerPresented,
             style: .height,
+            tracking: ProfileRedirectType.pickLanguage,
             content: {
                 redirect(.pickLanguage)
                     .configureTitle(L10n.MarketLanguageScreen.chooseLanguageLabel)
                     .embededInNavigation(options: .navigationType(type: .large))
             }
         )
-        .fullScreenCover(
-            isPresented: $profileNavigationViewModel.isDeleteAccountAlreadyRequestedPresented
+        .modally(
+            presented: $profileNavigationViewModel.isDeleteAccountAlreadyRequestedPresented,
+            tracking: ProfileRedirectType.deleteRequestLoading
         ) {
             redirect(.deleteRequestLoading)
         }
@@ -123,7 +126,7 @@ extension ProfileRedirectType: TrackingViewNameProtocol {
         switch self {
         case .travelCertificate:
             return "List screen"
-        case .deleteAccount(let memberDetails):
+        case .deleteAccount:
             return .init(describing: DeleteAccountView.self)
         case .deleteRequestLoading:
             return .init(describing: DeleteRequestLoadingView.self)

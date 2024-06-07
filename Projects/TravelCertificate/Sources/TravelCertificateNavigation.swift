@@ -111,7 +111,7 @@ public struct TravelCertificateNavigation: View {
                 document: .init(url: model.url, title: model.title)
             )
         }
-        .fullScreenCover(
+        .modally(
             item: $vm.isStartDateScreenPresented
         ) { specificationModel in
             start(with: specificationModel.specification)

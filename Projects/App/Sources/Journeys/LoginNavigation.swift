@@ -24,7 +24,7 @@ struct LoginNavigation: View {
                 .embededInNavigation()
 
         }
-        .detent(presented: $vm.showLogin, style: .large) {
+        .detent(presented: $vm.showLogin, style: .large, tracking: Localization.Locale.currentLocale.market) {
             Group {
                 switch Localization.Locale.currentLocale.market {
                 case .no, .dk:
@@ -290,5 +290,17 @@ private class PlayerUIView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         playerLayer.frame = bounds
+    }
+}
+
+extension Localization.Locale.Market: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        switch self {
+        case .no, .dk:
+            return .init(describing: OTPEntryView.self)
+        case .se:
+            return .init(describing: BankIDLoginQRView.self)
+
+        }
     }
 }
