@@ -40,13 +40,13 @@ struct AskForPushNotifications: View {
                 hCoreUIAssets.infoIconFilled.view
                     .resizable()
                     .frame(width: 24, height: 24)
-                    .foregroundColor(hSignalColor.blueElement)
+                    .foregroundColor(hSignalColor.Blue.element)
                 VStack(spacing: 0) {
                     hText(L10n.activateNotificationsTitle)
                     hText(text)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 32)
-                        .foregroundColor(hTextColor.secondary)
+                        .foregroundColor(hTextColor.Opaque.secondary)
                 }
                 hButton.MediumButton(type: .primary) {
                     let current = UNUserNotificationCenter.current()
@@ -70,7 +70,7 @@ struct AskForPushNotifications: View {
                     store.send(.setPushNotificationStatus(status: nil))
                 } content: {
                     hText(L10n.claimsActivateNotificationsDismiss, style: .footnote)
-                        .foregroundColor(hTextColor.primary)
+                        .foregroundColor(hTextColor.Opaque.primary)
                 }
                 .padding(.bottom, 16)
             }

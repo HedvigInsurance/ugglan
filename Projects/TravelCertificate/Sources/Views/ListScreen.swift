@@ -23,7 +23,7 @@ public struct ListScreen: View {
                     Image(uiImage: hCoreUIAssets.infoIconFilled.image)
                         .resizable()
                         .frame(width: 24, height: 24)
-                        .foregroundColor(hSignalColor.blueElement)
+                        .foregroundColor(hSignalColor.Blue.element)
                     hText(L10n.TravelCertificate.emptyListMessage)
                         .multilineTextAlignment(.center)
                 }
@@ -74,7 +74,7 @@ public struct ListScreen: View {
                     description: L10n.TravelCertificate.Info.subtitle,
                     type: .navigation
                 )
-                .foregroundColor(hTextColor.primary)
+                .foregroundColor(hTextColor.Opaque.primary)
             }
         }
         .sectionContainerStyle(.transparent)

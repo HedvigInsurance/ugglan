@@ -13,7 +13,7 @@ struct SupportView: View {
                 hText(L10n.submitClaimNeedHelpTitle)
                     .foregroundColor(hTextColor.primaryTranslucent)
                 hText(L10n.submitClaimNeedHelpLabel)
-                    .foregroundColor(hTextColor.secondary)
+                    .foregroundColor(hTextColor.Opaque.secondary)
                     .multilineTextAlignment(.center)
             }
             hButton.MediumButton(type: .primary) {

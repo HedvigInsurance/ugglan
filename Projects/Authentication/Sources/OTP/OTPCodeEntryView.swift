@@ -52,7 +52,7 @@ public struct OTPCodeEntryView: View {
                                 errorMessage,
                                 style: .footnote
                             )
-                            .foregroundColor(hSignalColor.redText)
+                            .foregroundColor(hSignalColor.Red.text)
                             .transition(.opacity)
                         }
 

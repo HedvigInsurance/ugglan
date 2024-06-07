@@ -41,7 +41,7 @@ struct LoggedInNavigation: View {
             }
             profileTab
         }
-        .tint(hTextColor.primary)
+        .tint(hTextColor.Opaque.primary)
         .modally(
             presented: $vm.isTravelInsurancePresented,
             options: .constant(.alwaysOpenOnTop)

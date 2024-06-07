@@ -55,7 +55,7 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
                     ForEach(Array(peril.covered.enumerated()), id: \.offset) { index, item in
                         HStack(alignment: .top, spacing: 8) {
                             hText(String(format: "%02d", index + 1), style: .footnote)
-                                .foregroundColor(hTextColor.tertiary)
+                                .foregroundColor(hTextColor.Opaque.tertiary)
                             hText(item, style: .footnote)
                         }
                     }

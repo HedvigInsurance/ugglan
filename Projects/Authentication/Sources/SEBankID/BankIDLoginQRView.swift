@@ -33,7 +33,7 @@ public struct BankIDLoginQRView: View {
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
                                     .frame(height: 140)
-                                    .foregroundColor(hTextColor.primary)
+                                    .foregroundColor(hTextColor.Opaque.primary)
                                     .transition(.opacity)
                                     .id(image.pngData()?.count ?? 0)
                             }

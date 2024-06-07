@@ -310,7 +310,7 @@ struct ShowTagList: View {
     func getPillText(claimId: String) -> some View {
         if selection == claimId {
             hText(claimId, style: .body)
-                .foregroundColor(hTextColor.primary)
+                .foregroundColor(hTextColor.Opaque.primary)
                 .colorScheme(.light)
         } else {
             hText(claimId, style: .body)

@@ -75,13 +75,13 @@ public struct InfoCard: View {
     var getTextColor: some hColor {
         switch type {
         case .info:
-            hSignalColor.blueText
+            hSignalColor.Blue.text
         case .attention:
-            hSignalColor.amberText
+            hSignalColor.Amber.text
         case .error:
-            hSignalColor.redText
+            hSignalColor.Red.text
         case .campaign:
-            hSignalColor.greenText
+            hSignalColor.Green.text
         }
     }
 
@@ -89,13 +89,13 @@ public struct InfoCard: View {
     var imageColor: some hColor {
         switch type {
         case .info:
-            hSignalColor.blueElement
+            hSignalColor.Blue.element
         case .attention:
-            hSignalColor.amberElement
+            hSignalColor.Amber.element
         case .error:
-            hSignalColor.redElement
+            hSignalColor.Red.element
         case .campaign:
-            hSignalColor.greenElement
+            hSignalColor.Green.element
         }
     }
 }
@@ -262,13 +262,13 @@ struct InfoCardStyle: ViewModifier {
     var getBackgroundColor: some hColor {
         switch type {
         case .info:
-            hSignalColor.blueFill
+            hSignalColor.Blue.fill
         case .attention:
-            hSignalColor.amberFill
+            hSignalColor.Amber.fill
         case .error:
-            hSignalColor.redFill
+            hSignalColor.Red.fill
         case .campaign:
-            hSignalColor.greenFill
+            hSignalColor.Green.fill
         }
     }
 }

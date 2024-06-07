@@ -8,29 +8,29 @@ extension Referral {
     @hColorBuilder var statusColor: some hColor {
         switch self.status {
         case .active:
-            hSignalColor.greenElement
+            hSignalColor.Green.element
         case .pending:
-            hSignalColor.amberElement
+            hSignalColor.Amber.element
         case .terminated:
-            hSignalColor.redElement
+            hSignalColor.Red.element
         }
     }
 
     @hColorBuilder var discountLabelColor: some hColor {
         switch self.status {
         case .active:
-            hTextColor.secondary
+            hTextColor.Opaque.secondary
         case .pending, .terminated:
-            hTextColor.tertiary
+            hTextColor.Opaque.tertiary
         }
     }
 
     @hColorBuilder var invitedByOtherLabelColor: some hColor {
         switch self.status {
         case .active, .pending:
-            hTextColor.tertiary
+            hTextColor.Opaque.tertiary
         case .terminated:
-            hTextColor.tertiary
+            hTextColor.Opaque.tertiary
         }
     }
 
@@ -102,10 +102,10 @@ struct InvitationRow: View {
                     .padding(.top, 5)
                 VStack(alignment: .leading) {
                     hText(row.name)
-                        .foregroundColor(hTextColor.primary)
+                        .foregroundColor(hTextColor.Opaque.primary)
                     if invitedYou {
                         hText(L10n.ReferallsInviteeStates.invitedYou)
-                            .foregroundColor(hTextColor.secondary)
+                            .foregroundColor(hTextColor.Opaque.secondary)
                     }
                 }
                 .frame(alignment: .top)

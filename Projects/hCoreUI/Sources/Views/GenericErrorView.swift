@@ -79,12 +79,12 @@ public struct GenericErrorView: View {
                 hCoreUIAssets.warningTriangleFilled.view
                     .resizable()
                     .frame(width: imageDimension, height: imageDimension)
-                    .foregroundColor(hSignalColor.amberElement)
+                    .foregroundColor(hSignalColor.Amber.element)
             case .circle:
                 hCoreUIAssets.infoIconFilled.view
                     .resizable()
                     .frame(width: imageDimension, height: imageDimension)
-                    .foregroundColor(hSignalColor.blueElement)
+                    .foregroundColor(hSignalColor.Blue.element)
             }
             VStack {
                 if !withoutTitle {

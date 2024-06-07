@@ -41,8 +41,8 @@ struct ClaimStatus_Previews: PreviewProvider {
         HStack {
             hPillFill(
                 text: "TEXT",
-                textColor: hTextColor.negative,
-                backgroundColor: hTextColor.primary
+                textColor: hTextColor.Opaque.negative,
+                backgroundColor: hTextColor.Opaque.primary
             )
         }
     }

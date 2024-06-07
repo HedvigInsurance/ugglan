@@ -104,7 +104,7 @@ extension UIColor {
             case let .messageBackground(my):
                 return UIColor(dynamic: { trait -> UIColor in
                     if my {
-                        return hSignalColor.blueFill
+                        return hSignalColor.Blue.fill
                             .colorFor(style ?? trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
                             .uiColor()
                     } else {
@@ -120,7 +120,8 @@ extension UIColor {
                 })
             case .chatTimeStamp:
                 return UIColor(dynamic: { trait -> UIColor in
-                    hTextColor.tertiary.colorFor(style ?? trait.userInterfaceStyle == .dark ? .dark : .light, .base)
+                    hTextColor.Opaque.tertiary
+                        .colorFor(style ?? trait.userInterfaceStyle == .dark ? .dark : .light, .base)
                         .color
                         .uiColor()
                 })
@@ -131,13 +132,13 @@ extension UIColor {
                 })
             case .chatMessageImportant:
                 return UIColor(dynamic: { trait -> UIColor in
-                    hSignalColor.blueElement
+                    hSignalColor.Blue.element
                         .colorFor(style ?? trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
                         .uiColor()
                 })
             case .toasterBackground:
                 return UIColor(dynamic: { trait -> UIColor in
-                    hSignalColor.greenFill.colorFor(style ?? trait.userInterfaceStyle == .dark ? .dark : .light, .base)
+                    hSignalColor.Green.fill.colorFor(style ?? trait.userInterfaceStyle == .dark ? .dark : .light, .base)
                         .color
                         .uiColor()
                 })
@@ -150,13 +151,13 @@ extension UIColor {
                 })
             case .toasterTitle:
                 return UIColor(dynamic: { trait -> UIColor in
-                    hSignalColor.greenText.colorFor(style ?? trait.userInterfaceStyle == .dark ? .dark : .light, .base)
+                    hSignalColor.Green.text.colorFor(style ?? trait.userInterfaceStyle == .dark ? .dark : .light, .base)
                         .color
                         .uiColor()
                 })
             case .toasterSubtitle:
                 return UIColor(dynamic: { trait -> UIColor in
-                    hSignalColor.greenText.colorFor(style ?? trait.userInterfaceStyle == .dark ? .dark : .light, .base)
+                    hSignalColor.Green.text.colorFor(style ?? trait.userInterfaceStyle == .dark ? .dark : .light, .base)
                         .color
                         .uiColor()
                 })

@@ -143,9 +143,9 @@ struct hRadioOptionSelectedView: View {
     static func getFillColor(isSelected: Bool, coloredCheckBox: Bool) -> some hColor {
         if isSelected {
             if coloredCheckBox {
-                hSignalColor.greenElement
+                hSignalColor.Green.element
             } else {
-                hTextColor.primary
+                hTextColor.Opaque.primary
             }
         } else {
             hFillColor.opaqueOne
@@ -155,7 +155,7 @@ struct hRadioOptionSelectedView: View {
     @hColorBuilder
     static func getBorderColor(isSelected: Bool) -> some hColor {
         if isSelected {
-            hTextColor.primary
+            hTextColor.Opaque.primary
         } else {
             hBorderColor.opaqueTwo
         }

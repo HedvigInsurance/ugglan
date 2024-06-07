@@ -18,7 +18,7 @@ struct SubmitClaimCarScreen: View {
                 VStack(alignment: .leading, spacing: 8) {
                     hText(L10n.submitClaimCarReportClaimTitle)
                     hText(L10n.submitClaimCarReportClaimText)
-                        .foregroundColor(hTextColor.secondary)
+                        .foregroundColor(hTextColor.Opaque.secondary)
                 }
             }
             .sectionContainerStyle(.transparent)

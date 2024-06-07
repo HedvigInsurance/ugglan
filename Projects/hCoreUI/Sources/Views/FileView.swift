@@ -30,13 +30,13 @@ public struct FileView: View {
                         Image(uiImage: fileImage)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .foregroundColor(hTextColor.secondary)
+                            .foregroundColor(hTextColor.Opaque.secondary)
                             .padding(.horizontal, geometry.size.width / 3)
                             .padding(.top, geometry.size.height / 5)
 
                         hSection {
                             hText(file.name, style: .standardExtraExtraSmall)
-                                .foregroundColor(hTextColor.secondary)
+                                .foregroundColor(hTextColor.Opaque.secondary)
                                 .lineLimit(2)
                                 .multilineTextAlignment(.center)
                         }

@@ -117,11 +117,11 @@ struct ButtonFilledStandardBackground: View {
             }
         case .alert:
             if configuration.isPressed {
-                hSignalColor.redElement
+                hSignalColor.Red.element
             } else if isEnabled {
-                hSignalColor.redElement
+                hSignalColor.Red.element
             } else {
-                hSignalColor.redElement.opacity(0.2)
+                hSignalColor.Red.element.opacity(0.2)
             }
         }
     }
@@ -326,40 +326,40 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
             case .primary:
                 if isEnabled {
                     if hUseNewDesign {
-                        hTextColor.primary.inverted
+                        hTextColor.Opaque.primary.inverted
                     } else {
-                        hTextColor.negative
+                        hTextColor.Opaque.negative
                     }
                 } else {
-                    hTextColor.disabled
+                    hTextColor.Opaque.disabled
                 }
             case .primaryAlt:
                 if isEnabled {
-                    hTextColor.primary.colorFor(.light, .base)
+                    hTextColor.Opaque.primary.colorFor(.light, .base)
                 } else {
-                    hTextColor.disabled
+                    hTextColor.Opaque.disabled
                 }
             case .secondary, .ghost:
                 if isEnabled {
                     if hUseNewDesign {
-                        hTextColor.primary
+                        hTextColor.Opaque.primary
                     } else {
-                        hTextColor.primary
+                        hTextColor.Opaque.primary
                     }
                 } else {
-                    hTextColor.disabled
+                    hTextColor.Opaque.disabled
                 }
             case .secondaryAlt:
                 if isEnabled {
-                    hColorScheme(light: hTextColor.primary, dark: hTextColor.negative)
+                    hColorScheme(light: hTextColor.Opaque.primary, dark: hTextColor.Opaque.negative)
                 } else {
-                    hTextColor.disabled
+                    hTextColor.Opaque.disabled
                 }
             case .alert:
                 if isEnabled {
-                    hColorScheme(light: hTextColor.negative, dark: hTextColor.primary)
+                    hColorScheme(light: hTextColor.Opaque.negative, dark: hTextColor.Opaque.primary)
                 } else {
-                    hTextColor.secondary
+                    hTextColor.Opaque.secondary
                 }
             }
         }
@@ -392,7 +392,7 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
                     ZStack {
                         //create shadow - this create shadows for whole shape
                         Squircle.default()
-                            .fill(hTextColor.primary.inverted.opacity(0.01))
+                            .fill(hTextColor.Opaque.primary.inverted.opacity(0.01))
                             .hShadow()
 
                         //cut out shape from previously created shape - we only need shadows
@@ -424,9 +424,9 @@ struct ButtonOutlinedStyle: SwiftUI.ButtonStyle {
         var configuration: Configuration
 
         var body: some View {
-            LoaderOrContent(color: hTextColor.primary) {
+            LoaderOrContent(color: hTextColor.Opaque.primary) {
                 configuration.label
-                    .foregroundColor(hTextColor.primary)
+                    .foregroundColor(hTextColor.Opaque.primary)
                     .environment(\.defaultHTextStyle, .standard)
             }
         }
@@ -448,12 +448,12 @@ struct ButtonOutlinedStyle: SwiftUI.ButtonStyle {
             if colorScheme == .light {
                 content.overlay(
                     Squircle.default(lineWidth: configuration.isPressed ? 0 : 1)
-                        .stroke(hTextColor.primary, lineWidth: configuration.isPressed ? 0 : 1)
+                        .stroke(hTextColor.Opaque.primary, lineWidth: configuration.isPressed ? 0 : 1)
                 )
             } else {
                 content.overlay(
                     Squircle.default(lineWidth: 1)
-                        .stroke(hTextColor.primary, lineWidth: 1)
+                        .stroke(hTextColor.Opaque.primary, lineWidth: 1)
                 )
             }
         }

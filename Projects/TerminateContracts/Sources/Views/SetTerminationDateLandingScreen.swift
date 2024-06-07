@@ -137,7 +137,7 @@ struct SetTerminationDateLandingScreen: View {
                                     L10n.terminationFlowImportantInformationText,
                                     style: .standardSmall
                                 )
-                                .foregroundColor(hTextColor.secondary)
+                                .foregroundColor(hTextColor.Opaque.secondary)
                             }
                         }
 
@@ -145,20 +145,23 @@ struct SetTerminationDateLandingScreen: View {
                             hRow {
                                 hText(L10n.terminationFlowIUnderstandText)
                                     .foregroundColor(
-                                        hColorScheme(light: hTextColor.primary, dark: hTextColor.negative)
+                                        hColorScheme(light: hTextColor.Opaque.primary, dark: hTextColor.Opaque.negative)
                                     )
                                 Spacer()
                                 if vm.hasAgreedToTerms {
                                     HStack {
                                         hCoreUIAssets.tick.view
                                             .foregroundColor(
-                                                hColorScheme(light: hTextColor.negative, dark: hTextColor.primary)
+                                                hColorScheme(
+                                                    light: hTextColor.Opaque.negative,
+                                                    dark: hTextColor.Opaque.primary
+                                                )
                                             )
                                     }
                                     .frame(width: 24, height: 24)
                                     .background(
                                         RoundedRectangle(cornerRadius: 6)
-                                            .fill(hSignalColor.greenElement)
+                                            .fill(hSignalColor.Green.element)
                                     )
                                 } else {
                                     Circle()
@@ -203,7 +206,7 @@ struct SetTerminationDateLandingScreen: View {
     @hColorBuilder
     func getFillColor() -> some hColor {
         if vm.hasAgreedToTerms {
-            hSignalColor.greenElement
+            hSignalColor.Green.element
         } else {
             hFillColor.opaqueOne
         }

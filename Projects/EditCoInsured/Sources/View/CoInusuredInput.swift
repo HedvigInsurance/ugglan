@@ -292,7 +292,7 @@ struct CoInusuredInput: View {
             .hFieldLockedState
             .hFieldTrailingView {
                 Image(uiImage: hCoreUIAssets.lockSmall.image)
-                    .foregroundColor(hTextColor.secondary)
+                    .foregroundColor(hTextColor.Opaque.secondary)
             }
             .disabled(true)
             .sectionContainerStyle(.transparent)
@@ -307,7 +307,7 @@ struct CoInusuredInput: View {
             .hFieldLockedState
             .hFieldTrailingView {
                 Image(uiImage: hCoreUIAssets.lockSmall.image)
-                    .foregroundColor(hTextColor.secondary)
+                    .foregroundColor(hTextColor.Opaque.secondary)
             }
             .disabled(true)
             .sectionContainerStyle(.transparent)
@@ -383,7 +383,7 @@ struct CoInusuredInput: View {
             Toggle(isOn: $vm.noSSN.animation(.default)) {
                 VStack(alignment: .leading, spacing: 0) {
                     hText(L10n.contractAddCoinsuredNoSsn, style: .body)
-                        .foregroundColor(hTextColor.secondary)
+                        .foregroundColor(hTextColor.Opaque.secondary)
                 }
             }
             .toggleStyle(ChecboxToggleStyle(.center, spacing: 0))

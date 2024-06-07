@@ -340,7 +340,7 @@ struct TerminationFlowNavigation: View {
             description: L10n.terminationFlowCancelInfoText,
             type: .navigation
         )
-        .foregroundColor(hTextColor.primary)
+        .foregroundColor(hTextColor.Opaque.primary)
     }
 }
 

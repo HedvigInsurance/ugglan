@@ -47,15 +47,15 @@ struct HelpCenterPill: View {
     var pillBackgroundColor: some hColor {
         switch color {
         case .blue:
-            hHighlightColor.blueFillOne
+            hHighlightColor.Blue.fillOne
         case .green:
-            hSignalColor.greenFill
+            hSignalColor.Green.fill
         case .yellow:
-            hHighlightColor.yellowFillOne
+            hHighlightColor.Yellow.fillOne
         case .purple:
-            hHighlightColor.purpleFillOne
+            hHighlightColor.Purple.fillOne
         case .pink:
-            hHighlightColor.pinkFillOne
+            hHighlightColor.Pink.fillOne
         }
     }
 }

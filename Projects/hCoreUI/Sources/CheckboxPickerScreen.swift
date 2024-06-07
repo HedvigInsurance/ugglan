@@ -286,7 +286,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                         (displayName?.subTitle != nil) ? .body : .title3
 
                     hText(displayName?.title ?? itemDisplayName ?? "", style: titleFont)
-                        .foregroundColor(hTextColor.primary)
+                        .foregroundColor(hTextColor.Opaque.primary)
 
                     if let subTitle = displayName?.subTitle {
                         hText(subTitle, style: .standardSmall)
@@ -352,7 +352,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
 
                     if isSelected {
                         Image(uiImage: hCoreUIAssets.tick.image)
-                            .foregroundColor(hTextColor.negative)
+                            .foregroundColor(hTextColor.Opaque.negative)
                     }
                 }
             }

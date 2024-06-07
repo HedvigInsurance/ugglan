@@ -40,7 +40,7 @@ public struct LanguageAndMarketPickerView: View {
             hSection {
                 VStack(spacing: 8) {
                     hText(L10n.profileAboutAppVersion + " " + Bundle.main.appVersion, style: .caption1)
-                        .foregroundColor(hTextColor.tertiary)
+                        .foregroundColor(hTextColor.Opaque.tertiary)
 
                     hButton.LargeButton(type: .primary) {
                         Task {
@@ -85,7 +85,7 @@ public struct LanguageAndMarketPickerView: View {
                                     .resizable()
                                     .frame(width: 24, height: 24)
                                 hText(market.title, style: .title3)
-                                    .foregroundColor(hTextColor.primary)
+                                    .foregroundColor(hTextColor.Opaque.primary)
                             }
                         },
                         selected: $vm.selectedMarketCode
@@ -107,7 +107,7 @@ public struct LanguageAndMarketPickerView: View {
                                     .resizable()
                                     .frame(width: 24, height: 24)
                                 hText(locale.displayName, style: .title3)
-                                    .foregroundColor(hTextColor.primary)
+                                    .foregroundColor(hTextColor.Opaque.primary)
                             }
                         },
                         selected: $vm.selectedLocaleCode

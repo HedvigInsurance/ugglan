@@ -15,15 +15,15 @@ struct PaymentStatusView: View {
                 Image(uiImage: hCoreUIAssets.tick.image)
                     .resizable()
                     .frame(width: 16, height: 16)
-                    .foregroundColor(hSignalColor.greenElement)
+                    .foregroundColor(hSignalColor.Green.element)
                 hText(L10n.paymentsPaymentSuccessful, style: .standardSmall)
-                    .foregroundColor(hSignalColor.greenText)
+                    .foregroundColor(hSignalColor.Green.text)
                 Spacer()
             }
             .padding(.vertical, 14)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(hSignalColor.greenFill)
+                    .fill(hSignalColor.Green.fill)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
@@ -35,16 +35,16 @@ struct PaymentStatusView: View {
                 Image(uiImage: hCoreUIAssets.infoIconFilled.image)
                     .resizable()
                     .frame(width: 16, height: 16)
-                    .foregroundColor(hSignalColor.blueElement)
+                    .foregroundColor(hSignalColor.Blue.element)
 
                 hText(L10n.paymentsPaymentInProgress, style: .standardSmall)
-                    .foregroundColor(hSignalColor.blueText)
+                    .foregroundColor(hSignalColor.Blue.text)
                 Spacer()
             }
             .padding(.vertical, 14)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(hSignalColor.blueFill)
+                    .fill(hSignalColor.Blue.fill)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 12)

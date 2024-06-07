@@ -143,10 +143,10 @@ struct PHPAssetPreview: View {
                 } content: {
                     if loading {
                         ProgressView()
-                            .foregroundColor(hTextColor.primary)
+                            .foregroundColor(hTextColor.Opaque.primary)
                     } else {
                         hText(L10n.chatUploadPresend)
-                            .foregroundColor(hTextColor.primary)
+                            .foregroundColor(hTextColor.Opaque.primary)
                             .colorScheme(.light)
                     }
                 }

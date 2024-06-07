@@ -88,11 +88,11 @@ struct ContractTable: View {
                             } content: {
                                 hRow {
                                     hText(L10n.InsurancesTab.cancelledInsurancesLabel("\(terminatedContracts.count)"))
-                                        .foregroundColor(hTextColor.primary)
+                                        .foregroundColor(hTextColor.Opaque.primary)
                                     Spacer()
                                 }
                                 .withChevronAccessory
-                                .foregroundColor(hTextColor.secondary)
+                                .foregroundColor(hTextColor.Opaque.secondary)
                             }
                         }
                         .transition(.slide)

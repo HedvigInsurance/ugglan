@@ -59,14 +59,14 @@ struct ClaimContactCard: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(height: 40)
-                    .foregroundColor(hTextColor.negative)
+                    .foregroundColor(hTextColor.Opaque.negative)
                     .padding(.vertical, 16)
             }
 
             hText(model.config?.cardText ?? "")
                 .fixedSize()
                 .multilineTextAlignment(.center)
-                .foregroundColor(hTextColor.tertiary)
+                .foregroundColor(hTextColor.Opaque.tertiary)
                 .padding(.bottom, 8)
                 .padding(.horizontal, 8)
 
@@ -84,7 +84,7 @@ struct ClaimContactCard: View {
                 } content: {
                     hText(model.config?.buttonText ?? "")
                         .multilineTextAlignment(.center)
-                        .foregroundColor(hTextColor.primary)
+                        .foregroundColor(hTextColor.Opaque.primary)
                         .colorScheme(.light)
                 }
             }
@@ -131,16 +131,18 @@ struct ClaimEmergencyContactCard: View {
                 }
                 .aspectRatio(contentMode: .fit)
                 .frame(height: 80)
-                .foregroundColor(hTextColor.negative)
+                .foregroundColor(hTextColor.Opaque.negative)
                 .colorScheme(.light)
                 .padding(.vertical, 8)
                 VStack(spacing: 0) {
                     if let cardTitle = cardTitle {
                         hText(cardTitle)
-                            .foregroundColor(hColorScheme(light: hTextColor.negative, dark: hTextColor.primary))
+                            .foregroundColor(
+                                hColorScheme(light: hTextColor.Opaque.negative, dark: hTextColor.Opaque.primary)
+                            )
                     }
                     hText(label ?? "")
-                        .foregroundColor(hTextColor.tertiary)
+                        .foregroundColor(hTextColor.Opaque.tertiary)
                         .colorScheme(.light)
                         .padding(.horizontal, 24)
                         .fixedSize(horizontal: false, vertical: true)
@@ -158,7 +160,7 @@ struct ClaimEmergencyContactCard: View {
                         }
                     } content: {
                         hText(L10n.submitClaimGlobalAssistanceCallLabel(phoneNumber ?? ""))
-                            .foregroundColor(hTextColor.primary)
+                            .foregroundColor(hTextColor.Opaque.primary)
                             .colorScheme(.light)
                     }
                 }
@@ -166,7 +168,7 @@ struct ClaimEmergencyContactCard: View {
 
                 if let footnote = footnote {
                     hText(footnote, style: .caption1)
-                        .foregroundColor(hTextColor.tertiary)
+                        .foregroundColor(hTextColor.Opaque.tertiary)
                         .colorScheme(.light)
                 }
             }

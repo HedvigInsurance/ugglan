@@ -63,7 +63,7 @@ struct RemoveCoInsuredScreen: View {
     @ViewBuilder
     func accessoryView(_ coInsuredModel: CoInsuredModel) -> some View {
         Image(uiImage: hCoreUIAssets.closeSmall.image)
-            .foregroundColor(hTextColor.secondary)
+            .foregroundColor(hTextColor.Opaque.secondary)
             .onTapGesture {
                 editCoInsuredNavigation.coInsuredInputModel = .init(
                     actionType: .delete,

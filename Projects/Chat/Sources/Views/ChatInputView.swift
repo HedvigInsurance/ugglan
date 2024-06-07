@@ -21,7 +21,7 @@ struct ChatInputView: View {
                         Image(uiImage: hCoreUIAssets.plusSmall.image)
                             .resizable().frame(width: 16, height: 16)
                             .rotationEffect(vm.showBottomMenu ? .degrees(45) : .zero)
-                            .foregroundColor(hTextColor.primary)
+                            .foregroundColor(hTextColor.Opaque.primary)
                             .padding(12)
                             .background(hBackgroundColor.primary)
                             .clipShape(RoundedRectangle(cornerRadius: 12))
@@ -96,7 +96,7 @@ struct ChatInputView: View {
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(height: 24)
-                        .foregroundColor(hTextColor.primary)
+                        .foregroundColor(hTextColor.Opaque.primary)
                 )
                 .frame(height: 80)
                 .overlay(
@@ -276,11 +276,11 @@ private class CustomTextView: UITextView, UITextViewDelegate {
 
     private var editingTextColor: UIColor {
         let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
-        return hTextColor.primary.colorFor(colorScheme, .base).color.uiColor()
+        return hTextColor.Opaque.primary.colorFor(colorScheme, .base).color.uiColor()
     }
     private var placeholderTextColor: UIColor {
         let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
-        return hTextColor.secondary.colorFor(colorScheme, .base).color.uiColor()
+        return hTextColor.Opaque.secondary.colorFor(colorScheme, .base).color.uiColor()
     }
 }
 

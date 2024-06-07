@@ -108,7 +108,7 @@ struct MovingFlowHouseView: View {
                                 hText(extraBuilding.type.translatedValue, style: .standard)
                                 HStack(spacing: 0) {
                                     hText(extraBuilding.descriptionText, style: .standardSmall)
-                                        .foregroundColor(hTextColor.secondary)
+                                        .foregroundColor(hTextColor.Opaque.secondary)
                                 }
                             }
                             Spacer()
@@ -120,7 +120,7 @@ struct MovingFlowHouseView: View {
                                 Image(uiImage: hCoreUIAssets.closeSmall.image)
                                     .resizable()
                                     .frame(width: 16, height: 16)
-                                    .foregroundColor(hTextColor.primary)
+                                    .foregroundColor(hTextColor.Opaque.primary)
                             }
                         }
                         .padding(.vertical, 13)

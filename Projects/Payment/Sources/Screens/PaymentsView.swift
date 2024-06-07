@@ -79,11 +79,11 @@ public struct PaymentsView: View {
                                         .resizable()
                                         .aspectRatio(contentMode: .fit)
                                         .frame(width: 16, height: 16)
-                                        .foregroundColor(hTextColor.secondary)
+                                        .foregroundColor(hTextColor.Opaque.secondary)
                                 }
                                 .foregroundColor(.primary)
                                 hText(upcomingPayment.payment.date.displayDate)
-                                    .foregroundColor(hTextColor.secondary)
+                                    .foregroundColor(hTextColor.Opaque.secondary)
                             }
                         }
                         .withEmptyAccessory
@@ -96,7 +96,7 @@ public struct PaymentsView: View {
                         Image(uiImage: hCoreUIAssets.infoSmall.image)
                             .resizable()
                             .frame(width: 24, height: 24)
-                            .foregroundColor(hSignalColor.blueElement)
+                            .foregroundColor(hSignalColor.Blue.element)
                         hText(L10n.paymentsNoPaymentsInProgress)
                     }
                     .padding(.vertical, 32)
@@ -122,7 +122,7 @@ public struct PaymentsView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 24, height: 24)
-                .foregroundColor(hSignalColor.greenElement)
+                .foregroundColor(hSignalColor.Green.element)
             hText(L10n.paymentsDiscountsSectionTitle)
             Spacer()
         }
@@ -141,7 +141,7 @@ public struct PaymentsView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 24, height: 24)
-                .foregroundColor(hTextColor.primary)
+                .foregroundColor(hTextColor.Opaque.primary)
             hText(L10n.paymentsPaymentHistoryButtonLabel)
             Spacer()
         }
@@ -160,12 +160,12 @@ public struct PaymentsView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 24, height: 24)
-                .foregroundColor(hTextColor.primary)
+                .foregroundColor(hTextColor.Opaque.primary)
             hText(displayName)
             Spacer()
         }
         .withCustomAccessory {
-            hText(descriptor).foregroundColor(hTextColor.secondary)
+            hText(descriptor).foregroundColor(hTextColor.Opaque.secondary)
         }
         .hWithoutHorizontalPadding
         .dividerInsets(.all, 0)
