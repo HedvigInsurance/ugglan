@@ -7,6 +7,22 @@ import hCoreUI
 public class ChatNavigationViewModel: ObservableObject {
     @Published var isFilePresented: FileUrlModel?
     @Published var isAskForPushNotificationsPresented = false
+    @Published var dateOfLastMessage: Date?
+    private var dateOfLastMessageCancellable: AnyCancellable?
+    init() {
+        let store: ChatStore = globalPresentableStoreContainer.get()
+        dateOfLastMessageCancellable = store.actionSignal.publisher
+            .receive(on: RunLoop.main)
+            .sink { _ in
+            } receiveValue: { [weak self] action in
+                switch action {
+                case let .setLastMessageDate(date):
+                    self?.dateOfLastMessage = date
+                default:
+                    break
+                }
+            }
+    }
 
     struct FileUrlModel: Identifiable, Equatable {
         public var id: String?
@@ -59,13 +75,16 @@ public struct ChatNavigation<Content: View>: View {
     @StateObject var chatNavigationViewModel = ChatNavigationViewModel()
     let openChat: ChatTopicWrapper
     @ViewBuilder var redirectView: (_ type: ChatRedirectViewType, _ onDone: @escaping () -> Void) -> Content
-
+    var onUpdateDate: (Date) -> Void
     public init(
         openChat: ChatTopicWrapper,
-        @ViewBuilder redirectView: @escaping (_ type: ChatRedirectViewType, _ onDone: @escaping () -> Void) -> Content
+        @ViewBuilder redirectView: @escaping (_ type: ChatRedirectViewType, _ onDone: @escaping () -> Void) -> Content,
+        onUpdateDate: @escaping (Date) -> Void
     ) {
         self.openChat = openChat
         self.redirectView = redirectView
+        self.onUpdateDate = onUpdateDate
+
     }
 
     public var body: some View {
@@ -93,11 +112,18 @@ public struct ChatNavigation<Content: View>: View {
                 }
             }
         }
+        .onChange(of: chatNavigationViewModel.dateOfLastMessage) { value in
+            if let value = value {
+                self.onUpdateDate(value)
+            }
+        }
     }
 }
 
 #Preview{
     ChatNavigation(openChat: .init(topic: nil, onTop: true)) { type, onDone in
         EmptyView()
+    } onUpdateDate: { _ in
+
     }
 }
