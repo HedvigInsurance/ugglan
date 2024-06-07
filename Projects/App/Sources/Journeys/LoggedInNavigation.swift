@@ -146,7 +146,7 @@ struct LoggedInNavigation: View {
             switch redirectType {
             case .forever:
                 ForeverNavigation(useOwnNavigation: false)
-                    .toolbar(.hidden, for: .tabBar)
+                    .hideToolbar()
             case let .openUrl(url):
                 EmptyView()
                     .onAppear {

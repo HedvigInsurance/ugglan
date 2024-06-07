@@ -163,7 +163,14 @@ public struct ChatScreen: View {
 
 class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        let vc = findProverVC(from: scrollView.viewController)
+        let vc: UIViewController? = {
+            if #available(iOS 16.0, *) {
+                return findProverVC(from: scrollView.viewController)
+            } else {
+                let vc = scrollView.viewController
+                return vc?.navigationController?.view.superview?.viewController ?? vc
+            }
+        }()
         vc?.isModalInPresentation = true
         vc?.navigationController?.isModalInPresentation = true
         setSheetInteractionState(vc: vc, to: false)
@@ -174,7 +181,14 @@ class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
         withVelocity velocity: CGPoint,
         targetContentOffset: UnsafeMutablePointer<CGPoint>
     ) {
-        let vc = findProverVC(from: scrollView.viewController)
+        let vc: UIViewController? = {
+            if #available(iOS 16.0, *) {
+                return findProverVC(from: scrollView.viewController)
+            } else {
+                let vc = scrollView.viewController
+                return vc?.navigationController?.view.superview?.viewController ?? vc
+            }
+        }()
         vc?.isModalInPresentation = false
         vc?.navigationController?.isModalInPresentation = false
         setSheetInteractionState(vc: vc, to: true)
@@ -191,6 +205,7 @@ class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
         }
     }
 
+    @available(iOS 16.0, *)
     private func findProverVC(from vc: UIViewController?) -> UIViewController? {
         if let vc {
             if let navigation = vc.navigationController {

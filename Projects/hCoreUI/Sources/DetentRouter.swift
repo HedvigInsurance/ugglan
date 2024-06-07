@@ -279,7 +279,13 @@ extension String {
         if !nameToLog.shouldBeLoggedAsView {
             return nil
         }
-        let elements = nameToLog.split(separator: "SizeModifier<")
+        let elements: [String] = {
+            if #available(iOS 16.0, *) {
+                return nameToLog.split(separator: "SizeModifier<").map({ String($0) })
+            } else {
+                return nameToLog.components(separatedBy: "SizeModifier<")
+            }
+        }()
         if elements.count > 1, let lastElement = elements.last {
             return String(lastElement).replacingOccurrences(of: "Optional<", with: "")
                 .replacingOccurrences(of: ">", with: "")
