@@ -105,7 +105,8 @@ public struct hTextView: View {
             numberOfLines: $popoverNumberOfLines
         )
         .colorScheme(.dark)
-        let vc = UIHostingController(rootView: view)
+
+        let vc = hHostingController(rootView: view, contentName: "EnterCommentTextView")
         vc.modalPresentationStyle = .overFullScreen
         vc.enableHero()
         vc.view.backgroundColor = hGrayscaleColor.greyScale1000.colorFor(.dark, .base).color.uiColor()

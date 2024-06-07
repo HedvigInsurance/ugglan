@@ -230,8 +230,6 @@ struct LoggedInNavigation: View {
                         }
                     }
                 )
-            default:
-                EmptyView()
             }
         }
         .tabItem {
