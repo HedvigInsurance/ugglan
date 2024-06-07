@@ -19,7 +19,5 @@ public indirect enum ClaimsAction: ActionProtocol, Hashable {
 }
 
 public enum ClaimsNavigationAction: ActionProtocol, Hashable {
-    case openFile(file: File)
-    case openFilesFor(claim: ClaimModel, files: [File])
-    case dismissAddFiles
+    case hasToBeAtLeastOne
 }
