@@ -68,7 +68,7 @@ extension HomeView {
         .sectionContainerStyle(.transparent)
         .hFormContentPosition(.center)
         .hFormMergeBottomViewWithContentIfNeeded
-        .task {
+        .onAppear {
             fetch()
         }
     }
