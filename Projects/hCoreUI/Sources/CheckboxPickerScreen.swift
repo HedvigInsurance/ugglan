@@ -290,7 +290,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
 
                     if let subTitle = displayName?.subTitle {
                         hText(subTitle, style: .standardSmall)
-                            .foregroundColor(hTextColor.secondaryTranslucent)
+                            .foregroundColor(hTextColor.Translucent.secondary)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)

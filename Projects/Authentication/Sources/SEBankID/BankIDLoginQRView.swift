@@ -60,10 +60,10 @@ public struct BankIDLoginQRView: View {
                         hSection {
                             VStack(spacing: 0) {
                                 hText(L10n.authenticationBankidLoginTitle)
-                                    .foregroundColor(hTextColor.primaryTranslucent)
+                                    .foregroundColor(hTextColor.Translucent.primary)
                                 hSection {
                                     hText(L10n.authenticationBankidLoginLabel)
-                                        .foregroundColor(hTextColor.secondaryTranslucent)
+                                        .foregroundColor(hTextColor.Translucent.secondary)
                                         .multilineTextAlignment(.center)
                                 }
                                 .sectionContainerStyle(.transparent)

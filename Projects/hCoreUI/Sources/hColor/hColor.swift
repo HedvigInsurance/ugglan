@@ -323,19 +323,24 @@ public struct hTextColor {
         }
     }
 
-    public static var primaryTranslucent: some hColor {
-        hColorScheme(
-            light: hGrayscaleTranslucent.offBlackTranslucent,
-            dark: hGrayscaleTranslucent.offWhiteTranslucent
-        )
-    }
+    public struct Translucent {
+        public static var primary: some hColor {
+            hColorScheme(
+                light: hGrayscaleTranslucent.offBlackTranslucent,
+                dark: hGrayscaleTranslucent.offWhiteTranslucent
+            )
+        }
 
-    public static var secondaryTranslucent: some hColor {
-        hGrayscaleTranslucent.greyScaleTranslucent700
-    }
+        public static var secondary: some hColor {
+            hGrayscaleTranslucent.greyScaleTranslucent700
+        }
 
-    public static var tertiaryTranslucent: some hColor {
-        hGrayscaleTranslucent.greyScaleTranslucent500
+        public static var tertiary: some hColor {
+            hGrayscaleTranslucent.greyScaleTranslucent500
+        }
+    }
+    public struct Color {
+
     }
 }
 

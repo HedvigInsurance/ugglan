@@ -182,7 +182,7 @@ private struct StatusPill: View {
         .padding(.vertical, 4)
         .padding(.horizontal, 10)
         .foregroundColor(hTextColor.Opaque.primary).colorScheme(.dark)
-        .background(hTextColor.tertiaryTranslucent).colorScheme(.light)
+        .background(hTextColor.Translucent.tertiary).colorScheme(.light)
         .cornerRadius(8)
     }
 }

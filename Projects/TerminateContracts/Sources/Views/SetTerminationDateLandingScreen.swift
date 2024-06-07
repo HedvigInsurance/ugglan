@@ -67,7 +67,7 @@ struct SetTerminationDateLandingScreen: View {
                     VStack(alignment: .leading) {
                         hText(config.contractDisplayName)
                         hText(config.contractExposureName, style: .standardSmall)
-                            .foregroundColor(hTextColor.secondaryTranslucent)
+                            .foregroundColor(hTextColor.Translucent.secondary)
                     }
                 }
             }
@@ -187,7 +187,7 @@ struct SetTerminationDateLandingScreen: View {
                                     .fill(
                                         hColorScheme(
                                             light: hGrayscaleTranslucent.offWhiteTranslucentInverted,
-                                            dark: hTextColor.primaryTranslucent
+                                            dark: hTextColor.Translucent.primary
                                         )
                                     )
                             )

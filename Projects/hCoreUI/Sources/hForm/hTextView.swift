@@ -501,7 +501,7 @@ private class TextView: UITextView, UITextViewDelegate {
             return hTextColor.Opaque.tertiary.colorFor(.init(.init(colorSchema))!, .base).color.uiColor()
         } else {
             if disabled {
-                return hTextColor.secondaryTranslucent.colorFor(.init(.init(colorSchema))!, .base).color.uiColor()
+                return hTextColor.Translucent.secondary.colorFor(.init(.init(colorSchema))!, .base).color.uiColor()
             }
             return hTextColor.Opaque.primary.colorFor(.init(.init(colorSchema))!, .base).color.uiColor()
         }

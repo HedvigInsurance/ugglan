@@ -109,7 +109,7 @@ public struct hOptOutField: View {
         if config.notSure {
             hTextColor.Opaque.primary
         } else {
-            hTextColor.secondaryTranslucent
+            hTextColor.Translucent.secondary
         }
     }
 

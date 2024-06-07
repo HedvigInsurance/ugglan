@@ -43,7 +43,7 @@ public struct DeleteRequestLoadingView: View {
                 hText(L10n.DeleteAccount.processedTitle, style: .body)
                     .foregroundColor(hTextColor.Opaque.primary)
                 hText(L10n.DeleteAccount.processedDescription, style: .body)
-                    .foregroundColor(hTextColor.secondaryTranslucent)
+                    .foregroundColor(hTextColor.Translucent.secondary)
                     .multilineTextAlignment(.center)
             }
             .padding(.top, UIScreen.main.bounds.size.height / 3.5)

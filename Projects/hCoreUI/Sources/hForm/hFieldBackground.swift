@@ -109,7 +109,7 @@ struct hFieldLabel: View {
         } else if isLocked {
             hTextColor.Opaque.tertiary
         } else {
-            hTextColor.tertiaryTranslucent
+            hTextColor.Translucent.tertiary
         }
     }
 }

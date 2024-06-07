@@ -11,7 +11,7 @@ struct SupportView: View {
         VStack(spacing: 24) {
             VStack(spacing: 0) {
                 hText(L10n.submitClaimNeedHelpTitle)
-                    .foregroundColor(hTextColor.primaryTranslucent)
+                    .foregroundColor(hTextColor.Translucent.primary)
                 hText(L10n.submitClaimNeedHelpLabel)
                     .foregroundColor(hTextColor.Opaque.secondary)
                     .multilineTextAlignment(.center)

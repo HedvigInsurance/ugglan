@@ -28,7 +28,7 @@ struct HelpCenterPill: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 hText(title, style: .standardSmall)
-                    .foregroundColor(hTextColor.primaryTranslucent)
+                    .foregroundColor(hTextColor.Translucent.primary)
                     .colorScheme(.light)
             }
             .padding(.horizontal, 8)
@@ -150,9 +150,9 @@ struct SupportView: View {
         HStack {
             VStack(spacing: 0) {
                 hText(L10n.hcChatQuestion)
-                    .foregroundColor(hTextColor.primaryTranslucent)
+                    .foregroundColor(hTextColor.Translucent.primary)
                 hText(L10n.hcChatAnswer)
-                    .foregroundColor(hTextColor.secondaryTranslucent)
+                    .foregroundColor(hTextColor.Translucent.secondary)
                     .multilineTextAlignment(.center)
 
                 hButton.MediumButton(type: .primary) {

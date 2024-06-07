@@ -89,14 +89,14 @@ public struct GenericErrorView: View {
             VStack {
                 if !withoutTitle {
                     hText(title ?? L10n.somethingWentWrong, style: .body)
-                        .foregroundColor(hTextColor.primaryTranslucent)
+                        .foregroundColor(hTextColor.Translucent.primary)
                         .multilineTextAlignment(.center)
                 }
                 if let description {
                     hText(description, style: .body)
                         .padding(.horizontal, 32)
                         .multilineTextAlignment(.center)
-                        .foregroundColor(hTextColor.secondaryTranslucent)
+                        .foregroundColor(hTextColor.Translucent.secondary)
                 }
             }
             if let actionButton = buttons.actionButton {
