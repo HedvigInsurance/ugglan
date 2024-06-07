@@ -339,8 +339,15 @@ public struct hTextColor {
             hGrayscaleTranslucent.greyScaleTranslucent500
         }
     }
-    public struct Color {
 
+    public struct Color {
+        public static var action: some hColor {
+            hRedColor.red600
+        }
+
+        public static var link: some hColor {
+            hBlueColor.blue600
+        }
     }
 }
 
