@@ -20,7 +20,7 @@ struct HideViewController: ViewModifier {
                 self.vc = vc
             }
         }
-        .onChange(of: hide) { newValue in
+        .onChange(of: hide) { [weak vc] newValue in
             if let vc = vc {
                 UIView.animate(withDuration: 0.4) {
                     let properVC = findProverVC(from: vc)
