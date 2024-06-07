@@ -9,4 +9,5 @@ public struct RouterDestionationOptions: OptionSet {
 
 extension RouterDestionationOptions {
     public static let hidesBackButton = RouterDestionationOptions(rawValue: 1 << 0)
+    public static let hidesBottomBarWhenPushed = RouterDestionationOptions(rawValue: 1 << 1)
 }

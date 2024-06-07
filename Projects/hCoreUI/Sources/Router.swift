@@ -145,6 +145,33 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
                     vc.navigationItem.setHidesBackButton(true, animated: true)
                 }
             }
+            vc.onViewWillAppear = { [weak vc] in
+                if options.contains(.hidesBottomBarWhenPushed) {
+                    if let tabBarController = vc?.tabBarController {
+                        tabBarController.tabBar.isHidden = true
+                        UIView.transition(
+                            with: tabBarController.tabBar,
+                            duration: 0.35,
+                            options: .transitionCrossDissolve,
+                            animations: nil
+                        )
+                    }
+                }
+            }
+
+            vc.onViewWillDisappear = { [weak vc] in
+                if options.contains(.hidesBottomBarWhenPushed) {
+                    if let tabBarController = vc?.tabBarController {
+                        tabBarController.tabBar.isHidden = false
+                        UIView.transition(
+                            with: tabBarController.tabBar,
+                            duration: 0.35,
+                            options: .transitionCrossDissolve,
+                            animations: nil
+                        )
+                    }
+                }
+            }
 
             vc.onViewDidLayoutSubviews = { [weak vc] in guard let vc = vc else { return }
                 if #available(iOS 16.0, *) {
@@ -169,6 +196,7 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
             if options.contains(.hidesBackButton) {
                 vc.navigationItem.setHidesBackButton(true, animated: true)
             }
+
             return vc
         }
 

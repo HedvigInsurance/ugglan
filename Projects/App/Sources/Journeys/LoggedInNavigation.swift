@@ -260,7 +260,7 @@ struct HomeTab: View {
                     return profileStrore.state.memberDetails?.id ?? ""
                 }
             )
-            .routerDestination(for: ClaimModel.self) { claim in
+            .routerDestination(for: ClaimModel.self, options: [.hidesBottomBarWhenPushed]) { claim in
                 ClaimDetailView(claim: claim)
                     .environmentObject(homeNavigationVm)
                     .configureTitle(L10n.claimsYourClaim)

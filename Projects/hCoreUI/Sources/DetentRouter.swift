@@ -151,6 +151,9 @@ class PresentationViewModel: ObservableObject {
 public class hHostingController<Content: View>: UIHostingController<Content> {
     var onViewWillLayoutSubviews: () -> Void = {}
     var onViewDidLayoutSubviews: () -> Void = {}
+    var onViewWillAppear: () -> Void = {}
+    var onViewWillDisappear: () -> Void = {}
+
     var onDeinit: () -> Void = {}
     private let contentName: String
     public init(rootView: Content, contentName: String) {
@@ -168,6 +171,15 @@ public class hHostingController<Content: View>: UIHostingController<Content> {
         onViewWillLayoutSubviews()
     }
 
+    public override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        onViewWillAppear()
+    }
+
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        onViewWillDisappear()
+    }
     @MainActor required dynamic init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
