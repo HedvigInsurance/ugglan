@@ -152,6 +152,8 @@ public struct ClaimsNavigation: View {
             cancellable = store.actionSignal.publisher.sink { _ in
             } receiveValue: { action in
                 switch action {
+                case .dissmissNewClaimFlow:
+                    router.dismiss()
                 case let .navigationAction(navigationAction):
                     switch navigationAction {
                     case .openTriagingEntrypointScreen:

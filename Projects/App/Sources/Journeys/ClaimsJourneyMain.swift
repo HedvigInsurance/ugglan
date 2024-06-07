@@ -28,7 +28,6 @@ public struct ClaimsJourneyMain: View {
                     options: .hidesBackButton
                 ) { destination in
                     if destination == .askForPushNotifications {
-
                         AskForPushNotifications(
                             text: L10n.claimsActivateNotificationsBody,
                             onActionExecuted: {
