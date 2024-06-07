@@ -19,10 +19,6 @@ struct ConnectPayment: ViewModifier {
                 options: .constant([.disableDismissOnScroll, .withoutGrabber, .alwaysOpenOnTop])
             ) { setupTypeModel in
                 DirectDebitSetup()
-                    .configureTitle(
-                        setupTypeModel.setUpType == .replacement
-                            ? L10n.PayInIframeInApp.connectPayment : L10n.PayInIframePostSign.title
-                    )
             }
     }
 }

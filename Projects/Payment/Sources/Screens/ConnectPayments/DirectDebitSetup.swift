@@ -288,8 +288,11 @@ public struct DirectDebitSetup: View {
                 dismissButton
             }
         }
+        .configureTitle(
+            setupType == .replacement
+                ? L10n.PayInIframeInApp.connectPayment : L10n.PayInIframePostSign.title
+        )
         .embededInNavigation(router: router, options: .navigationType(type: .large), tracking: self)
-
     }
 
     private var dismissButton: some View {
