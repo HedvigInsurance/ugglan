@@ -208,9 +208,8 @@ struct LoggedInNavigation: View {
                     //show loading screen since we everything needs to be updated
                     mainNavigationVm?.hasLaunchFinished = false
                     profileNavigationVm?.isLanguagePickerPresented = false
-
                     //show home screen with updated langauge
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         mainNavigationVm?.hasLaunchFinished = true
                         vm?.selectedTab = 0
                     }

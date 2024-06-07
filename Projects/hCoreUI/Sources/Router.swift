@@ -273,7 +273,9 @@ private struct EmbededInNavigation: ViewModifier {
 extension View {
     public func configureTitle(_ title: String) -> some View {
         self.introspectViewController { vc in
-            vc.title = title
+            UIView.performWithoutAnimation { [weak vc] in
+                vc?.title = title
+            }
         }
     }
 
