@@ -69,7 +69,6 @@ public struct PickLanguage: View {
                         hButton.LargeButton(type: .primary) {
                             Localization.Locale.currentLocale = currentLocale
                             onSave(currentLocale.code)
-                            store.send(.dismissPicker)
                         } content: {
                             hText(L10n.generalSaveButton)
                         }

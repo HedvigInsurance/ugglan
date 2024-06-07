@@ -8,6 +8,7 @@ import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct LoginNavigation: View {
     @ObservedObject var vm: NotLoggedViewModel
@@ -178,25 +179,22 @@ public class NotLoggedViewModel: ObservableObject {
         self.bootStrapped = true
     }
 
-    func onCountryPressed() {
-        store.send(.presentLanguageAndMarketPicker)
-    }
-
-    func onLoginPressed() {
-        store.send(.loginButtonTapped)
-    }
-
     func onOnBoardPressed() {
-        store.send(.onboard)
+        var webUrl = Environment.current.webBaseURL
+        webUrl.appendPathComponent(Localization.Locale.currentLocale.webPath)
+        webUrl.appendPathComponent(Localization.Locale.currentLocale.priceQoutePath)
+        webUrl =
+            webUrl
+            .appending("utm_source", value: "ios")
+            .appending("utm_medium", value: "hedvig-app")
+            .appending("utm_campaign", value: Localization.Locale.currentLocale.market.rawValue.lowercased())
+        UIApplication.shared.open(webUrl)
+
     }
 
     enum ViewState {
         case loading
         case marketAndLanguage
-    }
-
-    deinit {
-        let ss = ""
     }
 }
 

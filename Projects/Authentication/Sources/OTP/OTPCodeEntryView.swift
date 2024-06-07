@@ -5,7 +5,7 @@ import hCoreUI
 public struct OTPCodeEntryView: View {
     @StateObject private var vm = OTPCodeEntryViewModel()
     @EnvironmentObject var otpVM: OTPState
-
+    @EnvironmentObject var router: Router
     public init() {}
 
     public var body: some View {
@@ -81,13 +81,16 @@ public struct OTPCodeEntryView: View {
         .onChange(of: otpVM.code) { newValue in
             vm.check(otpState: otpVM)
         }
+        .onAppear {
+            vm.router = router
+        }
     }
 }
 
 class OTPCodeEntryViewModel: ObservableObject {
     private var authenticationService = AuthenticationService()
     @hTextFieldFocusState var focusCodeField: Bool? = true
-
+    var router: Router?
     func check(otpState: OTPState) {
         let code = otpState.code
         Task {
@@ -104,6 +107,9 @@ class OTPCodeEntryViewModel: ObservableObject {
                         try await service.exchange(code: code)
                         let generator = UINotificationFeedbackGenerator()
                         generator.notificationOccurred(.success)
+                        ApplicationState.preserveState(.loggedIn)
+                        ApplicationState.state = .loggedIn
+                        self?.router?.dismiss()
                     }
                 } catch let error {
                     otpState?.codeErrorMessage = error.localizedDescription
