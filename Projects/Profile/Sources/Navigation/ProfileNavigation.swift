@@ -64,8 +64,17 @@ public struct ProfileNavigation<Content: View>: View {
         .detent(
             item: $profileNavigationViewModel.isDeleteAccountPresented,
             style: .height,
-            options: .constant(.withoutGrabber), 
-            tracking: ProfileRedirectType.deleteAccount(memberDetails: .init(id: "", firstName: "", lastName: "", phone: "", email: "", hasTravelCertificate: false))
+            options: .constant(.withoutGrabber),
+            tracking: ProfileRedirectType.deleteAccount(
+                memberDetails: .init(
+                    id: "",
+                    firstName: "",
+                    lastName: "",
+                    phone: "",
+                    email: "",
+                    hasTravelCertificate: false
+                )
+            )
         ) { memberDetails in
             redirect(
                 .deleteAccount(
