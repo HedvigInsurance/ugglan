@@ -20,18 +20,24 @@ struct MainNavigationJourney: App {
     var body: some Scene {
         WindowGroup {
             Group {
-                if vm.hasLaunchFinished {
-                    switch vm.stateToShow {
-                    case .loggedIn:
-                        LoggedInNavigation(vm: vm.loggedInVm)
-                            .environmentObject(vm)
-                    case .impersonation:
-                        ImpersonationSettings()
-                    default:
-                        LoginNavigation(vm: vm.notLoggedInVm)
+                Group {
+                    if vm.osVersionTooLow {
+                        UpdateOSScreen()
+                    } else if vm.shouldUpdateApp {
+                        UpdateAppScreen {}
+                    } else if vm.hasLaunchFinished {
+                        switch vm.stateToShow {
+                        case .loggedIn:
+                            LoggedInNavigation(vm: vm.loggedInVm)
+                                .environmentObject(vm)
+                        case .impersonation:
+                            ImpersonationSettings()
+                        default:
+                            LoginNavigation(vm: vm.notLoggedInVm)
+                        }
+                    } else {
+                        ProgressView()
                     }
-                } else {
-                    ProgressView()
                 }
             }
             .onOpenURL { url in
@@ -54,6 +60,8 @@ struct MainNavigationJourney: App {
 
 class MainNavigationViewModel: ObservableObject {
     @Published var hasLaunchFinished = false
+    @Published var shouldUpdateApp = false
+    @Published var osVersionTooLow = false
     lazy var notLoggedInVm = NotLoggedViewModel()
     var loggedInVm = LoggedInNavigationViewModel()
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
@@ -68,7 +76,7 @@ class MainNavigationViewModel: ObservableObject {
                     }
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()
                     await contractStore.sendAsync(.fetchContracts)
-                    await fetchFeatureFlag()
+                    await checkForFeatureFlags()
                     AnalyticsService().fetchAndSetUserId()
                     withAnimation {
                         hasLaunchFinished = true
@@ -88,11 +96,17 @@ class MainNavigationViewModel: ObservableObject {
     @MainActor
     init() {
         Task {
-            await fetchFeatureFlag()
+            await checkForFeatureFlags()
             withAnimation {
                 hasLaunchFinished = true
             }
         }
+    }
+
+    private func checkForFeatureFlags() async {
+        await fetchFeatureFlag()
+        shouldUpdateApp = Dependencies.featureFlags().isUpdateNecessary
+        osVersionTooLow = Dependencies.featureFlags().osVersionTooLow
     }
 
     func fetchFeatureFlag() async {
