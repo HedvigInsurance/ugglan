@@ -91,3 +91,15 @@ public struct HedvigUIKitRUMViewsPredicate: UIKitRUMViewsPredicate {
         return nil
     }
 }
+
+extension View {
+    func trackViewName(name: String? = nil) -> some View {
+        self.onAppear {
+            RUMMonitor.shared()
+                .startView(key: .init(describing: self), name: name ?? .init(describing: self), attributes: [:])
+        }
+        .onDisappear {
+            RUMMonitor.shared().stopView(key: .init(describing: self), attributes: [:])
+        }
+    }
+}

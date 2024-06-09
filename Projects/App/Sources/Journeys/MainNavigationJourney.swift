@@ -23,8 +23,10 @@ struct MainNavigationJourney: App {
                 Group {
                     if vm.osVersionTooLow {
                         UpdateOSScreen()
+                            .trackViewName(name: .init(describing: UpdateOSScreen.self))
                     } else if vm.shouldUpdateApp {
-                        UpdateAppScreen {}
+                        UpdateAppScreen(onSelected: {}, withoutDismissButton: true)
+                            .trackViewName(name: .init(describing: UpdateAppScreen.self))
                     } else if vm.hasLaunchFinished {
                         switch vm.stateToShow {
                         case .loggedIn:
@@ -32,6 +34,7 @@ struct MainNavigationJourney: App {
                                 .environmentObject(vm)
                         case .impersonation:
                             ImpersonationSettings()
+                                .trackViewName(name: .init(describing: ImpersonationSettings.self))
                         default:
                             LoginNavigation(vm: vm.notLoggedInVm)
                         }
