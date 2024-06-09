@@ -20,27 +20,25 @@ struct MainNavigationJourney: App {
     var body: some Scene {
         WindowGroup {
             Group {
-                Group {
-                    if vm.osVersionTooLow {
-                        UpdateOSScreen()
-                            .trackViewName(name: .init(describing: UpdateOSScreen.self))
-                    } else if vm.shouldUpdateApp {
-                        UpdateAppScreen(onSelected: {}, withoutDismissButton: true)
-                            .trackViewName(name: .init(describing: UpdateAppScreen.self))
-                    } else if vm.hasLaunchFinished {
-                        switch vm.stateToShow {
-                        case .loggedIn:
-                            LoggedInNavigation(vm: vm.loggedInVm)
-                                .environmentObject(vm)
-                        case .impersonation:
-                            ImpersonationSettings()
-                                .trackViewName(name: .init(describing: ImpersonationSettings.self))
-                        default:
-                            LoginNavigation(vm: vm.notLoggedInVm)
-                        }
-                    } else {
-                        ProgressView()
+                if vm.osVersionTooLow {
+                    UpdateOSScreen()
+                        .trackViewName(name: .init(describing: UpdateOSScreen.self))
+                } else if vm.shouldUpdateApp {
+                    UpdateAppScreen(onSelected: {}, withoutDismissButton: true)
+                        .trackViewName(name: .init(describing: UpdateAppScreen.self))
+                } else if vm.hasLaunchFinished {
+                    switch vm.stateToShow {
+                    case .loggedIn:
+                        LoggedInNavigation(vm: vm.loggedInVm)
+                            .environmentObject(vm)
+                    case .impersonation:
+                        ImpersonationSettings()
+                            .trackViewName(name: .init(describing: ImpersonationSettings.self))
+                    default:
+                        LoginNavigation(vm: vm.notLoggedInVm)
                     }
+                } else {
+                    ProgressView()
                 }
             }
             .onOpenURL { url in
