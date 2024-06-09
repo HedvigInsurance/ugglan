@@ -167,7 +167,7 @@ public class FilesUploadViewModel: ObservableObject {
 
     private let fileUploadManager = FileUploadManager()
     private let model: FlowClaimFileUploadStepModel
-    @Inject var claimFileUploadService: hClaimFileUploadService
+    var claimFileUploadService = hClaimFileUploadService()
     @ObservedObject var fileGridViewModel: FileGridViewModel
     @PresentableStore var store: SubmitClaimStore
     var delayTimer: AnyCancellable?

@@ -17,6 +17,7 @@ public struct InfoCardScrollView<Content: View, cardItem: Identifiable>: View {
     }
 
     public var body: some View {
+        let _ = print("items is: ", items)
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(alignment: .bottom, spacing: vm.spacing) {
                 ForEach(items) { item in
@@ -82,6 +83,7 @@ public class InfoCardScrollViewModel: NSObject, ObservableObject, UIScrollViewDe
     @Published var calcOffset: CGFloat = 0
     @Published var scrollViewHeight: CGFloat = 0
     @Published var itemsCount: CGFloat = 0
+
     let spacing: CGFloat
     let cardWidth: CGFloat
     let cardWithSpacing: CGFloat

@@ -175,8 +175,8 @@ class ClaimFilesViewModel: ObservableObject {
     let fileUploadManager = FileUploadManager()
     var fileGridViewModel: FileGridViewModel
     private var onSuccess: (_ data: [ClaimFileUploadResponse]) -> Void
-    @Inject var claimFileUploadService: hClaimFileUploadService
-    @Inject var fetchClaimService: hFetchClaimService
+    var claimFileUploadService = hClaimFileUploadService()
+    var fetchClaimService = hFetchClaimService()
 
     @PresentableStore var store: ClaimsStore
     init(

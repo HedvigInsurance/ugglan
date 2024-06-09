@@ -4,7 +4,8 @@ import hCore
 import hCoreUI
 
 struct DiscountCodeSectionView: View {
-    @PresentableStore var store: ForeverStore
+    @EnvironmentObject var foreverNavigationVm: ForeverNavigationViewModel
+
     var body: some View {
         PresentableStoreLens(
             ForeverStore.self,
@@ -31,19 +32,13 @@ struct DiscountCodeSectionView: View {
                     hSection {
                         VStack(spacing: 8) {
                             hButton.LargeButton(type: .primary) {
-                                store.send(
-                                    .showShareSheetOnly(
-                                        code: code,
-                                        discount: store.state.foreverData?.monthlyDiscountPerReferral.formattedAmount
-                                            ?? ""
-                                    )
-                                )
+                                foreverNavigationVm.shareCode(code: code)
                             } content: {
                                 hText(L10n.ReferralsEmpty.shareCodeButton)
                             }
 
                             hButton.LargeButton(type: .ghost) {
-                                store.send(.showChangeCodeDetail)
+                                foreverNavigationVm.isChangeCodePresented = true
                             } content: {
                                 hText(L10n.ReferralsChange.changeCode)
                             }
@@ -64,7 +59,7 @@ struct DiscountCodeSectionView_Previews: PreviewProvider {
         Localization.Locale.currentLocale = .en_SE
         return DiscountCodeSectionView()
             .onAppear {
-                Dependencies.shared.add(module: Module { () -> ForeverService in ForeverServiceDemo() })
+                Dependencies.shared.add(module: Module { () -> ForeverClient in ForeverClientDemo() })
             }
     }
 }

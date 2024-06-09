@@ -8,7 +8,7 @@ public final class TerminationContractStore: LoadingStateStore<
     TerminationContractState, TerminationContractAction, TerminationContractLoadingAction
 >
 {
-    @Inject var terminateContractsService: TerminateContractsService
+    @Inject var terminateContractsService: TerminateContractsClient
 
     public override func effects(
         _ getState: @escaping () -> TerminationContractState,

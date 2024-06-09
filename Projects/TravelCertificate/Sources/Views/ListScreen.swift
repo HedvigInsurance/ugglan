@@ -3,19 +3,19 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct ListScreen: View {
+public struct ListScreen: View {
     @StateObject var vm = ListScreenViewModel()
-    @PresentableStore var store: TravelInsuranceStore
+    @EnvironmentObject var router: Router
+    @EnvironmentObject var travelCertificateNavigationVm: TravelCertificateNavigationViewModel
 
-    let canAddTravelInsurance: Bool
     let infoButtonPlacement: ToolbarItemPlacement
-    init(
-        canAddTravelInsurance: Bool,
+
+    public init(
         infoButtonPlacement: ToolbarItemPlacement
     ) {
-        self.canAddTravelInsurance = canAddTravelInsurance
         self.infoButtonPlacement = infoButtonPlacement
     }
+
     public var body: some View {
         hForm {
             if vm.list.isEmpty {
@@ -41,7 +41,7 @@ struct ListScreen: View {
                     .withChevronAccessory
                     .foregroundColor(travelCertificate.textColor)
                     .onTapGesture {
-                        store.send(.navigation(.openDetails(for: travelCertificate)))
+                        travelCertificateNavigationVm.isDocumentPresented = travelCertificate
                     }
                 }
                 .withoutHorizontalPadding
@@ -52,9 +52,9 @@ struct ListScreen: View {
             hSection {
                 VStack(spacing: 16) {
                     InfoCard(text: L10n.TravelCertificate.startDateInfo(45), type: .info)
-                    if canAddTravelInsurance {
+                    if vm.canCreateTravelInsurance {
                         hButton.LargeButton(type: .secondary) {
-                            vm.createNewPressed()
+                            createNewPressed()
                         } content: {
                             hText(L10n.TravelCertificate.createNewCertificate)
                         }
@@ -79,13 +79,30 @@ struct ListScreen: View {
         }
         .sectionContainerStyle(.transparent)
     }
+
+    func createNewPressed() {
+        Task { @MainActor in
+            withAnimation {
+                vm.isCreateNewLoading = true
+            }
+            do {
+                let specifications = try await vm.service.getSpecifications()
+                travelCertificateNavigationVm.isStartDateScreenPresented = .init(specification: specifications)
+            } catch _ {
+
+            }
+            withAnimation {
+                vm.isCreateNewLoading = false
+            }
+        }
+    }
 }
 
 class ListScreenViewModel: ObservableObject {
-    @Inject var service: TravelInsuranceClient
-    @PresentableStore var store: TravelInsuranceStore
+    var service = TravelInsuranceService()
 
     @Published var list: [TravelCertificateModel] = []
+    @Published var canCreateTravelInsurance: Bool = false
     @Published var error: String?
     @Published var isLoading = false
     @Published var isCreateNewLoading: Bool = false
@@ -100,66 +117,12 @@ class ListScreenViewModel: ObservableObject {
     private func getTravelCertificateList() async {
         isLoading = true
         do {
-            let list = try await self.service.getList()
+            let (list, canCreateTravelInsurance) = try await self.service.getList()
             self.list = list
+            self.canCreateTravelInsurance = canCreateTravelInsurance
         } catch _ {
             self.error = L10n.General.errorBody
         }
         isLoading = false
-    }
-
-    func createNewPressed() {
-        Task { @MainActor in
-            withAnimation {
-                isCreateNewLoading = true
-            }
-            do {
-                let specifications = try await service.getSpecifications()
-                store.send(.navigation(.openCreateNew(specifications: specifications)))
-            } catch _ {
-
-            }
-            withAnimation {
-                isCreateNewLoading = false
-            }
-        }
-    }
-}
-
-struct LoadingViewWithContent: ViewModifier {
-    @Binding var isLoading: Bool
-    @Binding var error: String?
-    func body(content: Content) -> some View {
-        ZStack {
-            BackgroundView().edgesIgnoringSafeArea(.all)
-            if isLoading {
-                loadingIndicatorView.transition(.opacity.animation(.easeInOut(duration: 0.2)))
-            } else if let error = error {
-                GenericErrorView(
-                    description: error,
-                    buttons: .init()
-                )
-                .hWithoutTitle
-                .transition(.opacity.animation(.easeInOut(duration: 0.2)))
-            } else {
-                content.transition(.opacity.animation(.easeInOut(duration: 0.2)))
-            }
-        }
-    }
-
-    private var loadingIndicatorView: some View {
-        HStack {
-            DotsActivityIndicator(.standard)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(hBackgroundColor.primary.opacity(0.01))
-        .edgesIgnoringSafeArea(.top)
-        .useDarkColor
-    }
-}
-
-extension View {
-    func loading(_ isLoading: Binding<Bool>, _ error: Binding<String?>) -> some View {
-        modifier(LoadingViewWithContent(isLoading: isLoading, error: error))
     }
 }

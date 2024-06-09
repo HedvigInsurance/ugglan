@@ -5,12 +5,10 @@ import Claims
 import Contracts
 import CoreDependencies
 import DatadogLogs
-import EditCoInsured
 import Flow
 import Forever
 import Form
 import Foundation
-import Home
 import MoveFlow
 import Payment
 import Presentation
@@ -29,9 +27,8 @@ import hGraphQL
     #endif
 #endif
 
-@UIApplicationMain class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate {
     let bag = DisposeBag()
-    let deepLinkDisposeBag = DisposeBag()
     let featureFlagsBag = DisposeBag()
     let window: UIWindow = {
         var window = UIWindow(frame: UIScreen.main.bounds)
@@ -39,7 +36,7 @@ import hGraphQL
         return window
     }()
 
-    func presentMainJourney() {
+    private func clearData() {
         ApolloClient.cache = InMemoryNormalizedCache()
 
         // remove all persisted state
@@ -48,26 +45,23 @@ import hGraphQL
         // create new store container to remove all old store instances
         globalPresentableStoreContainer = PresentableStoreContainer()
 
-        self.setupSession()
-        self.bag += self.window.present(AppJourney.main)
-        UIView.transition(
-            with: self.window,
-            duration: 0.3,
-            options: .transitionCrossDissolve,
-            animations: {},
-            completion: { _ in }
-        )
+        ApolloClient.initAndRegisterClient()
     }
 
     func logout() {
         bag.dispose()
         let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
         ugglanStore.send(.setIsDemoMode(to: false))
-        let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
-        authenticationStore.send(.logout)
-        ApplicationContext.shared.$isLoggedIn.value = false
+        Task {
+            let authenticationService = AuthenticationService()
+            do {
+                try await authenticationService.logout()
+            } catch _ {
+
+            }
+        }
         ApolloClient.deleteToken()
-        self.presentMainJourney()
+        clearData()
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
@@ -89,56 +83,54 @@ import hGraphQL
         restorationHandler _: @escaping ([UIUserActivityRestoring]?) -> Void
     ) -> Bool {
         guard let url = userActivity.webpageURL else { return false }
-        if let rootVC = window.rootViewController {
-            self.handleDeepLink(url, fromVC: rootVC)
-        }
+        NotificationCenter.default.post(name: .openDeepLink, object: url)
         return true
     }
 
-    func registerForPushNotifications() -> Future<Void> {
-        Future { completion in
-            UNUserNotificationCenter.current()
-                .getNotificationSettings { settings in
-                    let store: ProfileStore = globalPresentableStoreContainer.get()
-                    store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
-                    guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
-                        return
-                    }
-                    if settings.authorizationStatus == .denied {
-                        DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
-                    }
+    func registerForPushNotifications(completed: @escaping () -> Void) {
+        UNUserNotificationCenter.current()
+            .getNotificationSettings { settings in
+                let store: ProfileStore = globalPresentableStoreContainer.get()
+                store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+                guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+                    return
                 }
+                if settings.authorizationStatus == .denied {
+                    DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
+                }
+            }
 
-            let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
-            UNUserNotificationCenter.current()
-                .requestAuthorization(
-                    options: authOptions,
-                    completionHandler: { _, _ in
+        let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+        UNUserNotificationCenter.current()
+            .requestAuthorization(
+                options: authOptions,
+                completionHandler: { _, _ in
+                    UNUserNotificationCenter.current()
+                        .getNotificationSettings { settings in
+                            let store: ProfileStore = globalPresentableStoreContainer.get()
+                            store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+                        }
+                    completed()
+                }
+            )
 
-                        UNUserNotificationCenter.current()
-                            .getNotificationSettings { settings in
-                                let store: ProfileStore = globalPresentableStoreContainer.get()
-                                store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
-                            }
-                        completion(.success)
-                    }
-                )
+    }
 
-            return NilDisposer()
+    func handleURL(url: URL) {
+        let impersonate = Impersonate()
+        if impersonate.canImpersonate(with: url) {
+            let store: UgglanStore = globalPresentableStoreContainer.get()
+            store.send(.setIsDemoMode(to: false))
+            Task {
+                setupSession()
+                await impersonate.impersonate(with: url)
+
+            }
         }
     }
 
     func application(_: UIApplication, open url: URL, sourceApplication _: String?, annotation _: Any) -> Bool {
-        if url.relativePath.contains("login-failure") {
-            let authenticationStore: AuthenticationStore = globalPresentableStoreContainer.get()
-            authenticationStore.send(.loginFailure(message: nil))
-        }
-
-        let impersonate = Impersonate()
-        if impersonate.canImpersonate(with: url) {
-            impersonate.impersonate(with: url)
-        }
-
+        handleURL(url: url)
         return false
     }
 
@@ -184,9 +176,7 @@ import hGraphQL
 
         ApolloClient.bundle = Bundle.main
         ApolloClient.acceptLanguageHeader = Localization.Locale.currentLocale.acceptLanguageHeader
-
         AskForRating().registerSession()
-
         setupDebugger()
     }
 
@@ -197,7 +187,7 @@ import hGraphQL
         Localization.Locale.currentLocale = ApplicationState.preferredLocale
         setupSession()
         TokenRefresher.shared.onRefresh = { token in
-            let authService: AuthentificationService = Dependencies.shared.resolve()
+            let authService = AuthenticationService()
             try await authService.exchange(refreshToken: token)
         }
         let config = Logger.Configuration(
@@ -216,20 +206,12 @@ import hGraphQL
         log.info("Starting app")
 
         UIApplication.shared.registerForRemoteNotifications()
-
-        let (launchView, launchFuture) = Launch.shared.materialize()
-        window.rootView.addSubview(launchView)
-        launchView.layer.zPosition = .greatestFiniteMagnitude - 2
-        forceLogoutHook = {
+        forceLogoutHook = { [weak self] in
             if ApplicationState.currentState != .notLoggedIn {
                 DispatchQueue.main.async {
-                    launchView.removeFromSuperview()
                     ApplicationState.preserveState(.notLoggedIn)
-
                     ApplicationContext.shared.hasFinishedBootstrapping = true
-                    Launch.shared.completeAnimationCallbacker.callAll()
-
-                    UIApplication.shared.appDelegate.logout()
+                    self?.logout()
                     let toast = Toast(
                         symbol: .icon(hCoreUIAssets.infoIconFilled.image),
                         body: L10n.forceLogoutMessageTitle,
@@ -244,49 +226,10 @@ import hGraphQL
 
         window.rootViewController = UIViewController()
         window.makeKeyAndVisible()
-
-        launchView.snp.makeConstraints { make in make.top.bottom.leading.trailing.equalToSuperview() }
-
         DefaultStyling.installCustom()
 
         UNUserNotificationCenter.current().delegate = self
-
-        bag += launchFuture.valueSignal.onValue { _ in
-            launchView.removeFromSuperview()
-            ApplicationContext.shared.hasFinishedBootstrapping = true
-
-            if Environment.hasOverridenDefault {
-                let toast = Toast(
-                    symbol: .icon(hCoreUIAssets.settingsIcon.image),
-                    body: "Targeting \(Environment.current.displayName) environment",
-                    textColor: .black,
-                    backgroundColor: .brand(.caution)
-                )
-
-                self.bag += toast.onTap.onValue {
-                    self.window.rootViewController?
-                        .present(
-                            UIHostingController(rootView: Debug()),
-                            style: .detented(.medium, .large),
-                            options: []
-                        )
-                }
-
-                Toasts.shared.displayToast(toast: toast)
-            }
-        }
-
-        let store: UgglanStore = globalPresentableStoreContainer.get()
-        setupExperiments()
         observeNotificationsSettings()
         return true
-    }
-
-    private func setupExperiments() {
-        self.setupFeatureFlags(onComplete: { success in
-            DispatchQueue.main.async {
-                self.bag += self.window.present(AppJourney.main)
-            }
-        })
     }
 }

@@ -33,7 +33,7 @@ extension AppDelegate {
         )
         let store: ProfileStore = globalPresentableStoreContainer.get()
         if let userId = store.state.memberDetails?.id {
-            let analyticsService: AnalyticsService = Dependencies.shared.resolve()
+            let analyticsService: AnalyticsClient = Dependencies.shared.resolve()
             analyticsService.setWith(userId: userId)
         }
         Logs.enable()
@@ -75,6 +75,13 @@ extension AppDelegate {
         if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
             Datadog.verbosityLevel = .debug
         }
+        logStartView = { key, name in
+            print("VIEW NAME \(name)")
+            RUMMonitor.shared().startView(key: key, name: name, attributes: [:])
+        }
+        logStopView = { key in
+            RUMMonitor.shared().stopView(key: key, attributes: [:])
+        }
     }
 }
 
@@ -82,103 +89,18 @@ public struct HedvigUIKitRUMViewsPredicate: UIKitRUMViewsPredicate {
     public init() {}
 
     public func rumView(for viewController: UIViewController) -> RUMView? {
-        guard !HedvigUIKitRUMViewsPredicate.isUIKit(class: type(of: viewController)) else {
-            // Part of our heuristic for (auto) tracking view controllers is to ignore
-            // container view controllers coming from `UIKit` if they are not subclassed.
-            // This condition is wider and it ignores all view controllers defined in `UIKit` bundle.
-            return nil
-        }
-
-        guard !isSwiftUI(class: type(of: viewController)) else {
-            // `SwiftUI` requires manual instrumentation in views. Therefore, all SwiftUI
-            // `UIKit` containers (e.g. `UIHostingController`) will be ignored from
-            // auto-intrumentation.
-            // This condition is wider and it ignores all view controllers defined in `SwiftUI` bundle.
-            return nil
-        }
-
-        let viewName = viewController.getViewNameForRum
-        if !viewName.shouldBeLoggedAsView {
-            return nil
-        }
-        var view = RUMView(name: viewName)
-        view.path = viewName
-        print("VIEW NAME: \(viewName) ")
-        return view
-    }
-
-    static func isUIKit(`class`: AnyClass) -> Bool {
-        return Bundle(for: `class`).isUIKit
-    }
-
-    private func isSwiftUI(`class`: AnyClass) -> Bool {
-        return Bundle(for: `class`).isSwiftUI
+        return nil
     }
 }
 
-extension UIViewController {
-    fileprivate var getViewNameForRum: String {
-
-        var viewControllerName = String(describing: type(of: self).self)
-        if let self = self as? UINavigationController, self.viewControllers.count == 1 {
-            if let vc = self.viewControllers.first, HedvigUIKitRUMViewsPredicate.isUIKit(class: type(of: vc)),
-                let title = vc.title
-            {
-                return title
-            }
+extension View {
+    func trackViewName(name: String? = nil) -> some View {
+        self.onAppear {
+            RUMMonitor.shared()
+                .startView(key: .init(describing: self), name: name ?? .init(describing: self), attributes: [:])
         }
-
-        if viewControllerName.contains("HostingJourneyController") {
-            if let range = viewControllerName.range(of: "HostingJourneyController<") {
-                viewControllerName.removeSubrange(range)
-            }
-
-            if let lastIndex = viewControllerName.lastIndex(of: ">") {
-                viewControllerName.remove(at: lastIndex)
-            }
+        .onDisappear {
+            RUMMonitor.shared().stopView(key: .init(describing: self), attributes: [:])
         }
-
-        if viewControllerName.contains("ModifiedContent") {
-            if let range = viewControllerName.range(of: "ModifiedContent<") {
-                viewControllerName.removeSubrange(range)
-            }
-            if let viewName = viewControllerName.components(separatedBy: ",").first {
-                return viewName
-            }
-        }
-        return viewControllerName
-    }
-}
-
-extension String {
-    fileprivate var shouldBeLoggedAsView: Bool {
-        switch self {
-
-        case String(describing: hNavigationController.self),
-            String(describing: hNavigationControllerWithLargerNavBar.self),
-            String(describing: IntrospectionUIViewController.self):
-            return false
-        default:
-            return true
-        }
-    }
-}
-
-extension Bundle {
-    fileprivate var isUIKit: Bool {
-        return bundleURL.lastPathComponent == "UIKitCore.framework"  // on iOS 12+
-            || bundleURL.lastPathComponent == "UIKit.framework"  // on iOS 11
-    }
-}
-
-extension Bundle {
-    var isSwiftUI: Bool {
-        return bundleURL.lastPathComponent == "SwiftUI.framework"
-    }
-}
-
-extension SwiftUI.View {
-    var typeDescription: String {
-        return String(describing: type(of: self))
     }
 }

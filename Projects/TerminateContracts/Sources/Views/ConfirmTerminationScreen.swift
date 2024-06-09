@@ -3,9 +3,9 @@ import hCore
 import hCoreUI
 
 struct ConfirmTerminationScreen: View {
-    @PresentableStore var store: TerminationContractStore
     @State private var isHidden = false
     let onSelected: () -> Void
+    @EnvironmentObject var terminationNavigationVm: TerminationFlowNavigationViewModel
 
     init(
         onSelected: @escaping () -> Void
@@ -36,8 +36,8 @@ struct ConfirmTerminationScreen: View {
                         ),
                     dismissButton: .init(
                         buttonTitle: L10n.generalCloseButton,
-                        buttonAction: { [weak store] in
-                            store?.send(.goBack)
+                        buttonAction: {
+                            terminationNavigationVm.isConfirmTerminationPresented = false
                         }
                     )
                 ),

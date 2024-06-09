@@ -1,13 +1,14 @@
 import Combine
-import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
 
 public struct BankIDLoginQRView: View {
-    @PresentableStore var store: AuthenticationStore
     @StateObject var vm = BandIDViewModel()
+    @EnvironmentObject var router: Router
+    @EnvironmentObject var otpVM: OTPState
+
     private var onStartDemoMode: () async -> Void
     public init(onStartDemoMode: @escaping () async -> Void) {
         self.onStartDemoMode = onStartDemoMode
@@ -48,8 +49,9 @@ public struct BankIDLoginQRView: View {
                                 secondaryButton: .destructive(Text(L10n.logoutAlertActionConfirm)) {
                                     Task {
                                         await onStartDemoMode()
-                                        store.send(.bankIdQrResultAction(action: .loggedIn))
-                                        vm.cancelLogin()
+                                        router.dismiss()
+                                        ApplicationState.preserveState(.loggedIn)
+                                        ApplicationState.state = .loggedIn
                                     }
                                 }
                             )
@@ -87,7 +89,7 @@ public struct BankIDLoginQRView: View {
                             }
 
                             hButton.LargeButton(type: .ghost) {
-                                store.send(.bankIdQrResultAction(action: .emailLogin))
+                                router.push(AuthentificationRouterType.emailLogin)
                                 vm.cancelLogin()
                             } content: {
                                 hText(L10n.BankidMissingLogin.emailButton)
@@ -101,6 +103,7 @@ public struct BankIDLoginQRView: View {
             }
         }
         .onAppear {
+            vm.router = router
             vm.onAppear()
         }
     }
@@ -114,9 +117,10 @@ class BandIDViewModel: ObservableObject {
     @Published var isLoading = true
     @Published var hasAlreadyOpenedBankId = false
     private var seBankIdState: SEBankIDState = .init()
-    @Inject var authentificationService: AuthentificationService
+    var authenticationService = AuthenticationService()
     private var cancellables = Set<AnyCancellable>()
     private var observeLoginTask: AnyCancellable?
+    var router: Router?
     init() {
         checkIfCanOpenBankId()
     }
@@ -125,8 +129,8 @@ class BandIDViewModel: ObservableObject {
         if seBankIdState.autoStartToken == nil {
             observeLoginTask = Task { @MainActor [weak self] in
                 do {
-                    try await self?.authentificationService
-                        .startSeBankId { newStatus in
+                    try await self?.authenticationService
+                        .startSeBankId { [weak self] newStatus in
                             DispatchQueue.main.async {
                                 switch newStatus {
                                 case .started(let code):
@@ -134,15 +138,15 @@ class BandIDViewModel: ObservableObject {
                                 case .pending(let qrCode):
                                     self?.set(qrData: qrCode)
                                 case .completed:
-                                    let store: AuthenticationStore = globalPresentableStoreContainer.get()
-                                    store.send(.navigationAction(action: .authSuccess))
+                                    ApplicationState.preserveState(.loggedIn)
+                                    ApplicationState.state = .loggedIn
+                                    self?.router?.dismiss()
                                 }
                             }
                         }
                 } catch let error {
                     self?.seBankIdState = .init()
-                    let store: AuthenticationStore = globalPresentableStoreContainer.get()
-                    store.send(.loginFailure(message: error.localizedDescription))
+                    self?.router?.push(AuthentificationRouterType.error(message: error.localizedDescription))
                 }
             }
             .eraseToAnyCancellable()
@@ -240,5 +244,24 @@ class BandIDViewModel: ObservableObject {
 struct BankIDLoginQR_Previews: PreviewProvider {
     static var previews: some View {
         BankIDLoginQRView {}
+    }
+}
+
+public enum AuthentificationRouterType: Hashable {
+    case emailLogin
+    case otpCodeEntry
+    case error(message: String)
+}
+
+extension AuthentificationRouterType: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        switch self {
+        case .emailLogin:
+            return .init(describing: OTPEntryView.self)
+        case .otpCodeEntry:
+            return .init(describing: OTPCodeEntryView.self)
+        case .error(let message):
+            return .init(describing: LoginErrorView.self)
+        }
     }
 }

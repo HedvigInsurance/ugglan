@@ -5,6 +5,8 @@ import hCoreUI
 
 struct EmailPreferencesConfirmView: View {
     @ObservedObject var vm: MemberSubscriptionPreferenceViewModel
+    @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
+
     @PresentableStore var store: ProfileStore
     var body: some View {
         GenericErrorView(
@@ -19,17 +21,18 @@ struct EmailPreferencesConfirmView: View {
                         buttonAction: {
                             Task {
                                 await vm.toogleSubscription()
-                                store.send(.dismissConfirmEmailPreferences)
+                                profileNavigationVm.isConfirmEmailPreferencesPresented = false
                             }
                         }
                     ),
                 dismissButton: .init(
                     buttonTitle: L10n.generalCloseButton,
                     buttonAction: {
-                        store.send(.dismissConfirmEmailPreferences)
+                        profileNavigationVm.isConfirmEmailPreferencesPresented = false
                     }
                 )
-            )
+            ),
+            attachContentToTheBottom: true
         )
         .hExtraTopPadding
         .hDisableScroll
@@ -40,21 +43,4 @@ struct EmailPreferencesConfirmView: View {
 
 #Preview{
     EmailPreferencesConfirmView(vm: .init())
-}
-
-extension EmailPreferencesConfirmView {
-    public static var journey: some JourneyPresentation {
-        let store: ProfileStore = globalPresentableStoreContainer.get()
-        return HostingJourney(
-            ProfileStore.self,
-            rootView: EmailPreferencesConfirmView(vm: store.memberSubscriptionPreferenceViewModel),
-            style: .detented(.scrollViewContentSize),
-            options: [.defaults, .blurredBackground]
-        ) { action in
-            if case .dismissConfirmEmailPreferences = action {
-                PopJourney()
-            }
-        }
-        .configureTitle(L10n.SettingsScreen.emailPreferences)
-    }
 }

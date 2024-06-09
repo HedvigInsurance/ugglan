@@ -14,7 +14,6 @@ public indirect enum SubmitClaimsAction: ActionProtocol, Hashable {
 
     case submitAudioRecording(type: SubmitAudioRecordingType)
     case resetAudioRecording
-    case submitDamage(damage: [String])
 
     case setNewClaimId(with: String)
     case setNewClaimContext(context: String)
@@ -56,32 +55,21 @@ public enum SubmitClaimsNavigationAction: ActionProtocol, Hashable {
     case openPhoneNumberScreen(model: FlowClaimPhoneNumberStepModel)
     case openDateOfOccurrencePlusLocationScreen(options: SubmitClaimOption)
     case openAudioRecordingScreen
-    case openLocationPicker
     case openSuccessScreen
     case openSingleItemScreen
     case openSummaryScreen
     case openSummaryEditScreen
-    case openDamagePickerScreen
-    case openModelPicker
-    case openBrandPicker
-    case openPriceInput
     case openClaimCheckoutScreen
     case openCheckoutTransferringScreen
     case openFailureSceen
     case openUpdateAppScreen
-    case openNotificationsPermissionScreen
     case openSelectContractScreen
     case openTriagingGroupScreen
     case openTriagingEntrypointScreen
     case openTriagingOptionScreen
-    case openDeflectScreen
+    case openDeflectScreen(type: FlowClaimDeflectStepType)
     case openConfirmEmergencyScreen
     case openFileUploadScreen
-    case openFilesFor(endPoint: String, files: [File])
-    case dismissFileUploadScreen
-    case openInfoScreen(title: String?, description: String?)
-    case dismissScreen
-    case dismissPreSubmitScreensAndStartClaim(origin: ClaimsOrigin)
 
     public struct SubmitClaimOption: OptionSet, ActionProtocol, Hashable {
         public let rawValue: UInt
@@ -173,7 +161,7 @@ extension ClaimsStepModelAction {
             case .Unknown:
                 return .openUpdateAppScreen
             default:
-                return .openDeflectScreen
+                return .openDeflectScreen(type: model.id)
             }
         case .setFileUploadStep:
             return .openFileUploadScreen

@@ -33,6 +33,8 @@ enum ContractDetailsViews: String, CaseIterable, Identifiable {
 class TabControllerContext: ObservableObject {
     private typealias Views = ContractDetailsViews
 
+    public init() {}
+
     @Published var selected = Views.overview {
         didSet {
             if previous != selected {
@@ -55,16 +57,16 @@ class TabControllerContext: ObservableObject {
 
 public struct ContractDetail: View {
     @PresentableStore var store: ContractStore
-    @EnvironmentObject var context: TabControllerContext
+    @StateObject var context = TabControllerContext()
     @StateObject private var vm: ContractDetailsViewModel
     var id: String
-    var title: String
 
     let contractOverview: ContractInformationView
     let contractCoverage: ContractCoverageView
     let contractDocuments: ContractDocumentsView
 
     @State private var selectedView = ContractDetailsViews.overview
+    @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
 
     @ViewBuilder
     func viewFor(view: ContractDetailsViews) -> some View {
@@ -81,11 +83,9 @@ public struct ContractDetail: View {
     }
 
     public init(
-        id: String,
-        title: String
+        id: String
     ) {
         self.id = id
-        self.title = title
         self._vm = .init(wrappedValue: .init(id: id))
         contractOverview = ContractInformationView(id: id)
         contractCoverage = ContractCoverageView(id: id)
@@ -138,9 +138,10 @@ public struct ContractDetail: View {
                 VStack(spacing: 4) {
                     ForEach(ContractDetailsViews.allCases) { panel in
                         if context.trigger == panel {
-                            viewFor(view: panel)
-                                .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
-                                .animation(.interpolatingSpring(stiffness: 300, damping: 70).speed(2))
+                            withAnimation(.interpolatingSpring(stiffness: 300, damping: 70).speed(2)) {
+                                viewFor(view: panel)
+                                    .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
+                            }
                         }
                     }
                 }
@@ -150,63 +151,6 @@ public struct ContractDetail: View {
             .presentableStoreLensAnimation(.default)
             .introspectViewController { [weak vm] vc in
                 vm?.vc = vc
-            }
-        }
-    }
-}
-
-extension ContractDetail {
-    public func journey<ResultJourney: JourneyPresentation>(
-        style: PresentationStyle = .default,
-        @JourneyBuilder resultJourney: @escaping (_ result: ContractsResult) -> ResultJourney,
-        options: PresentationOptions = [.defaults, .prefersLargeTitles(false), .largeTitleDisplayMode(.never)]
-    ) -> some JourneyPresentation {
-        HostingJourney(
-            ContractStore.self,
-            rootView: self.environmentObject(TabControllerContext()),
-            style: style,
-            options: options
-        ) { action in
-            if case let .contractDetailNavigationAction(action: .document(url, title)) = action {
-                Journey(
-                    Document(url: url, title: title),
-                    style: .detented(.large)
-                )
-                .withDismissButton
-            } else if case let .contractDetailNavigationAction(action: .openInsuranceUpdate(contract)) = action {
-                UpcomingChangesScreen.journey(contract: contract)
-            } else if case .goToFreeTextChat = action {
-                resultJourney(.openFreeTextChat)
-            }
-        }
-        .configureTitle(title)
-    }
-
-    public var contractDetailErrorJourney: some JourneyPresentation {
-        HostingJourney(
-            ContractStore.self,
-            rootView: GenericErrorView(
-                description: L10n.contractDetailsError,
-                buttons: .init(
-                    actionButton: .init(
-                        buttonTitle: L10n.generalCloseButton,
-                        buttonAction: {
-                            let store: ContractStore = globalPresentableStoreContainer.get()
-                            store.send(.dismissContractDetailNavigation)
-                        }
-                    ),
-                    dismissButton: .init(
-                        buttonAction: {
-                            let store: ContractStore = globalPresentableStoreContainer.get()
-                            store.send(.goToFreeTextChat)
-                        })
-                )
-            )
-        ) { action in
-            if case .goToFreeTextChat = action {
-                DismissJourney()
-            } else if case .dismissContractDetailNavigation = action {
-                DismissJourney()
             }
         }
     }

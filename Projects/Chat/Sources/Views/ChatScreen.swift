@@ -6,13 +6,20 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct ChatScreen: View {
+public struct ChatScreen: View {
     @StateObject var vm: ChatScreenViewModel
     @State var infoViewHeight: CGFloat = 0
     @State var infoViewWidth: CGFloat = 0
     @StateObject var chatScrollViewDelegate = ChatScrollViewDelegate()
-    @PresentableStore private var store: ChatStore
-    var body: some View {
+    @EnvironmentObject var chatNavigationVm: ChatNavigationViewModel
+
+    public init(
+        vm: ChatScreenViewModel
+    ) {
+        self._vm = StateObject(wrappedValue: vm)
+    }
+
+    public var body: some View {
         ScrollViewReader { proxy in
             loadingPreviousMessages
             messagesContainer(with: proxy)
@@ -25,6 +32,9 @@ struct ChatScreen: View {
         .findScrollView({ sv in
             sv.delegate = chatScrollViewDelegate
         })
+        .task {
+            vm.chatNavigationVm = chatNavigationVm
+        }
     }
 
     @ViewBuilder
@@ -127,7 +137,7 @@ struct ChatScreen: View {
                             linkColor: hSignalColor.blueText,
                             linkUnderlineStyle: .single
                         ) { url in
-                            store.send(.navigation(action: .linkClicked(url: url)))
+                            NotificationCenter.default.post(name: .openDeepLink, object: url)
                         }
                     )
                 }
@@ -152,10 +162,10 @@ struct ChatScreen: View {
 }
 
 class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
-    let disposeBag = DisposeBag()
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        let vc = scrollView.viewController
+        let vc = findProverVC(from: scrollView.viewController)
         vc?.isModalInPresentation = true
+        vc?.navigationController?.isModalInPresentation = true
         setSheetInteractionState(vc: vc, to: false)
     }
 
@@ -164,17 +174,39 @@ class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
         withVelocity velocity: CGPoint,
         targetContentOffset: UnsafeMutablePointer<CGPoint>
     ) {
-        let vc = scrollView.viewController
+        let vc = findProverVC(from: scrollView.viewController)
         vc?.isModalInPresentation = false
+        vc?.navigationController?.isModalInPresentation = false
         setSheetInteractionState(vc: vc, to: true)
     }
 
     private func setSheetInteractionState(vc: UIViewController?, to: Bool) {
-        let presentationController = vc?.navigationController?.presentationController
-        let key = [
-            "_sheet", "Interaction",
-        ]
-        let sheetInteraction = presentationController?.value(forKey: key.joined()) as? NSObject
-        sheetInteraction?.setValue(to, forKey: "enabled")
+        if let presentationController = vc?.presentationController as? UISheetPresentationController {
+            let key = [
+                "_sheet", "Interaction",
+            ]
+            let sheetInteraction = presentationController.value(forKey: key.joined()) as? NSObject
+            print("SET FOR \(vc!) to \(to) - \(sheetInteraction!)")
+            sheetInteraction?.setValue(to, forKey: "enabled")
+        }
+    }
+
+    private func findProverVC(from vc: UIViewController?) -> UIViewController? {
+        if #available(iOS 16.0, *) {
+            if let vc {
+                if let navigation = vc.navigationController {
+                    return findProverVC(from: navigation)
+                } else {
+                    if let vccc = vc.presentationController as? BlurredSheetPresenationController {
+                        return vc
+                    } else if let superviewVc = vc.view.superview?.viewController {
+                        return findProverVC(from: superviewVc)
+                    }
+                }
+            }
+        } else {
+            return vc?.navigationController?.view.superview?.viewController ?? vc
+        }
+        return nil
     }
 }

@@ -1,4 +1,3 @@
-import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
@@ -9,14 +8,16 @@ struct UpcomingChangesScreen: View {
     let upcomingAgreement: Agreement?
     @PresentableStore var store: ContractStore
 
-    fileprivate init(
+    @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
+
+    init(
         updateDate: String,
         upcomingAgreement: Agreement?
     ) {
         self.updateDate = updateDate
         self.upcomingAgreement = upcomingAgreement
     }
-    var body: some View {
+    public var body: some View {
         hForm {
             if let upcomingAgreement {
                 hSection(upcomingAgreement.displayItems, id: \.displayValue) { item in
@@ -40,8 +41,7 @@ struct UpcomingChangesScreen: View {
                 VStack(spacing: 8) {
                     hSection {
                         hButton.LargeButton(type: .primary) {
-                            store.send(.contractDetailNavigationAction(action: .dismissUpcomingChanges))
-                            store.send(.goToFreeTextChat)
+                            NotificationCenter.default.post(name: .openChat, object: nil)
                         } content: {
                             hText(L10n.openChat)
                         }
@@ -49,7 +49,7 @@ struct UpcomingChangesScreen: View {
                     }
                     hSection {
                         hButton.LargeButton(type: .ghost) {
-                            store.send(.contractDetailNavigationAction(action: .dismissUpcomingChanges))
+                            contractsNavigationVm.insuranceUpdate = nil
                         } content: {
                             hText(L10n.generalCloseButton)
                         }
@@ -79,24 +79,5 @@ struct UpcomingChangesScreen_Previews: PreviewProvider {
                     )
             )
         )
-    }
-}
-
-extension UpcomingChangesScreen {
-    static func journey(contract: Contract) -> some JourneyPresentation {
-        return HostingJourney(
-            ContractStore.self,
-            rootView: UpcomingChangesScreen(
-                updateDate: contract.upcomingChangedAgreement?.activeFrom ?? "",
-                upcomingAgreement: contract.upcomingChangedAgreement
-            ),
-            style: .detented(.large),
-            options: [.largeNavigationBar]
-        ) { action in
-            if case .contractDetailNavigationAction(action: .dismissUpcomingChanges) = action {
-                PopJourney()
-            }
-        }
-        .configureTitle(L10n.InsuranceDetails.updateDetailsSheetTitle)
     }
 }

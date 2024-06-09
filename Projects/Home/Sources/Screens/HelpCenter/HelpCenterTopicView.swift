@@ -39,25 +39,6 @@ struct HelpCenterTopicView: View {
     }
 }
 
-extension HelpCenterTopicView {
-    static func journey(commonTopic: CommonTopic) -> some JourneyPresentation {
-        HostingJourney(
-            HomeStore.self,
-            rootView: HelpCenterTopicView(
-                commonTopic: commonTopic
-            )
-        ) { action in
-            if case .openFreeTextChat = action {
-                DismissJourney()
-            } else if case let .openHelpCenterQuestionView(question) = action {
-                HelpCenterQuestionView.journey(question: question, title: commonTopic.title)
-            }
-        }
-        .configureTitle(commonTopic.title)
-        .withJourneyDismissButton
-    }
-}
-
 #Preview{
     let questions: [Question] = [
         .init(

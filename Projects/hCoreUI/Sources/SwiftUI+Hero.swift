@@ -20,11 +20,9 @@ public struct HeroAnimationWrapper<Content: View>: UIViewRepresentable {
     }
 }
 
-extension JourneyPresentation {
-    public var enableHero: Self {
-        addConfiguration { presenter in
-            presenter.viewController.hero.isEnabled = true
-            presenter.viewController.hero.modalAnimationType = .fade
-        }
+extension UIViewController {
+    public func enableHero() {
+        self.hero.isEnabled = true
+        self.hero.modalAnimationType = .fade
     }
 }

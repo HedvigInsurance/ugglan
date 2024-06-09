@@ -5,15 +5,15 @@ import SwiftUI
 import hCore
 import hGraphQL
 
-class ChatScreenViewModel: ObservableObject {
+public class ChatScreenViewModel: ObservableObject {
     @Published var messages: [Message] = []
     @Published var lastDeliveredMessage: Message?
     @Published var isFetchingNext = false
     @Published var scrollToMessage: Message?
     @Published var banner: Markdown?
     @Published var chatInputVm: ChatInputViewModel = .init()
-    @Inject private var fetchMessagesClient: FetchMessagesClient
-    @Inject private var sendMessageClient: SendMessageClient
+    private var fetchMessagesService = FetchMessagesService()
+    private var sendMessageService = SendMessagesService()
     private var addedMessagesIds: [String] = []
     private var nextUntil: String?
     private var hasNext: Bool?
@@ -21,8 +21,12 @@ class ChatScreenViewModel: ObservableObject {
     private let topicType: ChatTopicType?
     private var haveSentAMessage = false
     private var storeActionSignal: AnyCancellable?
-    init(topicType: ChatTopicType?) {
+    var chatNavigationVm: ChatNavigationViewModel?
+    public init(
+        topicType: ChatTopicType?
+    ) {
         self.topicType = topicType
+
         chatInputVm.sendMessage = { [weak self] message in
             Task { [weak self] in
                 await self?.send(message: message)
@@ -46,28 +50,25 @@ class ChatScreenViewModel: ObservableObject {
             AskForRating().askAccordingToTheNumberOfSessions()
         }
         log.addUserAction(type: .click, name: "Chat open", error: nil, attributes: nil)
-        let store: ChatStore = globalPresentableStoreContainer.get()
-        storeActionSignal = store.actionSignal.publisher
-            .sink(receiveValue: { [weak self] action in guard let self = self else { return }
-                if case let .navigation(navigationAction) = action {
-                    if case let .linkClicked(url) = navigationAction {
-                        if let deepLink = DeepLink.getType(from: url), deepLink == .helpCenter {
-                            log.addUserAction(
-                                type: .custom,
-                                name: "Help center opened from the chat",
-                                error: nil,
-                                attributes: ["haveSentAMessage": self.haveSentAMessage]
-                            )
-                        }
-                    }
+        NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) {
+            [weak self] notification in guard let self = self else { return }
+            if let deepLinkUrl = notification.object as? URL {
+                if let deepLink = DeepLink.getType(from: deepLinkUrl), deepLink == .helpCenter {
+                    log.addUserAction(
+                        type: .custom,
+                        name: "Help center opened from the chat",
+                        error: nil,
+                        attributes: ["haveSentAMessage": self.haveSentAMessage]
+                    )
                 }
             }
-            )
+        }
     }
 
     deinit {
         let fileUploadManager = FileUploadManager()
         fileUploadManager.resetuploadFilesPath()
+        NotificationCenter.default.removeObserver(self)
     }
 
     @MainActor
@@ -86,7 +87,7 @@ class ChatScreenViewModel: ObservableObject {
     @MainActor
     private func fetch(with next: String? = nil) async {
         do {
-            let chatData = try await fetchMessagesClient.get(next)
+            let chatData = try await fetchMessagesService.get(next)
             let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
             if !newMessages.isEmpty {
                 if next != nil {
@@ -155,7 +156,7 @@ class ChatScreenViewModel: ObservableObject {
 
     private func sendToClient(message: Message) async {
         do {
-            let data = try await sendMessageClient.send(message: message, topic: topicType)
+            let data = try await sendMessageService.send(message: message, topic: topicType)
             if let remoteMessage = data.message {
                 await handleSuccessAdding(for: remoteMessage, to: message)
             }
@@ -169,6 +170,9 @@ class ChatScreenViewModel: ObservableObject {
         let store: ChatStore = globalPresentableStoreContainer.get()
         if !store.state.askedForPushNotificationsPermission {
             store.send(.checkPushNotificationStatus)
+            Task {
+                await chatNavigationVm?.checkForPushNotificationStatus()
+            }
         }
         withAnimation {
             messages.insert(message, at: 0)

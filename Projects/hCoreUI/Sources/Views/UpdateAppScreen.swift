@@ -1,4 +1,3 @@
-import Presentation
 import SwiftUI
 import hCore
 import hGraphQL
@@ -53,16 +52,4 @@ public struct UpdateAppScreen: View {
 
 #Preview{
     UpdateAppScreen(onSelected: {})
-}
-
-extension UpdateAppScreen {
-    public static var journey: some JourneyPresentation {
-        HostingJourney(
-            rootView: UpdateAppScreen(
-                onSelected: {
-                },
-                withoutDismissButton: true
-            )
-        )
-    }
 }

@@ -1,4 +1,3 @@
-import Presentation
 import SwiftUI
 import hCore
 import hGraphQL
@@ -18,12 +17,4 @@ public struct UpdateOSScreen: View {
 
 #Preview{
     UpdateOSScreen()
-}
-
-extension UpdateOSScreen {
-    public static var journey: some JourneyPresentation {
-        HostingJourney(
-            rootView: UpdateOSScreen()
-        )
-    }
 }

@@ -11,7 +11,7 @@ import hCoreUI
 import hGraphQL
 
 private class DirectDebitWebview: UIView {
-    @Inject var paymentService: hPaymentService
+    var paymentService = hPaymentService()
     @PresentableStore var paymentStore: PaymentStore
     private let resultSubject = PassthroughSubject<URL?, Never>()
     var cancellables = Set<AnyCancellable>()
@@ -20,6 +20,7 @@ private class DirectDebitWebview: UIView {
     var webView = WKWebView()
     var webViewDelgate = WebViewDelegate(webView: .init())
     @Binding var showErrorAlert: Bool
+    @EnvironmentObject var router: Router
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -150,7 +151,7 @@ private class DirectDebitWebview: UIView {
             .receive(on: RunLoop.main)
             .sink(receiveCompletion: { _ in }) { [weak self] value in
                 self?.paymentStore.send(.fetchPaymentStatus)
-                self?.paymentStore.send(.dismissPayment)
+                self?.router.dismiss()
             }
             .store(in: &cancellables)
     }
@@ -245,10 +246,9 @@ struct DirectDebitSetupRepresentable: UIViewRepresentable {
 }
 
 public struct DirectDebitSetup: View {
-    @PresentableStore var paymentStore: PaymentStore
     @State var showCancelAlert: Bool = false
     @State var showErrorAlert: Bool = false
-
+    @StateObject var router = Router()
     let setupType: SetupType
 
     public init(
@@ -288,6 +288,11 @@ public struct DirectDebitSetup: View {
                 dismissButton
             }
         }
+        .configureTitle(
+            setupType == .replacement
+                ? L10n.PayInIframeInApp.connectPayment : L10n.PayInIframePostSign.title
+        )
+        .embededInNavigation(router: router, options: .navigationType(type: .large), tracking: self)
     }
 
     private var dismissButton: some View {
@@ -303,7 +308,7 @@ public struct DirectDebitSetup: View {
             title: Text(L10n.PayInIframeInAppCancelAlert.title),
             message: Text(L10n.PayInIframeInAppCancelAlert.body),
             primaryButton: .default(Text(L10n.PayInIframeInAppCancelAlert.proceedButton)) {
-                paymentStore.send(.dismissPayment)
+                router.dismiss()
             },
             secondaryButton: .default(Text(L10n.PayInIframeInAppCancelAlert.dismissButton))
         )
@@ -315,7 +320,7 @@ public struct DirectDebitSetup: View {
             message: Text(L10n.somethingWentWrong),
             primaryButton: .default(Text(L10n.generalRetry)),
             secondaryButton: .cancel(Text(L10n.alertCancel)) {
-                paymentStore.send(.dismissPayment)
+                router.dismiss()
             }
         )
     }
@@ -327,40 +332,9 @@ public enum SetupType: Equatable {
     case replacement, postOnboarding
 }
 
-extension DirectDebitSetup {
-    @JourneyBuilder
-    public func journey() -> some JourneyPresentation {
-        let featureFlags: FeatureFlags = Dependencies.shared.resolve()
-        switch featureFlags.paymentType {
-        case .adyen:
-            ContinueJourney()
-                .onPresent {
-                    Task {
-                        let paymentServcice: AdyenService = Dependencies.shared.resolve()
-                        do {
-                            let url = try await paymentServcice.getAdyenUrl()
-                            paymentStore.send(.navigation(to: .openUrl(url: url, handledBySystem: true)))
-                        } catch {
-                            //we are not so concern about this
-                        }
-                    }
-                }
-        case .trustly:
-            HostingJourney(
-                PaymentStore.self,
-                rootView: self,
-                style: .detented(.large),
-                options: [.defaults, .autoPopSelfAndSuccessors, .largeNavigationBar]
-            ) { action in
-                if case .dismissPayment = action {
-                    PopJourney()
-                }
-            }
-            .configureTitle(
-                self.setupType == .replacement ? L10n.PayInIframeInApp.connectPayment : L10n.PayInIframePostSign.title
-            )
-            .enableModalInPresentation
-        }
-
+extension DirectDebitSetup: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        return .init(describing: DirectDebitSetup.self)
     }
+
 }

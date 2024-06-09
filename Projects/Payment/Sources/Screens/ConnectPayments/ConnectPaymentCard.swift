@@ -6,7 +6,8 @@ import hCoreUI
 
 public struct ConnectPaymentCardView: View {
     @PresentableStore var store: PaymentStore
-
+    @EnvironmentObject var connectPaymentVm: ConnectPaymentViewModel
+    @EnvironmentObject var router: Router
     public init() {}
     public var body: some View {
         PresentableStoreLens(
@@ -37,7 +38,7 @@ public struct ConnectPaymentCardView: View {
                         buttonTitle: L10n.General.chatButton,
                         buttonAction: {
                             if let url = DeepLink.getUrl(from: .openChat) {
-                                store.send(.navigation(to: .openUrl(url: url, handledBySystem: false)))
+                                router.push(PaymentsRouterAction.openUrl(url: url))
                             }
                         }
                     )
@@ -53,12 +54,11 @@ public struct ConnectPaymentCardView: View {
                     .init(
                         buttonTitle: L10n.PayInExplainer.buttonText,
                         buttonAction: {
-                            store.send(.navigation(to: .openConnectPayments))
+                            connectPaymentVm.set(for: .initial)
                         }
                     )
                 ]
             )
         }
     }
-
 }

@@ -14,7 +14,6 @@ struct OTPCodeLoadingOverlay: View {
             .background(hBackgroundColor.primary.opacity(0.7))
             .cornerRadius(.defaultCornerRadius)
             .edgesIgnoringSafeArea(.top)
-            .presentableStoreLensAnimation(.default)
         }
     }
 }

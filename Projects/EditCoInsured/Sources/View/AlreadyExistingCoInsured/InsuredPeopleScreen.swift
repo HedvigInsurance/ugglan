@@ -9,6 +9,8 @@ struct InsuredPeopleScreen: View {
     @PresentableStore var store: EditCoInsuredStore
     @ObservedObject var vm: InsuredPeopleNewScreenModel
     @ObservedObject var intentVm: IntentViewModel
+    @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+    @EnvironmentObject var router: Router
 
     @ViewBuilder
     func getView(coInsured: CoInsuredListType) -> some View {
@@ -52,22 +54,14 @@ struct InsuredPeopleScreen: View {
                         let hasExistingCoInsured = vm.config.preSelectedCoInsuredList
                             .filter { !vm.coInsuredAdded.contains($0) }
                         if hasExistingCoInsured.isEmpty {
-                            store.send(
-                                .coInsuredNavigationAction(
-                                    action: .openCoInsuredInput(
-                                        actionType: .add,
-                                        coInsuredModel: CoInsuredModel(),
-                                        title: L10n.contractAddCoinsured,
-                                        contractId: vm.config.contractId
-                                    )
-                                )
+                            editCoInsuredNavigation.coInsuredInputModel = .init(
+                                actionType: .add,
+                                coInsuredModel: CoInsuredModel(),
+                                title: L10n.contractAddCoinsured,
+                                contractId: vm.config.contractId
                             )
                         } else {
-                            store.send(
-                                .coInsuredNavigationAction(
-                                    action: .openCoInsuredSelectScreen(contractId: vm.config.contractId)
-                                )
-                            )
+                            editCoInsuredNavigation.selectCoInsured = .init(id: vm.config.contractId)
                         }
                     } content: {
                         hText(L10n.contractAddCoinsured)
@@ -95,15 +89,11 @@ struct InsuredPeopleScreen: View {
         Image(uiImage: hCoreUIAssets.closeSmall.image)
             .foregroundColor(hTextColor.secondary)
             .onTapGesture {
-                store.send(
-                    .coInsuredNavigationAction(
-                        action: .openCoInsuredInput(
-                            actionType: .delete,
-                            coInsuredModel: coInsured,
-                            title: L10n.contractRemoveCoinsuredConfirmation,
-                            contractId: vm.config.contractId
-                        )
-                    )
+                editCoInsuredNavigation.coInsuredInputModel = .init(
+                    actionType: .delete,
+                    coInsuredModel: coInsured,
+                    title: L10n.contractRemoveCoinsuredConfirmation,
+                    contractId: vm.config.contractId
                 )
             }
     }
@@ -113,15 +103,11 @@ struct InsuredPeopleScreen: View {
         Image(uiImage: hCoreUIAssets.closeSmall.image)
             .foregroundColor(hTextColor.secondary)
             .onTapGesture {
-                store.send(
-                    .coInsuredNavigationAction(
-                        action: .openCoInsuredInput(
-                            actionType: .delete,
-                            coInsuredModel: coInsured,
-                            title: L10n.contractRemoveCoinsuredConfirmation,
-                            contractId: vm.config.contractId
-                        )
-                    )
+                editCoInsuredNavigation.coInsuredInputModel = .init(
+                    actionType: .delete,
+                    coInsuredModel: coInsured,
+                    title: L10n.contractRemoveCoinsuredConfirmation,
+                    contractId: vm.config.contractId
                 )
             }
     }
@@ -151,12 +137,14 @@ struct InsuredPeopleScreen: View {
 }
 
 struct CancelButton: View {
-    @PresentableStore var store: EditCoInsuredStore
+    @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+    @EnvironmentObject private var router: Router
 
     var body: some View {
         hSection {
             hButton.LargeButton(type: .ghost) {
-                store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
+                editCoInsuredNavigation.editCoInsuredConfig = nil
+                router.dismiss()
             } content: {
                 hText(L10n.generalCancelButton)
             }
@@ -168,6 +156,7 @@ struct CancelButton: View {
 struct ConfirmChangesView: View {
     @PresentableStore var store: EditCoInsuredStore
     @ObservedObject var intentVm: IntentViewModel
+    @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
 
     public init() {
         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
@@ -204,7 +193,7 @@ struct ConfirmChangesView: View {
 
                 hButton.LargeButton(type: .primary) {
                     store.send(.performCoInsuredChanges(commitId: intentVm.intent.id))
-                    store.send(.coInsuredNavigationAction(action: .openCoInsuredProcessScreen(showSuccess: true)))
+                    editCoInsuredNavigation.showProgressScreenWithSuccess = true
                 } content: {
                     hText(L10n.contractAddCoinsuredConfirmChanges)
                 }
@@ -220,6 +209,7 @@ struct InsuredPeopleScreen_Previews: PreviewProvider {
         let vm = InsuredPeopleNewScreenModel()
         let intentVm = IntentViewModel()
         let config = InsuredPeopleConfig(
+            id: UUID().uuidString,
             contractCoInsured: [],
             contractId: "",
             activeFrom: nil,
@@ -230,7 +220,8 @@ struct InsuredPeopleScreen_Previews: PreviewProvider {
             contractDisplayName: "",
             holderFirstName: "",
             holderLastName: "",
-            holderSSN: nil
+            holderSSN: nil,
+            fromInfoCard: false
         )
         vm.initializeCoInsured(with: config)
         return InsuredPeopleScreen(vm: vm, intentVm: intentVm)

@@ -5,7 +5,7 @@ import hCore
 import hGraphQL
 
 public final class ContractStore: LoadingStateStore<ContractState, ContractAction, ContractLoadingAction> {
-    @Inject var fetchContractsService: FetchContractsService
+    @Inject var fetchContractsService: FetchContractsClient
     public override func effects(
         _ getState: @escaping () -> ContractState,
         _ action: ContractAction

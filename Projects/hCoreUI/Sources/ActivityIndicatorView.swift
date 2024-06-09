@@ -105,12 +105,6 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
         self.content = content
         self.showLoading = showLoading
         self.retryActions = retryActions
-        let store: StoreType = globalPresentableStoreContainer.get()
-        if let state = handle(allActions: store.loadingSignal.value) {
-            _isLoading = State(initialValue: state.isLoading)
-            _error = State(initialValue: state.error ?? "")
-            _presentError = State(initialValue: state.presentError)
-        }
     }
 
     public var body: some View {
@@ -141,6 +135,14 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
                 .publisher
         ) { value in
             handle(allActions: value)
+        }
+        .onAppear {
+            let store: StoreType = globalPresentableStoreContainer.get()
+            if let state = handle(allActions: store.loadingSignal.value) {
+                isLoading = state.isLoading
+                error = state.error ?? ""
+                presentError = state.presentError
+            }
         }
     }
 
@@ -369,12 +371,7 @@ public struct LoadingViewWithGenericError<Content: View, StoreType: StoreLoading
         self.content = content
         self.showLoading = showLoading
         self.bottomAction = bottomAction
-        let store: StoreType = globalPresentableStoreContainer.get()
-        if let state = handle(allActions: store.loadingSignal.value) {
-            _isLoading = State(initialValue: state.isLoading)
-            _error = State(initialValue: state.error ?? "")
-            _presentError = State(initialValue: state.presentError)
-        }
+
     }
 
     public var body: some View {
@@ -410,6 +407,14 @@ public struct LoadingViewWithGenericError<Content: View, StoreType: StoreLoading
                 .publisher
         ) { value in
             handle(allActions: value)
+        }
+        .onAppear {
+            let store: StoreType = globalPresentableStoreContainer.get()
+            if let state = handle(allActions: store.loadingSignal.value) {
+                isLoading = state.isLoading
+                error = state.error ?? ""
+                presentError = state.presentError
+            }
         }
     }
 
@@ -473,5 +478,43 @@ public struct LoadingViewWithGenericError<Content: View, StoreType: StoreLoading
         let isLoading: Bool
         let presentError: Bool
         let error: String?
+    }
+}
+
+public struct LoadingViewWithContentt: ViewModifier {
+    @Binding var isLoading: Bool
+    @Binding var error: String?
+    public func body(content: Content) -> some View {
+        ZStack {
+            BackgroundView().edgesIgnoringSafeArea(.all)
+            if isLoading {
+                loadingIndicatorView.transition(.opacity.animation(.easeInOut(duration: 0.2)))
+            } else if let error = error {
+                GenericErrorView(
+                    description: error,
+                    buttons: .init()
+                )
+                .hWithoutTitle
+                .transition(.opacity.animation(.easeInOut(duration: 0.2)))
+            } else {
+                content.transition(.opacity.animation(.easeInOut(duration: 0.2)))
+            }
+        }
+    }
+
+    private var loadingIndicatorView: some View {
+        HStack {
+            DotsActivityIndicator(.standard)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(hBackgroundColor.primary.opacity(0.01))
+        .edgesIgnoringSafeArea(.top)
+        .useDarkColor
+    }
+}
+
+extension View {
+    public func loading(_ isLoading: Binding<Bool>, _ error: Binding<String?>) -> some View {
+        modifier(LoadingViewWithContentt(isLoading: isLoading, error: error))
     }
 }

@@ -24,7 +24,7 @@ struct NotificationsCardView: View {
                         .init(
                             buttonTitle: L10n.ReferralsAllowPushNotificationSheet.Allow.button,
                             buttonAction: {
-                                store.send(.registerForPushNotifications)
+                                NotificationCenter.default.post(name: .registerForPushNotifications, object: nil)
                             }
                         ),
                     ])

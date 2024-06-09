@@ -5,7 +5,7 @@ import Presentation
 import hCore
 
 public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, ProfileLoadingAction> {
-    @Inject var profileService: ProfileService
+    @Inject var profileService: ProfileClient
 
     let memberSubscriptionPreferenceViewModel = MemberSubscriptionPreferenceViewModel()
     public override func effects(
@@ -65,8 +65,6 @@ public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, 
             newState.memberDetails?.email = email
         case let .setMemberPhone(phone):
             newState.memberDetails?.phone = phone
-        case let .setOpenAppSettings(to):
-            newState.openSettingsDirectly = to
         case let .setMemberDetails(details):
             newState.memberDetails = details
         case let .setPushNotificationStatus(status):

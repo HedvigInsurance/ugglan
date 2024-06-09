@@ -5,10 +5,11 @@ import hCoreUI
 import hGraphQL
 
 public struct MovingFlowHousingTypeView: View {
-    @ObservedObject var vm = MovingFlowHousingTypeViewModel()
+    @StateObject var vm = MovingFlowHousingTypeViewModel()
+    @EnvironmentObject var router: Router
+    @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
 
     public var body: some View {
-
         LoadingViewWithState(
             MoveFlowStore.self,
             .fetchMoveIntent
@@ -31,7 +32,7 @@ public struct MovingFlowHousingTypeView: View {
                             }
                             InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
                             hButton.LargeButton(type: .primary) {
-                                vm.continuePressed()
+                                continuePressed()
                             } content: {
                                 hText(L10n.generalContinueButton, style: .body)
                             }
@@ -51,7 +52,7 @@ public struct MovingFlowHousingTypeView: View {
                         actionButton: .init(
                             buttonTitle: L10n.openChat,
                             buttonAction: {
-                                vm.store.send(.navigation(action: .goToFreeTextChat))
+                                NotificationCenter.default.post(name: .openChat, object: nil)
                             }
                         ),
                         dismissButton: nil
@@ -61,12 +62,21 @@ public struct MovingFlowHousingTypeView: View {
                 VStack {
                     Spacer()
                     hButton.LargeButton(type: .ghost) {
-                        vm.store.send(.navigation(action: .dismissMovingFlow))
+                        router.dismiss()
                     } content: {
                         hText(L10n.generalCancelButton)
                     }
                 }
             }
+        }
+    }
+
+    func continuePressed() {
+        let housingType = HousingType(rawValue: vm.selectedHousingType ?? "")
+        vm.store.send(.setHousingType(with: housingType ?? .apartment))
+
+        if let housingType {
+            router.push(housingType)
         }
     }
 }
@@ -80,26 +90,21 @@ struct MovingFlowTypeOfHome_Previews: PreviewProvider {
 
 class MovingFlowHousingTypeViewModel: ObservableObject {
     @PresentableStore var store: MoveFlowStore
-    @Published var selectedHousingType: String? = HousingType.apartmant.rawValue
+    @Published var selectedHousingType: String? = HousingType.apartment.rawValue
 
     init() {
         store.send(.getMoveIntent)
     }
-
-    func continuePressed() {
-        store.send(.setHousingType(with: HousingType(rawValue: selectedHousingType ?? "") ?? .apartmant))
-        store.send(.navigation(action: .openAddressFillScreen))
-    }
 }
 
 public enum HousingType: String, CaseIterable, Codable, Equatable, Hashable {
-    case apartmant
+    case apartment
     case rental
     case house
 
     var title: String {
         switch self {
-        case .apartmant:
+        case .apartment:
             return L10n.changeAddressApartmentOwnLabel
         case .rental:
             return L10n.changeAddressApartmentRentLabel
@@ -110,7 +115,7 @@ public enum HousingType: String, CaseIterable, Codable, Equatable, Hashable {
 
     var asMoveApartmentSubType: GraphQLEnum<OctopusGraphQL.MoveApartmentSubType> {
         switch self {
-        case .apartmant:
+        case .apartment:
             return GraphQLEnum<OctopusGraphQL.MoveApartmentSubType>(.own)
         case .rental:
             return GraphQLEnum<OctopusGraphQL.MoveApartmentSubType>(.rent)
@@ -118,4 +123,18 @@ public enum HousingType: String, CaseIterable, Codable, Equatable, Hashable {
             return GraphQLEnum<OctopusGraphQL.MoveApartmentSubType>(.own)
         }
     }
+}
+
+extension HousingType: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        switch self {
+        case .apartment:
+            return .init(describing: MovingFlowAddressView.self)
+        case .rental:
+            return .init(describing: MovingFlowAddressView.self)
+        case .house:
+            return .init(describing: MovingFlowAddressView.self)
+        }
+    }
+
 }

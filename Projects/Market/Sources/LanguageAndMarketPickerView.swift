@@ -4,26 +4,13 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-extension Market {
-    @JourneyBuilder
-    public static var languageAndMarketPicker: some JourneyPresentation {
-        HostingJourney(
-            MarketStore.self,
-            rootView: LanguageAndMarketPickerView(),
-            style: .detented(.scrollViewContentSize),
-            options: [.largeNavigationBar, .blurredBackground]
-        ) { action in
-            if case .dismissPicker = action {
-                PopJourney()
-            }
-        }
-        .configureTitle(L10n.loginMarketPickerPreferences)
-    }
-}
-
-struct LanguageAndMarketPickerView: View {
+public struct LanguageAndMarketPickerView: View {
     @StateObject private var vm = LanguageAndMarketPickerViewModel()
-    var body: some View {
+    @EnvironmentObject var router: Router
+
+    public init() {}
+
+    public var body: some View {
         hForm {
             VStack(spacing: 8) {
                 hSection {
@@ -38,9 +25,10 @@ struct LanguageAndMarketPickerView: View {
 
                 ForEach(LanguageAndMarketPicker.allCases) { panel in
                     if vm.selected == panel {
-                        viewFor(view: panel)
-                            .transition(.asymmetric(insertion: vm.insertion, removal: vm.removal))
-                            .animation(.easeInOut(duration: 0.4))
+                        withAnimation(.easeInOut(duration: 0.4)) {
+                            viewFor(view: panel)
+                                .transition(.asymmetric(insertion: vm.insertion, removal: vm.removal))
+                        }
                     }
                 }
                 .padding(.top, 8)
@@ -55,12 +43,15 @@ struct LanguageAndMarketPickerView: View {
                         .foregroundColor(hTextColor.tertiary)
 
                     hButton.LargeButton(type: .primary) {
-                        vm.save()
+                        Task {
+                            await vm.save()
+                            router.dismiss()
+                        }
                     } content: {
                         hText(L10n.generalSaveButton)
                     }
                     hButton.LargeButton(type: .ghost) {
-                        vm.dismiss()
+                        router.dismiss()
                     } content: {
                         hText(L10n.generalCancelButton)
                     }
@@ -179,22 +170,16 @@ class LanguageAndMarketPickerViewModel: ObservableObject {
                     self?.selectedLocaleCode = currentSelectedLocale.rawValue
                 } else {
                     self?.selectedLocaleCode = market.preferredLanguage.rawValue
-
                 }
             }
         }
         .store(in: &cancellables)
     }
 
-    func save() {
+    func save() async {
         let store: MarketStore = globalPresentableStoreContainer.get()
-        store.send(.selectMarket(market: selectedMarket))
-        store.send(.selectLanguage(language: selectedLocale.rawValue))
-        dismiss()
-    }
-    func dismiss() {
-        let store: MarketStore = globalPresentableStoreContainer.get()
-        store.send(.dismissPicker)
+        await store.sendAsync(.selectMarket(market: selectedMarket))
+        await store.sendAsync(.selectLanguage(language: self.selectedLocale.rawValue))
     }
 }
 

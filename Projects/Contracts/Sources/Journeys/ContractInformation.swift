@@ -12,6 +12,7 @@ struct ContractInformationView: View {
     @PresentableStore var store: ContractStore
     @PresentableStore var terminationContractStore: TerminationContractStore
     @StateObject private var vm = ContractsInformationViewModel()
+    @EnvironmentObject private var contractsNavigationVm: ContractsNavigationViewModel
 
     let id: String
     var body: some View {
@@ -58,16 +59,14 @@ struct ContractInformationView: View {
                                         if onlyCoInsured(contract)
                                             && Dependencies.featureFlags().isEditCoInsuredEnabled
                                         {
-                                            store.send(
-                                                .coInsuredNavigationAction(
-                                                    action: .openEditCoInsured(
-                                                        config: .init(contract: contract),
-                                                        fromInfoCard: false
-                                                    )
-                                                )
+                                            let contract: InsuredPeopleConfig = .init(
+                                                contract: contract,
+                                                fromInfoCard: false
                                             )
+
+                                            contractsNavigationVm.editCoInsuredVm.start(fromContract: contract)
                                         } else {
-                                            store.send(.contractEditInfo(id: id))
+                                            contractsNavigationVm.changeYourInformationContract = contract
                                         }
                                     } content: {
                                         if onlyCoInsured(contract)
@@ -165,7 +164,7 @@ struct ContractInformationView: View {
                     hSection {
                         CoInsuredInfoView(
                             text: L10n.contractCoinsuredAddPersonalInfo,
-                            config: .init(contract: contract)
+                            config: .init(contract: contract, fromInfoCard: true)
                         )
                         .padding(.bottom, 16)
                     }
@@ -203,11 +202,11 @@ struct ContractInformationView: View {
         )
         .onTapGesture {
             if contract.showEditCoInsuredInfo && coInsured.terminatesOn == nil {
-                store.send(
-                    .coInsuredNavigationAction(
-                        action: .openEditCoInsured(config: .init(contract: contract), fromInfoCard: true)
-                    )
+                let contract: InsuredPeopleConfig = .init(
+                    contract: contract,
+                    fromInfoCard: false
                 )
+                contractsNavigationVm.editCoInsuredVm.start(fromContract: contract)
             }
         }
     }
@@ -237,10 +236,9 @@ struct ContractInformationView: View {
                     .init(
                         buttonTitle: L10n.dashboardRenewalPrompterBodyButton,
                         buttonAction: {
-                            store.send(
-                                .contractDetailNavigationAction(
-                                    action: .document(url: url, title: L10n.insuranceCertificateTitle)
-                                )
+                            contractsNavigationVm.document = Document(
+                                url: url,
+                                title: L10n.insuranceCertificateTitle
                             )
                         }
                     )
@@ -267,10 +265,9 @@ struct ContractInformationView: View {
                             .init(
                                 buttonTitle: L10n.contractViewCertificateButton,
                                 buttonAction: {
-                                    store.send(
-                                        .contractDetailNavigationAction(
-                                            action: .document(url: url, title: L10n.myDocumentsInsuranceCertificate)
-                                        )
+                                    contractsNavigationVm.document = Document(
+                                        url: url,
+                                        title: L10n.myDocumentsInsuranceCertificate
                                     )
                                 }
                             )
@@ -287,11 +284,7 @@ struct ContractInformationView: View {
                             .init(
                                 buttonTitle: L10n.InsurancesTab.viewDetails,
                                 buttonAction: {
-                                    store.send(
-                                        .contractDetailNavigationAction(
-                                            action: .openInsuranceUpdate(contract: contract)
-                                        )
-                                    )
+                                    contractsNavigationVm.insuranceUpdate = contract
                                 }
                             )
                         ])
@@ -326,7 +319,8 @@ struct ContractInformationView: View {
                     hSection {
                         hButton.LargeButton(type: .ghost) {
                             if let contract {
-                                store.send(.startTermination(contract: contract))
+                                let config = TerminationConfirmConfig(contract: contract)
+                                contractsNavigationVm.terminateInsuranceVm.start(with: [config])
                             }
                         } content: {
                             hText(L10n.terminationButton, style: .body)
@@ -338,31 +332,6 @@ struct ContractInformationView: View {
                 }
             }
         }
-    }
-}
-
-struct ChangePeopleView: View {
-    @PresentableStore var store: ContractStore
-
-    var body: some View {
-        hSection {
-            VStack(alignment: .leading, spacing: 16) {
-                L10n.InsuranceDetailsViewYourInfo.editInsuranceTitle
-                    .hText(.title2)
-                L10n.InsuranceDetailsViewYourInfo.editInsuranceDescription
-                    .hText(.subheadline)
-                    .foregroundColor(hTextColor.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .multilineTextAlignment(.leading)
-                    .padding(.bottom, 10)
-                hButton.LargeButton(type: .primary) {
-                    store.send(.goToFreeTextChat)
-                } content: {
-                    L10n.InsuranceDetailsViewYourInfo.editInsuranceButton.hText()
-                }
-            }
-        }
-        .sectionContainerStyle(.transparent)
     }
 }
 
@@ -383,6 +352,7 @@ private class ContractsInformationViewModel: ObservableObject {
 
 public struct CoInsuredInfoView: View {
     @PresentableStore var store: ContractStore
+    @EnvironmentObject private var contractsNavigationVm: ContractsNavigationViewModel
 
     let text: String
     let config: InsuredPeopleConfig
@@ -400,9 +370,7 @@ public struct CoInsuredInfoView: View {
                 .init(
                     buttonTitle: L10n.contractCoinsuredMissingAddInfo,
                     buttonAction: {
-                        store.send(
-                            .coInsuredNavigationAction(action: .openEditCoInsured(config: config, fromInfoCard: true))
-                        )
+                        contractsNavigationVm.editCoInsuredVm.start(fromContract: config)
                     }
                 )
             ])

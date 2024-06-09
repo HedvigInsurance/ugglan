@@ -76,24 +76,27 @@ public struct ForeverView: View {
             .onAppear {
                 store.send(.fetch)
             }
-            .navigationBarItems(
-                trailing:
+            .toolbar {
+                ToolbarItem(
+                    placement: .topBarTrailing
+                ) {
                     PresentableStoreLens(
                         ForeverStore.self,
                         getter: { state in
                             state.foreverData?.monthlyDiscountPerReferral
                         }
                     ) { discountAmount in
-                        Button(action: {
-                            if let discountAmount {
-                                store.send(.showInfoSheet(discount: discountAmount.formattedAmount))
-                            }
-                        }) {
-                            Image(uiImage: hCoreUIAssets.infoIcon.image)
-                                .foregroundColor(hTextColor.primary)
+                        if let discountAmount {
+                            InfoViewHolder(
+                                title: L10n.ReferralsInfoSheet.headline,
+                                description: L10n.ReferralsInfoSheet.body(discountAmount.formattedAmount),
+                                type: .navigation
+                            )
+                            .foregroundColor(hTextColor.primary)
                         }
                     }
-            )
+                }
+            }
             .onPullToRefresh {
                 await store.sendAsync(.fetch)
             }
@@ -118,68 +121,21 @@ public struct ForeverView: View {
     }
 }
 
-extension ForeverView {
-    public static func journey() -> some JourneyPresentation {
-        HostingJourney(
-            ForeverStore.self,
-            rootView: ForeverView()
-        ) { action in
-            if case .showChangeCodeDetail = action {
-                ChangeCodeView.journey
-            } else if case let .showShareSheetOnly(code, discount) = action {
-                shareSheetJourney(code: code, discount: discount)
-            } else if case let .showInfoSheet(discount) = action {
-                infoSheetJourney(potentialDiscount: discount)
-            }
-        }
-        .configureTitle(L10n.ReferralsInfoSheet.headline)
-        .configureTabBarItem(
-            title: L10n.tabReferralsTitle,
-            image: hCoreUIAssets.foreverTab.image,
-            selectedImage: hCoreUIAssets.foreverTabActive.image
-        )
-    }
-
-    static func infoSheetJourney(potentialDiscount: String) -> some JourneyPresentation {
-        HostingJourney(
-            rootView: InfoView(
-                title: L10n.ReferralsInfoSheet.headline,
-                description: L10n.ReferralsInfoSheet.body(potentialDiscount),
-                onDismiss: {
-                    let store: ForeverStore = globalPresentableStoreContainer.get()
-                    store.send(.closeInfoSheet)
-                }
-            ),
-            style: .detented(.scrollViewContentSize),
-            options: [.blurredBackground]
-        )
-        .onAction(ForeverStore.self) { action in
-            if case .closeInfoSheet = action {
-                DismissJourney()
-            }
-        }
-    }
-
-    static func shareSheetJourney(code: String, discount: String) -> some JourneyPresentation {
-        let url =
-            "\(hGraphQL.Environment.current.webBaseURL)/\(hCore.Localization.Locale.currentLocale.webPath)/forever/\(code)"
-        let message = L10n.referralSmsMessage(discount, url)
-        return HostingJourney(
-            rootView: ActivityViewController(activityItems: [
-                message
-            ]),
-            style: .activityView
-        )
-    }
-}
-
 struct ForeverView_Previews: PreviewProvider {
     @PresentableStore static var store: ForeverStore
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
         return ForeverView()
             .onAppear {
-                Dependencies.shared.add(module: Module { () -> ForeverService in ForeverServiceDemo() })
+                Dependencies.shared.add(module: Module { () -> ForeverClient in ForeverClientDemo() })
             }
+    }
+}
+
+struct VisualEffectView: UIViewRepresentable {
+    var effect: UIVisualEffect?
+    func makeUIView(context: UIViewRepresentableContext<Self>) -> UIVisualEffectView { UIVisualEffectView() }
+    func updateUIView(_ uiView: UIVisualEffectView, context: UIViewRepresentableContext<Self>) {
+        uiView.effect = effect
     }
 }

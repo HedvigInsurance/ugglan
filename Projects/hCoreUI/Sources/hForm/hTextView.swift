@@ -105,38 +105,29 @@ public struct hTextView: View {
             numberOfLines: $popoverNumberOfLines
         )
         .colorScheme(.dark)
-        let journey = HostingJourney(
-            rootView: view,
-            style: .modally(presentationStyle: .overFullScreen),
-            options: []
 
-        )
-        .enableHero
-        .addConfiguration { presenter in
-            presenter.viewController.view.backgroundColor = hGrayscaleColor.greyScale1000.colorFor(.dark, .base).color
-                .uiColor()  //UIColor(hexString: "121212")
+        let vc = hHostingController(rootView: view, contentName: "EnterCommentTextView")
+        vc.modalPresentationStyle = .overFullScreen
+        vc.enableHero()
+        vc.view.backgroundColor = hGrayscaleColor.greyScale1000.colorFor(.dark, .base).color.uiColor()
 
-        }
-
-        let freeTextFieldJourney = journey.addConfiguration { presenter in
-            continueAction.execute = {
-                self.selectedValue = value
-                if numberOfLines != popoverNumberOfLines {
-                    let lineHeight = abs(Double(popoverHeight - height) / Double(popoverNumberOfLines - numberOfLines))
-                    let spacing = height - Double(numberOfLines) * lineHeight
-                    self.height = min(3 * lineHeight + spacing, popoverHeight)
-                }
-                self.value = value
-                self.onContinue(value)
-                presenter.dismisser(JourneyError.cancelled)
+        continueAction.execute = { [weak vc] in
+            self.selectedValue = value
+            if numberOfLines != popoverNumberOfLines {
+                let lineHeight = abs(Double(popoverHeight - height) / Double(popoverNumberOfLines - numberOfLines))
+                let spacing = height - Double(numberOfLines) * lineHeight
+                self.height = min(3 * lineHeight + spacing, popoverHeight)
             }
-            cancelAction.execute = {
-                presenter.dismisser(JourneyError.cancelled)
-            }
+            self.value = value
+            self.onContinue(value)
+            vc?.dismiss(animated: true)
         }
-        let vc = UIApplication.shared.getTopViewController()
-        if let vc {
-            disposeBag += vc.present(freeTextFieldJourney)
+        cancelAction.execute = { [weak vc] in
+            vc?.dismiss(animated: true)
+        }
+        let topVC = UIApplication.shared.getTopViewController()
+        if let topVC {
+            topVC.present(vc, animated: true)
         }
     }
 }

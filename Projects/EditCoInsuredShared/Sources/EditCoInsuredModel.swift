@@ -108,3 +108,14 @@ public struct CoInsuredListType: Hashable, Identifiable {
     var isContractOwner: Bool?
     public var isEmpty: Bool?
 }
+
+public struct CoInsuredConfigModel: Identifiable, Equatable {
+    public init(
+        configs: [InsuredPeopleConfig]
+    ) {
+        self.configs = configs
+    }
+
+    public var id: String?
+    public var configs: [InsuredPeopleConfig]
+}

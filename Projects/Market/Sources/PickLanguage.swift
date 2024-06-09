@@ -69,7 +69,6 @@ public struct PickLanguage: View {
                         hButton.LargeButton(type: .primary) {
                             Localization.Locale.currentLocale = currentLocale
                             onSave(currentLocale.code)
-                            store.send(.dismissPicker)
                         } content: {
                             hText(L10n.generalSaveButton)
                         }
@@ -113,21 +112,5 @@ public struct PickLanguage: View {
         } else {
             hBorderColor.opaqueTwo
         }
-    }
-}
-
-extension PickLanguage {
-    public var journey: some JourneyPresentation {
-        HostingJourney(
-            MarketStore.self,
-            rootView: self,
-            style: .detented(.scrollViewContentSize),
-            options: [.largeNavigationBar, .blurredBackground]
-        ) { action in
-            if case .dismissPicker = action {
-                PopJourney()
-            }
-        }
-        .configureTitle(L10n.MarketLanguageScreen.chooseLanguageLabel)
     }
 }

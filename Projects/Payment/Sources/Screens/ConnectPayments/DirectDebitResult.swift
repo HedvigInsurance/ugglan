@@ -32,7 +32,7 @@ enum DirectDebitResultType {
 
 struct DirectDebitResult: View {
     let type: DirectDebitResultType
-    @PresentableStore var store: PaymentStore
+    @EnvironmentObject var router: Router
     let retry: () -> Void
 
     var body: some View {
@@ -43,7 +43,7 @@ struct DirectDebitResult: View {
                 successViewBody: type.messageText,
                 buttons: .init(
                     ghostButton: .init(buttonAction: {
-                        store.send(.dismissPayment)
+                        router.dismiss()
                     })
                 )
             )
@@ -68,5 +68,5 @@ struct DirectDebitResult: View {
 }
 
 #Preview{
-    DirectDebitResult(type: .success, store: .init(), retry: {})
+    DirectDebitResult(type: .success, retry: {})
 }

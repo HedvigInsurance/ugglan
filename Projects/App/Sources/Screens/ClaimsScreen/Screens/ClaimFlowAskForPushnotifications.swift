@@ -5,21 +5,35 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct AskForPushnotifications: View {
+struct AskForPushNotifications: View {
     let onActionExecuted: () -> Void
     let text: String
     let pushNotificationStatus: UNAuthorizationStatus
+    let wrapWithForm: Bool
+
     init(
         text: String,
-        onActionExecuted: @escaping () -> Void
+        onActionExecuted: @escaping () -> Void,
+        wrapWithForm: Bool = false
     ) {
         let store: ProfileStore = globalPresentableStoreContainer.get()
         self.pushNotificationStatus = store.state.pushNotificationCurrentStatus()
         self.text = text
         self.onActionExecuted = onActionExecuted
+        self.wrapWithForm = wrapWithForm
     }
 
     var body: some View {
+        if wrapWithForm {
+            hForm {
+                mainContent
+            }
+        } else {
+            mainContent
+        }
+    }
+
+    var mainContent: some View {
         hSection {
             VStack(spacing: 24) {
                 Spacer()
@@ -39,8 +53,7 @@ struct AskForPushnotifications: View {
                     current.getNotificationSettings(completionHandler: { settings in
                         DispatchQueue.main.async {
                             UIApplication.shared.appDelegate
-                                .registerForPushNotifications()
-                                .onValue { status in
+                                .registerForPushNotifications {
                                     onActionExecuted()
                                 }
                         }
@@ -69,45 +82,9 @@ struct AskForPushnotifications: View {
     }
 }
 
-extension AskForPushnotifications {
-    static func journey(for origin: ClaimsOrigin) -> some JourneyPresentation {
-        HostingJourney(
-            SubmitClaimStore.self,
-            rootView: AskForPushnotifications(
-                text: L10n.claimsActivateNotificationsBody,
-                onActionExecuted: {
-                    let vc = UIApplication.shared.getTopViewController()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                        vc?.sheetPresentationController?.presentedViewController.view.alpha = 0
-                        vc?.sheetPresentationController?.detents = [.medium()]
-                    }
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    store.send(.navigationAction(action: .dismissPreSubmitScreensAndStartClaim(origin: origin)))
-                }
-            ),
-            style: .detented(.large, modally: false, bgColor: nil)
-        ) { action in
-            if case let .navigationAction(navigationAction) = action {
-                if case .dismissPreSubmitScreensAndStartClaim = navigationAction {
-                    ClaimJourneys.showClaimEntrypointGroup(origin: origin)
-                        .onAction(SubmitClaimStore.self) { action in
-                            if case .dissmissNewClaimFlow = action {
-                                DismissJourney()
-                            }
-                        }
-                } else if case .openTriagingGroupScreen = navigationAction {
-                    ClaimJourneys.showClaimEntrypointGroup(origin: origin)
-                }
-            } else {
-                ClaimJourneys.getScreenForAction(for: action, withHidesBack: true)
-            }
-        }
-        .hidesBackButton
-    }
-}
 struct AskForPushnotifications_Previews: PreviewProvider {
     static var previews: some View {
-        AskForPushnotifications(text: "TEXT") {
+        AskForPushNotifications(text: "TEXT") {
 
         }
     }

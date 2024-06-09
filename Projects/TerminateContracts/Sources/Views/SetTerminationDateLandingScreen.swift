@@ -8,6 +8,7 @@ struct SetTerminationDateLandingScreen: View {
     @PresentableStore var store: TerminationContractStore
     @StateObject var vm = SetTerminationDateLandingScreenViewModel()
     let onSelected: () -> Void
+    @EnvironmentObject var terminationNavigationVm: TerminationFlowNavigationViewModel
 
     var body: some View {
         if vm.isDeletion == nil {
@@ -109,7 +110,7 @@ struct SetTerminationDateLandingScreen: View {
                             ?? L10n.terminationFlowDateFieldPlaceholder,
                         placeholder: L10n.terminationFlowDateFieldText,
                         onTap: {
-                            store.send(.navigationAction(action: .openTerminationDatePickerScreen))
+                            terminationNavigationVm.isDatePickerPresented = true
                         }
                     )
                     .hFontSize(.standard)

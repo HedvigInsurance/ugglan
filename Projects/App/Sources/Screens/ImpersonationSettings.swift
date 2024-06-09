@@ -8,6 +8,7 @@ import hCoreUI
 struct ImpersonationSettings: View {
     @PresentableStore var store: UgglanStore
     @PresentableStore var marketStore: MarketStore
+    @AppStorage(ApplicationState.key) public var state: ApplicationState.Screen = .notLoggedIn
 
     var body: some View {
         hForm {
@@ -17,12 +18,15 @@ struct ImpersonationSettings: View {
                         hText(locale.rawValue)
                     }
                     .onTap {
-                        if let realMarket = Market(rawValue: locale.market.rawValue) {
-                            marketStore.send(.selectMarket(market: realMarket))
+                        Task {
+                            if let realMarket = Market(rawValue: locale.market.rawValue) {
+                                marketStore.send(.selectMarket(market: realMarket))
+                            }
+                            Localization.Locale.currentLocale = locale
+                            await marketStore.sendAsync(.selectLanguage(language: locale.rawValue))
+                            ApplicationState.preserveState(.loggedIn)
+                            ApplicationState.state = .loggedIn
                         }
-                        marketStore.send(.selectLanguage(language: locale.rawValue))
-                        Localization.Locale.currentLocale = locale
-                        store.send(.showLoggedIn)
                     }
                 }
             }

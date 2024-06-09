@@ -1,4 +1,5 @@
 import Apollo
+import EditCoInsuredShared
 import Foundation
 import Presentation
 import hCore
@@ -7,7 +8,7 @@ public final class EditCoInsuredStore: LoadingStateStore<
     EditCoInsuredState, EditCoInsuredAction, EditCoInsuredLoadingAction
 >
 {
-    @Inject var editCoInsuredService: EditCoInsuredService
+    @Inject var editCoInsuredService: EditCoInsuredClient
     let coInsuredViewModel = InsuredPeopleNewScreenModel()
     let intentViewModel = IntentViewModel()
 
@@ -20,7 +21,6 @@ public final class EditCoInsuredStore: LoadingStateStore<
             do {
                 try await self.editCoInsuredService.sendMidtermChangeIntentCommit(commitId: commitId)
                 self.removeLoading(for: .postCoInsured)
-                send(.fetchContracts)
                 AskForRating().askForReview()
             } catch {
                 self.setError(L10n.General.errorBody, for: .postCoInsured)

@@ -1,4 +1,5 @@
 import Combine
+import Home
 import SwiftUI
 import hCore
 import hCoreUI
@@ -9,10 +10,11 @@ struct ClaimSection: View {
 
     @PresentableStore
     var store: ClaimsStore
+    @EnvironmentObject var homeRouter: Router
 
     var tapAction: (ClaimModel) -> Void {
         return { claim in
-            store.send(.openClaimDetails(claim: claim))
+            homeRouter.push(claim)
         }
     }
 

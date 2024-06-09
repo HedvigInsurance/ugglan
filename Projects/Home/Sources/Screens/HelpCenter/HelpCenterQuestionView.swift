@@ -34,7 +34,7 @@ struct HelpCenterQuestionView: View {
                                     linkColor: hTextColor.primary,
                                     linkUnderlineStyle: .single
                                 ) { url in
-                                    store.send(.goToURL(url: url))
+                                    NotificationCenter.default.post(name: .openDeepLink, object: url)
                                 }
                             )
                         }
@@ -47,25 +47,6 @@ struct HelpCenterQuestionView: View {
         }
         .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hFillColor.opaqueOne))
         .edgesIgnoringSafeArea(.bottom)
-    }
-}
-
-extension HelpCenterQuestionView {
-    static func journey(question: Question, title: String?) -> some JourneyPresentation {
-        HostingJourney(
-            HomeStore.self,
-            rootView: HelpCenterQuestionView(
-                question: question
-            )
-        ) { action in
-            if case .openFreeTextChat = action {
-                DismissJourney()
-            } else if case .dismissHelpCenter = action {
-                DismissJourney()
-            }
-        }
-        .configureTitle(title ?? "")
-        .withJourneyDismissButton
     }
 }
 

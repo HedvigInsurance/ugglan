@@ -5,6 +5,8 @@ import hCoreUI
 
 struct AddCampaingCodeView: View {
     @StateObject var vm = AddCampaingCodeViewModel()
+    @EnvironmentObject var router: Router
+
     var body: some View {
         ZStack(alignment: .center) {
             TextInputView(vm: vm.inputVm).opacity(vm.codeAdded ? 0 : 1)
@@ -16,6 +18,9 @@ struct AddCampaingCodeView: View {
                 hText(vm.hideTitle ? "" : L10n.paymentsAddCampaignCode)
             }
         }
+        .task {
+            vm.router = router
+        }
     }
 }
 
@@ -24,18 +29,15 @@ class AddCampaingCodeViewModel: ObservableObject {
     var errorMessage: String?
     @Published var codeAdded: Bool = false
     @Published var hideTitle: Bool = false
+    var router: Router?
 
-    @Inject var campaignsService: hCampaignsService
+    var campaignsService = hCampaignService()
     @PresentableStore var store: PaymentStore
     init() {
-        let store: PaymentStore = globalPresentableStoreContainer.get()
         inputVm = TextInputViewModel(
             masking: .init(type: .none),
             input: "",
-            title: L10n.referralAddcouponInputplaceholder,
-            dismiss: { [weak store] in
-                store?.send(.navigation(to: .goBack))
-            }
+            title: L10n.referralAddcouponInputplaceholder
         )
 
         inputVm.onSave = { [weak self] text in
@@ -44,9 +46,14 @@ class AddCampaingCodeViewModel: ObservableObject {
             self?.store.send(.fetchDiscountsData)
 
             await self?.onSuccessAdd()
+
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
-                self?.store.send(.navigation(to: .goBack))
+                self?.router?.dismiss()
             }
+        }
+
+        inputVm.onDismiss = {
+            try await self.dismissRouter()
         }
     }
 
@@ -57,28 +64,16 @@ class AddCampaingCodeViewModel: ObservableObject {
             codeAdded = true
         }
     }
-}
 
-extension AddCampaingCodeView {
-    static var journey: some JourneyPresentation {
-        HostingJourney(
-            PaymentStore.self,
-            rootView: AddCampaingCodeView(),
-            style: .detented(.scrollViewContentSize),
-            options: [.largeNavigationBar, .blurredBackground]
-        ) { action in
-            if case let .navigation(navigateTo) = action {
-                if case .goBack = navigateTo {
-                    PopJourney()
-                }
-            }
-        }
+    @MainActor
+    private func dismissRouter() async throws {
+        self.router?.dismiss()
     }
 }
 
 struct AddCampaingCodeView_Previews: PreviewProvider {
     static var previews: some View {
-        Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsServiceDemo() })
+        Dependencies.shared.add(module: Module { () -> hCampaignClient in hCampaignClientDemo() })
         return AddCampaingCodeView()
     }
 }

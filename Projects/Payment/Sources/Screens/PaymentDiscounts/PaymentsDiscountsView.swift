@@ -7,13 +7,16 @@ import hCoreUI
 struct PaymentsDiscountsView: View {
     let data: PaymentDiscountsData
     @PresentableStore var store: PaymentStore
+    @EnvironmentObject var paymentsNavigationVm: PaymentsNavigationViewModel
+    @EnvironmentObject var router: Router
+
     var body: some View {
         hForm {
             VStack(spacing: 8) {
                 discounts
                 hSection {
                     hButton.LargeButton(type: .secondary) {
-                        store.send(.navigation(to: .openAddCampaing))
+                        paymentsNavigationVm.isAddCampaignPresented = true
                     } content: {
                         hText(L10n.paymentsAddCampaignCode)
                     }
@@ -102,7 +105,7 @@ struct PaymentsDiscountsView: View {
                     .init(
                         buttonTitle: L10n.paymentsInviteFriends,
                         buttonAction: {
-                            store.send(.navigation(to: .openForever))
+                            router.push(PaymentsRedirectType.forever)
                         }
                     )
                 ]
@@ -117,17 +120,6 @@ struct PaymentsDiscountsView: View {
         }
         .hWithoutHorizontalPadding
         .dividerInsets(.all, 0)
-    }
-
-    private var seeAllInvitesView: some View {
-        hRow {
-            hText(L10n.referralsSeeAllInvites)
-        }
-        .onTap {
-            store.send(.navigation(to: .openAllReferrals))
-        }
-        .hWithoutHorizontalPadding
-        .padding(.horizontal, -16)
     }
 }
 
@@ -207,32 +199,6 @@ struct PaymentsDiscountsRootView: View {
             }
         }
     }
-}
-
-extension PaymentsDiscountsRootView {
-    var journey: some JourneyPresentation {
-        let store: PaymentStore = globalPresentableStoreContainer.get()
-        store.send(.fetchDiscountsData)
-        return HostingJourney(
-            PaymentStore.self,
-            rootView: self
-        ) { action in
-            if case let .navigation(navigateTo) = action {
-                if case .openForever = navigateTo {
-                    ForeverView.journey()
-                        .hidesBottomBarWhenPushed
-                } else if case .openAddCampaing = navigateTo {
-                    AddCampaingCodeView.journey
-                } else if case .openAllReferrals = navigateTo {
-                    ReferralsView.journey
-                } else if case let .openDeleteCampaing(discount) = navigateTo {
-                    DeleteCampaignView.journeyWith(discount: discount)
-                }
-            }
-        }
-        .configureTitle(L10n.paymentsDiscountsSectionTitle)
-    }
-
 }
 
 struct ReferralView: View {

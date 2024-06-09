@@ -1,4 +1,5 @@
 import Combine
+import Home
 import Kingfisher
 import Photos
 import Presentation
@@ -13,6 +14,9 @@ public struct ClaimDetailView: View {
     @State var showFilePicker = false
     @State var showCamera = false
     @StateObject var vm: ClaimDetailViewModel
+
+    @EnvironmentObject var homeVm: HomeNavigationViewModel
+
     public init(
         claim: ClaimModel
     ) {
@@ -73,6 +77,24 @@ public struct ClaimDetailView: View {
 
             }
             .ignoresSafeArea()
+        }
+        .modally(item: $vm.showFilesView) { [weak vm] item in
+            ClaimFilesView(endPoint: item.endPoint, files: item.files) { _ in
+                let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
+                claimStore.send(.fetchClaims)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    let nav = UIApplication.shared.getTopViewControllerNavigation()
+                    nav?.setNavigationBarHidden(false, animated: true)
+                    vm?.showFilesView = nil
+                    Task {
+                        await vm?.fetchFiles()
+                    }
+                }
+            }
+            .withDismissButton()
+            .configureTitle(L10n.ClaimStatusDetail.addedFiles)
+            .embededInNavigation()
+
         }
     }
 
@@ -175,9 +197,7 @@ public struct ClaimDetailView: View {
                     Image(uiImage: hCoreUIAssets.neArrowSmall.image)
                 }
                 .onTap {
-                    if let url = URL(string: termsAndConditionsDocument.url) {
-                        vm.store.send(.openDocument(url: url, title: termsAndConditionsDocument.displayName))
-                    }
+                    homeVm.document = termsAndConditionsDocument
                 }
             }
         }
@@ -300,10 +320,10 @@ struct ClaimDetailView_Previews: PreviewProvider {
 public class ClaimDetailViewModel: ObservableObject {
     @PresentableStore var store: ClaimsStore
     @Published var claim: ClaimModel
-    @Inject var claimService: hFetchClaimService
+    var claimService = hFetchClaimService()
     @Published var fetchFilesError: String?
     @Published var hasFiles = false
-
+    @Published var showFilesView: FilesDto?
     let fileUploadManager = FileUploadManager()
     var fileGridViewModel: FileGridViewModel
     private var cancellables = Set<AnyCancellable>()
@@ -348,11 +368,12 @@ public class ClaimDetailViewModel: ObservableObject {
         do {
             let files = try await claimService.getFiles()
             store.send(.setFiles(files: files))
-            self.fileGridViewModel.files = files[claim.id] ?? []
+            withAnimation {
+                self.fileGridViewModel.files = files[claim.id] ?? []
+            }
         } catch let ex {
             withAnimation {
                 fetchFilesError = ex.localizedDescription
-
             }
         }
     }
@@ -364,7 +385,7 @@ public class ClaimDetailViewModel: ObservableObject {
                     return $0.asFile()
                 }
             )
-            store.send(.navigation(action: .openFilesFor(claim: claim, files: filess)))
+            showFilesView = .init(id: claim.id, endPoint: claim.targetFileUploadUri, files: filess)
         }
     }
 
@@ -375,4 +396,10 @@ public class ClaimDetailViewModel: ObservableObject {
     var canAddFiles: Bool {
         return self.claim.status != .closed && fetchFilesError == nil
     }
+}
+
+struct FilesDto: Identifiable, Equatable {
+    let id: String
+    let endPoint: String
+    let files: [File]
 }

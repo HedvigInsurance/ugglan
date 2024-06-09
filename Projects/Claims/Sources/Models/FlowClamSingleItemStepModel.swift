@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 import hCore
+import hCoreUI
 import hGraphQL
 
 public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
@@ -187,6 +188,16 @@ public struct ClaimFlowItemBrandOptionModel: Codable, Equatable, Hashable {
     let itemTypeId: String
 
     init(
+        displayName: String,
+        itemBrandId: String,
+        itemTypeId: String
+    ) {
+        self.displayName = displayName
+        self.itemBrandId = itemBrandId
+        self.itemTypeId = itemTypeId
+    }
+
+    init(
         with model: OctopusGraphQL.FlowClaimSingleItemStepFragment.AvailableItemBrand
     ) {
         self.displayName = model.displayName
@@ -246,4 +257,10 @@ public struct ClaimFlowItemProblemOptionModel: Codable, Equatable, Hashable {
 public enum SelectedModel: Codable, Equatable, Hashable {
     case model(ClaimFlowItemModelOptionModel)
     case custom(brand: ClaimFlowItemBrandOptionModel, name: String)
+}
+
+extension ClaimFlowItemBrandOptionModel: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        return .init(describing: ModelPickerView.self)
+    }
 }

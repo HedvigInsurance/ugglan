@@ -6,6 +6,7 @@ import hGraphQL
 
 struct ProfileRow: View {
     @PresentableStore var store: ProfileStore
+    @EnvironmentObject var router: Router
 
     let row: ProfileRowType
 
@@ -28,7 +29,23 @@ struct ProfileRow: View {
         }
         .withChevronAccessory
         .onTap {
-            store.send(row.action)
+            action()
+        }
+        .environmentObject(router)
+    }
+
+    func action() {
+        switch row {
+        case .myInfo:
+            router.push(ProfileRouterType.myInfo)
+        case .appInfo:
+            router.push(ProfileRouterType.appInfo)
+        case .settings:
+            router.push(ProfileRouterType.settings)
+        case .eurobonus:
+            router.push(ProfileRouterType.euroBonus)
+        case .travelCertificate:
+            router.push(ProfileRedirectType.travelCertificate)
         }
     }
 }

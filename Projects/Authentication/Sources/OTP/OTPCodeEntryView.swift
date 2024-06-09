@@ -4,8 +4,9 @@ import hCoreUI
 
 public struct OTPCodeEntryView: View {
     @StateObject private var vm = OTPCodeEntryViewModel()
-    @ObservedObject var otpVM: OTPState
-    @PresentableStore var store: AuthenticationStore
+    @EnvironmentObject var otpVM: OTPState
+    @EnvironmentObject var router: Router
+    public init() {}
 
     public var body: some View {
         hForm {
@@ -56,9 +57,8 @@ public struct OTPCodeEntryView: View {
                         }
 
                         ResendOTPCode(otpVM: otpVM)
-                            .environmentObject(store.otpState)
+                            .environmentObject(otpVM)
                     }
-                    .presentableStoreLensAnimation(.default)
                 }
             }
             .background(
@@ -72,6 +72,7 @@ public struct OTPCodeEntryView: View {
         }
         .hFormAttachToBottom {
             OpenEmailClientButton()
+                .environmentObject(otpVM)
         }
         .overlay(
             OTPCodeLoadingOverlay(otpVM: otpVM)
@@ -80,14 +81,16 @@ public struct OTPCodeEntryView: View {
         .onChange(of: otpVM.code) { newValue in
             vm.check(otpState: otpVM)
         }
+        .onAppear {
+            vm.router = router
+        }
     }
 }
 
 class OTPCodeEntryViewModel: ObservableObject {
-    @PresentableStore private var store: AuthenticationStore
-    @Inject private var service: AuthentificationService
+    private var authenticationService = AuthenticationService()
     @hTextFieldFocusState var focusCodeField: Bool? = true
-
+    var router: Router?
     func check(otpState: OTPState) {
         let code = otpState.code
         Task {
@@ -99,10 +102,14 @@ class OTPCodeEntryViewModel: ObservableObject {
             Task { @MainActor [weak self, weak otpState] in
                 otpState?.isLoading = true
                 do {
-                    if let service = self?.service, let otpState = otpState {
+                    if let service = self?.authenticationService, let otpState = otpState {
                         let code = try await service.submit(otpState: otpState)
                         try await service.exchange(code: code)
-                        self?.store.send(.navigationAction(action: .authSuccess))
+                        let generator = UINotificationFeedbackGenerator()
+                        generator.notificationOccurred(.success)
+                        ApplicationState.preserveState(.loggedIn)
+                        ApplicationState.state = .loggedIn
+                        self?.router?.dismiss()
                     }
                 } catch let error {
                     otpState?.codeErrorMessage = error.localizedDescription

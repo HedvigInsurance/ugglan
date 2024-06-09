@@ -7,8 +7,9 @@ import hCoreUI
 import hGraphQL
 
 public struct PaymentHistoryView: View {
-    @PresentableStore var store: PaymentStore
     @ObservedObject var vm: PaymentsHistoryViewModel
+    @EnvironmentObject var router: Router
+
     public var body: some View {
         LoadingViewWithContent(
             PaymentStore.self,
@@ -65,9 +66,7 @@ public struct PaymentHistoryView: View {
                                         }
                                     }
                                     .onTap {
-                                        store.send(
-                                            .navigation(to: .openPaymentDetailsFromHistory(data: month.paymentData))
-                                        )
+                                        router.push(month.paymentData)
                                     }
                                     .foregroundColor(
                                         getColor(hTextColor.secondary, hasFailed: month.paymentData.status.hasFailed)
@@ -105,7 +104,7 @@ public struct PaymentHistoryView: View {
 }
 
 class PaymentsHistoryViewModel: ObservableObject {
-    @Inject private var paymentService: hPaymentService
+    private var paymentService = hPaymentService()
 
     init() {
         let store: PaymentStore = globalPresentableStoreContainer.get()
@@ -113,28 +112,10 @@ class PaymentsHistoryViewModel: ObservableObject {
     }
 }
 
-extension PaymentHistoryView {
-    public static var journey: some JourneyPresentation {
-        return HostingJourney(
-            PaymentStore.self,
-            rootView: PaymentHistoryView(vm: .init())
-        ) { action in
-            if case let .navigation(navigateTo) = action {
-                if case .goBack = navigateTo {
-                    PopJourney()
-                } else if case let .openPaymentDetailsFromHistory(data) = navigateTo {
-                    PaymentDetailsView.journey(with: data)
-                }
-            }
-        }
-        .configureTitle(L10n.paymentHistoryTitle)
-    }
-}
-
 struct PaymentHistoryView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .sv_SE
-        Dependencies.shared.add(module: Module { () -> hPaymentService in hPaymentServiceDemo() })
+        Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
         return PaymentHistoryView(vm: .init())
     }
 }

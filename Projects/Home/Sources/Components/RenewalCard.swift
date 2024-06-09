@@ -13,13 +13,15 @@ public struct RenewalCardView: View {
     @State private var showFailedToOpenUrlAlert = false
     let showCoInsured: Bool?
 
+    @EnvironmentObject var navigationVm: HomeNavigationViewModel
+
     public init(
         showCoInsured: Bool? = true
     ) {
         self.showCoInsured = showCoInsured
     }
 
-    private func buildSheetButtons(contracts: [Contract]) -> [ActionSheet.Button] {
+    private func buildSheetButtons(contracts: [HomeContract]) -> [ActionSheet.Button] {
         var buttons = contracts.map { contract in
             ActionSheet.Button.default(Text(contract.displayName)) {
                 openDocument(contract)
@@ -29,11 +31,16 @@ public struct RenewalCardView: View {
         return buttons
     }
 
-    private func openDocument(_ contract: Contract) {
+    private func openDocument(_ contract: HomeContract) {
         if let draftCertificateUrl = contract.upcomingRenewal?.draftCertificateUrl,
             let url = URL(string: draftCertificateUrl)
         {
-            store.send(.openDocument(contractURL: url))
+            navigationVm.document = InsuranceTerm(
+                displayName: contract.displayName,
+                url: contract.upcomingRenewal?.draftCertificateUrl ?? "",
+                type: .unknown
+            )
+
         } else {
             showFailedToOpenUrlAlert = true
         }
@@ -72,14 +79,15 @@ public struct RenewalCardView: View {
                             buttonTitle: L10n.contractViewCertificateButton,
                             buttonAction: {
                                 let certificateURL = contract.upcomingChangedAgreement?.certificateUrl
-                                if let url = URL(string: certificateURL) {
-                                    store.send(
-                                        .openContractCertificate(
-                                            url: url,
-                                            title: L10n.myDocumentsInsuranceCertificate
-                                        )
+                                openDocument(
+                                    HomeContract(
+                                        upcomingRenewal: .init(
+                                            renewalDate: contract.upcomingChangedAgreement?.activeFrom,
+                                            draftCertificateUrl: certificateURL
+                                        ),
+                                        displayName: contract.upcomingChangedAgreement?.productVariant.displayName ?? ""
                                     )
-                                }
+                                )
                             }
                         )
                     ])
@@ -153,7 +161,7 @@ struct RenewalCardView_Previews: PreviewProvider {
                     )
                 )
 
-                let contract = Home.Contract(contract: octopusContract)
+                let contract = HomeContract(contract: octopusContract)
                 store.send(.setMemberContractState(state: state, contracts: [contract]))
             }
     }

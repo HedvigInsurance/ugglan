@@ -1,3 +1,4 @@
+import EditCoInsuredShared
 import Presentation
 import SwiftUI
 import hCore
@@ -8,7 +9,9 @@ struct CoInsuredProcessingScreen: View {
     @ObservedObject var intentVm: IntentViewModel
     var showSuccessScreen: Bool
     @PresentableStore var store: EditCoInsuredStore
-
+    @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+    @EnvironmentObject private var editCoInsuredViewModel: EditCoInsuredViewModel
+    @StateObject var router = Router()
     init(
         showSuccessScreen: Bool
     ) {
@@ -18,51 +21,48 @@ struct CoInsuredProcessingScreen: View {
     }
 
     var body: some View {
-        ProcessingView(
-            showSuccessScreen: showSuccessScreen,
-            EditCoInsuredStore.self,
-            loading: .postCoInsured,
-            loadingViewText: L10n.contractAddCoinsuredProcessing,
-            successViewTitle: L10n.contractAddCoinsuredUpdatedTitle,
-            successViewBody: L10n.contractAddCoinsuredUpdatedLabel(
-                intentVm.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-            ),
-            successViewButtonAction: {
-                vm.store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
-                missingContractAlert()
-            },
-            onAppearLoadingView: {
-                missingContractAlert()
-            },
-            onErrorCancelAction: {
-                store.send(.coInsuredNavigationAction(action: .dismissEdit))
+        RouterHost(router: router, options: [.navigationBarHidden]) {
+            ProcessingView(
+                showSuccessScreen: showSuccessScreen,
+                EditCoInsuredStore.self,
+                loading: .postCoInsured,
+                loadingViewText: L10n.contractAddCoinsuredProcessing,
+                successViewTitle: L10n.contractAddCoinsuredUpdatedTitle,
+                successViewBody: L10n.contractAddCoinsuredUpdatedLabel(
+                    intentVm.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                ),
+                onAppearLoadingView: {
+                    editCoInsuredNavigation.showProgressScreenWithSuccess = false
+                    editCoInsuredNavigation.showProgressScreenWithoutSuccess = false
+                    editCoInsuredNavigation.editCoInsuredConfig = nil
+                    editCoInsuredViewModel.checkForAlert()
+                    EditCoInsuredViewModel.updatedCoInsuredForContractId.send(intentVm.contractId)
+
+                },
+                onErrorCancelAction: {
+                    router.dismiss()
+                }
+            )
+            .hSuccessBottomAttachedView {
+                customBottomSuccessView
             }
-        )
-        .hSuccessBottomAttachedView {
-            customBottomSuccessView
         }
     }
 
     private var customBottomSuccessView: some View {
         hSection {
             hButton.LargeButton(type: .ghost) {
-                vm.store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
-                missingContractAlert()
+                editCoInsuredNavigation.showProgressScreenWithSuccess = false
+                editCoInsuredNavigation.showProgressScreenWithoutSuccess = false
+                editCoInsuredNavigation.editCoInsuredConfig = nil
+                editCoInsuredViewModel.checkForAlert()
+                EditCoInsuredViewModel.updatedCoInsuredForContractId.send(intentVm.contractId)
             } content: {
                 hText(L10n.generalDoneButton)
             }
         }
         .sectionContainerStyle(.transparent)
     }
-
-    private func missingContractAlert() {
-        vm.store.send(.fetchContracts)
-        vm.store.send(.coInsuredNavigationAction(action: .dismissEditCoInsuredFlow))
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            store.send(.checkForAlert)
-        }
-    }
-
 }
 
 class ProcessingViewModel: ObservableObject {

@@ -2,7 +2,6 @@ import Combine
 import Contracts
 import Presentation
 import SwiftUI
-import TravelCertificate
 import hCore
 import hCoreUI
 import hGraphQL
@@ -10,11 +9,15 @@ import hGraphQL
 public struct HelpCenterStartView: View {
     @ObservedObject var vm: HelpCenterStartViewModel
     @PresentableStore var store: HomeStore
+    let onQuickAction: (QuickAction) -> Void
+    @EnvironmentObject var router: Router
     @State var vc: UIViewController?
 
     public init(
+        onQuickAction: @escaping (QuickAction) -> Void,
         helpCenterModel: HelpCenterModel
     ) {
+        self.onQuickAction = onQuickAction
         self.vm = .init(helpCenterModel: helpCenterModel)
     }
 
@@ -104,7 +107,6 @@ public struct HelpCenterStartView: View {
                                     .foregroundColor(hTextColor.secondary)
 
                             }
-
                             Spacer()
                         }
                         .withChevronAccessory
@@ -115,9 +117,7 @@ public struct HelpCenterStartView: View {
                                 name: "help center quick action",
                                 attributes: ["action": quickAction.id]
                             )
-                            Task {
-                                vm.store.send(.goToQuickAction(quickAction))
-                            }
+                            onQuickAction(quickAction)
                         }
                     }
                     .withoutHorizontalPadding
@@ -157,9 +157,7 @@ public struct HelpCenterStartView: View {
                                 name: "help center quick action",
                                 attributes: ["action": quickAction.id]
                             )
-                            Task {
-                                vm.store.send(.goToQuickAction(quickAction))
-                            }
+                            onQuickAction(quickAction)
                         }
                     }
                     .withoutHorizontalPadding
@@ -188,7 +186,7 @@ public struct HelpCenterStartView: View {
                     }
                     .withChevronAccessory
                     .onTap {
-                        vm.store.send(.openHelpCenterTopicView(commonTopic: item))
+                        router.push(item)
                     }
                 }
                 .withoutHorizontalPadding
@@ -197,109 +195,6 @@ public struct HelpCenterStartView: View {
             }
         }
     }
-}
-
-extension HelpCenterStartView {
-    public static var journey: some JourneyPresentation {
-        let commonQuestions: [Question] = [
-            ClaimsQuestions.claimsQuestion1.question,
-            InsuranceQuestions.insuranceQuestion5.question,
-            PaymentsQuestions.paymentsQuestion1.question,
-            InsuranceQuestions.insuranceQuestion3.question,
-            InsuranceQuestions.insuranceQuestion1.question,
-        ]
-        return HostingJourney(
-            HomeStore.self,
-            rootView: HelpCenterStartView(
-
-                helpCenterModel:
-                    .init(
-                        title: L10n.hcHomeViewQuestion,
-                        description:
-                            L10n.hcHomeViewAnswer,
-                        commonTopics: [
-                            .init(
-                                title: L10n.hcPaymentsTitle,
-                                type: .payments,
-                                commonQuestions: PaymentsQuestions.common().asQuestions(),
-                                allQuestions: PaymentsQuestions.others().asQuestions()
-                            ),
-                            .init(
-                                title: L10n.hcClaimsTitle,
-                                type: .claims,
-                                commonQuestions: ClaimsQuestions.common().asQuestions(),
-                                allQuestions: ClaimsQuestions.others().asQuestions()
-                            ),
-                            .init(
-                                title: L10n.hcCoverageTitle,
-                                type: .coverage,
-                                commonQuestions: CoverageQuestions.common().asQuestions(),
-                                allQuestions: CoverageQuestions.others().asQuestions()
-                            ),
-                            .init(
-                                title: L10n.hcInsurancesTitle,
-                                type: .myInsurance,
-                                commonQuestions: InsuranceQuestions.common().asQuestions(),
-                                allQuestions: InsuranceQuestions.others().asQuestions()
-                            ),
-                            .init(
-                                title: L10n.hcGeneralTitle,
-                                type: nil,
-                                commonQuestions: OtherQuestions.common().asQuestions(),
-                                allQuestions: OtherQuestions.others().asQuestions()
-                            ),
-                        ],
-                        commonQuestions: commonQuestions
-                    )
-
-            ),
-            style: .modally(presentationStyle: .overFullScreen),
-            options: [.defaults]
-        ) { action in
-            if case .openFreeTextChat = action {
-                DismissJourney()
-            } else if case let .openHelpCenterTopicView(topic) = action {
-                HelpCenterTopicView.journey(commonTopic: topic)
-            } else if case let .openHelpCenterQuestionView(question) = action {
-                HelpCenterQuestionView.journey(question: question, title: nil)
-            } else if case .dismissHelpCenter = action {
-                DismissJourney()
-            }
-        }
-        .configureTitle(L10n.hcTitle)
-        .withJourneyDismissButton
-    }
-}
-
-extension HelpCenterStartViewModel: UISearchResultsUpdating {
-    func updateSearchResults(for searchController: UISearchController) {
-        withAnimation {
-            searchInProgress = searchController.isActive
-            startSearch(for: searchController.searchBar.text ?? "")
-        }
-        updateColors()
-    }
-}
-
-extension HelpCenterStartViewModel: UISearchControllerDelegate {
-    func didPresentSearchController(_ searchController: UISearchController) {
-        updateColors()
-    }
-
-    func willPresentSearchController(_ searchController: UISearchController) {
-        updateColors()
-    }
-
-    func updateColors() {
-        let button = searchController.searchBar.subviews.first?.subviews.last?.subviews.last as? UIButton
-        let hColor = hTextColor.primary
-        let color = UIColor(
-            light: hColor.colorFor(.light, .base).color.uiColor(),
-            dark: hColor.colorFor(.dark, .base).color.uiColor()
-        )
-        button?.setTitleColor(color, for: .normal)
-    }
-
 }
 
 class HelpCenterStartViewModel: NSObject, ObservableObject {
@@ -383,6 +278,37 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
     }
 }
 
+extension HelpCenterStartViewModel: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        withAnimation {
+            searchInProgress = searchController.isActive
+            startSearch(for: searchController.searchBar.text ?? "")
+        }
+        updateColors()
+    }
+}
+
+extension HelpCenterStartViewModel: UISearchControllerDelegate {
+    func didPresentSearchController(_ searchController: UISearchController) {
+        updateColors()
+    }
+
+    func willPresentSearchController(_ searchController: UISearchController) {
+        updateColors()
+    }
+
+    func updateColors() {
+        let button = searchController.searchBar.subviews.first?.subviews.last?.subviews.last as? UIButton
+        let hColor = hTextColor.primary
+        let color = UIColor(
+            light: hColor.colorFor(.light, .base).color.uiColor(),
+            dark: hColor.colorFor(.dark, .base).color.uiColor()
+        )
+        button?.setTitleColor(color, for: .normal)
+    }
+
+}
+
 #Preview{
     let commonQuestions: [Question] = [
         .init(
@@ -421,34 +347,61 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
             relatedQuestions: []
         ),
     ]
-
     return HelpCenterStartView(
-        helpCenterModel:
-            .init(
-                title: L10n.hcHomeViewQuestion,
-                description:
-                    L10n.hcHomeViewAnswer,
-                commonTopics: [
-                    .init(
-                        title: "Payments",
-                        type: .payments,
-                        commonQuestions: commonQuestions,
-                        allQuestions: []
-                    ),
-                    .init(
-                        title: "Claims",
-                        type: .claims,
-                        commonQuestions: commonQuestions,
-                        allQuestions: []
-                    ),
-                    .init(
-                        title: "My insurance",
-                        type: .myInsurance,
-                        commonQuestions: commonQuestions,
-                        allQuestions: []
-                    ),
-                ],
-                commonQuestions: commonQuestions
-            )
+        onQuickAction: { _ in
+
+        },
+        helpCenterModel: HelpCenterModel.getDefault()
     )
+}
+
+extension HelpCenterModel {
+    static func getDefault() -> HelpCenterModel {
+        let commonQuestions: [Question] = [
+            ClaimsQuestions.claimsQuestion1.question,
+            InsuranceQuestions.insuranceQuestion5.question,
+            PaymentsQuestions.paymentsQuestion1.question,
+            InsuranceQuestions.insuranceQuestion3.question,
+            InsuranceQuestions.insuranceQuestion1.question,
+        ]
+
+        return .init(
+            title: L10n.hcHomeViewQuestion,
+            description:
+                L10n.hcHomeViewAnswer,
+            commonTopics: [
+                .init(
+                    title: L10n.hcPaymentsTitle,
+                    type: .payments,
+                    commonQuestions: PaymentsQuestions.common().asQuestions(),
+                    allQuestions: PaymentsQuestions.others().asQuestions()
+                ),
+                .init(
+                    title: L10n.hcClaimsTitle,
+                    type: .claims,
+                    commonQuestions: ClaimsQuestions.common().asQuestions(),
+                    allQuestions: ClaimsQuestions.others().asQuestions()
+                ),
+                .init(
+                    title: L10n.hcCoverageTitle,
+                    type: .coverage,
+                    commonQuestions: CoverageQuestions.common().asQuestions(),
+                    allQuestions: CoverageQuestions.others().asQuestions()
+                ),
+                .init(
+                    title: L10n.hcInsurancesTitle,
+                    type: .myInsurance,
+                    commonQuestions: InsuranceQuestions.common().asQuestions(),
+                    allQuestions: InsuranceQuestions.others().asQuestions()
+                ),
+                .init(
+                    title: L10n.hcGeneralTitle,
+                    type: nil,
+                    commonQuestions: OtherQuestions.common().asQuestions(),
+                    allQuestions: OtherQuestions.others().asQuestions()
+                ),
+            ],
+            commonQuestions: commonQuestions
+        )
+    }
 }

@@ -2,11 +2,13 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct OTPEntryView: View {
+public struct OTPEntryView: View {
     @StateObject private var vm: OTPEntryViewModel = .init()
-    @ObservedObject var otpVM: OTPState
+    @EnvironmentObject var otpVM: OTPState
+    @EnvironmentObject var router: Router
+    public init() {}
 
-    var body: some View {
+    public var body: some View {
         hForm {
             hSection {
                 VStack(spacing: 50) {
@@ -23,7 +25,6 @@ struct OTPEntryView: View {
                         vm.onSubmit(otpState: otpVM)
                     }
                     .hTextFieldError(otpVM.otpInputErrorMessage)
-                    .presentableStoreLensAnimation(.default)
                 }
             }
         }
@@ -37,20 +38,19 @@ struct OTPEntryView: View {
                 .hButtonIsLoading(otpVM.isLoading)
             }
             .disabled(!vm.masking.isValid(text: otpVM.input))
-            .presentableStoreLensAnimation(.default)
         }
         .sectionContainerStyle(.transparent)
         .onAppear {
             vm.focusInputField = true
+            vm.router = router
         }
     }
 }
 
 class OTPEntryViewModel: ObservableObject {
-    @PresentableStore var store: AuthenticationStore
-    @Inject var authorizationService: AuthentificationService
+    var authenticationService = AuthenticationService()
     @hTextFieldFocusState var focusInputField = false
-
+    weak var router: Router?
     var masking: Masking {
         switch Localization.Locale.currentLocale.market {
         case .dk:
@@ -79,7 +79,7 @@ class OTPEntryViewModel: ObservableObject {
         otpState.isLoading = true
         Task { @MainActor [weak self, weak otpState] in
             do {
-                if let otpState = otpState, let data = try await self?.authorizationService.start(with: otpState) {
+                if let otpState = otpState, let data = try await self?.authenticationService.start(with: otpState) {
                     otpState.code = ""
                     otpState.verifyUrl = data.verifyUrl
                     otpState.resendUrl = data.resendUrl
@@ -89,7 +89,7 @@ class OTPEntryViewModel: ObservableObject {
                     otpState.canResendAt = Date().addingTimeInterval(60)
                     otpState.isResending = false
                     otpState.maskedEmail = data.maskedEmail
-                    self?.store.send(.navigationAction(action: .otpCode))
+                    self?.router?.push(AuthentificationRouterType.otpCodeEntry)
                 }
             } catch let error {
                 otpState?.isLoading = false

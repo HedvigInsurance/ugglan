@@ -1,7 +1,10 @@
 import Flow
-import Presentation
 import SwiftUI
 import hCore
+
+public class hOptOutFieldNavigationViewModel: ObservableObject {
+    @Published var isFieldPresented: hOptOutFieldViewModel?
+}
 
 public struct hOptOutField: View {
     @ObservedObject var config: HOptOutFieldConfig
@@ -10,7 +13,9 @@ public struct hOptOutField: View {
     @State private var animate = false
     @Binding var error: String?
     @State var selected: String = ""
-    @State private var disposeBag = DisposeBag()
+
+    @StateObject var hOptOutFieldViewModel = hOptOutFieldNavigationViewModel()
+    @EnvironmentObject var router: Router
 
     public var shouldMoveLabel: Binding<Bool> {
         Binding(
@@ -72,6 +77,12 @@ public struct hOptOutField: View {
                 showPriceInputView()
             }
         }
+        .detent(
+            item: $hOptOutFieldViewModel.isFieldPresented,
+            style: .height
+        ) { hOptOutFieldModel in
+            PriceInputScreen(vm: hOptOutFieldModel)
+        }
     }
 
     var displayLabel: String {
@@ -106,7 +117,7 @@ public struct hOptOutField: View {
         let continueAction = ReferenceAction {}
         let cancelAction = ReferenceAction {}
 
-        let view = PriceInputScreen(
+        hOptOutFieldViewModel.isFieldPresented = .init(
             config: config,
             continueAction: continueAction,
             cancelAction: cancelAction,
@@ -115,29 +126,16 @@ public struct hOptOutField: View {
             },
             purchasePrice: value
         )
-
-        let journey = HostingJourney(
-            rootView: view,
-            style: .detented(.scrollViewContentSize),
-            options: [.largeNavigationBar, .blurredBackground]
-        )
-
-        let priceInputJourney = journey.addConfiguration { presenter in
-            continueAction.execute = {
-                self.animate = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                    self.animate = false
-                }
-                self.onContinue(value)
-                presenter.dismisser(JourneyError.cancelled)
+        continueAction.execute = {
+            self.animate = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                self.animate = false
             }
-            cancelAction.execute = {
-                presenter.dismisser(JourneyError.cancelled)
-            }
+            self.onContinue(value)
+            router.dismiss()
         }
-        let vc = UIApplication.shared.getTopViewController()
-        if let vc {
-            disposeBag += vc.present(priceInputJourney)
+        cancelAction.execute = {
+            router.dismiss()
         }
     }
 
@@ -157,26 +155,13 @@ public struct hOptOutField: View {
 }
 
 struct PriceInputScreen: View {
-    private let continueAction: ReferenceAction
-    private let cancelAction: ReferenceAction
-    private let config: hOptOutField.HOptOutFieldConfig
-    private var onSave: (String) -> Void
-
-    @State var purchasePrice: String
+    private var vm: hOptOutFieldViewModel
     @State private var type: hOptOutFieldType? = .purchasePrice
 
     init(
-        config: hOptOutField.HOptOutFieldConfig,
-        continueAction: ReferenceAction,
-        cancelAction: ReferenceAction,
-        onSave: @escaping (String) -> Void,
-        purchasePrice: String
+        vm: hOptOutFieldViewModel
     ) {
-        self.config = config
-        self.continueAction = continueAction
-        self.cancelAction = cancelAction
-        self.onSave = onSave
-        self.purchasePrice = purchasePrice
+        self.vm = vm
     }
 
     var body: some View {
@@ -184,11 +169,11 @@ struct PriceInputScreen: View {
             hSection {
                 hFloatingTextField(
                     masking: Masking(type: .digits),
-                    value: $purchasePrice,
+                    value: vm.$purchasePrice,
                     equals: $type,
                     focusValue: .purchasePrice,
-                    placeholder: config.placeholder,
-                    suffix: config.currency
+                    placeholder: vm.config.placeholder,
+                    suffix: vm.config.currency
                 )
             }
         }
@@ -198,13 +183,13 @@ struct PriceInputScreen: View {
                 VStack(spacing: 8) {
                     hButton.LargeButton(type: .primary) {
                         UIApplication.dismissKeyboard()
-                        onSave(purchasePrice)
-                        continueAction.execute()
+                        vm.onSave(vm.purchasePrice)
+                        vm.continueAction.execute()
                     } content: {
                         hText(L10n.generalSaveButton, style: .body)
                     }
                     hButton.LargeButton(type: .ghost) {
-                        cancelAction.execute()
+                        vm.cancelAction.execute()
                     } content: {
                         hText(L10n.generalNotSure, style: .body)
                     }
@@ -256,4 +241,32 @@ enum hOptOutFieldType: hTextFieldFocusStateCompliant {
     }
 
     case purchasePrice
+}
+
+struct hOptOutFieldViewModel: Identifiable, Equatable {
+    static func == (lhs: hOptOutFieldViewModel, rhs: hOptOutFieldViewModel) -> Bool {
+        return lhs.id == rhs.id
+    }
+
+    var id: String?
+    let continueAction: ReferenceAction
+    let cancelAction: ReferenceAction
+    let config: hOptOutField.HOptOutFieldConfig
+    var onSave: (String) -> Void
+
+    @State var purchasePrice: String
+
+    init(
+        config: hOptOutField.HOptOutFieldConfig,
+        continueAction: ReferenceAction,
+        cancelAction: ReferenceAction,
+        onSave: @escaping (String) -> Void,
+        purchasePrice: String
+    ) {
+        self.config = config
+        self.continueAction = continueAction
+        self.cancelAction = cancelAction
+        self.onSave = onSave
+        self.purchasePrice = purchasePrice
+    }
 }

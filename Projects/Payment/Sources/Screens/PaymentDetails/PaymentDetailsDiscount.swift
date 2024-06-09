@@ -4,6 +4,7 @@ import hCoreUI
 
 struct PaymentDetailsDiscountView: View {
     @ObservedObject var vm: PaymentDetailsDiscountViewModel
+    @EnvironmentObject var paymentNavigationVm: PaymentsNavigationViewModel
 
     init(vm: PaymentDetailsDiscountViewModel) {
         self.vm = vm
@@ -28,7 +29,7 @@ struct PaymentDetailsDiscountView: View {
                             .fill(hFillColor.opaqueOne)
                     )
                     .onTapGesture {
-                        vm.startRemoveCode()
+                        startRemoveCode()
                     }
                     Spacer()
                     if vm.options.contains(.forPayment), let discount = vm.discount.amount {
@@ -81,13 +82,19 @@ struct PaymentDetailsDiscountView: View {
             hTextColor.primary
         }
     }
+
+    func startRemoveCode() {
+        if vm.shouldShowRemove {
+            paymentNavigationVm.isDeleteCampaignPresented = vm.discount
+        }
+    }
 }
 
 class PaymentDetailsDiscountViewModel: ObservableObject {
     let options: PaymentDetailsDiscountOptions
     let discount: Discount
     @PresentableStore private var store: PaymentStore
-    @Inject private var campaignsService: hCampaignsService
+    private var campaignService = hCampaignService()
 
     init(options: PaymentDetailsDiscountOptions, discount: Discount) {
         self.options = options
@@ -109,17 +116,11 @@ class PaymentDetailsDiscountViewModel: ObservableObject {
         options.contains(.enableRemoving) && discount.isValid && discount.canBeDeleted
     }
 
-    func startRemoveCode() {
-        if shouldShowRemove {
-            store.send(.navigation(to: .openDeleteCampaing(discount: discount)))
-        }
-    }
-
 }
 
 struct PaymentDetailsDiscount_Previews: PreviewProvider {
     static var previews: some View {
-        Dependencies.shared.add(module: Module { () -> hCampaignsService in hCampaignsServiceDemo() })
+        Dependencies.shared.add(module: Module { () -> hCampaignClient in hCampaignClientDemo() })
         let discount: Discount = .init(
             id: "1",
             code: "231223",

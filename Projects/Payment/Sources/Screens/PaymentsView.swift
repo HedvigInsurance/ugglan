@@ -6,6 +6,9 @@ import hGraphQL
 
 public struct PaymentsView: View {
     @PresentableStore var store: PaymentStore
+    @EnvironmentObject var router: Router
+    @EnvironmentObject var paymentNavigationVm: PaymentsNavigationViewModel
+
     public init() {
         let store: PaymentStore = globalPresentableStoreContainer.get()
         store.send(.load)
@@ -85,13 +88,7 @@ public struct PaymentsView: View {
                         }
                         .withEmptyAccessory
                         .onTap {
-                            store.send(
-                                .navigation(
-                                    to: .openPaymentDetails(
-                                        data: upcomingPayment
-                                    )
-                                )
-                            )
+                            router.push(upcomingPayment)
                         }
                     }
                 } else {
@@ -106,6 +103,7 @@ public struct PaymentsView: View {
                 }
                 hSection {
                     ConnectPaymentCardView()
+                        .environmentObject(paymentNavigationVm.connectPaymentVm)
                 }
                 if let status = state.paymentData?.status, status != .upcoming {
                     hSection {
@@ -130,7 +128,7 @@ public struct PaymentsView: View {
         }
         .withChevronAccessory
         .onTap {
-            store.send(.navigation(to: .openDiscounts))
+            router.push(PaymentsRouterAction.discounts)
         }
         .hWithoutHorizontalPadding
         .dividerInsets(.all, 0)
@@ -149,7 +147,7 @@ public struct PaymentsView: View {
         }
         .withChevronAccessory
         .onTap {
-            store.send(.navigation(to: .openHistory))
+            router.push(PaymentsRouterAction.history)
         }
         .hWithoutHorizontalPadding
         .dividerInsets(.all, 0)
@@ -187,7 +185,7 @@ public struct PaymentsView: View {
                             InfoCard(text: L10n.myPaymentUpdatingMessage, type: .info)
                         }
                         hButton.LargeButton(type: .secondary) {
-                            store.send(.navigation(to: .openConnectPayments))
+                            paymentNavigationVm.connectPaymentVm.set(for: nil)
                         } content: {
                             hText(statusData.connectButtonTitle)
                         }
@@ -203,55 +201,7 @@ public struct PaymentsView: View {
 struct PaymentsView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
-        Dependencies.shared.add(module: Module { () -> hPaymentService in hPaymentServiceDemo() })
+        Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
         return PaymentsView()
-    }
-}
-
-extension PaymentsView {
-    public func journey(schema: String) -> some JourneyPresentation {
-        HostingJourney(
-            PaymentStore.self,
-            rootView: self
-        ) { action in
-            if case let .navigation(navigateTo) = action {
-                if case .openHistory = navigateTo {
-                    PaymentHistoryView.journey
-                } else if case let .openPaymentDetails(details) = navigateTo {
-                    PaymentDetailsView.journey(with: details)
-                } else if case .openDiscounts = navigateTo {
-                    PaymentsDiscountsRootView().journey
-                }
-            }
-        }
-        .configureTitle(L10n.myPaymentTitle)
-        .configureTabBarItem(
-            title: L10n.tabPaymentsTitle,
-            image: hCoreUIAssets.paymentsTab.image,
-            selectedImage: hCoreUIAssets.paymentsTab.image
-        )
-    }
-
-    public func detentJourney(schema: String) -> some JourneyPresentation {
-        HostingJourney(
-            PaymentStore.self,
-            rootView: self,
-            style: .detented(.large),
-            options: .largeNavigationBar
-        ) { action in
-            if case let .navigation(navigateTo) = action {
-                if case .openConnectPayments = navigateTo {
-                    DirectDebitSetup().journey()
-                } else if case .openHistory = navigateTo {
-                    PaymentHistoryView.journey
-                } else if case let .openPaymentDetails(details) = navigateTo {
-                    PaymentDetailsView.journey(with: details)
-                } else if case .openDiscounts = navigateTo {
-                    PaymentsDiscountsRootView().journey
-                }
-            }
-        }
-        .configureTitle(L10n.myPaymentTitle)
-        .withJourneyDismissButton
     }
 }

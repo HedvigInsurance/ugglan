@@ -2,7 +2,7 @@ import Foundation
 import hCore
 import hGraphQL
 
-enum FlowClaimDeflectStepType: Decodable, Encodable {
+public enum FlowClaimDeflectStepType: Decodable, Encodable {
     case FlowClaimDeflectGlassDamageStep
     case FlowClaimDeflectPestsStep
     case FlowClaimDeflectEmergencyStep
@@ -10,7 +10,7 @@ enum FlowClaimDeflectStepType: Decodable, Encodable {
     case FlowClaimDeflectEirStep
     case Unknown
 
-    var title: String {
+    public var title: String {
         switch self {
         case .FlowClaimDeflectGlassDamageStep:
             return L10n.submitClaimGlassDamageTitle
@@ -46,7 +46,7 @@ struct DeflectQuestion {
 }
 
 public struct FlowClaimDeflectStepModel: FlowClaimStepModel {
-    let id: FlowClaimDeflectStepType
+    public let id: FlowClaimDeflectStepType
     let partners: [Partner]
     var isEmergencyStep: Bool {
         id == .FlowClaimDeflectEmergencyStep
@@ -156,7 +156,7 @@ public struct FlowClaimDeflectStepModel: FlowClaimStepModel {
         self.partners = data.partners.map({ .init(with: $0.fragments.flowClaimDeflectPartnerFragment) })
     }
 
-    init(
+    public init(
         id: FlowClaimDeflectStepType,
         partners: [Partner]? = [],
         isEmergencyStep: Bool
@@ -198,7 +198,7 @@ public struct Partner: Codable, Equatable, Hashable {
         self.phoneNumber = data.phoneNumber
     }
 
-    init(
+    public init(
         id: String,
         imageUrl: String?,
         url: String?,

@@ -1,4 +1,3 @@
-import Home
 import Presentation
 import SwiftUI
 import hCore
@@ -9,7 +8,7 @@ public struct SubmitClaimDeflectScreen: View {
     private let isEmergencyStep: Bool
     private let openChat: () -> Void
 
-    init(
+    public init(
         model: FlowClaimDeflectStepModel?,
         openChat: @escaping () -> Void
     ) {
@@ -63,14 +62,19 @@ public struct SubmitClaimDeflectScreen: View {
                 .sectionContainerStyle(.transparent)
 
                 VStack(spacing: 4) {
-                    ForEach(model?.config?.questions ?? [], id: \.question) { question in
-                        InfoExpandableView(
-                            title: question.question,
-                            text: question.answer
-                        )
+                    withAnimation(.easeOut) {
+                        ForEach(model?.config?.questions ?? [], id: \.question) { question in
+
+                            InfoExpandableView(
+                                title: question.question,
+                                text: question.answer,
+                                onMarkDownClick: { url in
+                                    NotificationCenter.default.post(name: .openDeepLink, object: url)
+                                }
+                            )
+                        }
                     }
                 }
-                .animation(.easeOut)
                 .padding(.top, 8)
 
                 SupportView(openChat: openChat)
@@ -78,49 +82,6 @@ public struct SubmitClaimDeflectScreen: View {
             }
             .padding(.top, 8)
         }
-    }
-}
-
-extension SubmitClaimDeflectScreen {
-    public static var journey: some JourneyPresentation {
-        let model: FlowClaimDeflectStepModel? = {
-            let store: HomeStore = globalPresentableStoreContainer.get()
-            let quickActions = store.state.quickActions
-            if let sickAbroadPartners = quickActions.first(where: { $0.sickAboardPartners != nil })?.sickAboardPartners
-            {
-                return FlowClaimDeflectStepModel(
-                    id: .FlowClaimDeflectEmergencyStep,
-                    partners: sickAbroadPartners.compactMap({
-                        .init(
-                            id: "",
-                            imageUrl: $0.imageUrl,
-                            url: "",
-                            phoneNumber: $0.phoneNumber
-                        )
-                    }),
-                    isEmergencyStep: true
-                )
-            }
-            return nil
-        }()
-        return HostingJourney(
-            SubmitClaimStore.self,
-            rootView: SubmitClaimDeflectScreen(
-                model: model,
-                openChat: {
-                    let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                    homeStore.send(.openFreeTextChat(from: nil))
-                }
-            ),
-            style: .detented(.scrollViewContentSize),
-            options: [.largeNavigationBar, .blurredBackground]
-        ) { action in
-            if case .dissmissNewClaimFlow = action {
-                DismissJourney()
-            }
-        }
-        .configureTitle(L10n.commonClaimEmergencyTitle)
-        .withJourneyDismissButton
     }
 }
 

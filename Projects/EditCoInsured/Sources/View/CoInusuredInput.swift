@@ -12,6 +12,8 @@ struct CoInusuredInput: View {
     @PresentableStore var store: EditCoInsuredStore
     @ObservedObject var vm: CoInusuredInputViewModel
     let title: String
+    @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+    @EnvironmentObject private var router: Router
 
     public init(
         vm: CoInusuredInputViewModel,
@@ -112,7 +114,7 @@ struct CoInusuredInput: View {
                                         )
                                     }
                                     if !intentVm.showErrorViewForCoInsuredInput {
-                                        store.send(.coInsuredNavigationAction(action: .deletionSuccess))
+                                        router.push(CoInsuredAction.delete)
                                     } else {
                                         // add back
                                         if vm.noSSN {
@@ -197,7 +199,7 @@ struct CoInusuredInput: View {
                                                 coInsured: insuredPeopleVm.completeList()
                                             )
                                             if !intentVm.showErrorViewForCoInsuredInput {
-                                                store.send(.coInsuredNavigationAction(action: .addSuccess))
+                                                router.push(CoInsuredAction.add)
                                             } else {
                                                 if vm.noSSN {
                                                     store.coInsuredViewModel.removeCoInsured(
@@ -221,6 +223,7 @@ struct CoInusuredInput: View {
 
                                             }
                                         }
+                                        editCoInsuredNavigation.selectCoInsured = nil
                                     }
                                 }
                             } content: {
@@ -236,7 +239,7 @@ struct CoInusuredInput: View {
 
                 hSection {
                     hButton.LargeButton(type: .ghost) {
-                        store.send(.coInsuredNavigationAction(action: .dismissEdit))
+                        editCoInsuredNavigation.coInsuredInputModel = nil
                     } content: {
                         hText(L10n.generalCancelButton)
                     }
@@ -467,7 +470,7 @@ public class CoInusuredInputViewModel: ObservableObject {
     @Published var actionType: CoInsuredAction
     let contractId: String
     let coInsuredModel: CoInsuredModel?
-    @Inject var editCoInsuredService: EditCoInsuredService
+    var editCoInsuredService = EditCoInsuredService()
 
     var showErrorView: Bool {
         SSNError != nil
@@ -578,7 +581,7 @@ public class IntentViewModel: ObservableObject {
     var fullName: String {
         return firstName + " " + lastName
     }
-    @Inject var editCoInsuredService: EditCoInsuredService
+    var editCoInsuredService = EditCoInsuredService()
 
     var showErrorViewForCoInsuredList: Bool {
         errorMessageForCoinsuredList != nil
@@ -587,8 +590,11 @@ public class IntentViewModel: ObservableObject {
         errorMessageForInput != nil
     }
 
+    var contractId: String?
+
     @MainActor
     func getIntent(contractId: String, origin: GetIntentOrigin, coInsured: [CoInsuredModel]) async {
+        self.contractId = contractId
         withAnimation {
             self.isLoading = true
             self.errorMessageForInput = nil

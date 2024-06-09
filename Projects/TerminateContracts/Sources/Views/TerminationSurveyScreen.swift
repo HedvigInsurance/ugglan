@@ -6,6 +6,8 @@ import hCoreUI
 struct TerminationSurveyScreen: View {
     @ObservedObject var vm: SurveyScreenViewModel
     @Namespace var animationNamespace
+    @EnvironmentObject var terminationFlowNavigationViewModel: TerminationFlowNavigationViewModel
+
     @PresentableStore var store: TerminationContractStore
     var body: some View {
         hForm {}
@@ -81,8 +83,8 @@ struct TerminationSurveyScreen: View {
                 .buttons([
                     .init(
                         buttonTitle: action.action.buttonTitle,
-                        buttonAction: { [weak store] in
-                            store?.send(.navigationAction(action: .openRedirectAction(action: action.action)))
+                        buttonAction: { [weak terminationFlowNavigationViewModel] in
+                            terminationFlowNavigationViewModel?.redirectAction = action.action
                         }
                     )
                 ])
@@ -92,9 +94,9 @@ struct TerminationSurveyScreen: View {
                 .buttons([
                     .init(
                         buttonTitle: redirect.buttonTitle,
-                        buttonAction: { [weak store] in
+                        buttonAction: { [weak terminationFlowNavigationViewModel] in
                             if let url = URL(string: redirect.url) {
-                                store?.send(.navigationAction(action: .openRedirectUrl(url: url)))
+                                terminationFlowNavigationViewModel?.redirectUrl = url
                             }
                         }
                     )

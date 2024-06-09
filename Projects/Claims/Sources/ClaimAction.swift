@@ -5,7 +5,6 @@ import hCore
 import hGraphQL
 
 public indirect enum ClaimsAction: ActionProtocol, Hashable {
-    case didAcceptHonestyPledge
     case submitNewClaim(from: ClaimsOrigin)
     case fetchClaims
     case setClaims(claims: [ClaimModel])
@@ -20,7 +19,5 @@ public indirect enum ClaimsAction: ActionProtocol, Hashable {
 }
 
 public enum ClaimsNavigationAction: ActionProtocol, Hashable {
-    case openFile(file: File)
-    case openFilesFor(claim: ClaimModel, files: [File])
-    case dismissAddFiles
+    case hasToBeAtLeastOne
 }

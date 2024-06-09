@@ -1,15 +1,20 @@
 import Flow
 import Foundation
-import Presentation
 import SwiftUI
 import hCore
 import hGraphQL
+
+public class InfoViewNavigationViewModel: ObservableObject {
+    @Published var isInfoViewPresented: InfoViewNavigationModel?
+}
 
 public struct InfoViewHolder: View {
     let title: String
     let description: String
     let type: InfoButtonType
-    @State private var disposeBag = DisposeBag()
+    @StateObject var infoViewNavigationModel = InfoViewNavigationViewModel()
+    @EnvironmentObject var router: Router
+
     public init(title: String, description: String, type: InfoButtonType = .regular) {
         self.title = title
         self.description = description
@@ -23,27 +28,28 @@ public struct InfoViewHolder: View {
             Image(uiImage: type.image)
                 .foregroundColor(type.color)
         }
+        .detent(
+            item: $infoViewNavigationModel.isInfoViewPresented,
+            style: .height,
+            options: .constant(.withoutGrabber)
+        ) { freeTextPickerVm in
+            InfoView(
+                title: title,
+                description: description
+            )
+        }
     }
 
     private func showInfoView() {
         let cancelAction = ReferenceAction {}
-        let view = InfoView(title: title, description: description) {
-            cancelAction.execute()
-        }
-        let journey = HostingJourney(
-            rootView: view,
-            style: .detented(.scrollViewContentSize),
-            options: [.blurredBackground]
+
+        infoViewNavigationModel.isInfoViewPresented = .init(
+            title: title,
+            description: description
         )
 
-        let calendarJourney = journey.addConfiguration { presenter in
-            cancelAction.execute = {
-                presenter.dismisser(JourneyError.cancelled)
-            }
-        }
-        let vc = UIApplication.shared.getTopViewController()
-        if let vc {
-            disposeBag += vc.present(calendarJourney)
+        cancelAction.execute = {
+            router.dismiss()
         }
     }
 
@@ -72,46 +78,19 @@ public struct InfoViewHolder: View {
     }
 }
 
-extension InfoViewHolder {
-    public static func showInfoView(with title: String, and description: String) {
-        let disposeBag = DisposeBag()
-        let cancelAction = ReferenceAction {}
-        let view = InfoView(title: title, description: description) {
-            cancelAction.execute()
-        }
-        let journey = HostingJourney(
-            rootView: view,
-            style: .detented(.scrollViewContentSize),
-            options: [.blurredBackground]
-        )
-
-        let calendarJourney = journey.addConfiguration { presenter in
-            cancelAction.execute = {
-                presenter.dismisser(JourneyError.cancelled)
-            }
-        }
-        let vc = UIApplication.shared.getTopViewController()
-        if let vc {
-            disposeBag += vc.present(calendarJourney)
-        }
-    }
-}
-
 public struct InfoView: View {
     let title: String
     let description: String
-    let onDismiss: () -> Void
     let extraButton: (text: String, style: hButtonConfigurationType, action: () -> Void)?
+    @StateObject private var vm = InfoViewModel()
 
     public init(
         title: String,
         description: String,
-        onDismiss: @escaping () -> Void,
         extraButton: (text: String, style: hButtonConfigurationType, action: () -> Void)? = nil
     ) {
         self.title = title
         self.description = description
-        self.onDismiss = onDismiss
         self.extraButton = extraButton
     }
 
@@ -149,22 +128,42 @@ public struct InfoView: View {
                     }
                 }
                 hButton.LargeButton(type: .ghost) {
-                    onDismiss()
+                    vm.vc?.dismiss(animated: true)
                 } content: {
                     hText(L10n.generalCloseButton)
                 }
             }
             .padding(.horizontal, 24)
         }
+        .introspectViewController { vc in
+            vm.vc = vc
+        }
     }
 }
 
-extension InfoView {
-    public var journey: some JourneyPresentation {
-        HostingJourney(
-            rootView: self,
-            style: .detented(.scrollViewContentSize),
-            options: [.blurredBackground]
-        )
+class InfoViewModel: ObservableObject {
+    weak var vc: UIViewController?
+}
+
+struct InfoViewNavigationModel: Equatable, Identifiable {
+    var id: String?
+
+    static func == (lhs: InfoViewNavigationModel, rhs: InfoViewNavigationModel) -> Bool {
+        return lhs.id == rhs.id
+    }
+
+    let title: String
+    let description: String
+    let extraButton: (text: String, style: hButtonConfigurationType, action: () -> Void)?
+    @StateObject fileprivate var vm = InfoViewModel()
+
+    public init(
+        title: String,
+        description: String,
+        extraButton: (text: String, style: hButtonConfigurationType, action: () -> Void)? = nil
+    ) {
+        self.title = title
+        self.description = description
+        self.extraButton = extraButton
     }
 }

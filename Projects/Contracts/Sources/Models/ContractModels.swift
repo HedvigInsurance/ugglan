@@ -51,10 +51,9 @@ public struct ProductVariant: Codable, Hashable {
         guard let data else { return nil }
         self.init(data: data)
     }
-
 }
 
-public struct Contract: Codable, Hashable, Equatable {
+public struct Contract: Codable, Hashable, Equatable, Identifiable {
     public init(
         id: String,
         currentAgreement: Agreement,
@@ -538,12 +537,15 @@ public struct TermsAndConditions: Identifiable, Codable, Hashable {
     public let url: String
 }
 
+/* TODO: USE THE ONE IN EDIT CO-INSURED PROJECT? */
 extension InsuredPeopleConfig {
     public init(
-        contract: Contract
+        contract: Contract,
+        fromInfoCard: Bool
     ) {
         let store: ContractStore = globalPresentableStoreContainer.get()
         self.init(
+            id: contract.id,
             contractCoInsured: contract.coInsured,
             contractId: contract.id,
             activeFrom: contract.upcomingChangedAgreement?.activeFrom,
@@ -554,7 +556,8 @@ extension InsuredPeopleConfig {
             contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
             holderFirstName: contract.firstName,
             holderLastName: contract.lastName,
-            holderSSN: contract.ssn
+            holderSSN: contract.ssn,
+            fromInfoCard: fromInfoCard
         )
     }
 }
@@ -588,4 +591,11 @@ extension Sequence where Iterator.Element == Contract {
         let show = !contractsWithMissingCoInsured.isEmpty
         return show
     }
+}
+
+extension Contract: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        return .init(describing: ContractDetail.self)
+    }
+
 }

@@ -7,6 +7,9 @@ import hGraphQL
 
 struct SettingsView: View {
     @PresentableStore var store: ProfileStore
+    @StateObject var memberSubscriptionPreferenceVm = MemberSubscriptionPreferenceViewModel()
+    @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
+
     init() {
         store.send(.fetchMemberDetails)
     }
@@ -19,7 +22,7 @@ struct SettingsView: View {
                         value: Localization.Locale.currentLocale.displayName,
                         placeholder: L10n.settingsLanguageTitle,
                         onTap: {
-                            store.send(.openLangaugePicker)
+                            profileNavigationVm.isLanguagePickerPresented = true
                         }
                     )
                     PresentableStoreLens(
@@ -39,12 +42,14 @@ struct SettingsView: View {
                                     }
                                     DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
                                 } else {
-                                    store.send(.registerForPushNotifications)
+                                    NotificationCenter.default.post(name: .registerForPushNotifications, object: nil)
+
                                 }
                             }
                         )
                     }
-                    MemberSubscriptionPreferenceView(vm: store.memberSubscriptionPreferenceViewModel)
+                    MemberSubscriptionPreferenceView(vm: memberSubscriptionPreferenceVm)
+                        .environmentObject(profileNavigationVm)
                 }
                 NotificationsCardView()
                     .padding(.vertical, 16)
@@ -72,9 +77,9 @@ struct SettingsView: View {
                     if ApplicationState.currentState?.isOneOf([.loggedIn]) == true {
                         let hasAlreadyRequested = ApolloClient.deleteAccountStatus(for: memberDetails.id)
                         if hasAlreadyRequested {
-                            store.send(.deleteAccountAlreadyRequested)
+                            profileNavigationVm.isDeleteAccountAlreadyRequestedPresented = true
                         } else {
-                            store.send(.deleteAccount(details: memberDetails))
+                            profileNavigationVm.isDeleteAccountPresented = memberDetails
                         }
                     }
                 } content: {
