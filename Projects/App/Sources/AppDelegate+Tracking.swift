@@ -76,6 +76,7 @@ extension AppDelegate {
             Datadog.verbosityLevel = .debug
         }
         logStartView = { key, name in
+            print("VIEW NAME \(name)")
             RUMMonitor.shared().startView(key: key, name: name, attributes: [:])
         }
         logStopView = { key in

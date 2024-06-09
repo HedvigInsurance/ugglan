@@ -14,9 +14,10 @@ extension View {
     public func modally<Item, Content>(
         item: Binding<Item?>,
         options: Binding<DetentPresentationOption> = .constant([]),
+        tracking: TrackingViewNameProtocol? = nil,
         @ViewBuilder content: @escaping (Item) -> Content
     ) -> some View where Item: Identifiable & Equatable, Content: View {
-        return modifier(ModallySizeItemModifier(item: item, options: options, content: content))
+        return modifier(ModallySizeItemModifier(item: item, options: options, tracking: tracking, content: content))
     }
 }
 
@@ -26,10 +27,11 @@ where SwiftUIContent: View, Item: Identifiable & Equatable {
     @State var itemToRenderFrom: Item?
     @State var present: Bool = false
     @Binding var options: DetentPresentationOption
+    let tracking: TrackingViewNameProtocol?
     var content: (Item) -> SwiftUIContent
     func body(content: Content) -> some View {
         Group {
-            content.modally(presented: $present, options: $options) {
+            content.modally(presented: $present, options: $options, tracking: tracking) {
                 if let item = itemToRenderFrom {
                     self.content(item)
                 }

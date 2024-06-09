@@ -36,7 +36,7 @@ extension TravelCertificateRouterActions: TrackingViewNameProtocol {
         case .startDate:
             return .init(describing: StartDateScreen.self)
         case .list:
-            return .init(describing: ContractsScreen.self)
+            return .init(describing: ListScreen.self)
         }
     }
 
@@ -44,6 +44,7 @@ extension TravelCertificateRouterActions: TrackingViewNameProtocol {
 
 enum TravelCertificateRouterActionsWithoutBackButton: Hashable {
     case processingScreen
+    case startScreen
 }
 
 extension TravelCertificateRouterActionsWithoutBackButton: TrackingViewNameProtocol {
@@ -51,6 +52,8 @@ extension TravelCertificateRouterActionsWithoutBackButton: TrackingViewNameProto
         switch self {
         case .processingScreen:
             return .init(describing: TravelCertificateProcessingScreen.self)
+        case .startScreen:
+            return ""
         }
     }
 
@@ -112,7 +115,8 @@ public struct TravelCertificateNavigation: View {
             )
         }
         .modally(
-            item: $vm.isStartDateScreenPresented
+            item: $vm.isStartDateScreenPresented,
+            tracking: TravelCertificateRouterActionsWithoutBackButton.startScreen
         ) { specificationModel in
             start(with: specificationModel.specification)
                 .routerDestination(for: TravelCertificateRouterActions.self) { action in
@@ -132,6 +136,8 @@ public struct TravelCertificateNavigation: View {
                     switch action {
                     case .processingScreen:
                         openProcessingScreen()
+                    case .startScreen:
+                        EmptyView()
                     }
                 }
                 .embededInNavigation(
