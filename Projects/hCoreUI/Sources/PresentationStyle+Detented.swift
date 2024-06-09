@@ -6,11 +6,9 @@ import SwiftUI
 import hCore
 
 func setGrabber(on presentationController: UIPresentationController, to value: Bool) {
-    let grabberKey = ["_", "setWants", "Grabber:"]
-
-    let selector = NSSelectorFromString(grabberKey.joined())
-
-    if #available(iOS 16.0, *) {
+    if #available(iOS 17.0, *) {
+        let grabberKey = ["_", "setWants", "Grabber:"]
+        let selector = NSSelectorFromString(grabberKey.joined())
         if let presentationController = presentationController as? UISheetPresentationController {
             presentationController.prefersGrabberVisible = value
         } else if presentationController.responds(to: selector) {
@@ -19,12 +17,6 @@ func setGrabber(on presentationController: UIPresentationController, to value: B
             } else {
                 presentationController.perform(selector, with: nil)
             }
-        }
-    } else if presentationController.responds(to: selector) {
-        if value {
-            presentationController.perform(selector, with: value)
-        } else {
-            presentationController.perform(selector, with: nil)
         }
     }
 }
