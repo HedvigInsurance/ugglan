@@ -172,7 +172,7 @@ struct SetTerminationDateLandingScreen: View {
                                                 .strokeBorder(
                                                     hColorScheme(
                                                         light: hBorderColor.translucentTwo,
-                                                        dark: hGrayscaleTranslucent.greyScaleTranslucent300Light
+                                                        dark: hBorderColor.translucentTwo
                                                     ),
                                                     lineWidth: 2
                                                 )
@@ -186,7 +186,7 @@ struct SetTerminationDateLandingScreen: View {
                                 Squircle.default()
                                     .fill(
                                         hColorScheme(
-                                            light: hGrayscaleTranslucent.offWhiteTranslucentInverted,
+                                            light: hFillColor.translucentOne,
                                             dark: hTextColor.Translucent.primary
                                         )
                                     )

@@ -108,7 +108,7 @@ public struct hTextView: View {
         let vc = UIHostingController(rootView: view)
         vc.modalPresentationStyle = .overFullScreen
         vc.enableHero()
-        vc.view.backgroundColor = hGrayscaleColor.black.colorFor(.dark, .base).color.uiColor()
+        vc.view.backgroundColor = hGrayscaleOpaqueColor.black.colorFor(.dark, .base).color.uiColor()
 
         continueAction.execute = { [weak vc] in
             self.selectedValue = value

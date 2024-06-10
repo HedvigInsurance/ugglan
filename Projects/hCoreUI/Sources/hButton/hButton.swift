@@ -72,23 +72,23 @@ struct ButtonFilledStandardBackground: View {
         switch hButtonConfigurationType {
         case .primary:
             if configuration.isPressed {
-                hButtonColor.primaryHover
+                hButtonColor.Primary.hover
             } else if isEnabled {
-                hButtonColor.primaryDefault
+                hButtonColor.Primary.resting
             } else {
-                hButtonColor.primaryDisabled
+                hButtonColor.Primary.disabled
             }
         case .primaryAlt:
             if configuration.isPressed {
-                hButtonColor.primaryAltHover
+                hButtonColor.PrimaryAlt.hover
             } else if isEnabled {
-                hButtonColor.primaryAltDefault
+                hButtonColor.PrimaryAlt.resting
             } else {
-                hButtonColor.primaryAltDisabled
+                hButtonColor.PrimaryAlt.disabled
             }
         case .secondary:
             if configuration.isPressed {
-                hButtonColor.secondaryHover
+                hButtonColor.Secondary.hover
             } else if isEnabled {
                 if hUseNewDesign {
                     hColorScheme(
@@ -99,15 +99,15 @@ struct ButtonFilledStandardBackground: View {
                     hFillColor.translucentOne
                 }
             } else {
-                hButtonColor.secondaryDisabled
+                hButtonColor.Secondary.disabled
             }
         case .secondaryAlt:
             if configuration.isPressed {
-                hButtonColor.secondaryAltHover
+                hButtonColor.SecondaryAlt.hover
             } else if isEnabled {
-                hButtonColor.secondaryAltDefault
+                hButtonColor.SecondaryAlt.resting
             } else {
-                hButtonColor.secondaryAltDisabled
+                hButtonColor.SecondaryAlt.disabled
             }
         case .ghost:
             if configuration.isPressed {
@@ -133,9 +133,9 @@ struct ButtonFilledOverImageBackground: View {
 
     var body: some View {
         if isEnabled {
-            hButtonColor.primaryDefault
+            hButtonColor.Primary.resting
         } else {
-            hButtonColor.primaryDisabled
+            hButtonColor.Primary.disabled
         }
     }
 }

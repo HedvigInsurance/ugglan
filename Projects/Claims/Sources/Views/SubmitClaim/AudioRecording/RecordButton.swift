@@ -53,7 +53,7 @@ struct RecordButtonStyle: SwiftUI.ButtonStyle {
         } else {
             hColorScheme.init(
                 light: hTextColor.Opaque.negative,
-                dark: hGrayscaleColor.greyScale900
+                dark: hGrayscaleOpaqueColor.greyScale900
             )
         }
     }

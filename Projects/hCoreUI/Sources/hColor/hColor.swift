@@ -265,28 +265,12 @@ public struct hColorBase: hColor, View {
     }
 }
 
-public struct hBackgroundColor {
-    public static var primary: some hColor {
-        hColorScheme(
-            light: hGrayscaleColor.white,
-            dark: hGrayscaleColor.black
-        )
-    }
-
-    public static var clear: some hColor {
-        hColorScheme(
-            light: Color.clear,
-            dark: Color.clear
-        )
-    }
-}
-
 public struct hTextColor {
     public struct Opaque {
         public static var primary: some hColor {
             hColorScheme(
-                light: hGrayscaleColor.black,
-                dark: hGrayscaleColor.white
+                light: hGrayscaleOpaqueColor.black,
+                dark: hGrayscaleOpaqueColor.white
             )
         }
 
@@ -296,29 +280,29 @@ public struct hTextColor {
 
         public static var secondary: some hColor {
             hColorScheme(
-                light: hGrayscaleColor.greyScale700,
-                dark: hGrayscaleColor.greyScale500
+                light: hGrayscaleOpaqueColor.greyScale700,
+                dark: hGrayscaleOpaqueColor.greyScale500
             )
         }
 
         public static var accordion: some hColor {
             hColorScheme(
-                light: hGrayscaleColor.greyScale750,
-                dark: hGrayscaleColor.greyScale450
+                light: hGrayscaleOpaqueColor.greyScale750,
+                dark: hGrayscaleOpaqueColor.greyScale450
             )
         }
 
         public static var tertiary: some hColor {
             hColorScheme(
-                light: hGrayscaleColor.greyScale500,
-                dark: hGrayscaleColor.greyScale700
+                light: hGrayscaleOpaqueColor.greyScale500,
+                dark: hGrayscaleOpaqueColor.greyScale700
             )
         }
 
         public static var disabled: some hColor {
             hColorScheme(
-                light: hGrayscaleColor.greyScale400,
-                dark: hGrayscaleColor.greyScale800
+                light: hGrayscaleOpaqueColor.greyScale400,
+                dark: hGrayscaleOpaqueColor.greyScale800
             )
         }
     }
@@ -326,8 +310,8 @@ public struct hTextColor {
     public struct Translucent {
         public static var primary: some hColor {
             hColorScheme(
-                light: hGrayscaleTranslucent.offBlackTranslucent,
-                dark: hGrayscaleTranslucent.offWhiteTranslucent
+                light: hGrayscaleTranslucent.black,
+                dark: hGrayscaleTranslucent.white
             )
         }
 
@@ -351,32 +335,165 @@ public struct hTextColor {
     }
 }
 
+public struct hButtonColor {
+    public struct Primary {
+        public static var resting: some hColor {
+            hColorScheme(
+                light: hGrayscaleOpaqueColor.black,
+                dark: hGrayscaleOpaqueColor.white
+            )
+        }
+
+        public static var hover: some hColor {
+            hColorScheme(
+                light: hGrayscaleTranslucentDark.greyScaleTranslucent900,
+                dark: hGrayscaleTranslucentLight.greyScaleTranslucent200
+            )
+        }
+
+        public static var disabled: some hColor {
+            hColorScheme(
+                light: hGrayscaleOpaqueColor.greyScale100,
+                dark: hGrayscaleOpaqueColor.greyScale900
+            )
+        }
+    }
+
+    public struct PrimaryAlt {
+        public static var resting: some hColor {
+            hColorScheme(
+                light: hGreenColor.green100,
+                dark: hGreenColor.green200
+            )
+        }
+
+        public static var hover: some hColor {
+            hColorScheme(
+                light: hGrayscaleTranslucentLight.greyScaleTranslucent100,
+                dark: hGrayscaleTranslucentLight.greyScaleTranslucent200
+            )
+        }
+
+        public static var disabled: some hColor {
+            hColorScheme(
+                light: hGrayscaleOpaqueColor.greyScale100,
+                dark: hGrayscaleOpaqueColor.greyScale900
+            )
+        }
+    }
+
+    public struct Secondary {
+        public static var resting: some hColor {
+            hColorScheme(
+                light: hGrayscaleTranslucentLight.greyScaleTranslucent100,
+                dark: hGrayscaleTranslucentDark.greyScaleTranslucent900
+            )
+        }
+
+        public static var hover: some hColor {
+            hColorScheme(
+                light: hGrayscaleTranslucentLight.greyScaleTranslucent100,
+                dark: hGrayscaleTranslucentDark.greyScaleTranslucent900
+            )
+        }
+
+        public static var disabled: some hColor {
+            hColorScheme(
+                light: hGrayscaleOpaqueColor.greyScale100,
+                dark: hGrayscaleOpaqueColor.greyScale900
+            )
+        }
+    }
+
+    public struct SecondaryAlt {
+        public static var resting: some hColor {
+            hColorScheme(
+                light: hGrayscaleOpaqueColor.white,
+                dark: hGrayscaleOpaqueColor.black
+            )
+        }
+
+        public static var hover: some hColor {
+            hColorScheme(
+                light: hGrayscaleTranslucentLight.greyScaleTranslucent500,
+                dark: hGrayscaleTranslucentLight.greyScaleTranslucent800
+            )
+        }
+
+        public static var disabled: some hColor {
+            hColorScheme(
+                light: hGrayscaleOpaqueColor.greyScale100,
+                dark: hGrayscaleOpaqueColor.greyScale900
+            )
+        }
+    }
+
+    public struct Ghost {
+        public static var resting: some hColor {
+            hColorScheme(
+                light: hGrayscaleTranslucent.transparent,
+                dark: hGrayscaleTranslucent.transparent
+            )
+        }
+
+        public static var hover: some hColor {
+            hColorScheme(
+                light: hGrayscaleTranslucentLight.greyScaleTranslucent100,
+                dark: hGrayscaleTranslucentDark.greyScaleTranslucent900
+            )
+        }
+
+        public static var disabled: some hColor {
+            hColorScheme(
+                light: hGrayscaleTranslucent.transparent,
+                dark: hGrayscaleTranslucent.transparent
+            )
+        }
+    }
+}
+
+public struct hBackgroundColor {
+    public static var primary: some hColor {
+        hColorScheme(
+            light: hGrayscaleOpaqueColor.white,
+            dark: hGrayscaleOpaqueColor.black
+        )
+    }
+
+    public static var clear: some hColor {
+        hColorScheme(
+            light: Color.clear,
+            dark: Color.clear
+        )
+    }
+}
+
 public struct hBorderColor {
     public static var opaqueOne: some hColor {
         hColorScheme(
-            light: hGrayscaleColor.greyScale200,
-            dark: hGrayscaleColor.greyScale900
+            light: hGrayscaleOpaqueColor.greyScale200,
+            dark: hGrayscaleOpaqueColor.greyScale900
         )
     }
 
     public static var opaqueTwo: some hColor {
         hColorScheme(
-            light: hGrayscaleColor.greyScale300,
-            dark: hGrayscaleColor.greyScale800
+            light: hGrayscaleOpaqueColor.greyScale300,
+            dark: hGrayscaleOpaqueColor.greyScale800
         )
     }
 
     public static var opaqueThree: some hColor {
         hColorScheme(
-            light: hGrayscaleColor.greyScale700,
-            dark: hGrayscaleColor.greyScale300
+            light: hGrayscaleOpaqueColor.greyScale700,
+            dark: hGrayscaleOpaqueColor.greyScale300
         )
     }
 
     public static var opaqueFour: some hColor {
         hColorScheme(
-            light: hGrayscaleColor.greyScale800,
-            dark: hGrayscaleColor.greyScale200
+            light: hGrayscaleOpaqueColor.greyScale800,
+            dark: hGrayscaleOpaqueColor.greyScale200
         )
     }
 
@@ -412,26 +529,26 @@ public struct hBorderColor {
 public struct hFillColor {
     public static var opaqueOne: some hColor {
         hColorScheme(
-            light: hGrayscaleColor.greyScale100,
-            dark: hGrayscaleColor.greyScale900
+            light: hGrayscaleOpaqueColor.greyScale100,
+            dark: hGrayscaleOpaqueColor.greyScale900
         )
     }
 
     public static var opaqueTwo: some hColor {
         hColorScheme(
-            light: hGrayscaleColor.greyScale300,
-            dark: hGrayscaleColor.greyScale900
+            light: hGrayscaleOpaqueColor.greyScale300,
+            dark: hGrayscaleOpaqueColor.greyScale900
         )
     }
 
     public static var opaqueThree: some hColor {
-        hGrayscaleColor.greyScale400
+        hGrayscaleOpaqueColor.greyScale400
     }
 
     public static var translucentOne: some hColor {
         hColorScheme(
             light: hGrayscaleTranslucent.greyScaleTranslucent100,
-            dark: hGrayscaleColor.greyScale800
+            dark: hGrayscaleOpaqueColor.greyScale800
         )
     }
 
@@ -445,14 +562,13 @@ public struct hFillColor {
 
     public static var offBlack: some hColor {
         hColorScheme(
-            light: hGrayscaleColor.black,
-            dark: hGrayscaleColor.white
+            light: hGrayscaleOpaqueColor.black,
+            dark: hGrayscaleOpaqueColor.white
         )
     }
 }
 
 public struct hHighlightColor {
-
     public struct Pink {
         public static var fillOne: some hColor {
             hColorScheme(
@@ -714,90 +830,7 @@ public struct hSignalColor {
     }
 }
 
-public struct hButtonColor {
-    public static var primaryDefault: some hColor {
-        hColorScheme(
-            light: hGrayscaleColor.black,
-            dark: hGrayscaleColor.white
-        )
-    }
-
-    public static var primaryHover: some hColor {
-        hColorScheme(
-            light: hGrayscaleColor.greyScale900,
-            dark: hGrayscaleColor.greyScale300
-        )
-    }
-
-    public static var primaryDisabled: some hColor {
-        hColorScheme(
-            light: hGrayscaleColor.greyScale200,
-            dark: hGrayscaleColor.greyScale900
-        )
-    }
-
-    public static var primaryAltDefault: some hColor {
-        hColorScheme(
-            light: hGreenColor.green50,
-            dark: hGreenColor.green200
-        )
-    }
-
-    public static var primaryAltHover: some hColor {
-        hColorScheme(
-            light: hGreenColor.green200,
-            dark: hGreenColor.green400
-        )
-    }
-
-    public static var primaryAltDisabled: some hColor {
-        hColorScheme(
-            light: hGrayscaleColor.greyScale200,
-            dark: hGrayscaleColor.greyScale900
-        )
-    }
-
-    public static var secondaryDefault: some hColor {
-        hColorScheme(
-            light: hGrayscaleColor.greyScale50,
-            dark: hGrayscaleColor.greyScale800
-        )
-    }
-
-    public static var secondaryHover: some hColor {
-        hColorScheme(
-            light: hGrayscaleColor.greyScale300,
-            dark: hGrayscaleColor.greyScale700
-        )
-    }
-
-    public static var secondaryDisabled: some hColor {
-        hColorScheme(
-            light: hGrayscaleColor.greyScale200,
-            dark: hGrayscaleColor.greyScale900
-        )
-    }
-
-    public static var secondaryAltDefault: some hColor {
-        hGrayscaleColor.white
-    }
-
-    public static var secondaryAltHover: some hColor {
-        hGrayscaleColor.black.opacity(0.2)
-    }
-
-    public static var secondaryAltDisabled: some hColor {
-        hGrayscaleColor.greyScale200
-    }
-}
-
-public struct hGrayscaleColor {
-    public static var white: some hColor {
-        hColorScheme(
-            Color(hexString: "FAFAFA")
-        )
-    }
-
+public struct hGrayscaleOpaqueColor {
     public static var greyScale50: some hColor {
         hColorScheme(
             Color(hexString: "F5F5F5")
@@ -876,106 +909,293 @@ public struct hGrayscaleColor {
             Color(hexString: "121212")
         )
     }
+
+    public static var white: some hColor {
+        hColorScheme(
+            Color(hexString: "FAFAFA")
+        )
+    }
 }
 
-public struct hGrayscaleTranslucent {
-    public static var offWhiteTranslucent: some hColor {
-        return hColorScheme(
-            light: Color(hexString: "#121212").opacity(0.2),
-            dark: Color(hexString: "FFFFFF").opacity(0.9)
+public struct hGrayscaleTranslucentLight {
+    public static var greyScaleTranslucent50: some hColor {
+        hColorScheme(
+            Color(hexString: "#121212").opacity(0.02)
         )
     }
 
-    public static var offWhiteTranslucentInverted: some hColor {
-        return hColorScheme(
-            light: Color(hexString: "FFFFFF").opacity(0.9),
-            dark: Color(hexString: "#121212").opacity(0.2)
+    public static var greyScaleTranslucent100: some hColor {
+        hColorScheme(
+            Color(hexString: "#121212").opacity(0.045)
         )
     }
 
+    public static var greyScaleTranslucent200: some hColor {
+        hColorScheme(
+            Color(hexString: "#121212").opacity(0.068)
+        )
+    }
+
+    public static var greyScaleTranslucent300: some hColor {
+        hColorScheme(
+            Color(hexString: "#121212").opacity(0.112)
+        )
+    }
+
+    public static var greyScaleTranslucent400: some hColor {
+        hColorScheme(
+            Color(hexString: "#121212").opacity(0.185)
+        )
+    }
+
+    public static var greyScaleTranslucent450: some hColor {
+        hColorScheme(
+            Color(hexString: "#121212").opacity(0.227)
+        )
+    }
+
+    public static var greyScaleTranslucent500: some hColor {
+        hColorScheme(
+            Color(hexString: "#121212").opacity(0.3)
+        )
+    }
+
+    public static var greyScaleTranslucent600: some hColor {
+        hColorScheme(
+            Color(hexString: "#121212").opacity(0.43)
+        )
+    }
+
+    public static var greyScaleTranslucent700: some hColor {
+        hColorScheme(
+            Color(hexString: "#121212").opacity(0.595)
+        )
+    }
+
+    public static var greyScaleTranslucent750: some hColor {
+        hColorScheme(
+            Color(hexString: "#121212").opacity(0.663)
+        )
+    }
+
+    public static var greyScaleTranslucent800: some hColor {
+        hColorScheme(
+            Color(hexString: "#121212").opacity(0.734)
+        )
+    }
+
+    public static var greyScaleTranslucent900: some hColor {
+        hColorScheme(
+            Color(hexString: "#121212").opacity(0.87)
+        )
+    }
+
+    public static var black: some hColor {
+        hColorScheme(
+            Color(hexString: "#000000").opacity(0.928)
+        )
+    }
+
+    public static var white: some hColor {
+        hColorScheme(
+            Color(hexString: "#121212").opacity(0.002)
+        )
+    }
+}
+
+public struct hGrayscaleTranslucentDark {
     public static var greyScaleTranslucent50: some hColor {
         return hColorScheme(
-            light: Color(hexString: "#121212").opacity(0.02),
-            dark: Color(hexString: "#FAFAFA").opacity(0.98)
+            Color(hexString: "#FAFAFA").opacity(0.98)
         )
     }
 
     public static var greyScaleTranslucent100: some hColor {
         return hColorScheme(
-            light: Color(hexString: "#121212").opacity(0.045),
-            dark: Color(hexString: "#FAFAFA").opacity(0.957)
+            Color(hexString: "#FAFAFA").opacity(0.957)
         )
     }
 
     public static var greyScaleTranslucent200: some hColor {
         return hColorScheme(
-            light: Color(hexString: "#121212").opacity(0.07),
-            dark: Color(hexString: "#FAFAFA").opacity(0.93)
+            Color(hexString: "#FAFAFA").opacity(0.93)
         )
     }
 
     public static var greyScaleTranslucent300: some hColor {
         return hColorScheme(
-            light: Color(hexString: "#121212").opacity(0.11),
-            dark: Color(hexString: "#FAFAFA").opacity(0.89)
-        )
-    }
-
-    public static var greyScaleTranslucent300Light: some hColor {
-        return hColorScheme(
-            Color(hexString: "#121212").opacity(0.11)
+            Color(hexString: "#FAFAFA").opacity(0.89)
         )
     }
 
     public static var greyScaleTranslucent400: some hColor {
         return hColorScheme(
-            light: Color(hexString: "#121212").opacity(0.185),
-            dark: Color(hexString: "#FAFAFA").opacity(0.815)
+            Color(hexString: "#FAFAFA").opacity(0.815)
+        )
+    }
+
+    public static var greyScaleTranslucent450: some hColor {
+        return hColorScheme(
+            Color(hexString: "#FAFAFA").opacity(0.772)
         )
     }
 
     public static var greyScaleTranslucent500: some hColor {
         return hColorScheme(
-            light: Color(hexString: "#121212").opacity(0.3),
-            dark: Color(hexString: "#FAFAFA").opacity(0.7)
+            Color(hexString: "#FAFAFA").opacity(0.7)
         )
     }
 
     public static var greyScaleTranslucent600: some hColor {
         return hColorScheme(
-            light: Color(hexString: "#121212").opacity(0.43),
-            dark: Color(hexString: "#FAFAFA").opacity(0.57)
+            Color(hexString: "#FAFAFA").opacity(0.57)
         )
     }
 
     public static var greyScaleTranslucent700: some hColor {
         return hColorScheme(
-            light: Color(hexString: "#121212").opacity(0.595),
-            dark: Color(hexString: "#FAFAFA").opacity(0.7)
+            Color(hexString: "#FAFAFA").opacity(0.405)
+        )
+    }
+
+    public static var greyScaleTranslucent750: some hColor {
+        return hColorScheme(
+            Color(hexString: "#FAFAFA").opacity(0.335)
         )
     }
 
     public static var greyScaleTranslucent800: some hColor {
         return hColorScheme(
-            light: Color(hexString: "#121212").opacity(0.734),
-            dark: Color(hexString: "#FAFAFA").opacity(0.266)
+            Color(hexString: "#FAFAFA").opacity(0.266)
         )
     }
 
     public static var greyScaleTranslucent900: some hColor {
         return hColorScheme(
-            light: Color(hexString: "#121212").opacity(0.87),
-            dark: Color(hexString: "#FAFAFA").opacity(0.13)
+            Color(hexString: "#FAFAFA").opacity(0.13)
         )
     }
 
-    public static var offBlackTranslucent: some hColor {
+    public static var black: some hColor {
         return hColorScheme(
-            light: Color(hexString: "#000000").opacity(0.927),
-            dark: Color(hexString: "#FAFAFA").opacity(0.02)
+            Color(hexString: "#FAFAFA").opacity(0.02)
+        )
+    }
+
+    public static var white: some hColor {
+        return hColorScheme(
+            Color(hexString: "FFFFFF").opacity(0.98)
         )
     }
 }
+
+public struct hGrayscaleTranslucent {
+    public static var greyScaleTranslucent50: some hColor {
+        return hColorScheme(
+            light: hGrayscaleTranslucentLight.greyScaleTranslucent50,
+            dark: hGrayscaleTranslucentDark.greyScaleTranslucent50
+        )
+    }
+
+    public static var greyScaleTranslucent100: some hColor {
+        return hColorScheme(
+            light: hGrayscaleTranslucentLight.greyScaleTranslucent100,
+            dark: hGrayscaleTranslucentDark.greyScaleTranslucent100
+        )
+    }
+
+    public static var greyScaleTranslucent200: some hColor {
+        return hColorScheme(
+            light: hGrayscaleTranslucentLight.greyScaleTranslucent200,
+            dark: hGrayscaleTranslucentDark.greyScaleTranslucent200
+        )
+    }
+
+    public static var greyScaleTranslucent300: some hColor {
+        return hColorScheme(
+            light: hGrayscaleTranslucentLight.greyScaleTranslucent300,
+            dark: hGrayscaleTranslucentDark.greyScaleTranslucent300
+        )
+    }
+
+    public static var greyScaleTranslucent400: some hColor {
+        return hColorScheme(
+            light: hGrayscaleTranslucentLight.greyScaleTranslucent400,
+            dark: hGrayscaleTranslucentDark.greyScaleTranslucent400
+        )
+    }
+
+    public static var greyScaleTranslucent450: some hColor {
+        return hColorScheme(
+            light: hGrayscaleTranslucentLight.greyScaleTranslucent450,
+            dark: hGrayscaleTranslucentDark.greyScaleTranslucent450
+        )
+    }
+
+    public static var greyScaleTranslucent500: some hColor {
+        return hColorScheme(
+            light: hGrayscaleTranslucentLight.greyScaleTranslucent500,
+            dark: hGrayscaleTranslucentDark.greyScaleTranslucent500
+        )
+    }
+
+    public static var greyScaleTranslucent600: some hColor {
+        return hColorScheme(
+            light: hGrayscaleTranslucentLight.greyScaleTranslucent600,
+            dark: hGrayscaleTranslucentDark.greyScaleTranslucent600
+        )
+    }
+
+    public static var greyScaleTranslucent700: some hColor {
+        return hColorScheme(
+            light: hGrayscaleTranslucentLight.greyScaleTranslucent700,
+            dark: hGrayscaleTranslucentDark.greyScaleTranslucent700
+        )
+    }
+
+    public static var greyScaleTranslucent750: some hColor {
+        return hColorScheme(
+            light: hGrayscaleTranslucentLight.greyScaleTranslucent750,
+            dark: hGrayscaleTranslucentDark.greyScaleTranslucent750
+        )
+    }
+
+    public static var greyScaleTranslucent800: some hColor {
+        return hColorScheme(
+            light: hGrayscaleTranslucentLight.greyScaleTranslucent800,
+            dark: hGrayscaleTranslucentDark.greyScaleTranslucent800
+        )
+    }
+
+    public static var greyScaleTranslucent900: some hColor {
+        return hColorScheme(
+            light: hGrayscaleTranslucentLight.greyScaleTranslucent900,
+            dark: hGrayscaleTranslucentDark.greyScaleTranslucent900
+        )
+    }
+
+    public static var black: some hColor {
+        return hColorScheme(
+            light: hGrayscaleTranslucentLight.black,
+            dark: hGrayscaleTranslucentDark.black
+        )
+    }
+
+    public static var white: some hColor {
+        return hColorScheme(
+            light: hGrayscaleTranslucentLight.white,
+            dark: hGrayscaleTranslucentDark.white
+        )
+    }
+
+    public static var transparent: some hColor {
+        return hColorScheme(
+            light: hGrayscaleTranslucent.white.opacity(1),
+            dark: hGrayscaleTranslucent.black.opacity(1)
+        )
+    }
+}
+
 public struct hGreenColor {
     public static var green50: some hColor {
         hColorScheme(

@@ -112,7 +112,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         } else {
             hColorScheme(
                 light: hTextColor.Opaque.secondary,
-                dark: hGrayscaleColor.greyScale900
+                dark: hGrayscaleOpaqueColor.greyScale900
             )
         }
     }

@@ -83,7 +83,7 @@ extension ClaimModel.ClaimOutcome {
     var backgroundColor: some hColor {
         switch self {
         case .none:
-            hColorScheme(light: hFillColor.opaqueTwo, dark: hGrayscaleColor.greyScale400)
+            hColorScheme(light: hFillColor.opaqueTwo, dark: hGrayscaleOpaqueColor.greyScale400)
         case .paid, .notCompensated, .notCovered:
             hTextColor.Opaque.primary
         }

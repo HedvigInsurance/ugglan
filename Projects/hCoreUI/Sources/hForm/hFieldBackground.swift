@@ -31,7 +31,7 @@ struct hFieldBackgroundModifier: ViewModifier {
             if error != nil {
                 hColorScheme(light: hSignalColor.Amber.fill, dark: hAmberColor.amber300)
             } else {
-                hColorScheme(light: hSignalColor.Green.fill, dark: hGrayscaleColor.greyScale800)
+                hColorScheme(light: hSignalColor.Green.fill, dark: hGrayscaleOpaqueColor.greyScale800)
             }
         } else {
             hFillColor.opaqueOne
@@ -103,7 +103,7 @@ struct hFieldLabel: View {
         if error != nil {
             hColorScheme(light: hSignalColor.Amber.text, dark: hTextColor.Opaque.secondary)
         } else if animate {
-            hColorScheme(light: hSignalColor.Green.text, dark: hGrayscaleColor.greyScale500)
+            hColorScheme(light: hSignalColor.Green.text, dark: hGrayscaleOpaqueColor.greyScale500)
         } else if isEnabled || withoutDisabledColor {
             hTextColor.Opaque.secondary
         } else if isLocked {
