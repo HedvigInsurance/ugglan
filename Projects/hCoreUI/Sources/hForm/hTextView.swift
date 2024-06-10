@@ -391,7 +391,8 @@ private struct SwiftUITextView: UIViewRepresentable {
             }
             textView.colorSchema = colorScheme
         }
-        uiView.backgroundColor = hFillColor.opaqueOne.colorFor(.init(.init(colorScheme))!, .base).color.uiColor()
+        uiView.backgroundColor = hSurfaceColor.Opaque.primary.colorFor(.init(.init(colorScheme))!, .base).color
+            .uiColor()
 
     }
 }

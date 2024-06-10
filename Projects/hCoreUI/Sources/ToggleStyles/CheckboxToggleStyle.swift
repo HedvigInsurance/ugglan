@@ -51,7 +51,7 @@ public struct ChecboxToggleStyle: ToggleStyle {
         if isOn {
             hSignalColor.Green.element
         } else {
-            hFillColor.opaqueThree
+            hFillColor.Opaque.disabled
         }
     }
 }

@@ -59,19 +59,13 @@ where MainContent: View, BottomContent: View {
         .padding(.vertical, 16)
         .background(
             Squircle.default()
-                .fill(hFillColor.opaqueOne)
+                .fill(hSurfaceColor.Translucent.secondary)
         )
         .onTapGesture {
             if let onSelected = onSelected {
                 onSelected()
             }
         }
-    }
-
-    @ViewBuilder
-    var getBackground: some View {
-        Squircle.default()
-            .fill(hFillColor.opaqueOne)
     }
 }
 

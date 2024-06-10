@@ -90,14 +90,7 @@ struct ButtonFilledStandardBackground: View {
             if configuration.isPressed {
                 hButtonColor.Secondary.hover
             } else if isEnabled {
-                if hUseNewDesign {
-                    hColorScheme(
-                        light: Color(hexString: "#121212").opacity(0.045),
-                        dark: Color(hexString: "#FAFAFA").opacity(0.13)
-                    )
-                } else {
-                    hFillColor.translucentOne
-                }
+                hButtonColor.Secondary.resting
             } else {
                 hButtonColor.Secondary.disabled
             }
@@ -111,9 +104,11 @@ struct ButtonFilledStandardBackground: View {
             }
         case .ghost:
             if configuration.isPressed {
-                hFillColor.translucentOne
+                hButtonColor.Ghost.hover
             } else if isEnabled {
-                Color.clear
+                hButtonColor.Ghost.resting
+            } else {
+                hButtonColor.Ghost.disabled
             }
         case .alert:
             if configuration.isPressed {

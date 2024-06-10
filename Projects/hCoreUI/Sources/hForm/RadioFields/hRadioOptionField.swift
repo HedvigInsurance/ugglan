@@ -148,7 +148,7 @@ struct hRadioOptionSelectedView: View {
                 hTextColor.Opaque.primary
             }
         } else {
-            hFillColor.opaqueOne
+            hSurfaceColor.Opaque.primary
         }
     }
 

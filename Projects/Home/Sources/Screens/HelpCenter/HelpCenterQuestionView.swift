@@ -45,7 +45,7 @@ struct HelpCenterQuestionView: View {
                     .padding(.top, 8)
             }
         }
-        .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hFillColor.opaqueOne))
+        .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary))
         .edgesIgnoringSafeArea(.bottom)
     }
 }

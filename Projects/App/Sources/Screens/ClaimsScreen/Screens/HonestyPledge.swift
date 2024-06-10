@@ -23,7 +23,7 @@ struct SlideTrack: View {
         }
         .frame(height: 58)
         .frame(maxWidth: .infinity)
-        .background(hFillColor.opaqueTwo)
+        .background(hSurfaceColor.Opaque.secondary)
         .cornerRadius(29)
     }
 

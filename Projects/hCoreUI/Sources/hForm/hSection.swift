@@ -172,14 +172,13 @@ extension EnvironmentValues {
 }
 
 extension hSectionContainerStyle: ViewModifier {
-
     public func body(content: Content) -> some View {
         switch self {
         case .transparent:
             content
         case .opaque:
             content.background(
-                hFillColor.opaqueOne
+                hSurfaceColor.Opaque.primary
             )
             .clipShape(Squircle.default())
         case .caution:
@@ -197,8 +196,8 @@ extension hSectionContainerStyle: ViewModifier {
         case .black:
             content.background(
                 hColorScheme(
-                    light: hFillColor.offBlack,
-                    dark: hFillColor.opaqueOne
+                    light: hFillColor.Opaque.black,
+                    dark: hSurfaceColor.Opaque.primary
                 )
             )
             .clipShape(Squircle.default())

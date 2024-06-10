@@ -50,7 +50,7 @@ struct TrackPlayer: View {
             .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: .defaultCornerRadius)
-                    .fill(hFillColor.opaqueOne)
+                    .fill(hSurfaceColor.Opaque.primary)
             )
             .onTapGesture {
                 audioPlayer.togglePlaying()

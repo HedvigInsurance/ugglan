@@ -43,7 +43,7 @@ public struct FileView: View {
                         .sectionContainerStyle(.transparent)
                     }
                 }
-                .background(hFillColor.opaqueOne)
+                .background(hSurfaceColor.Opaque.primary)
             }
         }
         .onTapGesture {

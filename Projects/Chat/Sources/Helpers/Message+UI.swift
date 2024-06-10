@@ -9,7 +9,7 @@ extension Message {
         } else {
             switch self.sender {
             case .hedvig:
-                hFillColor.opaqueOne
+                hSurfaceColor.Opaque.primary
             case .member:
                 hSignalColor.Blue.fill
             }

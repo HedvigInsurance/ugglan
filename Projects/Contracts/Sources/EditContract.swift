@@ -113,7 +113,7 @@ struct EditContract: View {
         if isSelected {
             hTextColor.Opaque.primary
         } else {
-            hFillColor.opaqueOne
+            hSurfaceColor.Opaque.primary
         }
     }
 

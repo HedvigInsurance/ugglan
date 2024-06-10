@@ -34,7 +34,7 @@ struct CrossSellingStack: View {
                                     .frame(maxWidth: .infinity, alignment: .leading)
                             }
                             Divider()
-                                .overlay(hFillColor.translucentOne)
+                                .overlay(hSurfaceColor.Opaque.primary)
                                 .frame(height: 1)
                         }
                     }

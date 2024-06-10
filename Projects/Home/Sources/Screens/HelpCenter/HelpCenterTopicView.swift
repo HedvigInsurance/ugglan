@@ -34,7 +34,7 @@ struct HelpCenterTopicView: View {
                 SupportView(topic: commonTopic.type)
             }
         }
-        .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hFillColor.opaqueOne))
+        .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary))
         .edgesIgnoringSafeArea(.bottom)
     }
 }

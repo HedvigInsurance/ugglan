@@ -34,7 +34,7 @@ struct hFieldBackgroundModifier: ViewModifier {
                 hColorScheme(light: hSignalColor.Green.fill, dark: hGrayscaleOpaqueColor.greyScale800)
             }
         } else {
-            hFillColor.opaqueOne
+            hSurfaceColor.Opaque.primary
         }
     }
 }

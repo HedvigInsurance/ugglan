@@ -69,7 +69,8 @@ public struct HelpCenterStartView: View {
             }
         }
         .hFormBottomBackgroundColor(
-            vm.searchInProgress ? .transparent : .gradient(from: hBackgroundColor.primary, to: hFillColor.opaqueOne)
+            vm.searchInProgress
+                ? .transparent : .gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary)
         )
         .hFormObserveKeyboard
         .edgesIgnoringSafeArea(.bottom)

@@ -83,7 +83,7 @@ struct PaymentsDiscountsView: View {
                         .padding(.vertical, 4)
                         .background(
                             RoundedRectangle(cornerRadius: 8)
-                                .fill(hFillColor.opaqueOne)
+                                .fill(hSurfaceColor.Opaque.primary)
 
                         )
                     Spacer()

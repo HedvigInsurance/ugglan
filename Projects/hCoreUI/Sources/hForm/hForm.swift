@@ -312,7 +312,7 @@ struct hForm_Previews: PreviewProvider {
                     .background(Color.red)
             }
         }
-        .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hFillColor.opaqueOne))
+        .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary))
         .hFormTitle(title: .init(.small, .standard, "TITLE"))
     }
 }

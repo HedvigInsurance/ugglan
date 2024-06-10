@@ -170,7 +170,7 @@ struct SupportView: View {
             .padding(.bottom, 24)
         }
         .frame(maxWidth: .infinity)
-        .background(hFillColor.opaqueOne)
+        .background(hSurfaceColor.Opaque.primary)
     }
 }
 

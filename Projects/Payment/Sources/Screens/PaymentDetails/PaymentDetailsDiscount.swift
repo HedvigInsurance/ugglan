@@ -26,7 +26,7 @@ struct PaymentDetailsDiscountView: View {
                     .padding(.horizontal, 8)
                     .background(
                         RoundedRectangle(cornerRadius: 8)
-                            .fill(hFillColor.opaqueOne)
+                            .fill(hSurfaceColor.Opaque.primary)
                     )
                     .onTapGesture {
                         startRemoveCode()

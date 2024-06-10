@@ -65,7 +65,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                 .padding(16)
                                 .background(
                                     Squircle.default()
-                                        .fill(hFillColor.opaqueOne)
+                                        .fill(hSurfaceColor.Opaque.primary)
                                 )
                                 .padding(.trailing, 88)
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -88,7 +88,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                 .padding(16)
                                 .background(
                                     Squircle.default()
-                                        .fill(hFillColor.opaqueOne)
+                                        .fill(hSurfaceColor.Opaque.primary)
                                 )
                                 .padding(.trailing, 88)
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -129,7 +129,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                             .padding(16)
                             .background(
                                 Squircle.default()
-                                    .fill(hFillColor.opaqueOne)
+                                    .fill(hSurfaceColor.Opaque.primary)
                             )
                             .padding(.vertical, 12)
                             .padding(.trailing, 88)
@@ -150,7 +150,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                             .padding(16)
                             .background(
                                 Squircle.default()
-                                    .fill(hFillColor.opaqueOne)
+                                    .fill(hSurfaceColor.Opaque.primary)
                             )
                             .padding(.vertical, 12)
                             .padding(.trailing, 88)
@@ -367,7 +367,7 @@ private class CustomTextView: UITextView, UITextViewDelegate {
             self.text = inputText.wrappedValue
             self.textColor = UIColor.black
         }
-        self.backgroundColor = UIColor(hFillColor.opaqueOne.colorFor(.light, .base).color)
+        self.backgroundColor = UIColor(hSurfaceColor.Opaque.primary.colorFor(.light, .base).color)
         let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
         let doneButton = UIBarButtonItem(
             barButtonSystemItem: .done,

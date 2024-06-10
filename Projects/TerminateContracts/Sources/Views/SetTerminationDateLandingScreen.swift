@@ -186,8 +186,8 @@ struct SetTerminationDateLandingScreen: View {
                                 Squircle.default()
                                     .fill(
                                         hColorScheme(
-                                            light: hFillColor.translucentOne,
-                                            dark: hTextColor.Translucent.primary
+                                            light: hSurfaceColor.Opaque.primary,
+                                            dark: hGrayscaleOpaqueColor.greyScale100
                                         )
                                     )
                             )
@@ -208,7 +208,7 @@ struct SetTerminationDateLandingScreen: View {
         if vm.hasAgreedToTerms {
             hSignalColor.Green.element
         } else {
-            hFillColor.opaqueOne
+            hSurfaceColor.Opaque.primary
         }
     }
 }
