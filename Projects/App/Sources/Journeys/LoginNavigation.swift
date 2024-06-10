@@ -177,6 +177,20 @@ public class NotLoggedViewModel: ObservableObject {
             .store(in: &cancellables)
 
         self.bootStrapped = true
+
+        NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) {
+            [weak self] notification in
+            if let url = notification.object as? URL {
+                if url.relativePath.contains("login-failure") {
+                    self?.router.push(AuthentificationRouterType.error(message: L10n.authenticationBankidLoginError))
+                }
+            }
+        }
+
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 
     func onOnBoardPressed() {
