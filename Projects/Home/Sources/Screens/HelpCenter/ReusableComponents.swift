@@ -35,7 +35,7 @@ struct HelpCenterPill: View {
             .padding(.vertical, 4)
             .background(pillBackgroundColor)
             .border(
-                hBorderColor.translucentOne,
+                hBorderColor.primary,
                 width: 0.5
             )
             .cornerRadius(8)

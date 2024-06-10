@@ -27,7 +27,7 @@ struct PaymentStatusView: View {
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(hBorderColor.translucentOne, lineWidth: 0.5)
+                    .stroke(hBorderColor.primary, lineWidth: 0.5)
             )
         case .pending:
             HStack(spacing: 8) {
@@ -48,7 +48,7 @@ struct PaymentStatusView: View {
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(hBorderColor.translucentOne, lineWidth: 0.5)
+                    .stroke(hBorderColor.primary, lineWidth: 0.5)
             )
         case let .failedForPrevious(from, to):
             InfoCard(

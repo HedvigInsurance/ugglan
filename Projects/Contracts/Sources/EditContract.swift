@@ -122,7 +122,7 @@ struct EditContract: View {
         if isSelected {
             hTextColor.Opaque.primary
         } else {
-            hBorderColor.opaqueTwo
+            hBorderColor.secondary
         }
     }
 }

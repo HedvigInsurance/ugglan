@@ -67,8 +67,19 @@ struct ButtonFilledStandardBackground: View {
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
     var configuration: SwiftUI.ButtonStyle.Configuration
-    @Environment(\.hUseNewDesign) var hUseNewDesign
+    @Environment(\.hUseLightMode) var hUseLightMode
+
     var body: some View {
+        if hUseLightMode {
+            buttonBackgroundColor
+                .colorScheme(.light)
+        } else {
+            buttonBackgroundColor
+        }
+    }
+
+    @hColorBuilder
+    var buttonBackgroundColor: some hColor {
         switch hButtonConfigurationType {
         case .primary:
             if configuration.isPressed {
@@ -120,6 +131,7 @@ struct ButtonFilledStandardBackground: View {
             }
         }
     }
+
 }
 
 struct ButtonFilledOverImageBackground: View {
@@ -312,7 +324,6 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         @Environment(\.hButtonFilledStyle) var hButtonFilledStyle
         @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
         @Environment(\.hUseLightMode) var hUseLightMode
-        @Environment(\.hUseNewDesign) var hUseNewDesign
 
         var configuration: Configuration
 
@@ -320,39 +331,31 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
             switch hButtonConfigurationType {
             case .primary:
                 if isEnabled {
-                    if hUseNewDesign {
-                        hTextColor.Opaque.primary.inverted
-                    } else {
-                        hTextColor.Opaque.negative
-                    }
+                    hTextColor.Opaque.primary.inverted
                 } else {
                     hTextColor.Opaque.disabled
                 }
             case .primaryAlt:
                 if isEnabled {
-                    hTextColor.Opaque.primary.colorFor(.light, .base)
+                    hTextColor.Opaque.primary
                 } else {
                     hTextColor.Opaque.disabled
                 }
             case .secondary, .ghost:
                 if isEnabled {
-                    if hUseNewDesign {
-                        hTextColor.Opaque.primary
-                    } else {
-                        hTextColor.Opaque.primary
-                    }
+                    hTextColor.Opaque.primary
                 } else {
                     hTextColor.Opaque.disabled
                 }
             case .secondaryAlt:
                 if isEnabled {
-                    hColorScheme(light: hTextColor.Opaque.primary, dark: hTextColor.Opaque.negative)
+                    hTextColor.Opaque.primary
                 } else {
                     hTextColor.Opaque.disabled
                 }
             case .alert:
                 if isEnabled {
-                    hColorScheme(light: hTextColor.Opaque.negative, dark: hTextColor.Opaque.primary)
+                    hTextColor.Opaque.primary
                 } else {
                     hTextColor.Opaque.secondary
                 }

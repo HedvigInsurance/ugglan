@@ -10,7 +10,7 @@ struct ChatInputView: View {
     @State var height: CGFloat = 0
     var body: some View {
         VStack(spacing: 0) {
-            Rectangle().fill(hBorderColor.translucentOne).frame(height: 1)
+            Rectangle().fill(hBorderColor.primary).frame(height: 1)
             VStack(alignment: .leading, spacing: 8) {
                 HStack(alignment: .bottom) {
                     Button {
@@ -26,7 +26,7 @@ struct ChatInputView: View {
                             .background(hBackgroundColor.primary)
                             .clipShape(RoundedRectangle(cornerRadius: 12))
                             .overlay(
-                                RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.opaqueOne, lineWidth: 0.5)
+                                RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.primary, lineWidth: 0.5)
                             )
                     }
                     HStack(alignment: .bottom, spacing: 0) {
@@ -52,7 +52,7 @@ struct ChatInputView: View {
                     .background(hBackgroundColor.primary)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.opaqueOne, lineWidth: 0.5)
+                        RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.primary, lineWidth: 0.5)
                     )
                 }
                 .padding([.horizontal, .top], 16)
@@ -100,7 +100,7 @@ struct ChatInputView: View {
                 )
                 .frame(height: 80)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.opaqueOne, lineWidth: 0.5)
+                    RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.primary, lineWidth: 0.5)
                 )
         }
     }

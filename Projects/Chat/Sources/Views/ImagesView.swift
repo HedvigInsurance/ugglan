@@ -36,7 +36,7 @@ struct ImagesView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 12))
                             .contentShape(RoundedRectangle(cornerRadius: 12))
                             .overlay(
-                                RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.opaqueOne, lineWidth: 0.5)
+                                RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.primary, lineWidth: 0.5)
                             )
                         }
                     }

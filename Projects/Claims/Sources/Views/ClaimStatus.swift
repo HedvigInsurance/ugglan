@@ -75,7 +75,7 @@ extension ClaimModel.ClaimOutcome {
         case .paid, .notCompensated, .notCovered:
             hTextColor.Opaque.negative
         case .none:
-            hColorScheme(light: hTextColor.Opaque.primary, dark: hTextColor.Opaque.negative)
+            hTextColor.Opaque.primary
         }
     }
 

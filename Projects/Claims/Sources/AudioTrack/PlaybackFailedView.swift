@@ -40,6 +40,6 @@ struct PlaybackFailedView: View {
         .padding(.horizontal, 24)
         .background(hBlurColor.blurTwo)
         .cornerRadius(.defaultCornerRadius)
-        .border(hBorderColor.opaqueFour, width: 0.5)
+        .border(hBorderColor.secondary, width: 0.5)
     }
 }

@@ -242,7 +242,7 @@ struct InfoCardStyle: ViewModifier {
                         .fill(getBackgroundColor)
                         .overlay(
                             Rectangle()
-                                .strokeBorder(hBorderColor.translucentOne, lineWidth: 0.5)
+                                .strokeBorder(hBorderColor.primary, lineWidth: 0.5)
                         )
                 )
         case .roundedRectangle:
@@ -252,7 +252,7 @@ struct InfoCardStyle: ViewModifier {
                         .fill(getBackgroundColor)
                         .overlay(
                             RoundedRectangle(cornerRadius: .defaultCornerRadiusNew)
-                                .strokeBorder(hBorderColor.translucentOne, lineWidth: 0.5)
+                                .strokeBorder(hBorderColor.primary, lineWidth: 0.5)
                         )
                 )
         }

@@ -144,7 +144,7 @@ extension UIColor {
                 })
             case .toasterBorder:
                 return UIColor(dynamic: { trait -> UIColor in
-                    hBorderColor.translucentOne
+                    hBorderColor.primary
                         .colorFor(style ?? trait.userInterfaceStyle == .dark ? .dark : .light, .base)
                         .color
                         .uiColor()

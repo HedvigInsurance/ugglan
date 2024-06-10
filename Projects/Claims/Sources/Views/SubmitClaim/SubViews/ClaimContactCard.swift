@@ -161,15 +161,16 @@ struct ClaimEmergencyContactCard: View {
                     } content: {
                         hText(L10n.submitClaimGlobalAssistanceCallLabel(phoneNumber ?? ""))
                             .foregroundColor(hTextColor.Opaque.primary)
-                            .colorScheme(.light)
                     }
                 }
                 .sectionContainerStyle(.transparent)
+                .hUseLightMode
 
                 if let footnote = footnote {
                     hText(footnote, style: .caption1)
                         .foregroundColor(hTextColor.Opaque.tertiary)
                         .colorScheme(.light)
+
                 }
             }
             .padding(.vertical, 24)

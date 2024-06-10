@@ -53,7 +53,7 @@ public struct CheckBoxComponent: View {
         if currentItem == isSelected {
             hTextColor.Opaque.primary
         } else {
-            hBorderColor.opaqueTwo
+            hBorderColor.secondary
         }
     }
 
