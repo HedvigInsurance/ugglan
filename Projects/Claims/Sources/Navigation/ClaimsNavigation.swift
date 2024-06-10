@@ -152,6 +152,8 @@ public struct ClaimsNavigation: View {
             cancellable = store.actionSignal.publisher.sink { _ in
             } receiveValue: { action in
                 switch action {
+                case .dissmissNewClaimFlow:
+                    router.dismiss()
                 case let .navigationAction(navigationAction):
                     switch navigationAction {
                     case .openTriagingEntrypointScreen:
@@ -201,7 +203,7 @@ public struct ClaimsNavigation: View {
         }
         .detent(
             presented: $claimsNavigationVm.isBrandPickerPresented,
-            style: .height
+            style: .large
         ) {
             openBrandPickerScreen()
                 .routerDestination(

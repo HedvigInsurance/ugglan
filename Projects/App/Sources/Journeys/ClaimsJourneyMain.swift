@@ -28,7 +28,6 @@ public struct ClaimsJourneyMain: View {
                     options: .hidesBackButton
                 ) { destination in
                     if destination == .askForPushNotifications {
-
                         AskForPushNotifications(
                             text: L10n.claimsActivateNotificationsBody,
                             onActionExecuted: {
@@ -39,8 +38,8 @@ public struct ClaimsJourneyMain: View {
                     }
                 }
         }
-        .fullScreenCover(
-            isPresented: $claimsNavigationVm.isClaimsFlowPresented
+        .modally(
+            presented: $claimsNavigationVm.isClaimsFlowPresented
         ) {
             ClaimsNavigation(origin: from)
                 .onAppear {

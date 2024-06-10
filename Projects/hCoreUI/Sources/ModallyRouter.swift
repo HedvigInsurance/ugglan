@@ -5,17 +5,19 @@ extension View {
     public func modally<SwiftUIContent: View>(
         presented: Binding<Bool>,
         options: Binding<DetentPresentationOption> = .constant([]),
+        tracking: TrackingViewNameProtocol? = nil,
         @ViewBuilder content: @escaping () -> SwiftUIContent
     ) -> some View {
-        modifier(ModallySizeModifier(presented: presented, options: options, content: content))
+        modifier(ModallySizeModifier(presented: presented, options: options, tracking: tracking, content: content))
     }
 
     public func modally<Item, Content>(
         item: Binding<Item?>,
         options: Binding<DetentPresentationOption> = .constant([]),
+        tracking: TrackingViewNameProtocol? = nil,
         @ViewBuilder content: @escaping (Item) -> Content
     ) -> some View where Item: Identifiable & Equatable, Content: View {
-        return modifier(ModallySizeItemModifier(item: item, options: options, content: content))
+        return modifier(ModallySizeItemModifier(item: item, options: options, tracking: tracking, content: content))
     }
 }
 
@@ -25,10 +27,11 @@ where SwiftUIContent: View, Item: Identifiable & Equatable {
     @State var itemToRenderFrom: Item?
     @State var present: Bool = false
     @Binding var options: DetentPresentationOption
+    let tracking: TrackingViewNameProtocol?
     var content: (Item) -> SwiftUIContent
     func body(content: Content) -> some View {
         Group {
-            content.modally(presented: $present, options: $options) {
+            content.modally(presented: $present, options: $options, tracking: tracking) {
                 if let item = itemToRenderFrom {
                     self.content(item)
                 }
@@ -53,14 +56,17 @@ private struct ModallySizeModifier<SwiftUIContent>: ViewModifier where SwiftUICo
     @Binding var presented: Bool
     let content: () -> SwiftUIContent
     @Binding var options: DetentPresentationOption
+    let tracking: TrackingViewNameProtocol?
     @StateObject private var presentationViewModel = PresentationViewModel()
     init(
         presented: Binding<Bool>,
         options: Binding<DetentPresentationOption>,
+        tracking: TrackingViewNameProtocol?,
         @ViewBuilder content: @escaping () -> SwiftUIContent
     ) {
         _presented = presented
         self.content = content
+        self.tracking = tracking
         self._options = options
     }
 
@@ -103,7 +109,10 @@ private struct ModallySizeModifier<SwiftUIContent>: ViewModifier where SwiftUICo
 
                 }()
                 let content = self.content()
-                let vc = hHostingController(rootView: content, contentName: "\(Content.self)")
+                let vc = hHostingController(
+                    rootView: content,
+                    contentName: tracking?.nameForTracking ?? "\(Content.self)"
+                )
                 vc.modalPresentationStyle = .overFullScreen
                 vc.transitioningDelegate = .none
                 vc.onDeinit = {

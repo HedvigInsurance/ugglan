@@ -112,7 +112,7 @@ struct TerminationFlowNavigation: View {
             openConfirmTerminationScreen()
                 .environmentObject(vm)
         }
-        .fullScreenCover(isPresented: $vm.isProcessingPresented) {
+        .modally(presented: $vm.isProcessingPresented) {
             openProgressScreen()
         }
     }

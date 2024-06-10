@@ -20,10 +20,16 @@ struct HideViewController: ViewModifier {
                 self.vc = vc
             }
         }
-        .onChange(of: hide) { newValue in
+        .onChange(of: hide) { [weak vc] newValue in
             if let vc = vc {
                 UIView.animate(withDuration: 0.4) {
-                    let properVC = findProverVC(from: vc)
+                    let properVC: UIViewController? = {
+                        if #available(iOS 16.0, *) {
+                            return self.findProverVC(from: vc)
+                        } else {
+                            return vc.navigationController?.view.superview?.viewController ?? vc
+                        }
+                    }()
                     properVC?.view.alpha = hide ? 0 : 1
                 }
             }

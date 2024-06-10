@@ -146,7 +146,7 @@ struct LoggedInNavigation: View {
             switch redirectType {
             case .forever:
                 ForeverNavigation(useOwnNavigation: false)
-                    .toolbar(.hidden, for: .tabBar)
+                    .hideToolbar()
             case let .openUrl(url):
                 EmptyView()
                     .onAppear {
@@ -209,6 +209,7 @@ struct LoggedInNavigation: View {
                     mainNavigationVm?.hasLaunchFinished = false
                     profileNavigationVm?.isLanguagePickerPresented = false
                     //show home screen with updated langauge
+                    mainNavigationVm?.loggedInVm = .init()
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         mainNavigationVm?.hasLaunchFinished = true
                         vm?.selectedTab = 0
@@ -229,8 +230,6 @@ struct LoggedInNavigation: View {
                         }
                     }
                 )
-            default:
-                EmptyView()
             }
         }
         .tabItem {
@@ -283,8 +282,8 @@ struct HomeTab: View {
                 PDFPreview(document: .init(url: url, title: document.displayName))
             }
         }
-        .fullScreenCover(
-            isPresented: $homeNavigationVm.isHelpCenterPresented
+        .modally(
+            presented: $homeNavigationVm.isHelpCenterPresented
         ) {
             HelpCenterNavigation(
                 helpCenterVm: loggedInVm.helpCenterVm

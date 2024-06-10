@@ -35,7 +35,7 @@ public class EditCoInsuredViewModel: ObservableObject {
                     editCoInsuredModelDetent = .init(contractsSupportingCoInsured: {
                         return contractsSupportingCoInsured
                     })
-                } else {
+                } else if !contractsSupportingCoInsured.isEmpty {
                     editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
                         return contractsSupportingCoInsured
                     })

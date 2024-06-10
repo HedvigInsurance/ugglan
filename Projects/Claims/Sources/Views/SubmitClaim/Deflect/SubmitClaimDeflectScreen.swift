@@ -1,3 +1,4 @@
+import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
@@ -63,9 +64,13 @@ public struct SubmitClaimDeflectScreen: View {
                 VStack(spacing: 4) {
                     withAnimation(.easeOut) {
                         ForEach(model?.config?.questions ?? [], id: \.question) { question in
+
                             InfoExpandableView(
                                 title: question.question,
-                                text: question.answer
+                                text: question.answer,
+                                onMarkDownClick: { url in
+                                    NotificationCenter.default.post(name: .openDeepLink, object: url)
+                                }
                             )
                         }
                     }

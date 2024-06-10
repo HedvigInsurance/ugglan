@@ -5,14 +5,16 @@ import hCore
 import hGraphQL
 
 public class AnalyticsService {
-    @Inject var service: AnalyticsClient
+    @Inject var client: AnalyticsClient
 
     func fetchAndSetUserId() {
         log.info("AnalyticsService: fetchAndSetUserId", error: nil, attributes: nil)
+        client.fetchAndSetUserId()
     }
 
     func setWith(userId: String) {
         log.info("AnalyticsService: setWith", error: nil, attributes: nil)
+        client.setWith(userId: userId)
     }
 }
 

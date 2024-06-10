@@ -192,16 +192,20 @@ class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
     }
 
     private func findProverVC(from vc: UIViewController?) -> UIViewController? {
-        if let vc {
-            if let navigation = vc.navigationController {
-                return findProverVC(from: navigation)
-            } else {
-                if let vccc = vc.presentationController as? BlurredSheetPresenationController {
-                    return vc
-                } else if let superviewVc = vc.view.superview?.viewController {
-                    return findProverVC(from: superviewVc)
+        if #available(iOS 16.0, *) {
+            if let vc {
+                if let navigation = vc.navigationController {
+                    return findProverVC(from: navigation)
+                } else {
+                    if let vccc = vc.presentationController as? BlurredSheetPresenationController {
+                        return vc
+                    } else if let superviewVc = vc.view.superview?.viewController {
+                        return findProverVC(from: superviewVc)
+                    }
                 }
             }
+        } else {
+            return vc?.navigationController?.view.superview?.viewController ?? vc
         }
         return nil
     }
