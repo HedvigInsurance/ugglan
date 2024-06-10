@@ -24,7 +24,7 @@ public struct PaymentHistoryView: View {
             ) { history in
                 if history.isEmpty {
                     VStack(spacing: 16) {
-                        Image(uiImage: hCoreUIAssets.infoIconFilled.image)
+                        Image(uiImage: hCoreUIAssets.infoFilled.image)
                             .resizable()
                             .frame(width: 24, height: 24)
                             .foregroundColor(hSignalColor.Blue.element)

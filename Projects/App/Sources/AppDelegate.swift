@@ -213,7 +213,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     ApplicationContext.shared.hasFinishedBootstrapping = true
                     self?.logout()
                     let toast = Toast(
-                        symbol: .icon(hCoreUIAssets.infoIconFilled.image),
+                        symbol: .icon(hCoreUIAssets.infoFilled.image),
                         body: L10n.forceLogoutMessageTitle,
                         textColor: .brand(.secondaryText),
                         backgroundColor: .brand(.opaqueFillOne, style: .dark),

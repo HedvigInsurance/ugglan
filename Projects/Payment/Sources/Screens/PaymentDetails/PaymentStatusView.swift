@@ -12,7 +12,7 @@ struct PaymentStatusView: View {
         case .success:
             HStack(spacing: 8) {
                 Spacer()
-                Image(uiImage: hCoreUIAssets.tick.image)
+                Image(uiImage: hCoreUIAssets.checkmark.image)
                     .resizable()
                     .frame(width: 16, height: 16)
                     .foregroundColor(hSignalColor.Green.element)
@@ -32,7 +32,7 @@ struct PaymentStatusView: View {
         case .pending:
             HStack(spacing: 8) {
                 Spacer()
-                Image(uiImage: hCoreUIAssets.infoIconFilled.image)
+                Image(uiImage: hCoreUIAssets.infoFilled.image)
                     .resizable()
                     .frame(width: 16, height: 16)
                     .foregroundColor(hSignalColor.Blue.element)

@@ -66,7 +66,7 @@ struct SlideDragger: View {
                     ZStack {
                         Group {
                             if didFinished {
-                                Image(uiImage: hCoreUIAssets.tick.image)
+                                Image(uiImage: hCoreUIAssets.checkmark.image)
                                     .transition(.scale)
                             } else {
                                 Image(uiImage: hCoreUIAssets.chevronRight.image)

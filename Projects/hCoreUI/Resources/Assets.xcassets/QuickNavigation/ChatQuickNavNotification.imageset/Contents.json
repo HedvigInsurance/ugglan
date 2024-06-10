@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "Type=Chat, Notification=Yes.svg",
+      "filename" : "Chat.png",
       "idiom" : "universal"
     }
   ],
@@ -11,6 +11,6 @@
   },
   "properties" : {
     "preserves-vector-representation" : true,
-    "template-rendering-intent" : "original"
+    "template-rendering-intent" : "template"
   }
 }

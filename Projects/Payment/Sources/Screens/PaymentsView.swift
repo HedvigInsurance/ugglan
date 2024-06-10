@@ -93,7 +93,7 @@ public struct PaymentsView: View {
                     }
                 } else {
                     VStack(spacing: 16) {
-                        Image(uiImage: hCoreUIAssets.infoSmall.image)
+                        Image(uiImage: hCoreUIAssets.infoFilledSmall.image)
                             .resizable()
                             .frame(width: 24, height: 24)
                             .foregroundColor(hSignalColor.Blue.element)
@@ -137,7 +137,7 @@ public struct PaymentsView: View {
 
     private var paymentHistory: some View {
         hRow {
-            Image(uiImage: hCoreUIAssets.waiting.image)
+            Image(uiImage: hCoreUIAssets.clock.image)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 24, height: 24)

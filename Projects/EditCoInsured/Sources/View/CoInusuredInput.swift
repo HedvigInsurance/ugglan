@@ -291,7 +291,7 @@ struct CoInusuredInput: View {
             }
             .hFieldLockedState
             .hFieldTrailingView {
-                Image(uiImage: hCoreUIAssets.lockSmall.image)
+                Image(uiImage: hCoreUIAssets.lock.image)
                     .foregroundColor(hTextColor.Opaque.secondary)
             }
             .disabled(true)
@@ -306,7 +306,7 @@ struct CoInusuredInput: View {
             }
             .hFieldLockedState
             .hFieldTrailingView {
-                Image(uiImage: hCoreUIAssets.lockSmall.image)
+                Image(uiImage: hCoreUIAssets.lock.image)
                     .foregroundColor(hTextColor.Opaque.secondary)
             }
             .disabled(true)

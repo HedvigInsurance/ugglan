@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "Type=FirstVet, Notification=Yes.svg",
+      "filename" : "FirstVet.png",
       "idiom" : "universal"
     }
   ],
@@ -11,6 +11,6 @@
   },
   "properties" : {
     "preserves-vector-representation" : true,
-    "template-rendering-intent" : "original"
+    "template-rendering-intent" : "template"
   }
 }

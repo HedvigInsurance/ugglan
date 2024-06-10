@@ -37,7 +37,7 @@ struct AskForPushNotifications: View {
         hSection {
             VStack(spacing: 24) {
                 Spacer()
-                hCoreUIAssets.infoIconFilled.view
+                hCoreUIAssets.infoFilled.view
                     .resizable()
                     .frame(width: 24, height: 24)
                     .foregroundColor(hSignalColor.Blue.element)

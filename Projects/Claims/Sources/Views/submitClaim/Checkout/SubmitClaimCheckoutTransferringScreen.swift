@@ -157,7 +157,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
         VStack {
             Spacer()
             VStack(spacing: 16) {
-                Image(uiImage: hCoreUIAssets.warningTriangle.image)
+                Image(uiImage: hCoreUIAssets.warningTrinagleOutlined.image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 40, height: 40)

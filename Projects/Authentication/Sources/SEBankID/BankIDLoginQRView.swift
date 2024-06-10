@@ -82,7 +82,7 @@ public struct BankIDLoginQRView: View {
                                     vm.openBankId()
                                 } content: {
                                     HStack(spacing: 8) {
-                                        Image(uiImage: hCoreUIAssets.bankIdSmall.image)
+                                        Image(uiImage: hCoreUIAssets.bankID.image)
                                         hText(L10n.authenticationBankidOpenButton)
                                     }
                                 }

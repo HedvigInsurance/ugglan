@@ -25,11 +25,11 @@ enum ProfileRowType {
     var icon: UIImage {
         switch self {
         case .myInfo:
-            return hCoreUIAssets.memberCard.image
+            return hCoreUIAssets.id.image
         case .appInfo:
-            return hCoreUIAssets.infoIcon.image
+            return hCoreUIAssets.infoOutlined.image
         case .settings:
-            return hCoreUIAssets.settingsIcon.image
+            return hCoreUIAssets.settings.image
         case let .eurobonus(hasEnteredNumber):
             if hasEnteredNumber {
                 return hCoreUIAssets.euroBonusWithValueRowIcon.image
@@ -37,7 +37,7 @@ enum ProfileRowType {
                 return hCoreUIAssets.eurobonus.image
             }
         case .travelCertificate:
-            return hCoreUIAssets.documentsMultiple.image
+            return hCoreUIAssets.documents.image
         }
     }
 

@@ -193,7 +193,7 @@ struct ContractInformationView: View {
         }
 
         CoInsuredField(
-            accessoryView: getAccessorytView(contract: contract, coInsured: coInsured)
+            accessoryView: getAccessoryView(contract: contract, coInsured: coInsured)
                 .foregroundColor(hSignalColor.Amber.element),
             includeStatusPill: statusPill,
             date: coInsured.terminatesOn ?? coInsured.activatesOn,
@@ -212,9 +212,9 @@ struct ContractInformationView: View {
     }
 
     @ViewBuilder
-    private func getAccessorytView(contract: Contract, coInsured: CoInsuredModel) -> some View {
+    private func getAccessoryView(contract: Contract, coInsured: CoInsuredModel) -> some View {
         if contract.showEditCoInsuredInfo && coInsured.terminatesOn == nil {
-            Image(uiImage: hCoreUIAssets.warningSmall.image)
+            Image(uiImage: hCoreUIAssets.warningTriangleSmall.image)
         } else {
             EmptyView()
         }

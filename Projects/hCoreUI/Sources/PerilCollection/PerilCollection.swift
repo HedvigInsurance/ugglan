@@ -30,14 +30,14 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
                 Spacer()
                 ZStack {
                     Image(
-                        uiImage: hCoreUIAssets.minusSmall.image
+                        uiImage: hCoreUIAssets.minus.image
                     )
                     .resizable()
                     .frame(width: 16, height: 16)
                     .transition(.opacity.animation(.easeOut))
                     .rotationEffect(selectedPerils.contains(peril) ? Angle(degrees: 360) : Angle(degrees: 270))
                     Image(
-                        uiImage: hCoreUIAssets.minusSmall.image
+                        uiImage: hCoreUIAssets.minus.image
                     )
                     .resizable()
                     .frame(width: 16, height: 16)
