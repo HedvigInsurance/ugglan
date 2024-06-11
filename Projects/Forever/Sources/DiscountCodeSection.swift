@@ -31,11 +31,16 @@ struct DiscountCodeSectionView: View {
                     }
                     hSection {
                         VStack(spacing: 8) {
-                            hButton.LargeButton(type: .primary) {
-                                foreverNavigationVm.shareCode(code: code)
-                            } content: {
-                                hText(L10n.ReferralsEmpty.shareCodeButton)
-                            }
+                            ModalPresentationSourceWrapper(
+                                content: {
+                                    hButton.LargeButton(type: .primary) {
+                                        foreverNavigationVm.shareCode(code: code)
+                                    } content: {
+                                        hText(L10n.ReferralsEmpty.shareCodeButton)
+                                    }
+                                },
+                                vm: foreverNavigationVm.modalPresentationSourceWrapperViewModel
+                            )
 
                             hButton.LargeButton(type: .ghost) {
                                 foreverNavigationVm.isChangeCodePresented = true

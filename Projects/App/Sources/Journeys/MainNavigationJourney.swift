@@ -51,9 +51,7 @@ struct MainNavigationJourney: App {
     }
 
     private func handle(url: URL) {
-        if url.relativePath.contains("login-failure") {
-            vm.notLoggedInVm.router.push(AuthentificationRouterType.error(message: L10n.authenticationBankidLoginError))
-        }
+        if url.absoluteString == "\(Bundle.main.urlScheme ?? "")://bankid" { return }
         NotificationCenter.default.post(name: .openDeepLink, object: url)
         appDelegate.handleURL(url: url)
     }
@@ -83,7 +81,10 @@ class MainNavigationViewModel: ObservableObject {
                         hasLaunchFinished = true
                     }
                 case .notLoggedIn:
+                    notLoggedInVm = .init()
+                    loggedInVm = .init()
                     appDelegate.logout()
+
                 default:
                     break
                 }

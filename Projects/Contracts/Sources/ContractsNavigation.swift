@@ -63,6 +63,9 @@ public struct ContractsNavigation<Content: View>: View {
                 .environmentObject(contractsNavigationVm)
                 .embededInNavigation(options: .navigationType(type: .large))
         }
+        .modally(presented: $contractsNavigationVm.isChangeAddressPresented) {
+            redirect(.movingFlow)
+        }
         .detent(
             item: $contractsNavigationVm.insuranceUpdate,
             style: .height
