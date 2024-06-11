@@ -35,11 +35,19 @@ struct TravelCertificateProcessingScreen: View {
             VStack(spacing: 16) {
                 InfoCard(text: L10n.TravelCertificate.downloadRecommendation, type: .info)
                 VStack(spacing: 8) {
-                    hButton.LargeButton(type: .primary) {
-                        vm.presentShare()
-                    } content: {
-                        hText(L10n.TravelCertificate.download)
-                    }
+                    ModalPresentationSourceWrapper(
+                        content: {
+                            hButton.LargeButton(type: .primary) {
+                                Task { [weak vm] in
+                                    await vm?.presentShare()
+                                }
+                            } content: {
+                                hText(L10n.TravelCertificate.download)
+                            }
+                        },
+                        vm: vm.modalPresentationSourceWrapperViewModel
+                    )
+                    .fixedSize(horizontal: false, vertical: true)
                     hButton.LargeButton(type: .ghost) {
                         router.dismiss()
                     } content: {
@@ -54,12 +62,12 @@ struct TravelCertificateProcessingScreen: View {
 
 class ProcessingViewModel: ObservableObject {
     var service = TravelInsuranceService()
-
     @Published var isLoading = true
     @Published var error: String?
     @Published var downloadUrl: URL?
     weak var whoIsTravelingViewModel: WhoIsTravelingViewModel?
     weak var startDateViewModel: StartDateViewModel?
+    var modalPresentationSourceWrapperViewModel = ModalPresentationSourceWrapperViewModel()
     init() {}
 
     func submit() {
@@ -93,36 +101,38 @@ class ProcessingViewModel: ObservableObject {
         }
     }
 
-    func presentShare() {
-        Task {
+    @MainActor
+    func presentShare() async {
+        do {
+            guard let url = downloadUrl else {
+                throw FileError.urlDoesNotExist
+            }
             do {
-                guard let url = downloadUrl else {
-                    throw FileError.urlDoesNotExist
-                }
+                let data = try Data(contentsOf: url)
+                let temporaryFolder = FileManager.default.temporaryDirectory
+                let temporaryFileURL = temporaryFolder.appendingPathComponent(fileName)
                 do {
-                    let data = try Data(contentsOf: url)
-                    let temporaryFolder = FileManager.default.temporaryDirectory
-                    let temporaryFileURL = temporaryFolder.appendingPathComponent(fileName)
-                    do {
-                        try? FileManager.default.removeItem(at: temporaryFileURL)
-                        try data.write(to: temporaryFileURL)
-                    } catch {
-                        throw FileError.downloadError
-                    }
-                    let activityVC = await UIActivityViewController(
-                        activityItems: [temporaryFileURL as Any],
-                        applicationActivities: nil
-                    )
-
-                    let topViewController = await UIApplication.shared.getTopViewController()
-                    await topViewController?.present(activityVC, animated: true, completion: nil)
-                } catch _ {
+                    try? FileManager.default.removeItem(at: temporaryFileURL)
+                    try data.write(to: temporaryFileURL)
+                } catch {
                     throw FileError.downloadError
                 }
-            } catch let exc {
-                error = exc.localizedDescription
+                let activityVC = UIActivityViewController(
+                    activityItems: [temporaryFileURL as Any],
+                    applicationActivities: nil
+                )
+
+                modalPresentationSourceWrapperViewModel.present(activity: activityVC)
+            } catch _ {
+                throw FileError.downloadError
             }
+        } catch let exc {
+            error = exc.localizedDescription
         }
+    }
+
+    func present(activity: UIActivityViewController) {
+
     }
 
     var fileName: String {
@@ -138,5 +148,22 @@ class ProcessingViewModel: ObservableObject {
 struct SuccessScreen_Previews: PreviewProvider {
     static var previews: some View {
         TravelCertificateProcessingScreen()
+    }
+}
+
+extension UIView {
+    func findViewWith(tag: Int) -> UIView? {
+        var viewToReturn: UIView?
+        for subview in subviews {
+            if subview.tag == tag {
+                viewToReturn = subview
+                break
+            }
+            if let view = findViewWith(tag: tag) {
+                viewToReturn = view
+                break
+            }
+        }
+        return viewToReturn
     }
 }
