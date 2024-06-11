@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "Payment-Outline-Notification.png",
+      "filename" : "Payment-Outline-Notification.svg",
       "idiom" : "universal"
     }
   ],
@@ -10,7 +10,6 @@
     "version" : 1
   },
   "properties" : {
-    "preserves-vector-representation" : true,
     "template-rendering-intent" : "template"
   }
 }

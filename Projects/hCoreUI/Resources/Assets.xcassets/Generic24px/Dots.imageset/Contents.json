@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "Dots.png",
+      "filename" : "Dots.svg",
       "idiom" : "universal"
     }
   ],
@@ -10,7 +10,6 @@
     "version" : 1
   },
   "properties" : {
-    "preserves-vector-representation" : true,
     "template-rendering-intent" : "template"
   }
 }

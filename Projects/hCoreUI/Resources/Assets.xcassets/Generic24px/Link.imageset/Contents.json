@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "Link.png",
+      "filename" : "Link.svg",
       "idiom" : "universal"
     }
   ],
@@ -10,7 +10,6 @@
     "version" : 1
   },
   "properties" : {
-    "preserves-vector-representation" : true,
     "template-rendering-intent" : "template"
   }
 }

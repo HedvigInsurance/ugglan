@@ -214,7 +214,7 @@ struct ContractInformationView: View {
     @ViewBuilder
     private func getAccessoryView(contract: Contract, coInsured: CoInsuredModel) -> some View {
         if contract.showEditCoInsuredInfo && coInsured.terminatesOn == nil {
-            Image(uiImage: hCoreUIAssets.warningTriangleSmall.image)
+            Image(uiImage: hCoreUIAssets.warningTriangleFilledSmall.image)
         } else {
             EmptyView()
         }
