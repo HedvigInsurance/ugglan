@@ -115,7 +115,7 @@ struct LinkView: View {
             .transition(.opacity)
         } else if let model = vm.webMetaDataProviderData {
             VStack(spacing: 8) {
-                Image(uiImage: model.image ?? hCoreUIAssets.hedvigCircleLogo.image)
+                Image(uiImage: model.image ?? hCoreUIAssets.helipadOutline.image)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(height: 200)
