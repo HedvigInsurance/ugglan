@@ -1,12 +1,12 @@
 {
   "images" : [
     {
-      "filename" : "Type=Workmark.png",
+      "filename" : "Type=Logotype.svg",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "Type=Logotype.png",
+      "filename" : "Type=Workmark.svg",
       "idiom" : "universal",
       "scale" : "2x"
     },
