@@ -78,12 +78,14 @@ struct ButtonFilledStandardBackground: View {
         }
     }
 
-    @hColorBuilder
-    var buttonBackgroundColor: some hColor {
+    @ViewBuilder
+    var buttonBackgroundColor: some View {
         switch hButtonConfigurationType {
         case .primary:
             if configuration.isPressed {
-                hButtonColor.Primary.hover
+                hButtonColor.Primary.hover.background {
+                    hButtonColor.Primary.resting
+                }
             } else if isEnabled {
                 hButtonColor.Primary.resting
             } else {
@@ -91,7 +93,9 @@ struct ButtonFilledStandardBackground: View {
             }
         case .primaryAlt:
             if configuration.isPressed {
-                hButtonColor.PrimaryAlt.hover
+                hButtonColor.PrimaryAlt.hover.background {
+                    hButtonColor.PrimaryAlt.resting
+                }
             } else if isEnabled {
                 hButtonColor.PrimaryAlt.resting
             } else {
@@ -99,7 +103,9 @@ struct ButtonFilledStandardBackground: View {
             }
         case .secondary:
             if configuration.isPressed {
-                hButtonColor.Secondary.hover
+                hButtonColor.Secondary.hover.background {
+                    hButtonColor.Secondary.resting
+                }
             } else if isEnabled {
                 hButtonColor.Secondary.resting
             } else {
@@ -107,7 +113,9 @@ struct ButtonFilledStandardBackground: View {
             }
         case .secondaryAlt:
             if configuration.isPressed {
-                hButtonColor.SecondaryAlt.hover
+                hButtonColor.SecondaryAlt.hover.background {
+                    hButtonColor.SecondaryAlt.resting
+                }
             } else if isEnabled {
                 hButtonColor.SecondaryAlt.resting
             } else {
@@ -115,7 +123,9 @@ struct ButtonFilledStandardBackground: View {
             }
         case .ghost:
             if configuration.isPressed {
-                hButtonColor.Ghost.hover
+                hButtonColor.Ghost.hover.background {
+                    hButtonColor.Ghost.resting
+                }
             } else if isEnabled {
                 hButtonColor.Ghost.resting
             } else {
