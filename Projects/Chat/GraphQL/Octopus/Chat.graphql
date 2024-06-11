@@ -1,4 +1,3 @@
-
 query Chat($until: Instant) {
   chat(until: $until) {
     hasNext

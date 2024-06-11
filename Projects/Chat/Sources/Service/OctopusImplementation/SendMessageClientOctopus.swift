@@ -5,7 +5,7 @@ import hGraphQL
 public class SendMessagesService {
     @Inject var service: SendMessageClient
 
-    public func send(message: Message, topic: ChatTopicType?) async throws -> SentMessageWrapper {
+    public func send(message: Message, topic: ChatTopicType?) async throws -> Message {
         log.info("SendMessagesService: send", error: nil, attributes: nil)
         return try await service.send(message: message, topic: topic)
     }
@@ -17,7 +17,7 @@ public class SendMessagesClientOctopus: SendMessageClient {
 
     public init() {}
 
-    public func send(message: Message, topic: ChatTopicType?) async throws -> SentMessageWrapper {
+    public func send(message: Message, topic: ChatTopicType?) async throws -> Message {
         switch message.type {
         case .text(let text):
             let data = try await octopus.client.perform(
@@ -26,12 +26,14 @@ public class SendMessagesClientOctopus: SendMessageClient {
                 )
             )
             if let error = data.chatSendText.error?.message {
-                throw NetworkError.badRequest(message: error)
+                throw SendMessageError.errorMesage(message: error)
             }
-            return .init(
-                message: data.chatSendText.message?.fragments.messageFragment.asMessage(),
-                status: data.chatSendText.status?.message
-            )
+            if let message = data.chatSendText.message?.fragments.messageFragment.asMessage() {
+                return message
+            }
+
+            throw SendMessageError.missingData
+
         case .file(let file):
             let uploadResponse = try await chatFileUploaderService.upload(files: [file]) { progress in
 
@@ -46,12 +48,13 @@ public class SendMessagesClientOctopus: SendMessageClient {
                 )
             )
             if let error = data.chatSendFile.error?.message {
-                throw NetworkError.badRequest(message: error)
+                throw SendMessageError.errorMesage(message: error)
             }
-            return .init(
-                message: data.chatSendFile.message?.fragments.messageFragment.asMessage(),
-                status: data.chatSendFile.status?.message
-            )
+            if let message = data.chatSendFile.message?.fragments.messageFragment.asMessage() {
+                return message
+            }
+
+            throw SendMessageError.missingData
         default:
             throw NetworkError.badRequest(message: nil)
         }
@@ -69,6 +72,20 @@ extension ChatTopicType {
             return GraphQLEnum<OctopusGraphQL.ChatMessageContext>(.helpCenterCoverage)
         case .myInsurance:
             return GraphQLEnum<OctopusGraphQL.ChatMessageContext>(.helpCenterMyInsurance)
+        }
+    }
+}
+
+enum SendMessageError: Error {
+    case errorMesage(message: String)
+    case missingData
+}
+
+extension SendMessageError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case let .errorMesage(message): return message
+        case .missingData: return "TODO"
         }
     }
 }

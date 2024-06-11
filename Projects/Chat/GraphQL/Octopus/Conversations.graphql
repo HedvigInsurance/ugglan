@@ -1,0 +1,43 @@
+query Conversations {
+  currentMember {
+    conversations {
+        ...ConversationFragment
+    }
+    legacyConversation {
+        ...ConversationFragment
+    }
+  }
+}
+
+fragment ConversationFragment on Conversation {
+    statusMessage
+    id
+    newestMessage {
+        ... MessageFragment
+    }
+}
+
+query Conversation($conversationId: UUID!, $olderToken: String, $newerToken: String) {
+  conversation(id: $conversationId) {
+    id
+    messagePage(olderToken: $olderToken, newerToken: $newerToken) {
+      messages {
+        ... MessageFragment
+      }
+      newerToken
+      olderToken
+    }
+    statusMessage
+  }
+}
+
+mutation ConversationSendMessage($input: ConversationSendMessageInput!) {
+  conversationSendMessage(input: $input) {
+    message {
+        ... MessageFragment
+    }
+    userError {
+      message
+    }
+  }
+}

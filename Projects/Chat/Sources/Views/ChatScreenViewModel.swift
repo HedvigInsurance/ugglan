@@ -156,10 +156,8 @@ public class ChatScreenViewModel: ObservableObject {
 
     private func sendToClient(message: Message) async {
         do {
-            let data = try await sendMessageService.send(message: message, topic: topicType)
-            if let remoteMessage = data.message {
-                await handleSuccessAdding(for: remoteMessage, to: message)
-            }
+            let message = try await sendMessageService.send(message: message, topic: topicType)
+            await handleSuccessAdding(for: message, to: message)
             haveSentAMessage = true
         } catch let ex {
             await handleSendFail(for: message, with: ex.localizedDescription)
