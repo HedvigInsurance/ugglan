@@ -3,6 +3,7 @@ import Foundation
 import Presentation
 import SwiftUI
 
+//
 extension PresentationStyle {
     public static let activityView = PresentationStyle(name: "activityView") { viewController, from, _ in
         let future = Future<Void> { completion in
@@ -87,4 +88,41 @@ public struct ActivityViewController: UIViewControllerRepresentable {
         _ uiViewController: UIActivityViewController,
         context: UIViewControllerRepresentableContext<ActivityViewController>
     ) {}
+}
+
+public struct ModalPresentationSourceWrapper<Content: View>: UIViewRepresentable {
+    @ViewBuilder var content: () -> Content
+    @ObservedObject var vm: ModalPresentationSourceWrapperViewModel
+
+    public init(content: @escaping () -> Content, vm: ModalPresentationSourceWrapperViewModel) {
+        self.content = content
+        self.vm = vm
+    }
+
+    public func makeUIView(context: Context) -> UIView {
+        let vc = UIHostingController(rootView: content())
+        vc.view.backgroundColor = .clear
+        vc.view.layer.cornerRadius = 12
+        vc.view.clipsToBounds = true
+        vm.view = vc.view
+        return vc.view
+    }
+
+    public func updateUIView(_ uiView: UIView, context: Context) {
+        vm.view = uiView
+    }
+}
+
+public class ModalPresentationSourceWrapperViewModel: ObservableObject {
+    weak var view: UIView?
+
+    public init() {}
+
+    public func present(activity: UIActivityViewController) {
+        if let view, let vc = view.viewController {
+            activity.popoverPresentationController?.sourceView = view
+            activity.popoverPresentationController?.sourceRect = view.bounds
+            vc.present(activity, animated: true)
+        }
+    }
 }

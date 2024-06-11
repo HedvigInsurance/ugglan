@@ -6,6 +6,7 @@ import hGraphQL
 
 public class ForeverNavigationViewModel: ObservableObject {
     @Published public var isChangeCodePresented = false
+    var modalPresentationSourceWrapperViewModel = ModalPresentationSourceWrapperViewModel()
 
     func shareCode(code: String) {
         let store: ForeverStore = globalPresentableStoreContainer.get()
@@ -18,9 +19,7 @@ public class ForeverNavigationViewModel: ObservableObject {
             activityItems: [message as Any],
             applicationActivities: nil
         )
-
-        let topViewController = UIApplication.shared.getTopViewController()
-        topViewController?.present(activityVC, animated: true, completion: nil)
+        modalPresentationSourceWrapperViewModel.present(activity: activityVC)
     }
 }
 
