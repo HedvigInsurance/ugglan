@@ -118,10 +118,7 @@ public struct PaymentsView: View {
 
     private var discounts: some View {
         hRow {
-            Image(uiImage: hCoreUIAssets.campaignSmall.image)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 24, height: 24)
+            Image(uiImage: hCoreUIAssets.campaign.image)
                 .foregroundColor(hSignalColor.Green.element)
             hText(L10n.paymentsDiscountsSectionTitle)
             Spacer()
@@ -138,9 +135,6 @@ public struct PaymentsView: View {
     private var paymentHistory: some View {
         hRow {
             Image(uiImage: hCoreUIAssets.clock.image)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 24, height: 24)
                 .foregroundColor(hTextColor.Opaque.primary)
             hText(L10n.paymentsPaymentHistoryButtonLabel)
             Spacer()
