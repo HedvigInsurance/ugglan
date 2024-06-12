@@ -29,7 +29,6 @@ struct SetTerminationDate: View {
                 if let termination {
                     DatePickerView(
                         vm: .init(
-
                             continueAction: {
                                 self.onSelected(terminationDate)
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {

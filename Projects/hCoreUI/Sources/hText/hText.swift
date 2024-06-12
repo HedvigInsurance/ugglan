@@ -42,18 +42,6 @@ public enum HFontTextStyle {
     case body3
     case label
     case finePrint
-    //    case displayXXLShort
-    //    case displayXXLLong
-    //    case displayXLShort
-    //    case displayXLLong
-    //    case displayLShort
-    //    case displayLLong
-    //    case displayMShort
-    //    case displayMLong
-    //    case displaySShort
-    //    case displaySLong
-    //    case displayXSShort
-    //    case displayXSLong
 
     case title
     case title1
@@ -63,7 +51,7 @@ public enum HFontTextStyle {
     case subheadline
     case callout
     case footnote
-    case standardSmall  //14
+    case standardSmall
     case badge
 
     var fontSize: CGFloat {
@@ -82,18 +70,7 @@ public enum HFontTextStyle {
 
         case .label: return 14
         case .finePrint: return 12
-        //        case .displayXXLShort: return 92
-        //        case .displayXXLLong: return 84
-        //        case .displayXLShort: return 84
-        //        case .displayXLLong: return 76
-        //        case .displayLShort: return 76
-        //        case .displayLLong: return 68
-        //        case .displayMShort: return 68
-        //        case .displayMLong: return 54
-        //        case .displaySShort: return 48
-        //        case .displaySLong: return 32
-        //        case .displayXSShort: return 32
-        //        case .displayXSLong: return 28
+
         case .title: return 32
         case .title1: return 28
         case .title2: return 26
@@ -147,30 +124,6 @@ public enum HFontTextStyle {
             return .body
         case .finePrint:
             return .footnote
-        //        case .displayXXLShort:
-        //            return .largeTitle
-        //        case .displayXXLLong:
-        //            return .largeTitle
-        //        case .displayXLShort:
-        //            return .largeTitle
-        //        case .displayXLLong:
-        //            return .largeTitle
-        //        case .displayLShort:
-        //            return .largeTitle
-        //        case .displayLLong:
-        //            return .largeTitle
-        //        case .displayMShort:
-        //            return .title3
-        //        case .displayMLong:
-        //            return .title3
-        //        case .displaySShort:
-        //            return .title2
-        //        case .displaySLong:
-        //            return .title2
-        //        case .displayXSShort:
-        //            return .title1
-        //        case .displayXSLong:
-        //            return .title1
         case .title:
             return .title1
         case .title1:
