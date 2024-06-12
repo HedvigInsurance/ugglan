@@ -155,4 +155,32 @@ extension Logging {
     }
 }
 
-public var log: (any Logging)! = nil
+public var log: (any Logging)! = DemoLogger()
+
+class DemoLogger: Logging {
+    func debug(_ message: String, error: Error?, attributes: [AttributeKey: AttributeValue]?) {
+    }
+
+    func info(_ message: String, error: Error?, attributes: [AttributeKey: AttributeValue]?) {}
+
+    func notice(_ message: String, error: Error?, attributes: [AttributeKey: AttributeValue]?) {}
+
+    func warn(_ message: String, error: Error?, attributes: [AttributeKey: AttributeValue]?) {}
+
+    func error(_ message: String, error: Error?, attributes: [AttributeKey: AttributeValue]?) {}
+
+    func critical(_ message: String, error: Error?, attributes: [AttributeKey: AttributeValue]?) {}
+
+    func addUserAction(
+        type: LoggingAction,
+        name: String,
+        error: Error?,
+        attributes: [AttributeKey: AttributeValue]?
+    ) {}
+
+    func addError(
+        error: Error,
+        type: ErrorSource,
+        attributes: [AttributeKey: AttributeValue]?
+    ) {}
+}

@@ -88,33 +88,38 @@ public struct ChatNavigation<Content: View>: View {
     }
 
     public var body: some View {
-        RouterHost(router: router, options: .navigationType(type: .large)) {
-            ChatScreen(vm: .init(topicType: openChat.topic))
-                .navigationTitle(L10n.chatTitle)
-                .withDismissButton()
-        }
-        .environmentObject(chatNavigationViewModel)
-        .detent(
-            item: $chatNavigationViewModel.isFilePresented,
-            style: .large
-        ) { urlModel in
-            DocumentPreview(url: urlModel.url)
-                .withDismissButton()
-                .embededInNavigation()
-        }
-        .detent(
-            presented: $chatNavigationViewModel.isAskForPushNotificationsPresented,
-            style: .large
-        ) {
-            redirectView(.notification) {
-                Task { @MainActor in
-                    chatNavigationViewModel.isAskForPushNotificationsPresented = false
+        if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
+            ConversationsView()
+                .configureTitle("Inbox")
+        } else {
+            RouterHost(router: router, options: .navigationType(type: .large)) {
+                ChatScreen(vm: .init(topicType: openChat.topic))
+                    .configureTitle(L10n.chatTitle)
+                    .withDismissButton()
+            }
+            .environmentObject(chatNavigationViewModel)
+            .detent(
+                item: $chatNavigationViewModel.isFilePresented,
+                style: .large
+            ) { urlModel in
+                DocumentPreview(url: urlModel.url)
+                    .withDismissButton()
+                    .embededInNavigation()
+            }
+            .detent(
+                presented: $chatNavigationViewModel.isAskForPushNotificationsPresented,
+                style: .large
+            ) {
+                redirectView(.notification) {
+                    Task { @MainActor in
+                        chatNavigationViewModel.isAskForPushNotificationsPresented = false
+                    }
                 }
             }
-        }
-        .onChange(of: chatNavigationViewModel.dateOfLastMessage) { value in
-            if let value = value {
-                self.onUpdateDate(value)
+            .onChange(of: chatNavigationViewModel.dateOfLastMessage) { value in
+                if let value = value {
+                    self.onUpdateDate(value)
+                }
             }
         }
     }

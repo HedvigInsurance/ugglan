@@ -12,6 +12,7 @@ public class FeatureFlagsUnleash: FeatureFlags {
         self.environment = environment
     }
 
+    public var isConversationBasedMessagesEnabled: Bool = true
     public var loadingExperimentsSuccess: (Bool) -> Void = { _ in }
     public var isMovingFlowEnabled: Bool = false
     public var isEditCoInsuredEnabled: Bool = false

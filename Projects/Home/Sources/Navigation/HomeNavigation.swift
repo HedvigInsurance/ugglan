@@ -6,21 +6,34 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+extension String: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        return self
+    }
+}
+
 public class HomeNavigationViewModel: ObservableObject {
     public static var isChatPresented = false
     public init() {
 
         NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: nil) {
             [weak self] notification in
-            if let topicWrapper = notification.object as? ChatTopicWrapper {
-                self?.openChatOptions = topicWrapper.onTop ? [.alwaysOpenOnTop, .withoutGrabber] : [.withoutGrabber]
-                self?.openChat = topicWrapper
+            if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
+                self?.router.push("Chat")
             } else {
-                self?.openChatOptions = [.alwaysOpenOnTop, .withoutGrabber]
-                self?.openChat = .init(topic: nil, onTop: false)
+                if let topicWrapper = notification.object as? ChatTopicWrapper {
+                    self?.openChatOptions =
+                        topicWrapper.onTop ? [.alwaysOpenOnTop, .withoutGrabber] : [.withoutGrabber]
+                    self?.openChat = topicWrapper
+                } else {
+                    self?.openChatOptions = [.alwaysOpenOnTop, .withoutGrabber]
+                    self?.openChat = .init(topic: nil, onTop: false)
+                }
             }
         }
     }
+
+    public var router = Router()
 
     @Published public var isSubmitClaimPresented = false
     @Published public var isHelpCenterPresented = false

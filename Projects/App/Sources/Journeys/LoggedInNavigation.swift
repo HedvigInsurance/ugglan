@@ -245,12 +245,11 @@ struct LoggedInNavigation: View {
 struct HomeTab: View {
     @ObservedObject var homeNavigationVm: HomeNavigationViewModel
     @ObservedObject var loggedInVm: LoggedInNavigationViewModel
-    @StateObject var homeRouter = Router()
 
     var body: some View {
         let claims = Claims()
 
-        return RouterHost(router: homeRouter, tracking: self) {
+        return RouterHost(router: homeNavigationVm.router, tracking: self) {
             HomeView(
                 claimsContent: claims,
                 memberId: {
@@ -262,6 +261,19 @@ struct HomeTab: View {
                 ClaimDetailView(claim: claim)
                     .environmentObject(homeNavigationVm)
                     .configureTitle(L10n.claimsYourClaim)
+            }
+            .routerDestination(for: String.self) { conversation in
+                ChatNavigation(openChat: .init(topic: nil, onTop: false)) { type, onDone in
+                    AskForPushNotifications(
+                        text: L10n.chatActivateNotificationsBody,
+                        onActionExecuted: {
+                            onDone()
+                        }
+                    )
+                } onUpdateDate: { date in
+                    let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                    homeStore.send(.setChatNotificationTimeStamp(sentAt: date))
+                }
             }
         }
         .environmentObject(homeNavigationVm)
