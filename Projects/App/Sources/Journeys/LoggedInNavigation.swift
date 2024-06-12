@@ -263,17 +263,8 @@ struct HomeTab: View {
                     .configureTitle(L10n.claimsYourClaim)
             }
             .routerDestination(for: String.self) { conversation in
-                ChatNavigation(openChat: .init(topic: nil, onTop: false)) { type, onDone in
-                    AskForPushNotifications(
-                        text: L10n.chatActivateNotificationsBody,
-                        onActionExecuted: {
-                            onDone()
-                        }
-                    )
-                } onUpdateDate: { date in
-                    let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                    homeStore.send(.setChatNotificationTimeStamp(sentAt: date))
-                }
+                ConversationsView()
+                    .configureTitle("Inbox")
             }
         }
         .environmentObject(homeNavigationVm)
@@ -372,7 +363,10 @@ struct HomeTab: View {
             style: .large,
             options: $homeNavigationVm.openChatOptions,
             content: { openChat in
-                ChatNavigation(openChat: openChat) { type, onDone in
+                ChatNavigation(
+                    openChat: openChat.chatTopicWrapper ?? .init(topic: nil, onTop: false),
+                    conversation: openChat.conversation
+                ) { type, onDone in
                     AskForPushNotifications(
                         text: L10n.chatActivateNotificationsBody,
                         onActionExecuted: {

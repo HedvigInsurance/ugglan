@@ -74,59 +74,56 @@ public struct ChatNavigation<Content: View>: View {
     @StateObject var router = Router()
     @StateObject var chatNavigationViewModel = ChatNavigationViewModel()
     let openChat: ChatTopicWrapper
+    let conversation: Conversation?
     @ViewBuilder var redirectView: (_ type: ChatRedirectViewType, _ onDone: @escaping () -> Void) -> Content
     var onUpdateDate: (Date) -> Void
     public init(
         openChat: ChatTopicWrapper,
+        conversation: Conversation?,
         @ViewBuilder redirectView: @escaping (_ type: ChatRedirectViewType, _ onDone: @escaping () -> Void) -> Content,
         onUpdateDate: @escaping (Date) -> Void
     ) {
         self.openChat = openChat
+        self.conversation = conversation
         self.redirectView = redirectView
         self.onUpdateDate = onUpdateDate
-
     }
 
     public var body: some View {
-        if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
-            ConversationsView()
-                .configureTitle("Inbox")
-        } else {
-            RouterHost(router: router, options: .navigationType(type: .large)) {
-                ChatScreen(vm: .init(topicType: openChat.topic))
-                    .configureTitle(L10n.chatTitle)
-                    .withDismissButton()
-            }
-            .environmentObject(chatNavigationViewModel)
-            .detent(
-                item: $chatNavigationViewModel.isFilePresented,
-                style: .large
-            ) { urlModel in
-                DocumentPreview(url: urlModel.url)
-                    .withDismissButton()
-                    .embededInNavigation()
-            }
-            .detent(
-                presented: $chatNavigationViewModel.isAskForPushNotificationsPresented,
-                style: .large
-            ) {
-                redirectView(.notification) {
-                    Task { @MainActor in
-                        chatNavigationViewModel.isAskForPushNotificationsPresented = false
-                    }
+        RouterHost(router: router, options: .navigationType(type: .large)) {
+            ChatScreen(vm: .init(topicType: openChat.topic))
+                .configureTitle(conversation?.title ?? L10n.chatTitle)
+                .withDismissButton()
+        }
+        .environmentObject(chatNavigationViewModel)
+        .detent(
+            item: $chatNavigationViewModel.isFilePresented,
+            style: .large
+        ) { urlModel in
+            DocumentPreview(url: urlModel.url)
+                .withDismissButton()
+                .embededInNavigation()
+        }
+        .detent(
+            presented: $chatNavigationViewModel.isAskForPushNotificationsPresented,
+            style: .large
+        ) {
+            redirectView(.notification) {
+                Task { @MainActor in
+                    chatNavigationViewModel.isAskForPushNotificationsPresented = false
                 }
             }
-            .onChange(of: chatNavigationViewModel.dateOfLastMessage) { value in
-                if let value = value {
-                    self.onUpdateDate(value)
-                }
+        }
+        .onChange(of: chatNavigationViewModel.dateOfLastMessage) { value in
+            if let value = value {
+                self.onUpdateDate(value)
             }
         }
     }
 }
 
 #Preview{
-    ChatNavigation(openChat: .init(topic: nil, onTop: true)) { type, onDone in
+    ChatNavigation(openChat: .init(topic: nil, onTop: true), conversation: nil) { type, onDone in
         EmptyView()
     } onUpdateDate: { _ in
 
