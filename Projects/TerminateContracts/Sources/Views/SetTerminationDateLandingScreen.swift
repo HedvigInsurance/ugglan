@@ -24,13 +24,13 @@ struct SetTerminationDateLandingScreen: View {
                 .hFormTitle(
                     title: .init(
                         .small,
-                        .title3,
+                        .body2,
                         L10n.terminationFlowCancellationTitle,
                         alignment: .leading
                     ),
                     subTitle: .init(
                         .small,
-                        .title3,
+                        .body2,
                         vm.titleText
                     )
                 )
