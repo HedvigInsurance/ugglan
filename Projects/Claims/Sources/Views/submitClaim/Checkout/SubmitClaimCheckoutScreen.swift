@@ -206,7 +206,7 @@ public struct SubmitClaimCheckoutScreen: View {
                         .padding(.bottom, 4)
                 }
                 .withSelectedAccessory(checkoutStep.selectedPayoutMethod == element && shouldShowCheckmark)
-                .cornerRadius(.defaultCornerRadius)
+                .cornerRadius(.cornerRadiusL)
                 .padding(.bottom, 8)
             }
         }

@@ -184,7 +184,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                 } content: {
                     hText(L10n.openChat, style: .body1)
                 }
-                .cornerRadius(.defaultCornerRadius)
+                .cornerRadius(.cornerRadiusL)
             }
             .sectionContainerStyle(.transparent)
             HStack {
@@ -197,10 +197,10 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                             .padding(16)
                     }
                     .frame(maxWidth: .infinity)
-                    .cornerRadius(.defaultCornerRadius)
+                    .cornerRadius(.cornerRadiusL)
                     .overlay(
                         RoundedRectangle(
-                            cornerRadius: .defaultCornerRadius
+                            cornerRadius: .cornerRadiusL
                         )
                         .stroke(hTextColor.Opaque.primary, lineWidth: 1)
                     )
@@ -215,10 +215,10 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                             .padding(16)
                     }
                     .frame(maxWidth: .infinity)
-                    .cornerRadius(.defaultCornerRadius)
+                    .cornerRadius(.cornerRadiusL)
                     .overlay(
                         RoundedRectangle(
-                            cornerRadius: .defaultCornerRadius
+                            cornerRadius: .cornerRadiusL
                         )
                         .stroke(hTextColor.Opaque.primary, lineWidth: 1)
                     )

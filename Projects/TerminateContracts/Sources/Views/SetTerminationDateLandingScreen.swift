@@ -41,7 +41,6 @@ struct SetTerminationDateLandingScreen: View {
                             displayTerminationDateField
                             displayImportantInformation
                         }
-
                         hSection {
                             VStack(spacing: 16) {
                                 hButton.LargeButton(type: .primary) {
@@ -56,6 +55,7 @@ struct SetTerminationDateLandingScreen: View {
                     }
                     .padding(.vertical, 16)
                 }
+                .hUseNewDesign
         }
     }
 
@@ -118,7 +118,6 @@ struct SetTerminationDateLandingScreen: View {
                         hCoreUIAssets.chevronDownSmall.view
                             .frame(width: 24, height: 24)
                     }
-                    .hUseNewDesign
                 }
             }
         }
@@ -129,8 +128,8 @@ struct SetTerminationDateLandingScreen: View {
         if vm.terminationDate != nil {
             hSection {
                 hRow {
-                    VStack(spacing: 16) {
-                        VStack(spacing: 16) {
+                    VStack(alignment: .leading, spacing: 16) {
+                        VStack(alignment: .leading, spacing: 16) {
                             VStack(alignment: .leading, spacing: 4) {
                                 hText(L10n.terminationFlowImportantInformationTitle)
                                 hText(
@@ -140,13 +139,10 @@ struct SetTerminationDateLandingScreen: View {
                                 .foregroundColor(hTextColor.Opaque.secondary)
                             }
                         }
-
                         HStack {
                             hRow {
                                 hText(L10n.terminationFlowIUnderstandText)
-                                    .foregroundColor(
-                                        hColorScheme(light: hTextColor.Opaque.primary, dark: hTextColor.Opaque.negative)
-                                    )
+                                    .foregroundColor(hTextColor.Opaque.primary)
                                 Spacer()
                                 if vm.hasAgreedToTerms {
                                     HStack {
@@ -160,7 +156,7 @@ struct SetTerminationDateLandingScreen: View {
                                     }
                                     .frame(width: 24, height: 24)
                                     .background(
-                                        RoundedRectangle(cornerRadius: 6)
+                                        RoundedRectangle(cornerRadius: .cornerRadiusXS)
                                             .fill(hSignalColor.Green.element)
                                     )
                                 } else {
@@ -168,7 +164,7 @@ struct SetTerminationDateLandingScreen: View {
                                         .fill(hBackgroundColor.clear)
                                         .frame(width: 24, height: 24)
                                         .overlay(
-                                            RoundedRectangle(cornerRadius: 6)
+                                            RoundedRectangle(cornerRadius: .cornerRadiusXS)
                                                 .strokeBorder(
                                                     hBorderColor.secondary,
                                                     lineWidth: 2
@@ -180,15 +176,13 @@ struct SetTerminationDateLandingScreen: View {
                                 }
                             }
                             .background(
-                                Squircle.default()
+                                RoundedRectangle(cornerRadius: .cornerRadiusS)
                                     .fill(
-                                        hColorScheme(
-                                            light: hSurfaceColor.Opaque.primary,
-                                            dark: hGrayscaleOpaqueColor.greyScale100
-                                        )
+                                        hFillColor.Translucent.negative
                                     )
                             )
                         }
+                        .colorScheme(.light)
                     }
                 }
                 .onTapGesture {

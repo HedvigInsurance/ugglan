@@ -64,7 +64,7 @@ struct OTPCodeDisplay: View {
                     .animation(.interpolatingSpring(stiffness: 400, damping: 20))
                 }
                 .overlay(
-                    RoundedRectangle(cornerRadius: .defaultCornerRadius)
+                    RoundedRectangle(cornerRadius: .cornerRadiusL)
                         .strokeBorder(digitStroke(focused: focused), lineWidth: 1)
                         .animation(.easeInOut)
                 )

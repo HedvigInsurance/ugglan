@@ -11,7 +11,7 @@ struct hFieldBackgroundModifier: ViewModifier {
                     .padding(.horizontal, 16)
                     .background(getBackgroundColor())
                     .animation(.easeOut, value: animate)
-                    .clipShape(RoundedRectangle(cornerSize: .init(width: 12, height: 12)))
+                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
             }
         } else {
             VStack(alignment: .leading, spacing: 0) {
