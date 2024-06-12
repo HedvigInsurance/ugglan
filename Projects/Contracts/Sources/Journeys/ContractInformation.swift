@@ -43,7 +43,7 @@ struct ContractInformationView: View {
                                     }
                                 }
                                 .fixedSize()
-                                .foregroundColor(hTextColor.secondary)
+                                .foregroundColor(hTextColor.Opaque.secondary)
                             })
                         }
                         .withoutHorizontalPadding
@@ -102,7 +102,7 @@ struct ContractInformationView: View {
                 hText(L10n.coinsuredEditTitle)
                 Spacer()
                 hText(L10n.changeAddressYouPlus(contract.coInsured.count))
-                    .foregroundColor(hTextColor.secondary)
+                    .foregroundColor(hTextColor.Opaque.secondary)
             }
         }
     }
@@ -194,7 +194,7 @@ struct ContractInformationView: View {
 
         CoInsuredField(
             accessoryView: getAccessorytView(contract: contract, coInsured: coInsured)
-                .foregroundColor(hSignalColor.amberElement),
+                .foregroundColor(hSignalColor.Amber.element),
             includeStatusPill: statusPill,
             date: coInsured.terminatesOn ?? coInsured.activatesOn,
             title: L10n.contractCoinsured,
@@ -324,7 +324,7 @@ struct ContractInformationView: View {
                             }
                         } content: {
                             hText(L10n.terminationButton, style: .body)
-                                .foregroundColor(hTextColor.secondary)
+                                .foregroundColor(hTextColor.Opaque.secondary)
                         }
                         .trackLoading(TerminationContractStore.self, action: .getInitialStep)
                     }

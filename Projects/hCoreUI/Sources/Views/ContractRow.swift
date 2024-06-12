@@ -111,8 +111,8 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             }
         } else {
             hColorScheme(
-                light: hTextColor.secondary,
-                dark: hGrayscaleColor.greyScale900
+                light: hTextColor.Opaque.secondary,
+                dark: hGrayscaleOpaqueColor.greyScale900
             )
         }
     }
@@ -121,7 +121,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         Image(uiImage: hCoreUIAssets.symbol.image.withRenderingMode(.alwaysTemplate))
             .resizable()
             .frame(width: 24, height: 24)
-            .foregroundColor(hTextColor.primary)
+            .foregroundColor(hTextColor.Opaque.primary)
             .colorScheme(.dark)
     }
 
@@ -151,7 +151,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             Spacer()
             HStack {
                 hText(contractDisplayName)
-                    .foregroundColor(hTextColor.primary)
+                    .foregroundColor(hTextColor.Opaque.primary)
                     .colorScheme(.dark)
                 Spacer()
             }
@@ -164,7 +164,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         .background(
             background
         )
-        .border(hBorderColor.translucentOne, width: 0.5)
+        .border(hBorderColor.primary, width: 0.5)
         .colorScheme(.light)
         .clipShape(Squircle.default())
         .hShadow()
@@ -181,8 +181,8 @@ private struct StatusPill: View {
         }
         .padding(.vertical, 4)
         .padding(.horizontal, 10)
-        .foregroundColor(hTextColor.primary).colorScheme(.dark)
-        .background(hTextColor.tertiaryTranslucent).colorScheme(.light)
+        .foregroundColor(hTextColor.Opaque.primary).colorScheme(.dark)
+        .background(hTextColor.Translucent.tertiary).colorScheme(.light)
         .cornerRadius(8)
     }
 }

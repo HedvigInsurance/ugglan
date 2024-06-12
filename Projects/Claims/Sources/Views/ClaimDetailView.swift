@@ -174,10 +174,10 @@ public struct ClaimDetailView: View {
     private func claimDetailsRow(title: String, value: String) -> some View {
         HStack {
             hText(title)
-                .foregroundColor(hTextColor.secondary)
+                .foregroundColor(hTextColor.Opaque.secondary)
             Spacer()
             hText(value)
-                .foregroundColor(hTextColor.secondary)
+                .foregroundColor(hTextColor.Opaque.secondary)
         }
     }
 

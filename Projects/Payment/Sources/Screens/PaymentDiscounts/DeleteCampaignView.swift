@@ -29,7 +29,7 @@ struct DeleteCampaignView: View {
                                 Image(uiImage: hCoreUIAssets.lockSmall.image)
                                     .resizable()
                                     .frame(width: 16, height: 16)
-                                    .foregroundColor(hTextColor.primary)
+                                    .foregroundColor(hTextColor.Opaque.primary)
 
                             }
                             VStack(spacing: 8) {

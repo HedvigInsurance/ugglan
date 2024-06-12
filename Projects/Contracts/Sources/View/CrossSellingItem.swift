@@ -27,7 +27,7 @@ struct CrossSellingItem: View {
                 .aspectRatio(contentMode: .fill)
             HStack(spacing: 0) {
                 VStack(alignment: .leading, spacing: 0) {
-                    hText(crossSell.title, style: .standard).foregroundColor(hTextColor.primary)
+                    hText(crossSell.title, style: .standard).foregroundColor(hTextColor.Opaque.primary)
                     MarqueeText(
                         text: crossSell.description,
                         font: Fonts.fontFor(style: .standardSmall),
@@ -35,14 +35,14 @@ struct CrossSellingItem: View {
                         rightFade: 3,
                         startDelay: 2
                     )
-                    .foregroundColor(hTextColor.secondary)
+                    .foregroundColor(hTextColor.Opaque.secondary)
                 }
                 Spacer()
                 hButton.MediumButton(type: .primaryAlt) {
                     openExternal()
                 } content: {
                     hText(L10n.crossSellGetPrice)
-                        .foregroundColor(hTextColor.primary).colorScheme(.light)
+                        .foregroundColor(hTextColor.Opaque.primary).colorScheme(.light)
                 }
                 .fixedSize(horizontal: true, vertical: true)
             }

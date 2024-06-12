@@ -5,13 +5,13 @@ extension Message {
     @hColorBuilder
     var bgColor: some hColor {
         if case .failed = status {
-            hSignalColor.redHighlight
+            hSignalColor.Red.highlight
         } else {
             switch self.sender {
             case .hedvig:
-                hFillColor.opaqueOne
+                hSurfaceColor.Opaque.primary
             case .member:
-                hSignalColor.blueFill
+                hSignalColor.Blue.fill
             }
         }
     }
@@ -19,9 +19,9 @@ extension Message {
     var textColor: some hColor {
         switch self.sender {
         case .hedvig:
-            hTextColor.primary
+            hTextColor.Opaque.primary
         case .member:
-            hTextColor.primary.colorFor(.light, .elevated)
+            hTextColor.Opaque.primary.colorFor(.light, .elevated)
         }
     }
 

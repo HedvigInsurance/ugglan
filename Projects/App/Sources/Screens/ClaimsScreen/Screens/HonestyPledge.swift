@@ -23,16 +23,16 @@ struct SlideTrack: View {
         }
         .frame(height: 58)
         .frame(maxWidth: .infinity)
-        .background(hFillColor.opaqueTwo)
+        .background(hSurfaceColor.Opaque.secondary)
         .cornerRadius(29)
     }
 
     @hColorBuilder
     private var getLabelColor: some hColor {
         if didFinished {
-            hTextColor.disabled
+            hTextColor.Opaque.disabled
         } else {
-            hTextColor.secondary
+            hTextColor.Opaque.secondary
         }
     }
 }
@@ -73,7 +73,7 @@ struct SlideDragger: View {
                                     .transition(.asymmetric(insertion: .scale, removal: .opacity))
                             }
                         }
-                        .foregroundColor(hTextColor.negative)
+                        .foregroundColor(hTextColor.Opaque.negative)
                         .frame(width: SlideDragger.size.width, height: SlideDragger.size.height)
                         .background(getIconBackgroundColor)
                         .colorScheme(.light)
@@ -96,9 +96,9 @@ struct SlideDragger: View {
     @hColorBuilder
     private var getIconBackgroundColor: some hColor {
         if didFinished {
-            hSignalColor.greenElement
+            hSignalColor.Green.element
         } else {
-            hTextColor.primary
+            hTextColor.Opaque.primary
         }
     }
 }
@@ -192,11 +192,11 @@ struct HonestyPledge: View {
         hForm {
             VStack(alignment: .leading, spacing: 0) {
                 L10n.honestyPledgeTitle.hText(.body)
-                    .foregroundColor(hTextColor.primary)
+                    .foregroundColor(hTextColor.Opaque.primary)
                     .padding(.bottom, 8)
                 HStack {
                     L10n.honestyPledgeDescription.hText(.body)
-                        .foregroundColor(hTextColor.secondary)
+                        .foregroundColor(hTextColor.Opaque.secondary)
                 }
                 .padding(.bottom, 32)
 
@@ -210,7 +210,7 @@ struct HonestyPledge: View {
                     router.dismiss()
                 } content: {
                     L10n.generalCancelButton.hText(.body)
-                        .foregroundColor(hTextColor.primary)
+                        .foregroundColor(hTextColor.Opaque.primary)
                 }
 
             }

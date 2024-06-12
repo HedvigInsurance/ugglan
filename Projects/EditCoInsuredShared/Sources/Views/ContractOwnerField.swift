@@ -38,7 +38,7 @@ public struct ContractOwnerField: View {
                         .foregroundColor(getTitleColor)
                     Spacer()
                     Image(uiImage: hCoreUIAssets.lockSmall.image)
-                        .foregroundColor(hTextColor.tertiary)
+                        .foregroundColor(hTextColor.Opaque.tertiary)
                 }
                 hText(SSN, style: .footnote)
                     .foregroundColor(getSubTitleColor)
@@ -54,18 +54,18 @@ public struct ContractOwnerField: View {
     @hColorBuilder
     var getTitleColor: some hColor {
         if enabled ?? false {
-            hTextColor.primary
+            hTextColor.Opaque.primary
         } else {
-            hTextColor.tertiary
+            hTextColor.Opaque.tertiary
         }
     }
 
     @hColorBuilder
     var getSubTitleColor: some hColor {
         if enabled ?? false {
-            hTextColor.secondary
+            hTextColor.Opaque.secondary
         } else {
-            hTextColor.tertiary
+            hTextColor.Opaque.tertiary
         }
     }
 }

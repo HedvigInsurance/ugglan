@@ -30,11 +30,11 @@ struct CrossSellingStack: View {
                                 CrossSellingUnseenCircle()
                                 hText(L10n.InsuranceTab.CrossSells.title)
                                     .padding(.leading, 2)
-                                    .foregroundColor(hTextColor.primary)
+                                    .foregroundColor(hTextColor.Opaque.primary)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                             }
                             Divider()
-                                .overlay(hFillColor.translucentOne)
+                                .overlay(hSurfaceColor.Opaque.primary)
                                 .frame(height: 1)
                         }
                     }

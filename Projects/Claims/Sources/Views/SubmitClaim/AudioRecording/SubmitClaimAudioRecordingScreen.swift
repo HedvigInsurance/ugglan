@@ -60,12 +60,12 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                 question in
                                 HStack {
                                     hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
-                                        .foregroundColor(hTextColor.primary)
+                                        .foregroundColor(hTextColor.Opaque.primary)
                                 }
                                 .padding(16)
                                 .background(
                                     Squircle.default()
-                                        .fill(hFillColor.opaqueOne)
+                                        .fill(hSurfaceColor.Opaque.primary)
                                 )
                                 .padding(.trailing, 88)
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -83,12 +83,12 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                 question in
                                 HStack {
                                     hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
-                                        .foregroundColor(hTextColor.primary)
+                                        .foregroundColor(hTextColor.Opaque.primary)
                                 }
                                 .padding(16)
                                 .background(
                                     Squircle.default()
-                                        .fill(hFillColor.opaqueOne)
+                                        .fill(hSurfaceColor.Opaque.primary)
                                 )
                                 .padding(.trailing, 88)
                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -124,12 +124,12 @@ public struct SubmitClaimAudioRecordingScreen: View {
                             question in
                             HStack {
                                 hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
-                                    .foregroundColor(hTextColor.primary)
+                                    .foregroundColor(hTextColor.Opaque.primary)
                             }
                             .padding(16)
                             .background(
                                 Squircle.default()
-                                    .fill(hFillColor.opaqueOne)
+                                    .fill(hSurfaceColor.Opaque.primary)
                             )
                             .padding(.vertical, 12)
                             .padding(.trailing, 88)
@@ -145,12 +145,12 @@ public struct SubmitClaimAudioRecordingScreen: View {
                             question in
                             HStack {
                                 hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
-                                    .foregroundColor(hTextColor.primary)
+                                    .foregroundColor(hTextColor.Opaque.primary)
                             }
                             .padding(16)
                             .background(
                                 Squircle.default()
-                                    .fill(hFillColor.opaqueOne)
+                                    .fill(hSurfaceColor.Opaque.primary)
                             )
                             .padding(.vertical, 12)
                             .padding(.trailing, 88)
@@ -234,12 +234,12 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                             }
                                         } content: {
                                             hText(L10n.claimsUseTextInstead, style: .body)
-                                                .foregroundColor(hTextColor.primary)
+                                                .foregroundColor(hTextColor.Opaque.primary)
                                         }
 
                                     } else {
                                         hText(L10n.claimsStartRecordingLabel, style: .body)
-                                            .foregroundColor(hTextColor.primary)
+                                            .foregroundColor(hTextColor.Opaque.primary)
 
                                     }
                                 }
@@ -247,7 +247,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                 let minutesToString = String(format: "%02d", minutes)
                                 let secondsToString = String(format: "%02d", seconds)
                                 hText("\(minutesToString):\(secondsToString)", style: .body)
-                                    .foregroundColor(hTextColor.primary)
+                                    .foregroundColor(hTextColor.Opaque.primary)
                                     .onReceive(timer) { time in
                                         if ((seconds % 59) == 0) && seconds != 0 {
                                             minutes += 1
@@ -367,7 +367,7 @@ private class CustomTextView: UITextView, UITextViewDelegate {
             self.text = inputText.wrappedValue
             self.textColor = UIColor.black
         }
-        self.backgroundColor = UIColor(hFillColor.opaqueOne.colorFor(.light, .base).color)
+        self.backgroundColor = UIColor(hSurfaceColor.Opaque.primary.colorFor(.light, .base).color)
         let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
         let doneButton = UIBarButtonItem(
             barButtonSystemItem: .done,

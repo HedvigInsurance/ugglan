@@ -51,7 +51,7 @@ struct PaymentsDiscountsView: View {
                 }
                 if data.discounts.count == 0 {
                     hText(L10n.paymentsNoCampaignCodeAdded)
-                        .foregroundColor(hTextColor.secondary)
+                        .foregroundColor(hTextColor.Opaque.secondary)
                         .padding(.bottom, 16)
                 }
             }
@@ -83,14 +83,14 @@ struct PaymentsDiscountsView: View {
                         .padding(.vertical, 4)
                         .background(
                             RoundedRectangle(cornerRadius: 8)
-                                .fill(hFillColor.opaqueOne)
+                                .fill(hSurfaceColor.Opaque.primary)
 
                         )
                     Spacer()
                     hText(
                         "\(data.referralsData.allReferralDiscount.formattedNegativeAmount)/\(L10n.monthAbbreviationLabel)"
                     )
-                    .foregroundColor(hTextColor.secondary)
+                    .foregroundColor(hTextColor.Opaque.secondary)
                 }
             }
             .padding(.bottom, -16)
@@ -208,7 +208,7 @@ struct ReferralView: View {
             HStack(spacing: 8) {
                 Circle().fill(referral.statusColor).frame(width: 14, height: 14)
                 VStack(alignment: .leading) {
-                    hText(referral.name).foregroundColor(hTextColor.primary)
+                    hText(referral.name).foregroundColor(hTextColor.Opaque.primary)
                 }
                 Spacer()
                 hText(referral.discountLabelText).foregroundColor(referral.discountLabelColor)
@@ -217,7 +217,7 @@ struct ReferralView: View {
                 HStack(spacing: 8) {
                     Circle().fill(Color.clear).frame(width: 14, height: 14)
                     hText(L10n.ReferallsInviteeStates.invitedYou, style: .standardSmall)
-                        .foregroundColor(hTextColor.secondary)
+                        .foregroundColor(hTextColor.Opaque.secondary)
                 }
             }
         }

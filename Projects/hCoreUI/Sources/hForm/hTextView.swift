@@ -61,7 +61,7 @@ public struct hTextView: View {
                 .frame(minHeight: 100)
                 if errorMessage != nil {
                     hCoreUIAssets.warningTriangleFilled.view
-                        .foregroundColor(hSignalColor.amberElement)
+                        .foregroundColor(hSignalColor.Amber.element)
                         .padding(.top, 12)
                         .padding(.trailing, 16)
                 }
@@ -72,7 +72,7 @@ public struct hTextView: View {
                     }
             }
             if let errorMessage {
-                hText(errorMessage, style: .standardSmall).foregroundColor(hTextColor.secondary)
+                hText(errorMessage, style: .standardSmall).foregroundColor(hTextColor.Opaque.secondary)
                     .padding(.horizontal, 16)
             }
         }
@@ -82,9 +82,9 @@ public struct hTextView: View {
     @hColorBuilder
     var getTextColor: some hColor {
         if selectedValue.count < maxCharacters {
-            hTextColor.tertiary
+            hTextColor.Opaque.tertiary
         } else {
-            hSignalColor.redElement
+            hSignalColor.Red.element
         }
     }
 
@@ -109,7 +109,7 @@ public struct hTextView: View {
         let vc = hHostingController(rootView: view, contentName: "EnterCommentTextView")
         vc.modalPresentationStyle = .overFullScreen
         vc.enableHero()
-        vc.view.backgroundColor = hGrayscaleColor.greyScale1000.colorFor(.dark, .base).color.uiColor()
+        vc.view.backgroundColor = hGrayscaleOpaqueColor.black.colorFor(.dark, .base).color.uiColor()
 
         continueAction.execute = { [weak vc] in
             self.selectedValue = value
@@ -338,9 +338,9 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
     @hColorBuilder
     var getTextColor: some hColor {
         if value.count < maxCharacters {
-            hTextColor.tertiary
+            hTextColor.Opaque.tertiary
         } else {
-            hSignalColor.redElement
+            hSignalColor.Red.element
         }
     }
 }
@@ -391,7 +391,8 @@ private struct SwiftUITextView: UIViewRepresentable {
             }
             textView.colorSchema = colorScheme
         }
-        uiView.backgroundColor = hFillColor.opaqueOne.colorFor(.init(.init(colorScheme))!, .base).color.uiColor()
+        uiView.backgroundColor = hSurfaceColor.Opaque.primary.colorFor(.init(.init(colorScheme))!, .base).color
+            .uiColor()
 
     }
 }
@@ -499,12 +500,12 @@ private class TextView: UITextView, UITextViewDelegate {
 
     private func getTextColor() -> UIColor {
         if text.isEmpty || placeholder == text {
-            return hTextColor.tertiary.colorFor(.init(.init(colorSchema))!, .base).color.uiColor()
+            return hTextColor.Opaque.tertiary.colorFor(.init(.init(colorSchema))!, .base).color.uiColor()
         } else {
             if disabled {
-                return hTextColor.secondaryTranslucent.colorFor(.init(.init(colorSchema))!, .base).color.uiColor()
+                return hTextColor.Translucent.secondary.colorFor(.init(.init(colorSchema))!, .base).color.uiColor()
             }
-            return hTextColor.primary.colorFor(.init(.init(colorSchema))!, .base).color.uiColor()
+            return hTextColor.Opaque.primary.colorFor(.init(.init(colorSchema))!, .base).color.uiColor()
         }
     }
 

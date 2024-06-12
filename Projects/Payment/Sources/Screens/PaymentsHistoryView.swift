@@ -27,7 +27,7 @@ public struct PaymentHistoryView: View {
                         Image(uiImage: hCoreUIAssets.infoIconFilled.image)
                             .resizable()
                             .frame(width: 24, height: 24)
-                            .foregroundColor(hSignalColor.blueElement)
+                            .foregroundColor(hSignalColor.Blue.element)
                         hText(L10n.paymentsNoHistoryData)
                             .multilineTextAlignment(.center)
                     }
@@ -59,7 +59,7 @@ public struct PaymentHistoryView: View {
 
                                             }
                                             Image(uiImage: hCoreUIAssets.chevronRightSmall.image)
-                                                .foregroundColor(hTextColor.secondary)
+                                                .foregroundColor(hTextColor.Opaque.secondary)
                                             if month.paymentData.status.hasFailed {
                                                 Spacer()
                                             }
@@ -69,7 +69,10 @@ public struct PaymentHistoryView: View {
                                         router.push(month.paymentData)
                                     }
                                     .foregroundColor(
-                                        getColor(hTextColor.secondary, hasFailed: month.paymentData.status.hasFailed)
+                                        getColor(
+                                            hTextColor.Opaque.secondary,
+                                            hasFailed: month.paymentData.status.hasFailed
+                                        )
                                     )
                                     .padding(.horizontal, -16)
                                 }
@@ -96,7 +99,7 @@ public struct PaymentHistoryView: View {
     @hColorBuilder
     private func getColor(_ baseColor: some hColor, hasFailed: Bool) -> some hColor {
         if hasFailed {
-            hSignalColor.redElement
+            hSignalColor.Red.element
         } else {
             baseColor
         }

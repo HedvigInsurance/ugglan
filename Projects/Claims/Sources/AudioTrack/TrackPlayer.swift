@@ -11,10 +11,10 @@ struct TrackPlayer: View {
             Image(uiImage: paused ? hCoreUIAssets.play.image : hCoreUIAssets.pause.image)
                 .resizable()
                 .frame(width: 24, height: 24)
-                .foregroundColor(hTextColor.primary)
+                .foregroundColor(hTextColor.Opaque.primary)
         default:
             Image(uiImage: hCoreUIAssets.play.image)
-                .foregroundColor(hTextColor.primary)
+                .foregroundColor(hTextColor.Opaque.primary)
         }
     }
 
@@ -24,14 +24,14 @@ struct TrackPlayer: View {
                 if audioPlayer.playbackState == .loading {
                     ActivityIndicator(
                         style: .large,
-                        color: hTextColor.primary
+                        color: hTextColor.Opaque.primary
                     )
-                    .foregroundColor(hTextColor.primary)
+                    .foregroundColor(hTextColor.Opaque.primary)
                     .transition(.opacity.animation(.easeOut))
                 } else {
                     image
                     let waveform = WaveformView(
-                        stripeColor: hTextColor.primary,
+                        stripeColor: hTextColor.Opaque.primary,
                         sampleHeights: audioPlayer.sampleHeights
                     )
                     .frame(maxWidth: .infinity)
@@ -50,7 +50,7 @@ struct TrackPlayer: View {
             .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: .defaultCornerRadius)
-                    .fill(hFillColor.opaqueOne)
+                    .fill(hSurfaceColor.Opaque.primary)
             )
             .onTapGesture {
                 audioPlayer.togglePlaying()

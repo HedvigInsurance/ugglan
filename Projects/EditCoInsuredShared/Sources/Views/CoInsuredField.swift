@@ -52,7 +52,7 @@ public struct CoInsuredField<Content: View>: View {
                     accessoryView
                 }
                 hText(displaySubTitle, style: .standardSmall)
-                    .foregroundColor(hTextColor.secondary)
+                    .foregroundColor(hTextColor.Opaque.secondary)
                     .fixedSize()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -86,9 +86,9 @@ extension StatusPillType {
     var textColor: some hColor {
         switch self {
         case .added:
-            hSignalColor.amberText
+            hSignalColor.Amber.text
         case .deleted:
-            hSignalColor.redText
+            hSignalColor.Red.text
         }
     }
 
@@ -96,9 +96,9 @@ extension StatusPillType {
     var backgroundColor: some hColor {
         switch self {
         case .added:
-            hSignalColor.amberFill
+            hSignalColor.Amber.fill
         case .deleted:
-            hSignalColor.redFill
+            hSignalColor.Red.fill
         }
     }
 }

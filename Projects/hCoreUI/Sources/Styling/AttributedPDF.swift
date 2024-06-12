@@ -11,7 +11,8 @@ public struct AttributedPDF {
         let attributes =
             [
                 NSAttributedString.Key.font: Fonts.fontFor(style: .standard),
-                NSAttributedString.Key.foregroundColor: hTextColor.primary.colorFor(schema, .base).color.uiColor(),
+                NSAttributedString.Key.foregroundColor: hTextColor.Opaque.primary.colorFor(schema, .base).color
+                    .uiColor(),
             ]
 
         let baseText = title
@@ -23,7 +24,7 @@ public struct AttributedPDF {
         attributedString.addAttribute(.baselineOffset, value: 6, range: rangeOfPdf)
         attributedString.addAttribute(
             .foregroundColor,
-            value: hTextColor.primary.colorFor(schema, .base).color.uiColor(),
+            value: hTextColor.Opaque.primary.colorFor(schema, .base).color.uiColor(),
             range: rangeOfPdf
         )
         return attributedString

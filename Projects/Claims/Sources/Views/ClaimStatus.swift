@@ -48,8 +48,8 @@ struct ClaimPills: View {
             if claim.status == .reopened {
                 hPillFill(
                     text: claim.status.title,
-                    textColor: hSignalColor.amberText,
-                    backgroundColor: hSignalColor.amberHighLight
+                    textColor: hSignalColor.Amber.text,
+                    backgroundColor: hSignalColor.Amber.highLight
                 )
             }
             hPillFill(
@@ -60,8 +60,8 @@ struct ClaimPills: View {
             if let payout = claim.payoutAmount {
                 hPillFill(
                     text: payout.formattedAmount,
-                    textColor: hSignalColor.blueText,
-                    backgroundColor: hSignalColor.blueHighLight
+                    textColor: hSignalColor.Blue.text,
+                    backgroundColor: hSignalColor.Blue.highLight
                 )
             }
         }
@@ -73,9 +73,9 @@ extension ClaimModel.ClaimOutcome {
     var textColor: some hColor {
         switch self {
         case .paid, .notCompensated, .notCovered:
-            hTextColor.negative
+            hTextColor.Opaque.negative
         case .none:
-            hColorScheme(light: hTextColor.primary, dark: hTextColor.negative)
+            hTextColor.Opaque.primary
         }
     }
 
@@ -83,9 +83,9 @@ extension ClaimModel.ClaimOutcome {
     var backgroundColor: some hColor {
         switch self {
         case .none:
-            hColorScheme(light: hFillColor.opaqueTwo, dark: hGrayscaleColor.greyScale400)
+            hSurfaceColor.Translucent.secondary
         case .paid, .notCompensated, .notCovered:
-            hTextColor.primary
+            hBackgroundColor.negative
         }
     }
 }

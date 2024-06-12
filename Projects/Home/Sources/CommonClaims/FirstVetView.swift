@@ -26,7 +26,7 @@ public struct FirstVetView: View {
                                     Spacer()
                                 }
                                 hText(partner.description ?? "")
-                                    .foregroundColor(hTextColor.secondary)
+                                    .foregroundColor(hTextColor.Opaque.secondary)
                                     .fixedSize(horizontal: false, vertical: true)
                                 hButton.MediumButton(type: .secondaryAlt) {
                                     if let url = URL(

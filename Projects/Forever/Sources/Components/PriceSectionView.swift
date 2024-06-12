@@ -41,7 +41,7 @@ struct PriceSectionView: View {
                         didPressInfo()
                     }
             }
-            .foregroundColor(hTextColor.secondary)
+            .foregroundColor(hTextColor.Opaque.secondary)
         }
         .onAppear {
             monthlyDiscount = .init(amount: monthlyDiscount.amount, currency: monthlyDiscount.currency)

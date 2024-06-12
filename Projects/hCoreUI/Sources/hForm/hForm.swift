@@ -118,7 +118,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                             hText(hFormTitle.title.text, style: hFormTitle.title.fontSize)
                             if let subTitle = hFormTitle.subTitle {
                                 hText(subTitle.text, style: subTitle.fontSize)
-                                    .foregroundColor(hTextColor.secondary)
+                                    .foregroundColor(hTextColor.Opaque.secondary)
                             }
                         }
                         .frame(maxWidth: .infinity, alignment: hFormTitle.title.alignment)
@@ -257,7 +257,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
 
     @hColorBuilder
     static func returnTintColor() -> some hColor {
-        hSignalColor.greenFill
+        hSignalColor.Green.fill
     }
 
     func recalculateHeight() {
@@ -312,7 +312,7 @@ struct hForm_Previews: PreviewProvider {
                     .background(Color.red)
             }
         }
-        .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hFillColor.opaqueOne))
+        .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary))
         .hFormTitle(title: .init(.small, .standard, "TITLE"))
     }
 }
