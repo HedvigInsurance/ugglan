@@ -9,7 +9,8 @@ extension DeepLink {
         let attributes = AttributeContainer(
             [
                 NSAttributedString.Key.font: Fonts.fontFor(style: .standard),
-                NSAttributedString.Key.foregroundColor: hTextColor.primary.colorFor(schema, .base).color.uiColor(),
+                NSAttributedString.Key.foregroundColor: hTextColor.Opaque.primary.colorFor(schema, .base).color
+                    .uiColor(),
             ]
         )
         let wholeText = wholeText(displayText: displayText).replacingOccurrences(of: displayText, with: "")
@@ -18,7 +19,7 @@ extension DeepLink {
         let deeplinkAttributes = AttributeContainer(
             [
                 NSAttributedString.Key.font: Fonts.fontFor(style: .standard),
-                NSAttributedString.Key.foregroundColor: hSignalColor.blueElement.colorFor(schema, .base).color
+                NSAttributedString.Key.foregroundColor: hSignalColor.Blue.element.colorFor(schema, .base).color
                     .uiColor(),
             ]
         )

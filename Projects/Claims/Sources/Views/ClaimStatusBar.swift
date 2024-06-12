@@ -11,74 +11,74 @@ struct ClaimStatusBar: View {
         switch status {
         case .submitted:
             if segment == .submitted {
-                hTextColor.primary
+                hTextColor.Opaque.primary
             } else {
-                hTextColor.tertiary
+                hTextColor.Opaque.tertiary
             }
         case .beingHandled:
             switch segment {
             case .submitted:
-                hTextColor.secondary
+                hTextColor.Opaque.secondary
             case .beingHandled:
-                hTextColor.primary
+                hTextColor.Opaque.primary
             default:
-                hTextColor.tertiary
+                hTextColor.Opaque.tertiary
             }
         case .closed:
             if outcome == .paid {
-                hSignalColor.blueElement
+                hSignalColor.Blue.element
             } else {
-                hTextColor.primary
+                hTextColor.Opaque.primary
             }
         case .reopened:
             switch segment {
             case .submitted:
-                hTextColor.secondary
+                hTextColor.Opaque.secondary
             case .beingHandled:
-                hSignalColor.amberElement
+                hSignalColor.Amber.element
             default:
-                hTextColor.tertiary
+                hTextColor.Opaque.tertiary
             }
         default:
-            hTextColor.secondary
+            hTextColor.Opaque.secondary
         }
     }
 
     @hColorBuilder func textColor(segment: ClaimModel.ClaimStatus) -> some hColor {
         if outcome == .paid {
-            hTextColor.primary
+            hTextColor.Opaque.primary
         } else {
             switch status {
             case .submitted:
                 if segment == .submitted {
-                    hTextColor.primary
+                    hTextColor.Opaque.primary
                 } else {
-                    hTextColor.tertiary
+                    hTextColor.Opaque.tertiary
                 }
             case .beingHandled:
                 switch segment {
                 case .submitted:
-                    hTextColor.secondary
+                    hTextColor.Opaque.secondary
                 case .beingHandled:
-                    hTextColor.primary
+                    hTextColor.Opaque.primary
                 case .closed:
-                    hTextColor.tertiary
+                    hTextColor.Opaque.tertiary
                 default:
-                    hTextColor.tertiary
+                    hTextColor.Opaque.tertiary
                 }
             case .reopened:
                 switch segment {
                 case .submitted:
-                    hTextColor.secondary
+                    hTextColor.Opaque.secondary
                 case .beingHandled:
-                    hTextColor.primary
+                    hTextColor.Opaque.primary
                 default:
-                    hTextColor.tertiary
+                    hTextColor.Opaque.tertiary
                 }
             case .closed:
-                hTextColor.primary
+                hTextColor.Opaque.primary
             default:
-                hTextColor.secondary
+                hTextColor.Opaque.secondary
             }
         }
     }

@@ -22,12 +22,12 @@ public struct hCheckmarkField: View {
             hText(text, style: .title3)
             Spacer()
             if selected {
-                Image(uiImage: hCoreUIAssets.tick.image).resizable().frame(width: 24, height: 24)
+                Image(uiImage: hCoreUIAssets.checkmark.image).resizable().frame(width: 24, height: 24)
             }
         }
         .padding(.vertical, 20)
         .modifier(hFontModifier(style: .body))
-        .foregroundColor(hTextColor.primary)
+        .foregroundColor(hTextColor.Opaque.primary)
         .addFieldBackground(animate: $animate, error: $error)
         .addFieldError(animate: $animate, error: $error)
         .onTapGesture {

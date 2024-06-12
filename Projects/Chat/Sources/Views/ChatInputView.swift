@@ -10,7 +10,7 @@ struct ChatInputView: View {
     @State var height: CGFloat = 0
     var body: some View {
         VStack(spacing: 0) {
-            Rectangle().fill(hBorderColor.translucentOne).frame(height: 1)
+            Rectangle().fill(hBorderColor.primary).frame(height: 1)
             VStack(alignment: .leading, spacing: 8) {
                 HStack(alignment: .bottom) {
                     Button {
@@ -21,12 +21,12 @@ struct ChatInputView: View {
                         Image(uiImage: hCoreUIAssets.plusSmall.image)
                             .resizable().frame(width: 16, height: 16)
                             .rotationEffect(vm.showBottomMenu ? .degrees(45) : .zero)
-                            .foregroundColor(hTextColor.primary)
+                            .foregroundColor(hTextColor.Opaque.primary)
                             .padding(12)
                             .background(hBackgroundColor.primary)
                             .clipShape(RoundedRectangle(cornerRadius: 12))
                             .overlay(
-                                RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.opaqueOne, lineWidth: 0.5)
+                                RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.primary, lineWidth: 0.5)
                             )
                     }
                     HStack(alignment: .bottom, spacing: 0) {
@@ -52,7 +52,7 @@ struct ChatInputView: View {
                     .background(hBackgroundColor.primary)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.opaqueOne, lineWidth: 0.5)
+                        RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.primary, lineWidth: 0.5)
                     )
                 }
                 .padding([.horizontal, .top], 16)
@@ -63,7 +63,7 @@ struct ChatInputView: View {
                             bottomMenuItem(with: hCoreUIAssets.camera.image) {
                                 vm.openCamera()
                             }
-                            bottomMenuItem(with: hCoreUIAssets.pictures.image) {
+                            bottomMenuItem(with: hCoreUIAssets.image.image) {
                                 vm.openImagePicker()
                             }
                             bottomMenuItem(with: hCoreUIAssets.documents.image) {
@@ -96,11 +96,11 @@ struct ChatInputView: View {
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(height: 24)
-                        .foregroundColor(hTextColor.primary)
+                        .foregroundColor(hTextColor.Opaque.primary)
                 )
                 .frame(height: 80)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.opaqueOne, lineWidth: 0.5)
+                    RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.primary, lineWidth: 0.5)
                 )
         }
     }
@@ -276,11 +276,11 @@ private class CustomTextView: UITextView, UITextViewDelegate {
 
     private var editingTextColor: UIColor {
         let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
-        return hTextColor.primary.colorFor(colorScheme, .base).color.uiColor()
+        return hTextColor.Opaque.primary.colorFor(colorScheme, .base).color.uiColor()
     }
     private var placeholderTextColor: UIColor {
         let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
-        return hTextColor.secondary.colorFor(colorScheme, .base).color.uiColor()
+        return hTextColor.Opaque.secondary.colorFor(colorScheme, .base).color.uiColor()
     }
 }
 

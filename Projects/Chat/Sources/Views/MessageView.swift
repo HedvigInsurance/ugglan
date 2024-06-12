@@ -19,10 +19,10 @@ struct MessageView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .environment(\.colorScheme, .light)
             if case .failed = message.status {
-                hCoreUIAssets.infoIconFilled.view
+                hCoreUIAssets.infoFilled.view
                     .resizable()
                     .frame(width: 16, height: 16)
-                    .foregroundColor(hSignalColor.redElement)
+                    .foregroundColor(hSignalColor.Red.element)
             }
         }
     }
@@ -31,10 +31,10 @@ struct MessageView: View {
     private var messageContent: some View {
         HStack {
             if case .failed = message.status {
-                hCoreUIAssets.restart.view
+                hCoreUIAssets.refresh.view
                     .resizable()
                     .frame(width: 24, height: 24)
-                    .foregroundColor(hSignalColor.redElement)
+                    .foregroundColor(hSignalColor.Red.element)
             }
             switch message.type {
             case let .text(text):
@@ -42,8 +42,8 @@ struct MessageView: View {
                     config: .init(
                         text: text,
                         fontStyle: .standard,
-                        color: hTextColor.primary,
-                        linkColor: hTextColor.primary,
+                        color: hTextColor.Opaque.primary,
+                        linkColor: hTextColor.Opaque.primary,
                         linkUnderlineStyle: .thick,
                         maxWidth: 300,
                         onUrlClicked: { url in
@@ -70,8 +70,8 @@ struct MessageView: View {
                         config: .init(
                             text: url.absoluteString,
                             fontStyle: .standard,
-                            color: hTextColor.primary,
-                            linkColor: hTextColor.primary,
+                            color: hTextColor.Opaque.primary,
+                            linkColor: hTextColor.Opaque.primary,
                             linkUnderlineStyle: .thick,
                             maxWidth: 300,
                             onUrlClicked: { url in
@@ -101,8 +101,8 @@ struct LinkView: View {
                 config: .init(
                     text: error,
                     fontStyle: .standard,
-                    color: hTextColor.primary,
-                    linkColor: hTextColor.primary,
+                    color: hTextColor.Opaque.primary,
+                    linkColor: hTextColor.Opaque.primary,
                     linkUnderlineStyle: .thick,
                     maxWidth: 300,
                     onUrlClicked: { url in
@@ -115,13 +115,13 @@ struct LinkView: View {
             .transition(.opacity)
         } else if let model = vm.webMetaDataProviderData {
             VStack(spacing: 8) {
-                Image(uiImage: model.image ?? hCoreUIAssets.hedvigBigLogo.image)
+                Image(uiImage: model.image ?? hCoreUIAssets.helipadOutlined.image)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(height: 200)
                 VStack(spacing: 8) {
                     hText(model.title)
-                        .foregroundColor(hTextColor.primary)
+                        .foregroundColor(hTextColor.Opaque.primary)
                         .multilineTextAlignment(.leading)
                         .fixedSize(horizontal: false, vertical: true)
                     hButton.MediumButton(type: .primaryAlt) {
@@ -137,7 +137,7 @@ struct LinkView: View {
             .frame(width: 300)
         } else {
             ProgressView()
-                .foregroundColor(hTextColor.primary)
+                .foregroundColor(hTextColor.Opaque.primary)
                 .frame(width: 300, height: 200)
                 .transition(.opacity)
         }

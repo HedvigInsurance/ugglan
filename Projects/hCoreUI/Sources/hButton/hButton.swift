@@ -67,64 +67,81 @@ struct ButtonFilledStandardBackground: View {
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
     var configuration: SwiftUI.ButtonStyle.Configuration
-    @Environment(\.hUseNewDesign) var hUseNewDesign
+    @Environment(\.hUseLightMode) var hUseLightMode
+
     var body: some View {
+        if hUseLightMode {
+            buttonBackgroundColor
+                .colorScheme(.light)
+        } else {
+            buttonBackgroundColor
+        }
+    }
+
+    @ViewBuilder
+    var buttonBackgroundColor: some View {
         switch hButtonConfigurationType {
         case .primary:
             if configuration.isPressed {
-                hButtonColor.primaryHover
+                hButtonColor.Primary.hover.background {
+                    hButtonColor.Primary.resting
+                }
             } else if isEnabled {
-                hButtonColor.primaryDefault
+                hButtonColor.Primary.resting
             } else {
-                hButtonColor.primaryDisabled
+                hButtonColor.Primary.disabled
             }
         case .primaryAlt:
             if configuration.isPressed {
-                hButtonColor.primaryAltHover
+                hButtonColor.PrimaryAlt.hover.background {
+                    hButtonColor.PrimaryAlt.resting
+                }
             } else if isEnabled {
-                hButtonColor.primaryAltDefault
+                hButtonColor.PrimaryAlt.resting
             } else {
-                hButtonColor.primaryAltDisabled
+                hButtonColor.PrimaryAlt.disabled
             }
         case .secondary:
             if configuration.isPressed {
-                hButtonColor.secondaryHover
-            } else if isEnabled {
-                if hUseNewDesign {
-                    hColorScheme(
-                        light: Color(hexString: "#121212").opacity(0.045),
-                        dark: Color(hexString: "#FAFAFA").opacity(0.13)
-                    )
-                } else {
-                    hFillColor.translucentOne
+                hButtonColor.Secondary.hover.background {
+                    hButtonColor.Secondary.resting
                 }
+            } else if isEnabled {
+                hButtonColor.Secondary.resting
             } else {
-                hButtonColor.secondaryDisabled
+                hButtonColor.Secondary.disabled
             }
         case .secondaryAlt:
             if configuration.isPressed {
-                hButtonColor.secondaryAltHover
+                hButtonColor.SecondaryAlt.hover.background {
+                    hButtonColor.SecondaryAlt.resting
+                }
             } else if isEnabled {
-                hButtonColor.secondaryAltDefault
+                hButtonColor.SecondaryAlt.resting
             } else {
-                hButtonColor.secondaryAltDisabled
+                hButtonColor.SecondaryAlt.disabled
             }
         case .ghost:
             if configuration.isPressed {
-                hFillColor.translucentOne
+                hButtonColor.Ghost.hover.background {
+                    hButtonColor.Ghost.resting
+                }
             } else if isEnabled {
-                Color.clear
+                hButtonColor.Ghost.resting
+            } else {
+                hButtonColor.Ghost.disabled
             }
         case .alert:
             if configuration.isPressed {
-                hSignalColor.redElement
+                hSignalColor.Red.element
             } else if isEnabled {
-                hSignalColor.redElement
+                hSignalColor.Red.element
             } else {
-                hSignalColor.redElement.opacity(0.2)
+                hSignalColor.Red.element.opacity(0.2)
             }
         }
     }
+
 }
 
 struct ButtonFilledOverImageBackground: View {
@@ -133,9 +150,9 @@ struct ButtonFilledOverImageBackground: View {
 
     var body: some View {
         if isEnabled {
-            hButtonColor.primaryDefault
+            hButtonColor.Primary.resting
         } else {
-            hButtonColor.primaryDisabled
+            hButtonColor.Primary.disabled
         }
     }
 }
@@ -317,7 +334,6 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         @Environment(\.hButtonFilledStyle) var hButtonFilledStyle
         @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
         @Environment(\.hUseLightMode) var hUseLightMode
-        @Environment(\.hUseNewDesign) var hUseNewDesign
 
         var configuration: Configuration
 
@@ -325,41 +341,33 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
             switch hButtonConfigurationType {
             case .primary:
                 if isEnabled {
-                    if hUseNewDesign {
-                        hTextColor.primary.inverted
-                    } else {
-                        hTextColor.negative
-                    }
+                    hTextColor.Opaque.primary.inverted
                 } else {
-                    hTextColor.disabled
+                    hTextColor.Opaque.disabled
                 }
             case .primaryAlt:
                 if isEnabled {
-                    hTextColor.primary.colorFor(.light, .base)
+                    hTextColor.Opaque.primary
                 } else {
-                    hTextColor.disabled
+                    hTextColor.Opaque.disabled
                 }
             case .secondary, .ghost:
                 if isEnabled {
-                    if hUseNewDesign {
-                        hTextColor.primary
-                    } else {
-                        hTextColor.primary
-                    }
+                    hTextColor.Opaque.primary
                 } else {
-                    hTextColor.disabled
+                    hTextColor.Opaque.disabled
                 }
             case .secondaryAlt:
                 if isEnabled {
-                    hColorScheme(light: hTextColor.primary, dark: hTextColor.negative)
+                    hTextColor.Opaque.primary
                 } else {
-                    hTextColor.disabled
+                    hTextColor.Opaque.disabled
                 }
             case .alert:
                 if isEnabled {
-                    hColorScheme(light: hTextColor.negative, dark: hTextColor.primary)
+                    hTextColor.Opaque.primary
                 } else {
-                    hTextColor.secondary
+                    hTextColor.Opaque.secondary
                 }
             }
         }
@@ -392,7 +400,7 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
                     ZStack {
                         //create shadow - this create shadows for whole shape
                         Squircle.default()
-                            .fill(hTextColor.primary.inverted.opacity(0.01))
+                            .fill(hTextColor.Opaque.primary.inverted.opacity(0.01))
                             .hShadow()
 
                         //cut out shape from previously created shape - we only need shadows
@@ -424,9 +432,9 @@ struct ButtonOutlinedStyle: SwiftUI.ButtonStyle {
         var configuration: Configuration
 
         var body: some View {
-            LoaderOrContent(color: hTextColor.primary) {
+            LoaderOrContent(color: hTextColor.Opaque.primary) {
                 configuration.label
-                    .foregroundColor(hTextColor.primary)
+                    .foregroundColor(hTextColor.Opaque.primary)
                     .environment(\.defaultHTextStyle, .standard)
             }
         }
@@ -448,12 +456,12 @@ struct ButtonOutlinedStyle: SwiftUI.ButtonStyle {
             if colorScheme == .light {
                 content.overlay(
                     Squircle.default(lineWidth: configuration.isPressed ? 0 : 1)
-                        .stroke(hTextColor.primary, lineWidth: configuration.isPressed ? 0 : 1)
+                        .stroke(hTextColor.Opaque.primary, lineWidth: configuration.isPressed ? 0 : 1)
                 )
             } else {
                 content.overlay(
                     Squircle.default(lineWidth: 1)
-                        .stroke(hTextColor.primary, lineWidth: 1)
+                        .stroke(hTextColor.Opaque.primary, lineWidth: 1)
                 )
             }
         }

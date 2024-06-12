@@ -53,35 +53,35 @@ extension Referral {
     @hColorBuilder var statusColor: some hColor {
         switch self.status {
         case .active:
-            hSignalColor.greenElement
+            hSignalColor.Green.element
         case .pending:
-            hSignalColor.amberElement
+            hSignalColor.Amber.element
         case .terminated:
-            hSignalColor.redElement
+            hSignalColor.Red.element
         case .unknown:
-            hSignalColor.blueElement
+            hSignalColor.Blue.element
         }
     }
 
     @hColorBuilder var discountLabelColor: some hColor {
         switch self.status {
         case .active:
-            hTextColor.secondary
+            hTextColor.Opaque.secondary
         case .pending, .terminated:
-            hTextColor.tertiary
+            hTextColor.Opaque.tertiary
         case .unknown:
-            hTextColor.tertiary
+            hTextColor.Opaque.tertiary
         }
     }
 
     @hColorBuilder var invitedByOtherLabelColor: some hColor {
         switch self.status {
         case .active, .pending:
-            hTextColor.tertiary
+            hTextColor.Opaque.tertiary
         case .terminated:
-            hTextColor.tertiary
+            hTextColor.Opaque.tertiary
         case .unknown:
-            hTextColor.tertiary
+            hTextColor.Opaque.tertiary
         }
     }
 

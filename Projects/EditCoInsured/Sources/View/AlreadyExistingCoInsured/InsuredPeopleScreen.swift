@@ -87,7 +87,7 @@ struct InsuredPeopleScreen: View {
     @ViewBuilder
     func localAccessoryView(coInsured: CoInsuredModel) -> some View {
         Image(uiImage: hCoreUIAssets.closeSmall.image)
-            .foregroundColor(hTextColor.secondary)
+            .foregroundColor(hTextColor.Opaque.secondary)
             .onTapGesture {
                 editCoInsuredNavigation.coInsuredInputModel = .init(
                     actionType: .delete,
@@ -101,7 +101,7 @@ struct InsuredPeopleScreen: View {
     @ViewBuilder
     func existingAccessoryView(coInsured: CoInsuredModel) -> some View {
         Image(uiImage: hCoreUIAssets.closeSmall.image)
-            .foregroundColor(hTextColor.secondary)
+            .foregroundColor(hTextColor.Opaque.secondary)
             .onTapGesture {
                 editCoInsuredNavigation.coInsuredInputModel = .init(
                     actionType: .delete,
@@ -173,10 +173,10 @@ struct ConfirmChangesView: View {
                         if #available(iOS 16.0, *) {
                             hText(intentVm.intent.currentPremium.formattedAmount + L10n.perMonth)
                                 .strikethrough()
-                                .foregroundColor(hTextColor.secondary)
+                                .foregroundColor(hTextColor.Opaque.secondary)
                         } else {
                             hText(intentVm.intent.currentPremium.formattedAmount + L10n.perMonth)
-                                .foregroundColor(hTextColor.secondary)
+                                .foregroundColor(hTextColor.Opaque.secondary)
 
                         }
                         hText(intentVm.intent.newPremium.formattedAmount + L10n.perMonth)
@@ -187,7 +187,7 @@ struct ConfirmChangesView: View {
                         ),
                         style: .footnote
                     )
-                    .foregroundColor(hTextColor.secondary)
+                    .foregroundColor(hTextColor.Opaque.secondary)
                     .frame(maxWidth: .infinity, alignment: .trailing)
                 }
 

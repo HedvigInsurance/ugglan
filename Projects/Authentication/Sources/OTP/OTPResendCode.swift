@@ -24,13 +24,13 @@ struct ResendOTPCode: View {
                         hText(L10n.Login.SmediumButton.Active.resendCode, style: .subheadline)
                     }
                 }
-                .tint(hTextColor.primary)
+                .tint(hTextColor.Opaque.primary)
             } else {
                 hText(
                     vm.canResendAtText,
                     style: .subheadline
                 )
-                .foregroundColor(hTextColor.tertiary)
+                .foregroundColor(hTextColor.Opaque.tertiary)
                 .onReceive(vm.timer) { _ in
                     vm.updateText(state: otpVM)
                 }

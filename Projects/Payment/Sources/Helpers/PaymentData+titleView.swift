@@ -27,9 +27,9 @@ extension PaymentData {
     var titleColor: some hColor {
         switch status {
         case .addedtoFuture:
-            hSignalColor.redElement
+            hSignalColor.Red.element
         default:
-            hTextColor.primary
+            hTextColor.Opaque.primary
         }
     }
 }

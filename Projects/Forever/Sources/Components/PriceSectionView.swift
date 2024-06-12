@@ -34,14 +34,14 @@ struct PriceSectionView: View {
             hText(L10n.foreverTabMonthlyDiscount)
             HStack(spacing: 4) {
                 hText(monthlyDiscountAnimate.negative.formattedAmount + "/" + L10n.monthAbbreviationLabel)
-                Image(uiImage: hCoreUIAssets.infoIconFilled.image)
+                Image(uiImage: hCoreUIAssets.infoFilled.image)
                     .resizable()
                     .frame(width: 16, height: 16)
                     .onTapGesture {
                         didPressInfo()
                     }
             }
-            .foregroundColor(hTextColor.secondary)
+            .foregroundColor(hTextColor.Opaque.secondary)
         }
         .onAppear {
             monthlyDiscount = .init(amount: monthlyDiscount.amount, currency: monthlyDiscount.currency)

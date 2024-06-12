@@ -172,33 +172,32 @@ extension EnvironmentValues {
 }
 
 extension hSectionContainerStyle: ViewModifier {
-
     public func body(content: Content) -> some View {
         switch self {
         case .transparent:
             content
         case .opaque:
             content.background(
-                hFillColor.opaqueOne
+                hSurfaceColor.Opaque.primary
             )
             .clipShape(Squircle.default())
         case .caution:
             content.background(
-                hSignalColor.amberElement
+                hSignalColor.Amber.element
             )
             .border(
                 Color(UIColor.brand(.primaryBorderColor))
             )
         case .alert:
             content.background(
-                hSignalColor.amberFill
+                hSignalColor.Amber.fill
             )
             .clipShape(Squircle.default())
         case .black:
             content.background(
                 hColorScheme(
-                    light: hFillColor.offBlack,
-                    dark: hFillColor.opaqueOne
+                    light: hFillColor.Opaque.black,
+                    dark: hSurfaceColor.Opaque.primary
                 )
             )
             .clipShape(Squircle.default())
@@ -321,7 +320,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
                     header
                         .environment(\.defaultHTextStyle, .standard)
                 }
-                .foregroundColor(hTextColor.primary)
+                .foregroundColor(hTextColor.Opaque.primary)
                 .padding(.bottom, 16)
             }
             hSectionContainer {
@@ -332,7 +331,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
                     footer
                         .environment(\.defaultHTextStyle, .footnote)
                 }
-                .foregroundColor(hTextColor.secondary)
+                .foregroundColor(hTextColor.Opaque.secondary)
                 .padding([.leading, .trailing], 15)
                 .padding(.top, 10)
             }

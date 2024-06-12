@@ -73,7 +73,7 @@ class MemberSubscriptionPreferenceViewModel: ObservableObject {
             let toast = Toast(
                 symbol: .icon(
                     hCoreUIAssets
-                        .circularCheckmark
+                        .checkmarkOutlined
                         .image
                 ),
                 body: (isUnsubscribed)

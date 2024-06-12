@@ -33,7 +33,7 @@ public struct BankIDLoginQRView: View {
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
                                     .frame(height: 140)
-                                    .foregroundColor(hTextColor.primary)
+                                    .foregroundColor(hTextColor.Opaque.primary)
                                     .transition(.opacity)
                                     .id(image.pngData()?.count ?? 0)
                             }
@@ -60,10 +60,10 @@ public struct BankIDLoginQRView: View {
                         hSection {
                             VStack(spacing: 0) {
                                 hText(L10n.authenticationBankidLoginTitle)
-                                    .foregroundColor(hTextColor.primaryTranslucent)
+                                    .foregroundColor(hTextColor.Translucent.primary)
                                 hSection {
                                     hText(L10n.authenticationBankidLoginLabel)
-                                        .foregroundColor(hTextColor.secondaryTranslucent)
+                                        .foregroundColor(hTextColor.Translucent.secondary)
                                         .multilineTextAlignment(.center)
                                 }
                                 .sectionContainerStyle(.transparent)
@@ -82,7 +82,7 @@ public struct BankIDLoginQRView: View {
                                     vm.openBankId()
                                 } content: {
                                     HStack(spacing: 8) {
-                                        Image(uiImage: hCoreUIAssets.bankIdSmall.image)
+                                        Image(uiImage: hCoreUIAssets.bankID.image)
                                         hText(L10n.authenticationBankidOpenButton)
                                     }
                                 }

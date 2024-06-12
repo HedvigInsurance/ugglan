@@ -92,7 +92,7 @@ public struct ForeverView: View {
                                 description: L10n.ReferralsInfoSheet.body(discountAmount.formattedAmount),
                                 type: .navigation
                             )
-                            .foregroundColor(hTextColor.primary)
+                            .foregroundColor(hTextColor.Opaque.primary)
                         }
                     }
                 }

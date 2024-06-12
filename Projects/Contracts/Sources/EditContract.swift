@@ -30,7 +30,7 @@ struct EditContract: View {
                             hRow {
                                 HStack(spacing: 0) {
                                     hText(editType.title, style: .title3)
-                                        .foregroundColor(hTextColor.primary)
+                                        .foregroundColor(hTextColor.Opaque.primary)
                                     Spacer()
                                     Circle()
                                         .strokeBorder(
@@ -111,18 +111,18 @@ struct EditContract: View {
     @hColorBuilder
     func retColor(isSelected: Bool) -> some hColor {
         if isSelected {
-            hTextColor.primary
+            hTextColor.Opaque.primary
         } else {
-            hFillColor.opaqueOne
+            hSurfaceColor.Opaque.primary
         }
     }
 
     @hColorBuilder
     func getBorderColor(isSelected: Bool) -> some hColor {
         if isSelected {
-            hTextColor.primary
+            hTextColor.Opaque.primary
         } else {
-            hBorderColor.opaqueTwo
+            hBorderColor.secondary
         }
     }
 }

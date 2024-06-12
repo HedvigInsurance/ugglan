@@ -26,10 +26,10 @@ struct DeleteCampaignView: View {
 
                             }
                             .hFieldTrailingView {
-                                Image(uiImage: hCoreUIAssets.lockSmall.image)
+                                Image(uiImage: hCoreUIAssets.lock.image)
                                     .resizable()
                                     .frame(width: 16, height: 16)
-                                    .foregroundColor(hTextColor.primary)
+                                    .foregroundColor(hTextColor.Opaque.primary)
 
                             }
                             VStack(spacing: 8) {

@@ -41,15 +41,15 @@ struct TooltipView: View {
                     HStack {
                         Spacer()
                         Triangle()
-                            .fill(hSignalColor.blueFill)
+                            .fill(hSignalColor.Blue.fill)
                             .frame(width: 18, height: 8)
                             .padding(.trailing, 24)
                     }
                     hText(L10n.HomeTab.chatHintText)
                         .padding(.horizontal)
                         .padding(.vertical, 10)
-                        .foregroundColor(hSignalColor.blueText)
-                        .background(hSignalColor.blueFill)
+                        .foregroundColor(hSignalColor.Blue.text)
+                        .background(hSignalColor.Blue.fill)
                         .cornerRadius(8)
                         .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 1)
                         .colorScheme(.light)

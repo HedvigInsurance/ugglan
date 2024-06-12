@@ -88,18 +88,18 @@ public struct SuccessScreen: View {
         VStack(spacing: 16) {
             Image(
                 uiImage: icon == .tick
-                    ? hCoreUIAssets.tick.image : hCoreUIAssets.circularCheckmarkFilled.image
+                    ? hCoreUIAssets.checkmark.image : hCoreUIAssets.checkmarkFilled.image
             )
             .resizable()
             .frame(width: icon == .tick ? 24 : 40, height: icon == .tick ? 24 : 40)
-            .foregroundColor(hSignalColor.greenElement)
+            .foregroundColor(hSignalColor.Green.element)
             hSection {
                 VStack(spacing: 0) {
                     if let title {
                         hText(title)
                     }
                     hText(subTitle ?? "")
-                        .foregroundColor(hTextColor.secondary)
+                        .foregroundColor(hTextColor.Opaque.secondary)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 32)
                 }

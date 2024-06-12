@@ -7,9 +7,9 @@ public struct hPagerDots: View {
 
     @hColorBuilder func circleColor(_ index: Int) -> some hColor {
         if index == currentIndex {
-            hTextColor.primary
+            hFillColor.Opaque.primary
         } else {
-            hFillColor.opaqueTwo
+            hSurfaceColor.Translucent.secondary
         }
     }
 
@@ -40,9 +40,9 @@ public struct hPagerDotsBinded: View {
     @hColorBuilder
     func circleColor(_ index: Int) -> some hColor {
         if index == currentIndex {
-            hTextColor.primary
+            hFillColor.Opaque.primary
         } else {
-            hFillColor.opaqueTwo
+            hSurfaceColor.Translucent.secondary
         }
     }
 

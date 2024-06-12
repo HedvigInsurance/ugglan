@@ -29,12 +29,12 @@ struct hFieldBackgroundModifier: ViewModifier {
     private func getBackgroundColor() -> some hColor {
         if animate {
             if error != nil {
-                hColorScheme(light: hSignalColor.amberFill, dark: hAmberColor.amber300)
+                hColorScheme(light: hSignalColor.Amber.fill, dark: hAmberColor.amber300)
             } else {
-                hColorScheme(light: hSignalColor.greenFill, dark: hGrayscaleColor.greyScale800)
+                hColorScheme(light: hSignalColor.Green.fill, dark: hGrayscaleOpaqueColor.greyScale800)
             }
         } else {
-            hFillColor.opaqueOne
+            hSurfaceColor.Opaque.primary
         }
     }
 }
@@ -54,13 +54,13 @@ struct hFieldErrorModifier: ViewModifier {
             if let errorMessage = error {
                 HStack {
                     Image(uiImage: HCoreUIAsset.warningTriangleFilled.image)
-                        .foregroundColor(hSignalColor.amberElement)
+                        .foregroundColor(hSignalColor.Amber.element)
                     hText(errorMessage, style: .standardSmall)
-                        .foregroundColor(hTextColor.primary)
+                        .foregroundColor(hTextColor.Opaque.primary)
                 }
                 .padding(.top, 6)
                 .padding(.horizontal, 6)
-                .foregroundColor(hSignalColor.amberFill)
+                .foregroundColor(hSignalColor.Amber.fill)
             }
         }
     }
@@ -101,15 +101,15 @@ struct hFieldLabel: View {
     @hColorBuilder
     private func getTextColor() -> some hColor {
         if error != nil {
-            hColorScheme(light: hSignalColor.amberText, dark: hTextColor.secondary)
+            hColorScheme(light: hSignalColor.Amber.text, dark: hTextColor.Opaque.secondary)
         } else if animate {
-            hColorScheme(light: hSignalColor.greenText, dark: hGrayscaleColor.greyScale500)
+            hColorScheme(light: hSignalColor.Green.text, dark: hGrayscaleOpaqueColor.greyScale500)
         } else if isEnabled || withoutDisabledColor {
-            hTextColor.secondary
+            hTextColor.Opaque.secondary
         } else if isLocked {
-            hTextColor.tertiary
+            hTextColor.Opaque.tertiary
         } else {
-            hTextColor.tertiaryTranslucent
+            hTextColor.Translucent.tertiary
         }
     }
 }

@@ -55,7 +55,7 @@ public struct SubmitClaimDeflectScreen: View {
                     VStack(alignment: .leading, spacing: 8) {
                         hText(model?.config?.infoSectionTitle ?? "")
                         hText(model?.config?.infoSectionText ?? "")
-                            .foregroundColor(hTextColor.secondary)
+                            .foregroundColor(hTextColor.Opaque.secondary)
                     }
                 }
                 .padding(.top, 8)
