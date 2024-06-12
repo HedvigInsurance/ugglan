@@ -137,7 +137,7 @@ public struct hTextView: View {
     return VStack(spacing: 4) {
         VStack {
             hForm {}
-                .hFormTitle(title: .init(.standard, .standardLarge, "TITLE"))
+                .hFormTitle(title: .init(.standard, .heading2, "TITLE"))
                 .hFormMergeBottomViewWithContentIfNeeded
                 .hFormAttachToBottom {
                     VStack(spacing: 20) {
@@ -432,7 +432,7 @@ private class TextView: UITextView, UITextViewDelegate {
         super.init(frame: .zero, textContainer: nil)
         self.textContainerInset = .init(horizontalInset: 0, verticalInset: 0)
         self.delegate = self
-        self.font = Fonts.fontFor(style: .standard)
+        self.font = Fonts.fontFor(style: .body1)
         self.backgroundColor = .clear
         self.layer.cornerRadius = 12
         self.setText(text: inputText.wrappedValue)

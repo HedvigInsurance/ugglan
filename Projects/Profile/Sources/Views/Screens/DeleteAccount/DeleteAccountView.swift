@@ -35,7 +35,7 @@ public struct DeleteAccountView: View {
                         MarkdownView(
                             config: .init(
                                 text: vm.text,
-                                fontStyle: .standard,
+                                fontStyle: .body1,
                                 color: hTextColor.Opaque.secondary,
                                 linkColor: hTextColor.Opaque.primary,
                                 linkUnderlineStyle: .single,

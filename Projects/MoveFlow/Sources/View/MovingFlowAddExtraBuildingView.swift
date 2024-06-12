@@ -74,7 +74,7 @@ struct MovingFlowAddExtraBuildingView: View {
         hSection {
             Toggle(isOn: $vm.connectedToWater.animation(.default)) {
                 VStack(alignment: .leading, spacing: 0) {
-                    hText(L10n.changeAddressExtraBuildingsWaterInputLabel, style: .standardLarge)
+                    hText(L10n.changeAddressExtraBuildingsWaterInputLabel, style: .heading2)
                 }
             }
             .toggleStyle(ChecboxToggleStyle(.center, spacing: 0))

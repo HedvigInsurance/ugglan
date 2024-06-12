@@ -84,12 +84,12 @@ struct hFieldLabel: View {
     @Environment(\.hFontSize) var fontSize
 
     var body: some View {
-        let sizeToScaleFrom = size == .large ? HFontTextStyle.title3.fontSize : HFontTextStyle.standard.fontSize
+        let sizeToScaleFrom = size == .large ? HFontTextStyle.title3.fontSize : HFontTextStyle.body1.fontSize
         let sizeToScaleTo = HFontTextStyle.footnote.fontSize
         let ratio = sizeToScaleTo / sizeToScaleFrom
         return hText(
             placeholder,
-            style: size == .large ? .title3 : (fontSize == .standard ? .standardSmall : .standard)
+            style: size == .large ? .title3 : (fontSize == .body1 ? .standardSmall : .body1)
         )
         .foregroundColor(getTextColor())
         .scaleEffect(shouldMoveLabel ? ratio : 1, anchor: .leading)

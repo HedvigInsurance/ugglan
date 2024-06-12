@@ -14,7 +14,7 @@ struct SlideTrack: View {
         ZStack {
             withAnimation(shouldAnimate && labelOpacity == 1 ? .easeInOut : nil) {
                 VStack(alignment: .center) {
-                    L10n.claimsPledgeSlideLabel.hText(.body)
+                    L10n.claimsPledgeSlideLabel.hText(.body1)
                         .foregroundColor(getLabelColor)
                         .frame(maxWidth: .infinity)
                         .opacity(didFinished ? 0 : labelOpacity)
@@ -191,11 +191,11 @@ struct HonestyPledge: View {
     var body: some View {
         hForm {
             VStack(alignment: .leading, spacing: 0) {
-                L10n.honestyPledgeTitle.hText(.body)
+                L10n.honestyPledgeTitle.hText(.body1)
                     .foregroundColor(hTextColor.Opaque.primary)
                     .padding(.bottom, 8)
                 HStack {
-                    L10n.honestyPledgeDescription.hText(.body)
+                    L10n.honestyPledgeDescription.hText(.body1)
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
                 .padding(.bottom, 32)
@@ -209,7 +209,7 @@ struct HonestyPledge: View {
                 hButton.LargeButton(type: .ghost) {
                     router.dismiss()
                 } content: {
-                    L10n.generalCancelButton.hText(.body)
+                    L10n.generalCancelButton.hText(.body1)
                         .foregroundColor(hTextColor.Opaque.primary)
                 }
 

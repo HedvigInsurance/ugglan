@@ -34,7 +34,7 @@ public struct SubmitClaimCheckoutScreen: View {
                                 L10n.Claims.Payout.Button.label(
                                     singleItemCheckoutStep?.compensation.payoutAmount.formattedAmount ?? ""
                                 ),
-                                style: .body
+                                style: .body1
                             )
                         }
                     }
@@ -53,7 +53,7 @@ public struct SubmitClaimCheckoutScreen: View {
                 VStack(alignment: .center) {
                     hText(
                         singleItemCheckoutStep?.compensation.payoutAmount.formattedAmount ?? "",
-                        style: .standardExtraExtraLarge
+                        style: .display1
                     )
                     .foregroundColor(hTextColor.Opaque.primary)
                 }
@@ -94,7 +94,7 @@ public struct SubmitClaimCheckoutScreen: View {
             }
             .withHeader {
                 HStack {
-                    hText(L10n.claimsCheckoutCountTitle, style: .body)
+                    hText(L10n.claimsCheckoutCountTitle, style: .body1)
                         .foregroundColor(hTextColor.Opaque.primary)
                     Spacer()
                     InfoViewHolder(
@@ -155,7 +155,7 @@ public struct SubmitClaimCheckoutScreen: View {
             }
             .withHeader {
                 HStack {
-                    hText(L10n.Claims.Payout.Summary.method, style: .body)
+                    hText(L10n.Claims.Payout.Summary.method, style: .body1)
                         .foregroundColor(hTextColor.Opaque.primary)
                     Spacer()
                     InfoViewHolder(
@@ -172,17 +172,17 @@ public struct SubmitClaimCheckoutScreen: View {
         hRow {
             HStack {
                 if useDarkTitle {
-                    hText(title, style: .body)
+                    hText(title, style: .body1)
                         .foregroundColor(hTextColor.Opaque.primary)
                 } else {
-                    hText(title, style: .body)
+                    hText(title, style: .body1)
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
                 Spacer()
 
                 hText(
                     model?.formattedAmount ?? "",
-                    style: .body
+                    style: .body1
                 )
                 .foregroundColor(hTextColor.Opaque.secondary)
             }

@@ -58,7 +58,7 @@ public struct hOptOutField: View {
                 Toggle(isOn: $config.notSure.animation(.default)) {
                     HStack(spacing: 8) {
                         Spacer()
-                        hText(L10n.optoutFieldPlaceholder, style: .body)
+                        hText(L10n.optoutFieldPlaceholder, style: .body1)
                             .foregroundColor(getToggleTextColor)
                             .fixedSize()
                     }
@@ -186,12 +186,12 @@ struct PriceInputScreen: View {
                         vm.onSave(vm.purchasePrice)
                         vm.continueAction.execute()
                     } content: {
-                        hText(L10n.generalSaveButton, style: .body)
+                        hText(L10n.generalSaveButton, style: .body1)
                     }
                     hButton.LargeButton(type: .ghost) {
                         vm.cancelAction.execute()
                     } content: {
-                        hText(L10n.generalNotSure, style: .body)
+                        hText(L10n.generalNotSure, style: .body1)
                     }
                 }
             }

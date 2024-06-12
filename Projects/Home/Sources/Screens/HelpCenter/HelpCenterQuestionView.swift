@@ -22,14 +22,14 @@ struct HelpCenterQuestionView: View {
                     VStack(alignment: .leading, spacing: 32) {
                         VStack(alignment: .leading, spacing: 8) {
                             HelpCenterPill(title: L10n.hcQuestionTitle, color: .blue)
-                            hText(question.question, style: .body)
+                            hText(question.question, style: .body1)
                         }
                         VStack(alignment: .leading, spacing: 8) {
                             HelpCenterPill(title: L10n.hcAnswerTitle, color: .green)
                             MarkdownView(
                                 config: .init(
                                     text: question.answer,
-                                    fontStyle: .standard,
+                                    fontStyle: .body1,
                                     color: hTextColor.Opaque.secondary,
                                     linkColor: hTextColor.Opaque.primary,
                                     linkUnderlineStyle: .single

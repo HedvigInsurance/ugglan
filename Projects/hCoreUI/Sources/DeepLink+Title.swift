@@ -8,7 +8,7 @@ extension DeepLink {
         let schema: ColorScheme = .light
         let attributes = AttributeContainer(
             [
-                NSAttributedString.Key.font: Fonts.fontFor(style: .standard),
+                NSAttributedString.Key.font: Fonts.fontFor(style: .body1),
                 NSAttributedString.Key.foregroundColor: hTextColor.Opaque.primary.colorFor(schema, .base).color
                     .uiColor(),
             ]
@@ -18,7 +18,7 @@ extension DeepLink {
 
         let deeplinkAttributes = AttributeContainer(
             [
-                NSAttributedString.Key.font: Fonts.fontFor(style: .standard),
+                NSAttributedString.Key.font: Fonts.fontFor(style: .body1),
                 NSAttributedString.Key.foregroundColor: hSignalColor.Blue.element.colorFor(schema, .base).color
                     .uiColor(),
             ]

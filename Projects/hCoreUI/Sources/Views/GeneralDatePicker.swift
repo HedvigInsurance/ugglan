@@ -30,7 +30,7 @@ public struct GeneralDatePicker: View {
                     hButton.LargeButton(type: .primary) {
                         model.onDateSelected(dateOfOccurrence)
                     } content: {
-                        hText(model.buttonTitle, style: .body)
+                        hText(model.buttonTitle, style: .body1)
                     }
                 }
             }

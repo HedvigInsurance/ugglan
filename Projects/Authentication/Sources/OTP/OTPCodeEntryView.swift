@@ -17,7 +17,7 @@ public struct OTPCodeEntryView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                         hText(
                             L10n.Login.Subtitle.verificationCodeEmail(otpVM.maskedEmail ?? L10n.authOtpYourEmail),
-                            style: .body
+                            style: .body1
                         )
                     }
                     VStack(spacing: 8) {

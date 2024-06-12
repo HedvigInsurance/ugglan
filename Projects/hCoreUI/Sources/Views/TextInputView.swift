@@ -41,7 +41,7 @@ public struct TextInputView: View {
                                 }
                             }
                         } content: {
-                            hText(L10n.generalSaveButton, style: .body)
+                            hText(L10n.generalSaveButton, style: .body1)
                         }
                         .hButtonIsLoading(vm.isLoading)
                         hButton.LargeButton(type: .ghost) {
@@ -53,7 +53,7 @@ public struct TextInputView: View {
                                 }
                             }
                         } content: {
-                            hText(L10n.generalCancelButton, style: .body)
+                            hText(L10n.generalCancelButton, style: .body1)
                         }
                         .disabled(vm.isLoading)
                     }

@@ -56,9 +56,9 @@ extension View {
         case .small:
             self.modifier(SmallButtonModifier()).environment(\.defaultHTextStyle, .subheadline)
         case .medium:
-            self.modifier(MediumButtonModifier()).environment(\.defaultHTextStyle, .standard)
+            self.modifier(MediumButtonModifier()).environment(\.defaultHTextStyle, .body1)
         case .large:
-            self.modifier(LargeButtonModifier()).environment(\.defaultHTextStyle, .standard)
+            self.modifier(LargeButtonModifier()).environment(\.defaultHTextStyle, .body1)
         }
     }
 }
@@ -435,7 +435,7 @@ struct ButtonOutlinedStyle: SwiftUI.ButtonStyle {
             LoaderOrContent(color: hTextColor.Opaque.primary) {
                 configuration.label
                     .foregroundColor(hTextColor.Opaque.primary)
-                    .environment(\.defaultHTextStyle, .standard)
+                    .environment(\.defaultHTextStyle, .body1)
             }
         }
     }

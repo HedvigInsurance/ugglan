@@ -318,7 +318,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
             if header != nil {
                 VStack(alignment: .leading) {
                     header
-                        .environment(\.defaultHTextStyle, .standard)
+                        .environment(\.defaultHTextStyle, .body1)
                 }
                 .foregroundColor(hTextColor.Opaque.primary)
                 .padding(.bottom, 16)

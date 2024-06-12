@@ -47,7 +47,7 @@ struct SetTerminationDateLandingScreen: View {
                                 hButton.LargeButton(type: .primary) {
                                     onSelected()
                                 } content: {
-                                    hText(L10n.terminationButton, style: .standard)
+                                    hText(L10n.terminationButton, style: .body1)
                                 }
                                 .disabled(vm.isCancelButtonDisabled)
                             }
@@ -66,7 +66,7 @@ struct SetTerminationDateLandingScreen: View {
                 hRow {
                     VStack(alignment: .leading) {
                         hText(config.contractDisplayName)
-                        hText(config.contractExposureName, style: .standardSmall)
+                        hText(config.contractExposureName, style: .label)
                             .foregroundColor(hTextColor.Translucent.secondary)
                     }
                 }
@@ -90,7 +90,7 @@ struct SetTerminationDateLandingScreen: View {
                             hCoreUIAssets.lock.view
                                 .frame(width: 24, height: 24)
                         }
-                        .hFontSize(.standard)
+                        .hFontSize(.body1)
                         .hFieldLockedState
                         .hWithoutDisabledColor
                         .disabled(true)
@@ -113,7 +113,7 @@ struct SetTerminationDateLandingScreen: View {
                             terminationNavigationVm.isDatePickerPresented = true
                         }
                     )
-                    .hFontSize(.standard)
+                    .hFontSize(.body1)
                     .hFieldTrailingView {
                         hCoreUIAssets.chevronDownSmall.view
                             .frame(width: 24, height: 24)
@@ -135,7 +135,7 @@ struct SetTerminationDateLandingScreen: View {
                                 hText(L10n.terminationFlowImportantInformationTitle)
                                 hText(
                                     L10n.terminationFlowImportantInformationText,
-                                    style: .standardSmall
+                                    style: .label
                                 )
                                 .foregroundColor(hTextColor.Opaque.secondary)
                             }

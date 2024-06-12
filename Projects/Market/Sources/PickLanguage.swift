@@ -35,7 +35,7 @@ public struct PickLanguage: View {
             VStack(spacing: 8) {
                 if onSave == nil {
                     hSection {
-                        hText(L10n.LanguagePickerModal.text, style: .body)
+                        hText(L10n.LanguagePickerModal.text, style: .body1)
                             .foregroundColor(.secondary)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }

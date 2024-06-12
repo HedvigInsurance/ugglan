@@ -59,7 +59,7 @@ struct AskForPushNotifications: View {
                         }
                     })
                 } content: {
-                    hText(L10n.claimsActivateNotificationsCta, style: .body)
+                    hText(L10n.claimsActivateNotificationsCta, style: .body1)
                 }
                 .fixedSize()
 

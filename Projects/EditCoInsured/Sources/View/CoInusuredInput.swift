@@ -382,7 +382,7 @@ struct CoInusuredInput: View {
         hSection {
             Toggle(isOn: $vm.noSSN.animation(.default)) {
                 VStack(alignment: .leading, spacing: 0) {
-                    hText(L10n.contractAddCoinsuredNoSsn, style: .body)
+                    hText(L10n.contractAddCoinsuredNoSsn, style: .body1)
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
             }
