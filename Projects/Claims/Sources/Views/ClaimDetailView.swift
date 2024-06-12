@@ -194,7 +194,7 @@ public struct ClaimDetailView: View {
                     .id("sds_\(String(describing: vm.claim.productVariant?.displayName))")
                 }
                 .withCustomAccessory {
-                    Image(uiImage: hCoreUIAssets.neArrowSmall.image)
+                    Image(uiImage: hCoreUIAssets.arrowNorthEast.image)
                 }
                 .onTap {
                     homeVm.document = termsAndConditionsDocument

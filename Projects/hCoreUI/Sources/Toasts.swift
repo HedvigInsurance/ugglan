@@ -203,7 +203,7 @@ extension Toast: Viewable {
             chevronImageView.snp.makeConstraints { make in
                 make.width.equalTo(20)
             }
-            chevronImageView.image = hCoreUIAssets.arrowForward.image
+            chevronImageView.image = hCoreUIAssets.arrowRight.image
 
             stackView.addArrangedSubview(chevronImageView)
 

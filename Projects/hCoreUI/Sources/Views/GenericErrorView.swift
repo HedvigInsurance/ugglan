@@ -81,7 +81,7 @@ public struct GenericErrorView: View {
                     .frame(width: imageDimension, height: imageDimension)
                     .foregroundColor(hSignalColor.Amber.element)
             case .circle:
-                hCoreUIAssets.infoIconFilled.view
+                hCoreUIAssets.infoFilled.view
                     .resizable()
                     .frame(width: imageDimension, height: imageDimension)
                     .foregroundColor(hSignalColor.Blue.element)

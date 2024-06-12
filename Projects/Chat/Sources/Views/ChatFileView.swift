@@ -49,7 +49,7 @@ struct ChatFileView: View {
                 }
             } else {
                 HStack {
-                    hCoreUIAssets.documentsMultiple.view
+                    hCoreUIAssets.documents.view
                     hText(L10n.chatFileDownload)
                 }
                 .padding(12)

@@ -32,7 +32,7 @@ struct ContractDocumentsView: View {
                                     .id("sds_\(document.displayName)")
                                 }
                                 .withCustomAccessory {
-                                    Image(uiImage: hCoreUIAssets.neArrowSmall.image)
+                                    Image(uiImage: hCoreUIAssets.arrowNorthEast.image)
                                 }
                                 .onTap {
                                     contractsNavigationViewModel.document = .init(url: url, title: document.displayName)

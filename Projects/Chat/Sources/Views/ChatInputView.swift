@@ -63,7 +63,7 @@ struct ChatInputView: View {
                             bottomMenuItem(with: hCoreUIAssets.camera.image) {
                                 vm.openCamera()
                             }
-                            bottomMenuItem(with: hCoreUIAssets.pictures.image) {
+                            bottomMenuItem(with: hCoreUIAssets.image.image) {
                                 vm.openImagePicker()
                             }
                             bottomMenuItem(with: hCoreUIAssets.documents.image) {

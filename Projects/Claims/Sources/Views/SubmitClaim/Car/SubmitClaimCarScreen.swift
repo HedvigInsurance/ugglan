@@ -38,7 +38,7 @@ struct SubmitClaimCarScreen: View {
                     } content: {
                         HStack(spacing: 8) {
                             hText(L10n.submitClaimCarReportClaimButton)
-                            Image(uiImage: hCoreUIAssets.neArrowSmall.image)
+                            Image(uiImage: hCoreUIAssets.arrowNorthEast.image)
                         }
                     }
             }

@@ -8,7 +8,7 @@ struct PlaybackFailedView: View {
     var body: some View {
         VStack {
             HStack {
-                Image(uiImage: hCoreUIAssets.warningTriangle.image)
+                Image(uiImage: hCoreUIAssets.warningTriangleOutlined.image)
                 hText(L10n.ClaimStatusDetail.InfoError.title, style: .headline)
             }
             .padding(.vertical, 18)

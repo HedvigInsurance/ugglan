@@ -152,7 +152,7 @@ public enum InfoCardType {
     var image: UIImage {
         switch self {
         case .info:
-            return hCoreUIAssets.infoIconFilled.image
+            return hCoreUIAssets.infoFilled.image
         case .attention:
             return hCoreUIAssets.warningTriangleFilled.image
         case .error:

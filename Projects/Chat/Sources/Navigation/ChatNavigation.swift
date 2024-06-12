@@ -40,7 +40,7 @@ public class ChatNavigationViewModel: ObservableObject {
             func createToast() -> Toast {
                 let schema = UITraitCollection.current.userInterfaceStyle
                 return Toast(
-                    symbol: .icon(hCoreUIAssets.infoIconFilled.image),
+                    symbol: .icon(hCoreUIAssets.infoFilled.image),
                     body: L10n.chatToastPushNotificationsTitle,
                     infoText: L10n.pushNotificationsAlertActionOk,
                     textColor: hSignalColor.Blue.text.colorFor(schema == .dark ? .dark : .light, .base).color

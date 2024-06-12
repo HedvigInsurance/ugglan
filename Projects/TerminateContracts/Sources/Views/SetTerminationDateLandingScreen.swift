@@ -87,7 +87,7 @@ struct SetTerminationDateLandingScreen: View {
                             }
                         )
                         .hFieldTrailingView {
-                            hCoreUIAssets.lockSmall.view
+                            hCoreUIAssets.lock.view
                                 .frame(width: 24, height: 24)
                         }
                         .hFontSize(.standard)
@@ -150,7 +150,7 @@ struct SetTerminationDateLandingScreen: View {
                                 Spacer()
                                 if vm.hasAgreedToTerms {
                                     HStack {
-                                        hCoreUIAssets.tick.view
+                                        hCoreUIAssets.checkmark.view
                                             .foregroundColor(
                                                 hColorScheme(
                                                     light: hTextColor.Opaque.negative,

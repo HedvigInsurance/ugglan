@@ -32,11 +32,11 @@ public struct InfoExpandableView: View {
             .withCustomAccessory({
                 ZStack {
                     Image(
-                        uiImage: hCoreUIAssets.minusSmall.image
+                        uiImage: hCoreUIAssets.minus.image
                     )
                     .rotationEffect(isSelected ? Angle(degrees: 360) : Angle(degrees: 270))
                     Image(
-                        uiImage: hCoreUIAssets.minusSmall.image
+                        uiImage: hCoreUIAssets.minus.image
                     )
                     .rotationEffect(isSelected ? Angle(degrees: 360) : Angle(degrees: 180))
                 }

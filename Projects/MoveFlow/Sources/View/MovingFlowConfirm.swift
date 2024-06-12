@@ -237,7 +237,7 @@ struct MovingFlowConfirm: View {
                 }
                 .withCustomAccessory {
                     Spacer()
-                    Image(uiImage: hCoreUIAssets.neArrowSmall.image)
+                    Image(uiImage: hCoreUIAssets.arrowNorthEast.image)
                 }
                 .onTap {
                     if let url = URL(string: document.url) {
@@ -278,7 +278,7 @@ struct MovingFlowConfirm: View {
                             }
                             .withCustomAccessory {
                                 Image(
-                                    uiImage: expanded ? hCoreUIAssets.minusSmall.image : hCoreUIAssets.plusSmall.image
+                                    uiImage: expanded ? hCoreUIAssets.minus.image : hCoreUIAssets.plusSmall.image
                                 )
                                 .resizable()
                                 .frame(width: 16, height: 16)

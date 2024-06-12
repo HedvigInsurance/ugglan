@@ -351,7 +351,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                         )
 
                     if isSelected {
-                        Image(uiImage: hCoreUIAssets.tick.image)
+                        Image(uiImage: hCoreUIAssets.checkmark.image)
                             .foregroundColor(hTextColor.Opaque.negative)
                     }
                 }

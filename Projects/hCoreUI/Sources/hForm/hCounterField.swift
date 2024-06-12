@@ -54,7 +54,7 @@ public struct hCounterField: View {
                                 decrease()
                             }
                         } label: {
-                            Image(uiImage: hCoreUIAssets.minusSmall.image)
+                            Image(uiImage: hCoreUIAssets.minus.image)
                                 .foregroundColor(
                                     hTextColor.Opaque.primary.opacity(value == 0 ? 0.4 : 1)
 

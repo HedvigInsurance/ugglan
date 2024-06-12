@@ -19,7 +19,7 @@ struct MessageView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .environment(\.colorScheme, .light)
             if case .failed = message.status {
-                hCoreUIAssets.infoIconFilled.view
+                hCoreUIAssets.infoFilled.view
                     .resizable()
                     .frame(width: 16, height: 16)
                     .foregroundColor(hSignalColor.Red.element)
@@ -31,7 +31,7 @@ struct MessageView: View {
     private var messageContent: some View {
         HStack {
             if case .failed = message.status {
-                hCoreUIAssets.restart.view
+                hCoreUIAssets.refresh.view
                     .resizable()
                     .frame(width: 24, height: 24)
                     .foregroundColor(hSignalColor.Red.element)
@@ -115,7 +115,7 @@ struct LinkView: View {
             .transition(.opacity)
         } else if let model = vm.webMetaDataProviderData {
             VStack(spacing: 8) {
-                Image(uiImage: model.image ?? hCoreUIAssets.hedvigBigLogo.image)
+                Image(uiImage: model.image ?? hCoreUIAssets.helipadOutlined.image)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(height: 200)

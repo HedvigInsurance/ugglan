@@ -125,7 +125,7 @@ struct ClaimEmergencyContactCard: View {
                             .setProcessor(SVGImageProcessor())
                             .resizable()
                     } else {
-                        hCoreUIAssets.hedvigBigLogo.view
+                        hCoreUIAssets.bigPillowBlack.view
                             .resizable()
                     }
                 }

@@ -60,9 +60,9 @@ public struct InfoViewHolder: View {
         var image: UIImage {
             switch self {
             case .regular:
-                hCoreUIAssets.infoIconFilled.image
+                hCoreUIAssets.infoFilled.image
             case .navigation:
-                hCoreUIAssets.infoIcon.image
+                hCoreUIAssets.infoOutlined.image
             }
         }
 

@@ -9,8 +9,6 @@ struct TrackPlayer: View {
         switch audioPlayer.playbackState {
         case let .playing(paused):
             Image(uiImage: paused ? hCoreUIAssets.play.image : hCoreUIAssets.pause.image)
-                .resizable()
-                .frame(width: 24, height: 24)
                 .foregroundColor(hTextColor.Opaque.primary)
         default:
             Image(uiImage: hCoreUIAssets.play.image)

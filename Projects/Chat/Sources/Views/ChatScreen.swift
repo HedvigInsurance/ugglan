@@ -99,7 +99,7 @@ public struct ChatScreen: View {
                     if vm.lastDeliveredMessage?.id == message.id {
                         hText(message.timeStampString)
                         hText(" ∙ \(L10n.chatDeliveredMessage)")
-                        hCoreUIAssets.circularCheckmarkFilled.view
+                        hCoreUIAssets.checkmarkFilled.view
                             .resizable()
                             .frame(width: 16, height: 16)
                             .foregroundColor(hSignalColor.Blue.element)
