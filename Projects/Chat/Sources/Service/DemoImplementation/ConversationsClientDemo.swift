@@ -1,11 +1,16 @@
 import Foundation
 
 public class ConversationsDemoClient: ConversationsClient {
-    public func getConversationMessages(for conversationId: String) async throws -> [Message] {
-        return [
+    public func getConversationMessages(
+        for conversationId: String,
+        olderToken: String?,
+        newerToken: String?
+    ) async throws -> ChatData {
+        let messages = [
             Message(type: .text(text: "text1")),
             Message(type: .text(text: "text2")),
         ]
+        return .init(hasNext: false, id: UUID().uuidString, messages: messages, nextUntil: nil, banner: nil)
     }
 
     public func getConversations() async throws -> [Conversation] {
