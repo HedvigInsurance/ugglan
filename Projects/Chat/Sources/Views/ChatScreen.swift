@@ -39,7 +39,7 @@ public struct ChatScreen: View {
 
     @ViewBuilder
     private var loadingPreviousMessages: some View {
-        if vm.isFetchingNext {
+        if vm.isFetchingPreviousMessages {
             DotsActivityIndicator(.standard)
                 .useDarkColor
                 .fixedSize()
@@ -58,7 +58,7 @@ public struct ChatScreen: View {
                         .onAppear {
                             if message.id == vm.messages.last?.id {
                                 Task {
-                                    await vm.fetchNext()
+                                    await vm.fetchPreviousMessages()
                                 }
                             }
                         }
@@ -127,7 +127,7 @@ public struct ChatScreen: View {
     @ViewBuilder
     private var infoCard: some View {
         if let banner = vm.banner {
-            InfoCard(text: "", type: vm.conversation == nil ? .info : .disabled)
+            InfoCard(text: "", type: vm.chatService.type == .conversation ? .info : .disabled)
                 .hInfoCardCustomView {
                     MarkdownView(
                         config: .init(
@@ -147,7 +147,7 @@ public struct ChatScreen: View {
 
     @hColorBuilder
     private var infoCardTextColor: some hColor {
-        if vm.conversation == nil {
+        if vm.chatService.type == .conversation {
             hSignalColor.Blue.text
         } else {
             hTextColor.Opaque.accordion
@@ -156,7 +156,7 @@ public struct ChatScreen: View {
 
     @hColorBuilder
     private var infoCardLinkColor: some hColor {
-        if vm.conversation == nil {
+        if vm.chatService.type == .conversation {
             hSignalColor.Blue.text
         } else {
             hTextColor.Opaque.accordion
@@ -176,7 +176,7 @@ public struct ChatScreen: View {
             client
         }
     )
-    return ChatScreen(vm: .init(topicType: nil, conversation: nil))
+    return ChatScreen(vm: .init(chatService: MessagesService(topic: nil)))
 }
 
 class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {

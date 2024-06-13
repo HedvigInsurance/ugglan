@@ -2,13 +2,44 @@ import Foundation
 import hCore
 import hGraphQL
 
-public class ConversationsService {
+public class ConversationsService: ChatServiceProtocol {
+    public var type: ChatServiceType = .conversation
+
     @Inject var client: ConversationsClient
+    private let conversationId: String
+    private var olderToken: String?
+    private var newerToken: String?
+
+    public init(conversationId: String) {
+        self.conversationId = conversationId
+    }
+
+    public func getNewMessages() async throws -> ChatData {
+        let data = try await getConversationMessages(for: conversationId, olderToken: nil, newerToken: newerToken)
+        if olderToken == nil {
+            olderToken = data.nextUntil
+        }
+        //newerToken = data.nextUntil TODO: SET newer token
+        return data
+    }
+
+    public func getPreviousMessages() async throws -> ChatData {
+        let data = try await getConversationMessages(for: conversationId, olderToken: olderToken, newerToken: nil)
+        //TODO: SET OLDER TOKEN from response
+        self.olderToken = data.nextUntil
+        return data
+
+    }
+
+    public func send(message: Message) async throws -> Message {
+        return try await self.send(message: message, for: conversationId)
+    }
 
     func getConversations() async throws -> [Conversation] {
         log.info("\(ConversationsService.self) getConversations", error: nil, attributes: [:])
         return try await client.getConversations()
     }
+
     func send(message: Message, for conversationId: String) async throws -> Message {
         log.info("\(ConversationsService.self) send message", error: nil, attributes: [:])
         return try await client.send(message: message, for: conversationId)

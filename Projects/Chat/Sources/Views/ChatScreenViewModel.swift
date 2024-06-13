@@ -5,32 +5,36 @@ import SwiftUI
 import hCore
 import hGraphQL
 
+public enum ChatServiceType {
+    case conversation
+    case oldChat
+}
+
+public protocol ChatServiceProtocol {
+    var type: ChatServiceType { get }
+    func getNewMessages() async throws -> ChatData
+    func getPreviousMessages() async throws -> ChatData
+    func send(message: Message) async throws -> Message
+}
+
 public class ChatScreenViewModel: ObservableObject {
     @Published var messages: [Message] = []
     @Published var lastDeliveredMessage: Message?
-    @Published var isFetchingNext = false
+    @Published var isFetchingPreviousMessages = false
     @Published var scrollToMessage: Message?
     @Published var banner: Markdown?
     @Published var chatInputVm: ChatInputViewModel = .init()
-    private var fetchMessagesService = FetchMessagesService()
-    private var conversationService = ConversationsService()
-    private var sendMessageService = SendMessagesService()
+    let chatService: ChatServiceProtocol
     private var addedMessagesIds: [String] = []
-    private var nextUntil: String?
     private var hasNext: Bool?
     private var isFetching = false
-    private let topicType: ChatTopicType?
-    let conversation: Conversation?
     private var haveSentAMessage = false
-    private var storeActionSignal: AnyCancellable?
     var chatNavigationVm: ChatNavigationViewModel?
 
     public init(
-        topicType: ChatTopicType?,
-        conversation: Conversation?
+        chatService: ChatServiceProtocol
     ) {
-        self.topicType = topicType
-        self.conversation = conversation
+        self.chatService = chatService
 
         chatInputVm.sendMessage = { [weak self] message in
             Task { [weak self] in
@@ -43,11 +47,11 @@ public class ChatScreenViewModel: ObservableObject {
                 return
             }
             Task { [weak self] in
-                await self?.fetch()
+                await self?.fetchMessages()
             }
         }
         Task { [weak self] in
-            await self?.fetch()
+            await self?.fetchMessages()
         }
         let fileUploadManager = FileUploadManager()
         fileUploadManager.resetuploadFilesPath()
@@ -77,109 +81,45 @@ public class ChatScreenViewModel: ObservableObject {
     }
 
     @MainActor
-    func fetchNext() async {
-        if let hasNext, let nextUntil, hasNext, !isFetchingNext {
-            withAnimation {
-                isFetchingNext = true
-            }
-            await fetch(with: nextUntil)
-            withAnimation {
-                isFetchingNext = false
+    func fetchPreviousMessages() async {
+        if let hasNext, hasNext, !isFetchingPreviousMessages {
+            do {
+                isFetchingPreviousMessages = true
+
+                let chatData = try await chatService.getPreviousMessages()
+                let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
+                withAnimation {
+                    self.messages.append(contentsOf: newMessages)
+                    self.messages.sort(by: { $0.sentAt > $1.sentAt })
+                    self.lastDeliveredMessage = self.messages.first(where: { $0.sender == .member })
+                }
+                self.banner = chatData.banner
+                addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
+                self.hasNext = chatData.hasNext
+
+                isFetchingPreviousMessages = false
+            } catch let ex {
+
             }
         }
     }
 
     @MainActor
-    private func fetch(with next: String? = nil) async {
+    private func fetchMessages() async {
         do {
-            if let conversation {
-                let chatData = try await conversationService.getConversationMessages(
-                    for: conversation.id,
-                    olderToken: next,
-                    newerToken: nil
-                )
-                let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
-                if !newMessages.isEmpty {
-                    if next != nil {
-                        handleNext(messages: newMessages)
-                    } else {
-                        withAnimation {
-                            if let statusMessage = conversation.statusMessage {
-                                self.banner = statusMessage
-                            } else {
-                                self.banner = chatData.banner
-                            }
-                        }
-                        handleInitial(messages: newMessages)
-                    }
-                    addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
-                }
-                if next == nil && nextUntil == nil {
-                    self.hasNext = chatData.hasNext
-                    if self.hasNext == true {
-                        self.nextUntil = chatData.nextUntil
-                    }
-                } else if next != nil {
-                    self.hasNext = chatData.hasNext
-                    self.nextUntil = chatData.nextUntil
-                }
-            } else {
-                let chatData = try await fetchMessagesService.get(next)
-                let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
-                if !newMessages.isEmpty {
-                    if next != nil {
-                        handleNext(messages: newMessages)
-                    } else {
-                        withAnimation {
-                            self.banner = chatData.banner
-                        }
-                        handleInitial(messages: newMessages)
-                    }
-                    addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
-                }
-                if next == nil && nextUntil == nil {
-                    self.hasNext = chatData.hasNext
-                    if self.hasNext == true {
-                        self.nextUntil = chatData.nextUntil
-                    }
-                } else if next != nil {
-                    self.hasNext = chatData.hasNext
-                    self.nextUntil = chatData.nextUntil
-                }
+            let chatData = try await chatService.getNewMessages()
+            let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
+            withAnimation {
+                self.messages.append(contentsOf: newMessages)
+                self.messages.sort(by: { $0.sentAt > $1.sentAt })
+                self.lastDeliveredMessage = self.messages.first(where: { $0.sender == .member })
             }
+            self.banner = chatData.banner
+            addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
+            hasNext = chatData.hasNext
+        } catch let ex {
 
-        } catch _ {
-            if let next = next {
-                if #available(iOS 16.0, *) {
-                    try! await Task.sleep(for: .seconds(2))
-                } else {
-                    try! await Task.sleep(nanoseconds: 2_000_000_000)
-                }
-                await fetch(with: next)
-            }
         }
-    }
-
-    private func handleInitial(messages: [Message]) {
-        withAnimation {
-            self.messages.insert(contentsOf: messages, at: 0)
-            sortMessages()
-        }
-        if let lastMessage = messages.first {
-            handleLastMessageTimeStamp(for: lastMessage)
-        }
-    }
-
-    private func handleNext(messages: [Message]) {
-        withAnimation {
-            self.messages.append(contentsOf: messages)
-            sortMessages()
-        }
-    }
-
-    private func sortMessages() {
-        self.messages.sort(by: { $0.sentAt > $1.sentAt })
-        self.lastDeliveredMessage = self.messages.first(where: { $0.sender == .member })
     }
 
     @MainActor
@@ -195,17 +135,9 @@ public class ChatScreenViewModel: ObservableObject {
 
     private func sendToClient(message: Message) async {
         do {
-            var respondedMessage: Message?
-
-            if let conversationId = conversation?.id {
-                respondedMessage = try await conversationService.send(message: message, for: conversationId)
-            } else {
-                respondedMessage = try await sendMessageService.send(message: message, topic: topicType)
-            }
-            if let respondedMessage = respondedMessage {
-                await handleSuccessAdding(for: respondedMessage, to: message)
-                haveSentAMessage = true
-            }
+            let sentMessage = try await chatService.send(message: message)
+            await handleSuccessAdding(for: sentMessage, to: message)
+            haveSentAMessage = true
         } catch let ex {
             await handleSendFail(for: message, with: ex.localizedDescription)
         }

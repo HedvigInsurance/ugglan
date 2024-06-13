@@ -69,7 +69,7 @@ public struct ConversationsView: View {
 }
 
 class ConversationsViewModel: ObservableObject {
-    let service = ConversationsService()
+    let service = ConversationsService(conversationId: "")
     @Published var conversations: [Conversation] = []
 
     init() {

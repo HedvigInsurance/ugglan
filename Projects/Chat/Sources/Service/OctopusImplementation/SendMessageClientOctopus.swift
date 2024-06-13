@@ -2,14 +2,6 @@ import Foundation
 import hCore
 import hGraphQL
 
-public class SendMessagesService {
-    @Inject var service: SendMessageClient
-
-    public func send(message: Message, topic: ChatTopicType?) async throws -> Message {
-        log.info("SendMessagesService: send", error: nil, attributes: nil)
-        return try await service.send(message: message, topic: topic)
-    }
-}
 
 public class SendMessagesClientOctopus: SendMessageClient {
     @Inject var octopus: hOctopus
