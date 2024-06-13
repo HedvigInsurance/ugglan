@@ -127,14 +127,14 @@ public struct ChatScreen: View {
     @ViewBuilder
     private var infoCard: some View {
         if let banner = vm.banner {
-            InfoCard(text: "", type: .info)
+            InfoCard(text: "", type: vm.conversation == nil ? .info : .disabled)
                 .hInfoCardCustomView {
                     MarkdownView(
                         config: .init(
                             text: banner,
                             fontStyle: .standardSmall,
                             color: infoCardTextColor,
-                            linkColor: hSignalColor.Blue.text,
+                            linkColor: infoCardLinkColor,
                             linkUnderlineStyle: .single
                         ) { url in
                             NotificationCenter.default.post(name: .openDeepLink, object: url)
@@ -147,6 +147,15 @@ public struct ChatScreen: View {
 
     @hColorBuilder
     private var infoCardTextColor: some hColor {
+        if vm.conversation == nil {
+            hSignalColor.Blue.text
+        } else {
+            hTextColor.Opaque.accordion
+        }
+    }
+
+    @hColorBuilder
+    private var infoCardLinkColor: some hColor {
         if vm.conversation == nil {
             hSignalColor.Blue.text
         } else {

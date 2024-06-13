@@ -96,9 +96,9 @@ public class ChatScreenViewModel: ObservableObject {
             let chatData = try await fetchMessagesService.get(next)
 
             if conversation != nil {
-                let newMessages = try await conversationService.getConversationMessages(for: conversation?.id ?? "")
+                newMessages = try await conversationService.getConversationMessages(for: conversation?.id ?? "")
             } else {
-                let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
+                newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
             }
 
             if !newMessages.isEmpty {

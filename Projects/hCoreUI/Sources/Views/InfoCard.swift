@@ -82,6 +82,8 @@ public struct InfoCard: View {
             hSignalColor.Red.text
         case .campaign:
             hSignalColor.Green.text
+        case .disabled:
+            hTextColor.Opaque.accordion
         }
     }
 
@@ -96,6 +98,8 @@ public struct InfoCard: View {
             hSignalColor.Red.element
         case .campaign:
             hSignalColor.Green.element
+        case .disabled:
+            hFillColor.Opaque.secondary
         }
     }
 }
@@ -148,6 +152,7 @@ public enum InfoCardType {
     case attention
     case error
     case campaign
+    case disabled
 
     var image: UIImage {
         switch self {
@@ -159,7 +164,8 @@ public enum InfoCardType {
             return hCoreUIAssets.warningTriangleFilled.image
         case .campaign:
             return hCoreUIAssets.campaignSmall.image
-
+        case .disabled:
+            return hCoreUIAssets.infoFilled.image
         }
     }
 }
@@ -269,6 +275,8 @@ struct InfoCardStyle: ViewModifier {
             hSignalColor.Red.fill
         case .campaign:
             hSignalColor.Green.fill
+        case .disabled:
+            hSurfaceColor.Opaque.primary
         }
     }
 }
