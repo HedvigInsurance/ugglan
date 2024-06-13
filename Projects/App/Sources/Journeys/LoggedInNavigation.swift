@@ -533,6 +533,9 @@ class LoggedInNavigationViewModel: ObservableObject {
                 vc.preferredControlTintColor = .brand(.primaryText())
                 UIApplication.shared.getTopViewController()?.present(vc, animated: true)
             } else {
+                if Bundle.main.urlSchemes.contains(schema ?? "") {
+                    return
+                }
                 UIApplication.shared.open(url)
             }
         }
