@@ -16,6 +16,7 @@ fragment ConversationFragment on Conversation {
     newestMessage {
         ... MessageFragment
     }
+    statusMessage
 }
 
 query ConversationMessages($conversationId: UUID!, $olderToken: String, $newerToken: String) {
