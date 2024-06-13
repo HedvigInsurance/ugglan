@@ -11,9 +11,8 @@ public struct RenewalCardView: View {
     @PresentableStore var store: HomeStore
     @State private var showMultipleAlert = false
     @State private var showFailedToOpenUrlAlert = false
+    @State private var document: InsuranceTerm?
     let showCoInsured: Bool?
-
-    @EnvironmentObject var navigationVm: HomeNavigationViewModel
 
     public init(
         showCoInsured: Bool? = true
@@ -35,7 +34,7 @@ public struct RenewalCardView: View {
         if let draftCertificateUrl = contract.upcomingRenewal?.draftCertificateUrl,
             let url = URL(string: draftCertificateUrl)
         {
-            navigationVm.document = InsuranceTerm(
+            self.document = InsuranceTerm(
                 displayName: contract.displayName,
                 url: contract.upcomingRenewal?.draftCertificateUrl ?? "",
                 type: .unknown
@@ -142,6 +141,11 @@ public struct RenewalCardView: View {
                 message: Text(L10n.renewalOpenInsuranceTermsErrorBody),
                 dismissButton: .default(Text(L10n.discountRedeemSuccessButton))
             )
+        }
+        .detent(item: $document, style: .large) { document in
+            if let url = URL(string: document.url) {
+                PDFPreview(document: .init(url: url, title: document.displayName))
+            }
         }
     }
 }
