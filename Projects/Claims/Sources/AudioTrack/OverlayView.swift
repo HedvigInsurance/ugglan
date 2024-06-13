@@ -7,7 +7,7 @@ struct OverlayView: View {
     var body: some View {
         GeometryReader { geometry in
             RoundedRectangle(cornerRadius: .defaultCornerRadius)
-                .fill(hTextColor.tertiary)
+                .fill(hTextColor.Opaque.tertiary)
                 .frame(width: geometry.size.width * audioPlayer.progress)
         }
     }

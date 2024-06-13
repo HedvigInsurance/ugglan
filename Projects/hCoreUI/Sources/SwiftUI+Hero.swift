@@ -16,7 +16,8 @@ public struct HeroAnimationWrapper<Content: View>: UIViewRepresentable {
     }
 
     public func updateUIView(_ uiView: UIView, context: Context) {
-        uiView.backgroundColor = hFillColor.opaqueOne.colorFor(.init(.init(colorScheme))!, .base).color.uiColor()
+        uiView.backgroundColor = hSurfaceColor.Opaque.primary.colorFor(.init(.init(colorScheme))!, .base).color
+            .uiColor()
     }
 }
 

@@ -30,14 +30,14 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
                 Spacer()
                 ZStack {
                     Image(
-                        uiImage: hCoreUIAssets.minusSmall.image
+                        uiImage: hCoreUIAssets.minus.image
                     )
                     .resizable()
                     .frame(width: 16, height: 16)
                     .transition(.opacity.animation(.easeOut))
                     .rotationEffect(selectedPerils.contains(peril) ? Angle(degrees: 360) : Angle(degrees: 270))
                     Image(
-                        uiImage: hCoreUIAssets.minusSmall.image
+                        uiImage: hCoreUIAssets.minus.image
                     )
                     .resizable()
                     .frame(width: 16, height: 16)
@@ -55,7 +55,7 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
                     ForEach(Array(peril.covered.enumerated()), id: \.offset) { index, item in
                         HStack(alignment: .top, spacing: 8) {
                             hText(String(format: "%02d", index + 1), style: .footnote)
-                                .foregroundColor(hTextColor.tertiary)
+                                .foregroundColor(hTextColor.Opaque.tertiary)
                             hText(item, style: .footnote)
                         }
                     }

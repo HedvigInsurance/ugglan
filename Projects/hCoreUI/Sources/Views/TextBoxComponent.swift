@@ -26,13 +26,13 @@ public struct TextBoxComponent<MainContent>: View where MainContent: View {
             VStack {
                 if let topTitle = topTitle {
                     hText(topTitle, style: .body)
-                        .foregroundColor(hTextColor.primary)
+                        .foregroundColor(hTextColor.Opaque.primary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.leading, 16)
                 }
                 if let subTitle = subTitle {
                     hText(subTitle, style: .body)
-                        .foregroundColor(hTextColor.secondary)
+                        .foregroundColor(hTextColor.Opaque.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.leading, 16)
                 }
@@ -42,7 +42,7 @@ public struct TextBoxComponent<MainContent>: View where MainContent: View {
         .padding(16)
         .background(
             Squircle.default()
-                .fill(hFillColor.opaqueOne)
+                .fill(hSurfaceColor.Opaque.primary)
                 .hShadow()
         )
         .onTapGesture {

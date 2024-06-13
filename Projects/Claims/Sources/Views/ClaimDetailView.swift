@@ -174,10 +174,10 @@ public struct ClaimDetailView: View {
     private func claimDetailsRow(title: String, value: String) -> some View {
         HStack {
             hText(title)
-                .foregroundColor(hTextColor.secondary)
+                .foregroundColor(hTextColor.Opaque.secondary)
             Spacer()
             hText(value)
-                .foregroundColor(hTextColor.secondary)
+                .foregroundColor(hTextColor.Opaque.secondary)
         }
     }
 
@@ -194,7 +194,7 @@ public struct ClaimDetailView: View {
                     .id("sds_\(String(describing: vm.claim.productVariant?.displayName))")
                 }
                 .withCustomAccessory {
-                    Image(uiImage: hCoreUIAssets.neArrowSmall.image)
+                    Image(uiImage: hCoreUIAssets.arrowNorthEast.image)
                 }
                 .onTap {
                     homeVm.document = termsAndConditionsDocument

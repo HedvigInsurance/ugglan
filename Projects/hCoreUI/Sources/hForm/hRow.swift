@@ -103,7 +103,7 @@ public struct StandaloneChevronAccessory: View {
 
     public var body: some View {
         Image(uiImage: hCoreUIAssets.chevronRightSmall.image)
-            .foregroundColor(hTextColor.secondary)
+            .foregroundColor(hTextColor.Opaque.secondary)
     }
 }
 
@@ -127,7 +127,7 @@ public struct SelectedAccessory: View {
     public var body: some View {
         Spacer()
         if selected {
-            Image(uiImage: hCoreUIAssets.tick.image)
+            Image(uiImage: hCoreUIAssets.checkmark.image)
         }
     }
 }

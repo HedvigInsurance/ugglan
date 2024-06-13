@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "hedvig_symbol_original_680x680-alpha_lightmode (1).png",
+      "filename" : "hedvig_symbol_original_4K-alpha_lightmode.png",
       "idiom" : "universal"
     },
     {
@@ -11,7 +11,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "hedvig_symbol_original_680x680-alpha-edit-darkmode.png",
+      "filename" : "helipad-darkmode.png",
       "idiom" : "universal"
     }
   ],

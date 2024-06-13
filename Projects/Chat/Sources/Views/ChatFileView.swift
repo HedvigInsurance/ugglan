@@ -35,7 +35,7 @@ struct ChatFileView: View {
                     .fade(duration: 0.25)
                     .placeholder({ progress in
                         ProgressView()
-                            .foregroundColor(hTextColor.primary)
+                            .foregroundColor(hTextColor.Opaque.primary)
                             .environment(\.colorScheme, .light)
 
                     })
@@ -49,7 +49,7 @@ struct ChatFileView: View {
                 }
             } else {
                 HStack {
-                    hCoreUIAssets.documentsMultiple.view
+                    hCoreUIAssets.documents.view
                     hText(L10n.chatFileDownload)
                 }
                 .padding(12)

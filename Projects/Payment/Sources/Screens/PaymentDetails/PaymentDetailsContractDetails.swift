@@ -20,14 +20,14 @@ struct ContractDetails: View {
                         Image(uiImage: hCoreUIAssets.chevronDownSmall.image)
                             .resizable()
                             .frame(width: 16, height: 16)
-                            .foregroundColor(hTextColor.secondary)
+                            .foregroundColor(hTextColor.Opaque.secondary)
                             .rotationEffect(
                                 expandedContracts.contains(contract.id) ? Angle(degrees: -180) : Angle(degrees: 0)
                             )
                             .padding(.top, 4)
                     }
                     hText(contract.subtitle)
-                        .foregroundColor(hTextColor.secondary)
+                        .foregroundColor(hTextColor.Opaque.secondary)
                 }
             }
             .withEmptyAccessory
@@ -53,15 +53,21 @@ struct ContractDetails: View {
                     VStack(alignment: .leading, spacing: 0) {
                         HStack {
                             hText(period.fromToDate)
-                                .foregroundColor(getColor(hTextColor.primary, isOutstanding: period.isOutstanding))
+                                .foregroundColor(
+                                    getColor(hTextColor.Opaque.primary, isOutstanding: period.isOutstanding)
+                                )
                             Spacer()
                             hText(period.amount.formattedAmount)
-                                .foregroundColor(getColor(hTextColor.secondary, isOutstanding: period.isOutstanding))
+                                .foregroundColor(
+                                    getColor(hTextColor.Opaque.secondary, isOutstanding: period.isOutstanding)
+                                )
 
                         }
                         if let desciption = period.desciption {
                             hText(desciption, style: .standardSmall)
-                                .foregroundColor(getColor(hTextColor.secondary, isOutstanding: period.isOutstanding))
+                                .foregroundColor(
+                                    getColor(hTextColor.Opaque.secondary, isOutstanding: period.isOutstanding)
+                                )
 
                         }
                     }
@@ -83,7 +89,7 @@ struct ContractDetails: View {
     @hColorBuilder
     private func getColor(_ baseColor: some hColor, isOutstanding: Bool) -> some hColor {
         if isOutstanding {
-            hSignalColor.redElement
+            hSignalColor.Red.element
         } else {
             baseColor
         }

@@ -34,11 +34,11 @@ struct OTPCodeDisplay: View {
 
     @hColorBuilder func digitStroke(focused: Bool) -> some hColor {
         if showRedBorders {
-            hSignalColor.redText
+            hSignalColor.Red.text
         } else if focused {
-            hTextColor.primary
+            hTextColor.Opaque.primary
         } else {
-            hTextColor.tertiary
+            hTextColor.Opaque.tertiary
         }
     }
 
@@ -49,7 +49,7 @@ struct OTPCodeDisplay: View {
                 let hasValue = digit != ""
 
                 if offset == 3 {
-                    hText("-").foregroundColor(hTextColor.tertiary)
+                    hText("-").foregroundColor(hTextColor.Opaque.tertiary)
                 }
 
                 VStack {

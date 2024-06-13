@@ -46,7 +46,7 @@ struct FilesGridView: View {
                                                 Image(uiImage: HCoreUIAsset.closeSmall.image)
                                                     .resizable()
                                                     .frame(width: 16, height: 16)
-                                                    .foregroundColor(hTextColor.secondary)
+                                                    .foregroundColor(hTextColor.Opaque.secondary)
                                             )
                                     )
                                     .offset(.init(width: 8, height: -8))

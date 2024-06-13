@@ -101,7 +101,7 @@ struct MovingFlowConfirm: View {
                     VStack(alignment: .leading) {
                         hText(quote.exposureName ?? quote.displayName)
                         hText(L10n.changeAddressActivationDate(quote.startDate))
-                            .foregroundColor(hTextColor.secondary)
+                            .foregroundColor(hTextColor.Opaque.secondary)
                     }
                     Spacer()
                 }
@@ -113,7 +113,7 @@ struct MovingFlowConfirm: View {
                     Image(uiImage: hCoreUIAssets.chevronDown.image)
                         .resizable()
                         .frame(width: 16, height: 16)
-                        .foregroundColor(hTextColor.tertiary)
+                        .foregroundColor(hTextColor.Opaque.tertiary)
                         .rotationEffect(isExpanded ? Angle(degrees: -180) : Angle(degrees: 0))
                     Spacer()
                     hText("\(quote.premium.formattedAmountWithoutDecimal)\(L10n.perMonth)")
@@ -129,7 +129,7 @@ struct MovingFlowConfirm: View {
                             }
                         }
                     }
-                    .foregroundColor(hTextColor.secondary)
+                    .foregroundColor(hTextColor.Opaque.secondary)
                 }
             }
             .padding(16)
@@ -237,7 +237,7 @@ struct MovingFlowConfirm: View {
                 }
                 .withCustomAccessory {
                     Spacer()
-                    Image(uiImage: hCoreUIAssets.neArrowSmall.image)
+                    Image(uiImage: hCoreUIAssets.arrowNorthEast.image)
                 }
                 .onTap {
                     if let url = URL(string: document.url) {
@@ -260,7 +260,7 @@ struct MovingFlowConfirm: View {
             hSection {
                 VStack(alignment: .leading, spacing: 0) {
                     hText(L10n.changeAddressQa)
-                    hText(L10n.changeAddressFaqSubtitle).foregroundColor(hTextColor.secondary)
+                    hText(L10n.changeAddressFaqSubtitle).foregroundColor(hTextColor.Opaque.secondary)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -278,7 +278,7 @@ struct MovingFlowConfirm: View {
                             }
                             .withCustomAccessory {
                                 Image(
-                                    uiImage: expanded ? hCoreUIAssets.minusSmall.image : hCoreUIAssets.plusSmall.image
+                                    uiImage: expanded ? hCoreUIAssets.minus.image : hCoreUIAssets.plusSmall.image
                                 )
                                 .resizable()
                                 .frame(width: 16, height: 16)
@@ -286,7 +286,8 @@ struct MovingFlowConfirm: View {
                             .verticalPadding(12)
                             if expanded, let description = faq.description {
                                 hRow {
-                                    hText(description, style: .standardSmall).foregroundColor(hTextColor.secondary)
+                                    hText(description, style: .standardSmall)
+                                        .foregroundColor(hTextColor.Opaque.secondary)
 
                                 }
                                 .verticalPadding(12)

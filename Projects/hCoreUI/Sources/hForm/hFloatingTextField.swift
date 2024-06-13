@@ -247,15 +247,15 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     @hColorBuilder
     private var foregroundColor: some hColor {
         if isEnabled {
-            hTextColor.primary
+            hTextColor.Opaque.primary
         } else {
-            hTextColor.secondary
+            hTextColor.Opaque.secondary
         }
     }
 
     private var getSuffixLabel: some View {
         hText(suffix ?? "", style: .title3)
-            .foregroundColor(hTextColor.secondary)
+            .foregroundColor(hTextColor.Opaque.secondary)
     }
 }
 
@@ -389,7 +389,7 @@ struct TextFieldClearButton<Value: hTextFieldFocusStateCompliant>: ViewModifier 
                                 Image(uiImage: hCoreUIAssets.closeSmall.image)
                                     .resizable()
                                     .frame(width: 16, height: 16)
-                                    .foregroundColor(hTextColor.primary)
+                                    .foregroundColor(hTextColor.Opaque.primary)
                             }
                         )
                     )

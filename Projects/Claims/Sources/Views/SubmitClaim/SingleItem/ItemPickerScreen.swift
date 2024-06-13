@@ -23,7 +23,7 @@ public struct ItemPickerScreen<T>: View {
                     hSection {
                         hRow {
                             hText(item.displayName, style: .title3)
-                                .foregroundColor(hTextColor.primary)
+                                .foregroundColor(hTextColor.Opaque.primary)
                             Spacer()
                         }
                         .withChevronAccessory
@@ -31,7 +31,7 @@ public struct ItemPickerScreen<T>: View {
                         .onTap {
                             onSelected(item.object)
                         }
-                        .foregroundColor(hTextColor.tertiary)
+                        .foregroundColor(hTextColor.Opaque.tertiary)
                     }
                 }
             }

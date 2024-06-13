@@ -26,7 +26,7 @@ struct PaymentDetailsDiscountView: View {
                     .padding(.horizontal, 8)
                     .background(
                         RoundedRectangle(cornerRadius: 8)
-                            .fill(hFillColor.opaqueOne)
+                            .fill(hSurfaceColor.Opaque.primary)
                     )
                     .onTapGesture {
                         startRemoveCode()
@@ -53,7 +53,7 @@ struct PaymentDetailsDiscountView: View {
                         if let validUntil = vm.discount.validUntil {
                             if vm.shouldShowExpire {
                                 hText(L10n.paymentsExpiredDate(validUntil.displayDate), style: .standardSmall)
-                                    .foregroundColor(hSignalColor.redElement)
+                                    .foregroundColor(hSignalColor.Red.element)
                             } else {
                                 hText(L10n.paymentsValidUntil(validUntil.displayDate), style: .standardSmall)
                             }
@@ -68,7 +68,7 @@ struct PaymentDetailsDiscountView: View {
                     }
                 }
             }
-            .foregroundColor(hTextColor.secondary)
+            .foregroundColor(hTextColor.Opaque.secondary)
         }
         .hWithoutHorizontalPadding
         .dividerInsets(.all, 0)
@@ -77,9 +77,9 @@ struct PaymentDetailsDiscountView: View {
     @hColorBuilder
     private var getCodeTextColor: some hColor {
         if vm.shouldShowExpire {
-            hTextColor.secondary
+            hTextColor.Opaque.secondary
         } else {
-            hTextColor.primary
+            hTextColor.Opaque.primary
         }
     }
 

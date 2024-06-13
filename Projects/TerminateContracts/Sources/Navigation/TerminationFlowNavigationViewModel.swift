@@ -9,10 +9,35 @@ class TerminationFlowNavigationViewModel: ObservableObject {
     @Published var isDatePickerPresented = false
     @Published var isConfirmTerminationPresented = false
     @Published var isProcessingPresented = false
-    @Published var redirectAction: FlowTerminationSurveyRedirectAction?
-    @Published var redirectUrl: URL?
+    var redirectAction: FlowTerminationSurveyRedirectAction? {
+        didSet {
+            switch redirectAction {
+            case .updateAddress:
+                self.router.dismiss()
+                var url = Environment.current.deepLinkUrl
+                url.appendPathComponent(DeepLink.moveContract.rawValue)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    NotificationCenter.default.post(name: .openDeepLink, object: url)
+                }
+            case .none:
+                break
+            }
+        }
+    }
+    var redirectUrl: URL? {
+        didSet {
+            if let redirectUrl {
+                self.router.dismiss()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    NotificationCenter.default.post(name: .openDeepLink, object: redirectUrl)
+                }
+            }
+        }
+    }
     let router = Router()
     var cancellable: AnyCancellable?
+
+    init() {}
 
 }
 
@@ -340,7 +365,7 @@ struct TerminationFlowNavigation: View {
             description: L10n.terminationFlowCancelInfoText,
             type: .navigation
         )
-        .foregroundColor(hTextColor.primary)
+        .foregroundColor(hTextColor.Opaque.primary)
     }
 }
 

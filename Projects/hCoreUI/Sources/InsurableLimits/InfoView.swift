@@ -60,9 +60,9 @@ public struct InfoViewHolder: View {
         var image: UIImage {
             switch self {
             case .regular:
-                hCoreUIAssets.infoIconFilled.image
+                hCoreUIAssets.infoFilled.image
             case .navigation:
-                hCoreUIAssets.infoIcon.image
+                hCoreUIAssets.infoOutlined.image
             }
         }
 
@@ -70,9 +70,9 @@ public struct InfoViewHolder: View {
         var color: some hColor {
             switch self {
             case .regular:
-                hTextColor.secondary
+                hTextColor.Opaque.secondary
             case .navigation:
-                hTextColor.primary
+                hTextColor.Opaque.primary
             }
         }
     }
@@ -100,7 +100,7 @@ public struct InfoView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     hText(title)
                     hText(description)
-                        .foregroundColor(hTextColor.secondary)
+                        .foregroundColor(hTextColor.Opaque.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .padding(.horizontal, 8)

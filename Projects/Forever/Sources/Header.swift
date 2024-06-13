@@ -19,7 +19,7 @@ struct HeaderView: View {
                 ) { data in
                     if let monthlyDiscount = data?.monthlyDiscount, monthlyDiscount.value == 0 {
                         hText(monthlyDiscount.negative.formattedAmount)
-                            .foregroundColor(hTextColor.secondary)
+                            .foregroundColor(hTextColor.Opaque.secondary)
                     }
                 }
                 PresentableStoreLens(
@@ -65,7 +65,7 @@ struct HeaderView: View {
                                     monthlyDiscountPerReferral.formattedAmount
                                 )
                             )
-                            .foregroundColor(hTextColor.secondary)
+                            .foregroundColor(hTextColor.Opaque.secondary)
                             .multilineTextAlignment(.center)
                             .padding(.top, 8)
                         }

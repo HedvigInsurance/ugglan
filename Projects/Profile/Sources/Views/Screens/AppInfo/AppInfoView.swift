@@ -41,13 +41,13 @@ public struct AppInfoView: View {
         ) { state in
             let memberId = state.memberDetails?.id
             hRow {
-                hText(L10n.profileAboutAppMemberId).foregroundColor(hTextColor.primary)
+                hText(L10n.profileAboutAppMemberId).foregroundColor(hTextColor.Opaque.primary)
             }
             .noSpacing()
             .withCustomAccessory {
                 HStack {
                     Spacer()
-                    hText(memberId ?? "").foregroundColor(hTextColor.secondary)
+                    hText(memberId ?? "").foregroundColor(hTextColor.Opaque.secondary)
                 }
             }
             .onTap {
@@ -61,14 +61,14 @@ public struct AppInfoView: View {
         let appVersion = Bundle.main.appVersion
         return hRow {
             hText(L10n.profileAboutAppVersion)
-                .foregroundColor(hTextColor.primary)
+                .foregroundColor(hTextColor.Opaque.primary)
         }
         .noSpacing()
         .withCustomAccessory {
             HStack {
                 Spacer()
                 hText(appVersion)
-                    .foregroundColor(hTextColor.secondary)
+                    .foregroundColor(hTextColor.Opaque.secondary)
             }
         }
         .onTap {
@@ -81,7 +81,7 @@ public struct AppInfoView: View {
         let deviceId = ApolloClient.getDeviceIdentifier()
         return hRow {
             hText(L10n.AppInfo.deviceIdLabel)
-                .foregroundColor(hTextColor.primary)
+                .foregroundColor(hTextColor.Opaque.primary)
         }
         .noSpacing()
         .withCustomAccessory {
@@ -90,7 +90,7 @@ public struct AppInfoView: View {
                 hText(deviceId, style: .standardSmall)
                     .minimumScaleFactor(0.2)
                     .lineLimit(1)
-                    .foregroundColor(hTextColor.secondary)
+                    .foregroundColor(hTextColor.Opaque.secondary)
 
             }
         }
@@ -133,7 +133,7 @@ public struct AppInfoView: View {
     private func showToaster() {
         Toasts.shared.displayToast(
             toast: Toast(
-                symbol: .icon(hCoreUIAssets.tick.image),
+                symbol: .icon(hCoreUIAssets.checkmark.image),
                 body: L10n.General.copied
             )
         )

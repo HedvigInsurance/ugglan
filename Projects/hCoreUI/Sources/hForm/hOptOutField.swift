@@ -96,20 +96,20 @@ public struct hOptOutField: View {
     @hColorBuilder
     var getLabelColor: some hColor {
         if config.notSure {
-            hTextColor.tertiaryTranslucent
+            hTextColor.Opaque.tertiary
         } else if value != "" {
-            hTextColor.primary
+            hTextColor.Opaque.primary
         } else {
-            hTextColor.secondary
+            hTextColor.Opaque.secondary
         }
     }
 
     @hColorBuilder
     var getToggleTextColor: some hColor {
         if config.notSure {
-            hTextColor.primary
+            hTextColor.Opaque.primary
         } else {
-            hTextColor.secondaryTranslucent
+            hTextColor.Translucent.secondary
         }
     }
 

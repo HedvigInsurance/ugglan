@@ -62,9 +62,9 @@ extension TravelCertificateModel {
     @hColorBuilder
     var textColor: some hColor {
         if valid {
-            hTextColor.primary
+            hTextColor.Opaque.primary
         } else {
-            hSignalColor.redElement
+            hSignalColor.Red.element
         }
     }
 }

@@ -36,7 +36,7 @@ struct ImagesView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 12))
                             .contentShape(RoundedRectangle(cornerRadius: 12))
                             .overlay(
-                                RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.opaqueOne, lineWidth: 0.5)
+                                RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.primary, lineWidth: 0.5)
                             )
                         }
                     }
@@ -143,10 +143,10 @@ struct PHPAssetPreview: View {
                 } content: {
                     if loading {
                         ProgressView()
-                            .foregroundColor(hTextColor.primary)
+                            .foregroundColor(hTextColor.Opaque.primary)
                     } else {
                         hText(L10n.chatUploadPresend)
-                            .foregroundColor(hTextColor.primary)
+                            .foregroundColor(hTextColor.Opaque.primary)
                             .colorScheme(.light)
                     }
                 }

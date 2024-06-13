@@ -32,11 +32,11 @@ public struct InfoExpandableView: View {
             .withCustomAccessory({
                 ZStack {
                     Image(
-                        uiImage: hCoreUIAssets.minusSmall.image
+                        uiImage: hCoreUIAssets.minus.image
                     )
                     .rotationEffect(isSelected ? Angle(degrees: 360) : Angle(degrees: 270))
                     Image(
-                        uiImage: hCoreUIAssets.minusSmall.image
+                        uiImage: hCoreUIAssets.minus.image
                     )
                     .rotationEffect(isSelected ? Angle(degrees: 360) : Angle(degrees: 180))
                 }
@@ -62,8 +62,8 @@ public struct InfoExpandableView: View {
                             config: .init(
                                 text: text,
                                 fontStyle: .standard,
-                                color: hTextColor.secondary,
-                                linkColor: hTextColor.primary,
+                                color: hTextColor.Opaque.secondary,
+                                linkColor: hTextColor.Opaque.primary,
                                 linkUnderlineStyle: .single
                             ) { url in
                                 onMarkDownClick?(url)

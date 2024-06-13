@@ -30,8 +30,8 @@ struct HelpCenterQuestionView: View {
                                 config: .init(
                                     text: question.answer,
                                     fontStyle: .standard,
-                                    color: hTextColor.secondary,
-                                    linkColor: hTextColor.primary,
+                                    color: hTextColor.Opaque.secondary,
+                                    linkColor: hTextColor.Opaque.primary,
                                     linkUnderlineStyle: .single
                                 ) { url in
                                     NotificationCenter.default.post(name: .openDeepLink, object: url)
@@ -45,7 +45,7 @@ struct HelpCenterQuestionView: View {
                     .padding(.top, 8)
             }
         }
-        .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hFillColor.opaqueOne))
+        .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary))
         .edgesIgnoringSafeArea(.bottom)
     }
 }

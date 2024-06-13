@@ -28,7 +28,7 @@ public struct DeleteAccountView: View {
                     VStack(alignment: vm.alignment, spacing: vm.titleAndDescriptionSpacing) {
                         if let topIcon = vm.topIcon {
                             Image(uiImage: topIcon)
-                                .foregroundColor(hSignalColor.amberElement)
+                                .foregroundColor(hSignalColor.Amber.element)
                                 .padding(.bottom, 16)
                         }
                         hText(vm.title)
@@ -36,8 +36,8 @@ public struct DeleteAccountView: View {
                             config: .init(
                                 text: vm.text,
                                 fontStyle: .standard,
-                                color: hTextColor.secondary,
-                                linkColor: hTextColor.primary,
+                                color: hTextColor.Opaque.secondary,
+                                linkColor: hTextColor.Opaque.primary,
                                 linkUnderlineStyle: .single,
                                 textAlignment: vm.textAlignment
                             ) { url in

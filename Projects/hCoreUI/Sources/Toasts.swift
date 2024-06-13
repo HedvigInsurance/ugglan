@@ -52,7 +52,7 @@ public struct Toast: Equatable {
         borderColor: UIColor = UIColor.brand(.toasterBorder),
         symbolColor: UIColor = UIColor(dynamic: { trait -> UIColor in
             UIColor(
-                hSignalColor.greenElement.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base)
+                hSignalColor.Green.element.colorFor(trait.userInterfaceStyle == .dark ? .dark : .light, .base)
                     .color
             )
         }),
@@ -203,7 +203,7 @@ extension Toast: Viewable {
             chevronImageView.snp.makeConstraints { make in
                 make.width.equalTo(20)
             }
-            chevronImageView.image = hCoreUIAssets.arrowForward.image
+            chevronImageView.image = hCoreUIAssets.arrowRight.image
 
             stackView.addArrangedSubview(chevronImageView)
 

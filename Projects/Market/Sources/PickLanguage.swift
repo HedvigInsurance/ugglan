@@ -51,7 +51,7 @@ public struct PickLanguage: View {
                                             .resizable()
                                             .frame(width: 24, height: 24)
                                         hText(locale.displayName, style: .title3)
-                                            .foregroundColor(hTextColor.primary)
+                                            .foregroundColor(hTextColor.Opaque.primary)
                                     }
                                 },
                                 selected: $code
@@ -99,18 +99,18 @@ public struct PickLanguage: View {
     @hColorBuilder
     func retColor(isSelected: Bool) -> some hColor {
         if isSelected {
-            hTextColor.primary
+            hTextColor.Opaque.primary
         } else {
-            hFillColor.opaqueOne
+            hSurfaceColor.Opaque.primary
         }
     }
 
     @hColorBuilder
     func getBorderColor(isSelected: Bool) -> some hColor {
         if isSelected {
-            hTextColor.primary
+            hTextColor.Opaque.primary
         } else {
-            hBorderColor.opaqueTwo
+            hBorderColor.secondary
         }
     }
 }

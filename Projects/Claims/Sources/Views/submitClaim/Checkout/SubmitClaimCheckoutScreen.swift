@@ -55,7 +55,7 @@ public struct SubmitClaimCheckoutScreen: View {
                         singleItemCheckoutStep?.compensation.payoutAmount.formattedAmount ?? "",
                         style: .standardExtraExtraLarge
                     )
-                    .foregroundColor(hTextColor.primary)
+                    .foregroundColor(hTextColor.Opaque.primary)
                 }
                 .background(
                     Squircle.default()
@@ -95,7 +95,7 @@ public struct SubmitClaimCheckoutScreen: View {
             .withHeader {
                 HStack {
                     hText(L10n.claimsCheckoutCountTitle, style: .body)
-                        .foregroundColor(hTextColor.primary)
+                        .foregroundColor(hTextColor.Opaque.primary)
                     Spacer()
                     InfoViewHolder(
                         title: L10n.claimsCheckoutCountTitle,
@@ -135,7 +135,7 @@ public struct SubmitClaimCheckoutScreen: View {
                         hSection {
                             hRow {
                                 hText(element.getDisplayName(), style: .title3)
-                                    .foregroundColor(hTextColor.primary)
+                                    .foregroundColor(hTextColor.Opaque.primary)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                             }
                             .withSelectedAccessory(
@@ -156,7 +156,7 @@ public struct SubmitClaimCheckoutScreen: View {
             .withHeader {
                 HStack {
                     hText(L10n.Claims.Payout.Summary.method, style: .body)
-                        .foregroundColor(hTextColor.primary)
+                        .foregroundColor(hTextColor.Opaque.primary)
                     Spacer()
                     InfoViewHolder(
                         title: L10n.Claims.Payout.Summary.method,
@@ -173,10 +173,10 @@ public struct SubmitClaimCheckoutScreen: View {
             HStack {
                 if useDarkTitle {
                     hText(title, style: .body)
-                        .foregroundColor(hTextColor.primary)
+                        .foregroundColor(hTextColor.Opaque.primary)
                 } else {
                     hText(title, style: .body)
-                        .foregroundColor(hTextColor.secondary)
+                        .foregroundColor(hTextColor.Opaque.secondary)
                 }
                 Spacer()
 
@@ -184,7 +184,7 @@ public struct SubmitClaimCheckoutScreen: View {
                     model?.formattedAmount ?? "",
                     style: .body
                 )
-                .foregroundColor(hTextColor.secondary)
+                .foregroundColor(hTextColor.Opaque.secondary)
             }
         }
         .noSpacing()
@@ -201,7 +201,7 @@ public struct SubmitClaimCheckoutScreen: View {
             ForEach(payoutMethods, id: \.id) { element in
                 hRow {
                     hText(element.getDisplayName(), style: .headline)
-                        .foregroundColor(hTextColor.primary)
+                        .foregroundColor(hTextColor.Opaque.primary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.bottom, 4)
                 }

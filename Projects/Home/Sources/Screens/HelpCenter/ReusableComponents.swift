@@ -28,14 +28,14 @@ struct HelpCenterPill: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 hText(title, style: .standardSmall)
-                    .foregroundColor(hTextColor.primaryTranslucent)
+                    .foregroundColor(hTextColor.Translucent.primary)
                     .colorScheme(.light)
             }
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
             .background(pillBackgroundColor)
             .border(
-                hBorderColor.translucentOne,
+                hBorderColor.primary,
                 width: 0.5
             )
             .cornerRadius(8)
@@ -47,15 +47,15 @@ struct HelpCenterPill: View {
     var pillBackgroundColor: some hColor {
         switch color {
         case .blue:
-            hHighlightColor.blueFillOne
+            hHighlightColor.Blue.fillOne
         case .green:
-            hSignalColor.greenFill
+            hSignalColor.Green.fill
         case .yellow:
-            hHighlightColor.yellowFillOne
+            hHighlightColor.Yellow.fillOne
         case .purple:
-            hHighlightColor.purpleFillOne
+            hHighlightColor.Purple.fillOne
         case .pink:
-            hHighlightColor.pinkFillOne
+            hHighlightColor.Pink.fillOne
         }
     }
 }
@@ -150,9 +150,9 @@ struct SupportView: View {
         HStack {
             VStack(spacing: 0) {
                 hText(L10n.hcChatQuestion)
-                    .foregroundColor(hTextColor.primaryTranslucent)
+                    .foregroundColor(hTextColor.Translucent.primary)
                 hText(L10n.hcChatAnswer)
-                    .foregroundColor(hTextColor.secondaryTranslucent)
+                    .foregroundColor(hTextColor.Translucent.secondary)
                     .multilineTextAlignment(.center)
 
                 hButton.MediumButton(type: .primary) {
@@ -170,7 +170,7 @@ struct SupportView: View {
             .padding(.bottom, 24)
         }
         .frame(maxWidth: .infinity)
-        .background(hFillColor.opaqueOne)
+        .background(hSurfaceColor.Opaque.primary)
     }
 }
 

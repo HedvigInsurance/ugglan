@@ -126,11 +126,11 @@ struct PaymentDetailsView: View {
                 if data.payment.gross.amount != data.payment.net.amount {
                     if #available(iOS 16.0, *) {
                         hText(data.payment.gross.formattedAmount)
-                            .foregroundColor(hTextColor.secondary)
+                            .foregroundColor(hTextColor.Opaque.secondary)
                             .strikethrough()
                     } else {
                         hText(data.payment.gross.formattedAmount)
-                            .foregroundColor(hTextColor.secondary)
+                            .foregroundColor(hTextColor.Opaque.secondary)
                     }
                 }
                 hText(data.payment.net.formattedAmount)
@@ -146,7 +146,7 @@ struct PaymentDetailsView: View {
                     hText(L10n.paymentsPaymentDue)
                     Spacer()
                     hText(data.payment.date.displayDate)
-                        .foregroundColor(hTextColor.secondary)
+                        .foregroundColor(hTextColor.Opaque.secondary)
                 }
                 if data.status != .upcoming {
                     PaymentStatusView(status: data.status) { action in
@@ -186,7 +186,7 @@ struct PaymentDetailsView: View {
                     hText(item.key)
                     Spacer()
                     hText(item.value)
-                        .foregroundColor(hTextColor.secondary)
+                        .foregroundColor(hTextColor.Opaque.secondary)
                 }
             }
             .hWithoutHorizontalPadding
@@ -206,7 +206,7 @@ struct PaymentDetailsView: View {
                     title: L10n.paymentsPaymentDetailsInfoTitle,
                     description: L10n.paymentsPaymentDetailsInfoDescription
                 )
-                .foregroundColor(hTextColor.secondary)
+                .foregroundColor(hTextColor.Opaque.secondary)
             }
         }
         .hWithoutHorizontalPadding

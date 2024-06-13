@@ -99,10 +99,10 @@ public struct ChatScreen: View {
                     if vm.lastDeliveredMessage?.id == message.id {
                         hText(message.timeStampString)
                         hText(" ∙ \(L10n.chatDeliveredMessage)")
-                        hCoreUIAssets.circularCheckmarkFilled.view
+                        hCoreUIAssets.checkmarkFilled.view
                             .resizable()
                             .frame(width: 16, height: 16)
-                            .foregroundColor(hSignalColor.blueElement)
+                            .foregroundColor(hSignalColor.Blue.element)
                             .padding(.leading, 2)
                     } else if case .failed = message.status {
                         hText(L10n.chatFailedToSend)
@@ -113,7 +113,7 @@ public struct ChatScreen: View {
 
                 }
                 .hTextStyle(.standardSmall)
-                .foregroundColor(hTextColor.tertiary)
+                .foregroundColor(hTextColor.Opaque.tertiary)
                 .padding(.bottom, 3)
 
             }
@@ -133,8 +133,8 @@ public struct ChatScreen: View {
                         config: .init(
                             text: banner,
                             fontStyle: .standardSmall,
-                            color: hSignalColor.blueText,
-                            linkColor: hSignalColor.blueText,
+                            color: hSignalColor.Blue.text,
+                            linkColor: hSignalColor.Blue.text,
                             linkUnderlineStyle: .single
                         ) { url in
                             NotificationCenter.default.post(name: .openDeepLink, object: url)

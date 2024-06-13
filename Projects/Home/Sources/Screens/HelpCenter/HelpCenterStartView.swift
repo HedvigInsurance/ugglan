@@ -49,7 +49,7 @@ public struct HelpCenterStartView: View {
                             VStack(alignment: .leading, spacing: 8) {
                                 hText(vm.helpCenterModel.title)
                                 hText(vm.helpCenterModel.description)
-                                    .foregroundColor(hTextColor.secondary)
+                                    .foregroundColor(hTextColor.Opaque.secondary)
                             }
                             displayQuickActions(from: vm.quickActions)
                             displayCommonTopics()
@@ -69,7 +69,8 @@ public struct HelpCenterStartView: View {
             }
         }
         .hFormBottomBackgroundColor(
-            vm.searchInProgress ? .transparent : .gradient(from: hBackgroundColor.primary, to: hFillColor.opaqueOne)
+            vm.searchInProgress
+                ? .transparent : .gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary)
         )
         .hFormObserveKeyboard
         .edgesIgnoringSafeArea(.bottom)
@@ -104,7 +105,7 @@ public struct HelpCenterStartView: View {
                             VStack(alignment: .leading, spacing: 0) {
                                 hText(quickAction.displayTitle)
                                 hText(quickAction.displaySubtitle, style: .standardSmall)
-                                    .foregroundColor(hTextColor.secondary)
+                                    .foregroundColor(hTextColor.Opaque.secondary)
 
                             }
                             Spacer()
@@ -143,7 +144,7 @@ public struct HelpCenterStartView: View {
                             VStack(alignment: .leading, spacing: 0) {
                                 hText(quickAction.displayTitle)
                                 hText(quickAction.displaySubtitle, style: .standardSmall)
-                                    .foregroundColor(hTextColor.secondary)
+                                    .foregroundColor(hTextColor.Opaque.secondary)
 
                             }
 
@@ -299,7 +300,7 @@ extension HelpCenterStartViewModel: UISearchControllerDelegate {
 
     func updateColors() {
         let button = searchController.searchBar.subviews.first?.subviews.last?.subviews.last as? UIButton
-        let hColor = hTextColor.primary
+        let hColor = hTextColor.Opaque.primary
         let color = UIColor(
             light: hColor.colorFor(.light, .base).color.uiColor(),
             dark: hColor.colorFor(.dark, .base).color.uiColor()

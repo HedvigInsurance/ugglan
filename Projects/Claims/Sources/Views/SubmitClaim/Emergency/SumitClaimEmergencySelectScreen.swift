@@ -62,7 +62,7 @@ struct SumitClaimEmergencySelectScreen: View {
                         } content: {
                             hText(option.displayName)
                                 .foregroundColor(
-                                    hColorScheme(light: hTextColor.primary, dark: hTextColor.negative)
+                                    hColorScheme(light: hTextColor.Opaque.primary, dark: hTextColor.Opaque.negative)
                                 )
                         }
                         .fixedSize(horizontal: false, vertical: true)

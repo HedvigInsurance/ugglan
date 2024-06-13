@@ -20,7 +20,7 @@ struct DiscountCodeSectionView: View {
                             UIPasteboard.general.string = code
                             Toasts.shared.displayToast(
                                 toast: .init(
-                                    symbol: .icon(hCoreUIAssets.tick.image),
+                                    symbol: .icon(hCoreUIAssets.checkmark.image),
                                     body: L10n.ReferralsActiveToast.text
                                 )
                             )

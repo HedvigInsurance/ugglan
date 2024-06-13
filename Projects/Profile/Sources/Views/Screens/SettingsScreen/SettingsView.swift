@@ -84,7 +84,7 @@ struct SettingsView: View {
                     }
                 } content: {
                     hText(L10n.SettingsScreen.deleteAccountButton)
-                        .foregroundColor(hSignalColor.redElement)
+                        .foregroundColor(hSignalColor.Red.element)
                 }
             }
             .padding(16)

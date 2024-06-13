@@ -95,7 +95,7 @@ public struct hTextField: View {
                         .lineLimit(5...10)
                         .modifier(hFontModifier(style: .body))
                         .modifier(masking)
-                        .tint(hTextColor.primary)
+                        .tint(hTextColor.Opaque.primary)
                         .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in
                             if shouldUpdate {
                                 value = masking.maskValue(text: innerValue, previousText: previousInnerValue)
@@ -108,7 +108,7 @@ public struct hTextField: View {
                     SwiftUI.TextField(placeholder ?? "", text: $innerValue)
                         .modifier(hFontModifier(style: .body))
                         .modifier(masking)
-                        .tint(hTextColor.primary)
+                        .tint(hTextColor.Opaque.primary)
                         .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in
                             if shouldUpdate {
                                 value = masking.maskValue(text: innerValue, previousText: previousInnerValue)
@@ -127,7 +127,7 @@ public struct hTextField: View {
                     hText(errorMessage, style: .footnote)
                         .padding(.top, 7)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .foregroundColor(hSignalColor.redText)
+                        .foregroundColor(hSignalColor.Red.text)
                 }
             }
         }
