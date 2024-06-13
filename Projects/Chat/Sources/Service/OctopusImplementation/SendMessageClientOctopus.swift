@@ -2,7 +2,6 @@ import Foundation
 import hCore
 import hGraphQL
 
-
 public class SendMessagesClientOctopus: SendMessageClient {
     @Inject var octopus: hOctopus
     var chatFileUploaderService = ChatFileUploaderService()
