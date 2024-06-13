@@ -56,12 +56,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let authenticationService = AuthenticationService()
             do {
                 try await authenticationService.logout()
+                ApolloClient.deleteToken()
+                clearData()
             } catch _ {
-
+                ApolloClient.deleteToken()
+                clearData()
             }
         }
-        ApolloClient.deleteToken()
-        clearData()
+
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
@@ -210,7 +212,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             if ApplicationState.currentState != .notLoggedIn {
                 DispatchQueue.main.async {
                     ApplicationState.preserveState(.notLoggedIn)
-                    ApplicationContext.shared.hasFinishedBootstrapping = true
+                    ApplicationState.state = .notLoggedIn
                     self?.logout()
                     let toast = Toast(
                         symbol: .icon(hCoreUIAssets.infoFilled.image),

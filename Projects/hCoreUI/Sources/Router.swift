@@ -20,8 +20,6 @@ public class Router: ObservableObject {
 
     var builders: [String: Builderrr<AnyView>] = [:]
 
-    var builders2: [String: ((AnyHashable) -> any View)] = [:]
-
     public func push<T>(_ route: T) where T: Hashable & TrackingViewNameProtocol {
         let key = "\(T.self)"
         if let builder = builders[key], let view = builder.builder(route) {
