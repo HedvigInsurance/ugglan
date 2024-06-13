@@ -115,7 +115,7 @@ public class ConversationsClientOctopus: ConversationsClient {
             id: UUID().uuidString,
             messages: messages,
             nextUntil: olderToken,
-            banner: nil
+            banner: data.conversation.statusMessage
         )
     }
 }
