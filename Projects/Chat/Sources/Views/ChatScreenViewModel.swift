@@ -85,7 +85,6 @@ public class ChatScreenViewModel: ObservableObject {
         if let hasNext, hasNext, !isFetchingPreviousMessages {
             do {
                 isFetchingPreviousMessages = true
-
                 let chatData = try await chatService.getPreviousMessages()
                 let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
                 withAnimation {
@@ -98,8 +97,14 @@ public class ChatScreenViewModel: ObservableObject {
                 self.hasNext = chatData.hasNext
 
                 isFetchingPreviousMessages = false
-            } catch let ex {
-
+            } catch _ {
+                isFetchingPreviousMessages = false
+                if #available(iOS 16.0, *) {
+                    try! await Task.sleep(for: .seconds(2))
+                } else {
+                    try! await Task.sleep(nanoseconds: 2_000_000_000)
+                }
+                await fetchPreviousMessages()
             }
         }
     }
@@ -117,8 +122,13 @@ public class ChatScreenViewModel: ObservableObject {
             self.banner = chatData.banner
             addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
             hasNext = chatData.hasNext
-        } catch let ex {
-
+        } catch _ {
+            if #available(iOS 16.0, *) {
+                try! await Task.sleep(for: .seconds(2))
+            } else {
+                try! await Task.sleep(nanoseconds: 2_000_000_000)
+            }
+            await fetchMessages()
         }
     }
 
