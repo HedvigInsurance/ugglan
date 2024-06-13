@@ -92,35 +92,58 @@ public class ChatScreenViewModel: ObservableObject {
     @MainActor
     private func fetch(with next: String? = nil) async {
         do {
-            var newMessages: [Message] = []
-            let chatData = try await fetchMessagesService.get(next)
-
-            if conversation != nil {
-                let newMessages = try await conversationService.getConversationMessages(for: conversation?.id ?? "")
-            } else {
+            if let conversation {
+                let chatData = try await conversationService.getConversationMessages(
+                    for: conversation.id,
+                    olderToken: next,
+                    newerToken: nil
+                )
                 let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
-            }
-
-            if !newMessages.isEmpty {
-                if next != nil {
-                    handleNext(messages: newMessages)
-                } else {
-                    withAnimation {
-                        self.banner = chatData.banner
+                if !newMessages.isEmpty {
+                    if next != nil {
+                        handleNext(messages: newMessages)
+                    } else {
+                        withAnimation {
+                            self.banner = chatData.banner
+                        }
+                        handleInitial(messages: newMessages)
                     }
-                    handleInitial(messages: newMessages)
+                    addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
                 }
-                addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
-            }
-            if next == nil && nextUntil == nil {
-                self.hasNext = chatData.hasNext
-                if self.hasNext == true {
+                if next == nil && nextUntil == nil {
+                    self.hasNext = chatData.hasNext
+                    if self.hasNext == true {
+                        self.nextUntil = chatData.nextUntil
+                    }
+                } else if next != nil {
+                    self.hasNext = chatData.hasNext
                     self.nextUntil = chatData.nextUntil
                 }
-            } else if next != nil {
-                self.hasNext = chatData.hasNext
-                self.nextUntil = chatData.nextUntil
+            } else {
+                let chatData = try await fetchMessagesService.get(next)
+                let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
+                if !newMessages.isEmpty {
+                    if next != nil {
+                        handleNext(messages: newMessages)
+                    } else {
+                        withAnimation {
+                            self.banner = chatData.banner
+                        }
+                        handleInitial(messages: newMessages)
+                    }
+                    addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
+                }
+                if next == nil && nextUntil == nil {
+                    self.hasNext = chatData.hasNext
+                    if self.hasNext == true {
+                        self.nextUntil = chatData.nextUntil
+                    }
+                } else if next != nil {
+                    self.hasNext = chatData.hasNext
+                    self.nextUntil = chatData.nextUntil
+                }
             }
+
         } catch _ {
             if let next = next {
                 if #available(iOS 16.0, *) {
@@ -168,16 +191,17 @@ public class ChatScreenViewModel: ObservableObject {
 
     private func sendToClient(message: Message) async {
         do {
-            var message: Message = .init(type: .unknown)
+            var respondedMessage: Message?
 
             if let conversationId = conversation?.id {
-                message = try await conversationService.send(message: message, for: conversationId)
+                respondedMessage = try await conversationService.send(message: message, for: conversationId)
             } else {
-                message = try await sendMessageService.send(message: message, topic: topicType)
+                respondedMessage = try await sendMessageService.send(message: message, topic: topicType)
             }
-
-            await handleSuccessAdding(for: message, to: message)
-            haveSentAMessage = true
+            if let respondedMessage = respondedMessage {
+                await handleSuccessAdding(for: respondedMessage, to: message)
+                haveSentAMessage = true
+            }
         } catch let ex {
             await handleSendFail(for: message, with: ex.localizedDescription)
         }

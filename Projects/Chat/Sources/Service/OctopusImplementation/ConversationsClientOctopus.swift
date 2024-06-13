@@ -14,9 +14,17 @@ public class ConversationsService {
         return try await client.send(message: message, for: conversationId)
     }
 
-    func getConversationMessages(for conversationId: String) async throws -> [Message] {
+    func getConversationMessages(
+        for conversationId: String,
+        olderToken: String?,
+        newerToken: String?
+    ) async throws -> ChatData {
         log.info("\(ConversationsService.self) getConversationMessages", error: nil, attributes: [:])
-        return try await client.getConversationMessages(for: conversationId)
+        return try await client.getConversationMessages(
+            for: conversationId,
+            olderToken: olderToken,
+            newerToken: newerToken
+        )
     }
 }
 
@@ -86,11 +94,15 @@ public class ConversationsClientOctopus: ConversationsClient {
         throw ConversationsError.missingData
     }
 
-    public func getConversationMessages(for conversationId: String) async throws -> [Message] {
+    public func getConversationMessages(
+        for conversationId: String,
+        olderToken: String?,
+        newerToken: String?
+    ) async throws -> ChatData {
         let query = hGraphQL.OctopusGraphQL.ConversationMessagesQuery(
             conversationId: conversationId,
-            olderToken: .none,
-            newerToken: .none
+            olderToken: .init(optionalValue: olderToken),
+            newerToken: .init(optionalValue: newerToken)
         )
 
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
@@ -98,7 +110,13 @@ public class ConversationsClientOctopus: ConversationsClient {
         let newerToken = data.conversation.messagePage.newerToken
         let olderToken = data.conversation.messagePage.olderToken
 
-        return messages
+        return .init(
+            hasNext: olderToken != nil,
+            id: UUID().uuidString,
+            messages: messages,
+            nextUntil: olderToken,
+            banner: nil
+        )
     }
 }
 
