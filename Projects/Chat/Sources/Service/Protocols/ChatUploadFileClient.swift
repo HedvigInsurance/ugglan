@@ -13,6 +13,7 @@ public struct ChatUploadFileResponseModel: Decodable {
 }
 
 class ChatDemoClients: FetchMessagesClient, SendMessageClient {
+
     var messages = [Message]()
 
     init() {
@@ -46,14 +47,8 @@ class ChatDemoClients: FetchMessagesClient, SendMessageClient {
         ]
     }
 
-    func get(_ next: String?) async throws -> ChatData {
-        return .init(
-            hasNext: true,
-            id: UUID().uuidString,
-            messages: messages,
-            nextUntil: nil,
-            banner: nil
-        )
+    func get(_ next: String?) async throws -> MessagesData {
+        return .init(messages: messages, banner: nil, olderToken: nil, hasNext: false)
     }
 
     public func send(message: Message, topic: ChatTopicType?) async throws -> Message {

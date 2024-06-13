@@ -15,19 +15,28 @@ public class ConversationsService: ChatServiceProtocol {
     }
 
     public func getNewMessages() async throws -> ChatData {
-        let data = try await getConversationMessages(for: conversationId, olderToken: nil, newerToken: newerToken)
+        log.info("\(ConversationsService.self) getConversationMessages", error: nil, attributes: [:])
+        let data = try await client.getConversationMessages(
+            for: conversationId,
+            olderToken: nil,
+            newerToken: newerToken
+        )
         if olderToken == nil {
-            olderToken = data.nextUntil
+            olderToken = data.olderToken
         }
-        //newerToken = data.nextUntil TODO: SET newer token
-        return data
+        newerToken = data.newerToken
+        return .init(hasPreviousMessage: olderToken != nil, messages: data.messages, banner: data.banner)
     }
 
     public func getPreviousMessages() async throws -> ChatData {
-        let data = try await getConversationMessages(for: conversationId, olderToken: olderToken, newerToken: nil)
-        //TODO: SET OLDER TOKEN from response
-        self.olderToken = data.nextUntil
-        return data
+        log.info("\(ConversationsService.self) getConversationMessages", error: nil, attributes: [:])
+        let data = try await client.getConversationMessages(
+            for: conversationId,
+            olderToken: olderToken,
+            newerToken: nil
+        )
+        self.olderToken = data.olderToken
+        return .init(hasPreviousMessage: olderToken != nil, messages: data.messages, banner: data.banner)
 
     }
 
@@ -43,19 +52,6 @@ public class ConversationsService: ChatServiceProtocol {
     func send(message: Message, for conversationId: String) async throws -> Message {
         log.info("\(ConversationsService.self) send message", error: nil, attributes: [:])
         return try await client.send(message: message, for: conversationId)
-    }
-
-    func getConversationMessages(
-        for conversationId: String,
-        olderToken: String?,
-        newerToken: String?
-    ) async throws -> ChatData {
-        log.info("\(ConversationsService.self) getConversationMessages", error: nil, attributes: [:])
-        return try await client.getConversationMessages(
-            for: conversationId,
-            olderToken: olderToken,
-            newerToken: newerToken
-        )
     }
 }
 
@@ -129,7 +125,7 @@ public class ConversationsClientOctopus: ConversationsClient {
         for conversationId: String,
         olderToken: String?,
         newerToken: String?
-    ) async throws -> ChatData {
+    ) async throws -> ConversationMessagesData {
         let query = hGraphQL.OctopusGraphQL.ConversationMessagesQuery(
             conversationId: conversationId,
             olderToken: .init(optionalValue: olderToken),
@@ -140,14 +136,8 @@ public class ConversationsClientOctopus: ConversationsClient {
         let messages = data.conversation.messagePage.messages.compactMap({ $0.fragments.messageFragment.asMessage() })
         let newerToken = data.conversation.messagePage.newerToken
         let olderToken = data.conversation.messagePage.olderToken
-
-        return .init(
-            hasNext: olderToken != nil,
-            id: UUID().uuidString,
-            messages: messages,
-            nextUntil: olderToken,
-            banner: data.conversation.statusMessage
-        )
+        let banner = data.conversation.statusMessage
+        return .init(messages: messages, banner: banner, olderToken: olderToken, newerToken: newerToken)
     }
 }
 

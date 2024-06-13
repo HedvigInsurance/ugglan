@@ -5,18 +5,6 @@ import SwiftUI
 import hCore
 import hGraphQL
 
-public enum ChatServiceType {
-    case conversation
-    case oldChat
-}
-
-public protocol ChatServiceProtocol {
-    var type: ChatServiceType { get }
-    func getNewMessages() async throws -> ChatData
-    func getPreviousMessages() async throws -> ChatData
-    func send(message: Message) async throws -> Message
-}
-
 public class ChatScreenViewModel: ObservableObject {
     @Published var messages: [Message] = []
     @Published var lastDeliveredMessage: Message?
@@ -24,12 +12,13 @@ public class ChatScreenViewModel: ObservableObject {
     @Published var scrollToMessage: Message?
     @Published var banner: Markdown?
     @Published var chatInputVm: ChatInputViewModel = .init()
+    var chatNavigationVm: ChatNavigationViewModel?
     let chatService: ChatServiceProtocol
+
     private var addedMessagesIds: [String] = []
     private var hasNext: Bool?
     private var isFetching = false
     private var haveSentAMessage = false
-    var chatNavigationVm: ChatNavigationViewModel?
 
     public init(
         chatService: ChatServiceProtocol
@@ -94,7 +83,7 @@ public class ChatScreenViewModel: ObservableObject {
                 }
                 self.banner = chatData.banner
                 addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
-                self.hasNext = chatData.hasNext
+                self.hasNext = chatData.hasPreviousMessage
 
                 isFetchingPreviousMessages = false
             } catch _ {
@@ -121,7 +110,7 @@ public class ChatScreenViewModel: ObservableObject {
             }
             self.banner = chatData.banner
             addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
-            hasNext = chatData.hasNext
+            hasNext = chatData.hasPreviousMessage
         } catch _ {
             if #available(iOS 16.0, *) {
                 try! await Task.sleep(for: .seconds(2))
@@ -239,4 +228,16 @@ public class ChatScreenViewModel: ObservableObject {
         let store: ChatStore = globalPresentableStoreContainer.get()
         store.send(.setLastMessageDate(date: message.sentAt))
     }
+}
+
+public enum ChatServiceType {
+    case conversation
+    case oldChat
+}
+
+public protocol ChatServiceProtocol {
+    var type: ChatServiceType { get }
+    func getNewMessages() async throws -> ChatData
+    func getPreviousMessages() async throws -> ChatData
+    func send(message: Message) async throws -> Message
 }

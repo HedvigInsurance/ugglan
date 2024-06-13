@@ -5,12 +5,12 @@ public class ConversationsDemoClient: ConversationsClient {
         for conversationId: String,
         olderToken: String?,
         newerToken: String?
-    ) async throws -> ChatData {
+    ) async throws -> ConversationMessagesData {
         let messages = [
             Message(type: .text(text: "text1")),
             Message(type: .text(text: "text2")),
         ]
-        return .init(hasNext: false, id: UUID().uuidString, messages: messages, nextUntil: nil, banner: nil)
+        return .init(messages: messages, banner: nil, olderToken: nil, newerToken: nil)
     }
 
     public func getConversations() async throws -> [Conversation] {
