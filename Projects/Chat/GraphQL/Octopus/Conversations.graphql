@@ -18,7 +18,7 @@ fragment ConversationFragment on Conversation {
     }
 }
 
-query Conversation($conversationId: UUID!, $olderToken: String, $newerToken: String) {
+query ConversationMessages($conversationId: UUID!, $olderToken: String, $newerToken: String) {
   conversation(id: $conversationId) {
     id
     messagePage(olderToken: $olderToken, newerToken: $newerToken) {

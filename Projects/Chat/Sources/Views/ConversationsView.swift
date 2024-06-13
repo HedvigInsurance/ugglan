@@ -20,15 +20,12 @@ public struct ConversationsView: View {
                 if conversation.type == .legacy {
                     hRow {
                         HStack(spacing: 16) {
-                            Image(uiImage: hCoreUIAssets.copy.image)
+                            Image(uiImage: hCoreUIAssets.activeInbox.image)
                                 .foregroundColor(hFillColor.Opaque.secondary)
                             hText("Conversation history until " + Date().localDateString, style: .footnote)
                         }
                     }
                 } else {
-                    //                    hRowDivider()
-                    //                        .hWithoutDividerPadding
-
                     hRow {
                         HStack {
                             Circle()
@@ -74,7 +71,7 @@ class ConversationsViewModel: ObservableObject {
     @Published var conversations: [Conversation] = []
 
     init() {
-        Task {
+        Task { @MainActor in
             self.conversations = try await service.getConversations()
         }
     }

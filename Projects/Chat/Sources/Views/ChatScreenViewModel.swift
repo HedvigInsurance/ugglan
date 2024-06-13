@@ -13,19 +13,24 @@ public class ChatScreenViewModel: ObservableObject {
     @Published var banner: Markdown?
     @Published var chatInputVm: ChatInputViewModel = .init()
     private var fetchMessagesService = FetchMessagesService()
+    private var conversationService = ConversationsService()
     private var sendMessageService = SendMessagesService()
     private var addedMessagesIds: [String] = []
     private var nextUntil: String?
     private var hasNext: Bool?
     private var isFetching = false
     private let topicType: ChatTopicType?
+    private let conversation: Conversation?
     private var haveSentAMessage = false
     private var storeActionSignal: AnyCancellable?
     var chatNavigationVm: ChatNavigationViewModel?
+
     public init(
-        topicType: ChatTopicType?
+        topicType: ChatTopicType?,
+        conversation: Conversation?
     ) {
         self.topicType = topicType
+        self.conversation = conversation
 
         chatInputVm.sendMessage = { [weak self] message in
             Task { [weak self] in
@@ -87,8 +92,15 @@ public class ChatScreenViewModel: ObservableObject {
     @MainActor
     private func fetch(with next: String? = nil) async {
         do {
+            var newMessages: [Message] = []
             let chatData = try await fetchMessagesService.get(next)
-            let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
+
+            if conversation != nil {
+                let newMessages = try await conversationService.getConversationMessages(for: conversation?.id ?? "")
+            } else {
+                let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
+            }
+
             if !newMessages.isEmpty {
                 if next != nil {
                     handleNext(messages: newMessages)
@@ -156,7 +168,14 @@ public class ChatScreenViewModel: ObservableObject {
 
     private func sendToClient(message: Message) async {
         do {
-            let message = try await sendMessageService.send(message: message, topic: topicType)
+            var message: Message = .init(type: .unknown)
+
+            if let conversationId = conversation?.id {
+                message = try await conversationService.send(message: message, for: conversationId)
+            } else {
+                message = try await sendMessageService.send(message: message, topic: topicType)
+            }
+
             await handleSuccessAdding(for: message, to: message)
             haveSentAMessage = true
         } catch let ex {

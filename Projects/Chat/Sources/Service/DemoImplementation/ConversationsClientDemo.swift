@@ -1,6 +1,13 @@
 import Foundation
 
 public class ConversationsDemoClient: ConversationsClient {
+    public func getConversationMessages(for conversationId: String) async throws -> [Message] {
+        return [
+            Message(type: .text(text: "text1")),
+            Message(type: .text(text: "text2")),
+        ]
+    }
+
     public func getConversations() async throws -> [Conversation] {
         return [
             Conversation(
@@ -28,7 +35,11 @@ public class ConversationsDemoClient: ConversationsClient {
         ]
     }
 
-    public func send(message: Message, for conversation: Conversation) async throws -> Message {
+    public func send(message: Message, for conversationId: String) async throws -> Message {
         return Message(type: .text(text: "send message"))
+    }
+
+    public func getConversations(for conversationId: String) async throws -> [Conversation] {
+        return []
     }
 }
