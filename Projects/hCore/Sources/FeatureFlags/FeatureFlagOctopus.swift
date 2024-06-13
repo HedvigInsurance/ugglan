@@ -12,7 +12,7 @@ public class FeatureFlagsUnleash: FeatureFlags {
         self.environment = environment
     }
 
-    public var isConversationBasedMessagesEnabled: Bool = true
+    public var isConversationBasedMessagesEnabled: Bool = false
     public var loadingExperimentsSuccess: (Bool) -> Void = { _ in }
     public var isMovingFlowEnabled: Bool = false
     public var isEditCoInsuredEnabled: Bool = false
@@ -143,6 +143,10 @@ public class FeatureFlagsUnleash: FeatureFlags {
         } else {
             paymentType = .trustly
         }
+
+        let conversationBasedMessagesKey = "enable_conversation_based_messages"
+        isConversationBasedMessagesEnabled = unleashClient.isEnabled(name: conversationBasedMessagesKey)
+        featureFlags[conversationBasedMessagesKey] = isConversationBasedMessagesEnabled
 
         log.info(
             "Feature flag set",

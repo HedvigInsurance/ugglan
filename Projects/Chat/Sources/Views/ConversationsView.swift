@@ -22,7 +22,7 @@ public struct ConversationsView: View {
                         HStack(spacing: 16) {
                             Image(uiImage: hCoreUIAssets.activeInbox.image)
                                 .resizable()
-                                .frame(width: 10)
+                                .frame(width: 10, height: 9)
                                 .foregroundColor(hFillColor.Opaque.secondary)
                             hText("Conversation history until " + Date().localDateString, style: .footnote)
                         }
