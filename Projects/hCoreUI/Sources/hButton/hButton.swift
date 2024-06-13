@@ -51,7 +51,8 @@ enum ButtonSize {
 }
 
 extension View {
-    @ViewBuilder func buttonSizeModifier(_ size: ButtonSize) -> some View {
+    @ViewBuilder
+    func buttonSizeModifier(_ size: ButtonSize) -> some View {
         switch size {
         case .small:
             self.modifier(SmallButtonModifier()).environment(\.defaultHTextStyle, .subheadline)
@@ -59,6 +60,32 @@ extension View {
             self.modifier(MediumButtonModifier()).environment(\.defaultHTextStyle, .body1)
         case .large:
             self.modifier(LargeButtonModifier()).environment(\.defaultHTextStyle, .body1)
+        }
+    }
+}
+
+extension View {
+    @ViewBuilder
+    func buttonCornerModifier(_ size: ButtonSize, useNewDesign: Bool) -> some View {
+        if useNewDesign {
+            switch size {
+            case .small:
+                self
+                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
+                    .contentShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
+            case .medium:
+                self
+                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusM))
+                    .contentShape(RoundedRectangle(cornerRadius: .cornerRadiusM))
+            case .large:
+                self
+                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+                    .contentShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+            }
+        } else {
+            self
+                .clipShape(Squircle.default())
+                .contentShape(Rectangle())
         }
     }
 }
@@ -328,6 +355,7 @@ extension View {
 struct ButtonFilledStyle: SwiftUI.ButtonStyle {
     var size: ButtonSize
     @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
+    @Environment(\.hUseNewDesign) var hUseNewDesign
 
     struct Label: View {
         @Environment(\.isEnabled) var isEnabled
@@ -398,14 +426,16 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
             getView(configuration: configuration)
                 .background(
                     ZStack {
-                        //create shadow - this create shadows for whole shape
-                        Squircle.default()
-                            .fill(hTextColor.Opaque.primary.inverted.opacity(0.01))
-                            .hShadow()
+                        if !hUseNewDesign {
+                            //create shadow - this create shadows for whole shape
+                            Squircle.default()
+                                .fill(hTextColor.Opaque.primary.inverted.opacity(0.01))
+                                .hShadow()
 
-                        //cut out shape from previously created shape - we only need shadows
-                        Squircle.default()
-                            .blendMode(.destinationOut)
+                            //cut out shape from previously created shape - we only need shadows
+                            Squircle.default()
+                                .blendMode(.destinationOut)
+                        }
 
                     }
                     .compositingGroup()
@@ -413,15 +443,29 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
         }
     }
 
+    @ViewBuilder
     private func getView(configuration: Configuration) -> some View {
-        VStack {
-            Label(configuration: configuration)
+        if hUseNewDesign {
+            VStack {
+                Label(configuration: configuration)
+            }
+            .buttonSizeModifier(size)
+            .background(ButtonFilledBackground(configuration: configuration))
+            .buttonCornerModifier(size, useNewDesign: hUseNewDesign)
+
+        } else {
+            VStack {
+                Label(configuration: configuration)
+            }
+            .buttonSizeModifier(size)
+            .background(ButtonFilledBackground(configuration: configuration))
+            .buttonCornerModifier(size, useNewDesign: hUseNewDesign)
         }
-        .buttonSizeModifier(size)
-        .background(ButtonFilledBackground(configuration: configuration))
-        .clipShape(Squircle.default())
-        .contentShape(Rectangle())
     }
+}
+
+extension View {
+
 }
 
 /* TODO: REMOVE */

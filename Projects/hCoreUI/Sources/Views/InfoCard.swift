@@ -251,7 +251,7 @@ struct InfoCardStyle: ViewModifier {
                     Squircle.default()
                         .fill(getBackgroundColor)
                         .overlay(
-                            RoundedRectangle(cornerRadius: .defaultCornerRadiusNew)
+                            RoundedRectangle(cornerRadius: .cornerRadiusL)
                                 .strokeBorder(hBorderColor.primary, lineWidth: 0.5)
                         )
                 )

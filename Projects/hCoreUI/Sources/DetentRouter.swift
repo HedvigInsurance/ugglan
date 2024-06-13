@@ -150,7 +150,6 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                 }
                 vc.transitioningDelegate = delegate
                 vc.modalPresentationStyle = .custom
-
                 vc.onDeinit = {
                     presented = false
                 }

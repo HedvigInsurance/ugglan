@@ -149,7 +149,7 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
                     presenting: presenting,
                     useBlur: options.contains(.blurredBackground)
                 )
-                presentationController.preferredCornerRadius = 16
+                presentationController.preferredCornerRadius = .cornerRadiusXL
                 return presentationController
             } else {
                 let key = ["_", "U", "I", "Sheet", "Presentation", "Controller"]
