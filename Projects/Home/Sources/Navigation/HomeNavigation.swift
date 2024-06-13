@@ -27,13 +27,14 @@ public class HomeNavigationViewModel: ObservableObject {
             [weak self] notification in
 
             if let topicWrapper = notification.object as? ChatTopicWrapper {
-                self?.openChatOptions =
-                    topicWrapper.onTop ? [.alwaysOpenOnTop, .withoutGrabber] : [.withoutGrabber]
+                //if conversations enabled ignore topic and open conversation - but which one?
+                self?.openChatOptions = topicWrapper.onTop ? [.alwaysOpenOnTop, .withoutGrabber] : [.withoutGrabber]
                 self?.openChat = ChatConversation(chatTopicWrapper: topicWrapper, conversation: nil)
             } else if let conversation = notification.object as? Conversation {
                 self?.openChat = ChatConversation(chatTopicWrapper: nil, conversation: conversation)
             } else {
                 self?.openChatOptions = [.alwaysOpenOnTop, .withoutGrabber]
+                //find conversation
                 self?.openChat = ChatConversation(chatTopicWrapper: .init(topic: nil, onTop: false), conversation: nil)
             }
         }

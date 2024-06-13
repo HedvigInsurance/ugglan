@@ -127,7 +127,7 @@ public struct ChatScreen: View {
     @ViewBuilder
     private var infoCard: some View {
         if let banner = vm.banner {
-            InfoCard(text: "", type: vm.chatService.type == .conversation ? .info : .disabled)
+            InfoCard(text: "", type: vm.chatService.type == .oldChat ? .info : .disabled)
                 .hInfoCardCustomView {
                     MarkdownView(
                         config: .init(
@@ -147,7 +147,7 @@ public struct ChatScreen: View {
 
     @hColorBuilder
     private var infoCardTextColor: some hColor {
-        if vm.chatService.type == .conversation {
+        if vm.chatService.type == .oldChat {
             hSignalColor.Blue.text
         } else {
             hTextColor.Opaque.accordion
@@ -156,7 +156,7 @@ public struct ChatScreen: View {
 
     @hColorBuilder
     private var infoCardLinkColor: some hColor {
-        if vm.chatService.type == .conversation {
+        if vm.chatService.type == .oldChat {
             hSignalColor.Blue.text
         } else {
             hTextColor.Opaque.accordion
