@@ -168,7 +168,14 @@ public class ChatScreenViewModel: ObservableObject {
 
     private func sendToClient(message: Message) async {
         do {
-            let message = try await sendMessageService.send(message: message, topic: topicType)
+            var message: Message = .init(type: .unknown)
+
+            if let conversationId = conversation?.id {
+                message = try await conversationService.send(message: message, for: conversationId)
+            } else {
+                message = try await sendMessageService.send(message: message, topic: topicType)
+            }
+
             await handleSuccessAdding(for: message, to: message)
             haveSentAMessage = true
         } catch let ex {
