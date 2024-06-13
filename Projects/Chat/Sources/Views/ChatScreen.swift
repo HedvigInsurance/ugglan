@@ -133,7 +133,7 @@ public struct ChatScreen: View {
                         config: .init(
                             text: banner,
                             fontStyle: .standardSmall,
-                            color: hSignalColor.Blue.text,
+                            color: infoCardTextColor,
                             linkColor: hSignalColor.Blue.text,
                             linkUnderlineStyle: .single
                         ) { url in
@@ -142,6 +142,15 @@ public struct ChatScreen: View {
                     )
                 }
                 .hInfoCardLayoutStyle(.rectange)
+        }
+    }
+
+    @hColorBuilder
+    private var infoCardTextColor: some hColor {
+        if vm.conversation == nil {
+            hSignalColor.Blue.text
+        } else {
+            hTextColor.Opaque.accordion
         }
     }
 }

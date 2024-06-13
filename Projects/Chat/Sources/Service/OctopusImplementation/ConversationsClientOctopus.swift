@@ -110,7 +110,8 @@ extension OctopusGraphQL.ConversationFragment {
             title: "TITLE",
             subtitle: "SUBTITLE",
             newestMessage: self.newestMessage?.fragments.messageFragment.asMessage(),
-            createdAt: "2024-06-10"
+            createdAt: "2024-06-10",
+            statusMessage: "STATUS MESSAGE"
         )
     }
 }

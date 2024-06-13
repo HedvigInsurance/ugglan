@@ -20,7 +20,7 @@ public class ChatScreenViewModel: ObservableObject {
     private var hasNext: Bool?
     private var isFetching = false
     private let topicType: ChatTopicType?
-    private let conversation: Conversation?
+    let conversation: Conversation?
     private var haveSentAMessage = false
     private var storeActionSignal: AnyCancellable?
     var chatNavigationVm: ChatNavigationViewModel?
@@ -106,7 +106,11 @@ public class ChatScreenViewModel: ObservableObject {
                     handleNext(messages: newMessages)
                 } else {
                     withAnimation {
-                        self.banner = chatData.banner
+                        if let statusMessage = conversation?.statusMessage {
+                            self.banner = statusMessage
+                        } else {
+                            self.banner = chatData.banner
+                        }
                     }
                     handleInitial(messages: newMessages)
                 }
