@@ -11,6 +11,7 @@ public struct Conversation: Identifiable, Equatable {
     let subtitle: String?
     let newestMessage: Message?
     let createdAt: String?
+    let statusMessage: String?
 }
 
 public enum ConversationType {

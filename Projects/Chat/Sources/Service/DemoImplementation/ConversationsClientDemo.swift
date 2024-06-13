@@ -21,7 +21,8 @@ public class ConversationsDemoClient: ConversationsClient {
                 title: "title",
                 subtitle: "subtitle",
                 newestMessage: nil,
-                createdAt: nil
+                createdAt: nil,
+                statusMessage: "status message"
             ),
 
             Conversation(
@@ -35,7 +36,8 @@ public class ConversationsDemoClient: ConversationsClient {
                     type: .text(text: "text"),
                     date: Date()
                 ),
-                createdAt: "2024-06-10"
+                createdAt: "2024-06-10",
+                statusMessage: "status message"
             ),
         ]
     }
