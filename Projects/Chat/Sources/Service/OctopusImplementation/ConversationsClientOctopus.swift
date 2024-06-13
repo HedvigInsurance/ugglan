@@ -9,9 +9,14 @@ public class ConversationsService {
         log.info("\(ConversationsService.self) getConversations", error: nil, attributes: [:])
         return try await client.getConversations()
     }
-    func send(message: Message, for conversation: Conversation) async throws -> Message {
+    func send(message: Message, for conversationId: String) async throws -> Message {
         log.info("\(ConversationsService.self) send message", error: nil, attributes: [:])
-        return try await client.send(message: message, for: conversation)
+        return try await client.send(message: message, for: conversationId)
+    }
+
+    func getConversationMessages(for conversationId: String) async throws -> [Message] {
+        log.info("\(ConversationsService.self) getConversationMessages", error: nil, attributes: [:])
+        return try await client.getConversationMessages(for: conversationId)
     }
 }
 
@@ -50,7 +55,7 @@ public class ConversationsClientOctopus: ConversationsClient {
         return conversations
     }
 
-    public func send(message: Message, for conversation: Conversation) async throws -> Message {
+    public func send(message: Message, for conversationId: String) async throws -> Message {
         var textToSend: String?
         var fileUplaodTokenToSend: String?
         switch message.type {
@@ -67,7 +72,7 @@ public class ConversationsClientOctopus: ConversationsClient {
             break
         }
         let input = OctopusGraphQL.ConversationSendMessageInput(
-            id: conversation.id,
+            id: conversationId,
             text: .init(optionalValue: textToSend),
             fileUploadToken: .init(optionalValue: fileUplaodTokenToSend)
         )
@@ -81,6 +86,20 @@ public class ConversationsClientOctopus: ConversationsClient {
         throw ConversationsError.missingData
     }
 
+    public func getConversationMessages(for conversationId: String) async throws -> [Message] {
+        let query = hGraphQL.OctopusGraphQL.ConversationMessagesQuery(
+            conversationId: conversationId,
+            olderToken: .none,
+            newerToken: .none
+        )
+
+        let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+        let messages = data.conversation.messagePage.messages.compactMap({ $0.fragments.messageFragment.asMessage() })
+        let newerToken = data.conversation.messagePage.newerToken
+        let olderToken = data.conversation.messagePage.olderToken
+
+        return messages
+    }
 }
 
 extension OctopusGraphQL.ConversationFragment {

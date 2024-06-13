@@ -91,7 +91,7 @@ public struct ChatNavigation<Content: View>: View {
 
     public var body: some View {
         RouterHost(router: router, options: .navigationType(type: .large)) {
-            ChatScreen(vm: .init(topicType: openChat.topic))
+            ChatScreen(vm: .init(topicType: openChat.topic, conversation: conversation))
                 .configureTitle(conversation?.title ?? L10n.chatTitle)
                 .withDismissButton()
         }
