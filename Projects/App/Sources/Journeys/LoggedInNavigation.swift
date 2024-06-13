@@ -398,18 +398,19 @@ class LoggedInNavigationViewModel: ObservableObject {
     private var updateCoInsuredCancellable: AnyCancellable?
 
     init() {
-        NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) { notification in
+        NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) {
+            [weak self] notification in
             let deepLinkUrl = notification.object as? URL
-            self.handleDeepLinks(deepLinkUrl: deepLinkUrl)
+            self?.handleDeepLinks(deepLinkUrl: deepLinkUrl)
         }
 
         NotificationCenter.default.addObserver(forName: .registerForPushNotifications, object: nil, queue: nil) {
             notification in
-            // register for push notifications
             UIApplication.shared.appDelegate.registerForPushNotifications {}
         }
 
         NotificationCenter.default.addObserver(forName: .handlePushNotification, object: nil, queue: nil) {
+            [weak self]
             notification in
             if let object = notification.object as? PushNotificationType {
                 switch object {
@@ -417,21 +418,21 @@ class LoggedInNavigationViewModel: ObservableObject {
                     NotificationCenter.default.post(name: .openChat, object: nil)
                 case .REFERRAL_SUCCESS, .REFERRALS_ENABLED:
                     UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                    self.selectedTab = 2
+                    self?.selectedTab = 2
                 case .CONNECT_DIRECT_DEBIT:
-                    self.homeNavigationVm.connectPaymentVm.set(for: nil)
+                    self?.homeNavigationVm.connectPaymentVm.set(for: nil)
                 case .PAYMENT_FAILED:
                     UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                    self.selectedTab = 3
+                    self?.selectedTab = 3
                 case .OPEN_FOREVER_TAB:
                     UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                    self.selectedTab = 2
+                    self?.selectedTab = 2
                 case .OPEN_INSURANCE_TAB:
                     UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                    self.selectedTab = 1
+                    self?.selectedTab = 1
                 case .CROSS_SELL:
                     UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                    self.selectedTab = 1
+                    self?.selectedTab = 1
                 }
             }
         }
@@ -474,9 +475,9 @@ class LoggedInNavigationViewModel: ObservableObject {
 
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
                 if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                        self.contractsNavigationVm.contractsRouter.popToRoot()
-                        self.contractsNavigationVm.contractsRouter.push(contract)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+                        self?.contractsNavigationVm.contractsRouter.popToRoot()
+                        self?.contractsNavigationVm.contractsRouter.push(contract)
                     }
                 }
             case .payments:
@@ -487,8 +488,8 @@ class LoggedInNavigationViewModel: ObservableObject {
             case .helpCenter:
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 self.selectedTab = 0
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                    self.homeNavigationVm.isHelpCenterPresented = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+                    self?.homeNavigationVm.isHelpCenterPresented = true
                 }
             case .moveContract:
                 self.isMoveContractPresented = true
@@ -535,6 +536,10 @@ class LoggedInNavigationViewModel: ObservableObject {
                 UIApplication.shared.open(url)
             }
         }
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 }
 

@@ -70,6 +70,7 @@ class MainNavigationViewModel: ObservableObject {
             Task {
                 switch state {
                 case .loggedIn:
+                    ApplicationContext.shared.isLoggedIn = true
                     withAnimation {
                         hasLaunchFinished = false
                     }
@@ -81,6 +82,7 @@ class MainNavigationViewModel: ObservableObject {
                         hasLaunchFinished = true
                     }
                 case .notLoggedIn:
+                    ApplicationContext.shared.isLoggedIn = false
                     notLoggedInVm = .init()
                     loggedInVm = .init()
                     appDelegate.logout()
@@ -97,11 +99,14 @@ class MainNavigationViewModel: ObservableObject {
 
     @MainActor
     init() {
-        Task {
-            await checkForFeatureFlags()
+        Task { @MainActor [weak self] in
+            await self?.checkForFeatureFlags()
             withAnimation {
-                hasLaunchFinished = true
+                self?.hasLaunchFinished = true
             }
+        }
+        if state == .loggedIn {
+            ApplicationContext.shared.isLoggedIn = true
         }
     }
 
