@@ -1,4 +1,5 @@
 import Chat
+import Combine
 import Contracts
 import EditCoInsuredShared
 import Foundation
@@ -21,6 +22,7 @@ public struct ChatConversation: Equatable, Identifiable {
 
 public class HomeNavigationViewModel: ObservableObject {
     public static var isChatPresented = false
+
     public init() {
 
         NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: nil) {
@@ -34,9 +36,13 @@ public class HomeNavigationViewModel: ObservableObject {
                 self?.openChat = ChatConversation(chatTopicWrapper: topicWrapper, conversation: nil)
             } else if let conversation = notification.object as? Conversation {
                 self?.openChat = ChatConversation(chatTopicWrapper: nil, conversation: conversation)
-            } else if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
+            } else if isConversationBasedMessagesEnabled {
                 self?.openChatOptions = [.alwaysOpenOnTop, .withoutGrabber]
-                self?.openChat = ChatConversation(chatTopicWrapper: nil, conversation: nil)
+                Task { [weak self] in
+                    let service = ConversationService()
+                    let conversation = try await service.createConversation()
+                    self?.openChat = ChatConversation(chatTopicWrapper: nil, conversation: conversation)
+                }
             } else {
                 self?.openChatOptions = [.alwaysOpenOnTop, .withoutGrabber]
                 //open new conversation
