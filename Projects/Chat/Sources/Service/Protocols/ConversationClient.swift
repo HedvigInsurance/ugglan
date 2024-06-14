@@ -1,7 +1,7 @@
 import Foundation
 import hCore
 
-public protocol ConversationsClient {
+public protocol ConversationClient {
     func getConversations() async throws -> [Conversation]
     func getConversationMessages(
         for conversationId: String,

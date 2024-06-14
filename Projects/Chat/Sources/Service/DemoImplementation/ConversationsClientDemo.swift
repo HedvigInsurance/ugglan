@@ -1,6 +1,6 @@
 import Foundation
 
-public class ConversationsDemoClient: ConversationsClient {
+public class ConversationsDemoClient: ConversationClient {
     public func getConversationMessages(
         for conversationId: String,
         olderToken: String?,

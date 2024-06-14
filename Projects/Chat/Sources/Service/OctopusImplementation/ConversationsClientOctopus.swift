@@ -2,10 +2,10 @@ import Foundation
 import hCore
 import hGraphQL
 
-public class ConversationsService: ChatServiceProtocol {
+public class AllConversationsService: ChatServiceProtocol {
     public var type: ChatServiceType = .conversation
 
-    @Inject var client: ConversationsClient
+    @Inject var client: ConversationClient
     private let conversationId: String
     private var olderToken: String?
     private var newerToken: String?
@@ -15,7 +15,7 @@ public class ConversationsService: ChatServiceProtocol {
     }
 
     public func getNewMessages() async throws -> ChatData {
-        log.info("\(ConversationsService.self) getConversationMessages", error: nil, attributes: [:])
+        log.info("\(AllConversationsService.self) getConversationMessages", error: nil, attributes: [:])
         let data = try await client.getConversationMessages(
             for: conversationId,
             olderToken: nil,
@@ -29,7 +29,7 @@ public class ConversationsService: ChatServiceProtocol {
     }
 
     public func getPreviousMessages() async throws -> ChatData {
-        log.info("\(ConversationsService.self) getConversationMessages", error: nil, attributes: [:])
+        log.info("\(AllConversationsService.self) getConversationMessages", error: nil, attributes: [:])
         let data = try await client.getConversationMessages(
             for: conversationId,
             olderToken: olderToken,
@@ -45,13 +45,70 @@ public class ConversationsService: ChatServiceProtocol {
     }
 
     func getConversations() async throws -> [Conversation] {
-        log.info("\(ConversationsService.self) getConversations", error: nil, attributes: [:])
+        log.info("\(AllConversationsService.self) getConversations", error: nil, attributes: [:])
         return try await client.getConversations()
     }
 
     func send(message: Message, for conversationId: String) async throws -> Message {
-        log.info("\(ConversationsService.self) send message", error: nil, attributes: [:])
+        log.info("\(AllConversationsService.self) send message", error: nil, attributes: [:])
         return try await client.send(message: message, for: conversationId)
+    }
+}
+
+public class ConversationService: ChatServiceProtocol {
+    public var type: ChatServiceType = .conversation
+
+    @Inject var client: ConversationClient
+    private let conversationId: String = ""
+    private var olderToken: String?
+    private var newerToken: String?
+
+    public init() {
+    }
+
+    public func getNewMessages() async throws -> ChatData {
+        log.info("\(AllConversationsService.self) getConversationMessages", error: nil, attributes: [:])
+        let data = try await client.getConversationMessages(
+            for: conversationId,
+            olderToken: nil,
+            newerToken: newerToken
+        )
+        if olderToken == nil {
+            olderToken = data.olderToken
+        }
+        newerToken = data.newerToken
+        return .init(hasPreviousMessage: olderToken != nil, messages: data.messages, banner: data.banner)
+    }
+
+    public func getPreviousMessages() async throws -> ChatData {
+        log.info("\(ConversationService.self) getConversationMessages", error: nil, attributes: [:])
+        let data = try await client.getConversationMessages(
+            for: conversationId,
+            olderToken: olderToken,
+            newerToken: nil
+        )
+        self.olderToken = data.olderToken
+        return .init(hasPreviousMessage: olderToken != nil, messages: data.messages, banner: data.banner)
+
+    }
+
+    public func send(message: Message) async throws -> Message {
+        return try await self.send(message: message, for: conversationId)
+    }
+
+    func getConversations() async throws -> [Conversation] {
+        log.info("\(ConversationService.self) getConversations", error: nil, attributes: [:])
+        return try await client.getConversations()
+    }
+
+    func send(message: Message, for conversationId: String) async throws -> Message {
+        log.info("\(ConversationService.self) send message", error: nil, attributes: [:])
+        return try await client.send(message: message, for: conversationId)
+    }
+
+    public func createConversation() async throws -> Conversation {
+        log.info("\(ConversationService.self) createConversation", error: nil, attributes: [:])
+        return try await client.createConversation()
     }
 }
 
@@ -71,7 +128,7 @@ extension ConversationsError: LocalizedError {
     }
 }
 
-public class ConversationsClientOctopus: ConversationsClient {
+public class ConversationsClientOctopus: ConversationClient {
     @Inject var octopus: hOctopus
     var chatFileUploaderService = ChatFileUploaderService()
 

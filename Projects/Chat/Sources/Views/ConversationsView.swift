@@ -69,7 +69,7 @@ public struct ConversationsView: View {
 }
 
 class ConversationsViewModel: ObservableObject {
-    let service = ConversationsService(conversationId: "")
+    let service = AllConversationsService(conversationId: "")
     @Published var conversations: [Conversation] = []
 
     init() {
@@ -80,6 +80,6 @@ class ConversationsViewModel: ObservableObject {
 }
 
 #Preview{
-    Dependencies.shared.add(module: Module { () -> ConversationsClient in ConversationsDemoClient() })
+    Dependencies.shared.add(module: Module { () -> ConversationClient in ConversationsDemoClient() })
     return ConversationsView()
 }

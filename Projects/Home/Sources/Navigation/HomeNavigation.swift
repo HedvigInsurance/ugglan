@@ -26,15 +26,20 @@ public class HomeNavigationViewModel: ObservableObject {
         NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: nil) {
             [weak self] notification in
 
-            if let topicWrapper = notification.object as? ChatTopicWrapper {
+            let isConversationBasedMessagesEnabled = Dependencies.featureFlags().isConversationBasedMessagesEnabled
+
+            if let topicWrapper = notification.object as? ChatTopicWrapper, !isConversationBasedMessagesEnabled {
                 //if conversations enabled ignore topic and open conversation - but which one?
                 self?.openChatOptions = topicWrapper.onTop ? [.alwaysOpenOnTop, .withoutGrabber] : [.withoutGrabber]
                 self?.openChat = ChatConversation(chatTopicWrapper: topicWrapper, conversation: nil)
             } else if let conversation = notification.object as? Conversation {
                 self?.openChat = ChatConversation(chatTopicWrapper: nil, conversation: conversation)
+            } else if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
+                self?.openChatOptions = [.alwaysOpenOnTop, .withoutGrabber]
+                self?.openChat = ChatConversation(chatTopicWrapper: nil, conversation: nil)
             } else {
                 self?.openChatOptions = [.alwaysOpenOnTop, .withoutGrabber]
-                //find conversation
+                //open new conversation
                 self?.openChat = ChatConversation(chatTopicWrapper: .init(topic: nil, onTop: false), conversation: nil)
             }
         }

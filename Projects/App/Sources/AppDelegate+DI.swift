@@ -96,7 +96,7 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> NotificationClient in notificationService })
                 Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in hFetchEntrypointsService })
                 Dependencies.shared.add(module: Module { () -> SubmitClaimClient in submitClaimService })
-                Dependencies.shared.add(module: Module { () -> ConversationsClient in conversationClient })
+                Dependencies.shared.add(module: Module { () -> ConversationClient in conversationClient })
             case .production, .custom:
                 Dependencies.shared.add(module: Module { hApollo.octopus })
                 Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlagsUnleash })
@@ -124,7 +124,7 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> NotificationClient in notificationService })
                 Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in hFetchEntrypointsService })
                 Dependencies.shared.add(module: Module { () -> SubmitClaimClient in submitClaimService })
-                Dependencies.shared.add(module: Module { () -> ConversationsClient in conversationClient })
+                Dependencies.shared.add(module: Module { () -> ConversationClient in conversationClient })
             }
         }
     }

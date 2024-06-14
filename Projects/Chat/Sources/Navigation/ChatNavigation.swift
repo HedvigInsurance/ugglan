@@ -92,11 +92,16 @@ public struct ChatNavigation<Content: View>: View {
     public var body: some View {
         RouterHost(router: router, options: .navigationType(type: .large)) {
             if let conversation {
-                ChatScreen(vm: .init(chatService: ConversationsService(conversationId: conversation.id)))
+                ChatScreen(vm: .init(chatService: AllConversationsService(conversationId: conversation.id)))
                     .configureTitle(conversation.title)
                     .withDismissButton()
+            } else if let topic = openChat.topic {
+                ChatScreen(vm: .init(chatService: MessagesService(topic: topic)))
+                    .configureTitle(L10n.chatTitle)
+                    .withDismissButton()
             } else {
-                ChatScreen(vm: .init(chatService: MessagesService(topic: openChat.topic)))
+                // open new conversation
+                ChatScreen(vm: .init(chatService: ConversationService()))
                     .configureTitle(L10n.chatTitle)
                     .withDismissButton()
             }
