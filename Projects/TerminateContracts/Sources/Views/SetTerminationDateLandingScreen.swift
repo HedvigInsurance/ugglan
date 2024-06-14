@@ -175,20 +175,17 @@ struct SetTerminationDateLandingScreen: View {
                                                 )
                                                 .animation(.easeInOut)
                                         )
+                                        .colorScheme(.light)
                                         .hUseLightMode
 
                                 }
                             }
-                            .background(
-                                Squircle.default()
-                                    .fill(
-                                        hColorScheme(
-                                            light: hSurfaceColor.Opaque.primary,
-                                            dark: hGrayscaleOpaqueColor.greyScale100
-                                        )
-                                    )
-                            )
                         }
+                        .background(
+                            Squircle.default()
+                                .fill(hGrayscaleTranslucentDark.white)
+                                .colorScheme(.light)
+                        )
                     }
                 }
                 .onTapGesture {
