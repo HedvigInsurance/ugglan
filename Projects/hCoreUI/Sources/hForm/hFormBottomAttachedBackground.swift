@@ -14,7 +14,7 @@ public struct hFormBottomAttachedBackground<Content: View>: View {
         VStack {
             hBorderColor.secondary.frame(height: .hairlineWidth)
                 .edgesIgnoringSafeArea(.horizontal)
-            content().padding(16)
+            content().padding(.padding16)
         }
         .background(hBackgroundColor.primary.edgesIgnoringSafeArea([.bottom, .horizontal]))
     }

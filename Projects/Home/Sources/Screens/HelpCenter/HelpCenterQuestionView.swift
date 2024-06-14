@@ -42,7 +42,7 @@ struct HelpCenterQuestionView: View {
                 }
                 .sectionContainerStyle(.transparent)
                 SupportView(topic: question.topicType)
-                    .padding(.top, 8)
+                    .padding(.top, .padding8)
             }
         }
         .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary))

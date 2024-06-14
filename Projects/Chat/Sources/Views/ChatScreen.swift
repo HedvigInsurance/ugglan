@@ -26,7 +26,7 @@ public struct ChatScreen: View {
             infoCard
                 .padding(.bottom, -8)
             ChatInputView(vm: vm.chatInputVm)
-                .padding(.bottom, 16)
+                .padding(.bottom, .padding16)
         }
         .dismissKeyboard()
         .findScrollView({ sv in
@@ -43,7 +43,7 @@ public struct ChatScreen: View {
             DotsActivityIndicator(.standard)
                 .useDarkColor
                 .fixedSize()
-                .padding(.vertical, 8)
+                .padding(.vertical, .padding8)
                 .transition(.opacity)
         }
     }

@@ -57,7 +57,7 @@ struct HeaderView: View {
                             // Discount present
                             PriceSectionView(monthlyDiscount: monthlyDiscount, didPressInfo: didPressInfo)
                                 .padding(.bottom, 65)
-                                .padding(.top, 8)
+                                .padding(.top, .padding8)
                         } else {
                             // No discount present
                             hText(
@@ -67,12 +67,12 @@ struct HeaderView: View {
                             )
                             .foregroundColor(hTextColor.Opaque.secondary)
                             .multilineTextAlignment(.center)
-                            .padding(.top, 8)
+                            .padding(.top, .padding8)
                         }
                     }
                 }
             }
-            .padding(.top, 64)
+            .padding(.top, .padding64)
         }
         .sectionContainerStyle(.transparent)
     }

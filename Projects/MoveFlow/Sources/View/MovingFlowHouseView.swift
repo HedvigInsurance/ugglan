@@ -34,8 +34,8 @@ struct MovingFlowHouseView: View {
 
                 }
             }
-            .padding(.bottom, 8)
-            .padding(.top, 16)
+            .padding(.bottom, .padding8)
+            .padding(.top, .padding16)
 
         }
         .hFormTitle(title: .init(.standard, .title1, L10n.changeAddressInformationAboutYourHouse))
@@ -123,7 +123,7 @@ struct MovingFlowHouseView: View {
                                     .foregroundColor(hTextColor.Opaque.primary)
                             }
                         }
-                        .padding(.vertical, 13)
+                        .padding(.vertical, .padding12)
                         if offset + 1 < vm.extraBuildings.count {
                             Divider()
                         }
@@ -134,22 +134,22 @@ struct MovingFlowHouseView: View {
                         HStack {
                             Image(uiImage: hCoreUIAssets.plusSmall.image)
                                 .resizable()
-                                .frame(width: 16, height: 16)
+                                .frame(width: .padding16, height: .padding16)
                             hText(L10n.changeAddressAddBuilding)
                         }
                     }
                     .fixedSize(horizontal: true, vertical: false)
                     .hUseLightMode
-                    .padding(.top, 8)
+                    .padding(.top, .padding8)
 
                 }
             }
             .verticalPadding(0)
-            .padding(.top, 12)
-            .padding(.bottom, 16)
+            .padding(.top, .padding12)
+            .padding(.bottom, .padding16)
         }
         .sectionContainerStyle(.opaque)
-        .padding(.top, 6)
+        .padding(.top, .padding6)
     }
 
     private var isSubleted: some View {

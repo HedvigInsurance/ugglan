@@ -68,17 +68,17 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                     hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
                                         .foregroundColor(hTextColor.Opaque.primary)
                                 }
-                                .padding(16)
+                                .padding(.padding16)
                                 .background(
                                     Squircle.default()
                                         .fill(hSurfaceColor.Opaque.primary)
                                 )
-                                .padding(.trailing, 88)
+                                .padding(.trailing, .padding88)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .slideUpAppearAnimation()
                             }
                         }
-                        .padding(.top, 8)
+                        .padding(.top, .padding8)
                     }
                     .sectionContainerStyle(.transparent)
                 } else {
@@ -91,18 +91,18 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                     hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
                                         .foregroundColor(hTextColor.Opaque.primary)
                                 }
-                                .padding(16)
+                                .padding(.padding16)
                                 .background(
                                     Squircle.default()
                                         .fill(hSurfaceColor.Opaque.primary)
                                 )
-                                .padding(.trailing, 88)
+                                .padding(.trailing, .padding88)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .slideUpAppearAnimation()
 
                             }
                         }
-                        .padding(.top, 8)
+                        .padding(.top, .padding8)
                     }
                     .sectionContainerStyle(.transparent)
                 }
@@ -132,13 +132,13 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                 hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
                                     .foregroundColor(hTextColor.Opaque.primary)
                             }
-                            .padding(16)
+                            .padding(.padding16)
                             .background(
                                 Squircle.default()
                                     .fill(hSurfaceColor.Opaque.primary)
                             )
-                            .padding(.vertical, 12)
-                            .padding(.trailing, 88)
+                            .padding(.vertical, .padding12)
+                            .padding(.trailing, .padding88)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .slideUpAppearAnimation()
                         }
@@ -153,13 +153,13 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                 hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
                                     .foregroundColor(hTextColor.Opaque.primary)
                             }
-                            .padding(16)
+                            .padding(.padding16)
                             .background(
                                 Squircle.default()
                                     .fill(hSurfaceColor.Opaque.primary)
                             )
-                            .padding(.vertical, 12)
-                            .padding(.trailing, 88)
+                            .padding(.vertical, .padding12)
+                            .padding(.trailing, .padding88)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .slideUpAppearAnimation()
 
@@ -267,7 +267,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                     }
                 }
-                .padding(.vertical, 16)
+                .padding(.vertical, .padding16)
             }
             .environmentObject(audioRecorder)
         }
@@ -298,7 +298,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
             }
             .sectionContainerStyle(.transparent)
         }
-        .padding(.vertical, 16)
+        .padding(.vertical, .padding16)
         .frame(height: 300)
     }
 
@@ -308,7 +308,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
             CustomTextViewRepresentable(placeholder: L10n.claimsTextInputPlaceholder, text: $inputText)
                 .cornerRadius(12)
                 .frame(height: 128)
-                .padding(.vertical, 16)
+                .padding(.vertical, .padding16)
                 .addFieldError(animate: $animateField, error: $inputTextError)
         }
     }

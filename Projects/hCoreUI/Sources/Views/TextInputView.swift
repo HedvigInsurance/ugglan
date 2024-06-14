@@ -59,7 +59,7 @@ public struct TextInputView: View {
                     }
                 }
 
-                .padding(.vertical, 16)
+                .padding(.vertical, .padding16)
             }
         }
         .hDisableScroll

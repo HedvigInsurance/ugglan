@@ -34,7 +34,7 @@ public struct MyInfoView: View {
                 }
                 .disabled(vm.isLoading)
             }
-            .padding(.top, 8)
+            .padding(.top, .padding8)
         }
         .hFormAttachToBottom({
             hSection {
@@ -55,7 +55,7 @@ public struct MyInfoView: View {
                 .hButtonIsLoading(vm.isLoading)
             }
             .sectionContainerStyle(.transparent)
-            .padding(.bottom, 8)
+            .padding(.bottom, .padding8)
             .opacity(vm.inEditMode ? 1 : 0)
         })
         .sectionContainerStyle(.transparent)

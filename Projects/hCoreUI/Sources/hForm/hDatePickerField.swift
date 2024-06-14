@@ -251,7 +251,7 @@ public struct DatePickerView: View {
                         datePicker
                             .datePickerStyle(.wheel)
                             .padding(.trailing, 23)
-                            .padding(.bottom, 16)
+                            .padding(.bottom, .padding16)
                     } else {
                         datePicker
                             .datePickerStyle(.graphical)
@@ -274,7 +274,7 @@ public struct DatePickerView: View {
                     .foregroundColor(hTextColor.Opaque.negative)
                 }
                 .frame(maxWidth: .infinity, alignment: .bottom)
-                .padding([.leading, .trailing], 16)
+                .padding(.horizontal, .padding16)
 
                 hButton.LargeButton(type: .ghost) {
                     vm.cancelAction.execute()

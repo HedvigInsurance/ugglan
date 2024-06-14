@@ -97,20 +97,20 @@ public struct InfoView: View {
     public var body: some View {
         hForm {
             hSection {
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: .padding8) {
                     hText(title)
                     hText(description)
                         .foregroundColor(hTextColor.Opaque.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .padding(.horizontal, 8)
-                .padding(.top, 32)
+                .padding(.horizontal, .padding8)
+                .padding(.top, .padding32)
             }
             .sectionContainerStyle(.transparent)
-            .padding(.bottom, 23)
+            .padding(.bottom, .padding24)
         }
         .hFormAttachToBottom {
-            VStack(spacing: 8) {
+            VStack(spacing: .padding8) {
                 if let button = extraButton {
                     if button.style != .alert {
                         hButton.LargeButton(type: .primary) {
@@ -133,7 +133,7 @@ public struct InfoView: View {
                     hText(L10n.generalCloseButton)
                 }
             }
-            .padding(.horizontal, 24)
+            .padding(.horizontal, .padding24)
         }
         .introspectViewController { vc in
             vm.vc = vc

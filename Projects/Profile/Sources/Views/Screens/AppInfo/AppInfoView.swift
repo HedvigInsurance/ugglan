@@ -19,7 +19,7 @@ public struct AppInfoView: View {
                 deviceId
             }
             .withoutHorizontalPadding
-            .padding(.top, 8)
+            .padding(.top, .padding8)
         }
         .sectionContainerStyle(.transparent)
         .hFormAttachToBottom {
@@ -27,7 +27,7 @@ public struct AppInfoView: View {
                 submitBugButton
             }
             .withoutHorizontalPadding
-            .padding(.vertical, 16)
+            .padding(.vertical, .padding16)
             .sectionContainerStyle(.transparent)
         }
     }

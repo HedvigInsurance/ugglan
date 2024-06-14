@@ -35,14 +35,14 @@ public struct ClaimDetailView: View {
             VStack(spacing: 8) {
                 hSection {
                     ClaimStatus(claim: vm.claim, enableTap: false)
-                        .padding(.top, 8)
+                        .padding(.top, .padding8)
                 }
                 .sectionContainerStyle(.transparent)
 
                 infoAndContactSection
                 memberFreeTextSection
                 claimDetailsSection
-                    .padding(.vertical, 16)
+                    .padding(.vertical, .padding16)
                 uploadFilesSection
             }
         }
@@ -112,7 +112,7 @@ public struct ClaimDetailView: View {
                     id: vm.claim.id,
                     status: vm.claim.status.rawValue
                 )
-                .padding(.bottom, 4)
+                .padding(.bottom, .padding4)
             }
         }
     }
@@ -129,7 +129,7 @@ public struct ClaimDetailView: View {
                 hText(L10n.ClaimStatusDetail.submittedMessage)
                     .padding(.leading, 2)
             }
-            .padding(.top, 16)
+            .padding(.top, .padding16)
         }
     }
 
@@ -260,7 +260,7 @@ public struct ClaimDetailView: View {
                         }
                         .fixedSize()
                     }
-                    .padding(.vertical, 32)
+                    .padding(.vertical, .padding32)
                 }
                 .sectionContainerStyle(.transparent)
             }

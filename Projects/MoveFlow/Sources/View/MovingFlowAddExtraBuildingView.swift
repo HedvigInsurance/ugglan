@@ -39,7 +39,7 @@ struct MovingFlowAddExtraBuildingView: View {
                         }
 
                     }
-                    .padding(.vertical, 16)
+                    .padding(.vertical, .padding16)
                 }
                 .sectionContainerStyle(.transparent)
             }

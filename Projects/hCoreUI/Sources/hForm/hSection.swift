@@ -324,7 +324,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
                         .environment(\.defaultHTextStyle, .body1)
                 }
                 .foregroundColor(hTextColor.Opaque.primary)
-                .padding(.bottom, 16)
+                .padding(.bottom, .padding16)
             }
             hSectionContainer {
                 content
@@ -335,12 +335,12 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
                         .environment(\.defaultHTextStyle, .footnote)
                 }
                 .foregroundColor(hTextColor.Opaque.secondary)
-                .padding([.leading, .trailing], 15)
-                .padding(.top, 10)
+                .padding(.horizontal, 15)
+                .padding(.top, .padding10)
             }
         }
         .frame(maxWidth: .infinity)
-        .padding([.leading, .trailing], minimumPadding ? 16 : (horizontalSizeClass == .regular ? 60 : 16))
+        .padding(.horizontal, minimumPadding ? 16 : (horizontalSizeClass == .regular ? 60 : 16))
     }
 
     /// removes hSection leading and trailing padding

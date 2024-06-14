@@ -111,7 +111,7 @@ struct LinkView: View {
                 )
             )
             .environment(\.colorScheme, .light)
-            .padding(16)
+            .padding(.padding16)
             .transition(.opacity)
         } else if let model = vm.webMetaDataProviderData {
             VStack(spacing: 8) {

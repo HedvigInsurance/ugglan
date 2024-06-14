@@ -242,8 +242,8 @@ struct ShowTagList: View {
                             notValid = false
                             ImpactGenerator.soft()
                         }
-                        .padding(.horizontal, 12)  // 16 - tag list horizontal spacing
-                        .padding(.vertical, 8)
+                        .padding(.horizontal, .padding12)  // 16 - tag list horizontal spacing
+                        .padding(.vertical, .padding8)
                         .background(getColorAndShadow(claimId: tag))
                         .scaleEffect(animate && selection == tag ? scaleSize : 1)
                         .transition(

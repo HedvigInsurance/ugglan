@@ -206,7 +206,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             }
         }
         .sectionContainerStyle(.transparent)
-        .padding(.top, 16)
+        .padding(.top, .padding16)
     }
 
     var sendSelectedItems: Void {

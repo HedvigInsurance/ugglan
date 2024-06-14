@@ -34,16 +34,16 @@ struct TrackPlayer: View {
                     )
                     .frame(maxWidth: .infinity)
                     waveform
-                        .padding(.top, 6)
+                        .padding(.top, .padding6)
                         .overlay(
                             OverlayView(audioPlayer: audioPlayer)
                                 .mask(waveform)
-                                .padding(.top, 6)
+                                .padding(.top, .padding6)
                         )
                         .transition(.opacity.animation(.easeOut))
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .padding16)
             .frame(height: 72)
             .frame(maxWidth: .infinity)
             .background(

@@ -69,7 +69,7 @@ public struct hOptOutField: View {
             }
         }
         .padding(.top, 11)
-        .padding(.bottom, 10)
+        .padding(.bottom, .padding10)
         .addFieldBackground(animate: $animate, error: $error)
         .addFieldError(animate: $animate, error: $error)
         .onTapGesture {
@@ -195,7 +195,7 @@ struct PriceInputScreen: View {
                     }
                 }
             }
-            .padding(.vertical, 16)
+            .padding(.vertical, .padding16)
         }
         .introspectScrollView { scrollView in
             scrollView.keyboardDismissMode = .interactive

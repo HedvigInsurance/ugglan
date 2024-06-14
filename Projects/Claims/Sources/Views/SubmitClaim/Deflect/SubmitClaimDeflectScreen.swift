@@ -58,7 +58,7 @@ public struct SubmitClaimDeflectScreen: View {
                             .foregroundColor(hTextColor.Opaque.secondary)
                     }
                 }
-                .padding(.top, 8)
+                .padding(.top, .padding8)
                 .sectionContainerStyle(.transparent)
 
                 VStack(spacing: 4) {
@@ -75,12 +75,12 @@ public struct SubmitClaimDeflectScreen: View {
                         }
                     }
                 }
-                .padding(.top, 8)
+                .padding(.top, .padding8)
 
                 SupportView(openChat: openChat)
-                    .padding(.vertical, 56)
+                    .padding(.vertical, .padding56)
             }
-            .padding(.top, 8)
+            .padding(.top, .padding8)
         }
     }
 }

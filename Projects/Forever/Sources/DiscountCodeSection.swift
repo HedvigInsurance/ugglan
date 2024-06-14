@@ -49,7 +49,7 @@ struct DiscountCodeSectionView: View {
                             }
                         }
                     }
-                    .padding(.vertical, 16)
+                    .padding(.vertical, .padding16)
                 }
             }
         }

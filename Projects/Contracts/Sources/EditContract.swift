@@ -88,7 +88,7 @@ struct EditContract: View {
                     }
                 }
                 .sectionContainerStyle(.transparent)
-                .padding(.bottom, 16)
+                .padding(.bottom, .padding16)
             }
         }
         .hDisableScroll

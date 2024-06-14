@@ -53,7 +53,7 @@ struct SetTerminationDateLandingScreen: View {
                         }
                         .sectionContainerStyle(.transparent)
                     }
-                    .padding(.vertical, 16)
+                    .padding(.vertical, .padding16)
                 }
                 .hUseNewDesign
         }

@@ -26,8 +26,8 @@ public struct hPillFill<T: hColor, L: hColor>: View {
 
         func body(content: Content) -> some View {
             content
-                .padding(.horizontal, 10)
-                .padding(.vertical, 4)
+                .padding(.horizontal, .padding10)
+                .padding(.vertical, .padding4)
                 .background(
                     RoundedRectangle(cornerRadius: .cornerRadiusL)
                         .fill(backgroundColor)

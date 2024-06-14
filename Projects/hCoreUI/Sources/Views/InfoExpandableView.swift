@@ -71,7 +71,7 @@ public struct InfoExpandableView: View {
                         )
                     }
                     .verticalPadding(0)
-                    .padding(.bottom, 24)
+                    .padding(.bottom, .padding24)
                 }
             }
         }
