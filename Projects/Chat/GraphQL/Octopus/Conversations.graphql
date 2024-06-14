@@ -9,25 +9,11 @@ query Conversations {
   }
 }
 
-fragment ConversationFragment on Conversation {
-    statusMessage
-    id
-    createdAt
-    newestMessage {
-        ... MessageFragment
-    }
-    statusMessage
-}
-
 query ConversationMessages($conversationId: UUID!, $olderToken: String, $newerToken: String) {
   conversation(id: $conversationId) {
     id
     messagePage(olderToken: $olderToken, newerToken: $newerToken) {
-      messages {
-        ... MessageFragment
-      }
-      newerToken
-      olderToken
+        ... MessagePageFragment
     }
     statusMessage
     createdAt
@@ -43,4 +29,38 @@ mutation ConversationSendMessage($input: ConversationSendMessageInput!) {
       message
     }
   }
+}
+
+mutation ConversationCreate($olderToken: String, $newerToken: String) {
+  conversationCreate {
+    id
+    title
+    subtitle
+    createdAt
+    statusMessage
+    newestMessage {
+        ... MessageFragment
+    }
+    messagePage(olderToken: $olderToken, newerToken: $newerToken) {
+        ...MessagePageFragment
+    }
+  }
+}
+
+fragment ConversationFragment on Conversation {
+    statusMessage
+    id
+    createdAt
+    newestMessage {
+        ... MessageFragment
+    }
+    statusMessage
+}
+
+fragment MessagePageFragment on ChatMessagePage {
+    messages {
+        ... MessageFragment
+    }
+    newerToken
+    olderToken
 }
