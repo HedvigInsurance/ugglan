@@ -162,12 +162,15 @@ extension View {
 
 public enum ShadowType {
     case `default`
+    case light
     case custom(opacity: CGFloat, radius: CGFloat, xOffset: CGFloat, yOffset: CGFloat)
 
     var opacity: CGFloat {
         switch self {
         case .default:
-            return 0.15
+            return 0.10
+        case .light:
+            return 0.05
         case let .custom(opacity, _, _, _):
             return opacity
         }
@@ -176,6 +179,8 @@ public enum ShadowType {
         switch self {
         case .default:
             return 1
+        case .light:
+            return 5
         case let .custom(_, radius, _, _):
             return radius
         }
@@ -183,6 +188,8 @@ public enum ShadowType {
     var xOffset: CGFloat {
         switch self {
         case .default:
+            return 0
+        case .light:
             return 0
         case let .custom(_, _, xOffset, _):
             return xOffset
@@ -192,6 +199,8 @@ public enum ShadowType {
         switch self {
         case .default:
             return 1
+        case .light:
+            return 2
         case let .custom(_, _, _, yOffset):
             return yOffset
         }
