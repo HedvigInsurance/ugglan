@@ -139,16 +139,62 @@ public struct RowViewBuilder {
     }
 }
 
-struct hShadowModifier: ViewModifier {
+private struct hShadowModifier: ViewModifier {
+    let color: Color = .black
+    let type: ShadowType
+    let show: Bool
     func body(content: Content) -> some View {
-        content.shadow(color: Color.black.opacity(0.15), radius: 1, x: 0, y: 1)
+        content.shadow(
+            color: color.opacity(show ? type.opacity : 0),
+            radius: type.radius,
+            x: type.xOffset,
+            y: type.yOffset
+        )
     }
 }
 
 extension View {
     /// adds a Hedvig shadow to the view
-    public func hShadow() -> some View {
-        self.modifier(hShadowModifier())
+    public func hShadow(type: ShadowType = .default, show: Bool = true) -> some View {
+        self.modifier(hShadowModifier(type: type, show: show))
+    }
+}
+
+public enum ShadowType {
+    case `default`
+    case custom(opacity: CGFloat, radius: CGFloat, xOffset: CGFloat, yOffset: CGFloat)
+
+    var opacity: CGFloat {
+        switch self {
+        case .default:
+            return 0.15
+        case let .custom(opacity, _, _, _):
+            return opacity
+        }
+    }
+    var radius: CGFloat {
+        switch self {
+        case .default:
+            return 1
+        case let .custom(_, radius, _, _):
+            return radius
+        }
+    }
+    var xOffset: CGFloat {
+        switch self {
+        case .default:
+            return 0
+        case let .custom(_, _, xOffset, _):
+            return xOffset
+        }
+    }
+    var yOffset: CGFloat {
+        switch self {
+        case .default:
+            return 1
+        case let .custom(_, _, _, yOffset):
+            return yOffset
+        }
     }
 }
 
