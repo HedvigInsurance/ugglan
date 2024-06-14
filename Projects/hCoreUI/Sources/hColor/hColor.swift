@@ -529,8 +529,8 @@ public struct hFillColor {
 
         public static var negative: some hColor {
             hColorScheme(
-                light: hGrayscaleTranslucentLight.white,
-                dark: hGrayscaleTranslucentDark.black
+                light: Color(hexString: "#FFFFFF").opacity(0.98),
+                dark: Color(hexString: "#000000").opacity(0.928)
             )
         }
 

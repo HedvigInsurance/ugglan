@@ -190,7 +190,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                 hButton.LargeButton(type: .primary) {
                     sendSelectedItems
                 } content: {
-                    hText(hButtonText, style: .standard)
+                    hText(hButtonText, style: .body1)
                 }
                 .hButtonIsLoading(isLoading)
                 .disabled(disableIfNoneSelected ? selectedItems.isEmpty : false)
@@ -198,7 +198,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                     hButton.LargeButton(type: .ghost) {
                         onCancel()
                     } content: {
-                        hText(L10n.generalCancelButton, style: .standard)
+                        hText(L10n.generalCancelButton, style: .body1)
                     }
                     .disabled(isLoading)
                     .hButtonDontShowLoadingWhenDisabled(true)
@@ -283,7 +283,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             VStack(spacing: 0) {
                 Group {
                     let titleFont: HFontTextStyle =
-                        (displayName?.subTitle != nil) ? .body : .title3
+                        (displayName?.subTitle != nil) ? .body1 : .title3
 
                     hText(displayName?.title ?? itemDisplayName ?? "", style: titleFont)
                         .foregroundColor(hTextColor.Opaque.primary)

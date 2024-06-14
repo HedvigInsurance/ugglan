@@ -27,7 +27,7 @@ struct MovingFlowHouseView: View {
                         hButton.LargeButton(type: .primary) {
                             vm.continuePressed()
                         } content: {
-                            hText(L10n.saveAndContinueButtonLabel, style: .body)
+                            hText(L10n.saveAndContinueButtonLabel, style: .body1)
                         }
                         .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
                     }
@@ -105,7 +105,7 @@ struct MovingFlowHouseView: View {
                     ForEach(Array(vm.extraBuildings.enumerated()), id: \.element.id) { offset, extraBuilding in
                         HStack {
                             VStack(alignment: .leading, spacing: 0) {
-                                hText(extraBuilding.type.translatedValue, style: .standard)
+                                hText(extraBuilding.type.translatedValue, style: .body1)
                                 HStack(spacing: 0) {
                                     hText(extraBuilding.descriptionText, style: .standardSmall)
                                         .foregroundColor(hTextColor.Opaque.secondary)
@@ -157,7 +157,7 @@ struct MovingFlowHouseView: View {
             hRow {
                 Toggle(isOn: $vm.isSubleted.animation(.default)) {
                     VStack(alignment: .leading, spacing: 0) {
-                        hText(L10n.changeAddressSubletLabel, style: .standardLarge)
+                        hText(L10n.changeAddressSubletLabel, style: .heading2)
                     }
                 }
                 .toggleStyle(ChecboxToggleStyle(.center, spacing: 0))

@@ -41,7 +41,7 @@ struct MessageView: View {
                 MarkdownView(
                     config: .init(
                         text: text,
-                        fontStyle: .standard,
+                        fontStyle: .body1,
                         color: hTextColor.Opaque.primary,
                         linkColor: hTextColor.Opaque.primary,
                         linkUnderlineStyle: .thick,
@@ -69,7 +69,7 @@ struct MessageView: View {
                     MarkdownView(
                         config: .init(
                             text: url.absoluteString,
-                            fontStyle: .standard,
+                            fontStyle: .body1,
                             color: hTextColor.Opaque.primary,
                             linkColor: hTextColor.Opaque.primary,
                             linkUnderlineStyle: .thick,
@@ -100,7 +100,7 @@ struct LinkView: View {
             MarkdownView(
                 config: .init(
                     text: error,
-                    fontStyle: .standard,
+                    fontStyle: .body1,
                     color: hTextColor.Opaque.primary,
                     linkColor: hTextColor.Opaque.primary,
                     linkUnderlineStyle: .thick,

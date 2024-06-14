@@ -58,7 +58,7 @@ public struct GenericErrorView: View {
                             hButton.LargeButton(type: .ghost) {
                                 dismissButton.buttonAction()
                             } content: {
-                                hText(dismissButton.buttonTitle ?? L10n.openChat, style: .body)
+                                hText(dismissButton.buttonTitle ?? L10n.openChat, style: .body1)
                             }
                         }
                     }
@@ -88,12 +88,12 @@ public struct GenericErrorView: View {
             }
             VStack {
                 if !withoutTitle {
-                    hText(title ?? L10n.somethingWentWrong, style: .body)
+                    hText(title ?? L10n.somethingWentWrong, style: .body1)
                         .foregroundColor(hTextColor.Translucent.primary)
                         .multilineTextAlignment(.center)
                 }
                 if let description {
-                    hText(description, style: .body)
+                    hText(description, style: .body1)
                         .padding(.horizontal, 32)
                         .multilineTextAlignment(.center)
                         .foregroundColor(hTextColor.Translucent.secondary)
@@ -103,7 +103,7 @@ public struct GenericErrorView: View {
                 hButton.MediumButton(type: .primary) {
                     actionButton.buttonAction()
                 } content: {
-                    hText(actionButton.buttonTitle ?? L10n.generalRetry, style: .body)
+                    hText(actionButton.buttonTitle ?? L10n.generalRetry, style: .body1)
                 }
                 .fixedSize()
             }

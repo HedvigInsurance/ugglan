@@ -40,9 +40,9 @@ public struct DeleteRequestLoadingView: View {
                     .frame(width: 24, height: 24)
                     .foregroundColor(hSignalColor.Green.element)
                     .padding(.bottom, 16)
-                hText(L10n.DeleteAccount.processedTitle, style: .body)
+                hText(L10n.DeleteAccount.processedTitle, style: .body1)
                     .foregroundColor(hTextColor.Opaque.primary)
-                hText(L10n.DeleteAccount.processedDescription, style: .body)
+                hText(L10n.DeleteAccount.processedDescription, style: .body1)
                     .foregroundColor(hTextColor.Translucent.secondary)
                     .multilineTextAlignment(.center)
             }
@@ -54,7 +54,7 @@ public struct DeleteRequestLoadingView: View {
                 hButton.LargeButton(type: .ghost) {
                     dismissAction(.makeHomeTabActive)
                 } content: {
-                    hText(L10n.generalCloseButton, style: .body)
+                    hText(L10n.generalCloseButton, style: .body1)
                 }
             }
             .sectionContainerStyle(.transparent)

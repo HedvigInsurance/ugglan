@@ -39,7 +39,7 @@ struct PlaybackFailedView: View {
         }
         .padding(.horizontal, 24)
         .background(hBlurColor.blurTwo)
-        .cornerRadius(.defaultCornerRadius)
+        .cornerRadius(.cornerRadiusL)
         .border(hBorderColor.secondary, width: 0.5)
     }
 }

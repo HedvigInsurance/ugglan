@@ -210,7 +210,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     private var getTextField: some View {
         return HStack {
             SwiftUI.TextField(textFieldPlaceholder ?? "", text: $innerValue)
-                .modifier(hFontModifier(style: size == .large ? .title3 : .standard))
+                .modifier(hFontModifier(style: size == .large ? .title3 : .body1))
                 .modifier(masking)
                 .tint(foregroundColor)
                 .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in
@@ -240,7 +240,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     private func getHeight() -> CGFloat {
         let value =
             (shouldMoveLabel)
-            ? (size == .large ? HFontTextStyle.title3.fontSize : HFontTextStyle.standard.fontSize) + 6 : 0
+            ? (size == .large ? HFontTextStyle.title3.fontSize : HFontTextStyle.body1.fontSize) + 6 : 0
         return value
     }
 

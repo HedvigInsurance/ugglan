@@ -167,7 +167,7 @@ struct ClaimEmergencyContactCard: View {
                 .hUseLightMode
 
                 if let footnote = footnote {
-                    hText(footnote, style: .caption1)
+                    hText(footnote, style: .finePrint)
                         .foregroundColor(hTextColor.Opaque.tertiary)
                         .colorScheme(.light)
 

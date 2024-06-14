@@ -44,13 +44,13 @@ struct PriceInputScreen: View {
                         UIApplication.dismissKeyboard()
                         onSave(purchasePrice)
                     } content: {
-                        hText(L10n.generalSaveButton, style: .body)
+                        hText(L10n.generalSaveButton, style: .body1)
                     }
                     hButton.LargeButton(type: .ghost) {
                         UIApplication.dismissKeyboard()
                         router.dismiss()
                     } content: {
-                        hText(L10n.generalNotSure, style: .body)
+                        hText(L10n.generalNotSure, style: .body1)
                     }
                 }
             }

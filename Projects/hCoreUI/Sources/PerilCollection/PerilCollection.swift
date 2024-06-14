@@ -25,7 +25,7 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
                         .frame(width: 16, height: 16)
                         .padding(.horizontal, 4)
                 }
-                hText(peril.title, style: .standardLarge)
+                hText(peril.title, style: .heading2)
                     .lineLimit(1)
                 Spacer()
                 ZStack {

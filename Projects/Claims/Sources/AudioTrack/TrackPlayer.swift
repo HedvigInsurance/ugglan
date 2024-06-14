@@ -47,7 +47,7 @@ struct TrackPlayer: View {
             .frame(height: 72)
             .frame(maxWidth: .infinity)
             .background(
-                RoundedRectangle(cornerRadius: .defaultCornerRadius)
+                RoundedRectangle(cornerRadius: .cornerRadiusL)
                     .fill(hSurfaceColor.Opaque.primary)
             )
             .onTapGesture {

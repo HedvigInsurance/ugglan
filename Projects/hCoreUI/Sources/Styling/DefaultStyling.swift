@@ -132,11 +132,11 @@ extension DefaultStyling {
     public static func applyCommonNavigationBarStyling(_ appearance: UINavigationBarAppearance) {
         appearance.titleTextAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-            NSAttributedString.Key.font: Fonts.fontFor(style: .standard),
+            NSAttributedString.Key.font: Fonts.fontFor(style: .body1),
         ]
         appearance.largeTitleTextAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-            NSAttributedString.Key.font: Fonts.fontFor(style: .standard),
+            NSAttributedString.Key.font: Fonts.fontFor(style: .body1),
         ]
 
         let backImage = hCoreUIAssets.chevronLeft.image.withAlignmentRectInsets(
@@ -629,7 +629,7 @@ extension DynamicSectionStyle {
         separatorType: SeparatorType,
         borderColor: UIColor = .clear,
         backgroundColor: UIColor = .clear,
-        roundedCornerRadius: CGFloat = .defaultCornerRadius,
+        roundedCornerRadius: CGFloat = .cornerRadiusL,
         shouldRoundCorners: @escaping (_ traitCollection: UITraitCollection) -> Bool = { trait in
             trait.userInterfaceIdiom == .pad && trait.horizontalSizeClass == .regular
         }
@@ -790,10 +790,13 @@ extension DynamicTableViewFormStyle {
 final class ListTableView: UITableView {}
 
 extension CGFloat {
-    public static var smallCornerRadius: CGFloat = 4
-    public static var defaultCornerRadius: CGFloat = 8
-    public static var defaultCornerRadiusNew: CGFloat = 12
-    public static var smallIconWidth: CGFloat = 16
+    public static var cornerRadiusXS: CGFloat = 4
+    public static var cornerRadiusS: CGFloat = 8
+    public static var cornerRadiusM: CGFloat = 10
+    public static var cornerRadiusL: CGFloat = 12
+    public static var cornerRadiusXL: CGFloat = 16
+    public static var cornerRadiusXXL: CGFloat = 24
+
 }
 
 extension Squircle {

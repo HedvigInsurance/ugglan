@@ -29,7 +29,7 @@ public struct hPillFill<T: hColor, L: hColor>: View {
                 .padding(.horizontal, 10)
                 .padding(.vertical, 4)
                 .background(
-                    RoundedRectangle(cornerRadius: .defaultCornerRadius)
+                    RoundedRectangle(cornerRadius: .cornerRadiusL)
                         .fill(backgroundColor)
                 )
         }
