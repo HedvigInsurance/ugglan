@@ -9,6 +9,7 @@ public protocol ConversationsClient {
         newerToken: String?
     ) async throws -> ConversationMessagesData
     func send(message: Message, for conversationId: String) async throws -> Message
+    func createConversation() async throws -> Conversation
 }
 
 public struct ConversationMessagesData {

@@ -49,4 +49,16 @@ public class ConversationsDemoClient: ConversationsClient {
     public func getConversations(for conversationId: String) async throws -> [Conversation] {
         return []
     }
+
+    public func createConversation() async throws -> Conversation {
+        return Conversation(
+            id: "id1",
+            type: .legacy,
+            title: "title",
+            subtitle: "subtitle",
+            newestMessage: nil,
+            createdAt: nil,
+            statusMessage: "status message"
+        )
+    }
 }

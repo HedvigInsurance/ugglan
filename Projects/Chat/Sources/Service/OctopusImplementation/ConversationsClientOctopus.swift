@@ -139,6 +139,14 @@ public class ConversationsClientOctopus: ConversationsClient {
         let banner = data.conversation.statusMessage
         return .init(messages: messages, banner: banner, olderToken: olderToken, newerToken: newerToken)
     }
+
+    public func createConversation() async throws -> Conversation {
+        let mutation = hGraphQL.OctopusGraphQL.ConversationCreateMutation()
+        let data = try await octopus.client.perform(mutation: mutation)
+        let conversationsFragment = data.conversationCreate.fragments.conversationFragment
+
+        return .init(fragment: conversationsFragment, type: .service)
+    }
 }
 
 extension OctopusGraphQL.ConversationFragment {
