@@ -38,6 +38,12 @@ public struct SubmitClaimAudioRecordingScreen: View {
         if isAudioInput {
             audioInputForm
                 .claimErrorTrackerFor([.postAudioRecording])
+                .onAppear {
+                    UIApplication.shared.isIdleTimerDisabled = true
+                }
+                .onDisappear {
+                    UIApplication.shared.isIdleTimerDisabled = false
+                }
         } else {
             textInputForm
                 .claimErrorTrackerFor([.postAudioRecording])

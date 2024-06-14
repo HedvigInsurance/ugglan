@@ -127,7 +127,11 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
             DispatchQueue.main.asyncAfter(deadline: .now() + (withDelay ? 0.8 : 0)) {
                 let vcToPresent: UIViewController? = {
                     if options.contains(.alwaysOpenOnTop) {
-                        return UIApplication.shared.getTopViewController()
+                        let vc = UIApplication.shared.getTopViewController()
+                        if vc?.isBeingDismissed == true {
+                            return vc?.presentingViewController
+                        }
+                        return vc
                     }
                     return presentationViewModel.rootVC ?? UIApplication.shared.getTopViewController()
 

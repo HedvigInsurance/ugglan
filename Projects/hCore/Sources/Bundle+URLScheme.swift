@@ -9,4 +9,12 @@ extension Bundle {
         else { return nil }
         return externalURLScheme
     }
+
+    public var urlSchemes: [String] {
+        guard let urlTypes = infoDictionary?["CFBundleURLTypes"] as? [AnyObject],
+            let urlTypeDictionary = urlTypes.first as? [String: AnyObject],
+            let urlSchemes = urlTypeDictionary["CFBundleURLSchemes"] as? [String]
+        else { return [] }
+        return urlSchemes
+    }
 }
