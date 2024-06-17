@@ -310,17 +310,58 @@ public struct hTextColor {
     public struct Translucent {
         public static var primary: some hColor {
             hColorScheme(
-                light: hGrayscaleTranslucent.black,
-                dark: hGrayscaleTranslucent.white
+                light: hGrayscaleTranslucentLight.black,
+                dark: hGrayscaleTranslucentDark.white
+            )
+        }
+
+        public static var negative: some hColor {
+            hColorScheme(
+                light: hGrayscaleTranslucentLight.white,
+                dark: hGrayscaleTranslucentDark.black
             )
         }
 
         public static var secondary: some hColor {
-            hGrayscaleTranslucent.greyScaleTranslucent700
+            hColorScheme(
+                light: hGrayscaleTranslucentLight.greyScaleTranslucent700,
+                dark: hGrayscaleTranslucentDark.greyScaleTranslucent500
+            )
+        }
+
+        public static var accordion: some hColor {
+            hColorScheme(
+                light: hGrayscaleTranslucentLight.greyScaleTranslucent750,
+                dark: hGrayscaleTranslucentDark.greyScaleTranslucent450
+            )
         }
 
         public static var tertiary: some hColor {
-            hGrayscaleTranslucent.greyScaleTranslucent500
+            hColorScheme(
+                light: hGrayscaleTranslucentLight.greyScaleTranslucent500,
+                dark: hGrayscaleTranslucentDark.greyScaleTranslucent700
+            )
+        }
+
+        public static var disabled: some hColor {
+            hColorScheme(
+                light: hGrayscaleTranslucentLight.greyScaleTranslucent400,
+                dark: hGrayscaleTranslucentDark.greyScaleTranslucent800
+            )
+        }
+
+        public static var black: some hColor {
+            hColorScheme(
+                light: hGrayscaleTranslucentLight.black,
+                dark: hGrayscaleTranslucentDark.black
+            )
+        }
+
+        public static var white: some hColor {
+            hColorScheme(
+                light: hGrayscaleTranslucentLight.white,
+                dark: hGrayscaleTranslucentDark.white
+            )
         }
     }
 
