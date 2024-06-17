@@ -64,8 +64,8 @@ public struct ChatScreen: View {
                         }
                 }
             }
-            .padding([.horizontal, .bottom], 16)
-            .padding(.top, vm.banner != nil ? 8 : 0)
+            .padding([.horizontal, .bottom], .padding16)
+            .padding(.top, vm.banner != nil ? .padding8 : 0)
             .onChange(of: vm.scrollToMessage?.id) { id in
                 withAnimation {
                     proxy?.scrollTo(id, anchor: .bottom)

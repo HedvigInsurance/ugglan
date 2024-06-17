@@ -131,7 +131,7 @@ struct LinkView: View {
                     }
 
                 }
-                .padding([.horizontal, .bottom], 16)
+                .padding([.horizontal, .bottom], .padding16)
             }
             .transition(.opacity)
             .frame(width: 300)
