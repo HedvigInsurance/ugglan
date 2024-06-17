@@ -52,7 +52,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         bag.dispose()
         let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
         ugglanStore.send(.setIsDemoMode(to: false))
-        Task {
+        Task { @MainActor in
             let authenticationService = AuthenticationService()
             do {
                 try await authenticationService.logout()
