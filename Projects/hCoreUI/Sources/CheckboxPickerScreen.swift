@@ -18,11 +18,10 @@ public struct CheckboxConfig<T> where T: Equatable & Hashable {
     typealias PickerModel = (object: T, displayName: CheckboxItemModel)
 
     var items: [PickerModel]
-    let preSelectedItems: [T]
+    var preSelectedItems: [T]
     let onSelected: ([(object: T?, displayName: String?)]) -> Void
     let onCancel: (() -> Void)?
     let singleSelect: Bool?
-    let showDividers: Bool?
     let attachToBottom: Bool
     let disableIfNoneSelected: Bool
     let manualInputPlaceholder: String
@@ -33,7 +32,6 @@ public struct CheckboxConfig<T> where T: Equatable & Hashable {
     let manualInputId = "manualInputId"
 
     @State var type: CheckboxFieldType? = nil
-    @State var selectedItems: [T] = []
     @State var manualBrandName: String = ""
     @State var manualInput: Bool = false
 
@@ -43,7 +41,6 @@ public struct CheckboxConfig<T> where T: Equatable & Hashable {
         onSelected: @escaping ([(T?, String?)]) -> Void,
         onCancel: (() -> Void)? = nil,
         singleSelect: Bool? = false,
-        showDividers: Bool? = false,
         attachToBottom: Bool = false,
         disableIfNoneSelected: Bool = false,
         manualInputPlaceholder: String? = "",
@@ -57,7 +54,6 @@ public struct CheckboxConfig<T> where T: Equatable & Hashable {
         self.onSelected = onSelected
         self.onCancel = onCancel
         self.singleSelect = singleSelect
-        self.showDividers = showDividers
         self.attachToBottom = attachToBottom
         self.disableIfNoneSelected = disableIfNoneSelected
         self.manualInputPlaceholder = manualInputPlaceholder ?? ""
@@ -106,6 +102,10 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     @Environment(\.hButtonIsLoading) var isLoading
     @Environment(\.hCheckboxPickerBottomAttachedView) var bottomAttachedView
     @Environment(\.hIncludeManualInput) var includeManualInput
+    @Environment(\.hUsePillowDesign) var usePillowDesign
+    @Environment(\.hLeftAlign) var leftAlign
+
+    @State var selectedItems: [T] = []
 
     private var config: CheckboxConfig<T>
 
@@ -119,32 +119,31 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     public var body: some View {
         ScrollViewReader { proxy in
             if config.attachToBottom {
-                hForm {
-                }
-                .hFormAttachToBottom {
-                    VStack(spacing: 0) {
-                        VStack(spacing: 16) {
-                            if let infoCard = config.infoCard, infoCard.placement == .top {
-                                hSection {
-                                    InfoCard(text: infoCard.text, type: .info).buttons(infoCard.buttons)
+                hForm {}
+                    .hFormAttachToBottom {
+                        VStack(spacing: 0) {
+                            VStack(spacing: 16) {
+                                if let infoCard = config.infoCard, infoCard.placement == .top {
+                                    hSection {
+                                        InfoCard(text: infoCard.text, type: .info).buttons(infoCard.buttons)
+                                    }
+                                    .sectionContainerStyle(.transparent)
                                 }
-                                .sectionContainerStyle(.transparent)
-                            }
-                            content(with: proxy)
-                            if let infoCard = config.infoCard, infoCard.placement == .bottom {
-                                hSection {
-                                    InfoCard(text: infoCard.text, type: .info).buttons(infoCard.buttons)
+                                content(with: proxy)
+                                if let infoCard = config.infoCard, infoCard.placement == .bottom {
+                                    hSection {
+                                        InfoCard(text: infoCard.text, type: .info).buttons(infoCard.buttons)
+                                    }
+                                    .sectionContainerStyle(.transparent)
                                 }
-                                .sectionContainerStyle(.transparent)
                             }
+                            bottomContent
                         }
-                        bottomContent
                     }
-                }
-                .hFormObserveKeyboard
-                .onAppear {
-                    onAppear(with: proxy)
-                }
+                    .hFormObserveKeyboard
+                    .onAppear {
+                        onAppear(with: proxy)
+                    }
             } else {
                 hForm {
                     content(with: proxy)
@@ -161,11 +160,11 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     }
 
     private func onAppear(with proxy: ScrollViewProxy) {
-        config.selectedItems = config.items.filter({ config.preSelectedItems.contains($0.object) })
+        selectedItems = config.items.filter({ config.preSelectedItems.contains($0.object) })
             .map({
                 $0.object
             })
-        if let selectedItem = config.selectedItems.first, config.selectedItems.count == 1 {
+        if let selectedItem = selectedItems.first, selectedItems.count == 1 {
             proxy.scrollTo(selectedItem, anchor: .center)
         }
 
@@ -206,7 +205,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                 }
                 .onAppear {
                     config.manualInput = true
-                    config.selectedItems = []
+                    selectedItems = []
                 }
                 .id(config.manualInputId)
             }
@@ -224,7 +223,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                     hText(config.hButtonText, style: .body1)
                 }
                 .hButtonIsLoading(isLoading)
-                .disabled(config.disableIfNoneSelected ? config.selectedItems.isEmpty : false)
+                .disabled(config.disableIfNoneSelected ? selectedItems.isEmpty : false)
                 if let onCancel = config.onCancel {
                     hButton.LargeButton(type: .ghost) {
                         onCancel()
@@ -241,20 +240,20 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     }
 
     var sendSelectedItems: Void {
-        if config.selectedItems.count > 1 {
+        if selectedItems.count > 1 {
             config.onSelected(
-                config.selectedItems.map({
+                selectedItems.map({
                     (object: $0, displayName: nil)
                 })
             )
-        } else if config.selectedItems.count == 0 {
+        } else if selectedItems.count == 0 {
             if config.manualInput && includeManualInput {
                 config.onSelected([(object: nil, displayName: config.manualBrandName)])
             } else {
                 config.onSelected([])
             }
         } else {
-            if let object = config.selectedItems.first {
+            if let object = selectedItems.first {
                 config.onSelected([(object: object, displayName: nil)])
             }
         }
@@ -262,73 +261,68 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
 
     @ViewBuilder
     func getCell(item: T? = nil, displayName: String? = nil) -> some View {
-        if config.showDividers ?? false {
-            hRow {
-                displayContentFor(item, displayName)
-            }
-            .withEmptyAccessory
-            .verticalPadding(config.fieldSize == .small ? 12.5 : 20.5)
-            .onTap {
-                if let item {
-                    withAnimation {
-                        config.manualInput = false
-                    }
-                    onTapExecuteFor(item)
-                } else {
-                    withAnimation {
-                        config.manualInput = true
-                    }
-                    config.selectedItems = []
-                    config.type = .inputField
+        hRow {
+            getCellContent(item, displayName)
+        }
+        .withEmptyAccessory
+        .onTap {
+            if let item {
+                withAnimation {
+                    config.manualInput = false
                 }
-            }
-        } else {
-            hRow {
-                displayContentFor(item, displayName)
-            }
-            .withEmptyAccessory
-            .verticalPadding(config.fieldSize == .small ? 12.5 : 20.5)
-            .onTap {
-                if let item {
-                    withAnimation {
-                        config.manualInput = false
-                    }
-                    onTapExecuteFor(item)
-                } else {
-                    withAnimation {
-                        config.manualInput = true
-                        config.type = .inputField
-                    }
+                onTapExecuteFor(item)
+            } else {
+                withAnimation {
+                    config.manualInput = true
                 }
+                selectedItems = []
+                config.type = .inputField
             }
-            .hWithoutDivider
         }
     }
 
     @ViewBuilder
-    func displayContentFor(_ item: T?, _ itemDisplayName: String?) -> some View {
+    func getCellContent(_ item: T?, _ itemDisplayName: String?) -> some View {
         let isSelected =
-            config.selectedItems.first(where: { $0 == item }) != nil || (config.manualInput && itemDisplayName != nil)
+            selectedItems.first(where: { $0 == item }) != nil || (config.manualInput && itemDisplayName != nil)
+
+        HStack(spacing: 8) {
+            if leftAlign {
+                checkBox(isSelected: isSelected, item, itemDisplayName)
+                getTextField(item, itemDisplayName: itemDisplayName)
+                Spacer()
+            } else {
+                if usePillowDesign {
+                    Image(uiImage: hCoreUIAssets.pillowHome.image)
+                        .resizable()
+                        .frame(width: 32, height: 32)
+                }
+
+                getTextField(item, itemDisplayName: itemDisplayName)
+                Spacer()
+                checkBox(isSelected: isSelected, item, itemDisplayName)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func getTextField(_ item: T?, itemDisplayName: String?) -> some View {
         let displayName = config.items.first(where: { $0.object == item })?.displayName
 
-        HStack(spacing: 0) {
-            VStack(spacing: 0) {
-                Group {
-                    let titleFont: HFontTextStyle =
-                        (displayName?.subTitle != nil) ? .body1 : .title3
+        VStack(spacing: 0) {
+            Group {
+                let titleFont: HFontTextStyle =
+                    (config.fieldSize != .large) ? .body1 : .title3
 
-                    hText(displayName?.title ?? itemDisplayName ?? "", style: titleFont)
-                        .foregroundColor(hTextColor.Opaque.primary)
+                hText(displayName?.title ?? itemDisplayName ?? "", style: titleFont)
+                    .foregroundColor(hTextColor.Opaque.primary)
 
-                    if let subTitle = displayName?.subTitle {
-                        hText(subTitle, style: .standardSmall)
-                            .foregroundColor(hTextColor.Translucent.secondary)
-                    }
+                if let subTitle = displayName?.subTitle {
+                    hText(subTitle, style: .standardSmall)
+                        .foregroundColor(hTextColor.Translucent.secondary)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            Spacer()
-            checkBox(isSelected: isSelected, item, itemDisplayName)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 
@@ -336,18 +330,18 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         ImpactGenerator.soft()
         withAnimation(.easeInOut(duration: 0)) {
             if !(config.singleSelect ?? true) {
-                if let index = self.config.selectedItems.firstIndex(where: { $0 == item }) {
-                    config.selectedItems.remove(at: index)
+                if let index = self.selectedItems.firstIndex(where: { $0 == item }) {
+                    selectedItems.remove(at: index)
                 } else {
-                    config.selectedItems.append(item)
+                    selectedItems.append(item)
                 }
             } else {
-                if let firstItem = config.selectedItems.first {
+                if let firstItem = selectedItems.first {
                     if !(firstItem == item) {
-                        config.selectedItems = [item]
+                        selectedItems = [item]
                     }
                 } else {
-                    config.selectedItems = [item]
+                    selectedItems = [item]
                 }
             }
         }
@@ -355,38 +349,15 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
 
     func checkBox(isSelected: Bool, _ item: T?, _ itemDisplayName: String?) -> some View {
         Group {
-            if config.singleSelect ?? false {
-                ZStack {
-                    let isSelected =
-                        config.selectedItems.first(where: { $0 == item }) != nil
-                        || (config.manualInput && itemDisplayName != nil)
-                    let displayName = config.items.first(where: { $0.object == item })?.displayName
-                    hRadioOptionSelectedView(
-                        selectedValue: .constant(isSelected ? displayName?.title : nil),
-                        value: displayName?.title ?? ""
-                    )
-                }
-            } else {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 8)
-                        .strokeBorder(
-                            hRadioOptionSelectedView.getBorderColor(isSelected: isSelected),
-                            lineWidth: isSelected ? 0 : 1.5
-                        )
-                        .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .foregroundColor(
-                                    hRadioOptionSelectedView.getFillColor(
-                                        isSelected: isSelected
-                                    )
-                                )
-                        )
-
-                    if isSelected {
-                        Image(uiImage: hCoreUIAssets.checkmark.image)
-                            .foregroundColor(hTextColor.Opaque.negative)
-                    }
-                }
+            ZStack {
+                let isSelected =
+                    selectedItems.first(where: { $0 == item }) != nil
+                    || (config.manualInput && itemDisplayName != nil)
+                let displayName = config.items.first(where: { $0.object == item })?.displayName
+                hRadioOptionSelectedView(
+                    selectedValue: .constant(isSelected ? displayName?.title : nil),
+                    value: displayName?.title ?? ""
+                )
             }
         }
         .frame(width: 24, height: 24)
@@ -409,14 +380,14 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
                             return [
                                 ModelForPreview(id: "id", name: .init(title: "name1")),
                                 ModelForPreview(id: "id2", name: .init(title: "title2", subTitle: "subtitle2")),
-                                ModelForPreview(
-                                    id: "id3",
-                                    name: .init(title: "title3", subTitle: "subtitle3")
-                                ),
-                                ModelForPreview(id: "id4", name: .init(title: "name4")),
-                                ModelForPreview(id: "id5", name: .init(title: "name5")),
-                                ModelForPreview(id: "id6", name: .init(title: "name6")),
-                                ModelForPreview(id: "id7", name: .init(title: "name7")),
+                                //                                ModelForPreview(
+                                //                                    id: "id3",
+                                //                                    name: .init(title: "title3", subTitle: "subtitle3")
+                                //                                ),
+                                //                                ModelForPreview(id: "id4", name: .init(title: "name4")),
+                                //                                ModelForPreview(id: "id5", name: .init(title: "name5")),
+                                //                                ModelForPreview(id: "id6", name: .init(title: "name6")),
+                                //                                ModelForPreview(id: "id7", name: .init(title: "name7")),
 
                             ]
                             .compactMap({ (object: $0, displayName: $0.name) })
@@ -429,13 +400,16 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
                         },
                         singleSelect: true,
                         attachToBottom: true,
-                        manualInputPlaceholder: "Enter brand name"
+                        manualInputPlaceholder: "Enter brand name",
+                        fieldSize: .large
                     )
             )
             .hFormTitle(
                 title: .init(.small, .title3, "title", alignment: .leading)
             )
             .hIncludeManualInput
+            //            .hUsePillowDesign
+            //            .hLeftAlign
         }
     }
 }
@@ -489,6 +463,40 @@ extension EnvironmentValues {
 extension View {
     public var hIncludeManualInput: some View {
         self.environment(\.hIncludeManualInput, true)
+    }
+}
+
+private struct EnvironmentHUsePillowDesign: EnvironmentKey {
+    static let defaultValue: Bool = false
+}
+
+extension EnvironmentValues {
+    public var hUsePillowDesign: Bool {
+        get { self[EnvironmentHUsePillowDesign.self] }
+        set { self[EnvironmentHUsePillowDesign.self] = newValue }
+    }
+}
+
+extension View {
+    public var hUsePillowDesign: some View {
+        self.environment(\.hUsePillowDesign, true)
+    }
+}
+
+private struct EnvironmentHLeftAlign: EnvironmentKey {
+    static let defaultValue: Bool = false
+}
+
+extension EnvironmentValues {
+    public var hLeftAlign: Bool {
+        get { self[EnvironmentHLeftAlign.self] }
+        set { self[EnvironmentHLeftAlign.self] = newValue }
+    }
+}
+
+extension View {
+    public var hLeftAlign: some View {
+        self.environment(\.hLeftAlign, true)
     }
 }
 

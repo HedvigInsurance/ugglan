@@ -96,6 +96,7 @@ struct hRadioOptionField_Previews: PreviewProvider {
             )
         }
         .hUseNewDesign
+        .hUsePillowDesign
     }
 }
 
@@ -123,6 +124,10 @@ struct hRadioOptionSelectedView: View {
                                     isSelected: selectedValue == value
                                 )
                             )
+                        if selectedValue == value {
+                            Image(uiImage: hCoreUIAssets.checkmark.image)
+                                .foregroundColor(hTextColor.Opaque.negative)
+                        }
                     }
                     .compositingGroup()
                 )

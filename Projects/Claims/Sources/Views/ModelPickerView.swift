@@ -39,7 +39,6 @@ struct ModelPickerView: View {
                     router?.dismiss()
                 },
                 singleSelect: true,
-                showDividers: true,
                 manualInputPlaceholder: L10n.Claims.Item.Enter.Model.name,
                 manualBrandName: customName
             )
