@@ -14,7 +14,7 @@ public struct CheckboxItemModel: Hashable {
     }
 }
 
-public struct CheckboxConfig<T> where T: Equatable & Hashable {
+public class CheckboxConfig<T>: ObservableObject where T: Equatable & Hashable {
     typealias PickerModel = (object: T, displayName: CheckboxItemModel)
 
     var items: [PickerModel]
@@ -32,9 +32,10 @@ public struct CheckboxConfig<T> where T: Equatable & Hashable {
     var fieldSize: hFieldSize
     let manualInputId = "manualInputId"
 
-    @State var type: CheckboxFieldType? = nil
-    @State var manualBrandName: String = ""
-    @State var manualInput: Bool = false
+    @Published var type: CheckboxFieldType? = nil
+    @Published var manualBrandName: String = ""
+    @Published var manualInput: Bool = false
+    @Published var selectedItems: [T] = []
 
     public init(
         items: [(object: T, displayName: CheckboxItemModel)],
@@ -108,9 +109,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     @Environment(\.hUsePillowDesign) var usePillowDesign
     @Environment(\.hLeftAlign) var leftAlign
 
-    @State var selectedItems: [T] = []
-
-    private var config: CheckboxConfig<T>
+    @ObservedObject private var config: CheckboxConfig<T>
 
     public init(
         config: CheckboxConfig<T>
@@ -163,11 +162,11 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     }
 
     private func onAppear(with proxy: ScrollViewProxy) {
-        selectedItems = config.items.filter({ config.preSelectedItems.contains($0.object) })
+        config.selectedItems = config.items.filter({ config.preSelectedItems.contains($0.object) })
             .map({
                 $0.object
             })
-        if let selectedItem = selectedItems.first, selectedItems.count == 1 {
+        if let selectedItem = config.selectedItems.first, config.selectedItems.count == 1 {
             proxy.scrollTo(selectedItem, anchor: .center)
         }
 
@@ -215,15 +214,15 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                 hSection {
                     hFloatingTextField(
                         masking: Masking(type: .none),
-                        value: config.$manualBrandName,
-                        equals: config.$type,
+                        value: $config.manualBrandName,
+                        equals: $config.type,
                         focusValue: .inputField,
                         placeholder: config.manualInputPlaceholder
                     )
                 }
                 .onAppear {
                     config.manualInput = true
-                    selectedItems = []
+                    config.selectedItems = []
                 }
                 .id(config.manualInputId)
             }
@@ -241,7 +240,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                     hText(config.hButtonText, style: .body1)
                 }
                 .hButtonIsLoading(isLoading)
-                .disabled(config.disableIfNoneSelected ? selectedItems.isEmpty : false)
+                .disabled(config.disableIfNoneSelected ? config.selectedItems.isEmpty : false)
                 if let onCancel = config.onCancel {
                     hButton.LargeButton(type: .ghost) {
                         onCancel()
@@ -258,20 +257,20 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     }
 
     var sendSelectedItems: Void {
-        if selectedItems.count > 1 {
+        if config.selectedItems.count > 1 {
             config.onSelected(
-                selectedItems.map({
+                config.selectedItems.map({
                     (object: $0, displayName: nil)
                 })
             )
-        } else if selectedItems.count == 0 {
+        } else if config.selectedItems.count == 0 {
             if config.manualInput && includeManualInput {
                 config.onSelected([(object: nil, displayName: config.manualBrandName)])
             } else {
                 config.onSelected([])
             }
         } else {
-            if let object = selectedItems.first {
+            if let object = config.selectedItems.first {
                 config.onSelected([(object: object, displayName: nil)])
             }
         }
@@ -293,7 +292,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                 withAnimation {
                     config.manualInput = true
                 }
-                selectedItems = []
+                config.selectedItems = []
                 config.type = .inputField
             }
         }
@@ -302,7 +301,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     @ViewBuilder
     func getCellContent(_ item: T?, _ itemDisplayName: String?) -> some View {
         let isSelected =
-            selectedItems.first(where: { $0 == item }) != nil || (config.manualInput && itemDisplayName != nil)
+            config.selectedItems.first(where: { $0 == item }) != nil || (config.manualInput && itemDisplayName != nil)
 
         HStack(spacing: 8) {
             if leftAlign {
@@ -315,7 +314,6 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                         .resizable()
                         .frame(width: 32, height: 32)
                 }
-
                 getTextField(item, itemDisplayName: itemDisplayName)
                 Spacer()
                 checkBox(isSelected: isSelected, item, itemDisplayName)
@@ -348,18 +346,18 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         ImpactGenerator.soft()
         withAnimation(.easeInOut(duration: 0)) {
             if !(config.singleSelect ?? true) {
-                if let index = self.selectedItems.firstIndex(where: { $0 == item }) {
-                    selectedItems.remove(at: index)
+                if let index = self.config.selectedItems.firstIndex(where: { $0 == item }) {
+                    config.selectedItems.remove(at: index)
                 } else {
-                    selectedItems.append(item)
+                    config.selectedItems.append(item)
                 }
             } else {
-                if let firstItem = selectedItems.first {
+                if let firstItem = config.selectedItems.first {
                     if !(firstItem == item) {
-                        selectedItems = [item]
+                        config.selectedItems = [item]
                     }
                 } else {
-                    selectedItems = [item]
+                    config.selectedItems = [item]
                 }
             }
         }
@@ -369,9 +367,14 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         Group {
             ZStack {
                 let isSelected =
-                    selectedItems.first(where: { $0 == item }) != nil
+                    config.selectedItems.first(where: { $0 == item }) != nil
                     || (config.manualInput && itemDisplayName != nil)
-                let displayName = config.items.first(where: { $0.object == item })?.displayName
+                var displayName = config.items.first(where: { $0.object == item })?.displayName
+
+                if itemDisplayName == L10n.manualInputListOther {
+                    let _ = displayName = .init(title: L10n.manualInputListOther, subTitle: nil)
+                }
+
                 hRadioOptionSelectedView(
                     selectedValue: .constant(isSelected ? displayName?.title : nil),
                     value: displayName?.title ?? ""
@@ -418,7 +421,7 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
                         singleSelect: true,
                         attachToBottom: true,
                         manualInputPlaceholder: "Enter brand name",
-                        withTitle: "Label",
+                        //                        withTitle: "Label",
                         fieldSize: .small
                     )
             )
