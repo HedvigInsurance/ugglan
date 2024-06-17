@@ -284,12 +284,12 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         .withEmptyAccessory
         .onTap {
             if let item {
-                withAnimation {
+                withAnimation(.easeInOut(duration: 0.2)) {
                     config.manualInput = false
                 }
                 onTapExecuteFor(item)
             } else {
-                withAnimation {
+                withAnimation(.easeInOut(duration: 0.2)) {
                     config.manualInput = true
                 }
                 config.selectedItems = []
@@ -344,7 +344,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
 
     func onTapExecuteFor(_ item: T) {
         ImpactGenerator.soft()
-        withAnimation(.easeInOut(duration: 0)) {
+        withAnimation(.easeInOut(duration: 0.2)) {
             if !(config.singleSelect ?? true) {
                 if let index = self.config.selectedItems.firstIndex(where: { $0 == item }) {
                     config.selectedItems.remove(at: index)
