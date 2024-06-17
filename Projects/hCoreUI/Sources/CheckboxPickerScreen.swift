@@ -27,6 +27,7 @@ public struct CheckboxConfig<T> where T: Equatable & Hashable {
     let manualInputPlaceholder: String
     let hButtonText: String
     let infoCard: CheckboxInfoCard?
+    let listTitle: String?
 
     var fieldSize: hFieldSize
     let manualInputId = "manualInputId"
@@ -45,6 +46,7 @@ public struct CheckboxConfig<T> where T: Equatable & Hashable {
         disableIfNoneSelected: Bool = false,
         manualInputPlaceholder: String? = "",
         manualBrandName: String? = nil,
+        withTitle: String? = nil,
         hButtonText: String? = L10n.generalSaveButton,
         infoCard: CheckboxInfoCard? = nil,
         fieldSize: hFieldSize? = nil
@@ -54,6 +56,7 @@ public struct CheckboxConfig<T> where T: Equatable & Hashable {
         self.onSelected = onSelected
         self.onCancel = onCancel
         self.singleSelect = singleSelect
+        self.listTitle = withTitle
         self.attachToBottom = attachToBottom
         self.disableIfNoneSelected = disableIfNoneSelected
         self.manualInputPlaceholder = manualInputPlaceholder ?? ""
@@ -175,12 +178,27 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
 
     private func content(with proxy: ScrollViewProxy) -> some View {
         VStack(spacing: 4) {
-            ForEach(config.items, id: \.object) { item in
-                hSection {
+
+            if let listTitle = config.listTitle {
+                hSection(config.items, id: \.object) { item in
                     getCell(item: item.object)
                         .id(item.object)
                 }
+                .withHeader({
+                    hText(listTitle, style: .footnote)
+                        .foregroundColor(hTextColor.Translucent.secondary)
+                })
+                .hEmbeddedHeader
+                .hWithoutDividerPadding
                 .disabled(isLoading)
+            } else {
+                ForEach(config.items, id: \.object) { item in
+                    hSection {
+                        getCell(item: item.object)
+                            .id(item.object)
+                    }
+                    .disabled(isLoading)
+                }
             }
 
             let showOtherCell = includeManualInput && !config.items.isEmpty
@@ -375,19 +393,18 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
             CheckboxPickerScreen<ModelForPreview>(
                 config:
                     .init(
-                        //            CheckboxPickerScreen<ModelForPreview>(
                         items: {
                             return [
                                 ModelForPreview(id: "id", name: .init(title: "name1")),
                                 ModelForPreview(id: "id2", name: .init(title: "title2", subTitle: "subtitle2")),
-                                //                                ModelForPreview(
-                                //                                    id: "id3",
-                                //                                    name: .init(title: "title3", subTitle: "subtitle3")
-                                //                                ),
-                                //                                ModelForPreview(id: "id4", name: .init(title: "name4")),
-                                //                                ModelForPreview(id: "id5", name: .init(title: "name5")),
-                                //                                ModelForPreview(id: "id6", name: .init(title: "name6")),
-                                //                                ModelForPreview(id: "id7", name: .init(title: "name7")),
+                                ModelForPreview(
+                                    id: "id3",
+                                    name: .init(title: "title3", subTitle: "subtitle3")
+                                ),
+                                ModelForPreview(id: "id4", name: .init(title: "name4")),
+                                ModelForPreview(id: "id5", name: .init(title: "name5")),
+                                ModelForPreview(id: "id6", name: .init(title: "name6")),
+                                ModelForPreview(id: "id7", name: .init(title: "name7")),
 
                             ]
                             .compactMap({ (object: $0, displayName: $0.name) })
@@ -401,7 +418,8 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
                         singleSelect: true,
                         attachToBottom: true,
                         manualInputPlaceholder: "Enter brand name",
-                        fieldSize: .large
+                        withTitle: "Label",
+                        fieldSize: .small
                     )
             )
             .hFormTitle(
