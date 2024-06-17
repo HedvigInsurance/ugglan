@@ -315,9 +315,9 @@ struct MovingFlowConfirm: View {
     @ViewBuilder
     var chatComponent: some View {
         VStack(spacing: 0) {
-            Spacing(height: .padding64)
+            Spacing(height: 64)
             hText(L10n.changeAddressNoFind, style: .body1)
-            Spacing(height: .padding16)
+            Spacing(height: 16)
             hButton.SmallButton(type: .primary) {
                 NotificationCenter.default.post(name: .openChat, object: nil)
             } content: {
