@@ -100,7 +100,6 @@ struct hRadioOptionField_Previews: PreviewProvider {
 }
 
 struct hRadioOptionSelectedView: View {
-    @Environment(\.hUseNewDesign) var hUseNewDesign
     @Binding var selectedValue: String?
     let value: String
 
@@ -111,23 +110,19 @@ struct hRadioOptionSelectedView: View {
 
     var body: some View {
         Group {
-            Circle()
+            RoundedRectangle(cornerRadius: 8)
                 .strokeBorder(
                     hRadioOptionSelectedView.getBorderColor(isSelected: selectedValue == value),
                     lineWidth: selectedValue == value ? 0 : 1.5
                 )
                 .background(
                     ZStack {
-                        Circle()
+                        RoundedRectangle(cornerRadius: 8)
                             .foregroundColor(
                                 hRadioOptionSelectedView.getFillColor(
-                                    isSelected: selectedValue == value,
-                                    coloredCheckBox: hUseNewDesign
+                                    isSelected: selectedValue == value
                                 )
                             )
-                        Circle().fill()
-                            .frame(width: shouldHaveMiddleCutted() ? 8 : 0, height: shouldHaveMiddleCutted() ? 8 : 0)
-                            .blendMode(.destinationOut)
                     }
                     .compositingGroup()
                 )
@@ -135,18 +130,10 @@ struct hRadioOptionSelectedView: View {
         .frame(width: 24, height: 24)
     }
 
-    private func shouldHaveMiddleCutted() -> Bool {
-        selectedValue == value && hUseNewDesign
-    }
-
     @hColorBuilder
-    static func getFillColor(isSelected: Bool, coloredCheckBox: Bool) -> some hColor {
+    static func getFillColor(isSelected: Bool) -> some hColor {
         if isSelected {
-            if coloredCheckBox {
-                hSignalColor.Green.element
-            } else {
-                hTextColor.Opaque.primary
-            }
+            hSignalColor.Green.element
         } else {
             hSurfaceColor.Opaque.primary
         }
@@ -155,7 +142,7 @@ struct hRadioOptionSelectedView: View {
     @hColorBuilder
     static func getBorderColor(isSelected: Bool) -> some hColor {
         if isSelected {
-            hTextColor.Opaque.primary
+            hSignalColor.Green.element
         } else {
             hBorderColor.secondary
         }

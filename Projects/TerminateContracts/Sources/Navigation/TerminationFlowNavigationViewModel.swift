@@ -201,37 +201,39 @@ struct TerminationFlowNavigation: View {
 
     private func openSelectInsuranceScreen() -> some View {
         CheckboxPickerScreen<TerminationConfirmConfig>(
-            items: {
-                let items = configs.map({
-                    (
-                        object: $0,
-                        displayName: CheckboxItemModel(
-                            title: $0.contractDisplayName,
-                            subTitle: $0.contractExposureName
+            config: .init(
+                items: {
+                    let items = configs.map({
+                        (
+                            object: $0,
+                            displayName: CheckboxItemModel(
+                                title: $0.contractDisplayName,
+                                subTitle: $0.contractExposureName
+                            )
                         )
-                    )
-                })
-                return items
-            }(),
-            preSelectedItems: { [] },
-            onSelected: { selected in
-                if let selectedContract = selected.first?.0 {
-                    let config = TerminationConfirmConfig(
-                        contractId: selectedContract.contractId,
-                        contractDisplayName: selectedContract.contractDisplayName,
-                        contractExposureName: selectedContract.contractExposureName,
-                        activeFrom: selectedContract.activeFrom
-                    )
-                    //                    vm.router.push(config)
-                    let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                    store.send(.startTermination(config: config))
-                }
-            },
-            singleSelect: true,
-            attachToBottom: true,
-            disableIfNoneSelected: true,
-            hButtonText: L10n.generalContinueButton,
-            fieldSize: .small
+                    })
+                    return items
+                }(),
+                preSelectedItems: { [] },
+                onSelected: { selected in
+                    if let selectedContract = selected.first?.0 {
+                        let config = TerminationConfirmConfig(
+                            contractId: selectedContract.contractId,
+                            contractDisplayName: selectedContract.contractDisplayName,
+                            contractExposureName: selectedContract.contractExposureName,
+                            activeFrom: selectedContract.activeFrom
+                        )
+                        //                    vm.router.push(config)
+                        let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                        store.send(.startTermination(config: config))
+                    }
+                },
+                singleSelect: true,
+                attachToBottom: true,
+                disableIfNoneSelected: true,
+                hButtonText: L10n.generalContinueButton,
+                fieldSize: .small
+            )
         )
         .hFormTitle(
             title: .init(.small, .title3, L10n.terminationFlowTitle, alignment: .leading),
