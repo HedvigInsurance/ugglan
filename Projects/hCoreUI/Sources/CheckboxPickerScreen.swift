@@ -108,6 +108,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     @Environment(\.hIncludeManualInput) var includeManualInput
     @Environment(\.hUsePillowDesign) var usePillowDesign
     @Environment(\.hLeftAlign) var leftAlign
+    @Environment(\.isEnabled) var enabled
 
     @ObservedObject private var config: CheckboxConfig<T>
 
@@ -331,14 +332,32 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                     (config.fieldSize != .large) ? .body1 : .title3
 
                 hText(displayName?.title ?? itemDisplayName ?? "", style: titleFont)
-                    .foregroundColor(hTextColor.Opaque.primary)
+                    .foregroundColor(getTitleColor)
 
                 if let subTitle = displayName?.subTitle {
                     hText(subTitle, style: .standardSmall)
-                        .foregroundColor(hTextColor.Translucent.secondary)
+                        .foregroundColor(getSubTitleColor)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    @hColorBuilder
+    var getTitleColor: some hColor {
+        if !enabled {
+            hTextColor.Translucent.disabled
+        } else {
+            hTextColor.Opaque.primary
+        }
+    }
+
+    @hColorBuilder
+    var getSubTitleColor: some hColor {
+        if !enabled {
+            hTextColor.Translucent.disabled
+        } else {
+            hTextColor.Translucent.secondary
         }
     }
 
@@ -431,6 +450,7 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
             .hIncludeManualInput
             //            .hUsePillowDesign
             //            .hLeftAlign
+            .disabled(true)
         }
     }
 }

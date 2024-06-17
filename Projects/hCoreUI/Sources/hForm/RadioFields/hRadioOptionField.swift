@@ -97,11 +97,13 @@ struct hRadioOptionField_Previews: PreviewProvider {
         }
         .hUseNewDesign
         .hUsePillowDesign
+        .disabled(true)
     }
 }
 
 struct hRadioOptionSelectedView: View {
     @Binding var selectedValue: String?
+    @Environment(\.isEnabled) var enabled
     let value: String
 
     init(selectedValue: Binding<String?>, value: String) {
@@ -113,15 +115,19 @@ struct hRadioOptionSelectedView: View {
         Group {
             RoundedRectangle(cornerRadius: 8)
                 .strokeBorder(
-                    hRadioOptionSelectedView.getBorderColor(isSelected: selectedValue == value),
-                    lineWidth: selectedValue == value ? 0 : 1.5
+                    hRadioOptionSelectedView.getBorderColor(
+                        isSelected: selectedValue == value,
+                        enabled: enabled
+                    ),
+                    lineWidth: (selectedValue == value || !enabled) ? 0 : 1.5
                 )
                 .background(
                     ZStack {
                         RoundedRectangle(cornerRadius: 8)
                             .foregroundColor(
                                 hRadioOptionSelectedView.getFillColor(
-                                    isSelected: selectedValue == value
+                                    isSelected: selectedValue == value,
+                                    enabled: enabled
                                 )
                             )
                         if selectedValue == value {
@@ -136,8 +142,10 @@ struct hRadioOptionSelectedView: View {
     }
 
     @hColorBuilder
-    static func getFillColor(isSelected: Bool) -> some hColor {
-        if isSelected {
+    static func getFillColor(isSelected: Bool, enabled: Bool) -> some hColor {
+        if !enabled {
+            hFillColor.Translucent.disabled
+        } else if isSelected {
             hSignalColor.Green.element
         } else {
             hSurfaceColor.Opaque.primary
@@ -145,8 +153,10 @@ struct hRadioOptionSelectedView: View {
     }
 
     @hColorBuilder
-    static func getBorderColor(isSelected: Bool) -> some hColor {
-        if isSelected {
+    static func getBorderColor(isSelected: Bool, enabled: Bool) -> some hColor {
+        if !enabled {
+            hFillColor.Translucent.disabled
+        } else if isSelected {
             hSignalColor.Green.element
         } else {
             hBorderColor.secondary
