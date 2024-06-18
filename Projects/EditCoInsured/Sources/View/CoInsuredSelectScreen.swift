@@ -42,65 +42,67 @@ struct CoInsuredSelectScreen: View {
 
     var picker: some View {
         CheckboxPickerScreen<CoInsuredModel>(
-            items: {
-                return
-                    alreadyAddedCoinsuredMembers
-                    .compactMap {
-                        ((object: $0, displayName: .init(title: $0.fullName ?? "")))
-                    }
-            }(),
-            preSelectedItems: { [] },
-            onSelected: { selectedCoinsured in
-                if let selectedCoinsured = selectedCoinsured.first {
-                    let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
+            config: .init(
+                items: {
+                    return
+                        alreadyAddedCoinsuredMembers
+                        .compactMap {
+                            ((object: $0, displayName: .init(title: $0.fullName ?? "")))
+                        }
+                }(),
+                preSelectedItems: { [] },
+                onSelected: { selectedCoinsured in
+                    if let selectedCoinsured = selectedCoinsured.first {
+                        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
 
-                    if let object = selectedCoinsured.0 {
-                        store.coInsuredViewModel.addCoInsured(
-                            .init(
-                                firstName: object.firstName,
-                                lastName: object.lastName,
-                                SSN: object.SSN,
-                                birthDate: object.birthDate,
-                                needsMissingInfo: false
-                            )
-                        )
-                    }
-                    Task {
-                        withAnimation {
-                            isLoading = true
-                        }
-                        await store.intentViewModel.getIntent(
-                            contractId: contractId,
-                            origin: .coinsuredSelectList,
-                            coInsured: store.coInsuredViewModel.completeList()
-                        )
-                        withAnimation {
-                            isLoading = false
-                        }
-                        if !store.intentViewModel.showErrorViewForCoInsuredList {
-                            editCoInsuredNavigation.selectCoInsured = nil
-                        } else {
-                            if let object = selectedCoinsured.0 {
-                                store.coInsuredViewModel.removeCoInsured(
-                                    .init(
-                                        firstName: object.firstName,
-                                        lastName: object.lastName,
-                                        SSN: object.SSN,
-                                        birthDate: object.birthDate,
-                                        needsMissingInfo: false
-                                    )
+                        if let object = selectedCoinsured.0 {
+                            store.coInsuredViewModel.addCoInsured(
+                                .init(
+                                    firstName: object.firstName,
+                                    lastName: object.lastName,
+                                    SSN: object.SSN,
+                                    birthDate: object.birthDate,
+                                    needsMissingInfo: false
                                 )
-                            }
+                            )
                         }
-                        editCoInsuredNavigation.selectCoInsured = nil
+                        Task {
+                            withAnimation {
+                                isLoading = true
+                            }
+                            await store.intentViewModel.getIntent(
+                                contractId: contractId,
+                                origin: .coinsuredSelectList,
+                                coInsured: store.coInsuredViewModel.completeList()
+                            )
+                            withAnimation {
+                                isLoading = false
+                            }
+                            if !store.intentViewModel.showErrorViewForCoInsuredList {
+                                editCoInsuredNavigation.selectCoInsured = nil
+                            } else {
+                                if let object = selectedCoinsured.0 {
+                                    store.coInsuredViewModel.removeCoInsured(
+                                        .init(
+                                            firstName: object.firstName,
+                                            lastName: object.lastName,
+                                            SSN: object.SSN,
+                                            birthDate: object.birthDate,
+                                            needsMissingInfo: false
+                                        )
+                                    )
+                                }
+                            }
+                            editCoInsuredNavigation.selectCoInsured = nil
+                        }
                     }
-                }
-            },
-            onCancel: {
-                editCoInsuredNavigation.selectCoInsured = nil
-            },
-            singleSelect: true,
-            attachToBottom: true
+                },
+                onCancel: {
+                    editCoInsuredNavigation.selectCoInsured = nil
+                },
+                singleSelect: true,
+                attachToBottom: true
+            )
         )
         .hCheckboxPickerBottomAttachedView {
             hButton.LargeButton(type: .ghost) {
