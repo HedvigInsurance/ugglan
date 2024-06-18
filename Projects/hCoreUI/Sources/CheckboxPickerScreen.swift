@@ -106,7 +106,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     @Environment(\.hButtonIsLoading) var isLoading
     @Environment(\.hCheckboxPickerBottomAttachedView) var bottomAttachedView
     @Environment(\.hIncludeManualInput) var includeManualInput
-    @Environment(\.hLeftAlign) var leftAlign
+    @Environment(\.hFieldLeftAttachedView) var leftAlign
     @Environment(\.isEnabled) var enabled
     @ObservedObject private var config: CheckboxConfig<T>
 
@@ -512,7 +512,7 @@ private struct EnvironmentHLeftAlign: EnvironmentKey {
 }
 
 extension EnvironmentValues {
-    public var hLeftAlign: Bool {
+    public var hFieldLeftAttachedView: Bool {
         get { self[EnvironmentHLeftAlign.self] }
         set { self[EnvironmentHLeftAlign.self] = newValue }
     }
@@ -520,7 +520,7 @@ extension EnvironmentValues {
 
 extension View {
     public var hLeftAlign: some View {
-        self.environment(\.hLeftAlign, true)
+        self.environment(\.hFieldLeftAttachedView, true)
     }
 }
 

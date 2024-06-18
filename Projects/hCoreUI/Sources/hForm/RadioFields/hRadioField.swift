@@ -7,31 +7,35 @@ public struct hRadioField<Content: View>: View {
     private let id: String
     private var useAnimation: Bool
     @Environment(\.hFieldSize) var size
-    @Environment(\.hLeftAlign) var leftAligned
+    @Environment(\.hFieldLeftAttachedView) var leftAligned
     @Environment(\.isEnabled) var enabled
     @Binding var selected: String?
     @Binding private var error: String?
     @State private var animate = false
+
+    let leftView: (() -> AnyView?)?
 
     public init(
         id: String,
         content: @escaping () -> Content,
         selected: Binding<String?>,
         error: Binding<String?>? = nil,
-        useAnimation: Bool = false
+        useAnimation: Bool = false,
+        leftView: (() -> AnyView?)? = nil
     ) {
         self.id = id
         self.content = content()
         self._selected = selected
         self._error = error ?? Binding.constant(nil)
         self.useAnimation = useAnimation
+        self.leftView = leftView
     }
 
     public var body: some View {
         HStack(spacing: 8) {
-            //            if let leftView = leftView?(item) {
-            //                leftView
-            //            }
+            if let leftView = leftView?() {
+                leftView
+            }
             if leftAligned {
                 hRadioOptionSelectedView(selectedValue: $selected, value: id)
                 content
