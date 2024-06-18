@@ -15,7 +15,6 @@ public struct hFloatingField: View {
     @Environment(\.hWithoutFixedHeight) var hWithoutFixedHeight
     @Environment(\.hFieldLockedState) var isLocked
     @Environment(\.hFieldSize) var size
-    @Environment(\.hFontSize) var fontSize
     @Environment(\.hWithoutDisabledColor) var withoutDisabledColor
 
     public var shouldMoveLabel: Binding<Bool> {
@@ -41,25 +40,24 @@ public struct hFloatingField: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                VStack(alignment: .leading, spacing: 0) {
+                ZStack(alignment: .leading) {
                     hFieldLabel(
                         placeholder: placeholder,
                         animate: $animate,
                         error: $error,
                         shouldMoveLabel: shouldMoveLabel
                     )
-                    if !value.isEmpty {
-                        getTextLabel
-                            .frame(height: hWithoutFixedHeight ?? false ? .infinity : HFontTextStyle.title3.fontSize)
-                    }
+                    .offset(y: !value.isEmpty ? size.labelOffset : 0)
+                    getTextLabel
+                        .offset(y: !value.isEmpty ? size.fieldOffset : 0)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.vertical, value.isEmpty ? 0 : 10)
-
                 Spacer()
                 fieldTrailingView
 
             }
+            .padding(.top, size.topPaddingNewDesign)
+            .padding(.bottom, size.bottomPaddingNewDesign)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .addFieldBackground(animate: $animate, error: $error)
@@ -77,7 +75,7 @@ public struct hFloatingField: View {
         }
     }
     private var getTextLabel: some View {
-        hText(value, style: fontSize)
+        hText(value, style: size == .large ? .body2 : .body1)
             .foregroundColor(foregroundColor)
     }
 
@@ -106,15 +104,27 @@ public struct hFloatingField: View {
 struct hFloatingField_Previews: PreviewProvider {
     static var previews: some View {
 
-        @State var value: String = ""
+        @State var value: String = "Value"
 
         VStack {
             hFloatingField(value: value, placeholder: "ni", error: nil) {
-
             }
             .hFieldTrailingView {
                 Image(uiImage: hCoreUIAssets.copy.image)
             }
+            hFloatingField(value: value, placeholder: "ni", error: nil) {
+            }
+            .hFieldTrailingView {
+                Image(uiImage: hCoreUIAssets.copy.image)
+            }
+            .hFieldSize(.medium)
+
+            hFloatingField(value: value, placeholder: "ni", error: nil) {
+            }
+            .hFieldTrailingView {
+                Image(uiImage: hCoreUIAssets.copy.image)
+            }
+            .hFieldSize(.small)
         }
     }
 }
@@ -171,22 +181,5 @@ extension View {
 
     public func hFieldSetLockedState(to value: Bool) -> some View {
         self.environment(\.hFieldLockedState, value)
-    }
-}
-
-private struct EnvironmentHFontSize: EnvironmentKey {
-    static let defaultValue: HFontTextStyle = .title3
-}
-
-extension EnvironmentValues {
-    public var hFontSize: HFontTextStyle {
-        get { self[EnvironmentHFontSize.self] }
-        set { self[EnvironmentHFontSize.self] = newValue }
-    }
-}
-
-extension View {
-    public func hFontSize(_ size: HFontTextStyle) -> some View {
-        self.environment(\.hFontSize, size)
     }
 }

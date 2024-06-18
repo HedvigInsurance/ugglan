@@ -72,7 +72,6 @@ public struct hCounterField: View {
                         }
                     }
                 }
-                .padding(.vertical, textToShow.isEmpty ? 3 : 9.5)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
         }

@@ -29,9 +29,9 @@ struct hFieldBackgroundModifier: ViewModifier {
     private func getBackgroundColor() -> some hColor {
         if animate {
             if error != nil {
-                hColorScheme(light: hSignalColor.Amber.fill, dark: hAmberColor.amber300)
+                hSignalColor.Amber.fill
             } else {
-                hColorScheme(light: hSignalColor.Green.fill, dark: hGrayscaleOpaqueColor.greyScale800)
+                hSurfaceColor.Opaque.secondary
             }
         } else {
             hSurfaceColor.Opaque.primary
@@ -53,13 +53,13 @@ struct hFieldErrorModifier: ViewModifier {
             content
             if let errorMessage = error {
                 HStack {
-                    Image(uiImage: HCoreUIAsset.warningTriangleFilled.image)
-                        .foregroundColor(hSignalColor.Amber.element)
-                    hText(errorMessage, style: .standardSmall)
-                        .foregroundColor(hTextColor.Opaque.primary)
+
+                    hText(errorMessage, style: .label)
+                        .foregroundColor(hTextColor.Translucent.secondary)
                 }
-                .padding(.top, .padding6)
-                .padding(.horizontal, .padding6)
+                .padding(.leading, .padding16)
+                .padding(.top, .padding4)
+                .padding(.bottom, .padding8)
                 .foregroundColor(hSignalColor.Amber.fill)
             }
         }
@@ -81,35 +81,34 @@ struct hFieldLabel: View {
     @Environment(\.hFieldSize) var size
     @Environment(\.hWithoutDisabledColor) var withoutDisabledColor
     @Environment(\.hFieldLockedState) var isLocked
-    @Environment(\.hFontSize) var fontSize
 
     var body: some View {
-        let sizeToScaleFrom = size == .large ? HFontTextStyle.title3.fontSize : HFontTextStyle.body1.fontSize
-        let sizeToScaleTo = HFontTextStyle.footnote.fontSize
+        let sizeToScaleFrom = size.labelFont.fontSize
+        let sizeToScaleTo = HFontTextStyle.label.fontSize
         let ratio = sizeToScaleTo / sizeToScaleFrom
         return hText(
             placeholder,
-            style: size == .large ? .title3 : (fontSize == .body1 ? .standardSmall : .body1)
+            style: size.labelFont
         )
+        .padding(.leading, 1)
         .foregroundColor(getTextColor())
         .scaleEffect(shouldMoveLabel ? ratio : 1, anchor: .leading)
-        .frame(height: sizeToScaleFrom)
-        .padding(.bottom, shouldMoveLabel ? (size == .large ? -0.5 : -1) : size == .large ? 21 : 16)
-        .padding(.top, shouldMoveLabel ? (size == .large ? -1.5 : 0) : size == .large ? 21 : 16)
     }
 
     @hColorBuilder
     private func getTextColor() -> some hColor {
-        if error != nil {
-            hColorScheme(light: hSignalColor.Amber.text, dark: hTextColor.Opaque.secondary)
+        if error != nil && animate {
+            hSignalColor.Amber.text
         } else if animate {
-            hColorScheme(light: hSignalColor.Green.text, dark: hGrayscaleOpaqueColor.greyScale500)
+            hTextColor.Translucent.secondary
         } else if isEnabled || withoutDisabledColor {
-            hTextColor.Opaque.secondary
+            hTextColor.Translucent.secondary
         } else if isLocked {
-            hTextColor.Opaque.tertiary
+            hTextColor.Translucent.disabled
+        } else if shouldMoveLabel && !isEnabled {
+            hTextColor.Translucent.secondary
         } else {
-            hTextColor.Translucent.tertiary
+            hTextColor.Translucent.disabled
         }
     }
 }

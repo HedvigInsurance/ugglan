@@ -90,7 +90,6 @@ struct SetTerminationDateLandingScreen: View {
                             hCoreUIAssets.lock.view
                                 .frame(width: 24, height: 24)
                         }
-                        .hFontSize(.body1)
                         .hFieldLockedState
                         .hWithoutDisabledColor
                         .disabled(true)
@@ -113,7 +112,6 @@ struct SetTerminationDateLandingScreen: View {
                             terminationNavigationVm.isDatePickerPresented = true
                         }
                     )
-                    .hFontSize(.body1)
                     .hFieldTrailingView {
                         hCoreUIAssets.chevronDownSmall.view
                             .frame(width: 24, height: 24)
