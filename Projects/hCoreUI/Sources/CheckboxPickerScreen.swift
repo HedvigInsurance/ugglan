@@ -311,7 +311,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                 Spacer()
             } else {
                 if usePillowDesign {
-                    Image(uiImage: hCoreUIAssets.pillowHome.image)
+                    Image(uiImage: enabled ? hCoreUIAssets.pillowHome.image : hCoreUIAssets.pillowHomeDisabled.image)
                         .resizable()
                         .frame(width: 32, height: 32)
                 }
@@ -398,6 +398,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                     selectedValue: .constant(isSelected ? displayName?.title : nil),
                     value: displayName?.title ?? ""
                 )
+                .hUseCheckbox
             }
         }
         .frame(width: 24, height: 24)
@@ -541,19 +542,19 @@ extension View {
     }
 }
 
-private struct EnvironmentHUseNewDesign: EnvironmentKey {
+private struct EnvironmentHUseCheckbox: EnvironmentKey {
     static let defaultValue: Bool = false
 }
 
 extension EnvironmentValues {
-    public var hUseNewDesign: Bool {
-        get { self[EnvironmentHUseNewDesign.self] }
-        set { self[EnvironmentHUseNewDesign.self] = newValue }
+    public var hUseCheckbox: Bool {
+        get { self[EnvironmentHUseCheckbox.self] }
+        set { self[EnvironmentHUseCheckbox.self] = newValue }
     }
 }
 
 extension View {
-    public var hUseNewDesign: some View {
-        self.environment(\.hUseNewDesign, true)
+    public var hUseCheckbox: some View {
+        self.environment(\.hUseCheckbox, true)
     }
 }

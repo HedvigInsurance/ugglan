@@ -71,6 +71,104 @@ public struct hRadioOptionField: View {
     }
 }
 
+struct hRadioOptionSelectedView: View {
+    @Binding var selectedValue: String?
+    @Environment(\.isEnabled) var enabled
+    @Environment(\.hUseCheckbox) var useCheckbox
+    let value: String
+
+    init(selectedValue: Binding<String?>, value: String) {
+        self._selectedValue = selectedValue
+        self.value = value
+    }
+
+    var body: some View {
+        Group {
+            if useCheckbox {
+                squareComponent
+            } else {
+                circleComponent
+            }
+        }
+        .frame(width: 24, height: 24)
+    }
+
+    var squareComponent: some View {
+        RoundedRectangle(cornerRadius: 8)
+            .strokeBorder(
+                hRadioOptionSelectedView.getBorderColor(
+                    isSelected: selectedValue == value,
+                    enabled: enabled
+                ),
+                lineWidth: (selectedValue == value || !enabled) ? 0 : 1.5
+            )
+            .background(
+                ZStack {
+                    RoundedRectangle(cornerRadius: 8)
+                        .foregroundColor(
+                            hRadioOptionSelectedView.getFillColor(
+                                isSelected: selectedValue == value,
+                                enabled: enabled
+                            )
+                        )
+                    if selectedValue == value {
+                        Image(uiImage: hCoreUIAssets.checkmark.image)
+                            .foregroundColor(hTextColor.Opaque.negative)
+                    }
+                }
+                .compositingGroup()
+            )
+    }
+
+    var circleComponent: some View {
+        Circle()
+            .strokeBorder(
+                hRadioOptionSelectedView.getBorderColor(
+                    isSelected: selectedValue == value,
+                    enabled: enabled
+                ),
+                lineWidth: selectedValue == value ? 0 : 1.5
+            )
+            .background(
+                ZStack {
+                    Circle()
+                        .foregroundColor(
+                            hRadioOptionSelectedView.getFillColor(
+                                isSelected: selectedValue == value,
+                                enabled: enabled
+                            )
+                        )
+                    Circle().fill()
+                        .frame(width: 8, height: 8)
+                        .blendMode(.destinationOut)
+                }
+                .compositingGroup()
+            )
+    }
+
+    @hColorBuilder
+    static func getFillColor(isSelected: Bool, enabled: Bool) -> some hColor {
+        if !enabled {
+            hFillColor.Translucent.disabled
+        } else if isSelected {
+            hSignalColor.Green.element
+        } else {
+            hSurfaceColor.Opaque.primary
+        }
+    }
+
+    @hColorBuilder
+    static func getBorderColor(isSelected: Bool, enabled: Bool) -> some hColor {
+        if !enabled {
+            hFillColor.Translucent.disabled
+        } else if isSelected {
+            hSignalColor.Green.element
+        } else {
+            hBorderColor.secondary
+        }
+    }
+}
+
 struct hRadioOptionField_Previews: PreviewProvider {
     @State static var value: String? = "id"
     @State static var error: String?
@@ -95,71 +193,7 @@ struct hRadioOptionField_Previews: PreviewProvider {
                 useAnimation: true
             )
         }
-        .hUseNewDesign
-        .hUsePillowDesign
+        //        .hUsePillowDesign
         .disabled(true)
-    }
-}
-
-struct hRadioOptionSelectedView: View {
-    @Binding var selectedValue: String?
-    @Environment(\.isEnabled) var enabled
-    let value: String
-
-    init(selectedValue: Binding<String?>, value: String) {
-        self._selectedValue = selectedValue
-        self.value = value
-    }
-
-    var body: some View {
-        Group {
-            RoundedRectangle(cornerRadius: 8)
-                .strokeBorder(
-                    hRadioOptionSelectedView.getBorderColor(
-                        isSelected: selectedValue == value,
-                        enabled: enabled
-                    ),
-                    lineWidth: (selectedValue == value || !enabled) ? 0 : 1.5
-                )
-                .background(
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 8)
-                            .foregroundColor(
-                                hRadioOptionSelectedView.getFillColor(
-                                    isSelected: selectedValue == value,
-                                    enabled: enabled
-                                )
-                            )
-                        if selectedValue == value {
-                            Image(uiImage: hCoreUIAssets.checkmark.image)
-                                .foregroundColor(hTextColor.Opaque.negative)
-                        }
-                    }
-                    .compositingGroup()
-                )
-        }
-        .frame(width: 24, height: 24)
-    }
-
-    @hColorBuilder
-    static func getFillColor(isSelected: Bool, enabled: Bool) -> some hColor {
-        if !enabled {
-            hFillColor.Translucent.disabled
-        } else if isSelected {
-            hSignalColor.Green.element
-        } else {
-            hSurfaceColor.Opaque.primary
-        }
-    }
-
-    @hColorBuilder
-    static func getBorderColor(isSelected: Bool, enabled: Bool) -> some hColor {
-        if !enabled {
-            hFillColor.Translucent.disabled
-        } else if isSelected {
-            hSignalColor.Green.element
-        } else {
-            hBorderColor.secondary
-        }
     }
 }

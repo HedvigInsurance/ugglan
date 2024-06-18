@@ -227,7 +227,6 @@ extension EnvironmentValues {
 }
 
 struct hSectionContainerStyleModifier: ViewModifier {
-    @Environment(\.hUseNewDesign) var useNewDesign
     @Environment(\.hSectionContainerStyle) var containerStyle
 
     public func body(content: Content) -> some View {

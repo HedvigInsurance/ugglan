@@ -7,7 +7,9 @@ public struct hRadioField<Content: View>: View {
     private let id: String
     private var useAnimation: Bool
     @Environment(\.hFieldSize) var size
-    @Environment(\.hUseNewDesign) var hUseNewDesign
+    @Environment(\.hLeftAlign) var leftAligned
+    @Environment(\.hUsePillowDesign) var usePillowDesign
+    @Environment(\.isEnabled) var enabled
     @Binding var selected: String?
     @Binding private var error: String?
     @State private var animate = false
@@ -27,13 +29,24 @@ public struct hRadioField<Content: View>: View {
     }
 
     public var body: some View {
-        HStack(spacing: 0) {
-            content
-            Spacer()
-            hRadioOptionSelectedView(selectedValue: $selected, value: id)
+        HStack(spacing: 8) {
+            if usePillowDesign {
+                Image(uiImage: enabled ? hCoreUIAssets.pillowHome.image : hCoreUIAssets.pillowHomeDisabled.image)
+                    .resizable()
+                    .frame(width: 32, height: 32)
+            }
+            if leftAligned {
+                hRadioOptionSelectedView(selectedValue: $selected, value: id)
+                content
+                Spacer()
+            } else {
+                content
+                Spacer()
+                hRadioOptionSelectedView(selectedValue: $selected, value: id)
+            }
         }
-        .padding(.top, hUseNewDesign ? size.topPaddingNewDesign : size.topPadding)
-        .padding(.bottom, hUseNewDesign ? size.bottomPaddingNewDesign : size.bottomPadding)
+        .padding(.top, size.topPadding)
+        .padding(.bottom, size.bottomPadding)
         .addFieldBackground(animate: $animate, error: $error)
         .addFieldError(animate: $animate, error: $error)
         .onTapGesture {
@@ -65,23 +78,15 @@ struct hRadioField_Previews: PreviewProvider {
                 error: $error,
                 useAnimation: true
             )
+            //            .hLeftAlign
+            .hUsePillowDesign
+            .disabled(true)
         }
     }
 }
 
 extension hFieldSize {
     fileprivate var minHeight: CGFloat {
-        switch self {
-        case .small:
-            return 40
-        case .large:
-            return 72
-        case .medium:
-            return 72
-        }
-    }
-
-    fileprivate var minHeightNewDesign: CGFloat {
         switch self {
         case .small:
             return 56
@@ -95,17 +100,6 @@ extension hFieldSize {
     fileprivate var topPadding: CGFloat {
         switch self {
         case .small:
-            return 8
-        case .large:
-            return 11
-        case .medium:
-            return 11
-        }
-    }
-
-    fileprivate var topPaddingNewDesign: CGFloat {
-        switch self {
-        case .small:
             return 15
         case .large:
             return 16
@@ -115,10 +109,6 @@ extension hFieldSize {
     }
 
     fileprivate var bottomPadding: CGFloat {
-        topPadding
-    }
-
-    fileprivate var bottomPaddingNewDesign: CGFloat {
-        topPaddingNewDesign + 2
+        topPadding + 2
     }
 }
