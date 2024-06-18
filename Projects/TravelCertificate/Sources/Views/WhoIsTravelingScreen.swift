@@ -16,7 +16,7 @@ struct WhoIsTravelingScreen: View {
             config: .init(
                 items: {
                     return vm.coInsuredModelData.compactMap({
-                        (object: $0, displayName: CheckboxItemModel(title: $0.fullName ?? ""))
+                        (object: $0, displayName: ItemModel(title: $0.fullName ?? ""))
                     })
                 }(),
                 preSelectedItems: {

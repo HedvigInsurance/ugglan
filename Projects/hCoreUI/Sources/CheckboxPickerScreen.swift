@@ -1,7 +1,7 @@
 import SwiftUI
 import hCore
 
-public struct CheckboxItemModel: Hashable {
+public struct ItemModel: Hashable {
     let title: String
     let subTitle: String?
 
@@ -14,8 +14,51 @@ public struct CheckboxItemModel: Hashable {
     }
 }
 
+public struct hFieldTextContent: View {
+    @Environment(\.isEnabled) var enabled
+    let item: ItemModel?
+    let fieldSize: hFieldSize
+    let itemDisplayName: String?
+
+    public var body: some View {
+        VStack(spacing: 0) {
+            Group {
+                let titleFont: HFontTextStyle =
+                    (fieldSize != .large) ? .body1 : .title3
+
+                hText(item?.title ?? itemDisplayName ?? "", style: titleFont)
+                    .foregroundColor(getTitleColor)
+
+                if let subTitle = item?.subTitle {
+                    hText(subTitle, style: .standardSmall)
+                        .foregroundColor(getSubTitleColor)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    @hColorBuilder
+    var getTitleColor: some hColor {
+        if !enabled {
+            hTextColor.Translucent.disabled
+        } else {
+            hTextColor.Opaque.primary
+        }
+    }
+
+    @hColorBuilder
+    var getSubTitleColor: some hColor {
+        if !enabled {
+            hTextColor.Translucent.disabled
+        } else {
+            hTextColor.Translucent.secondary
+        }
+    }
+}
+
 public class CheckboxConfig<T>: ObservableObject where T: Equatable & Hashable {
-    typealias PickerModel = (object: T, displayName: CheckboxItemModel)
+    typealias PickerModel = (object: T, displayName: ItemModel)
 
     var items: [PickerModel]
     var preSelectedItems: [T]
@@ -38,7 +81,7 @@ public class CheckboxConfig<T>: ObservableObject where T: Equatable & Hashable {
     @Published var selectedItems: [T] = []
 
     public init(
-        items: [(object: T, displayName: CheckboxItemModel)],
+        items: [(object: T, displayName: ItemModel)],
         preSelectedItems: @escaping () -> [T],
         onSelected: @escaping ([(T?, String?)]) -> Void,
         onCancel: (() -> Void)? = nil,
@@ -107,7 +150,6 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     @Environment(\.hCheckboxPickerBottomAttachedView) var bottomAttachedView
     @Environment(\.hIncludeManualInput) var includeManualInput
     @Environment(\.hFieldLeftAttachedView) var leftAlign
-    @Environment(\.isEnabled) var enabled
     @ObservedObject private var config: CheckboxConfig<T>
 
     let leftView: ((T?) -> AnyView?)?
@@ -180,7 +222,6 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
 
     private func content(with proxy: ScrollViewProxy) -> some View {
         VStack(spacing: 4) {
-
             if let listTitle = config.listTitle {
                 hSection(config.items, id: \.object) { item in
                     getCell(item: item.object)
@@ -326,39 +367,11 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     private func getTextField(_ item: T?, itemDisplayName: String?) -> some View {
         let displayName = config.items.first(where: { $0.object == item })?.displayName
 
-        VStack(spacing: 0) {
-            Group {
-                let titleFont: HFontTextStyle =
-                    (config.fieldSize != .large) ? .body1 : .title3
-
-                hText(displayName?.title ?? itemDisplayName ?? "", style: titleFont)
-                    .foregroundColor(getTitleColor)
-
-                if let subTitle = displayName?.subTitle {
-                    hText(subTitle, style: .standardSmall)
-                        .foregroundColor(getSubTitleColor)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-
-    @hColorBuilder
-    var getTitleColor: some hColor {
-        if !enabled {
-            hTextColor.Translucent.disabled
-        } else {
-            hTextColor.Opaque.primary
-        }
-    }
-
-    @hColorBuilder
-    var getSubTitleColor: some hColor {
-        if !enabled {
-            hTextColor.Translucent.disabled
-        } else {
-            hTextColor.Translucent.secondary
-        }
+        hFieldTextContent(
+            item: displayName,
+            fieldSize: config.fieldSize,
+            itemDisplayName: itemDisplayName
+        )
     }
 
     func onTapExecuteFor(_ item: T) {
@@ -408,11 +421,10 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
 struct CheckboxPickerScreen_Previews: PreviewProvider {
     struct ModelForPreview: Equatable, Hashable {
         let id: String
-        let name: CheckboxItemModel
+        let name: ItemModel
     }
     static var previews: some View {
         VStack {
-
             CheckboxPickerScreen<ModelForPreview>(
                 config:
                     .init(
@@ -441,15 +453,16 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
                         singleSelect: true,
                         attachToBottom: true,
                         manualInputPlaceholder: "Enter brand name",
-                        //                        withTitle: "Label",
+                        withTitle: "Label",
                         fieldSize: .small
                     )
             )
-            .hFormTitle(
-                title: .init(.small, .title3, "title", alignment: .leading)
-            )
+            .hEmbeddedHeader
+            //            .hFormTitle(
+            //                title: .init(.small, .title3, "title", alignment: .leading)
+            //            )
             .hIncludeManualInput
-            .hLeftAlign
+            .hFieldLeftAttachedView
             .disabled(true)
         }
     }
@@ -519,7 +532,7 @@ extension EnvironmentValues {
 }
 
 extension View {
-    public var hLeftAlign: some View {
+    public var hFieldLeftAttachedView: some View {
         self.environment(\.hFieldLeftAttachedView, true)
     }
 }

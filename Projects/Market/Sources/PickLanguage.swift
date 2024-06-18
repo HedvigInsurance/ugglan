@@ -45,7 +45,7 @@ public struct PickLanguage: View {
                         ForEach(currentMarket.languages, id: \.lprojCode) { locale in
                             hRadioField(
                                 id: locale.lprojCode,
-                                content: {
+                                customContent: {
                                     HStack(spacing: 16) {
                                         Image(uiImage: locale.icon)
                                             .resizable()

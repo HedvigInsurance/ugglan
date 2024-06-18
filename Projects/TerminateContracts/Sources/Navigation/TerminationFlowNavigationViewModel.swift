@@ -206,7 +206,7 @@ struct TerminationFlowNavigation: View {
                     let items = configs.map({
                         (
                             object: $0,
-                            displayName: CheckboxItemModel(
+                            displayName: ItemModel(
                                 title: $0.contractDisplayName,
                                 subTitle: $0.contractExposureName
                             )

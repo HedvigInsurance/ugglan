@@ -79,7 +79,7 @@ public struct LanguageAndMarketPickerView: View {
                 ForEach(Market.activatedMarkets, id: \.title) { market in
                     hRadioField(
                         id: market.rawValue,
-                        content: {
+                        customContent: {
                             HStack(spacing: 16) {
                                 Image(uiImage: market.icon)
                                     .resizable()
@@ -101,7 +101,7 @@ public struct LanguageAndMarketPickerView: View {
                 ForEach(vm.selectedMarket.languages, id: \.lprojCode) { locale in
                     hRadioField(
                         id: locale.rawValue,
-                        content: {
+                        customContent: {
                             HStack(spacing: 16) {
                                 Image(uiImage: locale.icon)
                                     .resizable()

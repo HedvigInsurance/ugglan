@@ -23,7 +23,7 @@ public struct MovingFlowHousingTypeView: View {
                                 ForEach(HousingType.allCases, id: \.self) { type in
                                     hRadioField(
                                         id: type.rawValue,
-                                        content: {
+                                        customContent: {
                                             hText(type.title, style: .heading2)
                                         },
                                         selected: $vm.selectedHousingType

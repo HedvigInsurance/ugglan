@@ -36,7 +36,7 @@ struct TerminationSurveyScreen: View {
                                     VStack(spacing: 4) {
                                         hRadioField(
                                             id: option.id,
-                                            content: {
+                                            customContent: {
                                                 hText(option.title)
                                             },
                                             selected: $vm.selected

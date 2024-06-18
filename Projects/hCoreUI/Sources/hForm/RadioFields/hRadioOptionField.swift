@@ -1,75 +1,75 @@
 import SwiftUI
 import hCore
 
-public struct hRadioOptionField: View {
-    private var placeholder: String
-    @Binding private var value: String?
-    @State private var animate = false
-    private var useAnimation: Bool
-    @Binding var error: String?
-    private var listOfOptions: [String]
-
-    public var shouldMoveLabel: Binding<Bool> {
-        Binding(
-            get: { true },
-            set: { _ in }
-        )
-    }
-
-    public init(
-        value: Binding<String?>?,
-        placeholder: String? = nil,
-        error: Binding<String?>? = nil,
-        useAnimation: Bool = false,
-        listOfOptions: [String]? = [L10n.General.yes, L10n.General.no]
-    ) {
-        self.placeholder = placeholder ?? ""
-        self._value = value ?? Binding.constant(nil)
-        self._error = error ?? Binding.constant(nil)
-        self.useAnimation = useAnimation
-        self.listOfOptions = listOfOptions ?? []
-    }
-
-    public var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            hFieldLabel(
-                placeholder: placeholder,
-                animate: $animate,
-                error: $error,
-                shouldMoveLabel: shouldMoveLabel
-            )
-            .padding(.bottom, 13)
-
-            HStack(spacing: 16) {
-                getCheckBox(texts: listOfOptions)
-                Spacer()
-            }
-        }
-        .padding(.vertical, .padding16)
-        .addFieldBackground(animate: $animate, error: $error)
-    }
-
-    func getCheckBox(texts: [String]) -> some View {
-        ForEach(texts, id: \.self) { text in
-            HStack(spacing: 8) {
-                Text(text)
-                hRadioOptionSelectedView(selectedValue: $value, value: text)
-            }
-            .onTapGesture {
-                ImpactGenerator.soft()
-                withAnimation(.none) {
-                    self.value = text
-                }
-                if useAnimation {
-                    self.animate = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                        self.animate = false
-                    }
-                }
-            }
-        }
-    }
-}
+//public struct hRadioOptionField: View {
+//    private var placeholder: String
+//    @Binding private var value: String?
+//    @State private var animate = false
+//    private var useAnimation: Bool
+//    @Binding var error: String?
+//    private var listOfOptions: [String]
+//
+//    public var shouldMoveLabel: Binding<Bool> {
+//        Binding(
+//            get: { true },
+//            set: { _ in }
+//        )
+//    }
+//
+//    public init(
+//        value: Binding<String?>?,
+//        placeholder: String? = nil,
+//        error: Binding<String?>? = nil,
+//        useAnimation: Bool = false,
+//        listOfOptions: [String]? = [L10n.General.yes, L10n.General.no]
+//    ) {
+//        self.placeholder = placeholder ?? ""
+//        self._value = value ?? Binding.constant(nil)
+//        self._error = error ?? Binding.constant(nil)
+//        self.useAnimation = useAnimation
+//        self.listOfOptions = listOfOptions ?? []
+//    }
+//
+//    public var body: some View {
+//        VStack(alignment: .leading, spacing: 0) {
+//            hFieldLabel(
+//                placeholder: placeholder,
+//                animate: $animate,
+//                error: $error,
+//                shouldMoveLabel: shouldMoveLabel
+//            )
+//            .padding(.bottom, 13)
+//
+//            HStack(spacing: 16) {
+//                getCheckBox(texts: listOfOptions)
+//                Spacer()
+//            }
+//        }
+//        .padding(.vertical, .padding16)
+//        .addFieldBackground(animate: $animate, error: $error)
+//    }
+//
+//    func getCheckBox(texts: [String]) -> some View {
+//        ForEach(texts, id: \.self) { text in
+//            HStack(spacing: 8) {
+//                Text(text)
+//                hRadioOptionSelectedView(selectedValue: $value, value: text)
+//            }
+//            .onTapGesture {
+//                ImpactGenerator.soft()
+//                withAnimation(.none) {
+//                    self.value = text
+//                }
+//                if useAnimation {
+//                    self.animate = true
+//                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+//                        self.animate = false
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}
 
 struct hRadioOptionSelectedView: View {
     @Binding var selectedValue: String?
@@ -176,7 +176,7 @@ struct hRadioOptionField_Previews: PreviewProvider {
         VStack {
             hRadioField(
                 id: "id",
-                content: {
+                customContent: {
                     hText("id")
                 },
                 selected: $value,
@@ -185,7 +185,7 @@ struct hRadioOptionField_Previews: PreviewProvider {
             )
             hRadioField(
                 id: "id2",
-                content: {
+                customContent: {
                     hText("id2")
                 },
                 selected: $value,
