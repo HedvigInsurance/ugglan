@@ -107,6 +107,8 @@ class MainNavigationViewModel: ObservableObject {
         if state == .loggedIn {
             ApplicationContext.shared.isLoggedIn = true
         }
+
+        appDelegate.configureAppBadgeTracking()
     }
 
     private func checkForFeatureFlags() async {

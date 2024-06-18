@@ -20,7 +20,7 @@ private class DirectDebitWebview: UIView {
     var webView = WKWebView()
     var webViewDelgate = WebViewDelegate(webView: .init())
     @Binding var showErrorAlert: Bool
-    @EnvironmentObject var router: Router
+    let router: Router
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -28,10 +28,12 @@ private class DirectDebitWebview: UIView {
 
     init(
         setupType: SetupType,
-        showErrorAlert: Binding<Bool>
+        showErrorAlert: Binding<Bool>,
+        router: Router
     ) {
         self.setupType = setupType
         self._showErrorAlert = showErrorAlert
+        self.router = router
         super.init(frame: .zero)
 
         presentWebView()
@@ -237,9 +239,10 @@ private class DirectDebitWebview: UIView {
 struct DirectDebitSetupRepresentable: UIViewRepresentable {
     let setupType: SetupType
     @Binding var showErrorAlert: Bool
+    let router: Router
 
     public func makeUIView(context: Context) -> some UIView {
-        return DirectDebitWebview(setupType: setupType, showErrorAlert: $showErrorAlert)
+        return DirectDebitWebview(setupType: setupType, showErrorAlert: $showErrorAlert, router: router)
     }
 
     public func updateUIView(_ uiView: UIViewType, context: Context) {}
@@ -270,12 +273,12 @@ public struct DirectDebitSetup: View {
     public var body: some View {
         Group {
             if showCancelAlert {
-                DirectDebitSetupRepresentable(setupType: setupType, showErrorAlert: $showErrorAlert)
+                DirectDebitSetupRepresentable(setupType: setupType, showErrorAlert: $showErrorAlert, router: router)
                     .alert(isPresented: $showCancelAlert) {
                         cancelAlert()
                     }
             } else {
-                DirectDebitSetupRepresentable(setupType: setupType, showErrorAlert: $showErrorAlert)
+                DirectDebitSetupRepresentable(setupType: setupType, showErrorAlert: $showErrorAlert, router: router)
                     .alert(isPresented: $showErrorAlert) {
                         errorAlert()
                     }
