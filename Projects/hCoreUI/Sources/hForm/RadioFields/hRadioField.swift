@@ -8,7 +8,6 @@ public struct hRadioField<Content: View>: View {
     private var useAnimation: Bool
     @Environment(\.hFieldSize) var size
     @Environment(\.hLeftAlign) var leftAligned
-    @Environment(\.hUsePillowDesign) var usePillowDesign
     @Environment(\.isEnabled) var enabled
     @Binding var selected: String?
     @Binding private var error: String?
@@ -30,11 +29,9 @@ public struct hRadioField<Content: View>: View {
 
     public var body: some View {
         HStack(spacing: 8) {
-            if usePillowDesign {
-                Image(uiImage: enabled ? hCoreUIAssets.pillowHome.image : hCoreUIAssets.pillowHomeDisabled.image)
-                    .resizable()
-                    .frame(width: 32, height: 32)
-            }
+            //            if let leftView = leftView?(item) {
+            //                leftView
+            //            }
             if leftAligned {
                 hRadioOptionSelectedView(selectedValue: $selected, value: id)
                 content
@@ -79,7 +76,6 @@ struct hRadioField_Previews: PreviewProvider {
                 useAnimation: true
             )
             //            .hLeftAlign
-            .hUsePillowDesign
             .disabled(true)
         }
     }
