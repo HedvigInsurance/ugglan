@@ -16,14 +16,14 @@ struct PaymentDetailsDiscountView: View {
                     HStack(spacing: 8) {
                         hText(vm.discount.code, style: .standardSmall)
                             .foregroundColor(getCodeTextColor)
-                            .padding(.vertical, 4)
+                            .padding(.vertical, .padding4)
                         if vm.shouldShowRemove {
                             Image(uiImage: hCoreUIAssets.close.image)
                                 .resizable()
                                 .frame(width: 16, height: 16)
                         }
                     }
-                    .padding(.horizontal, 8)
+                    .padding(.horizontal, .padding8)
                     .background(
                         RoundedRectangle(cornerRadius: 8)
                             .fill(hSurfaceColor.Opaque.primary)

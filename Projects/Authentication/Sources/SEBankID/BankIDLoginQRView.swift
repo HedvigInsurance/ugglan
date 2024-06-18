@@ -95,7 +95,7 @@ public struct BankIDLoginQRView: View {
                                 hText(L10n.BankidMissingLogin.emailButton)
                             }
                         }
-                        .padding(.bottom, 16)
+                        .padding(.bottom, .padding16)
                     }
                     .sectionContainerStyle(.transparent)
                 }

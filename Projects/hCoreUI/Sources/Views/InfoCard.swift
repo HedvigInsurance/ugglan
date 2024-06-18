@@ -27,7 +27,7 @@ public struct InfoCard: View {
             }
             if let customContentView = customContentView {
                 customContentView
-                    .padding(.leading, 8)
+                    .padding(.leading, .padding8)
                     .hUseLightMode
             } else {
                 VStack(alignment: .leading) {
@@ -58,15 +58,15 @@ public struct InfoCard: View {
                         }
                     }
                 }
-                .padding(.leading, 8)
+                .padding(.leading, .padding8)
                 .hUseLightMode
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, 14)
-        .padding(.bottom, 16)
-        .padding(.leading, 12)
-        .padding(.trailing, 16)
+        .padding(.bottom, .padding16)
+        .padding(.leading, .padding12)
+        .padding(.trailing, .padding16)
         .modifier(InfoCardStyle(type: type))
         .fixedSize(horizontal: false, vertical: true)
     }

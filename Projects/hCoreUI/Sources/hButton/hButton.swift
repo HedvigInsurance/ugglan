@@ -26,7 +26,7 @@ struct MediumButtonModifier: ViewModifier {
                 content
                     .frame(maxHeight: 40)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
+                    .padding(.vertical, .padding8)
             }
             .sectionContainerStyle(.transparent)
         }
@@ -37,7 +37,7 @@ struct SmallButtonModifier: ViewModifier {
     func body(content: Content) -> some View {
         hSection {
             content
-                .padding(.vertical, 8)
+                .padding(.vertical, .padding8)
                 .frame(minHeight: 32)
         }
         .sectionContainerStyle(.transparent)

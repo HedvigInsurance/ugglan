@@ -29,7 +29,7 @@ public struct DeleteAccountView: View {
                         if let topIcon = vm.topIcon {
                             Image(uiImage: topIcon)
                                 .foregroundColor(hSignalColor.Amber.element)
-                                .padding(.bottom, 16)
+                                .padding(.bottom, .padding16)
                         }
                         hText(vm.title)
                         MarkdownView(
@@ -65,7 +65,7 @@ public struct DeleteAccountView: View {
                             hText(vm.dismissButtonTitle)
                         }
                     }
-                    .padding(.vertical, 16)
+                    .padding(.vertical, .padding16)
                 }
                 .sectionContainerStyle(.transparent)
             }

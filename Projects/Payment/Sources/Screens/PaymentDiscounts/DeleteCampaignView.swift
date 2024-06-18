@@ -49,7 +49,7 @@ struct DeleteCampaignView: View {
                             }
 
                         }
-                        .padding(.bottom, 16)
+                        .padding(.bottom, .padding16)
                     }
                 }
             SuccessScreen(title: L10n.paymentsCodeRemoved).opacity(vm.codeRemoved ? 1 : 0)

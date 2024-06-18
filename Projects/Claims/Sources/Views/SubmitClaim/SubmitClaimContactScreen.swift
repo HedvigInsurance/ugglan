@@ -42,7 +42,7 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
                         .disabled(!(vm.enableContinueButton || vm.keyboardEnabled))
 
                     }
-                    .padding(.bottom, 16)
+                    .padding(.bottom, .padding16)
                 }
                 .sectionContainerStyle(.transparent)
             }

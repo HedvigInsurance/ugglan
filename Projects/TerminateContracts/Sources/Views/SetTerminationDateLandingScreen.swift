@@ -24,13 +24,13 @@ struct SetTerminationDateLandingScreen: View {
                 .hFormTitle(
                     title: .init(
                         .small,
-                        .body2,
+                        .title3,
                         L10n.terminationFlowCancellationTitle,
                         alignment: .leading
                     ),
                     subTitle: .init(
                         .small,
-                        .body2,
+                        .title3,
                         vm.titleText
                     )
                 )
@@ -41,6 +41,7 @@ struct SetTerminationDateLandingScreen: View {
                             displayTerminationDateField
                             displayImportantInformation
                         }
+
                         hSection {
                             VStack(spacing: 16) {
                                 hButton.LargeButton(type: .primary) {
@@ -55,7 +56,6 @@ struct SetTerminationDateLandingScreen: View {
                     }
                     .padding(.vertical, 16)
                 }
-                .hUseNewDesign
         }
     }
 
@@ -66,7 +66,7 @@ struct SetTerminationDateLandingScreen: View {
                 hRow {
                     VStack(alignment: .leading) {
                         hText(config.contractDisplayName)
-                        hText(config.contractExposureName, style: .label)
+                        hText(config.contractExposureName, style: .standardSmall)
                             .foregroundColor(hTextColor.Translucent.secondary)
                     }
                 }
@@ -118,6 +118,7 @@ struct SetTerminationDateLandingScreen: View {
                         hCoreUIAssets.chevronDownSmall.view
                             .frame(width: 24, height: 24)
                     }
+                    .hUseNewDesign
                 }
             }
         }
@@ -128,21 +129,24 @@ struct SetTerminationDateLandingScreen: View {
         if vm.terminationDate != nil {
             hSection {
                 hRow {
-                    VStack(alignment: .leading, spacing: 16) {
-                        VStack(alignment: .leading, spacing: 16) {
+                    VStack(spacing: 16) {
+                        VStack(spacing: 16) {
                             VStack(alignment: .leading, spacing: 4) {
                                 hText(L10n.terminationFlowImportantInformationTitle)
                                 hText(
                                     L10n.terminationFlowImportantInformationText,
-                                    style: .label
+                                    style: .standardSmall
                                 )
                                 .foregroundColor(hTextColor.Opaque.secondary)
                             }
                         }
+
                         HStack {
                             hRow {
                                 hText(L10n.terminationFlowIUnderstandText)
-                                    .foregroundColor(hTextColor.Opaque.primary)
+                                    .foregroundColor(
+                                        hColorScheme(light: hTextColor.Opaque.primary, dark: hTextColor.Opaque.negative)
+                                    )
                                 Spacer()
                                 if vm.hasAgreedToTerms {
                                     HStack {
@@ -156,7 +160,7 @@ struct SetTerminationDateLandingScreen: View {
                                     }
                                     .frame(width: 24, height: 24)
                                     .background(
-                                        RoundedRectangle(cornerRadius: .cornerRadiusXS)
+                                        RoundedRectangle(cornerRadius: 6)
                                             .fill(hSignalColor.Green.element)
                                     )
                                 } else {
@@ -164,7 +168,7 @@ struct SetTerminationDateLandingScreen: View {
                                         .fill(hBackgroundColor.clear)
                                         .frame(width: 24, height: 24)
                                         .overlay(
-                                            RoundedRectangle(cornerRadius: .cornerRadiusXS)
+                                            RoundedRectangle(cornerRadius: 6)
                                                 .strokeBorder(
                                                     hBorderColor.secondary,
                                                     lineWidth: 2

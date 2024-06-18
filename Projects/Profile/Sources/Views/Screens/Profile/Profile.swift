@@ -48,7 +48,7 @@ public struct ProfileView: View {
                 }
                 .withoutHorizontalPadding
                 .sectionContainerStyle(.transparent)
-                .padding(.top, 16)
+                .padding(.top, .padding16)
             }
         }
         .hFormMergeBottomViewWithContentIfNeeded

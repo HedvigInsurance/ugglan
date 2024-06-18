@@ -146,7 +146,7 @@ struct SlideToConfirm: View {
                 dragOffsetX: dragOffsetX,
                 didFinished: $draggedTillTheEnd
             )
-            .padding(.all, 4)
+            .padding(.padding4)
         }
         .background(
             DidAcceptPledgeNotifier(
@@ -193,12 +193,12 @@ struct HonestyPledge: View {
             VStack(alignment: .leading, spacing: 0) {
                 L10n.honestyPledgeTitle.hText(.body1)
                     .foregroundColor(hTextColor.Opaque.primary)
-                    .padding(.bottom, 8)
+                    .padding(.bottom, .padding8)
                 HStack {
                     L10n.honestyPledgeDescription.hText(.body1)
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
-                .padding(.bottom, 32)
+                .padding(.bottom, .padding32)
 
                 SlideToConfirm(onConfirmAction: {
                     onConfirmAction?()
@@ -214,7 +214,7 @@ struct HonestyPledge: View {
                 }
 
             }
-            .padding(.horizontal, 24)
+            .padding(.horizontal, .padding24)
             .fixedSize(horizontal: false, vertical: true)
         }
         .hDisableScroll

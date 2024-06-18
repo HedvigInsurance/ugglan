@@ -125,7 +125,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                         .multilineTextAlignment(hFormTitle.title.alignment == .center ? .center : .leading)
                         .padding(.top, shouldIgnoreTitleMargins ? 0 : hFormTitle.title.type.topMargin)
                         .padding(.bottom, shouldIgnoreTitleMargins ? 0 : hFormTitle.title.type.bottomMargin)
-                        .padding(.horizontal, 16)
+                        .padding(.horizontal, .padding16)
                     }
                     if contentPosition == .bottom {
                         Rectangle().fill(Color.clear).frame(height: additionalSpaceFromTop)

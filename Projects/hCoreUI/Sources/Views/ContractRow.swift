@@ -129,21 +129,21 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 0) {
                 if let terminationMessage {
-                    StatusPill(text: terminationMessage).padding(.trailing, 4)
+                    StatusPill(text: terminationMessage).padding(.trailing, .padding4)
                 } else if let activeFrom {
                     StatusPill(
                         text: L10n.dashboardInsuranceStatusActiveUpdateDate(
                             activeFrom.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                         )
                     )
-                    .padding(.trailing, 4)
+                    .padding(.trailing, .padding4)
                 } else if activeInFuture ?? false {
                     StatusPill(
                         text: L10n.contractStatusActiveInFuture(
                             masterInceptionDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                         )
                     )
-                    .padding(.trailing, 4)
+                    .padding(.trailing, .padding4)
                 }
                 Spacer()
                 logo
@@ -159,7 +159,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                 .foregroundColor(hGrayscaleTranslucent.greyScaleTranslucent600)
                 .colorScheme(.dark)
         }
-        .padding(16)
+        .padding(.padding16)
         .frame(minHeight: 200)
         .background(
             background
@@ -179,8 +179,8 @@ private struct StatusPill: View {
         VStack {
             hText(text, style: .standardSmall)
         }
-        .padding(.vertical, 4)
-        .padding(.horizontal, 10)
+        .padding(.vertical, .padding4)
+        .padding(.horizontal, .padding10)
         .foregroundColor(hTextColor.Opaque.primary).colorScheme(.dark)
         .background(hTextColor.Translucent.tertiary).colorScheme(.light)
         .cornerRadius(8)

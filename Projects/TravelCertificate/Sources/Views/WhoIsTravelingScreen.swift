@@ -54,7 +54,7 @@ struct WhoIsTravelingScreen: View {
                     placement: .bottom
                 ) : nil
         )
-        .padding(.bottom, 16)
+        .padding(.bottom, .padding16)
         .hFormTitle(title: .init(.standard, .title1, L10n.TravelCertificate.whoIsTraveling))
         .hDisableScroll
         .disabled(vm.isLoading)

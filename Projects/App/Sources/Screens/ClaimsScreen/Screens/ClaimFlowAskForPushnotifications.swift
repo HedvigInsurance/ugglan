@@ -45,7 +45,7 @@ struct AskForPushNotifications: View {
                     hText(L10n.activateNotificationsTitle)
                     hText(text)
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, 32)
+                        .padding(.horizontal, .padding32)
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
                 hButton.MediumButton(type: .primary) {
@@ -72,7 +72,7 @@ struct AskForPushNotifications: View {
                     hText(L10n.claimsActivateNotificationsDismiss, style: .footnote)
                         .foregroundColor(hTextColor.Opaque.primary)
                 }
-                .padding(.bottom, 16)
+                .padding(.bottom, .padding16)
             }
         }
         .sectionContainerStyle(.transparent)

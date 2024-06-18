@@ -52,7 +52,7 @@ struct ChatFileView: View {
                     hCoreUIAssets.documents.view
                     hText(L10n.chatFileDownload)
                 }
-                .padding(12)
+                .padding(.padding12)
                 .background(
                     RoundedRectangle(cornerRadius: 12).stroke()
                 )

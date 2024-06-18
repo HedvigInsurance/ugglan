@@ -83,7 +83,7 @@ struct ContractInformationView: View {
                                 displayTerminationButton
                             }
                         }
-                        .padding(.bottom, 16)
+                        .padding(.bottom, .padding16)
                     }
                 }
             }
@@ -138,7 +138,7 @@ struct ContractInformationView: View {
                         )
                     }
                     .verticalPadding(0)
-                    .padding(.top, 16)
+                    .padding(.top, .padding16)
                 }
             }
             .withoutHorizontalPadding
@@ -166,7 +166,7 @@ struct ContractInformationView: View {
                             text: L10n.contractCoinsuredAddPersonalInfo,
                             config: .init(contract: contract, fromInfoCard: true)
                         )
-                        .padding(.bottom, 16)
+                        .padding(.bottom, .padding16)
                     }
                 }
             }
@@ -244,7 +244,7 @@ struct ContractInformationView: View {
                     )
                 ])
             }
-            .padding(.top, 8)
+            .padding(.top, .padding8)
         } else if let upcomingChangedAgreement = contract.upcomingChangedAgreement,
             let url = URL(string: upcomingChangedAgreement.certificateUrl)
         {
@@ -272,7 +272,7 @@ struct ContractInformationView: View {
                                 }
                             )
                         ])
-                        .padding(.top, 8)
+                        .padding(.top, .padding8)
                     } else {
                         InfoCard(
                             text: L10n.InsurancesTab.yourInsuranceWillBeUpdated(
@@ -288,7 +288,7 @@ struct ContractInformationView: View {
                                 }
                             )
                         ])
-                        .padding(.top, 8)
+                        .padding(.top, .padding8)
                     }
                 }
             }

@@ -30,7 +30,7 @@ public struct SubmitClaimSummaryScreen: View {
                 .withHeader {
                     HStack {
                         L10n.changeAddressDetails.hText(.body1).foregroundColor(hTextColor.Opaque.primary)
-                            .padding(.top, 16)
+                            .padding(.top, .padding16)
                     }
                 }
                 .sectionContainerStyle(.transparent)
@@ -52,7 +52,7 @@ public struct SubmitClaimSummaryScreen: View {
             hSection {
                 VStack(spacing: 8) {
                     InfoCard(text: L10n.claimsComplementClaim, type: .info)
-                        .padding(.bottom, 8)
+                        .padding(.bottom, .padding8)
                     hButton.LargeButton(type: .primary) {
                         store.send(.summaryRequest)
                     } content: {

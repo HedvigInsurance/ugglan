@@ -8,7 +8,7 @@ struct hFieldBackgroundModifier: ViewModifier {
         if hUseNewDesign {
             VStack(alignment: .leading, spacing: 0) {
                 content
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, .padding16)
                     .background(getBackgroundColor())
                     .animation(.easeOut, value: animate)
                     .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
@@ -16,7 +16,7 @@ struct hFieldBackgroundModifier: ViewModifier {
         } else {
             VStack(alignment: .leading, spacing: 0) {
                 content
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, .padding16)
                     .background(getBackgroundColor())
                     .animation(.easeOut, value: animate)
                     .clipShape(Squircle.default())
@@ -58,8 +58,8 @@ struct hFieldErrorModifier: ViewModifier {
                     hText(errorMessage, style: .standardSmall)
                         .foregroundColor(hTextColor.Opaque.primary)
                 }
-                .padding(.top, 6)
-                .padding(.horizontal, 6)
+                .padding(.top, .padding6)
+                .padding(.horizontal, .padding6)
                 .foregroundColor(hSignalColor.Amber.fill)
             }
         }

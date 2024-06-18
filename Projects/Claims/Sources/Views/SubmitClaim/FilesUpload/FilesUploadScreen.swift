@@ -20,7 +20,7 @@ struct SubmitClaimFilesUploadScreen: View {
                     hSection {
                         FilesGridView(vm: vm.fileGridViewModel)
                     }
-                    .padding(.vertical, 16)
+                    .padding(.vertical, .padding16)
                 }
                 .hDisableScroll
                 .hFormAttachToBottom {
@@ -61,7 +61,7 @@ struct SubmitClaimFilesUploadScreen: View {
 
                         }
                     }
-                    .padding(.vertical, 16)
+                    .padding(.vertical, .padding16)
                 }
                 .sectionContainerStyle(.transparent)
                 .toolbar {

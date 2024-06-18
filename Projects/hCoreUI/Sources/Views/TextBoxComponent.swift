@@ -28,18 +28,18 @@ public struct TextBoxComponent<MainContent>: View where MainContent: View {
                     hText(topTitle, style: .body1)
                         .foregroundColor(hTextColor.Opaque.primary)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.leading, 16)
+                        .padding(.leading, .padding16)
                 }
                 if let subTitle = subTitle {
                     hText(subTitle, style: .body1)
                         .foregroundColor(hTextColor.Opaque.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.leading, 16)
+                        .padding(.leading, .padding16)
                 }
             }
             Spacer()
         }
-        .padding(16)
+        .padding(.padding16)
         .background(
             Squircle.default()
                 .fill(hSurfaceColor.Opaque.primary)
