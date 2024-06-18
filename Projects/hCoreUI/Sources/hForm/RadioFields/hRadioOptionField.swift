@@ -96,7 +96,6 @@ struct hRadioOptionField_Previews: PreviewProvider {
             )
         }
         .hUseNewDesign
-        .hUsePillowDesign
         .disabled(true)
     }
 }

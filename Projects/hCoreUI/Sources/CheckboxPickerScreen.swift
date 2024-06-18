@@ -106,16 +106,17 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     @Environment(\.hButtonIsLoading) var isLoading
     @Environment(\.hCheckboxPickerBottomAttachedView) var bottomAttachedView
     @Environment(\.hIncludeManualInput) var includeManualInput
-    @Environment(\.hUsePillowDesign) var usePillowDesign
     @Environment(\.hLeftAlign) var leftAlign
     @Environment(\.isEnabled) var enabled
-
     @ObservedObject private var config: CheckboxConfig<T>
 
+    let leftView: ((T?) -> AnyView?)?
     public init(
-        config: CheckboxConfig<T>
+        config: CheckboxConfig<T>,
+        leftView: ((T?) -> AnyView?)? = nil
     ) {
         self.config = config
+        self.leftView = leftView
     }
 
     @ViewBuilder
@@ -160,6 +161,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                 }
             }
         }
+        .hFieldSize(config.fieldSize)
     }
 
     private func onAppear(with proxy: ScrollViewProxy) {
@@ -310,11 +312,14 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                 getTextField(item, itemDisplayName: itemDisplayName)
                 Spacer()
             } else {
-                if usePillowDesign {
-                    Image(uiImage: hCoreUIAssets.pillowHome.image)
-                        .resizable()
-                        .frame(width: 32, height: 32)
+                if let leftView = leftView?(item) {
+                    leftView
                 }
+                //                if usePillowDesign {
+                //                    Image(uiImage: hCoreUIAssets.pillowHome.image)
+                //                        .resizable()
+                //                        .frame(width: 32, height: 32)
+                //                }
                 getTextField(item, itemDisplayName: itemDisplayName)
                 Spacer()
                 checkBox(isSelected: isSelected, item, itemDisplayName)
@@ -448,8 +453,7 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
                 title: .init(.small, .title3, "title", alignment: .leading)
             )
             .hIncludeManualInput
-            //            .hUsePillowDesign
-            //            .hLeftAlign
+            .hLeftAlign
             .disabled(true)
         }
     }
@@ -504,23 +508,6 @@ extension EnvironmentValues {
 extension View {
     public var hIncludeManualInput: some View {
         self.environment(\.hIncludeManualInput, true)
-    }
-}
-
-private struct EnvironmentHUsePillowDesign: EnvironmentKey {
-    static let defaultValue: Bool = false
-}
-
-extension EnvironmentValues {
-    public var hUsePillowDesign: Bool {
-        get { self[EnvironmentHUsePillowDesign.self] }
-        set { self[EnvironmentHUsePillowDesign.self] = newValue }
-    }
-}
-
-extension View {
-    public var hUsePillowDesign: some View {
-        self.environment(\.hUsePillowDesign, true)
     }
 }
 
