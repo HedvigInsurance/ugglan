@@ -25,13 +25,13 @@ public struct TextBoxComponent<MainContent>: View where MainContent: View {
             mainContent
             VStack {
                 if let topTitle = topTitle {
-                    hText(topTitle, style: .body)
+                    hText(topTitle, style: .body1)
                         .foregroundColor(hTextColor.Opaque.primary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.leading, 16)
                 }
                 if let subTitle = subTitle {
-                    hText(subTitle, style: .body)
+                    hText(subTitle, style: .body1)
                         .foregroundColor(hTextColor.Opaque.secondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.leading, 16)

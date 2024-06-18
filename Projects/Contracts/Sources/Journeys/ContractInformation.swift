@@ -323,7 +323,7 @@ struct ContractInformationView: View {
                                 contractsNavigationVm.terminateInsuranceVm.start(with: [config])
                             }
                         } content: {
-                            hText(L10n.terminationButton, style: .body)
+                            hText(L10n.terminationButton, style: .body1)
                                 .foregroundColor(hTextColor.Opaque.secondary)
                         }
                         .trackLoading(TerminationContractStore.self, action: .getInitialStep)

@@ -204,7 +204,7 @@ private class CustomTextView: UITextView, UITextViewDelegate {
         super.init(frame: .zero, textContainer: nil)
         self.textContainerInset = .init(horizontalInset: 4, verticalInset: 4)
         self.delegate = self
-        self.font = Fonts.fontFor(style: .standard)
+        self.font = Fonts.fontFor(style: .body1)
         if inputText.wrappedValue.isEmpty {
             self.text = placeholder
             self.textColor = UIColor.lightGray

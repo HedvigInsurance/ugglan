@@ -61,7 +61,7 @@ public struct InfoExpandableView: View {
                         MarkdownView(
                             config: .init(
                                 text: text,
-                                fontStyle: .standard,
+                                fontStyle: .body1,
                                 color: hTextColor.Opaque.secondary,
                                 linkColor: hTextColor.Opaque.primary,
                                 linkUnderlineStyle: .single

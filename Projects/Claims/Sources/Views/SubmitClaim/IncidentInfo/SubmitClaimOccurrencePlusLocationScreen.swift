@@ -80,7 +80,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
         hButton.LargeButton(type: .primary) {
             store.send(.dateOfOccurrenceAndLocationRequest)
         } content: {
-            hText(L10n.generalContinueButton, style: .body)
+            hText(L10n.generalContinueButton, style: .body1)
         }
         .trackLoading(SubmitClaimStore.self, action: .postDateOfOccurrenceAndLocation)
         .presentableStoreLensAnimation(.default)

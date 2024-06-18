@@ -115,7 +115,7 @@ public struct hDatePickerField: View {
                     }
                 }
             }
-            .modifier(hFontModifier(style: size == .large ? .title3 : .standard))
+            .modifier(hFontModifier(style: size == .large ? .title3 : .body1))
             .foregroundColor(foregroundColor)
             Spacer()
         }
@@ -269,7 +269,7 @@ public struct DatePickerView: View {
                 } content: {
                     hText(
                         vm.config.buttonText ?? L10n.generalSaveButton,
-                        style: .body
+                        style: .body1
                     )
                     .foregroundColor(hTextColor.Opaque.negative)
                 }
@@ -281,7 +281,7 @@ public struct DatePickerView: View {
                 } content: {
                     hText(
                         L10n.generalCancelButton,
-                        style: .body
+                        style: .body1
                     )
                     .foregroundColor(hTextColor.Opaque.primary)
                 }

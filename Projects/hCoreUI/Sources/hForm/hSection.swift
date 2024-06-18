@@ -171,9 +171,12 @@ extension EnvironmentValues {
     }
 }
 
-extension hSectionContainerStyle: ViewModifier {
+struct hSectionContainerStyleModifier: ViewModifier {
+    @Environment(\.hUseNewDesign) var useNewDesign
+    @Environment(\.hSectionContainerStyle) var containerStyle
+
     public func body(content: Content) -> some View {
-        switch self {
+        switch containerStyle {
         case .transparent:
             content
         case .opaque:
@@ -279,7 +282,7 @@ struct hSectionContainer<Content: View>: View {
                 content
             }
             .frame(maxWidth: .infinity)
-            .modifier(containerStyle)
+            .modifier(hSectionContainerStyleModifier())
         }
         .frame(maxWidth: .infinity)
     }
@@ -318,7 +321,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
             if header != nil {
                 VStack(alignment: .leading) {
                     header
-                        .environment(\.defaultHTextStyle, .standard)
+                        .environment(\.defaultHTextStyle, .body1)
                 }
                 .foregroundColor(hTextColor.Opaque.primary)
                 .padding(.bottom, 16)

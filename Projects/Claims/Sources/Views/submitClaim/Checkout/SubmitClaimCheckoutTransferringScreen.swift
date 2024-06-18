@@ -65,7 +65,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                     .foregroundColor(hTextColor.Opaque.primary)
                 }
                 hSection {
-                    hText(L10n.claimsPayoutSuccessLabel, style: .body)
+                    hText(L10n.claimsPayoutSuccessLabel, style: .body1)
                         .foregroundColor(hTextColor.Opaque.secondary)
                         .multilineTextAlignment(.center)
                 }
@@ -83,7 +83,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
             hButton.LargeButton(type: .ghost) {
                 store.send(.dissmissNewClaimFlow)
             } content: {
-                hText(L10n.generalCloseButton, style: .body)
+                hText(L10n.generalCloseButton, style: .body1)
                     .foregroundColor(hTextColor.Opaque.primary)
             }
         }
@@ -163,7 +163,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                     .frame(width: 40, height: 40)
                 hText(L10n.HomeTab.errorTitle, style: .title3)
                     .foregroundColor(hTextColor.Opaque.primary)
-                hText(error, style: .body)
+                hText(error, style: .body1)
                     .multilineTextAlignment(.center)
                     .foregroundColor(hTextColor.Opaque.primary)
             }
@@ -182,9 +182,9 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                         store.send(.submitClaimOpenFreeTextChat)
                     }
                 } content: {
-                    hText(L10n.openChat, style: .body)
+                    hText(L10n.openChat, style: .body1)
                 }
-                .cornerRadius(.defaultCornerRadius)
+                .cornerRadius(.cornerRadiusL)
             }
             .sectionContainerStyle(.transparent)
             HStack {
@@ -192,15 +192,15 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                     store.send(.dissmissNewClaimFlow)
                 } label: {
                     HStack {
-                        hText(L10n.generalCloseButton, style: .body)
+                        hText(L10n.generalCloseButton, style: .body1)
                             .foregroundColor(hTextColor.Opaque.secondary)
                             .padding(16)
                     }
                     .frame(maxWidth: .infinity)
-                    .cornerRadius(.defaultCornerRadius)
+                    .cornerRadius(.cornerRadiusL)
                     .overlay(
                         RoundedRectangle(
-                            cornerRadius: .defaultCornerRadius
+                            cornerRadius: .cornerRadiusL
                         )
                         .stroke(hTextColor.Opaque.primary, lineWidth: 1)
                     )
@@ -210,15 +210,15 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                     store.send(.singleItemCheckoutRequest)
                 } label: {
                     HStack {
-                        hText(L10n.generalRetry, style: .body)
+                        hText(L10n.generalRetry, style: .body1)
                             .foregroundColor(hTextColor.Opaque.primary)
                             .padding(16)
                     }
                     .frame(maxWidth: .infinity)
-                    .cornerRadius(.defaultCornerRadius)
+                    .cornerRadius(.cornerRadiusL)
                     .overlay(
                         RoundedRectangle(
-                            cornerRadius: .defaultCornerRadius
+                            cornerRadius: .cornerRadiusL
                         )
                         .stroke(hTextColor.Opaque.primary, lineWidth: 1)
                     )

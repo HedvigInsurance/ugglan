@@ -239,12 +239,12 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                                 self.isAudioInput = false
                                             }
                                         } content: {
-                                            hText(L10n.claimsUseTextInstead, style: .body)
+                                            hText(L10n.claimsUseTextInstead, style: .body1)
                                                 .foregroundColor(hTextColor.Opaque.primary)
                                         }
 
                                     } else {
-                                        hText(L10n.claimsStartRecordingLabel, style: .body)
+                                        hText(L10n.claimsStartRecordingLabel, style: .body1)
                                             .foregroundColor(hTextColor.Opaque.primary)
 
                                     }
@@ -252,7 +252,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                             } else {
                                 let minutesToString = String(format: "%02d", minutes)
                                 let secondsToString = String(format: "%02d", seconds)
-                                hText("\(minutesToString):\(secondsToString)", style: .body)
+                                hText("\(minutesToString):\(secondsToString)", style: .body1)
                                     .foregroundColor(hTextColor.Opaque.primary)
                                     .onReceive(timer) { time in
                                         if ((seconds % 59) == 0) && seconds != 0 {
@@ -292,7 +292,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                         self.isAudioInput = true
                     }
                 } content: {
-                    hText(L10n.claimsUseAudioRecording, style: .body)
+                    hText(L10n.claimsUseAudioRecording, style: .body1)
                 }
                 .disableOn(SubmitClaimStore.self, [.postAudioRecording])
             }
@@ -365,7 +365,7 @@ private class CustomTextView: UITextView, UITextViewDelegate {
         super.init(frame: .zero, textContainer: nil)
         self.textContainerInset = .init(horizontalInset: 4, verticalInset: 4)
         self.delegate = self
-        self.font = Fonts.fontFor(style: .standard)
+        self.font = Fonts.fontFor(style: .body1)
         if inputText.wrappedValue.isEmpty {
             self.text = placeholder
             self.textColor = UIColor.lightGray

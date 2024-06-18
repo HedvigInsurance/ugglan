@@ -25,7 +25,7 @@ struct ContactChatView: View {
             VStack(alignment: .leading, spacing: 3) {
                 hText(L10n.ClaimStatus.Contact.Generic.subtitle, style: .standardSmall)
                     .foregroundColor(hTextColor.Opaque.secondary)
-                hText(L10n.ClaimStatus.Contact.Generic.title, style: .standard)
+                hText(L10n.ClaimStatus.Contact.Generic.title, style: .body1)
             }
             Spacer()
 
