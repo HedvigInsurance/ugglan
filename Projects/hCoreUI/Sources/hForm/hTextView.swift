@@ -55,15 +55,15 @@ public struct hTextView: View {
                     }
                 }
                 .hSectionMinimumPadding
-                .padding(.top, 12)
+                .padding(.top, .padding12)
                 .sectionContainerStyle(.transparent)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .frame(minHeight: 100)
                 if errorMessage != nil {
                     hCoreUIAssets.warningTriangleFilled.view
                         .foregroundColor(hSignalColor.Amber.element)
-                        .padding(.top, 12)
-                        .padding(.trailing, 16)
+                        .padding(.top, .padding12)
+                        .padding(.trailing, .padding16)
                 }
                 Rectangle()
                     .fill(Color.white.opacity(0.000001))
@@ -73,7 +73,7 @@ public struct hTextView: View {
             }
             if let errorMessage {
                 hText(errorMessage, style: .standardSmall).foregroundColor(hTextColor.Opaque.secondary)
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, .padding16)
             }
         }
         .fixedSize(horizontal: false, vertical: true)
@@ -257,7 +257,7 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
                                         .frame(maxWidth: .infinity, alignment: .trailing)
                                 }
                             }
-                            .padding(.vertical, 12)
+                            .padding(.vertical, .padding12)
                         }
                         .colorScheme(.light)
                     }
@@ -282,13 +282,13 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
                                 .frame(maxWidth: .infinity, alignment: .trailing)
 
                         }
-                        .padding(.vertical, 12)
+                        .padding(.vertical, .padding12)
                     }
                     .colorScheme(.light)
                     .sectionContainerStyle(.transparent)
 
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, .padding16)
                 VStack(spacing: 0) {
                     hSection {
                         HStack(spacing: 8) {
@@ -304,7 +304,7 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
                             }
                             .disabled(value.count > maxCharacters)
                         }
-                        .padding(.bottom, 8)
+                        .padding(.bottom, .padding8)
                     }
                     .sectionContainerStyle(.transparent)
                 }

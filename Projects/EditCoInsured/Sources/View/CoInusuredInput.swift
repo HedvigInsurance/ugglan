@@ -234,7 +234,7 @@ struct CoInusuredInput: View {
                         }
                     }
                 }
-                .padding(.top, 12)
+                .padding(.top, .padding12)
                 .disabled(buttonIsDisabled && !(vm.actionType == .delete))
 
                 hSection {
@@ -243,8 +243,8 @@ struct CoInusuredInput: View {
                     } content: {
                         hText(L10n.generalCancelButton)
                     }
-                    .padding(.top, 4)
-                    .padding(.bottom, 16)
+                    .padding(.top, .padding4)
+                    .padding(.bottom, .padding16)
                     .disabled(vm.isLoading || intentVm.isLoading)
                 }
                 .sectionContainerStyle(.transparent)
@@ -399,8 +399,8 @@ struct CoInusuredInput: View {
                     }
                 }
             )
-            .padding(.vertical, 12)
-            .padding(.horizontal, 16)
+            .padding(.vertical, .padding12)
+            .padding(.horizontal, .padding16)
         }
         .frame(height: 56)
         .sectionContainerStyle(.opaque)

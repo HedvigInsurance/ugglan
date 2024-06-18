@@ -66,7 +66,7 @@ struct InvitationTable: View {
                 }
                 .withoutHorizontalPadding
                 .sectionContainerStyle(.transparent)
-                .padding(.vertical, 16)
+                .padding(.vertical, .padding16)
             }
         }
     }

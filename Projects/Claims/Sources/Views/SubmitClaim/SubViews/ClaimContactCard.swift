@@ -60,15 +60,15 @@ struct ClaimContactCard: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(height: 40)
                     .foregroundColor(hTextColor.Opaque.negative)
-                    .padding(.vertical, 16)
+                    .padding(.vertical, .padding16)
             }
 
             hText(model.config?.cardText ?? "")
                 .fixedSize()
                 .multilineTextAlignment(.center)
                 .foregroundColor(hTextColor.Opaque.tertiary)
-                .padding(.bottom, 8)
-                .padding(.horizontal, 8)
+                .padding(.bottom, .padding8)
+                .padding(.horizontal, .padding8)
 
             hSection {
                 hButton.MediumButton(type: .secondaryAlt) {
@@ -90,7 +90,7 @@ struct ClaimContactCard: View {
             }
             .sectionContainerStyle(.transparent)
         }
-        .padding(.vertical, 16)
+        .padding(.vertical, .padding16)
     }
 }
 
@@ -133,7 +133,7 @@ struct ClaimEmergencyContactCard: View {
                 .frame(height: 80)
                 .foregroundColor(hTextColor.Opaque.negative)
                 .colorScheme(.light)
-                .padding(.vertical, 8)
+                .padding(.vertical, .padding8)
                 VStack(spacing: 0) {
                     if let cardTitle = cardTitle {
                         hText(cardTitle)
@@ -144,11 +144,11 @@ struct ClaimEmergencyContactCard: View {
                     hText(label ?? "")
                         .foregroundColor(hTextColor.Opaque.tertiary)
                         .colorScheme(.light)
-                        .padding(.horizontal, 24)
+                        .padding(.horizontal, .padding24)
                         .fixedSize(horizontal: false, vertical: true)
                         .multilineTextAlignment(.center)
                 }
-                .padding(.bottom, 8)
+                .padding(.bottom, .padding8)
                 hSection {
                     hButton.MediumButton(type: .secondaryAlt) {
                         if let phoneNumber {
@@ -173,7 +173,7 @@ struct ClaimEmergencyContactCard: View {
 
                 }
             }
-            .padding(.vertical, 24)
+            .padding(.vertical, .padding24)
         }
         .sectionContainerStyle(.black)
 

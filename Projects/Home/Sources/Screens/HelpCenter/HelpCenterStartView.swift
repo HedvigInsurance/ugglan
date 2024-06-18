@@ -64,7 +64,7 @@ public struct HelpCenterStartView: View {
                 .sectionContainerStyle(.transparent)
                 if !vm.searchInProgress {
                     SupportView(topic: nil)
-                        .padding(.top, 40)
+                        .padding(.top, .padding40)
                 }
             }
         }
@@ -97,7 +97,7 @@ public struct HelpCenterStartView: View {
         if !quickActions.isEmpty {
             VStack(alignment: .leading, spacing: 4) {
                 HelpCenterPill(title: L10n.hcQuickActionsTitle, color: .green)
-                    .padding(.bottom, 4)
+                    .padding(.bottom, .padding4)
 
                 ForEach(quickActions, id: \.displayTitle) { quickAction in
                     hSection {
@@ -136,7 +136,7 @@ public struct HelpCenterStartView: View {
             VStack(alignment: .leading, spacing: 4) {
 
                 HelpCenterPill(title: L10n.hcQuickActionsTitle, color: .green)
-                    .padding(.bottom, 4)
+                    .padding(.bottom, .padding4)
 
                 ForEach(quickActions, id: \.displayTitle) { quickAction in
                     hSection {

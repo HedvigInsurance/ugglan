@@ -362,8 +362,8 @@ private struct LargeButtonModifier: ViewModifier {
         content
             .padding(.top, 15)
             .padding(.bottom, 17)
-            .frame(minHeight: 56)
-            .frame(minWidth: 300)
+            .frame(minHeight: .padding56)
+            //            .frame(minWidth: 300)
             .frame(maxWidth: .infinity)
     }
 }
@@ -382,9 +382,9 @@ private struct MediumButtonModifier: ViewModifier {
         } else {
             hSection {
                 content
-                    .frame(maxHeight: 40)
+                    .frame(maxHeight: .padding40)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
+                    .padding(.vertical, .padding8)
             }
             .sectionContainerStyle(.transparent)
         }
@@ -395,7 +395,7 @@ private struct SmallButtonModifier: ViewModifier {
     func body(content: Content) -> some View {
         hSection {
             content
-                .padding(.vertical, 8)
+                .padding(.vertical, .padding8)
                 .frame(minHeight: 32)
         }
         .sectionContainerStyle(.transparent)
@@ -407,7 +407,7 @@ private struct MiniButtonModifier: ViewModifier {
         hSection {
             content
                 .padding(.vertical, 3)
-                .padding(.horizontal, 8)
+                .padding(.horizontal, .padding8)
                 .frame(minHeight: 24)
         }
         .sectionContainerStyle(.transparent)

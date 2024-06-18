@@ -54,7 +54,7 @@ struct PriceInputScreen: View {
                     }
                 }
             }
-            .padding(.vertical, 16)
+            .padding(.vertical, .padding16)
         }
         .introspectScrollView { scrollView in
             scrollView.keyboardDismissMode = .interactive

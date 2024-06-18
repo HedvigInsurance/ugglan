@@ -101,7 +101,7 @@ public struct SuccessScreen: View {
                     hText(subTitle ?? "")
                         .foregroundColor(hTextColor.Opaque.secondary)
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, 32)
+                        .padding(.horizontal, .padding32)
                 }
             }
             .sectionContainerStyle(.transparent)

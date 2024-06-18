@@ -47,7 +47,7 @@ public struct PaymentsView: View {
                     .sectionContainerStyle(.transparent)
 
                 }
-                .padding(.vertical, 8)
+                .padding(.vertical, .padding8)
             }
             .hFormAttachToBottom {
                 bottomPart
@@ -99,7 +99,7 @@ public struct PaymentsView: View {
                             .foregroundColor(hSignalColor.Blue.element)
                         hText(L10n.paymentsNoPaymentsInProgress)
                     }
-                    .padding(.vertical, 32)
+                    .padding(.vertical, .padding32)
                 }
                 hSection {
                     ConnectPaymentCardView()
@@ -183,7 +183,7 @@ public struct PaymentsView: View {
                         } content: {
                             hText(statusData.connectButtonTitle)
                         }
-                        .padding(.bottom, 16)
+                        .padding(.bottom, .padding16)
                     }
                 }
                 .sectionContainerStyle(.transparent)

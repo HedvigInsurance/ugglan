@@ -39,7 +39,7 @@ public struct SubmitClaimCheckoutScreen: View {
                         }
                     }
                 }
-                .padding(.vertical, 16)
+                .padding(.vertical, .padding16)
                 .sectionContainerStyle(.transparent)
             }
         }
@@ -61,9 +61,9 @@ public struct SubmitClaimCheckoutScreen: View {
                     Squircle.default()
                         .fill(Color.clear)
                 )
-                .padding(.vertical, 6)
+                .padding(.vertical, .padding6)
             }
-            .padding(.vertical, 8)
+            .padding(.vertical, .padding8)
 
             let repairCost = singleItemCheckoutStep?.compensation.repairCompensation?.repairCost
 
@@ -105,7 +105,7 @@ public struct SubmitClaimCheckoutScreen: View {
                 }
             }
             .sectionContainerStyle(.transparent)
-            .padding(.bottom, 16)
+            .padding(.bottom, .padding16)
 
             hSection {
                 VStack(spacing: 16) {
@@ -142,7 +142,7 @@ public struct SubmitClaimCheckoutScreen: View {
                                 checkoutStep.selectedPayoutMethod == element && shouldShowCheckmark
                             )
                             .noSpacing()
-                            .padding(.vertical, 9)
+                            .padding(.vertical, .padding8)
                             .onTapGesture {
                                 withAnimation {
                                     store.send(.setPayoutMethod(method: element))
@@ -203,11 +203,11 @@ public struct SubmitClaimCheckoutScreen: View {
                     hText(element.getDisplayName(), style: .headline)
                         .foregroundColor(hTextColor.Opaque.primary)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.bottom, 4)
+                        .padding(.bottom, .padding4)
                 }
                 .withSelectedAccessory(checkoutStep.selectedPayoutMethod == element && shouldShowCheckmark)
                 .cornerRadius(.cornerRadiusL)
-                .padding(.bottom, 8)
+                .padding(.bottom, .padding8)
             }
         }
     }

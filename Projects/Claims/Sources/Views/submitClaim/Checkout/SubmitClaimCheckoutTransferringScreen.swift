@@ -42,7 +42,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                     )
                 )
             }
-            .padding(.horizontal, 24)
+            .padding(.horizontal, .padding24)
         }
     }
 
@@ -132,7 +132,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
 
             Spacer()
         }
-        .padding(.bottom, 40)
+        .padding(.bottom, .padding40)
         .opacity(loadingAnimation ? 1 : 0)
         .disabled(!loadingAnimation)
         .animation(
@@ -194,7 +194,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                     HStack {
                         hText(L10n.generalCloseButton, style: .body1)
                             .foregroundColor(hTextColor.Opaque.secondary)
-                            .padding(16)
+                            .padding(.padding16)
                     }
                     .frame(maxWidth: .infinity)
                     .cornerRadius(.cornerRadiusL)
@@ -212,7 +212,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                     HStack {
                         hText(L10n.generalRetry, style: .body1)
                             .foregroundColor(hTextColor.Opaque.primary)
-                            .padding(16)
+                            .padding(.padding16)
                     }
                     .frame(maxWidth: .infinity)
                     .cornerRadius(.cornerRadiusL)
@@ -224,7 +224,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                     )
                 }
             }
-            .padding([.leading, .trailing], 16)
+            .padding(.horizontal, .padding16)
 
         }
         .opacity(errorAnimation ? 1 : 0)

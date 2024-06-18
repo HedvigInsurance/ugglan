@@ -32,7 +32,7 @@ public struct ForeverView: View {
                             scrollTo = 2
                         }
                         .id(0)
-                        .padding(.bottom, 16)
+                        .padding(.bottom, .padding16)
                         .background(
                             GeometryReader(content: { proxy in
                                 Color.clear

@@ -31,7 +31,7 @@ public struct LanguageAndMarketPickerView: View {
                         }
                     }
                 }
-                .padding(.top, 8)
+                .padding(.top, .padding8)
 
             }
         }
@@ -58,7 +58,7 @@ public struct LanguageAndMarketPickerView: View {
 
                 }
             }
-            .padding(.top, 8)
+            .padding(.top, .padding8)
             .hWithoutDivider
         }
     }

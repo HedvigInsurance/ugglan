@@ -67,7 +67,7 @@ struct TerminationSurveyScreen: View {
                         }
                         .disabled(!vm.continueEnabled)
                     }
-                    .padding(.bottom, 16)
+                    .padding(.bottom, .padding16)
                 }
                 .sectionContainerStyle(.transparent)
             }

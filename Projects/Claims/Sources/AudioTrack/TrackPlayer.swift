@@ -54,7 +54,7 @@ struct TrackPlayer: View {
                         )
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .padding16)
             .frame(maxWidth: .infinity)
             .frame(height: 64)
             .background(

@@ -50,7 +50,7 @@ struct MovingFlowConfirm: View {
                                 }
                             }
 
-                            .padding(.top, 16)
+                            .padding(.top, .padding16)
                             .id(whatIsCoveredId)
                             faqsComponent(for: movingFlowModel.faqs)
                             chatComponent
@@ -132,7 +132,7 @@ struct MovingFlowConfirm: View {
                     .foregroundColor(hTextColor.Opaque.secondary)
                 }
             }
-            .padding(16)
+            .padding(.padding16)
             .contentShape(Rectangle())
             .onTapGesture {
                 withAnimation {
@@ -206,8 +206,8 @@ struct MovingFlowConfirm: View {
             hSection {
                 VStack {
                     hText(quote.exposureName ?? quote.displayName, style: .body1)
-                        .padding([.top, .bottom], 4)
-                        .padding([.leading, .trailing], 8)
+                        .padding(.vertical, .padding4)
+                        .padding(.horizontal, .padding8)
 
                 }
                 .background(
@@ -286,14 +286,14 @@ struct MovingFlowConfirm: View {
                                 .resizable()
                                 .frame(width: 16, height: 16)
                             }
-                            .verticalPadding(12)
+                            .verticalPadding(.padding12)
                             if expanded, let description = faq.description {
                                 hRow {
                                     hText(description, style: .standardSmall)
                                         .foregroundColor(hTextColor.Opaque.secondary)
 
                                 }
-                                .verticalPadding(12)
+                                .verticalPadding(.padding12)
                             }
                         }
                     }

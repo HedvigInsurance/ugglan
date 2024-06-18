@@ -56,7 +56,7 @@ struct StartDateScreen: View {
                         } content: {
                             hText(L10n.generalContinueButton)
                         }
-                        .padding(.bottom, 16)
+                        .padding(.bottom, .padding16)
                     }
                 }
             }

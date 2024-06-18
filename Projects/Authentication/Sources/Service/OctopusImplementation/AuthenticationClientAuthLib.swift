@@ -48,7 +48,7 @@ public class AuthenticationService {
 final public class AuthenticationClientAuthLib: AuthenticationClient {
     public init() {}
 
-    lazy private var networkAuthRepository: NetworkAuthRepository = {
+    private var networkAuthRepository: NetworkAuthRepository = {
         NetworkAuthRepository(
             environment: Environment.current.authEnvironment,
             additionalHttpHeadersProvider: { ApolloClient.headers() },

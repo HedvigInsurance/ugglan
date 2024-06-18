@@ -82,7 +82,7 @@ public struct PickLanguage: View {
                     }
                 }
             }
-            .padding(.vertical, 16)
+            .padding(.vertical, .padding16)
             .sectionContainerStyle(.transparent)
             .hWithoutDivider
         }

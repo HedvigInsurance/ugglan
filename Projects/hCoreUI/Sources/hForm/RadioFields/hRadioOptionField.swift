@@ -45,7 +45,7 @@ public struct hRadioOptionField: View {
                 Spacer()
             }
         }
-        .padding(.vertical, 16)
+        .padding(.vertical, .padding16)
         .addFieldBackground(animate: $animate, error: $error)
     }
 

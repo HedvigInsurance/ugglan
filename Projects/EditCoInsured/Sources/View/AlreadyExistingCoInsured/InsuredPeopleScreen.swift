@@ -31,7 +31,7 @@ struct InsuredPeopleScreen: View {
                         ContractOwnerField(hasContentBelow: hasContentBelow, config: store.coInsuredViewModel.config)
                     }
                     .verticalPadding(0)
-                    .padding(.top, 16)
+                    .padding(.top, .padding16)
                 }
                 .withoutHorizontalPadding
                 .sectionContainerStyle(.transparent)

@@ -61,8 +61,8 @@ struct MovingFlowAddressView: View {
                 }
 
             }
-            .padding(.bottom, 8)
-            .padding(.top, 16)
+            .padding(.bottom, .padding8)
+            .padding(.top, .padding16)
 
         }
         .hFormTitle(title: .init(.standard, .title1, L10n.changeAddressEnterNewAddressTitle))
@@ -153,8 +153,8 @@ struct MovingFlowAddressView: View {
                 vm.isStudent.toggle()
             }
         }
-        .padding(.vertical, 16)
-        .padding(.horizontal, 16)
+        .padding(.vertical, .padding16)
+        .padding(.horizontal, .padding16)
     }
 
     func continuePressed() {
