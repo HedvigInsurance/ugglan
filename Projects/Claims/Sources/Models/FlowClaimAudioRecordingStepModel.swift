@@ -9,6 +9,22 @@ public struct FlowClaimAudioRecordingStepModel: FlowClaimStepModel {
     let inputTextContent: String?
     let optionalAudio: Bool
 
+    init(
+        id: String,
+        questions: [String],
+        audioContent: AudioContentModel? = nil,
+        textQuestions: [String],
+        inputTextContent: String?,
+        optionalAudio: Bool
+    ) {
+        self.id = id
+        self.questions = questions
+        self.audioContent = audioContent
+        self.textQuestions = textQuestions
+        self.inputTextContent = inputTextContent
+        self.optionalAudio = optionalAudio
+    }
+
     init?(
         with data: OctopusGraphQL.FlowClaimAudioRecordingStepFragment?
     ) {
@@ -32,6 +48,11 @@ public struct FlowClaimAudioRecordingStepModel: FlowClaimStepModel {
 struct AudioContentModel: Codable, Equatable, Hashable {
     let audioUrl: String
     let signedUrl: String
+
+    init(audioUrl: String, signedUrl: String) {
+        self.audioUrl = audioUrl
+        self.signedUrl = signedUrl
+    }
 
     init?(
         with data: OctopusGraphQL.FlowClaimAudioContentFragment?

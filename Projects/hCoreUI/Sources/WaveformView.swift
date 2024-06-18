@@ -9,7 +9,7 @@ public struct WaveformView<StripeColor: hColor>: View {
     private let sampleHeights: [Int]
 
     public init(
-        maxStripeHeight: CGFloat = 40,
+        maxStripeHeight: CGFloat = 30,
         stripeColor: StripeColor,
         sampleHeights: [Int]
     ) {
