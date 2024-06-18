@@ -1,62 +1,6 @@
 import SwiftUI
 import hCore
 
-public struct ItemModel: Hashable {
-    let title: String
-    let subTitle: String?
-
-    public init(
-        title: String,
-        subTitle: String? = nil
-    ) {
-        self.title = title
-        self.subTitle = subTitle
-    }
-}
-
-public struct hFieldTextContent: View {
-    @Environment(\.isEnabled) var enabled
-    let item: ItemModel?
-    let fieldSize: hFieldSize
-    let itemDisplayName: String?
-
-    public var body: some View {
-        VStack(spacing: 0) {
-            Group {
-                let titleFont: HFontTextStyle =
-                    (fieldSize != .large) ? .body1 : .title3
-
-                hText(item?.title ?? itemDisplayName ?? "", style: titleFont)
-                    .foregroundColor(getTitleColor)
-
-                if let subTitle = item?.subTitle {
-                    hText(subTitle, style: .standardSmall)
-                        .foregroundColor(getSubTitleColor)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-
-    @hColorBuilder
-    var getTitleColor: some hColor {
-        if !enabled {
-            hTextColor.Translucent.disabled
-        } else {
-            hTextColor.Opaque.primary
-        }
-    }
-
-    @hColorBuilder
-    var getSubTitleColor: some hColor {
-        if !enabled {
-            hTextColor.Translucent.disabled
-        } else {
-            hTextColor.Translucent.secondary
-        }
-    }
-}
-
 public class CheckboxConfig<T>: ObservableObject where T: Equatable & Hashable {
     typealias PickerModel = (object: T, displayName: ItemModel)
 
@@ -353,9 +297,6 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                 getTextField(item, itemDisplayName: itemDisplayName)
                 Spacer()
             } else {
-                if let leftView = leftView?(item) {
-                    leftView
-                }
                 getTextField(item, itemDisplayName: itemDisplayName)
                 Spacer()
                 checkBox(isSelected: isSelected, item, itemDisplayName)
@@ -370,7 +311,8 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         hFieldTextContent(
             item: displayName,
             fieldSize: config.fieldSize,
-            itemDisplayName: itemDisplayName
+            itemDisplayName: itemDisplayName,
+            leftViewWithItem: leftView
         )
     }
 
@@ -455,15 +397,22 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
                         manualInputPlaceholder: "Enter brand name",
                         withTitle: "Label",
                         fieldSize: .small
+                    ),
+                leftView: { _ in
+                    AnyView(
+                        Image(uiImage: hCoreUIAssets.pillowHome.image)
+                            .resizable()
+                            .frame(width: 32, height: 32)
                     )
+                }
             )
             .hEmbeddedHeader
             //            .hFormTitle(
             //                title: .init(.small, .title3, "title", alignment: .leading)
             //            )
             .hIncludeManualInput
-            .hFieldLeftAttachedView
-            .disabled(true)
+            //            .hFieldLeftAttachedView
+            //            .disabled(true)
         }
     }
 }

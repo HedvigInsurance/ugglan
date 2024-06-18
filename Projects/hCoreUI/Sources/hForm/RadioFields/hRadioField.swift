@@ -36,9 +36,9 @@ public struct hRadioField<Content: View>: View {
 
     public var body: some View {
         HStack(spacing: 8) {
-            if let leftView = leftView?() {
-                leftView
-            }
+            //            if let leftView = leftView?() {
+            //                leftView
+            //            }
             if leftAligned {
                 hRadioOptionSelectedView(selectedValue: $selected, value: id)
                 mainContent
@@ -72,10 +72,11 @@ public struct hRadioField<Content: View>: View {
         if let customContent {
             customContent
         } else if let itemModel {
-            hFieldTextContent(
+            hFieldTextContent<EmptyView>(
                 item: itemModel,
                 fieldSize: size,
-                itemDisplayName: nil
+                itemDisplayName: nil,
+                leftView: leftView
             )
         }
     }
@@ -87,18 +88,19 @@ struct hRadioField_Previews: PreviewProvider {
     static var previews: some View {
         hSection {
             VStack {
-                hRadioField(
+                hRadioField<EmptyView>(
                     id: "id",
-                    customContent: {
-                        hText("id")
-                    },
+                    customContent: nil,
+                    //                    customContent: {
+                    //                        hText("id")
+                    //                    },
                     selected: $value,
                     error: $error,
                     useAnimation: true,
                     leftView: {
                         AnyView {
                             VStack {
-                                hText("Label")
+                                hText("Label left view")
                                 hText("920321412")
                             }
                         }
