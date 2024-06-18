@@ -171,6 +171,7 @@ struct SetTerminationDateLandingScreen: View {
                                                 )
                                                 .animation(.easeInOut)
                                         )
+                                        .colorScheme(.light)
                                         .hUseLightMode
 
                                 }
