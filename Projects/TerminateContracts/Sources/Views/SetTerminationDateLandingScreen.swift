@@ -180,12 +180,14 @@ struct SetTerminationDateLandingScreen: View {
 
                                 }
                             }
+                            .background(
+                                RoundedRectangle(cornerRadius: .cornerRadiusS)
+                                    .fill(
+                                        hFillColor.Translucent.negative
+                                    )
+                            )
                         }
-                        .background(
-                            Squircle.default()
-                                .fill(hGrayscaleTranslucentDark.white)
-                                .colorScheme(.light)
-                        )
+                        .colorScheme(.light)
                     }
                 }
                 .onTapGesture {

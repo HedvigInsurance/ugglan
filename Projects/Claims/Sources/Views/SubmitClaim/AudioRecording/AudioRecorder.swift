@@ -91,7 +91,7 @@ class AudioRecorder: ObservableObject {
 struct AudioPulseBackground: View {
     @EnvironmentObject var audioRecorder: AudioRecorder
 
-    private let backgroundColorScheme: some hColor = hBorderColor.primary
+    private let backgroundColorScheme: some hColor = hBorderColor.secondary
 
     var body: some View {
         withAnimation(.spring()) {
