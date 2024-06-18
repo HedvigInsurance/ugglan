@@ -14,44 +14,40 @@ public struct CheckboxItemModel: Hashable {
     }
 }
 
-public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
+public class CheckboxConfig<T>: ObservableObject where T: Equatable & Hashable {
     typealias PickerModel = (object: T, displayName: CheckboxItemModel)
-    private var items: [PickerModel]
-    private let preSelectedItems: [T]
-    private let onSelected: ([(object: T?, displayName: String?)]) -> Void
-    private let onCancel: (() -> Void)?
-    private let singleSelect: Bool?
-    private let showDividers: Bool?
-    private let attachToBottom: Bool
-    private let disableIfNoneSelected: Bool
-    private let manualInputPlaceholder: String
-    private let hButtonText: String
-    private let infoCard: CheckboxInfoCard?
 
-    @State var type: CheckboxFieldType? = nil
+    var items: [PickerModel]
+    var preSelectedItems: [T]
+    let onSelected: ([(object: T?, displayName: String?)]) -> Void
+    let onCancel: (() -> Void)?
+    let singleSelect: Bool?
+    let attachToBottom: Bool
+    let disableIfNoneSelected: Bool
+    let manualInputPlaceholder: String
+    let hButtonText: String
+    let infoCard: CheckboxInfoCard?
+    let listTitle: String?
 
-    @State private var selectedItems: [T] = []
-    @Environment(\.hButtonIsLoading) var isLoading
-    @Environment(\.hCheckboxPickerBottomAttachedView) var bottomAttachedView
-    @Environment(\.hIncludeManualInput) var includeManualInput
-    @Environment(\.hUseNewDesign) var hUseNewDesign
+    var fieldSize: hFieldSize
+    let manualInputId = "manualInputId"
 
-    @State var manualBrandName: String = ""
-    @State var manualInput: Bool = false
+    @Published var type: CheckboxFieldType? = nil
+    @Published var manualBrandName: String = ""
+    @Published var manualInput: Bool = false
+    @Published var selectedItems: [T] = []
 
-    private var fieldSize: hFieldSize
-    private let manualInputId = "manualInputId"
     public init(
         items: [(object: T, displayName: CheckboxItemModel)],
         preSelectedItems: @escaping () -> [T],
         onSelected: @escaping ([(T?, String?)]) -> Void,
         onCancel: (() -> Void)? = nil,
         singleSelect: Bool? = false,
-        showDividers: Bool? = false,
         attachToBottom: Bool = false,
         disableIfNoneSelected: Bool = false,
         manualInputPlaceholder: String? = "",
         manualBrandName: String? = nil,
+        withTitle: String? = nil,
         hButtonText: String? = L10n.generalSaveButton,
         infoCard: CheckboxInfoCard? = nil,
         fieldSize: hFieldSize? = nil
@@ -61,7 +57,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         self.onSelected = onSelected
         self.onCancel = onCancel
         self.singleSelect = singleSelect
-        self.showDividers = showDividers
+        self.listTitle = withTitle
         self.attachToBottom = attachToBottom
         self.disableIfNoneSelected = disableIfNoneSelected
         self.manualInputPlaceholder = manualInputPlaceholder ?? ""
@@ -82,282 +78,6 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         }
 
         self.infoCard = infoCard
-    }
-
-    @ViewBuilder
-    public var body: some View {
-        ScrollViewReader { proxy in
-            if attachToBottom {
-                hForm {
-                }
-                .hFormAttachToBottom {
-                    VStack(spacing: 0) {
-                        VStack(spacing: 16) {
-                            if let infoCard, infoCard.placement == .top {
-                                hSection {
-                                    InfoCard(text: infoCard.text, type: .info).buttons(infoCard.buttons)
-                                }
-                                .sectionContainerStyle(.transparent)
-                            }
-                            content(with: proxy)
-                            if let infoCard, infoCard.placement == .bottom {
-                                hSection {
-                                    InfoCard(text: infoCard.text, type: .info).buttons(infoCard.buttons)
-                                }
-                                .sectionContainerStyle(.transparent)
-                            }
-                        }
-                        bottomContent
-                    }
-                }
-                .hFormObserveKeyboard
-                .onAppear {
-                    onAppear(with: proxy)
-                }
-            } else {
-                hForm {
-                    content(with: proxy)
-                }
-                .hFormAttachToBottom {
-                    bottomContent
-                }
-                .hFormObserveKeyboard
-                .onAppear {
-                    onAppear(with: proxy)
-                }
-            }
-        }
-    }
-
-    private func onAppear(with proxy: ScrollViewProxy) {
-        selectedItems = items.filter({ preSelectedItems.contains($0.object) })
-            .map({
-                $0.object
-            })
-        if let selectedItem = selectedItems.first, selectedItems.count == 1 {
-            proxy.scrollTo(selectedItem, anchor: .center)
-        }
-
-        if manualInput {
-            proxy.scrollTo(manualInputId, anchor: .center)
-        }
-    }
-
-    private func content(with proxy: ScrollViewProxy) -> some View {
-        VStack(spacing: 4) {
-            ForEach(items, id: \.object) { item in
-                hSection {
-                    getCell(item: item.object)
-                        .id(item.object)
-                }
-                .disabled(isLoading)
-            }
-
-            let showOtherCell = includeManualInput && !items.isEmpty
-            let showFreeTextField = (manualInput && includeManualInput) || items.isEmpty
-
-            if showOtherCell {
-                hSection {
-                    getCell(displayName: L10n.manualInputListOther)
-                }
-                .disabled(isLoading)
-            }
-
-            if showFreeTextField {
-                hSection {
-                    hFloatingTextField(
-                        masking: Masking(type: .none),
-                        value: $manualBrandName,
-                        equals: $type,
-                        focusValue: .inputField,
-                        placeholder: manualInputPlaceholder
-                    )
-                }
-                .onAppear {
-                    manualInput = true
-                    selectedItems = []
-                }
-                .id(manualInputId)
-            }
-        }
-    }
-
-    var bottomContent: some View {
-        hSection {
-            VStack(spacing: 16) {
-                bottomAttachedView
-
-                hButton.LargeButton(type: .primary) {
-                    sendSelectedItems
-                } content: {
-                    hText(hButtonText, style: .body1)
-                }
-                .hButtonIsLoading(isLoading)
-                .disabled(disableIfNoneSelected ? selectedItems.isEmpty : false)
-                if let onCancel {
-                    hButton.LargeButton(type: .ghost) {
-                        onCancel()
-                    } content: {
-                        hText(L10n.generalCancelButton, style: .body1)
-                    }
-                    .disabled(isLoading)
-                    .hButtonDontShowLoadingWhenDisabled(true)
-                }
-            }
-        }
-        .sectionContainerStyle(.transparent)
-        .padding(.top, .padding16)
-    }
-
-    var sendSelectedItems: Void {
-        if selectedItems.count > 1 {
-            onSelected(
-                selectedItems.map({
-                    (object: $0, displayName: nil)
-                })
-            )
-        } else if selectedItems.count == 0 {
-            if manualInput && includeManualInput {
-                onSelected([(object: nil, displayName: manualBrandName)])
-            } else {
-                onSelected([])
-            }
-        } else {
-            if let object = selectedItems.first {
-                onSelected([(object: object, displayName: nil)])
-            }
-        }
-    }
-
-    @ViewBuilder
-    func getCell(item: T? = nil, displayName: String? = nil) -> some View {
-        if showDividers ?? false {
-            hRow {
-                displayContentFor(item, displayName)
-            }
-            .withEmptyAccessory
-            .verticalPadding(fieldSize == .small ? 12.5 : 20.5)
-            .onTap {
-                if let item {
-                    withAnimation {
-                        manualInput = false
-                    }
-                    onTapExecuteFor(item)
-                } else {
-                    withAnimation {
-                        manualInput = true
-                    }
-                    selectedItems = []
-                    type = .inputField
-                }
-            }
-        } else {
-            hRow {
-                displayContentFor(item, displayName)
-            }
-            .withEmptyAccessory
-            .verticalPadding(fieldSize == .small ? 12.5 : 20.5)
-            .onTap {
-                if let item {
-                    withAnimation {
-                        manualInput = false
-                    }
-                    onTapExecuteFor(item)
-                } else {
-                    withAnimation {
-                        manualInput = true
-                        type = .inputField
-                    }
-                }
-            }
-            .hWithoutDivider
-        }
-    }
-
-    @ViewBuilder
-    func displayContentFor(_ item: T?, _ itemDisplayName: String?) -> some View {
-        let isSelected = selectedItems.first(where: { $0 == item }) != nil || (manualInput && itemDisplayName != nil)
-        let displayName = items.first(where: { $0.object == item })?.displayName
-
-        HStack(spacing: 0) {
-            VStack(spacing: 0) {
-                Group {
-                    let titleFont: HFontTextStyle =
-                        (displayName?.subTitle != nil) ? .body1 : .title3
-
-                    hText(displayName?.title ?? itemDisplayName ?? "", style: titleFont)
-                        .foregroundColor(hTextColor.Opaque.primary)
-
-                    if let subTitle = displayName?.subTitle {
-                        hText(subTitle, style: .standardSmall)
-                            .foregroundColor(hTextColor.Translucent.secondary)
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            Spacer()
-            checkBox(isSelected: isSelected, item, itemDisplayName)
-        }
-    }
-
-    func onTapExecuteFor(_ item: T) {
-        ImpactGenerator.soft()
-        withAnimation(.easeInOut(duration: 0)) {
-            if !(singleSelect ?? true) {
-                if let index = self.selectedItems.firstIndex(where: { $0 == item }) {
-                    selectedItems.remove(at: index)
-                } else {
-                    selectedItems.append(item)
-                }
-            } else {
-                if let firstItem = selectedItems.first {
-                    if !(firstItem == item) {
-                        selectedItems = [item]
-                    }
-                } else {
-                    selectedItems = [item]
-                }
-            }
-        }
-    }
-
-    func checkBox(isSelected: Bool, _ item: T?, _ itemDisplayName: String?) -> some View {
-        Group {
-            if singleSelect ?? false {
-                ZStack {
-                    let isSelected =
-                        selectedItems.first(where: { $0 == item }) != nil || (manualInput && itemDisplayName != nil)
-                    let displayName = items.first(where: { $0.object == item })?.displayName
-                    hRadioOptionSelectedView(
-                        selectedValue: .constant(isSelected ? displayName?.title : nil),
-                        value: displayName?.title ?? ""
-                    )
-                }
-            } else {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 8)
-                        .strokeBorder(
-                            hRadioOptionSelectedView.getBorderColor(isSelected: isSelected),
-                            lineWidth: isSelected ? 0 : 1.5
-                        )
-                        .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .foregroundColor(
-                                    hRadioOptionSelectedView.getFillColor(
-                                        isSelected: isSelected,
-                                        coloredCheckBox: hUseNewDesign
-                                    )
-                                )
-                        )
-
-                    if isSelected {
-                        Image(uiImage: hCoreUIAssets.checkmark.image)
-                            .foregroundColor(hTextColor.Opaque.negative)
-                    }
-                }
-            }
-        }
-        .frame(width: 24, height: 24)
     }
 
     public struct CheckboxInfoCard {
@@ -382,45 +102,355 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     }
 }
 
-struct CheckboxPickerScreen_Previews: PreviewProvider {
+public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
+    @Environment(\.hButtonIsLoading) var isLoading
+    @Environment(\.hCheckboxPickerBottomAttachedView) var bottomAttachedView
+    @Environment(\.hIncludeManualInput) var includeManualInput
+    @Environment(\.hUsePillowDesign) var usePillowDesign
+    @Environment(\.hLeftAlign) var leftAlign
+    @Environment(\.isEnabled) var enabled
 
+    @ObservedObject private var config: CheckboxConfig<T>
+
+    public init(
+        config: CheckboxConfig<T>
+    ) {
+        self.config = config
+    }
+
+    @ViewBuilder
+    public var body: some View {
+        ScrollViewReader { proxy in
+            if config.attachToBottom {
+                hForm {}
+                    .hFormAttachToBottom {
+                        VStack(spacing: 0) {
+                            VStack(spacing: 16) {
+                                if let infoCard = config.infoCard, infoCard.placement == .top {
+                                    hSection {
+                                        InfoCard(text: infoCard.text, type: .info).buttons(infoCard.buttons)
+                                    }
+                                    .sectionContainerStyle(.transparent)
+                                }
+                                content(with: proxy)
+                                if let infoCard = config.infoCard, infoCard.placement == .bottom {
+                                    hSection {
+                                        InfoCard(text: infoCard.text, type: .info).buttons(infoCard.buttons)
+                                    }
+                                    .sectionContainerStyle(.transparent)
+                                }
+                            }
+                            bottomContent
+                        }
+                    }
+                    .hFormObserveKeyboard
+                    .onAppear {
+                        onAppear(with: proxy)
+                    }
+            } else {
+                hForm {
+                    content(with: proxy)
+                }
+                .hFormAttachToBottom {
+                    bottomContent
+                }
+                .hFormObserveKeyboard
+                .onAppear {
+                    onAppear(with: proxy)
+                }
+            }
+        }
+    }
+
+    private func onAppear(with proxy: ScrollViewProxy) {
+        config.selectedItems = config.items.filter({ config.preSelectedItems.contains($0.object) })
+            .map({
+                $0.object
+            })
+        if let selectedItem = config.selectedItems.first, config.selectedItems.count == 1 {
+            proxy.scrollTo(selectedItem, anchor: .center)
+        }
+
+        if config.manualInput {
+            proxy.scrollTo(config.manualInputId, anchor: .center)
+        }
+    }
+
+    private func content(with proxy: ScrollViewProxy) -> some View {
+        VStack(spacing: 4) {
+
+            if let listTitle = config.listTitle {
+                hSection(config.items, id: \.object) { item in
+                    getCell(item: item.object)
+                        .id(item.object)
+                }
+                .withHeader({
+                    hText(listTitle, style: .footnote)
+                        .foregroundColor(hTextColor.Translucent.secondary)
+                })
+                .hEmbeddedHeader
+                .hWithoutDividerPadding
+                .disabled(isLoading)
+            } else {
+                ForEach(config.items, id: \.object) { item in
+                    hSection {
+                        getCell(item: item.object)
+                            .id(item.object)
+                    }
+                    .disabled(isLoading)
+                }
+            }
+
+            let showOtherCell = includeManualInput && !config.items.isEmpty
+            let showFreeTextField = (config.manualInput && includeManualInput) || config.items.isEmpty
+
+            if showOtherCell {
+                hSection {
+                    getCell(displayName: L10n.manualInputListOther)
+                }
+                .disabled(isLoading)
+            }
+
+            if showFreeTextField {
+                hSection {
+                    hFloatingTextField(
+                        masking: Masking(type: .none),
+                        value: $config.manualBrandName,
+                        equals: $config.type,
+                        focusValue: .inputField,
+                        placeholder: config.manualInputPlaceholder
+                    )
+                }
+                .onAppear {
+                    config.manualInput = true
+                    config.selectedItems = []
+                }
+                .id(config.manualInputId)
+            }
+        }
+    }
+
+    var bottomContent: some View {
+        hSection {
+            VStack(spacing: 16) {
+                bottomAttachedView
+
+                hButton.LargeButton(type: .primary) {
+                    sendSelectedItems
+                } content: {
+                    hText(config.hButtonText, style: .body1)
+                }
+                .hButtonIsLoading(isLoading)
+                .disabled(config.disableIfNoneSelected ? config.selectedItems.isEmpty : false)
+                if let onCancel = config.onCancel {
+                    hButton.LargeButton(type: .ghost) {
+                        onCancel()
+                    } content: {
+                        hText(L10n.generalCancelButton, style: .body1)
+                    }
+                    .disabled(isLoading)
+                    .hButtonDontShowLoadingWhenDisabled(true)
+                }
+            }
+        }
+        .sectionContainerStyle(.transparent)
+        .padding(.top, .padding16)
+    }
+
+    var sendSelectedItems: Void {
+        if config.selectedItems.count > 1 {
+            config.onSelected(
+                config.selectedItems.map({
+                    (object: $0, displayName: nil)
+                })
+            )
+        } else if config.selectedItems.count == 0 {
+            if config.manualInput && includeManualInput {
+                config.onSelected([(object: nil, displayName: config.manualBrandName)])
+            } else {
+                config.onSelected([])
+            }
+        } else {
+            if let object = config.selectedItems.first {
+                config.onSelected([(object: object, displayName: nil)])
+            }
+        }
+    }
+
+    @ViewBuilder
+    func getCell(item: T? = nil, displayName: String? = nil) -> some View {
+        hRow {
+            getCellContent(item, displayName)
+        }
+        .withEmptyAccessory
+        .onTap {
+            if let item {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    config.manualInput = false
+                }
+                onTapExecuteFor(item)
+            } else {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    config.manualInput = true
+                }
+                config.selectedItems = []
+                config.type = .inputField
+            }
+        }
+    }
+
+    @ViewBuilder
+    func getCellContent(_ item: T?, _ itemDisplayName: String?) -> some View {
+        let isSelected =
+            config.selectedItems.first(where: { $0 == item }) != nil || (config.manualInput && itemDisplayName != nil)
+
+        HStack(spacing: 8) {
+            if leftAlign {
+                checkBox(isSelected: isSelected, item, itemDisplayName)
+                getTextField(item, itemDisplayName: itemDisplayName)
+                Spacer()
+            } else {
+                if usePillowDesign {
+                    Image(uiImage: hCoreUIAssets.pillowHome.image)
+                        .resizable()
+                        .frame(width: 32, height: 32)
+                }
+                getTextField(item, itemDisplayName: itemDisplayName)
+                Spacer()
+                checkBox(isSelected: isSelected, item, itemDisplayName)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func getTextField(_ item: T?, itemDisplayName: String?) -> some View {
+        let displayName = config.items.first(where: { $0.object == item })?.displayName
+
+        VStack(spacing: 0) {
+            Group {
+                let titleFont: HFontTextStyle =
+                    (config.fieldSize != .large) ? .body1 : .title3
+
+                hText(displayName?.title ?? itemDisplayName ?? "", style: titleFont)
+                    .foregroundColor(getTitleColor)
+
+                if let subTitle = displayName?.subTitle {
+                    hText(subTitle, style: .standardSmall)
+                        .foregroundColor(getSubTitleColor)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    @hColorBuilder
+    var getTitleColor: some hColor {
+        if !enabled {
+            hTextColor.Translucent.disabled
+        } else {
+            hTextColor.Opaque.primary
+        }
+    }
+
+    @hColorBuilder
+    var getSubTitleColor: some hColor {
+        if !enabled {
+            hTextColor.Translucent.disabled
+        } else {
+            hTextColor.Translucent.secondary
+        }
+    }
+
+    func onTapExecuteFor(_ item: T) {
+        ImpactGenerator.soft()
+        withAnimation(.easeInOut(duration: 0.2)) {
+            if !(config.singleSelect ?? true) {
+                if let index = self.config.selectedItems.firstIndex(where: { $0 == item }) {
+                    config.selectedItems.remove(at: index)
+                } else {
+                    config.selectedItems.append(item)
+                }
+            } else {
+                if let firstItem = config.selectedItems.first {
+                    if !(firstItem == item) {
+                        config.selectedItems = [item]
+                    }
+                } else {
+                    config.selectedItems = [item]
+                }
+            }
+        }
+    }
+
+    func checkBox(isSelected: Bool, _ item: T?, _ itemDisplayName: String?) -> some View {
+        Group {
+            ZStack {
+                let isSelected =
+                    config.selectedItems.first(where: { $0 == item }) != nil
+                    || (config.manualInput && itemDisplayName != nil)
+                var displayName = config.items.first(where: { $0.object == item })?.displayName
+
+                if itemDisplayName == L10n.manualInputListOther {
+                    let _ = displayName = .init(title: L10n.manualInputListOther, subTitle: nil)
+                }
+
+                hRadioOptionSelectedView(
+                    selectedValue: .constant(isSelected ? displayName?.title : nil),
+                    value: displayName?.title ?? ""
+                )
+            }
+        }
+        .frame(width: 24, height: 24)
+    }
+}
+
+struct CheckboxPickerScreen_Previews: PreviewProvider {
     struct ModelForPreview: Equatable, Hashable {
         let id: String
         let name: CheckboxItemModel
     }
     static var previews: some View {
         VStack {
+
             CheckboxPickerScreen<ModelForPreview>(
-                items: {
-                    return [
-                        ModelForPreview(id: "id", name: .init(title: "name1")),
-                        ModelForPreview(id: "id2", name: .init(title: "title2", subTitle: "subtitle2")),
-                        ModelForPreview(
-                            id: "id3",
-                            name: .init(title: "title3", subTitle: "subtitle3")
-                        ),
-                        ModelForPreview(id: "id4", name: .init(title: "name4")),
-                        ModelForPreview(id: "id5", name: .init(title: "name5")),
-                        ModelForPreview(id: "id6", name: .init(title: "name6")),
-                        ModelForPreview(id: "id7", name: .init(title: "name7")),
+                config:
+                    .init(
+                        items: {
+                            return [
+                                ModelForPreview(id: "id", name: .init(title: "name1")),
+                                ModelForPreview(id: "id2", name: .init(title: "title2", subTitle: "subtitle2")),
+                                ModelForPreview(
+                                    id: "id3",
+                                    name: .init(title: "title3", subTitle: "subtitle3")
+                                ),
+                                ModelForPreview(id: "id4", name: .init(title: "name4")),
+                                ModelForPreview(id: "id5", name: .init(title: "name5")),
+                                ModelForPreview(id: "id6", name: .init(title: "name6")),
+                                ModelForPreview(id: "id7", name: .init(title: "name7")),
 
-                    ]
-                    .compactMap({ (object: $0, displayName: $0.name) })
-                }(),
-                preSelectedItems: { [] },
-                onSelected: { selectedLocation in
+                            ]
+                            .compactMap({ (object: $0, displayName: $0.name) })
+                        }(),
+                        preSelectedItems: { [] },
+                        onSelected: { selectedLocation in
 
-                },
-                onCancel: {
-                },
-                singleSelect: true,
-                attachToBottom: true,
-                manualInputPlaceholder: "Enter brand name"
+                        },
+                        onCancel: {
+                        },
+                        singleSelect: true,
+                        attachToBottom: true,
+                        manualInputPlaceholder: "Enter brand name",
+                        //                        withTitle: "Label",
+                        fieldSize: .small
+                    )
             )
             .hFormTitle(
                 title: .init(.small, .title3, "title", alignment: .leading)
             )
             .hIncludeManualInput
+            //            .hUsePillowDesign
+            //            .hLeftAlign
+            .disabled(true)
         }
     }
 }
@@ -474,6 +504,40 @@ extension EnvironmentValues {
 extension View {
     public var hIncludeManualInput: some View {
         self.environment(\.hIncludeManualInput, true)
+    }
+}
+
+private struct EnvironmentHUsePillowDesign: EnvironmentKey {
+    static let defaultValue: Bool = false
+}
+
+extension EnvironmentValues {
+    public var hUsePillowDesign: Bool {
+        get { self[EnvironmentHUsePillowDesign.self] }
+        set { self[EnvironmentHUsePillowDesign.self] = newValue }
+    }
+}
+
+extension View {
+    public var hUsePillowDesign: some View {
+        self.environment(\.hUsePillowDesign, true)
+    }
+}
+
+private struct EnvironmentHLeftAlign: EnvironmentKey {
+    static let defaultValue: Bool = false
+}
+
+extension EnvironmentValues {
+    public var hLeftAlign: Bool {
+        get { self[EnvironmentHLeftAlign.self] }
+        set { self[EnvironmentHLeftAlign.self] = newValue }
+    }
+}
+
+extension View {
+    public var hLeftAlign: some View {
+        self.environment(\.hLeftAlign, true)
     }
 }
 
