@@ -29,8 +29,8 @@ public struct SubmitClaimSummaryScreen: View {
                 }
                 .withHeader {
                     HStack {
-                        L10n.changeAddressDetails.hText(.body).foregroundColor(hTextColor.Opaque.primary)
-                            .padding(.top, 16)
+                        L10n.changeAddressDetails.hText(.body1).foregroundColor(hTextColor.Opaque.primary)
+                            .padding(.top, .padding16)
                     }
                 }
                 .sectionContainerStyle(.transparent)
@@ -52,7 +52,7 @@ public struct SubmitClaimSummaryScreen: View {
             hSection {
                 VStack(spacing: 8) {
                     InfoCard(text: L10n.claimsComplementClaim, type: .info)
-                        .padding(.bottom, 8)
+                        .padding(.bottom, .padding8)
                     hButton.LargeButton(type: .primary) {
                         store.send(.summaryRequest)
                     } content: {
@@ -188,9 +188,9 @@ public struct SubmitClaimSummaryScreen: View {
     func createRow(with title: String?, and value: String?) -> some View {
         if let title, let value {
             HStack {
-                title.hText(.body).foregroundColor(hTextColor.Opaque.secondary)
+                title.hText(.body1).foregroundColor(hTextColor.Opaque.secondary)
                 Spacer()
-                value.hText(.body).foregroundColor(hTextColor.Opaque.secondary)
+                value.hText(.body1).foregroundColor(hTextColor.Opaque.secondary)
             }
         }
     }

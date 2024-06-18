@@ -27,19 +27,19 @@ struct PlaybackFailedView: View {
                 hSection {
                     hText(L10n.ClaimStatusDetail.InfoError.button, style: .subheadline)
                         .foregroundColor(hTextColor.Opaque.primary)
-                        .padding(.vertical, 8)
+                        .padding(.vertical, .padding8)
                 }
                 .sectionContainerStyle(.transparent)
             }
             .frame(height: 36)
             .cornerRadius(6)
             .background(hHighlightColor.Yellow.fillThree)
-            .padding(.bottom, 16)
+            .padding(.bottom, .padding16)
 
         }
-        .padding(.horizontal, 24)
+        .padding(.horizontal, .padding24)
         .background(hBlurColor.blurTwo)
-        .cornerRadius(.defaultCornerRadius)
+        .cornerRadius(.cornerRadiusL)
         .border(hBorderColor.secondary, width: 0.5)
     }
 }

@@ -58,7 +58,7 @@ public struct hOptOutField: View {
                 Toggle(isOn: $config.notSure.animation(.default)) {
                     HStack(spacing: 8) {
                         Spacer()
-                        hText(L10n.optoutFieldPlaceholder, style: .body)
+                        hText(L10n.optoutFieldPlaceholder, style: .body1)
                             .foregroundColor(getToggleTextColor)
                             .fixedSize()
                     }
@@ -69,7 +69,7 @@ public struct hOptOutField: View {
             }
         }
         .padding(.top, 11)
-        .padding(.bottom, 10)
+        .padding(.bottom, .padding10)
         .addFieldBackground(animate: $animate, error: $error)
         .addFieldError(animate: $animate, error: $error)
         .onTapGesture {
@@ -186,16 +186,16 @@ struct PriceInputScreen: View {
                         vm.onSave(vm.purchasePrice)
                         vm.continueAction.execute()
                     } content: {
-                        hText(L10n.generalSaveButton, style: .body)
+                        hText(L10n.generalSaveButton, style: .body1)
                     }
                     hButton.LargeButton(type: .ghost) {
                         vm.cancelAction.execute()
                     } content: {
-                        hText(L10n.generalNotSure, style: .body)
+                        hText(L10n.generalNotSure, style: .body1)
                     }
                 }
             }
-            .padding(.vertical, 16)
+            .padding(.vertical, .padding16)
         }
         .introspectScrollView { scrollView in
             scrollView.keyboardDismissMode = .interactive

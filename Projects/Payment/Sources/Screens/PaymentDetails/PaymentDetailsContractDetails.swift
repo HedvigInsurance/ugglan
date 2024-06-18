@@ -24,7 +24,7 @@ struct ContractDetails: View {
                             .rotationEffect(
                                 expandedContracts.contains(contract.id) ? Angle(degrees: -180) : Angle(degrees: 0)
                             )
-                            .padding(.top, 4)
+                            .padding(.top, .padding4)
                     }
                     hText(contract.subtitle)
                         .foregroundColor(hTextColor.Opaque.secondary)

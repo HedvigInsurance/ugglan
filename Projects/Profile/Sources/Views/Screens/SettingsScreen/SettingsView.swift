@@ -52,10 +52,10 @@ struct SettingsView: View {
                         .environmentObject(profileNavigationVm)
                 }
                 NotificationsCardView()
-                    .padding(.vertical, 16)
+                    .padding(.vertical, .padding16)
 
             }
-            .padding(.top, 8)
+            .padding(.top, .padding8)
         }
         .sectionContainerStyle(.transparent)
         .hFormAttachToBottom {
@@ -87,7 +87,7 @@ struct SettingsView: View {
                         .foregroundColor(hSignalColor.Red.element)
                 }
             }
-            .padding(16)
+            .padding(.padding16)
         }
     }
 }

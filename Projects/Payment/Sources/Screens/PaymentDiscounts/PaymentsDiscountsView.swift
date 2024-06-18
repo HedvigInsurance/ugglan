@@ -24,7 +24,7 @@ struct PaymentsDiscountsView: View {
                 Spacing(height: 16)
                 forever
             }
-            .padding(.vertical, 16)
+            .padding(.vertical, .padding16)
         }
         .sectionContainerStyle(.transparent)
 
@@ -52,7 +52,7 @@ struct PaymentsDiscountsView: View {
                 if data.discounts.count == 0 {
                     hText(L10n.paymentsNoCampaignCodeAdded)
                         .foregroundColor(hTextColor.Opaque.secondary)
-                        .padding(.bottom, 16)
+                        .padding(.bottom, .padding16)
                 }
             }
             .padding(.bottom, -16)
@@ -79,8 +79,8 @@ struct PaymentsDiscountsView: View {
                 }
                 HStack {
                     hText(data.referralsData.code, style: .standardSmall)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
+                        .padding(.horizontal, .padding8)
+                        .padding(.vertical, .padding4)
                         .background(
                             RoundedRectangle(cornerRadius: 8)
                                 .fill(hSurfaceColor.Opaque.primary)
@@ -110,7 +110,7 @@ struct PaymentsDiscountsView: View {
                     )
                 ]
             )
-            .padding(.bottom, 8)
+            .padding(.bottom, .padding8)
         }
     }
 

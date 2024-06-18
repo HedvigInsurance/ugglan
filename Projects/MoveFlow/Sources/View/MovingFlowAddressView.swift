@@ -55,14 +55,14 @@ struct MovingFlowAddressView: View {
                     hButton.LargeButton(type: .primary) {
                         continuePressed()
                     } content: {
-                        hText(vm.continueButtonTitle, style: .body)
+                        hText(vm.continueButtonTitle, style: .body1)
                     }
                     .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
                 }
 
             }
-            .padding(.bottom, 8)
-            .padding(.top, 16)
+            .padding(.bottom, .padding8)
+            .padding(.top, .padding16)
 
         }
         .hFormTitle(title: .init(.standard, .title1, L10n.changeAddressEnterNewAddressTitle))
@@ -143,7 +143,7 @@ struct MovingFlowAddressView: View {
     func isStudentField() -> some View {
         Toggle(isOn: $vm.isStudent.animation(.default)) {
             VStack(alignment: .leading, spacing: 0) {
-                hText(L10n.changeAddressStudentLabel, style: .standardLarge)
+                hText(L10n.changeAddressStudentLabel, style: .heading2)
             }
         }
         .toggleStyle(ChecboxToggleStyle(.center, spacing: 0))
@@ -153,8 +153,8 @@ struct MovingFlowAddressView: View {
                 vm.isStudent.toggle()
             }
         }
-        .padding(.vertical, 16)
-        .padding(.horizontal, 16)
+        .padding(.vertical, .padding16)
+        .padding(.horizontal, .padding16)
     }
 
     func continuePressed() {

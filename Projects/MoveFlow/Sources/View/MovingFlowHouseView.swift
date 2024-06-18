@@ -27,15 +27,15 @@ struct MovingFlowHouseView: View {
                         hButton.LargeButton(type: .primary) {
                             vm.continuePressed()
                         } content: {
-                            hText(L10n.saveAndContinueButtonLabel, style: .body)
+                            hText(L10n.saveAndContinueButtonLabel, style: .body1)
                         }
                         .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
                     }
 
                 }
             }
-            .padding(.bottom, 8)
-            .padding(.top, 16)
+            .padding(.bottom, .padding8)
+            .padding(.top, .padding16)
 
         }
         .hFormTitle(title: .init(.standard, .title1, L10n.changeAddressInformationAboutYourHouse))
@@ -105,7 +105,7 @@ struct MovingFlowHouseView: View {
                     ForEach(Array(vm.extraBuildings.enumerated()), id: \.element.id) { offset, extraBuilding in
                         HStack {
                             VStack(alignment: .leading, spacing: 0) {
-                                hText(extraBuilding.type.translatedValue, style: .standard)
+                                hText(extraBuilding.type.translatedValue, style: .body1)
                                 HStack(spacing: 0) {
                                     hText(extraBuilding.descriptionText, style: .standardSmall)
                                         .foregroundColor(hTextColor.Opaque.secondary)
@@ -123,7 +123,7 @@ struct MovingFlowHouseView: View {
                                     .foregroundColor(hTextColor.Opaque.primary)
                             }
                         }
-                        .padding(.vertical, 13)
+                        .padding(.vertical, .padding12)
                         if offset + 1 < vm.extraBuildings.count {
                             Divider()
                         }
@@ -134,22 +134,22 @@ struct MovingFlowHouseView: View {
                         HStack {
                             Image(uiImage: hCoreUIAssets.plusSmall.image)
                                 .resizable()
-                                .frame(width: 16, height: 16)
+                                .frame(width: .padding16, height: .padding16)
                             hText(L10n.changeAddressAddBuilding)
                         }
                     }
                     .fixedSize(horizontal: true, vertical: false)
                     .hUseLightMode
-                    .padding(.top, 8)
+                    .padding(.top, .padding8)
 
                 }
             }
             .verticalPadding(0)
-            .padding(.top, 12)
-            .padding(.bottom, 16)
+            .padding(.top, .padding12)
+            .padding(.bottom, .padding16)
         }
         .sectionContainerStyle(.opaque)
-        .padding(.top, 6)
+        .padding(.top, .padding6)
     }
 
     private var isSubleted: some View {
@@ -157,7 +157,7 @@ struct MovingFlowHouseView: View {
             hRow {
                 Toggle(isOn: $vm.isSubleted.animation(.default)) {
                     VStack(alignment: .leading, spacing: 0) {
-                        hText(L10n.changeAddressSubletLabel, style: .standardLarge)
+                        hText(L10n.changeAddressSubletLabel, style: .heading2)
                     }
                 }
                 .toggleStyle(ChecboxToggleStyle(.center, spacing: 0))

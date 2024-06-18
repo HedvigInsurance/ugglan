@@ -34,12 +34,12 @@ public struct SubmitClaimCheckoutScreen: View {
                                 L10n.Claims.Payout.Button.label(
                                     singleItemCheckoutStep?.compensation.payoutAmount.formattedAmount ?? ""
                                 ),
-                                style: .body
+                                style: .body1
                             )
                         }
                     }
                 }
-                .padding(.vertical, 16)
+                .padding(.vertical, .padding16)
                 .sectionContainerStyle(.transparent)
             }
         }
@@ -53,7 +53,7 @@ public struct SubmitClaimCheckoutScreen: View {
                 VStack(alignment: .center) {
                     hText(
                         singleItemCheckoutStep?.compensation.payoutAmount.formattedAmount ?? "",
-                        style: .standardExtraExtraLarge
+                        style: .display1
                     )
                     .foregroundColor(hTextColor.Opaque.primary)
                 }
@@ -61,9 +61,9 @@ public struct SubmitClaimCheckoutScreen: View {
                     Squircle.default()
                         .fill(Color.clear)
                 )
-                .padding(.vertical, 6)
+                .padding(.vertical, .padding6)
             }
-            .padding(.vertical, 8)
+            .padding(.vertical, .padding8)
 
             let repairCost = singleItemCheckoutStep?.compensation.repairCompensation?.repairCost
 
@@ -94,7 +94,7 @@ public struct SubmitClaimCheckoutScreen: View {
             }
             .withHeader {
                 HStack {
-                    hText(L10n.claimsCheckoutCountTitle, style: .body)
+                    hText(L10n.claimsCheckoutCountTitle, style: .body1)
                         .foregroundColor(hTextColor.Opaque.primary)
                     Spacer()
                     InfoViewHolder(
@@ -105,7 +105,7 @@ public struct SubmitClaimCheckoutScreen: View {
                 }
             }
             .sectionContainerStyle(.transparent)
-            .padding(.bottom, 16)
+            .padding(.bottom, .padding16)
 
             hSection {
                 VStack(spacing: 16) {
@@ -142,7 +142,7 @@ public struct SubmitClaimCheckoutScreen: View {
                                 checkoutStep.selectedPayoutMethod == element && shouldShowCheckmark
                             )
                             .noSpacing()
-                            .padding(.vertical, 9)
+                            .padding(.vertical, .padding8)
                             .onTapGesture {
                                 withAnimation {
                                     store.send(.setPayoutMethod(method: element))
@@ -155,7 +155,7 @@ public struct SubmitClaimCheckoutScreen: View {
             }
             .withHeader {
                 HStack {
-                    hText(L10n.Claims.Payout.Summary.method, style: .body)
+                    hText(L10n.Claims.Payout.Summary.method, style: .body1)
                         .foregroundColor(hTextColor.Opaque.primary)
                     Spacer()
                     InfoViewHolder(
@@ -172,17 +172,17 @@ public struct SubmitClaimCheckoutScreen: View {
         hRow {
             HStack {
                 if useDarkTitle {
-                    hText(title, style: .body)
+                    hText(title, style: .body1)
                         .foregroundColor(hTextColor.Opaque.primary)
                 } else {
-                    hText(title, style: .body)
+                    hText(title, style: .body1)
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
                 Spacer()
 
                 hText(
                     model?.formattedAmount ?? "",
-                    style: .body
+                    style: .body1
                 )
                 .foregroundColor(hTextColor.Opaque.secondary)
             }
@@ -203,11 +203,11 @@ public struct SubmitClaimCheckoutScreen: View {
                     hText(element.getDisplayName(), style: .headline)
                         .foregroundColor(hTextColor.Opaque.primary)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.bottom, 4)
+                        .padding(.bottom, .padding4)
                 }
                 .withSelectedAccessory(checkoutStep.selectedPayoutMethod == element && shouldShowCheckmark)
-                .cornerRadius(.defaultCornerRadius)
-                .padding(.bottom, 8)
+                .cornerRadius(.cornerRadiusL)
+                .padding(.bottom, .padding8)
             }
         }
     }

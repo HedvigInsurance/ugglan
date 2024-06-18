@@ -27,7 +27,7 @@ struct CrossSellingItem: View {
                 .aspectRatio(contentMode: .fill)
             HStack(spacing: 0) {
                 VStack(alignment: .leading, spacing: 0) {
-                    hText(crossSell.title, style: .standard).foregroundColor(hTextColor.Opaque.primary)
+                    hText(crossSell.title, style: .body1).foregroundColor(hTextColor.Opaque.primary)
                     MarqueeText(
                         text: crossSell.description,
                         font: Fonts.fontFor(style: .standardSmall),

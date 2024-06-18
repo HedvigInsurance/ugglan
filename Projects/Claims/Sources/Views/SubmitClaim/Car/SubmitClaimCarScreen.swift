@@ -22,7 +22,7 @@ struct SubmitClaimCarScreen: View {
                 }
             }
             .sectionContainerStyle(.transparent)
-            .padding(.top, 16)
+            .padding(.top, .padding16)
         }
         .hFormAttachToBottom {
             hSection {

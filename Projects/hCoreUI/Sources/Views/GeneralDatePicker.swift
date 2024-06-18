@@ -19,7 +19,7 @@ public struct GeneralDatePicker: View {
                 getDatePicker
                     .environment(\.locale, Locale.init(identifier: Localization.Locale.currentLocale.rawValue))
                     .datePickerStyle(.graphical)
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, .padding16)
                     .padding([.top], 5)
             }
             .sectionContainerStyle(.transparent)
@@ -30,7 +30,7 @@ public struct GeneralDatePicker: View {
                     hButton.LargeButton(type: .primary) {
                         model.onDateSelected(dateOfOccurrence)
                     } content: {
-                        hText(model.buttonTitle, style: .body)
+                        hText(model.buttonTitle, style: .body1)
                     }
                 }
             }

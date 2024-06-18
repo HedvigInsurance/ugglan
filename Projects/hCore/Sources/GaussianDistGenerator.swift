@@ -10,17 +10,25 @@ import GameKit
 public func generateGaussianHeights(
     mean: Float = 20,
     deviation: Float = 6,
-    count: Int = 300
+    count: Int = 300,
+    maxValue: Int = 30
 ) -> [Int] {
     let distribution = GKGaussianDistribution(
         randomSource: GKRandomSource(),
         mean: mean,
         deviation: deviation
     )
-
     var numbers: [Int] = []
     for _ in 1...count {
-        let diceRoll = distribution.nextInt()
+        let diceRoll: Int = {
+            var nextValue = distribution.nextInt()
+            if nextValue < 0 {
+                return 0
+            } else if nextValue > maxValue {
+                return maxValue
+            }
+            return nextValue
+        }()
         numbers.append(diceRoll)
     }
 

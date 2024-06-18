@@ -31,46 +31,55 @@ extension String {
 }
 
 public enum HFontTextStyle {
+    case display1
+    case display2
+    case display3
+    case heading3
+    case heading2
+    case heading1
+    case body1
+    case body2
+    case body3
+    case label
+    case finePrint
+
     case title
     case title1
     case title2
     case title3
     case headline
     case subheadline
-    case body
     case callout
     case footnote
-    case caption1
-    case caption2
-    case standardExtraExtraSmall  //8
-    case standardExtraSmall  //12
-    case standardSmall  //14
-    case standard  //18
-    case standardLarge  //24
-    case standardExtraLarge  //32
-    case standardExtraExtraLarge  //48
+    case standardSmall
     case badge
 
     var fontSize: CGFloat {
         switch self {
+        case .display1: return 54
+        case .display2: return 68
+        case .display3: return 84
+
+        case .heading1: return 18
+        case .heading2: return 24
+        case .heading3: return 32
+
+        case .body1: return 18
+        case .body2: return 24
+        case .body3: return 32
+
+        case .label: return 14
+        case .finePrint: return 12
+
         case .title: return 32
         case .title1: return 28
         case .title2: return 26
         case .title3: return 24
         case .headline: return 17
         case .subheadline: return 15
-        case .body: return 17
         case .callout: return 16
         case .footnote: return 14
-        case .caption1: return 12
-        case .caption2: return 11
-        case .standardExtraExtraSmall: return 8
-        case .standardExtraSmall: return 12
         case .standardSmall: return 14
-        case .standard: return 18
-        case .standardLarge: return 24
-        case .standardExtraLarge: return 32
-        case .standardExtraExtraLarge: return 48
         case .badge: return 42
         }
     }
@@ -96,6 +105,25 @@ public enum HFontTextStyle {
 
     private var uifontTextStyle: UIFont.TextStyle {
         switch self {
+        case .display1: return .title1
+        case .display2: return .title1
+        case .display3: return .title1
+        case .heading3:
+            return .title3
+        case .heading2:
+            return .title2
+        case .heading1:
+            return .title1
+        case .body1:
+            return .body
+        case .body2:
+            return .body
+        case .body3:
+            return .body
+        case .label:
+            return .body
+        case .finePrint:
+            return .footnote
         case .title:
             return .title1
         case .title1:
@@ -104,34 +132,16 @@ public enum HFontTextStyle {
             return .title2
         case .title3:
             return .title3
-        case .body:
-            return .body
         case .headline:
             return .headline
         case .footnote:
             return .footnote
-        case .standardExtraExtraSmall:
-            return .body
-        case .standardExtraSmall:
-            return .body  //12
         case .standardSmall:
             return .body  //14
-        case .standard:
-            return .body  //18
-        case .standardLarge:
-            return .body  //24
-        case .standardExtraLarge:
-            return .body  //32
-        case .standardExtraExtraLarge:
-            return .body  //48
         case .subheadline:
             return .body
         case .callout:
             return .body
-        case .caption1:
-            return .footnote
-        case .caption2:
-            return .footnote
         case .badge:
             return .title1
         }
@@ -150,8 +160,6 @@ public struct hFontModifier: ViewModifier {
 
     var lineSpacing: CGFloat {
         switch style {
-        //        case .largeTitle:
-        //            return 41 - font.lineHeight
         case .title1:
             return 32 - font.lineHeight
         case .title2:
@@ -162,16 +170,12 @@ public struct hFontModifier: ViewModifier {
             return 22 - font.lineHeight
         case .subheadline:
             return 20 - font.lineHeight
-        case .body:
+        case .body1:
             return 22 - font.lineHeight
         case .callout:
             return 21 - font.lineHeight
         case .footnote:
             return 18 - font.lineHeight
-        case .caption1:
-            return 16 - font.lineHeight
-        case .caption2:
-            return 14 - font.lineHeight
         default:
             return 0
         }
@@ -204,6 +208,6 @@ public struct hText: View {
     }
 
     public var body: some View {
-        Text(text).modifier(hFontModifier(style: style ?? defaultStyle ?? .standard))
+        Text(text).modifier(hFontModifier(style: style ?? defaultStyle ?? .body1))
     }
 }

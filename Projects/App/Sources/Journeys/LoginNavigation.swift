@@ -106,7 +106,7 @@ public struct NotLoggedInView: View {
                             vm.showLanguagePicker = true
                         } label: {
                             Image(uiImage: market.icon)
-                                .padding(8)
+                                .padding(.padding8)
                         }
 
                     }
