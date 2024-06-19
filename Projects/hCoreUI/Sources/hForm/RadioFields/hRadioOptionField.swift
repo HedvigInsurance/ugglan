@@ -106,8 +106,9 @@ struct hRadioOptionField_Previews: PreviewProvider {
         VStack {
             hRadioField(
                 id: "id",
-                customContent: {
+                leftView: {
                     hText("id")
+                        .asAnyView
                 },
                 selected: $value,
                 error: $error,
@@ -115,8 +116,9 @@ struct hRadioOptionField_Previews: PreviewProvider {
             )
             hRadioField(
                 id: "id2",
-                customContent: {
+                leftView: {
                     hText("id2")
+                        .asAnyView
                 },
                 selected: $value,
                 error: $error,

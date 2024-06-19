@@ -15,27 +15,46 @@ public struct ItemModel: Hashable {
 
 public struct hFieldTextContent<T>: View {
     @Environment(\.isEnabled) var enabled
+    @Environment(\.hFieldLeftAttachedView) var leftAlign
     let item: ItemModel?
     let fieldSize: hFieldSize
     let itemDisplayName: String?
     let leftViewWithItem: ((T?) -> AnyView?)?
     let leftView: (() -> AnyView?)?
 
+    let cellView: (() -> AnyView?)?
+
     public init(
         item: ItemModel? = nil,
         fieldSize: hFieldSize,
         itemDisplayName: String? = nil,
         leftViewWithItem: ((T?) -> AnyView?)? = nil,
-        leftView: (() -> AnyView?)? = nil
+        leftView: (() -> AnyView?)? = nil,
+        cellView: (() -> AnyView?)?
     ) {
         self.item = item
         self.fieldSize = fieldSize
         self.itemDisplayName = itemDisplayName
         self.leftViewWithItem = leftViewWithItem
         self.leftView = leftView
+        self.cellView = cellView
     }
 
     public var body: some View {
+        HStack(spacing: 8) {
+            if leftAlign {
+                cellView?()
+                getTextField
+                Spacer()
+            } else {
+                getTextField
+                Spacer()
+                cellView?()
+            }
+        }
+    }
+
+    var getTextField: some View {
         HStack(spacing: 8) {
             if let leftViewWithItem = leftViewWithItem?(item as? T) {
                 leftViewWithItem

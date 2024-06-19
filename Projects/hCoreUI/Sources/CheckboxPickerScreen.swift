@@ -93,7 +93,6 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     @Environment(\.hButtonIsLoading) var isLoading
     @Environment(\.hCheckboxPickerBottomAttachedView) var bottomAttachedView
     @Environment(\.hIncludeManualInput) var includeManualInput
-    @Environment(\.hFieldLeftAttachedView) var leftAlign
     @ObservedObject private var config: CheckboxConfig<T>
 
     let leftView: ((T?) -> AnyView?)?
@@ -291,28 +290,22 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         let isSelected =
             config.selectedItems.first(where: { $0 == item }) != nil || (config.manualInput && itemDisplayName != nil)
 
-        HStack(spacing: 8) {
-            if leftAlign {
-                checkBox(isSelected: isSelected, item, itemDisplayName)
-                getTextField(item, itemDisplayName: itemDisplayName)
-                Spacer()
-            } else {
-                getTextField(item, itemDisplayName: itemDisplayName)
-                Spacer()
-                checkBox(isSelected: isSelected, item, itemDisplayName)
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func getTextField(_ item: T?, itemDisplayName: String?) -> some View {
         let displayName = config.items.first(where: { $0.object == item })?.displayName
 
         hFieldTextContent(
             item: displayName,
             fieldSize: config.fieldSize,
             itemDisplayName: itemDisplayName,
-            leftViewWithItem: leftView
+            leftViewWithItem: leftView,
+            cellView: {
+                AnyView(
+                    checkBox(
+                        isSelected: isSelected,
+                        item,
+                        itemDisplayName
+                    )
+                )
+            }
         )
     }
 
@@ -399,11 +392,10 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
                         fieldSize: .small
                     ),
                 leftView: { _ in
-                    AnyView(
-                        Image(uiImage: hCoreUIAssets.pillowHome.image)
-                            .resizable()
-                            .frame(width: 32, height: 32)
-                    )
+                    Image(uiImage: hCoreUIAssets.pillowHome.image)
+                        .resizable()
+                        .frame(width: 32, height: 32)
+                        .asAnyView
                 }
             )
             .hEmbeddedHeader

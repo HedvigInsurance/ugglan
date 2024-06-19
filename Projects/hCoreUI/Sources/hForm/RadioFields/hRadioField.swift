@@ -2,83 +2,70 @@ import Combine
 import SwiftUI
 import hCore
 
-public struct hRadioField<Content: View>: View {
-    private let customContent: Content?
+public struct hRadioField: View {
+    private let leftView: AnyView?
     private let itemModel: ItemModel?
-
     private let id: String
     private var useAnimation: Bool
     @Environment(\.hFieldSize) var size
-    @Environment(\.hFieldLeftAttachedView) var leftAligned
-    @Environment(\.isEnabled) var enabled
     @Binding var selected: String?
     @Binding private var error: String?
     @State private var animate = false
-    let leftView: (() -> AnyView?)?
 
     public init(
         id: String,
         itemModel: ItemModel? = nil,
-        customContent: (() -> Content)?,
+        leftView: (() -> AnyView)?,
         selected: Binding<String?>,
         error: Binding<String?>? = nil,
-        useAnimation: Bool = false,
-        leftView: (() -> AnyView?)? = nil
+        useAnimation: Bool = false
     ) {
         self.id = id
         self.itemModel = itemModel
-        self.customContent = customContent?()
+        self.leftView = leftView?()
         self._selected = selected
         self._error = error ?? Binding.constant(nil)
         self.useAnimation = useAnimation
-        self.leftView = leftView
     }
 
     public var body: some View {
-        HStack(spacing: 8) {
-            //            if let leftView = leftView?() {
-            //                leftView
-            //            }
-            if leftAligned {
-                hRadioOptionSelectedView(selectedValue: $selected, value: id)
-                mainContent
-                Spacer()
-            } else {
-                mainContent
-                Spacer()
-                hRadioOptionSelectedView(selectedValue: $selected, value: id)
-            }
-        }
-        .padding(.top, size.topPadding)
-        .padding(.bottom, size.bottomPadding)
-        .addFieldBackground(animate: $animate, error: $error)
-        .addFieldError(animate: $animate, error: $error)
-        .onTapGesture {
-            ImpactGenerator.soft()
-            withAnimation(.none) {
-                self.selected = id
-            }
-            if useAnimation {
-                self.animate = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                    self.animate = false
+        mainContent
+            .padding(.top, size.topPadding)
+            .padding(.bottom, size.bottomPadding)
+            .addFieldBackground(animate: $animate, error: $error)
+            .addFieldError(animate: $animate, error: $error)
+            .onTapGesture {
+                ImpactGenerator.soft()
+                withAnimation(.none) {
+                    self.selected = id
+                }
+                if useAnimation {
+                    self.animate = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                        self.animate = false
+                    }
                 }
             }
-        }
     }
 
     @ViewBuilder
     var mainContent: some View {
-        if let customContent {
-            customContent
-        } else if let itemModel {
-            hFieldTextContent<EmptyView>(
-                item: itemModel,
-                fieldSize: size,
-                itemDisplayName: nil,
-                leftView: leftView
-            )
-        }
+        hFieldTextContent<EmptyView>(
+            item: itemModel,
+            fieldSize: size,
+            itemDisplayName: nil,
+            leftView: {
+                leftView
+            },
+            cellView: {
+                AnyView(
+                    hRadioOptionSelectedView(
+                        selectedValue: $selected,
+                        value: id
+                    )
+                )
+            }
+        )
     }
 }
 
@@ -88,71 +75,66 @@ struct hRadioField_Previews: PreviewProvider {
     static var previews: some View {
         hSection {
             VStack {
-                hRadioField<EmptyView>(
+                hRadioField(
                     id: "id",
-                    customContent: nil,
-                    //                    customContent: {
-                    //                        hText("id")
-                    //                    },
-                    selected: $value,
-                    error: $error,
-                    useAnimation: true,
                     leftView: {
-                        AnyView {
-                            VStack {
-                                hText("Label left view")
-                                hText("920321412")
-                            }
+                        VStack(alignment: .leading) {
+                            hText("Label left view")
+                            hText("920321412")
                         }
-                    }
-                )
-                .hFieldSize(.large)
-
-                hRadioField<EmptyView>(
-                    id: "id",
-                    itemModel: .init(
-                        title: "Large Label"
-                    ),
-                    customContent: nil,
+                        .asAnyView
+                    },
                     selected: $value,
                     error: $error,
                     useAnimation: true
                 )
                 .hFieldSize(.large)
 
-                hRadioField<EmptyView>(
+                hRadioField(
+                    id: "id",
+                    itemModel: .init(
+                        title: "Large Label"
+                    ),
+                    leftView: nil,
+                    selected: $value,
+                    error: $error,
+                    useAnimation: true
+                )
+                .hFieldSize(.large)
+
+                hRadioField(
                     id: "id",
                     itemModel: .init(
                         title: "Large Label",
                         subTitle: "920321412"
                     ),
-                    customContent: nil,
+                    leftView: nil,
                     selected: $value,
                     error: $error,
                     useAnimation: true
                 )
                 .hFieldSize(.large)
 
-                hRadioField<EmptyView>(
+                hRadioField(
                     id: "id",
                     itemModel: .init(
                         title: "Medium field Label",
                         subTitle: "920321412"
                     ),
-                    customContent: nil,
+                    leftView: nil,
                     selected: $value,
                     error: $error,
                     useAnimation: true
                 )
                 .hFieldSize(.medium)
 
-                hRadioField<EmptyView>(
+                hRadioField(
                     id: "id",
                     itemModel: .init(
                         title: "Small field Label",
                         subTitle: "920321412"
                     ),
-                    customContent: nil,
+                    leftView: nil,
                     selected: $value,
                     error: $error,
                     useAnimation: true
@@ -161,16 +143,16 @@ struct hRadioField_Previews: PreviewProvider {
 
                 hRadioField(
                     id: "id",
-                    customContent: {
-                        AnyView(
-                            HStack {
-                                Image(uiImage: hCoreUIAssets.pillowHome.image)
-                                    .resizable()
-                                    .frame(width: 32, height: 32)
+                    leftView: {
+                        HStack {
+                            Image(uiImage: hCoreUIAssets.pillowHome.image)
+                                .resizable()
+                                .frame(width: 32, height: 32)
 
-                                hText("Label")
-                            }
-                        )
+                            hText("Custom")
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .asAnyView
                     },
                     selected: $value,
                     error: $error,
@@ -178,13 +160,13 @@ struct hRadioField_Previews: PreviewProvider {
                 )
                 .hFieldSize(.small)
 
-                hRadioField<EmptyView>(
+                hRadioField(
                     id: "id",
                     itemModel: .init(
                         title: "Label",
                         subTitle: "920321412"
                     ),
-                    customContent: nil,
+                    leftView: nil,
                     selected: $value,
                     error: $error,
                     useAnimation: true
@@ -192,12 +174,12 @@ struct hRadioField_Previews: PreviewProvider {
                 .hFieldSize(.large)
                 .hFieldLeftAttachedView
 
-                hRadioField<EmptyView>(
+                hRadioField(
                     id: "id",
                     itemModel: .init(
                         title: "Label"
                     ),
-                    customContent: nil,
+                    leftView: nil,
                     selected: $value,
                     error: $error,
                     useAnimation: true
@@ -235,5 +217,11 @@ extension hFieldSize {
 
     fileprivate var bottomPadding: CGFloat {
         topPadding + 2
+    }
+}
+
+extension View {
+    public var asAnyView: AnyView {
+        return AnyView(self)
     }
 }
