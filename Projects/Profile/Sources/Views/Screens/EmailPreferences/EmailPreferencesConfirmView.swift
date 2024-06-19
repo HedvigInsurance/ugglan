@@ -37,7 +37,6 @@ struct EmailPreferencesConfirmView: View {
         .hExtraTopPadding
         .hDisableScroll
         .hButtonIsLoading(vm.isLoading)
-        .hUseNewDesign
     }
 }
 

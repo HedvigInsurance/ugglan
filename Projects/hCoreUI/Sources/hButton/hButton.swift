@@ -26,6 +26,7 @@ public enum hButton {
             .buttonStyle(ButtonFilledStyle(size: .large))
             .hButtonConfigurationType(type)
         }
+        .sectionContainerStyle(.transparent)
     }
 
     public struct MediumButton<Content: View>: View {

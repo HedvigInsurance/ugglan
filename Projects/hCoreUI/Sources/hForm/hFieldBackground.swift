@@ -3,26 +3,16 @@ import SwiftUI
 struct hFieldBackgroundModifier: ViewModifier {
     @Binding var animate: Bool
     @Binding var error: String?
-    @Environment(\.hUseNewDesign) var hUseNewDesign
-    func body(content: Content) -> some View {
-        if hUseNewDesign {
-            VStack(alignment: .leading, spacing: 0) {
-                content
-                    .padding(.horizontal, .padding16)
-                    .background(getBackgroundColor())
-                    .animation(.easeOut, value: animate)
-                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-            }
-        } else {
-            VStack(alignment: .leading, spacing: 0) {
-                content
-                    .padding(.horizontal, .padding16)
-                    .background(getBackgroundColor())
-                    .animation(.easeOut, value: animate)
-                    .clipShape(Squircle.default())
-            }
-        }
+    @Environment(\.isEnabled) var enabled
 
+    func body(content: Content) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            content
+                .padding(.horizontal, .padding16)
+                .background(getBackgroundColor())
+                .animation(.easeOut, value: animate)
+                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+        }
     }
 
     @hColorBuilder
