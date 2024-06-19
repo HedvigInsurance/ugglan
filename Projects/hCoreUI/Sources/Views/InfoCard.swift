@@ -17,13 +17,11 @@ public struct InfoCard: View {
 
     public var body: some View {
         HStack(alignment: .top, spacing: 0) {
-            VStack(spacing: 0) {
-                Rectangle().fill(Color.clear)
-                    .frame(width: 0, height: 2)
+            VStack(spacing: .padding8) {
                 Image(uiImage: type.image)
                     .resizable()
                     .foregroundColor(imageColor)
-                    .frame(width: 16, height: 16)
+                    .frame(width: 20, height: 20)
             }
             if let customContentView = customContentView {
                 customContentView
@@ -36,7 +34,7 @@ public struct InfoCard: View {
                         .multilineTextAlignment(.leading)
                     if let buttonsConfig {
                         if buttonsConfig.count > 1 {
-                            HStack(spacing: 8) {
+                            HStack(spacing: 4) {
                                 ForEach(buttonsConfig, id: \.buttonTitle) { config in
                                     hButton.SmallButton(type: .secondaryAlt) {
                                         config.buttonAction()
@@ -102,43 +100,45 @@ public struct InfoCard: View {
 
 struct InfoCard_Previews: PreviewProvider {
     static var previews: some View {
-        VStack {
-            InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
-                .buttons([
-                    .init(
-                        buttonTitle: "Title",
-                        buttonAction: {
+        hSection {
+            VStack {
+                InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
+                    .buttons([
+                        .init(
+                            buttonTitle: "Title",
+                            buttonAction: {
 
-                        }
-                    ),
-                    .init(
-                        buttonTitle: "Title 2",
-                        buttonAction: {
+                            }
+                        ),
+                        .init(
+                            buttonTitle: "Title 2",
+                            buttonAction: {
 
-                        }
-                    ),
-                ])
+                            }
+                        ),
+                    ])
 
-            InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
-                .buttons([
-                    .init(
-                        buttonTitle: "Title",
-                        buttonAction: {
+                InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
+                    .buttons([
+                        .init(
+                            buttonTitle: "Title",
+                            buttonAction: {
 
-                        }
-                    )
-                ])
+                            }
+                        )
+                    ])
 
-            InfoCard(text: L10n.changeAddressCoverageInfoText, type: .attention)
+                InfoCard(text: L10n.changeAddressCoverageInfoText, type: .attention)
 
-            InfoCard(text: L10n.changeAddressCoverageInfoText, type: .campaign)
-            InfoCard(text: L10n.changeAddressCoverageInfoText, type: .error)
+                InfoCard(text: L10n.changeAddressCoverageInfoText, type: .campaign)
+                InfoCard(text: L10n.changeAddressCoverageInfoText, type: .error)
 
-            InfoCard(text: "", type: .error)
-                .hInfoCardCustomView {
-                    Text("Testing custom texzt view")
+                InfoCard(text: "", type: .error)
+                    .hInfoCardCustomView {
+                        Text("Testing custom texzt view")
 
-                }
+                    }
+            }
         }
     }
 }
