@@ -11,7 +11,6 @@ public struct GenericErrorView: View {
     @Environment(\.hWithoutTitle) var withoutTitle
     @Environment(\.hExtraBottomPadding) var extraBottomPadding
     @Environment(\.hExtraTopPadding) var extraTopPadding
-    @Environment(\.hUseNewDesign) var hUseNewDesign
 
     public init(
         title: String? = nil,
@@ -72,7 +71,7 @@ public struct GenericErrorView: View {
     }
 
     private var content: some View {
-        let imageDimension: CGFloat = hUseNewDesign ? 40 : 24
+        let imageDimension: CGFloat = 40
         return VStack(spacing: 16) {
             switch icon {
             case .triangle:

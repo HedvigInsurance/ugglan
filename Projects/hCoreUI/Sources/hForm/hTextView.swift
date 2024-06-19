@@ -313,7 +313,6 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
             .frame(height: UIScreen.main.bounds.height - safeAreaInsets.top - safeAreaInsets.bottom - keyboard)
             .padding(.horizontal, -8)
         }
-        .hUseNewDesign
         .onReceive(keyboardHeightPublisher) { newHeight in
             if let newHeight {
                 keyboard = newHeight - 44 + 12
