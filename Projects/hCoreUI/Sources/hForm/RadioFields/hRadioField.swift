@@ -211,7 +211,7 @@ extension hFieldSize {
         case .large:
             return 16
         case .medium:
-            return 19
+            return 16
         }
     }
 
