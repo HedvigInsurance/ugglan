@@ -221,7 +221,6 @@ struct LoaderOrContent<Content: View>: View {
 struct ButtonFilledStyle: SwiftUI.ButtonStyle {
     fileprivate var size: ButtonSize
     @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
-    @Environment(\.hUseNewDesign) var hUseNewDesign
 
     func makeBody(configuration: Configuration) -> some View {
         switch hButtonConfigurationType {
@@ -229,43 +228,17 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
             getView(configuration: configuration)
         case .primaryAlt, .secondary, .secondaryAlt:
             getView(configuration: configuration)
-                .background(
-                    ZStack {
-                        if !hUseNewDesign {
-                            //create shadow - this create shadows for whole shape
-                            Squircle.default()
-                                .fill(hTextColor.Opaque.primary.inverted.opacity(0.01))
-                                .hShadow()
-
-                            //cut out shape from previously created shape - we only need shadows
-                            Squircle.default()
-                                .blendMode(.destinationOut)
-                        }
-
-                    }
-                    .compositingGroup()
-                )
         }
     }
 
     @ViewBuilder
     private func getView(configuration: Configuration) -> some View {
-        if hUseNewDesign {
-            VStack {
-                Label(configuration: configuration)
-            }
-            .buttonSizeModifier(size, useNewDesing: hUseNewDesign)
-            .background(ButtonFilledStandardBackground(configuration: configuration))
-            .buttonCornerModifier(size, useNewDesign: hUseNewDesign)
-
-        } else {
-            VStack {
-                Label(configuration: configuration)
-            }
-            .buttonSizeModifier(size, useNewDesing: hUseNewDesign)
-            .background(ButtonFilledStandardBackground(configuration: configuration))
-            .buttonCornerModifier(size, useNewDesign: hUseNewDesign)
+        VStack {
+            Label(configuration: configuration)
         }
+        .buttonSizeModifier(size)
+        .background(ButtonFilledStandardBackground(configuration: configuration))
+        .buttonCornerModifier(size)
     }
 
     //content
@@ -369,25 +342,14 @@ private struct LargeButtonModifier: ViewModifier {
 }
 
 private struct MediumButtonModifier: ViewModifier {
-    @Environment(\.hUseNewDesign) var hUseNewDesign
     func body(content: Content) -> some View {
-        if hUseNewDesign {
-            hSection {
-                content
-                    .padding(.top, 7)
-                    .padding(.bottom, 9)
-                    .frame(maxWidth: .infinity)
-            }
-            .sectionContainerStyle(.transparent)
-        } else {
-            hSection {
-                content
-                    .frame(maxHeight: .padding40)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, .padding8)
-            }
-            .sectionContainerStyle(.transparent)
+        hSection {
+            content
+                .padding(.top, 7)
+                .padding(.bottom, 9)
+                .frame(maxWidth: .infinity)
         }
+        .sectionContainerStyle(.transparent)
     }
 }
 
@@ -424,12 +386,12 @@ private enum ButtonSize {
 
 extension View {
     @ViewBuilder
-    fileprivate func buttonSizeModifier(_ size: ButtonSize, useNewDesing: Bool) -> some View {
+    fileprivate func buttonSizeModifier(_ size: ButtonSize) -> some View {
         switch size {
         case .mini:
-            self.modifier(MiniButtonModifier()).environment(\.defaultHTextStyle, useNewDesing ? .label : .body1)
+            self.modifier(MiniButtonModifier()).environment(\.defaultHTextStyle, .label)
         case .small:
-            self.modifier(SmallButtonModifier()).environment(\.defaultHTextStyle, useNewDesing ? .label : .body1)
+            self.modifier(SmallButtonModifier()).environment(\.defaultHTextStyle, .label)
         case .medium:
             self.modifier(MediumButtonModifier()).environment(\.defaultHTextStyle, .body1)
         case .large:
@@ -440,30 +402,24 @@ extension View {
 
 extension View {
     @ViewBuilder
-    fileprivate func buttonCornerModifier(_ size: ButtonSize, useNewDesign: Bool) -> some View {
-        if useNewDesign {
-            switch size {
-            case .mini:
-                self
-                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXS))
-                    .contentShape(RoundedRectangle(cornerRadius: .cornerRadiusXS))
-            case .small:
-                self
-                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
-                    .contentShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
-            case .medium:
-                self
-                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusM))
-                    .contentShape(RoundedRectangle(cornerRadius: .cornerRadiusM))
-            case .large:
-                self
-                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-                    .contentShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-            }
-        } else {
+    fileprivate func buttonCornerModifier(_ size: ButtonSize) -> some View {
+        switch size {
+        case .mini:
             self
-                .clipShape(Squircle.default())
-                .contentShape(Rectangle())
+                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXS))
+                .contentShape(RoundedRectangle(cornerRadius: .cornerRadiusXS))
+        case .small:
+            self
+                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
+                .contentShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
+        case .medium:
+            self
+                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusM))
+                .contentShape(RoundedRectangle(cornerRadius: .cornerRadiusM))
+        case .large:
+            self
+                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+                .contentShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
         }
     }
 }
@@ -618,8 +574,6 @@ struct hButtonLarge_Previews: PreviewProvider {
         }
         .hButtonIsLoading(hButtonLarge_Previews.isLoading)
         .disabled(hButtonLarge_Previews.disabled)
-        .hUseNewDesign
-
     }
 }
 
@@ -670,7 +624,6 @@ struct hButtonMedium_Previews: PreviewProvider {
         }
         .hButtonIsLoading(hButtonLarge_Previews.isLoading)
         .disabled(hButtonLarge_Previews.disabled)
-        .hUseNewDesign
 
     }
 }
@@ -722,7 +675,6 @@ struct hButtonSmall_Previews: PreviewProvider {
         }
         .hButtonIsLoading(hButtonLarge_Previews.isLoading)
         .disabled(hButtonLarge_Previews.disabled)
-        .hUseNewDesign
 
     }
 }
@@ -774,7 +726,5 @@ struct hButtonMini_Previews: PreviewProvider {
         }
         .hButtonIsLoading(hButtonLarge_Previews.isLoading)
         .disabled(hButtonLarge_Previews.disabled)
-        .hUseNewDesign
-
     }
 }
