@@ -149,9 +149,8 @@ struct hRadioField_Previews: PreviewProvider {
                                 .resizable()
                                 .frame(width: 32, height: 32)
 
-                            hText("Custom")
+                            hText("Custom view with long text")
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
                         .asAnyView
                     },
                     selected: $value,

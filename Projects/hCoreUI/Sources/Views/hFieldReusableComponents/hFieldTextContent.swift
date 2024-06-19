@@ -21,7 +21,6 @@ public struct hFieldTextContent<T>: View {
     let itemDisplayName: String?
     let leftViewWithItem: ((T?) -> AnyView?)?
     let leftView: (() -> AnyView?)?
-
     let cellView: (() -> AnyView?)?
 
     public init(
@@ -60,21 +59,22 @@ public struct hFieldTextContent<T>: View {
                 leftViewWithItem
             } else if let leftView = leftView?() {
                 leftView
-            }
-            VStack(spacing: 0) {
-                Group {
-                    let titleFont: HFontTextStyle =
-                        (fieldSize != .large) ? .body1 : .title3
+            } else {
+                VStack(spacing: 0) {
+                    Group {
+                        let titleFont: HFontTextStyle =
+                            (fieldSize != .large) ? .body1 : .title3
 
-                    hText(item?.title ?? itemDisplayName ?? "", style: titleFont)
-                        .foregroundColor(getTitleColor)
+                        hText(item?.title ?? itemDisplayName ?? "", style: titleFont)
+                            .foregroundColor(getTitleColor)
 
-                    if let subTitle = item?.subTitle {
-                        hText(subTitle, style: .standardSmall)
-                            .foregroundColor(getSubTitleColor)
+                        if let subTitle = item?.subTitle {
+                            hText(subTitle, style: .standardSmall)
+                                .foregroundColor(getSubTitleColor)
+                        }
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
     }
