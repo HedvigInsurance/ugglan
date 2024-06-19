@@ -197,7 +197,6 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
 
     private func updateMoveLabel(_ animation: Bool) {
         if (innerValue != "" || equals == focusValue) && !shouldMoveLabel {
-            //        if innerValue != "" && !shouldMoveLabel {
             if animation {
                 withAnimation(Animation.easeInOut(duration: 0.2)) {
                     shouldMoveLabel = true
