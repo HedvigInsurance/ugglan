@@ -434,44 +434,46 @@ public struct ClaimsNavigation: View {
 
     private func openDamagePickerScreen() -> some View {
         CheckboxPickerScreen<ClaimFlowItemProblemOptionModel>(
-            items: {
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                return store.state.singleItemStep?.availableItemProblems
-                    .compactMap({ (object: $0, displayName: .init(title: $0.displayName)) }) ?? []
-            }(),
-            preSelectedItems: {
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                if let singleItemStep = store.state.singleItemStep {
-                    let preselected = singleItemStep.availableItemProblems
-                        .filter { model in
-                            singleItemStep.selectedItemProblems?
-                                .contains(where: { item in
-                                    model.itemProblemId == item
-                                }) ?? false
-                        }
-                    return preselected
-                }
-                return []
-            },
-            onSelected: { selectedDamages in
-                var damages: [String] = []
-
-                for damage in selectedDamages {
-                    if let object = damage.0 {
-                        damages.append(object.itemProblemId)
+            config: .init(
+                items: {
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    return store.state.singleItemStep?.availableItemProblems
+                        .compactMap({ (object: $0, displayName: .init(title: $0.displayName)) }) ?? []
+                }(),
+                preSelectedItems: {
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    if let singleItemStep = store.state.singleItemStep {
+                        let preselected = singleItemStep.availableItemProblems
+                            .filter { model in
+                                singleItemStep.selectedItemProblems?
+                                    .contains(where: { item in
+                                        model.itemProblemId == item
+                                    }) ?? false
+                            }
+                        return preselected
                     }
-                }
-                claimsNavigationVm.isDamagePickerPresented = false
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                store.send(
-                    .setSingleItemDamage(
-                        damages: damages
+                    return []
+                },
+                onSelected: { selectedDamages in
+                    var damages: [String] = []
+
+                    for damage in selectedDamages {
+                        if let object = damage.0 {
+                            damages.append(object.itemProblemId)
+                        }
+                    }
+                    claimsNavigationVm.isDamagePickerPresented = false
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    store.send(
+                        .setSingleItemDamage(
+                            damages: damages
+                        )
                     )
-                )
-            },
-            onCancel: {
-                router.dismiss()
-            }
+                },
+                onCancel: {
+                    router.dismiss()
+                }
+            )
         )
         .configureTitle(L10n.Claims.Item.Screen.Damage.button)
     }

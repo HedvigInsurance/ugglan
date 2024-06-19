@@ -63,8 +63,8 @@ public struct hDatePickerField: View {
                 .offset(y: !(selectedDate?.localDateString.isEmpty ?? true) ? size.labelOffset : 0)
                 getValueLabel()
             }
-            .padding(.top, size.topPaddingNewDesign)
-            .padding(.bottom, size.bottomPaddingNewDesign)
+            .padding(.top, size.topPadding)
+            .padding(.bottom, size.bottomPadding)
             .frame(maxWidth: .infinity, alignment: .leading)
             .onChange(of: selectedDate) { date in
                 if let date {

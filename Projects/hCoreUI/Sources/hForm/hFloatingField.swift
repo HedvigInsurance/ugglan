@@ -56,8 +56,8 @@ public struct hFloatingField: View {
                 fieldTrailingView
 
             }
-            .padding(.top, size.topPaddingNewDesign)
-            .padding(.bottom, size.bottomPaddingNewDesign)
+            .padding(.top, size.topPadding)
+            .padding(.bottom, size.bottomPadding)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .addFieldBackground(animate: $animate, error: $error)

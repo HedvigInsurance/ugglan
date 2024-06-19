@@ -71,8 +71,8 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                     .offset(y: shouldMoveLabel ? size.labelOffset : 0)
                     getTextField
                 }
-                .padding(.top, size.topPaddingNewDesign)
-                .padding(.bottom, size.bottomPaddingNewDesign)
+                .padding(.top, size.topPadding)
+                .padding(.bottom, size.bottomPadding)
             }
             rightAttachedView
         }
@@ -217,7 +217,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
 
     private var getTextField: some View {
         return HStack {
-            SwiftUI.TextField(textFieldPlaceholder ?? "", text: $innerValue)
+            SwiftUI.TextField(shouldMoveLabel ? textFieldPlaceholder ?? "" : "", text: $innerValue)
                 .modifier(hFontModifier(style: size == .large ? .body2 : .body1))
                 .modifier(masking)
                 .tint(foregroundColor)

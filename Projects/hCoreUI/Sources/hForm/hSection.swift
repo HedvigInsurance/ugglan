@@ -227,7 +227,6 @@ extension EnvironmentValues {
 }
 
 struct hSectionContainerStyleModifier: ViewModifier {
-    @Environment(\.hUseNewDesign) var useNewDesign
     @Environment(\.hSectionContainerStyle) var containerStyle
 
     public func body(content: Content) -> some View {
@@ -297,6 +296,23 @@ extension View {
     }
 }
 
+private struct EnvironmentHEmbeddedHeader: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    public var hEmbeddedHeader: Bool {
+        get { self[EnvironmentHEmbeddedHeader.self] }
+        set { self[EnvironmentHEmbeddedHeader.self] = newValue }
+    }
+}
+
+extension View {
+    public var hEmbeddedHeader: some View {
+        self.environment(\.hEmbeddedHeader, true)
+    }
+}
+
 private struct EnvironmentHWithoutHorizontalPadding: EnvironmentKey {
     static let defaultValue = false
 }
@@ -346,6 +362,7 @@ struct hSectionContainer<Content: View>: View {
 public struct hSection<Header: View, Content: View, Footer: View>: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.minimumPadding) var minimumPadding
+    @Environment(\.hEmbeddedHeader) var embeddedHeader
 
     var header: Header?
     var content: Content
@@ -373,7 +390,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            if header != nil {
+            if header != nil && !embeddedHeader {
                 VStack(alignment: .leading) {
                     header
                         .environment(\.defaultHTextStyle, .body1)
@@ -382,6 +399,13 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
                 .padding(.bottom, .padding16)
             }
             hSectionContainer {
+                if header != nil && embeddedHeader {
+                    header
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, .padding16)
+                        .padding(.top, .padding12)
+                        .padding(.bottom, -8)
+                }
                 content
             }
             if footer != nil {

@@ -11,25 +11,14 @@ struct LargeButtonModifier: ViewModifier {
 }
 
 struct MediumButtonModifier: ViewModifier {
-    @Environment(\.hUseNewDesign) var hUseNewDesign
     func body(content: Content) -> some View {
-        if hUseNewDesign {
-            hSection {
-                content
-                    .padding(.top, 7)
-                    .padding(.bottom, 9)
-                    .frame(maxWidth: .infinity)
-            }
-            .sectionContainerStyle(.transparent)
-        } else {
-            hSection {
-                content
-                    .frame(maxHeight: 40)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, .padding8)
-            }
-            .sectionContainerStyle(.transparent)
+        hSection {
+            content
+                .padding(.top, 7)
+                .padding(.bottom, 9)
+                .frame(maxWidth: .infinity)
         }
+        .sectionContainerStyle(.transparent)
     }
 }
 
@@ -66,26 +55,20 @@ extension View {
 
 extension View {
     @ViewBuilder
-    func buttonCornerModifier(_ size: ButtonSize, useNewDesign: Bool) -> some View {
-        if useNewDesign {
-            switch size {
-            case .small:
-                self
-                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
-                    .contentShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
-            case .medium:
-                self
-                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusM))
-                    .contentShape(RoundedRectangle(cornerRadius: .cornerRadiusM))
-            case .large:
-                self
-                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-                    .contentShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-            }
-        } else {
+    func buttonCornerModifier(_ size: ButtonSize) -> some View {
+        switch size {
+        case .small:
             self
-                .clipShape(Squircle.default())
-                .contentShape(Rectangle())
+                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
+                .contentShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
+        case .medium:
+            self
+                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusM))
+                .contentShape(RoundedRectangle(cornerRadius: .cornerRadiusM))
+        case .large:
+            self
+                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+                .contentShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
         }
     }
 }
@@ -355,7 +338,6 @@ extension View {
 struct ButtonFilledStyle: SwiftUI.ButtonStyle {
     var size: ButtonSize
     @Environment(\.hButtonConfigurationType) var hButtonConfigurationType
-    @Environment(\.hUseNewDesign) var hUseNewDesign
 
     struct Label: View {
         @Environment(\.isEnabled) var isEnabled
@@ -424,43 +406,17 @@ struct ButtonFilledStyle: SwiftUI.ButtonStyle {
             getView(configuration: configuration)
         case .primaryAlt, .secondary, .secondaryAlt:
             getView(configuration: configuration)
-                .background(
-                    ZStack {
-                        if !hUseNewDesign {
-                            //create shadow - this create shadows for whole shape
-                            Squircle.default()
-                                .fill(hTextColor.Opaque.primary.inverted.opacity(0.01))
-                                .hShadow()
-
-                            //cut out shape from previously created shape - we only need shadows
-                            Squircle.default()
-                                .blendMode(.destinationOut)
-                        }
-
-                    }
-                    .compositingGroup()
-                )
         }
     }
 
     @ViewBuilder
     private func getView(configuration: Configuration) -> some View {
-        if hUseNewDesign {
-            VStack {
-                Label(configuration: configuration)
-            }
-            .buttonSizeModifier(size)
-            .background(ButtonFilledBackground(configuration: configuration))
-            .buttonCornerModifier(size, useNewDesign: hUseNewDesign)
-
-        } else {
-            VStack {
-                Label(configuration: configuration)
-            }
-            .buttonSizeModifier(size)
-            .background(ButtonFilledBackground(configuration: configuration))
-            .buttonCornerModifier(size, useNewDesign: hUseNewDesign)
+        VStack {
+            Label(configuration: configuration)
         }
+        .buttonSizeModifier(size)
+        .background(ButtonFilledBackground(configuration: configuration))
+        .buttonCornerModifier(size)
     }
 }
 

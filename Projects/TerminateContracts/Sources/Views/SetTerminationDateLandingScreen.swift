@@ -116,7 +116,6 @@ struct SetTerminationDateLandingScreen: View {
                         hCoreUIAssets.chevronDownSmall.view
                             .frame(width: 24, height: 24)
                     }
-                    .hUseNewDesign
                 }
             }
         }
