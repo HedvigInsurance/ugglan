@@ -6,6 +6,7 @@ import hCore
 
 public struct ToastBar: View {
     let type: NotificationType
+    let text: String
 
     public var body: some View {
         HStack(spacing: 8) {
@@ -13,7 +14,7 @@ public struct ToastBar: View {
                 .resizable()
                 .foregroundColor(type.imageColor)
                 .frame(width: 20, height: 20)
-            hText("test")
+            hText(text)
                 .foregroundColor(type.textColor)
         }
         .frame(maxWidth: .infinity, alignment: .center)
@@ -24,7 +25,7 @@ public struct ToastBar: View {
 
 #Preview{
     hSection {
-        ToastBar(type: .attention)
+        ToastBar(type: .attention, text: "testing toast bar")
     }
 }
 
