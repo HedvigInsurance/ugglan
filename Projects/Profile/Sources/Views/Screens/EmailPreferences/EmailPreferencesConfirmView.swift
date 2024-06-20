@@ -10,14 +10,15 @@ struct EmailPreferencesConfirmView: View {
     @PresentableStore var store: ProfileStore
     var body: some View {
         GenericErrorView(
-            title: L10n.General.areYouSure,
+            title: vm.isUnsubscribed ? L10n.SettingsScreen.subscribeTitle : L10n.General.areYouSure,
             description: vm.isUnsubscribed
                 ? L10n.SettingsScreen.subscribeDescription : L10n.SettingsScreen.unsubscribeDescription,
             icon: .triangle,
             buttons: .init(
                 actionButtonAttachedToBottom:
                     .init(
-                        buttonTitle: vm.isUnsubscribed ? L10n.General.yes : L10n.SettingsScreen.confirmUnsubscribe,
+                        buttonTitle: vm.isUnsubscribed
+                            ? L10n.SettingsScreen.subscribeButton : L10n.SettingsScreen.confirmUnsubscribe,
                         buttonAction: {
                             Task {
                                 await vm.toogleSubscription()
