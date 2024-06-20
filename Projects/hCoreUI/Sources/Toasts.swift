@@ -4,6 +4,30 @@ import Foundation
 import SwiftUI
 import hCore
 
+public struct ToastBar: View {
+    let type: NotificationType
+
+    public var body: some View {
+        HStack(spacing: 8) {
+            Image(uiImage: type.image)
+                .resizable()
+                .foregroundColor(type.imageColor)
+                .frame(width: 20, height: 20)
+            hText("test")
+                .foregroundColor(type.textColor)
+        }
+        .frame(maxWidth: .infinity, alignment: .center)
+        .padding(.vertical, .padding16)
+        .modifier(NotificationStyle(type: type)) /* TODO: MOVE */
+    }
+}
+
+#Preview{
+    hSection {
+        ToastBar(type: .attention)
+    }
+}
+
 public enum ToastSymbol: Equatable {
     public static func == (lhs: ToastSymbol, rhs: ToastSymbol) -> Bool {
         switch (lhs, rhs) {
