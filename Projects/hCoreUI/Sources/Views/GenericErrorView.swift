@@ -85,11 +85,6 @@ public struct GenericErrorView: View {
                     .resizable()
                     .frame(width: imageDimension, height: imageDimension)
                     .foregroundColor(hSignalColor.Blue.element)
-            case .checkmark:
-                hCoreUIAssets.checkmarkFilled.view
-                    .resizable()
-                    .frame(width: imageDimension, height: imageDimension)
-                    .foregroundColor(hSignalColor.Green.element)
             }
             VStack {
                 if !withoutTitle {
@@ -121,7 +116,6 @@ public struct GenericErrorView: View {
 public enum ErrorIconType {
     case triangle
     case circle
-    case checkmark
 }
 
 public struct ErrorViewButtonConfig {
