@@ -7,6 +7,17 @@ import hCore
 public struct ToastBar: View {
     let type: NotificationType
     let text: String
+    let action: ToastBarAction?
+
+    public init(
+        type: NotificationType,
+        text: String,
+        action: ToastBarAction? = nil
+    ) {
+        self.type = type
+        self.text = text
+        self.action = action
+    }
 
     public var body: some View {
         HStack(spacing: 8) {
@@ -16,16 +27,42 @@ public struct ToastBar: View {
                 .frame(width: 20, height: 20)
             hText(text)
                 .foregroundColor(type.textColor)
+
+            if let action {
+                Spacer()
+                if #available(iOS 16.0, *) {
+                    hText(action.actionText)
+                        .underline()
+                        .foregroundColor(type.textColor)
+                } else {
+                    hText(action.actionText)
+                        .foregroundColor(type.textColor)
+                }
+            }
         }
         .frame(maxWidth: .infinity, alignment: .center)
-        .padding(.vertical, .padding16)
-        .modifier(NotificationStyle(type: type)) /* TODO: MOVE */
+        .padding(.padding16)
+        .modifier(NotificationStyle(type: type))
+    }
+
+    public struct ToastBarAction {
+        let actionText: String
+        let onClick: () -> Void
     }
 }
 
 #Preview{
-    hSection {
-        ToastBar(type: .attention, text: "testing toast bar")
+    VStack {
+        hSection {
+            ToastBar(type: .attention, text: "testing toast bar")
+        }
+        hSection {
+            ToastBar(
+                type: .info,
+                text: "testing toast bar action",
+                action: .init(actionText: "action", onClick: {})
+            )
+        }
     }
 }
 
