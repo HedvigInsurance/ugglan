@@ -24,8 +24,11 @@ struct ContractCoverageView: View {
                         contractsNavigationVm.insurableLimit = limit
                     }
                     Spacer()
-                    PerilCollection(perils: contract.currentAgreement?.productVariant.perils ?? []) { peril in
-                    }
+                    PerilCollection(
+                        perils: contract.currentAgreement?.productVariant.perils ?? [],
+                        didTapPeril: { _ in }
+                    )
+                    .hFieldSize(.large)
                 }
             }
         }
