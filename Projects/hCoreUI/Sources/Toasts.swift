@@ -63,6 +63,9 @@ public struct ToastBar: View {
                 action: .init(actionText: "action", onClick: {})
             )
         }
+        hSection {
+            ToastBar(type: .disabled, text: "disabled toast bar")
+        }
     }
 }
 
