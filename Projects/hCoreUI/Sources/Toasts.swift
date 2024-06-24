@@ -5,45 +5,63 @@ import Foundation
 import SwiftUI
 import hCore
 
-public struct ToastBar: View {
+public struct ToastBar {
     let type: NotificationType
     let text: String
     let action: ToastBarAction?
+    let duration: Double
 
     public init(
         type: NotificationType,
         text: String,
-        action: ToastBarAction? = nil
+        action: ToastBarAction? = nil,
+        duration: Double = 3
     ) {
         self.type = type
         self.text = text
         self.action = action
+        self.duration = duration
+    }
+
+    public struct ToastBarAction {
+        let actionText: String
+        let onClick: () -> Void
+    }
+}
+
+public struct ToastBarView: View {
+    private let toastModel: ToastBar
+
+    public init(
+        toastModel: ToastBar
+    ) {
+        self.toastModel = toastModel
     }
 
     public var body: some View {
         HStack(spacing: 8) {
-            Image(uiImage: type.image)
+            Image(uiImage: toastModel.type.image)
                 .resizable()
-                .foregroundColor(type.imageColor)
+                .foregroundColor(toastModel.type.imageColor)
                 .frame(width: 20, height: 20)
-            hText(text)
-                .foregroundColor(type.textColor)
+            hText(toastModel.text)
+                .foregroundColor(toastModel.type.textColor)
 
-            if let action {
+            if let action = toastModel.action {
                 Spacer()
                 if #available(iOS 16.0, *) {
                     hText(action.actionText)
                         .underline()
-                        .foregroundColor(type.textColor)
+                        .foregroundColor(toastModel.type.textColor)
                 } else {
                     hText(action.actionText)
-                        .foregroundColor(type.textColor)
+                        .foregroundColor(toastModel.type.textColor)
                 }
             }
         }
         .frame(maxWidth: .infinity, alignment: .center)
         .padding(.padding16)
-        .modifier(NotificationStyle(type: type))
+        .modifier(NotificationStyle(type: toastModel.type))
     }
 
     public struct ToastBarAction {
@@ -55,17 +73,29 @@ public struct ToastBar: View {
 #Preview{
     VStack {
         hSection {
-            ToastBar(type: .attention, text: "testing toast bar")
-        }
-        hSection {
-            ToastBar(
-                type: .info,
-                text: "testing toast bar action",
-                action: .init(actionText: "action", onClick: {})
+            ToastBarView(
+                toastModel: .init(
+                    type: .attention,
+                    text: "testing toast bar"
+                )
             )
         }
         hSection {
-            ToastBar(type: .disabled, text: "disabled toast bar")
+            ToastBarView(
+                toastModel: .init(
+                    type: .info,
+                    text: "testing toast bar action",
+                    action: .init(actionText: "action", onClick: {})
+                )
+            )
+        }
+        hSection {
+            ToastBarView(
+                toastModel: .init(
+                    type: .disabled,
+                    text: "disabled toast bar"
+                )
+            )
         }
     }
 }
@@ -333,13 +363,13 @@ public class ToastsHandler {
 }
 
 private class ToastUIView: UIView {
-    private let vc: hHostingController<ToastBar>
+    private let vc: hHostingController<ToastBarView>
     private let onDeinit: () -> Void
     private let model: Toast
     private var timerSubscription: AnyCancellable?
 
     init(model: Toast, onDeinit: @escaping () -> Void) {
-        let toastBarView = ToastBar(type: .info, text: "Test")
+        let toastBarView = ToastBarView(toastModel: .init(type: .info, text: "Test"))
         vc = hHostingController(rootView: toastBarView, contentName: "")
         self.model = model
         self.onDeinit = onDeinit
