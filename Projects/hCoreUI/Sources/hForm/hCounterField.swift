@@ -65,7 +65,7 @@ public struct hCounterField: View {
                             increase()
                         }
                     } label: {
-                        Image(uiImage: hCoreUIAssets.plusSmall.image)
+                        Image(uiImage: hCoreUIAssets.plus.image)
                             .foregroundColor(hTextColor.Opaque.primary)
                             .frame(width: 35, height: 35)
                     }
@@ -83,7 +83,7 @@ public struct hCounterField: View {
             self.textToShow = textForValue(value) ?? ""
         }
         .onChange(of: textToShow) { value in
-            shouldMoveLabel = value != nil
+            shouldMoveLabel = placeholder != "" && value != ""
         }
     }
 
@@ -119,55 +119,44 @@ public struct hCounterField: View {
 struct hCounterField_Previews: PreviewProvider {
     @State static var value: Int = 1
     static var previews: some View {
-        VStack {
-            hCounterField(value: $value, placeholder: "Placeholder", minValue: 0, maxValue: 5) { value in
-                if value == 0 {
-                    return nil
-                } else {
-                    return "VALUE \(value)"
-                }
+        let counerWithPlaceholder = hCounterField(value: $value, placeholder: "Placeholder", minValue: 0, maxValue: 5) {
+            value in
+            if value == 0 {
+                return nil
+            } else {
+                return "VALUE \(value)"
             }
-            .hFieldSize(.large)
-            .background {
-                GeometryReader(content: { geometry in
-                    Color.clear.onAppear {
-                        print("SIZE \(hFieldSize.large) \(geometry.size.height)")
-                    }
-                })
-            }
+        }
 
-            hCounterField(value: $value, placeholder: "Placeholder", minValue: 0, maxValue: 5) { value in
-                if value == 0 {
-                    return nil
-                } else {
-                    return "VALUE \(value)"
-                }
+        let counerWithWithoutPlaceholder = hCounterField(value: $value, placeholder: "", minValue: 0, maxValue: 5) {
+            value in
+            if value == 0 {
+                return nil
+            } else {
+                return "VALUE \(value)"
             }
-            .hFieldSize(.medium)
-            .background {
-                GeometryReader(content: { geometry in
-                    Color.clear.onAppear {
-                        print("SIZE \(hFieldSize.medium) \(geometry.size.height)")
-                    }
-                })
-            }
+        }
+        return VStack(alignment: .leading) {
+            Section("With placeholder") {
+                counerWithPlaceholder
+                    .hFieldSize(.large)
 
-            hCounterField(value: $value, placeholder: "Placeholder", minValue: 0, maxValue: 5) { value in
-                if value == 0 {
-                    return nil
-                } else {
-                    return "VALUE \(value)"
-                }
-            }
-            .hFieldSize(.small)
-            .background {
-                GeometryReader(content: { geometry in
-                    Color.clear.onAppear {
-                        print("SIZE \(hFieldSize.small) \(geometry.size.height)")
-                    }
-                })
-            }
+                counerWithPlaceholder
+                    .hFieldSize(.medium)
 
+                counerWithPlaceholder
+                    .hFieldSize(.small)
+            }
+            Section("Without placeholder") {
+                counerWithWithoutPlaceholder
+                    .hFieldSize(.large)
+
+                counerWithWithoutPlaceholder
+                    .hFieldSize(.medium)
+
+                counerWithWithoutPlaceholder
+                    .hFieldSize(.small)
+            }
         }
     }
 }
