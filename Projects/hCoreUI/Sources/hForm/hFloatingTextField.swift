@@ -57,32 +57,34 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         HStack(spacing: 8) {
             VStack {
                 ZStack(alignment: .leading) {
+                    hFieldLabel(
+                        placeholder: placeholder,
+                        animate: $animate,
+                        error: $error,
+                        shouldMoveLabel: $shouldMoveLabel
+                    )
+                    .offset(y: shouldMoveLabel ? size.labelOffset : 0)
                     HStack {
-                        hFieldLabel(
-                            placeholder: placeholder,
-                            animate: $animate,
-                            error: $error,
-                            shouldMoveLabel: $shouldMoveLabel
-                        )
-                        if !(suffix ?? "").isEmpty && !shouldMoveLabel {
+                        getTextField
+                            .showClearButtonOrError(
+                                $innerValue,
+                                equals: $equals,
+                                animationEnabled: $animationEnabled,
+                                error: $error,
+                                focusValue: focusValue
+                            )
+                        if !(suffix ?? "").isEmpty {
                             getSuffixLabel
                         }
                     }
-                    .offset(y: shouldMoveLabel ? size.labelOffset : 0)
-                    getTextField
+                    .offset(y: shouldMoveLabel ? size.fieldOffset : 0)
+
                 }
                 .padding(.top, size.topPadding)
                 .padding(.bottom, size.bottomPadding)
             }
             rightAttachedView
         }
-        .showClearButtonOrError(
-            $innerValue,
-            equals: $equals,
-            animationEnabled: $animationEnabled,
-            error: $error,
-            focusValue: focusValue
-        )
         .addFieldBackground(animate: $animate, error: $error)
         .addFieldError(animate: $animate, error: $error)
         .onChange(of: vm.textField) { textField in
@@ -188,7 +190,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
 
     private func startAnimation(_ value: String) {
         self.animate = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
             if value == innerValue {
                 self.animate = false
             }
@@ -216,27 +218,21 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     }
 
     private var getTextField: some View {
-        return HStack {
-            SwiftUI.TextField(shouldMoveLabel ? textFieldPlaceholder ?? "" : "", text: $innerValue)
-                .modifier(hFontModifier(style: size == .large ? .body2 : .body1))
-                .modifier(masking)
-                .tint(foregroundColor)
-                .foregroundColor(foregroundColor)
-                .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in
-                    if shouldUpdate {
-                        let value = masking.maskValue(text: innerValue, previousText: previousInnerValue)
-                        withAnimation {
-                            self.value = value
-                            innerValue = value
-                            previousInnerValue = value
-                        }
+        SwiftUI.TextField(shouldMoveLabel ? textFieldPlaceholder ?? "" : "", text: $innerValue)
+            .modifier(hFontModifier(style: size == .large ? .body2 : .body1))
+            .modifier(masking)
+            .tint(foregroundColor)
+            .foregroundColor(foregroundColor)
+            .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in
+                if shouldUpdate {
+                    let value = masking.maskValue(text: innerValue, previousText: previousInnerValue)
+                    withAnimation {
+                        self.value = value
+                        innerValue = value
+                        previousInnerValue = value
                     }
                 }
-            if !(suffix ?? "").isEmpty && shouldMoveLabel {
-                getSuffixLabel
             }
-        }
-        .offset(y: shouldMoveLabel ? size.fieldOffset : 0)
 
     }
 
@@ -263,22 +259,24 @@ class TextFieldVM: ObservableObject {
 
 struct hFloatingTextField_Previews: PreviewProvider {
     @State static var value: String = "Text Input"
-    @State static var error: String? = "ERROR"
+    @State static var error: String?
+    @State static var previewType: PreviewType?
     static var previews: some View {
         VStack {
-            hFloatingTextField<Bool>(
+            hFloatingTextField<PreviewType>(
                 masking: .init(type: .none),
                 value: $value,
-                equals: .constant(true),
-                focusValue: true,
+                equals: $previewType,
+                focusValue: .first,
                 placeholder: "Label",
+                suffix: "SEK",
                 error: $error
             )
-            hFloatingTextField<Bool>(
+            hFloatingTextField<PreviewType>(
                 masking: .init(type: .none),
                 value: $value,
-                equals: .constant(true),
-                focusValue: true,
+                equals: $previewType,
+                focusValue: .second,
                 placeholder: "Label",
                 error: $error
             )
@@ -286,6 +284,23 @@ struct hFloatingTextField_Previews: PreviewProvider {
         }
         .hFieldSize(.large)
 
+    }
+
+    enum PreviewType: Int, CaseIterable, hTextFieldFocusStateCompliant {
+        static var last: PreviewType {
+            return PreviewType.allCases.last!
+        }
+
+        var next: PreviewType? {
+            let rawValue = self.rawValue
+            if let next = PreviewType(rawValue: rawValue + 1) {
+                return next
+            }
+            return nil
+        }
+
+        case first
+        case second
     }
 }
 
