@@ -7,17 +7,20 @@ import hCore
 
 public struct ToastBar {
     let type: NotificationType
+    let icon: UIImage?
     let text: String
     let action: ToastBarAction?
     let duration: Double
 
     public init(
         type: NotificationType,
+        icon: UIImage? = nil,
         text: String,
         action: ToastBarAction? = nil,
         duration: Double = 3
     ) {
         self.type = type
+        self.icon = icon
         self.text = text
         self.action = action
         self.duration = duration
@@ -40,21 +43,21 @@ public struct ToastBarView: View {
 
     public var body: some View {
         HStack(spacing: 8) {
-            Image(uiImage: toastModel.type.image)
+            Image(uiImage: toastModel.icon ?? toastModel.type.image)
                 .resizable()
-                .foregroundColor(toastModel.type.imageColor)
+                .foregroundColor(iconColor)
                 .frame(width: 20, height: 20)
-            hText(toastModel.text)
+            hText(toastModel.text, style: .footnote)
                 .foregroundColor(toastModel.type.textColor)
 
             if let action = toastModel.action {
                 Spacer()
                 if #available(iOS 16.0, *) {
-                    hText(action.actionText)
+                    hText(action.actionText, style: .footnote)
                         .underline()
                         .foregroundColor(toastModel.type.textColor)
                 } else {
-                    hText(action.actionText)
+                    hText(action.actionText, style: .footnote)
                         .foregroundColor(toastModel.type.textColor)
                 }
             }
@@ -64,9 +67,13 @@ public struct ToastBarView: View {
         .modifier(NotificationStyle(type: toastModel.type))
     }
 
-    public struct ToastBarAction {
-        let actionText: String
-        let onClick: () -> Void
+    @hColorBuilder
+    private var iconColor: some hColor {
+        if toastModel.icon != nil {
+            hSignalColor.Green.element
+        } else {
+            toastModel.type.imageColor
+        }
     }
 }
 
@@ -333,7 +340,6 @@ public struct Toasts {
 
 public class ToastsHandler {
     public static let shared = ToastsHandler()
-    //list of toast bar models
     var list = [ToastBar]()
     public func displayToastBar(toast: ToastBar) {
         list.append(toast)
@@ -369,7 +375,7 @@ private class ToastUIView: UIView {
     private var timerSubscription: AnyCancellable?
 
     init(model: ToastBar, onDeinit: @escaping () -> Void) {
-        let toastBarView = ToastBarView(toastModel: .init(type: .info, text: "Test"))
+        let toastBarView = ToastBarView(toastModel: model)
         vc = hHostingController(rootView: toastBarView, contentName: "")
         self.model = model
         self.onDeinit = onDeinit
