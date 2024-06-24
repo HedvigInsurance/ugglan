@@ -1,3 +1,4 @@
+import Combine
 import Flow
 import Form
 import Foundation
@@ -289,7 +290,6 @@ public struct Toasts {
     let bag = DisposeBag()
     let toastCallbacker = Callbacker<Toast>()
     let window = UIApplication.shared.windows.first!
-
     public func displayToast(toast: Toast) {
         toastCallbacker.callAll(with: toast)
     }
@@ -298,6 +298,87 @@ public struct Toasts {
         let (view, disposable) = materialize(events: ViewableEvents(wasAddedCallbacker: .init()))
         bag += disposable
         window.rootView.addSubview(view)
+    }
+}
+
+public class ToastsHandler {
+    public static let shared = ToastsHandler()
+    //list of toast bar models
+    var list = [Toast]()
+    public func displayToastBar(toast: Toast) {
+        list.append(toast)
+        if list.count == 1 {
+            showNext()
+        }
+    }
+
+    init() {
+
+    }
+
+    private func showNext() {
+        if let toast = list.first {
+            let viewToShow = ToastUIView(model: toast) { [weak self] in
+                self?.list.removeFirst()
+                self?.showNext()
+            }
+            let viewToShowFrom = UIApplication.shared.getRootViewController()!.view!
+            viewToShowFrom.addSubview(viewToShow)
+            viewToShow.snp.makeConstraints { make in
+                make.leading.top.trailing.equalToSuperview()
+            }
+        }
+    }
+
+}
+
+private class ToastUIView: UIView {
+    private let vc: hHostingController<ToastBar>
+    private let onDeinit: () -> Void
+    private let model: Toast
+    private var timerSubscription: AnyCancellable?
+
+    init(model: Toast, onDeinit: @escaping () -> Void) {
+        let toastBarView = ToastBar(type: .info, text: "Test")
+        vc = hHostingController(rootView: toastBarView, contentName: "")
+        self.model = model
+        self.onDeinit = onDeinit
+        super.init(frame: .zero)
+        self.addSubview(vc.view)
+        setAutoDismiss()
+        self.transform = .init(translationX: 0, y: -200)
+        UIView.animate(withDuration: 1) { [weak self] in
+            self?.transform = .identity
+        }
+        vc.view.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
+        let drag = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
+        vc.view?.addGestureRecognizer(drag)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    @objc func handlePan(_ sender: UIPanGestureRecognizer) {
+        setAutoDismiss()
+    }
+
+    private func setAutoDismiss() {
+        timerSubscription = Timer.publish(every: 6, on: .main, in: .common).autoconnect()
+            .sink { [weak self] _ in
+                UIView.animate(withDuration: 1) {
+                    self?.transform = .init(translationX: 0, y: -200)
+                } completion: { _ in
+                    self?.removeFromSuperview()
+                }
+            }
+    }
+
+    deinit {
+        onDeinit()
     }
 }
 
