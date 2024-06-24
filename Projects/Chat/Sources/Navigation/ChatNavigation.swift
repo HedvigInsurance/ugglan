@@ -37,29 +37,22 @@ public class ChatNavigationViewModel: ObservableObject {
         case .notDetermined:
             self.isAskForPushNotificationsPresented = true
         case .denied:
-            func createToast() -> Toast {
-                let schema = UITraitCollection.current.userInterfaceStyle
-                return Toast(
-                    symbol: .icon(hCoreUIAssets.infoFilled.image),
-                    body: L10n.chatToastPushNotificationsTitle,
-                    infoText: L10n.pushNotificationsAlertActionOk,
-                    textColor: hSignalColor.Blue.text.colorFor(schema == .dark ? .dark : .light, .base).color
-                        .uiColor(),
-                    backgroundColor: hSignalColor.Blue.fill.colorFor(schema == .dark ? .dark : .light, .base)
-                        .color
-                        .uiColor(),
-                    symbolColor: hSignalColor.Blue.element.colorFor(schema == .dark ? .dark : .light, .base)
-                        .color
-                        .uiColor(),
+            func createToast() -> ToastBar {
+                return ToastBar(
+                    type: .info,
+                    text: L10n.chatToastPushNotificationsTitle,
+                    action: .init(
+                        actionText: L10n.pushNotificationsAlertActionOk,
+                        onClick: {
+                            NotificationCenter.default.post(name: .registerForPushNotifications, object: nil)
+                        }
+                    ),
                     duration: 6
                 )
             }
 
             let toast = createToast()
-            toastPublisher = toast.onTap.publisher.sink { _ in
-                NotificationCenter.default.post(name: .registerForPushNotifications, object: nil)
-            }
-            Toasts.shared.displayToast(toast: toast)
+            Toasts.shared.displayToastBar(toast: toast)
         default:
             break
         }

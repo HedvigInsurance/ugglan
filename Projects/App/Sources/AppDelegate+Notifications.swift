@@ -80,20 +80,20 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         willPresent notification: UNNotification,
         withCompletionHandler _: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
-        let toast = Toast(
-            symbol: .none,
-            body: notification.request.content.title,
-            subtitle: notification.request.content.body
+        let toast = ToastBar(
+            type: .info,
+            text: notification.request.content.title,
+            action: .init(
+                actionText: "Open message",
+                onClick: {
+                    let userInfo = notification.request.content.userInfo
+                    guard let notificationType = userInfo["TYPE"] as? String else { return }
+
+                    self.performPushAction(notificationType: notificationType, userInfo: userInfo)
+                }
+            )
         )
-
-        self.bag += toast.onTap.onValue {
-            let userInfo = notification.request.content.userInfo
-            guard let notificationType = userInfo["TYPE"] as? String else { return }
-
-            self.performPushAction(notificationType: notificationType, userInfo: userInfo)
-        }
-
-        if !HomeNavigationViewModel.isChatPresented { Toasts.shared.displayToast(toast: toast) }
+        if !HomeNavigationViewModel.isChatPresented { Toasts.shared.displayToastBar(toast: toast) }
     }
 }
 

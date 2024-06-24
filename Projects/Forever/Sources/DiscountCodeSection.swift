@@ -18,7 +18,7 @@ struct DiscountCodeSectionView: View {
                     hSection {
                         hFloatingField(value: code, placeholder: L10n.ReferralsEmpty.Code.headline) {
                             UIPasteboard.general.string = code
-                            ToastsHandler.shared.displayToastBar(
+                            Toasts.shared.displayToastBar(
                                 toast: .init(
                                     type: .campaign,
                                     icon: hCoreUIAssets.checkmark.image,

@@ -75,7 +75,7 @@ class MemberSubscriptionPreferenceViewModel: ObservableObject {
                 icon: hCoreUIAssets.checkmarkOutlined.image,
                 text: (isUnsubscribed) ? L10n.SettingsScreen.subscribedMessage : L10n.SettingsScreen.unsubscribedMessage
             )
-            ToastsHandler.shared.displayToastBar(toast: toast)
+            Toasts.shared.displayToastBar(toast: toast)
 
             withAnimation {
                 if let unsubscribedMembers = unsubscribedMembers {

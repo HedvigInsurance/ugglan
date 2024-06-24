@@ -249,7 +249,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                         type: .info,
                         text: L10n.forceLogoutMessageTitle
                     )
-                    ToastsHandler.shared.displayToastBar(toast: toast)
+                    Toasts.shared.displayToastBar(toast: toast)
                 }
             }
         }

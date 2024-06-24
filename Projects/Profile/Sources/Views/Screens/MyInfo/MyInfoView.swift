@@ -169,7 +169,7 @@ public class MyInfoViewModel: ObservableObject {
         async let updateEmailAsync: () = self.getEmailFuture()
         do {
             _ = try await [updatePhoneAsync, updateEmailAsync]
-            ToastsHandler.shared.displayToastBar(
+            Toasts.shared.displayToastBar(
                 toast: .init(
                     type: .campaign,
                     icon: hCoreUIAssets.edit.image,

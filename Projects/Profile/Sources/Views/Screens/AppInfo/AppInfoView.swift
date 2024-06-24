@@ -131,7 +131,7 @@ public struct AppInfoView: View {
     }
 
     private func showToaster() {
-        ToastsHandler.shared.displayToastBar(
+        Toasts.shared.displayToastBar(
             toast: .init(
                 type: .campaign,
                 icon: hCoreUIAssets.checkmark.image,
