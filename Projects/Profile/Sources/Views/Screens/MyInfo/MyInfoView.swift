@@ -169,10 +169,11 @@ public class MyInfoViewModel: ObservableObject {
         async let updateEmailAsync: () = self.getEmailFuture()
         do {
             _ = try await [updatePhoneAsync, updateEmailAsync]
-            Toasts.shared.displayToast(
-                toast: Toast(
-                    symbol: .icon(hCoreUIAssets.edit.image),
-                    body: L10n.profileMyInfoSaveSuccessToastBody
+            ToastsHandler.shared.displayToastBar(
+                toast: .init(
+                    type: .campaign,
+                    icon: hCoreUIAssets.edit.image,
+                    text: L10n.profileMyInfoSaveSuccessToastBody
                 )
             )
         } catch let error {

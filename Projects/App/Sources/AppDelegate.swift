@@ -244,14 +244,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     ApplicationState.preserveState(.notLoggedIn)
                     ApplicationState.state = .notLoggedIn
                     self?.logout()
-                    let toast = Toast(
-                        symbol: .icon(hCoreUIAssets.infoFilled.image),
-                        body: L10n.forceLogoutMessageTitle,
-                        textColor: .brand(.secondaryText),
-                        backgroundColor: .brand(.opaqueFillOne, style: .dark),
-                        symbolColor: .brand(.secondaryText)
+
+                    let toast = ToastBar(
+                        type: .info,
+                        text: L10n.forceLogoutMessageTitle
                     )
-                    Toasts.shared.displayToast(toast: toast)
+                    ToastsHandler.shared.displayToastBar(toast: toast)
                 }
             }
         }

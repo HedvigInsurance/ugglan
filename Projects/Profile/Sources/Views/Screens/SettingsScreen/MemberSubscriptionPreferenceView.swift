@@ -70,16 +70,13 @@ class MemberSubscriptionPreferenceViewModel: ObservableObject {
         let memberId = store.state.memberDetails?.id ?? ""
         do {
             try await profileService.updateSubscriptionPreference(to: isUnsubscribed)
-            let toast = Toast(
-                symbol: .icon(
-                    hCoreUIAssets
-                        .checkmarkOutlined
-                        .image
-                ),
-                body: (isUnsubscribed)
-                    ? L10n.SettingsScreen.subscribedMessage : L10n.SettingsScreen.unsubscribedMessage
+            let toast = ToastBar(
+                type: .campaign,
+                icon: hCoreUIAssets.checkmarkOutlined.image,
+                text: (isUnsubscribed) ? L10n.SettingsScreen.subscribedMessage : L10n.SettingsScreen.unsubscribedMessage
             )
-            Toasts.shared.displayToast(toast: toast)
+            ToastsHandler.shared.displayToastBar(toast: toast)
+
             withAnimation {
                 if let unsubscribedMembers = unsubscribedMembers {
                     if let index = unsubscribedMembers.firstIndex(of: memberId) {
