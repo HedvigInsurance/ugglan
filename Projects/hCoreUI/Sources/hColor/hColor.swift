@@ -305,6 +305,14 @@ public struct hTextColor {
                 dark: hGrayscaleOpaqueColor.greyScale800
             )
         }
+
+        public static var white: some hColor {
+            hGrayscaleOpaqueColor.white
+        }
+
+        public static var black: some hColor {
+            hGrayscaleOpaqueColor.black
+        }
     }
 
     public struct Translucent {
