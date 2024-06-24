@@ -72,9 +72,9 @@ extension ClaimModel.ClaimOutcome {
     @hColorBuilder
     var textColor: some hColor {
         switch self {
-        case .paid, .notCompensated, .notCovered:
+        case .paid, .closed:
             hTextColor.Opaque.negative
-        case .none:
+        case .none, .notCompensated, .notCovered:
             hTextColor.Opaque.primary
         }
     }
@@ -82,9 +82,9 @@ extension ClaimModel.ClaimOutcome {
     @hColorBuilder
     var backgroundColor: some hColor {
         switch self {
-        case .none:
+        case .none, .notCompensated, .notCovered:
             hSurfaceColor.Translucent.secondary
-        case .paid, .notCompensated, .notCovered:
+        case .paid, .closed:
             hBackgroundColor.negative
         }
     }
