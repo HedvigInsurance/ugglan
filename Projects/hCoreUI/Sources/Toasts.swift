@@ -334,8 +334,8 @@ public struct Toasts {
 public class ToastsHandler {
     public static let shared = ToastsHandler()
     //list of toast bar models
-    var list = [Toast]()
-    public func displayToastBar(toast: Toast) {
+    var list = [ToastBar]()
+    public func displayToastBar(toast: ToastBar) {
         list.append(toast)
         if list.count == 1 {
             showNext()
@@ -365,10 +365,10 @@ public class ToastsHandler {
 private class ToastUIView: UIView {
     private let vc: hHostingController<ToastBarView>
     private let onDeinit: () -> Void
-    private let model: Toast
+    private let model: ToastBar
     private var timerSubscription: AnyCancellable?
 
-    init(model: Toast, onDeinit: @escaping () -> Void) {
+    init(model: ToastBar, onDeinit: @escaping () -> Void) {
         let toastBarView = ToastBarView(toastModel: .init(type: .info, text: "Test"))
         vc = hHostingController(rootView: toastBarView, contentName: "")
         self.model = model
