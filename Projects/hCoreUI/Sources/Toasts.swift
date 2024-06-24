@@ -149,29 +149,30 @@ public class Toasts {
 }
 
 private class ToastUIView: UIView {
-    private let vc: hHostingController<ToastBarView>
     private let onDeinit: () -> Void
     private let model: ToastBar
-    private var timerSubscription: AnyCancellable?
-
+    private var timerSubscription: Cancellable?
+    private var offsetForPanGesture: CGFloat = 0
     init(model: ToastBar, onDeinit: @escaping () -> Void) {
         let toastBarView = ToastBarView(toastModel: model)
-        vc = hHostingController(rootView: toastBarView, contentName: "")
+        let vc = hHostingController(rootView: toastBarView, contentName: "")
         self.model = model
         self.onDeinit = onDeinit
         super.init(frame: .zero)
         self.addSubview(vc.view)
         setAutoDismiss()
         self.transform = .init(translationX: 0, y: -200)
+        self.backgroundColor = .clear
         UIView.animate(withDuration: 1) { [weak self] in
             self?.transform = .identity
         }
+        vc.view.backgroundColor = .clear
         vc.view.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
 
         let drag = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
-        vc.view?.addGestureRecognizer(drag)
+        self.addGestureRecognizer(drag)
     }
 
     required init?(coder: NSCoder) {
@@ -179,21 +180,98 @@ private class ToastUIView: UIView {
     }
 
     @objc func handlePan(_ sender: UIPanGestureRecognizer) {
-        setAutoDismiss()
+        disableAutoDismiss()
+        var ended = false
+        switch sender.state {
+        case .began:
+            offsetForPanGesture = 0
+        case .possible:
+            break
+        case .changed:
+            offsetForPanGesture = sender.translation(in: self).y
+        case .ended:
+            let velocity = sender.velocity(in: self).y
+            // dismiss if swiped with negative velocity or ended in position thats should dismiss toast
+            if velocity < 0 || (self.frame.height / 2 < -(offsetForPanGesture) && offsetForPanGesture < 0) {
+                dismiss()
+                return
+            } else {
+                ended = true
+                offsetForPanGesture = 0
+            }
+            setAutoDismiss()
+        case .cancelled:
+            offsetForPanGesture = 0
+            setAutoDismiss()
+        case .failed:
+            offsetForPanGesture = 0
+            setAutoDismiss()
+        case .recognized:
+            offsetForPanGesture = 0
+        @unknown default:
+            break
+        }
+
+        //do slower animation if ended
+        let duration: TimeInterval = {
+            if ended {
+                return 0.5
+            }
+            return 0.1
+        }()
+        UIView.animate(withDuration: duration, delay: 0, usingSpringWithDamping: 5, initialSpringVelocity: 1) {
+            [weak self] in
+            if self?.offsetForPanGesture ?? 0 > 0 {
+                let maxOffsetToAnimate: CGFloat = 200
+                let offset = min(maxOffsetToAnimate, self?.offsetForPanGesture ?? 0)
+                let scale = (offset / maxOffsetToAnimate) * 0.1
+                self?.transform = .init(translationX: 0, y: 0).scaledBy(x: 1 + scale / 4, y: 1 + scale)
+            } else {
+                self?.transform = .init(translationX: 0, y: self?.offsetForPanGesture ?? 0)
+            }
+
+        }
+    }
+
+    private func disableAutoDismiss() {
+        timerSubscription = nil
     }
 
     private func setAutoDismiss() {
-        timerSubscription = Timer.publish(every: 6, on: .main, in: .common).autoconnect()
-            .sink { [weak self] _ in
-                UIView.animate(withDuration: 1) {
-                    self?.transform = .init(translationX: 0, y: -200)
-                } completion: { _ in
-                    self?.removeFromSuperview()
-                }
-            }
+        let runLoop = RunLoop.main
+        timerSubscription = runLoop.schedule(
+            after: runLoop.now.advanced(by: .seconds(model.duration)),
+            interval: .seconds(6),
+            tolerance: .milliseconds(100),
+            options: nil
+        ) { [weak self] in
+            self?.dismiss()
+        }
+    }
+
+    private func dismiss() {
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            self?.transform = .init(translationX: 0, y: -200)
+        } completion: { [weak self] _ in
+            self?.removeFromSuperview()
+        }
     }
 
     deinit {
         onDeinit()
+    }
+}
+
+#Preview{
+    VStack {
+        Button(
+            action: {
+                let model = ToastBar(type: .attention, text: "TEST")
+                Toasts.shared.displayToastBar(toast: model)
+            },
+            label: {
+                Text("Button")
+            }
+        )
     }
 }
