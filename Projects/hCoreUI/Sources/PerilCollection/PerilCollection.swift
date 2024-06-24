@@ -16,16 +16,17 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
     var peril: Perils
     var selectedPerils: [Perils]
     @State var nbOfPerils = 1
+    @SwiftUI.Environment(\.hFieldSize) var fieldSize
 
     func makeBody(configuration: Configuration) -> some View {
         VStack(alignment: .center, spacing: 11) {
             HStack(spacing: 8) {
                 if let color = peril.color {
                     Circle().fill(Color(hexString: color))
-                        .frame(width: 16, height: 16)
+                        .frame(width: fieldSize == .small ? 20 : 24, height: fieldSize == .small ? 20 : 24)
                         .padding(.horizontal, .padding4)
                 }
-                hText(peril.title, style: .heading2)
+                hText(peril.title, style: fieldSize == .small ? .body1 : .heading2)
                     .lineLimit(1)
                 Spacer()
                 ZStack {
@@ -33,20 +34,18 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
                         uiImage: hCoreUIAssets.minus.image
                     )
                     .resizable()
-                    .frame(width: 16, height: 16)
+                    .frame(width: 24, height: 24)
                     .transition(.opacity.animation(.easeOut))
                     .rotationEffect(selectedPerils.contains(peril) ? Angle(degrees: 360) : Angle(degrees: 270))
                     Image(
                         uiImage: hCoreUIAssets.minus.image
                     )
                     .resizable()
-                    .frame(width: 16, height: 16)
+                    .frame(width: 24, height: 24)
                     .transition(.opacity.animation(.easeOut))
                     .rotationEffect(selectedPerils.contains(peril) ? Angle(degrees: 360) : Angle(degrees: 180))
                 }
-                .padding(.trailing, .padding4)
             }
-            .padding(.vertical, .padding12)
 
             if selectedPerils.contains(peril) {
                 VStack(alignment: .leading, spacing: 12) {
@@ -65,7 +64,9 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
                 .padding(.bottom, .padding24)
             }
         }
-        .padding(.horizontal, .padding12)
+        .padding(.horizontal, .padding16)
+        .padding(.top, fieldSize == .small ? 15 : .padding16)
+        .padding(.bottom, fieldSize == .small ? 17 : 18)
         .contentShape(Rectangle())
     }
 }
@@ -80,6 +81,7 @@ public struct PerilCollection: View {
     public var perils: [Perils]
     public var didTapPeril: (_ peril: Perils) -> Void
     @State var selectedPerils: [Perils] = []
+    @SwiftUI.Environment(\.hFieldSize) var fieldSize
 
     public init(
         perils: [Perils],
@@ -102,7 +104,12 @@ public struct PerilCollection: View {
                 } label: {
                     EmptyView()
                 }
-                .buttonStyle(PerilButtonStyle(peril: peril, selectedPerils: selectedPerils))
+                .buttonStyle(
+                    PerilButtonStyle(
+                        peril: peril,
+                        selectedPerils: selectedPerils
+                    )
+                )
             }
         }
     }
@@ -115,17 +122,29 @@ struct PerilCollection_Previews: PreviewProvider {
                 .init(
                     id: "1",
                     title: "title",
-                    description: "des",
+                    description: "lkflihf uhreuidhf iwureahriur ekfshiuf erhfw iueherfuihgfeuihfgrui fruhfiuehf",
                     info: nil,
-                    color: nil,
+                    color: "121212",
                     covered: [],
                     exceptions: []
                 )
             ]
-        PerilCollection(
-            perils: perils
-        ) { peril in
+        VStack {
+            PerilCollection(
+                perils: perils,
+                didTapPeril: { peril in
 
+                }
+            )
+            .hFieldSize(.small)
+
+            PerilCollection(
+                perils: perils,
+                didTapPeril: { _ in
+
+                }
+            )
+            .hFieldSize(.large)
         }
     }
 }
