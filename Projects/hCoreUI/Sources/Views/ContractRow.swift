@@ -118,10 +118,10 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     }
 
     @ViewBuilder var logo: some View {
-        Image(uiImage: hCoreUIAssets.helipadOutlined.image.withRenderingMode(.alwaysTemplate))
+        Image(uiImage: hCoreUIAssets.helipadBig.image.withRenderingMode(.alwaysTemplate))
             .resizable()
             .frame(width: 24, height: 24)
-            .foregroundColor(hTextColor.Opaque.primary)
+            .foregroundColor(hFillColor.Opaque.white)
             .colorScheme(.dark)
     }
 
