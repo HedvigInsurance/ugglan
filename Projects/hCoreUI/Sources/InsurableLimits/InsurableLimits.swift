@@ -31,7 +31,7 @@ public struct InsurableLimitsSectionView: View {
                             .resizable()
                             .foregroundColor(hTextColor.Opaque.secondary)
                             .frame(width: 16, height: 16)
-                            .padding(.vertical, 4)
+                            .padding(.vertical, .padding4)
                             .onTapGesture {
                                 didTap(limit)
                             }

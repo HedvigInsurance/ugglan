@@ -19,7 +19,7 @@ public struct ListScreen: View {
     public var body: some View {
         hForm {
             if vm.list.isEmpty {
-                VStack(spacing: 16) {
+                VStack(spacing: .padding16) {
                     Image(uiImage: hCoreUIAssets.infoFilled.image)
                         .resizable()
                         .frame(width: 24, height: 24)
@@ -27,7 +27,7 @@ public struct ListScreen: View {
                     hText(L10n.TravelCertificate.emptyListMessage)
                         .multilineTextAlignment(.center)
                 }
-                .padding(.horizontal, 24)
+                .padding(.horizontal, .padding24)
             } else {
                 hSection(vm.list) { travelCertificate in
                     hRow {
@@ -61,7 +61,7 @@ public struct ListScreen: View {
                         .hButtonIsLoading(vm.isCreateNewLoading)
                     }
                 }
-                .padding(.vertical, 16)
+                .padding(.vertical, .padding16)
             }
         }
         .loading($vm.isLoading, $vm.error)

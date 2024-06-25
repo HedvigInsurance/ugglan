@@ -87,7 +87,7 @@ public struct PaymentHistoryView: View {
                                 }
                             }
                         }
-                        .padding(.vertical, 16)
+                        .padding(.vertical, .padding16)
                     }
                     .sectionContainerStyle(.transparent)
                 }

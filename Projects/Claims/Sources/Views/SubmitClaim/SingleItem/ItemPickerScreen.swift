@@ -41,9 +41,9 @@ public struct ItemPickerScreen<T>: View {
                 hButton.LargeButton(type: .ghost) {
                     onCancel()
                 } content: {
-                    hText(L10n.generalCancelButton, style: .body)
+                    hText(L10n.generalCancelButton, style: .body1)
                 }
-                .padding(.top, 16)
+                .padding(.top, .padding16)
             }
             .sectionContainerStyle(.transparent)
         }

@@ -26,7 +26,7 @@ public struct hCheckmarkField: View {
             }
         }
         .padding(.vertical, 20)
-        .modifier(hFontModifier(style: .body))
+        .modifier(hFontModifier(style: .body1))
         .foregroundColor(hTextColor.Opaque.primary)
         .addFieldBackground(animate: $animate, error: $error)
         .addFieldError(animate: $animate, error: $error)

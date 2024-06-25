@@ -25,7 +25,7 @@ struct Contracts: View {
     public var body: some View {
         hForm {
             ContractTable(showTerminated: showTerminated)
-                .padding(.top, 8)
+                .padding(.top, .padding8)
         }
         .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hBackgroundColor.primary))
         .onReceive(pollTimer) { _ in
@@ -43,7 +43,7 @@ struct Contracts: View {
                     InfoCard(text: L10n.InsurancesTab.cancelledInsurancesNote, type: .info)
                 }
                 .sectionContainerStyle(.transparent)
-                .padding(.vertical, 16)
+                .padding(.vertical, .padding16)
             }
         }
     }

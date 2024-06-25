@@ -22,14 +22,14 @@ struct HelpCenterQuestionView: View {
                     VStack(alignment: .leading, spacing: 32) {
                         VStack(alignment: .leading, spacing: 8) {
                             HelpCenterPill(title: L10n.hcQuestionTitle, color: .blue)
-                            hText(question.question, style: .body)
+                            hText(question.question, style: .body1)
                         }
                         VStack(alignment: .leading, spacing: 8) {
                             HelpCenterPill(title: L10n.hcAnswerTitle, color: .green)
                             MarkdownView(
                                 config: .init(
                                     text: question.answer,
-                                    fontStyle: .standard,
+                                    fontStyle: .body1,
                                     color: hTextColor.Opaque.secondary,
                                     linkColor: hTextColor.Opaque.primary,
                                     linkUnderlineStyle: .single
@@ -42,7 +42,7 @@ struct HelpCenterQuestionView: View {
                 }
                 .sectionContainerStyle(.transparent)
                 SupportView(topic: question.topicType)
-                    .padding(.top, 8)
+                    .padding(.top, .padding8)
             }
         }
         .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary))

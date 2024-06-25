@@ -39,7 +39,7 @@ where MainContent: View, BottomContent: View {
                 }
             }
             .sectionContainerStyle(.transparent)
-            .padding(.bottom, 16)
+            .padding(.bottom, .padding16)
             VStack(alignment: .leading, spacing: 0) {
                 if let title = title {
                     hText(title)
@@ -48,15 +48,15 @@ where MainContent: View, BottomContent: View {
                     .foregroundColor(hTextColor.Opaque.secondary)
 
             }
-            .padding([.leading, .trailing], 16)
+            .padding(.horizontal, .padding16)
 
             Spacer().frame(height: 20)
             SwiftUI.Divider()
-            Spacer().frame(height: 16)
+            Spacer().frame(height: .padding16)
             bottomComponent()
-                .padding([.leading, .trailing], 16)
+                .padding(.horizontal, .padding16)
         }
-        .padding(.vertical, 16)
+        .padding(.vertical, .padding16)
         .background(
             Squircle.default()
                 .fill(hSurfaceColor.Translucent.secondary)

@@ -93,7 +93,7 @@ public struct hTextField: View {
                 if options.useLineBreak, #available(iOS 16.0, *) {
                     SwiftUI.TextField(placeholder ?? "", text: $innerValue, axis: .vertical)
                         .lineLimit(5...10)
-                        .modifier(hFontModifier(style: .body))
+                        .modifier(hFontModifier(style: .body1))
                         .modifier(masking)
                         .tint(hTextColor.Opaque.primary)
                         .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in
@@ -106,7 +106,7 @@ public struct hTextField: View {
                         .frame(minHeight: options.minimumHeight)
                 } else {
                     SwiftUI.TextField(placeholder ?? "", text: $innerValue)
-                        .modifier(hFontModifier(style: .body))
+                        .modifier(hFontModifier(style: .body1))
                         .modifier(masking)
                         .tint(hTextColor.Opaque.primary)
                         .onReceive(Just(innerValue != previousInnerValue)) { shouldUpdate in

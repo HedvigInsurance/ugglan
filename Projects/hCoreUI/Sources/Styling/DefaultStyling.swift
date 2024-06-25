@@ -132,11 +132,11 @@ extension DefaultStyling {
     public static func applyCommonNavigationBarStyling(_ appearance: UINavigationBarAppearance) {
         appearance.titleTextAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-            NSAttributedString.Key.font: Fonts.fontFor(style: .standard),
+            NSAttributedString.Key.font: Fonts.fontFor(style: .body1),
         ]
         appearance.largeTitleTextAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-            NSAttributedString.Key.font: Fonts.fontFor(style: .standard),
+            NSAttributedString.Key.font: Fonts.fontFor(style: .body1),
         ]
 
         let backImage = hCoreUIAssets.chevronLeft.image.withAlignmentRectInsets(
@@ -629,7 +629,7 @@ extension DynamicSectionStyle {
         separatorType: SeparatorType,
         borderColor: UIColor = .clear,
         backgroundColor: UIColor = .clear,
-        roundedCornerRadius: CGFloat = .defaultCornerRadius,
+        roundedCornerRadius: CGFloat = .cornerRadiusL,
         shouldRoundCorners: @escaping (_ traitCollection: UITraitCollection) -> Bool = { trait in
             trait.userInterfaceIdiom == .pad && trait.horizontalSizeClass == .regular
         }
@@ -790,14 +790,36 @@ extension DynamicTableViewFormStyle {
 final class ListTableView: UITableView {}
 
 extension CGFloat {
-    public static var smallCornerRadius: CGFloat = 4
-    public static var defaultCornerRadius: CGFloat = 8
-    public static var defaultCornerRadiusNew: CGFloat = 12
-    public static var smallIconWidth: CGFloat = 16
+    public static var cornerRadiusXS: CGFloat = 4
+    public static var cornerRadiusS: CGFloat = 8
+    public static var cornerRadiusM: CGFloat = 10
+    public static var cornerRadiusL: CGFloat = 12
+    public static var cornerRadiusXL: CGFloat = 16
+    public static var cornerRadiusXXL: CGFloat = 24
+
 }
 
 extension Squircle {
     public static func `default`(lineWidth: CGFloat = 0.0) -> Squircle {
         Squircle(radius: 27.0, smooth: 100.0, lineWidth: lineWidth)
     }
+}
+
+extension CGFloat {
+    public static var padding4: CGFloat = 4
+    public static var padding6: CGFloat = 6
+    public static var padding8: CGFloat = 8
+    public static var padding10: CGFloat = 10
+    public static var padding12: CGFloat = 12
+    public static var padding16: CGFloat = 16
+    public static var padding24: CGFloat = 24
+    public static var padding32: CGFloat = 32
+    public static var padding40: CGFloat = 40
+    public static var padding48: CGFloat = 48
+    public static var padding56: CGFloat = 56
+    public static var padding64: CGFloat = 64
+    public static var padding72: CGFloat = 72
+    public static var padding80: CGFloat = 80
+    public static var padding88: CGFloat = 88
+    public static var padding96: CGFloat = 96
 }

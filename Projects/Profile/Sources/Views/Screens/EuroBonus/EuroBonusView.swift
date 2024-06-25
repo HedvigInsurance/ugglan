@@ -30,7 +30,7 @@ public struct EuroBonusView: View {
                         }
                     }
                 }
-                .padding(.top, 8)
+                .padding(.top, .padding8)
             }
             .sectionContainerStyle(.transparent)
             .hFormAttachToBottom {
@@ -45,7 +45,7 @@ public struct EuroBonusView: View {
                         } content: {
                             hText(L10n.SasIntegration.connectEurobonus)
                         }
-                        .padding(.vertical, 16)
+                        .padding(.vertical, .padding16)
                     }
                 } else {
                     hSection {
@@ -54,7 +54,7 @@ public struct EuroBonusView: View {
                         } content: {
                             hText(L10n.SasIntegration.changeEurobonusNumber)
                         }
-                        .padding(.vertical, 16)
+                        .padding(.vertical, .padding16)
                     }
                 }
             }

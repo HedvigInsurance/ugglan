@@ -39,22 +39,22 @@ public struct DeleteRequestLoadingView: View {
                     .resizable()
                     .frame(width: 24, height: 24)
                     .foregroundColor(hSignalColor.Green.element)
-                    .padding(.bottom, 16)
-                hText(L10n.DeleteAccount.processedTitle, style: .body)
+                    .padding(.bottom, .padding16)
+                hText(L10n.DeleteAccount.processedTitle, style: .body1)
                     .foregroundColor(hTextColor.Opaque.primary)
-                hText(L10n.DeleteAccount.processedDescription, style: .body)
+                hText(L10n.DeleteAccount.processedDescription, style: .body1)
                     .foregroundColor(hTextColor.Translucent.secondary)
                     .multilineTextAlignment(.center)
             }
             .padding(.top, UIScreen.main.bounds.size.height / 3.5)
-            .padding(.horizontal, 32)
+            .padding(.horizontal, .padding32)
         }
         .hFormAttachToBottom {
             hSection {
                 hButton.LargeButton(type: .ghost) {
                     dismissAction(.makeHomeTabActive)
                 } content: {
-                    hText(L10n.generalCloseButton, style: .body)
+                    hText(L10n.generalCloseButton, style: .body1)
                 }
             }
             .sectionContainerStyle(.transparent)

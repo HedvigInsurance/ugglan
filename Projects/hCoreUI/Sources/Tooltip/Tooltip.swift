@@ -93,7 +93,7 @@ extension Tooltip: Presentable {
 
         let backgroundView = UIView()
         backgroundView.backgroundColor = .brand(.primaryBackground(true))
-        backgroundView.layer.cornerRadius = .defaultCornerRadius
+        backgroundView.layer.cornerRadius = .cornerRadiusL
         backgroundView.layer.masksToBounds = false
 
         bag += backgroundView.applyShadow { _ -> UIView.ShadowProperties in

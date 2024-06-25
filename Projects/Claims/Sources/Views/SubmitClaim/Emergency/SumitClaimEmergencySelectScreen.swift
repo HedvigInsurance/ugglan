@@ -27,7 +27,7 @@ struct SumitClaimEmergencySelectScreen: View {
                         }
                         .hButtonIsLoading(isLoading)
                     }
-                    .padding(.bottom, 32)
+                    .padding(.bottom, .padding32)
                 }
                 .sectionContainerStyle(.transparent)
             }

@@ -88,7 +88,7 @@ extension HomeView {
                 claimsContent: claimsContent
             )
         case .future:
-            hText(L10n.hedvigNameText, style: .title)
+            hText(L10n.hedvigNameText, style: .heading3)
         case .terminated:
             TerminatedSectionView(claimsContent: claimsContent)
         case .loading:
@@ -130,7 +130,7 @@ extension HomeView {
                 }
             }
         }
-        .padding(.bottom, 16)
+        .padding(.bottom, .padding16)
     }
 
     @ViewBuilder

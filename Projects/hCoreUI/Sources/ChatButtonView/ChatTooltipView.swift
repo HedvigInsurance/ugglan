@@ -43,11 +43,11 @@ struct TooltipView: View {
                         Triangle()
                             .fill(hSignalColor.Blue.fill)
                             .frame(width: 18, height: 8)
-                            .padding(.trailing, 24)
+                            .padding(.trailing, .padding24)
                     }
                     hText(L10n.HomeTab.chatHintText)
                         .padding(.horizontal)
-                        .padding(.vertical, 10)
+                        .padding(.vertical, .padding10)
                         .foregroundColor(hSignalColor.Blue.text)
                         .background(hSignalColor.Blue.fill)
                         .cornerRadius(8)

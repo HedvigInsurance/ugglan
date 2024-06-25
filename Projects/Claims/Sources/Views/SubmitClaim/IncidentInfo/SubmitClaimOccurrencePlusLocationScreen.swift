@@ -47,7 +47,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
                         claimsNavigationVm.isLocationPickerPresented = true
                     }
                 )
-                .padding(.bottom, 4)
+                .padding(.bottom, .padding4)
             }
         }
 
@@ -70,7 +70,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
                     store.send(.setNewDate(dateOfOccurrence: date.localDateString))
                 }
                 InfoCard(text: L10n.claimsDateNotSureNoticeLabel, type: .info)
-                    .padding(.vertical, 16)
+                    .padding(.vertical, .padding16)
             }
         }
     }
@@ -80,7 +80,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
         hButton.LargeButton(type: .primary) {
             store.send(.dateOfOccurrenceAndLocationRequest)
         } content: {
-            hText(L10n.generalContinueButton, style: .body)
+            hText(L10n.generalContinueButton, style: .body1)
         }
         .trackLoading(SubmitClaimStore.self, action: .postDateOfOccurrenceAndLocation)
         .presentableStoreLensAnimation(.default)

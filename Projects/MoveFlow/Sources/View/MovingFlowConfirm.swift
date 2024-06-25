@@ -50,7 +50,7 @@ struct MovingFlowConfirm: View {
                                 }
                             }
 
-                            .padding(.top, 16)
+                            .padding(.top, .padding16)
                             .id(whatIsCoveredId)
                             faqsComponent(for: movingFlowModel.faqs)
                             chatComponent
@@ -109,7 +109,7 @@ struct MovingFlowConfirm: View {
                 let index = selectedInsurances.firstIndex(of: quote.id)
                 let isExpanded = index != nil
                 HStack(spacing: 8) {
-                    hText(L10n.changeAddressDetails, style: .body)
+                    hText(L10n.changeAddressDetails, style: .body1)
                     Image(uiImage: hCoreUIAssets.chevronDown.image)
                         .resizable()
                         .frame(width: 16, height: 16)
@@ -122,9 +122,9 @@ struct MovingFlowConfirm: View {
                     VStack(alignment: .leading) {
                         ForEach(quote.displayItems, id: \.displayTitle) { displayItem in
                             HStack {
-                                hText(displayItem.displayTitle, style: .body)
+                                hText(displayItem.displayTitle, style: .body1)
                                 Spacer()
-                                hText(displayItem.displayValue, style: .body)
+                                hText(displayItem.displayValue, style: .body1)
                                     .multilineTextAlignment(.trailing)
                             }
                         }
@@ -132,7 +132,7 @@ struct MovingFlowConfirm: View {
                     .foregroundColor(hTextColor.Opaque.secondary)
                 }
             }
-            .padding(16)
+            .padding(.padding16)
             .contentShape(Rectangle())
             .onTapGesture {
                 withAnimation {
@@ -165,7 +165,7 @@ struct MovingFlowConfirm: View {
                     store.send(.confirmMoveIntent)
                     router.push(MovingFlowRouterWithHiddenBackButtonActions.processing)
                 } content: {
-                    hText(L10n.changeAddressAcceptOffer, style: .standard)
+                    hText(L10n.changeAddressAcceptOffer, style: .body1)
                 }
 
                 hButton.LargeButton(type: .ghost) {
@@ -173,7 +173,7 @@ struct MovingFlowConfirm: View {
                         proxy.scrollTo(whatIsCoveredId, anchor: .top)
                     }
                 } content: {
-                    hText(L10n.changeAddressViewCoverage, style: .standard)
+                    hText(L10n.changeAddressViewCoverage, style: .body1)
                 }
             }
         }
@@ -188,9 +188,12 @@ struct MovingFlowConfirm: View {
         ) { movingFlowModel in
             hSection {
                 HStack {
-                    hText(L10n.changeAddressTotal, style: .body)
+                    hText(L10n.changeAddressTotal, style: .body1)
                     Spacer()
-                    hText("\(movingFlowModel?.total.formattedAmountWithoutDecimal ?? "")\(L10n.perMonth)", style: .body)
+                    hText(
+                        "\(movingFlowModel?.total.formattedAmountWithoutDecimal ?? "")\(L10n.perMonth)",
+                        style: .body1
+                    )
                 }
             }
             .sectionContainerStyle(.transparent)
@@ -202,9 +205,9 @@ struct MovingFlowConfirm: View {
         VStack(spacing: 0) {
             hSection {
                 VStack {
-                    hText(quote.exposureName ?? quote.displayName, style: .standard)
-                        .padding([.top, .bottom], 4)
-                        .padding([.leading, .trailing], 8)
+                    hText(quote.exposureName ?? quote.displayName, style: .body1)
+                        .padding(.vertical, .padding4)
+                        .padding(.horizontal, .padding8)
 
                 }
                 .background(
@@ -217,9 +220,9 @@ struct MovingFlowConfirm: View {
             Spacing(height: 16)
             hSection(quote.insurableLimits, id: \.label) { field in
                 hRow {
-                    hText(field.label, style: .body)
+                    hText(field.label, style: .body1)
                     Spacer(minLength: 8)
-                    hText(field.limit, style: .body)
+                    hText(field.limit, style: .body1)
                 }
                 .hWithoutHorizontalPadding
             }
@@ -283,14 +286,14 @@ struct MovingFlowConfirm: View {
                                 .resizable()
                                 .frame(width: 16, height: 16)
                             }
-                            .verticalPadding(12)
+                            .verticalPadding(.padding12)
                             if expanded, let description = faq.description {
                                 hRow {
                                     hText(description, style: .standardSmall)
                                         .foregroundColor(hTextColor.Opaque.secondary)
 
                                 }
-                                .verticalPadding(12)
+                                .verticalPadding(.padding12)
                             }
                         }
                     }
@@ -313,12 +316,12 @@ struct MovingFlowConfirm: View {
     var chatComponent: some View {
         VStack(spacing: 0) {
             Spacing(height: 64)
-            hText(L10n.changeAddressNoFind, style: .body)
+            hText(L10n.changeAddressNoFind, style: .body1)
             Spacing(height: 16)
             hButton.SmallButton(type: .primary) {
                 NotificationCenter.default.post(name: .openChat, object: nil)
             } content: {
-                hText(L10n.openChat, style: .body)
+                hText(L10n.openChat, style: .body1)
             }
             .fixedSize()
             Spacing(height: 103)

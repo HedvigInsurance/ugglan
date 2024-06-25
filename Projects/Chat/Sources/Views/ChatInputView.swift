@@ -22,7 +22,7 @@ struct ChatInputView: View {
                             .resizable().frame(width: 16, height: 16)
                             .rotationEffect(vm.showBottomMenu ? .degrees(45) : .zero)
                             .foregroundColor(hTextColor.Opaque.primary)
-                            .padding(12)
+                            .padding(.padding12)
                             .background(hBackgroundColor.primary)
                             .clipShape(RoundedRectangle(cornerRadius: 12))
                             .overlay(
@@ -45,10 +45,10 @@ struct ChatInputView: View {
                             hCoreUIAssets.sendChat.view
                                 .resizable()
                                 .frame(width: 24, height: 24)
-                                .padding(8)
+                                .padding(.padding8)
                         }
                     }
-                    .padding(.leading, 4)
+                    .padding(.leading, .padding4)
                     .background(hBackgroundColor.primary)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                     .overlay(
@@ -78,7 +78,7 @@ struct ChatInputView: View {
                     }
                     .fixedSize(horizontal: false, vertical: true)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
-                    .padding(.leading, 16)
+                    .padding(.leading, .padding16)
                 }
             }
         }
@@ -204,7 +204,7 @@ private class CustomTextView: UITextView, UITextViewDelegate {
         super.init(frame: .zero, textContainer: nil)
         self.textContainerInset = .init(horizontalInset: 4, verticalInset: 4)
         self.delegate = self
-        self.font = Fonts.fontFor(style: .standard)
+        self.font = Fonts.fontFor(style: .body1)
         if inputText.wrappedValue.isEmpty {
             self.text = placeholder
             self.textColor = UIColor.lightGray

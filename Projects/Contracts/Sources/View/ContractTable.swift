@@ -45,7 +45,7 @@ struct ContractTable: View {
                     VStack(spacing: 0) {
                         if onlyTerminatedInsurances {
                             InfoCard(text: L10n.InsurancesTab.cancelledInsurancesNote, type: .info)
-                                .padding(.bottom, 16)
+                                .padding(.bottom, .padding16)
 
                         }
                         ForEach(contracts, id: \.id) { contract in
@@ -62,7 +62,7 @@ struct ContractTable: View {
                                 }
                             )
                             .fixedSize(horizontal: false, vertical: true)
-                            .padding(.bottom, 8)
+                            .padding(.bottom, .padding8)
                             .transition(.slide)
                         }
                     }
@@ -74,7 +74,7 @@ struct ContractTable: View {
         if !showTerminated {
             VStack(spacing: 16) {
                 CrossSellingStack(withHeader: true)
-                    .padding(.top, 24)
+                    .padding(.top, .padding24)
                 PresentableStoreLens(
                     ContractStore.self,
                     getter: { state in
@@ -100,7 +100,7 @@ struct ContractTable: View {
                 }
                 .presentableStoreLensAnimation(.spring())
                 .sectionContainerStyle(.transparent)
-                .padding(.bottom, 24)
+                .padding(.bottom, .padding24)
             }
         }
     }

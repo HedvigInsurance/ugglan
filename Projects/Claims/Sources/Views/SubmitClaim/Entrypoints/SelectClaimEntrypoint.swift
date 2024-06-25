@@ -242,8 +242,8 @@ struct ShowTagList: View {
                             notValid = false
                             ImpactGenerator.soft()
                         }
-                        .padding(.horizontal, 12)  // 16 - tag list horizontal spacing
-                        .padding(.vertical, 8)
+                        .padding(.horizontal, .padding12)  // 16 - tag list horizontal spacing
+                        .padding(.vertical, .padding8)
                         .background(getColorAndShadow(claimId: tag))
                         .scaleEffect(animate && selection == tag ? scaleSize : 1)
                         .transition(
@@ -266,7 +266,7 @@ struct ShowTagList: View {
                         selection = ""
                     }
                 } content: {
-                    hText(L10n.generalContinueButton, style: .body)
+                    hText(L10n.generalContinueButton, style: .body1)
                 }
                 .trackLoading(SubmitClaimStore.self, action: .startClaim)
                 .presentableStoreLensAnimation(.default)
@@ -288,7 +288,7 @@ struct ShowTagList: View {
             HStack {
                 Image(uiImage: hCoreUIAssets.infoFilledSmall.image)
                     .foregroundColor(hAmberColor.amber600)
-                hText(L10n.claimsSelectCategory, style: .body)
+                hText(L10n.claimsSelectCategory, style: .body1)
             }
         }
     }
@@ -309,11 +309,11 @@ struct ShowTagList: View {
     @ViewBuilder
     func getPillText(claimId: String) -> some View {
         if selection == claimId {
-            hText(claimId, style: .body)
+            hText(claimId, style: .body1)
                 .foregroundColor(hTextColor.Opaque.primary)
                 .colorScheme(.light)
         } else {
-            hText(claimId, style: .body)
+            hText(claimId, style: .body1)
         }
     }
 }

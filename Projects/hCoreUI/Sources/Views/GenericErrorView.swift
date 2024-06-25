@@ -34,7 +34,7 @@ public struct GenericErrorView: View {
             hForm {
                 if !attachContentToTheBottom {
                     content
-                        .padding(.bottom, 32)
+                        .padding(.bottom, .padding32)
                         .padding(.top, extraTopPadding ? 32 : 0)
                 }
             }
@@ -44,7 +44,7 @@ public struct GenericErrorView: View {
                     VStack(spacing: 8) {
                         if attachContentToTheBottom {
                             content
-                                .padding(.bottom, 40)
+                                .padding(.bottom, .padding40)
                                 .padding(.top, extraTopPadding ? 32 : 0)
                         }
                         if let actionButton = buttons.actionButtonAttachedToBottom {
@@ -58,13 +58,13 @@ public struct GenericErrorView: View {
                             hButton.LargeButton(type: .ghost) {
                                 dismissButton.buttonAction()
                             } content: {
-                                hText(dismissButton.buttonTitle ?? L10n.openChat, style: .body)
+                                hText(dismissButton.buttonTitle ?? L10n.openChat, style: .body1)
                             }
                         }
                     }
                 }
                 .sectionContainerStyle(.transparent)
-                .padding(.vertical, 16)
+                .padding(.vertical, .padding16)
             }
         } else {
             content
@@ -88,13 +88,13 @@ public struct GenericErrorView: View {
             }
             VStack {
                 if !withoutTitle {
-                    hText(title ?? L10n.somethingWentWrong, style: .body)
+                    hText(title ?? L10n.somethingWentWrong, style: .body1)
                         .foregroundColor(hTextColor.Translucent.primary)
                         .multilineTextAlignment(.center)
                 }
                 if let description {
-                    hText(description, style: .body)
-                        .padding(.horizontal, 32)
+                    hText(description, style: .body1)
+                        .padding(.horizontal, .padding32)
                         .multilineTextAlignment(.center)
                         .foregroundColor(hTextColor.Translucent.secondary)
                 }
@@ -103,12 +103,12 @@ public struct GenericErrorView: View {
                 hButton.MediumButton(type: .primary) {
                     actionButton.buttonAction()
                 } content: {
-                    hText(actionButton.buttonTitle ?? L10n.generalRetry, style: .body)
+                    hText(actionButton.buttonTitle ?? L10n.generalRetry, style: .body1)
                 }
                 .fixedSize()
             }
         }
-        .padding(.horizontal, 32)
+        .padding(.horizontal, .padding32)
         .padding(.bottom, extraBottomPadding ? 32 : 0)
     }
 }

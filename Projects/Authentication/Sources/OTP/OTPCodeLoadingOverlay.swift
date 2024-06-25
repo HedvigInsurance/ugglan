@@ -12,7 +12,7 @@ struct OTPCodeLoadingOverlay: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(hBackgroundColor.primary.opacity(0.7))
-            .cornerRadius(.defaultCornerRadius)
+            .cornerRadius(.cornerRadiusL)
             .edgesIgnoringSafeArea(.top)
         }
     }

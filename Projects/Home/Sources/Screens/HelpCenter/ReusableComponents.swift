@@ -31,8 +31,8 @@ struct HelpCenterPill: View {
                     .foregroundColor(hTextColor.Translucent.primary)
                     .colorScheme(.light)
             }
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
+            .padding(.horizontal, .padding8)
+            .padding(.vertical, .padding4)
             .background(pillBackgroundColor)
             .border(
                 hBorderColor.primary,
@@ -163,11 +163,11 @@ struct SupportView: View {
                 } content: {
                     hText(L10n.hcChatButton)
                 }
-                .padding(.top, 24)
+                .padding(.top, .padding24)
                 .fixedSize()
             }
-            .padding(.vertical, 32)
-            .padding(.bottom, 24)
+            .padding(.vertical, .padding32)
+            .padding(.bottom, .padding24)
         }
         .frame(maxWidth: .infinity)
         .background(hSurfaceColor.Opaque.primary)
