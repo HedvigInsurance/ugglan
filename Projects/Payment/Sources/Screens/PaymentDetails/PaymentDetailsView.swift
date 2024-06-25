@@ -20,7 +20,7 @@ struct PaymentDetailsView: View {
                 paymentInfo
                 paymentInfoDetails
             }
-            .padding(.vertical, 8)
+            .padding(.vertical, .padding8)
         }
     }
 

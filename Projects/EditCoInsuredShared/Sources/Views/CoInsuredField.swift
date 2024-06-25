@@ -73,8 +73,8 @@ public struct CoInsuredField<Content: View>: View {
                 style: .standardSmall
             )
         }
-        .padding(.vertical, 4)
-        .padding(.horizontal, 10)
+        .padding(.vertical, .padding4)
+        .padding(.horizontal, .padding10)
         .foregroundColor(includeStatusPill?.textColor)
         .background(includeStatusPill?.backgroundColor)
         .cornerRadius(8)

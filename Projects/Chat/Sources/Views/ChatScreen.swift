@@ -26,7 +26,7 @@ public struct ChatScreen: View {
             infoCard
                 .padding(.bottom, -8)
             ChatInputView(vm: vm.chatInputVm)
-                .padding(.bottom, 16)
+                .padding(.bottom, .padding16)
         }
         .dismissKeyboard()
         .findScrollView({ sv in
@@ -43,7 +43,7 @@ public struct ChatScreen: View {
             DotsActivityIndicator(.standard)
                 .useDarkColor
                 .fixedSize()
-                .padding(.vertical, 8)
+                .padding(.vertical, .padding8)
                 .transition(.opacity)
         }
     }
@@ -64,8 +64,8 @@ public struct ChatScreen: View {
                         }
                 }
             }
-            .padding([.horizontal, .bottom], 16)
-            .padding(.top, vm.banner != nil ? 8 : 0)
+            .padding([.horizontal, .bottom], .padding16)
+            .padding(.top, vm.banner != nil ? .padding8 : 0)
             .onChange(of: vm.scrollToMessage?.id) { id in
                 withAnimation {
                     proxy?.scrollTo(id, anchor: .bottom)

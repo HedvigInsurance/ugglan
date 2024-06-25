@@ -62,7 +62,7 @@ struct ChecboxToggleStyle_Previews: PreviewProvider {
         VStack {
             Toggle(isOn: $isOn.animation(.default)) {
                 VStack(alignment: .leading, spacing: 0) {
-                    hText("tasd", style: .standardLarge)
+                    hText("tasd", style: .heading2)
                     hText("sasdasdasdasd")
                 }
             }

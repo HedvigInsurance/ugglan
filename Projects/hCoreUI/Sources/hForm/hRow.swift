@@ -74,12 +74,12 @@ public struct hRow<Content: View, Accessory: View>: View {
                 HStack(alignment: .top) {
                     content
                     accessory
-                        .padding(.top, 4)
+                        .padding(.top, .padding4)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding([.horizontal], withoutHorizontalPadding ? 0 : horizontalPadding)
-            .padding([.vertical], verticalPadding)
+            .padding(.horizontal, withoutHorizontalPadding ? 0 : horizontalPadding)
+            .padding(.vertical, verticalPadding)
             if (position == .middle || position == .top) && !hWithoutDivider {
                 hRowDivider()
             }

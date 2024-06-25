@@ -75,10 +75,10 @@ public struct ContractDetail: View {
             contractOverview
         case .coverage:
             contractCoverage
-                .padding(.top, 8)
+                .padding(.top, .padding8)
         case .details:
             contractDocuments
-                .padding(.top, 8)
+                .padding(.top, .padding8)
         }
     }
 
@@ -130,11 +130,11 @@ public struct ContractDetail: View {
                         }
                     }
                     .pickerStyle(.segmented)
-                    .padding(.top, 16)
-                    .padding(.bottom, 8)
+                    .padding(.top, .padding16)
+                    .padding(.bottom, .padding8)
                 }
                 .sectionContainerStyle(.transparent)
-                .padding(.top, 8)
+                .padding(.top, .padding8)
                 VStack(spacing: 4) {
                     ForEach(ContractDetailsViews.allCases) { panel in
                         if context.trigger == panel {
@@ -145,8 +145,8 @@ public struct ContractDetail: View {
                         }
                     }
                 }
-                .padding(.top, 16)
-                .padding(.bottom, 8)
+                .padding(.top, .padding16)
+                .padding(.bottom, .padding8)
             }
             .presentableStoreLensAnimation(.default)
             .introspectViewController { [weak vm] vc in

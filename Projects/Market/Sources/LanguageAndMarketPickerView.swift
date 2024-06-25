@@ -31,7 +31,7 @@ public struct LanguageAndMarketPickerView: View {
                         }
                     }
                 }
-                .padding(.top, 8)
+                .padding(.top, .padding8)
 
             }
         }
@@ -39,7 +39,7 @@ public struct LanguageAndMarketPickerView: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: 8) {
-                    hText(L10n.profileAboutAppVersion + " " + Bundle.main.appVersion, style: .caption1)
+                    hText(L10n.profileAboutAppVersion + " " + Bundle.main.appVersion, style: .finePrint)
                         .foregroundColor(hTextColor.Opaque.tertiary)
 
                     hButton.LargeButton(type: .primary) {
@@ -58,7 +58,7 @@ public struct LanguageAndMarketPickerView: View {
 
                 }
             }
-            .padding(.top, 8)
+            .padding(.top, .padding8)
             .hWithoutDivider
         }
     }

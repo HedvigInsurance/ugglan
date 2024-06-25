@@ -23,9 +23,9 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
                 if let color = peril.color {
                     Circle().fill(Color(hexString: color))
                         .frame(width: 16, height: 16)
-                        .padding(.horizontal, 4)
+                        .padding(.horizontal, .padding4)
                 }
-                hText(peril.title, style: .standardLarge)
+                hText(peril.title, style: .heading2)
                     .lineLimit(1)
                 Spacer()
                 ZStack {
@@ -44,14 +44,14 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
                     .transition(.opacity.animation(.easeOut))
                     .rotationEffect(selectedPerils.contains(peril) ? Angle(degrees: 360) : Angle(degrees: 180))
                 }
-                .padding(.trailing, 4)
+                .padding(.trailing, .padding4)
             }
-            .padding(.vertical, 13)
+            .padding(.vertical, .padding12)
 
             if selectedPerils.contains(peril) {
                 VStack(alignment: .leading, spacing: 12) {
                     hText(peril.description, style: .footnote)
-                        .padding(.bottom, 12)
+                        .padding(.bottom, .padding12)
                     ForEach(Array(peril.covered.enumerated()), id: \.offset) { index, item in
                         HStack(alignment: .top, spacing: 8) {
                             hText(String(format: "%02d", index + 1), style: .footnote)
@@ -61,11 +61,11 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
                     }
                 }
                 .fixedSize(horizontal: false, vertical: true)
-                .padding(.horizontal, 32)
-                .padding(.bottom, 24)
+                .padding(.horizontal, .padding32)
+                .padding(.bottom, .padding24)
             }
         }
-        .padding(.horizontal, 12)
+        .padding(.horizontal, .padding12)
         .contentShape(Rectangle())
     }
 }

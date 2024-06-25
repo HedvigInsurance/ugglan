@@ -24,7 +24,7 @@ public struct MovingFlowHousingTypeView: View {
                                     hRadioField(
                                         id: type.rawValue,
                                         content: {
-                                            hText(type.title, style: .standardLarge)
+                                            hText(type.title, style: .heading2)
                                         },
                                         selected: $vm.selectedHousingType
                                     )
@@ -34,9 +34,9 @@ public struct MovingFlowHousingTypeView: View {
                             hButton.LargeButton(type: .primary) {
                                 continuePressed()
                             } content: {
-                                hText(L10n.generalContinueButton, style: .body)
+                                hText(L10n.generalContinueButton, style: .body1)
                             }
-                            .padding(.bottom, 16)
+                            .padding(.bottom, .padding16)
                         }
                     }
                     .sectionContainerStyle(.transparent)

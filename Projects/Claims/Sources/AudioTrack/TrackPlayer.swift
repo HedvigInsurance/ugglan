@@ -6,19 +6,29 @@ struct TrackPlayer: View {
     @ObservedObject var audioPlayer: AudioPlayer
 
     @ViewBuilder var image: some View {
-        switch audioPlayer.playbackState {
-        case let .playing(paused):
-            Image(uiImage: paused ? hCoreUIAssets.play.image : hCoreUIAssets.pause.image)
-                .foregroundColor(hTextColor.Opaque.primary)
-        default:
-            Image(uiImage: hCoreUIAssets.play.image)
-                .foregroundColor(hTextColor.Opaque.primary)
+        Image(
+            uiImage: {
+                switch audioPlayer.playbackState {
+                case let .playing(paused):
+                    if paused {
+                        return hCoreUIAssets.play.image
+                    } else {
+                        return hCoreUIAssets.pause.image
+                    }
+                default:
+                    return hCoreUIAssets.play.image
+                }
+            }()
+        )
+        .foregroundColor(hFillColor.Opaque.primary)
+        .background {
+            Circle().fill(hSurfaceColor.Translucent.secondary)
         }
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 16) {
+            HStack(alignment: .center, spacing: 16) {
                 if audioPlayer.playbackState == .loading {
                     ActivityIndicator(
                         style: .large,
@@ -29,25 +39,26 @@ struct TrackPlayer: View {
                 } else {
                     image
                     let waveform = WaveformView(
-                        stripeColor: hTextColor.Opaque.primary,
+                        stripeColor: hFillColor.Opaque.secondary,
                         sampleHeights: audioPlayer.sampleHeights
                     )
                     .frame(maxWidth: .infinity)
                     waveform
-                        .padding(.top, 6)
                         .overlay(
-                            OverlayView(audioPlayer: audioPlayer)
+                            OverlayView(audioPlayer: audioPlayer, cornerRadius: 0)
                                 .mask(waveform)
-                                .padding(.top, 6)
+
                         )
-                        .transition(.opacity.animation(.easeOut))
+                        .transition(
+                            .opacity.animation(.easeOut)
+                        )
                 }
             }
-            .padding(.horizontal, 16)
-            .frame(height: 72)
+            .padding(.horizontal, .padding16)
             .frame(maxWidth: .infinity)
+            .frame(height: 64)
             .background(
-                RoundedRectangle(cornerRadius: .defaultCornerRadius)
+                RoundedRectangle(cornerRadius: .cornerRadiusL)
                     .fill(hSurfaceColor.Opaque.primary)
             )
             .onTapGesture {
@@ -60,7 +71,8 @@ struct TrackPlayer: View {
 struct TrackPlayer_Previews: PreviewProvider {
 
     static var previews: some View {
-        let audioPlayer = AudioPlayer(url: nil)
+        let audioPlayer = AudioPlayer(url: URL(string: "https://filesamples.com/samples/audio/m4a/sample4.m4a"))
         TrackPlayer(audioPlayer: audioPlayer)
+
     }
 }

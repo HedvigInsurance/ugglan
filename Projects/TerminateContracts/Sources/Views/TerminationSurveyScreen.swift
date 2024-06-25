@@ -14,13 +14,13 @@ struct TerminationSurveyScreen: View {
             .hFormTitle(
                 title: .init(
                     .small,
-                    .title3,
+                    .body2,
                     L10n.terminationFlowCancellationTitle,
                     alignment: .leading
                 ),
                 subTitle: .init(
                     .small,
-                    .title3,
+                    .body2,
                     L10n.terminationSurveySubtitle
                 )
             )
@@ -67,7 +67,7 @@ struct TerminationSurveyScreen: View {
                         }
                         .disabled(!vm.continueEnabled)
                     }
-                    .padding(.bottom, 16)
+                    .padding(.bottom, .padding16)
                 }
                 .sectionContainerStyle(.transparent)
             }

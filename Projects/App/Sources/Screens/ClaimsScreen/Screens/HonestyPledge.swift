@@ -14,7 +14,7 @@ struct SlideTrack: View {
         ZStack {
             withAnimation(shouldAnimate && labelOpacity == 1 ? .easeInOut : nil) {
                 VStack(alignment: .center) {
-                    L10n.claimsPledgeSlideLabel.hText(.body)
+                    L10n.claimsPledgeSlideLabel.hText(.body1)
                         .foregroundColor(getLabelColor)
                         .frame(maxWidth: .infinity)
                         .opacity(didFinished ? 0 : labelOpacity)
@@ -146,7 +146,7 @@ struct SlideToConfirm: View {
                 dragOffsetX: dragOffsetX,
                 didFinished: $draggedTillTheEnd
             )
-            .padding(.all, 4)
+            .padding(.padding4)
         }
         .background(
             DidAcceptPledgeNotifier(
@@ -191,14 +191,14 @@ struct HonestyPledge: View {
     var body: some View {
         hForm {
             VStack(alignment: .leading, spacing: 0) {
-                L10n.honestyPledgeTitle.hText(.body)
+                L10n.honestyPledgeTitle.hText(.body1)
                     .foregroundColor(hTextColor.Opaque.primary)
-                    .padding(.bottom, 8)
+                    .padding(.bottom, .padding8)
                 HStack {
-                    L10n.honestyPledgeDescription.hText(.body)
+                    L10n.honestyPledgeDescription.hText(.body1)
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
-                .padding(.bottom, 32)
+                .padding(.bottom, .padding32)
 
                 SlideToConfirm(onConfirmAction: {
                     onConfirmAction?()
@@ -209,12 +209,12 @@ struct HonestyPledge: View {
                 hButton.LargeButton(type: .ghost) {
                     router.dismiss()
                 } content: {
-                    L10n.generalCancelButton.hText(.body)
+                    L10n.generalCancelButton.hText(.body1)
                         .foregroundColor(hTextColor.Opaque.primary)
                 }
 
             }
-            .padding(.horizontal, 24)
+            .padding(.horizontal, .padding24)
             .fixedSize(horizontal: false, vertical: true)
         }
         .hDisableScroll

@@ -88,11 +88,6 @@ public struct NotLoggedInView: View {
     @ViewBuilder
     var marketAndLanguage: some View {
         ZStack {
-            Image(uiImage: hCoreUIAssets.wordmark.image)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(height: 40)
-                .offset(y: -24)
             VStack {
                 HStack {
                     Spacer()
@@ -106,7 +101,7 @@ public struct NotLoggedInView: View {
                             vm.showLanguagePicker = true
                         } label: {
                             Image(uiImage: market.icon)
-                                .padding(8)
+                                .padding(.padding8)
                         }
 
                     }

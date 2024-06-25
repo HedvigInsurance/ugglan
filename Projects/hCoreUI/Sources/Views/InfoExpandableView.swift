@@ -61,7 +61,7 @@ public struct InfoExpandableView: View {
                         MarkdownView(
                             config: .init(
                                 text: text,
-                                fontStyle: .standard,
+                                fontStyle: .body1,
                                 color: hTextColor.Opaque.secondary,
                                 linkColor: hTextColor.Opaque.primary,
                                 linkUnderlineStyle: .single
@@ -71,7 +71,7 @@ public struct InfoExpandableView: View {
                         )
                     }
                     .verticalPadding(0)
-                    .padding(.bottom, 24)
+                    .padding(.bottom, .padding24)
                 }
             }
         }

@@ -68,17 +68,17 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                     hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
                                         .foregroundColor(hTextColor.Opaque.primary)
                                 }
-                                .padding(16)
+                                .padding(.padding16)
                                 .background(
                                     Squircle.default()
                                         .fill(hSurfaceColor.Opaque.primary)
                                 )
-                                .padding(.trailing, 88)
+                                .padding(.trailing, .padding88)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .slideUpAppearAnimation()
                             }
                         }
-                        .padding(.top, 8)
+                        .padding(.top, .padding8)
                     }
                     .sectionContainerStyle(.transparent)
                 } else {
@@ -91,18 +91,18 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                     hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
                                         .foregroundColor(hTextColor.Opaque.primary)
                                 }
-                                .padding(16)
+                                .padding(.padding16)
                                 .background(
                                     Squircle.default()
                                         .fill(hSurfaceColor.Opaque.primary)
                                 )
-                                .padding(.trailing, 88)
+                                .padding(.trailing, .padding88)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .slideUpAppearAnimation()
 
                             }
                         }
-                        .padding(.top, 8)
+                        .padding(.top, .padding8)
                     }
                     .sectionContainerStyle(.transparent)
                 }
@@ -132,13 +132,13 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                 hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
                                     .foregroundColor(hTextColor.Opaque.primary)
                             }
-                            .padding(16)
+                            .padding(.padding16)
                             .background(
                                 Squircle.default()
                                     .fill(hSurfaceColor.Opaque.primary)
                             )
-                            .padding(.vertical, 12)
-                            .padding(.trailing, 88)
+                            .padding(.vertical, .padding12)
+                            .padding(.trailing, .padding88)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .slideUpAppearAnimation()
                         }
@@ -153,13 +153,13 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                 hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
                                     .foregroundColor(hTextColor.Opaque.primary)
                             }
-                            .padding(16)
+                            .padding(.padding16)
                             .background(
                                 Squircle.default()
                                     .fill(hSurfaceColor.Opaque.primary)
                             )
-                            .padding(.vertical, 12)
-                            .padding(.trailing, 88)
+                            .padding(.vertical, .padding12)
+                            .padding(.trailing, .padding88)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .slideUpAppearAnimation()
 
@@ -239,12 +239,12 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                                 self.isAudioInput = false
                                             }
                                         } content: {
-                                            hText(L10n.claimsUseTextInstead, style: .body)
+                                            hText(L10n.claimsUseTextInstead, style: .body1)
                                                 .foregroundColor(hTextColor.Opaque.primary)
                                         }
 
                                     } else {
-                                        hText(L10n.claimsStartRecordingLabel, style: .body)
+                                        hText(L10n.claimsStartRecordingLabel, style: .body1)
                                             .foregroundColor(hTextColor.Opaque.primary)
 
                                     }
@@ -252,7 +252,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                             } else {
                                 let minutesToString = String(format: "%02d", minutes)
                                 let secondsToString = String(format: "%02d", seconds)
-                                hText("\(minutesToString):\(secondsToString)", style: .body)
+                                hText("\(minutesToString):\(secondsToString)", style: .body1)
                                     .foregroundColor(hTextColor.Opaque.primary)
                                     .onReceive(timer) { time in
                                         if ((seconds % 59) == 0) && seconds != 0 {
@@ -267,7 +267,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                     }
                 }
-                .padding(.vertical, 16)
+                .padding(.vertical, .padding16)
             }
             .environmentObject(audioRecorder)
         }
@@ -292,13 +292,13 @@ public struct SubmitClaimAudioRecordingScreen: View {
                         self.isAudioInput = true
                     }
                 } content: {
-                    hText(L10n.claimsUseAudioRecording, style: .body)
+                    hText(L10n.claimsUseAudioRecording, style: .body1)
                 }
                 .disableOn(SubmitClaimStore.self, [.postAudioRecording])
             }
             .sectionContainerStyle(.transparent)
         }
-        .padding(.vertical, 16)
+        .padding(.vertical, .padding16)
         .frame(height: 300)
     }
 
@@ -308,7 +308,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
             CustomTextViewRepresentable(placeholder: L10n.claimsTextInputPlaceholder, text: $inputText)
                 .cornerRadius(12)
                 .frame(height: 128)
-                .padding(.vertical, 16)
+                .padding(.vertical, .padding16)
                 .addFieldError(animate: $animateField, error: $inputTextError)
         }
     }
@@ -329,17 +329,21 @@ public struct SubmitClaimAudioRecordingScreen: View {
 
 struct SubmitClaimAudioRecordingScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SubmitClaimAudioRecordingScreen(url: nil)
+        SubmitClaimAudioRecordingScreen(url: URL(string: "https://filesamples.com/samples/audio/m4a/sample4.m4a"))
             .onAppear {
                 let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                let graphQL = OctopusGraphQL.FlowClaimAudioRecordingStepFragment(
-                    _dataDict:
-                        .init(
-                            data: [:],
-                            fulfilledFragments: .init()
-                        )
+                let model = FlowClaimAudioRecordingStepModel(
+                    id: "ID",
+                    questions: [],
+                    audioContent: .init(
+                        audioUrl: "https://filesamples.com/samples/audio/m4a/sample4.m4a",
+                        signedUrl: "https://filesamples.com/samples/audio/m4a/sample4.m4a"
+                    ),
+                    textQuestions: [],
+
+                    inputTextContent: nil,
+                    optionalAudio: false
                 )
-                let model = FlowClaimAudioRecordingStepModel(with: graphQL)
                 store.send(.stepModelAction(action: .setAudioStep(model: model)))
             }
     }
@@ -365,7 +369,7 @@ private class CustomTextView: UITextView, UITextViewDelegate {
         super.init(frame: .zero, textContainer: nil)
         self.textContainerInset = .init(horizontalInset: 4, verticalInset: 4)
         self.delegate = self
-        self.font = Fonts.fontFor(style: .standard)
+        self.font = Fonts.fontFor(style: .body1)
         if inputText.wrappedValue.isEmpty {
             self.text = placeholder
             self.textColor = UIColor.lightGray

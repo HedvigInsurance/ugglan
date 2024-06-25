@@ -122,22 +122,23 @@ struct ToolbarButtonsView: View {
     }
 
     var body: some View {
-        HStack(spacing: 0) {
+        HStack(spacing: -8) {
             ForEach(Array(types.enumerated()), id: \.element.rawValue) { index, type in
                 VStack {
-                    SwiftUI.Button(action: {
-                        withAnimation(.spring()) {
-                            displayTooltip = false
+                    withAnimation(nil) {
+                        SwiftUI.Button(action: {
+                            withAnimation(.spring()) {
+                                displayTooltip = false
+                            }
+                            action(type)
+                        }) {
+                            Image(uiImage: type.image)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 40, height: 40)
+                                .shadow(color: .black.opacity(0.15), radius: 1, x: 0, y: 1)
                         }
-                        action(type)
-                    }) {
-                        Image(uiImage: type.image)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 32, height: 32)
-                            .shadow(color: .black.opacity(0.15), radius: 1, x: 0, y: 1)
                     }
-                    .animation(nil)
                 }
                 .background(
                     VStack {

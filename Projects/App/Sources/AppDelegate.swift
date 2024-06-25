@@ -52,7 +52,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         bag.dispose()
         let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
         ugglanStore.send(.setIsDemoMode(to: false))
-        Task {
+        Task { @MainActor in
             let authenticationService = AuthenticationService()
             do {
                 try await authenticationService.logout()
@@ -74,9 +74,39 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidEnterBackground(_ application: UIApplication) {
     }
 
-    func applicationWillEnterForeground(_ application: UIApplication) {
+    func configureAppBadgeTracking() {
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.willEnterForegroundNotification,
+            object: nil,
+            queue: nil
+        ) { [weak self] _ in
+            self?.resetBadge()
+        }
+
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.didEnterBackgroundNotification,
+            object: nil,
+            queue: nil
+        ) { [weak self] _ in
+            self?.resetBadge()
+        }
+
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.willTerminateNotification,
+            object: nil,
+            queue: nil
+        ) { [weak self] _ in
+            self?.resetBadge()
+        }
+    }
+
+    func resetBadge() {
         UserDefaults(suiteName: "group.\(Bundle.main.bundleIdentifier!)")?.set(1, forKey: "count")
-        UIApplication.shared.applicationIconBadgeNumber = 0
+        if #available(iOS 16.0, *) {
+            UNUserNotificationCenter.current().setBadgeCount(0)
+        } else {
+            UIApplication.shared.applicationIconBadgeNumber = 0
+        }
     }
 
     func application(

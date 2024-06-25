@@ -8,15 +8,15 @@ struct hFieldBackgroundModifier: ViewModifier {
         if hUseNewDesign {
             VStack(alignment: .leading, spacing: 0) {
                 content
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, .padding16)
                     .background(getBackgroundColor())
                     .animation(.easeOut, value: animate)
-                    .clipShape(RoundedRectangle(cornerSize: .init(width: 12, height: 12)))
+                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
             }
         } else {
             VStack(alignment: .leading, spacing: 0) {
                 content
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, .padding16)
                     .background(getBackgroundColor())
                     .animation(.easeOut, value: animate)
                     .clipShape(Squircle.default())
@@ -58,8 +58,8 @@ struct hFieldErrorModifier: ViewModifier {
                     hText(errorMessage, style: .standardSmall)
                         .foregroundColor(hTextColor.Opaque.primary)
                 }
-                .padding(.top, 6)
-                .padding(.horizontal, 6)
+                .padding(.top, .padding6)
+                .padding(.horizontal, .padding6)
                 .foregroundColor(hSignalColor.Amber.fill)
             }
         }
@@ -84,12 +84,12 @@ struct hFieldLabel: View {
     @Environment(\.hFontSize) var fontSize
 
     var body: some View {
-        let sizeToScaleFrom = size == .large ? HFontTextStyle.title3.fontSize : HFontTextStyle.standard.fontSize
+        let sizeToScaleFrom = size == .large ? HFontTextStyle.title3.fontSize : HFontTextStyle.body1.fontSize
         let sizeToScaleTo = HFontTextStyle.footnote.fontSize
         let ratio = sizeToScaleTo / sizeToScaleFrom
         return hText(
             placeholder,
-            style: size == .large ? .title3 : (fontSize == .standard ? .standardSmall : .standard)
+            style: size == .large ? .title3 : (fontSize == .body1 ? .standardSmall : .body1)
         )
         .foregroundColor(getTextColor())
         .scaleEffect(shouldMoveLabel ? ratio : 1, anchor: .leading)

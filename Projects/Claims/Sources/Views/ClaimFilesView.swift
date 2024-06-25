@@ -46,7 +46,7 @@ public struct ClaimFilesView: View {
                     hSection {
                         FilesGridView(vm: vm.fileGridViewModel)
                     }
-                    .padding(.vertical, 16)
+                    .padding(.vertical, .padding16)
 
                 }
                 .hFormAttachToBottom {
@@ -71,7 +71,7 @@ public struct ClaimFilesView: View {
                             .disabled(vm.fileGridViewModel.files.isEmpty)
                         }
                     }
-                    .padding(.vertical, 16)
+                    .padding(.vertical, .padding16)
                 }
                 .sectionContainerStyle(.transparent)
                 .sheet(isPresented: $showImagePicker) {

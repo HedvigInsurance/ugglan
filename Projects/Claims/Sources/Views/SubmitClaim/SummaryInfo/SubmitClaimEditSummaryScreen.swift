@@ -39,7 +39,7 @@ public struct SubmitClaimEditSummaryScreen: View {
             } content: {
                 hText(L10n.generalSaveButton)
             }
-            .padding([.leading, .trailing], 16)
+            .padding(.horizontal, .padding16)
         }
     }
 
@@ -63,10 +63,10 @@ public struct SubmitClaimEditSummaryScreen: View {
                 HStack(spacing: 0) {
                     hText(dateOfOccurenceStep?.dateOfOccurence ?? "")
                         .foregroundColor(hTextColor.Opaque.primary).colorScheme(.light)
-                        .padding([.top, .bottom], 11)
+                        .padding(.vertical, 11)
                         .padding([.trailing, .leading], 12)
                 }
-                .cornerRadius(.defaultCornerRadius)
+                .cornerRadius(.cornerRadiusL)
             }
         }
     }
@@ -137,11 +137,11 @@ public struct SubmitClaimEditSummaryScreen: View {
                     if let date = singleItemStep?.purchaseDate {
                         hText(date)
                             .foregroundColor(hTextColor.Opaque.primary).colorScheme(.light)
-                            .padding([.top, .bottom], 11)
+                            .padding(.vertical, 11)
                             .padding([.trailing, .leading], 12)
                     }
                 }
-                .cornerRadius(.defaultCornerRadius)
+                .cornerRadius(.cornerRadiusL)
             }
         }
     }

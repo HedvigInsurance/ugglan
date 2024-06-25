@@ -35,7 +35,7 @@ public struct FileView: View {
                             .padding(.top, geometry.size.height / 5)
 
                         hSection {
-                            hText(file.name, style: .standardExtraExtraSmall)
+                            hText(file.name, style: .finePrint)
                                 .foregroundColor(hTextColor.Opaque.secondary)
                                 .lineLimit(2)
                                 .multilineTextAlignment(.center)
