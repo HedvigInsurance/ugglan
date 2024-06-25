@@ -56,6 +56,7 @@ extension ClaimModel {
         self.incidentDate = claim.incidentDate
         self.productVariant = .init(data: claim.productVariant?.fragments.productVariantFragment)
         self.claimType = claim.claimType ?? ""
+        self.conversationId = claim.conversation.id
     }
 }
 

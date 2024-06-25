@@ -16,6 +16,9 @@ query Claims {
             }
             claimType
             incidentDate
+            conversation {
+                id
+            }
         }
     }
 }
