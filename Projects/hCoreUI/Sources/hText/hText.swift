@@ -121,7 +121,7 @@ public enum HFontTextStyle {
         case .body3:
             return .body
         case .label:
-            return .body
+            return .footnote
         case .finePrint:
             return .footnote
         case .title:
@@ -172,9 +172,13 @@ public struct hFontModifier: ViewModifier {
             return 20 - font.lineHeight
         case .body1:
             return 22 - font.lineHeight
+        case .body2:
+            return 30 - font.lineHeight
         case .callout:
             return 21 - font.lineHeight
         case .footnote:
+            return 18 - font.lineHeight
+        case .label:
             return 18 - font.lineHeight
         default:
             return 0
@@ -184,6 +188,30 @@ public struct hFontModifier: ViewModifier {
     public func body(content: Content) -> some View {
         content.font(Font(font))
             .lineSpacing(lineSpacing)
+            .padding(.vertical, lineSpacing / 2)
+    }
+}
+
+struct hFloatingTextFieldd_Previews: PreviewProvider {
+    @State static var value: String = "Ss"
+    @State static var error: String?
+    static var previews: some View {
+        VStack {
+            SwiftUI.TextField("Placeholder", text: $value)
+                .modifier(hFontModifier(style: .body2))
+                .background {
+                    GeometryReader { proxy in
+                        Color.red
+                            .onAppear {
+                                print("TOTAL HEIGHT IS \(proxy.size.height)")
+                            }
+                            .onChange(of: proxy.size) { size in
+                                print("TOTAL HEIGHT IS \(size.height)")
+                            }
+                    }
+                }
+        }
+        .hFieldSize(.large)
     }
 }
 
