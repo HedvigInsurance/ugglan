@@ -62,7 +62,7 @@ struct NotificationStyle: ViewModifier {
 
     func body(content: Content) -> some View {
         switch layoutStyle {
-        case .rectange:
+        case .bannerStyle:
             content
                 .background(
                     Rectangle()
@@ -72,7 +72,7 @@ struct NotificationStyle: ViewModifier {
                                 .strokeBorder(hBorderColor.primary, lineWidth: 0.5)
                         )
                 )
-        case .roundedRectangle:
+        case .defaultStyle:
             content
                 .background(
                     Squircle.default()
