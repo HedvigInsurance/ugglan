@@ -115,7 +115,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     }
 
     @ViewBuilder var logo: some View {
-        Image(uiImage: hCoreUIAssets.helipadBig.image.withRenderingMode(.alwaysTemplate))
+        Image(uiImage: hCoreUIAssets.helipadBig.image)
             .resizable()
             .frame(width: 24, height: 24)
             .foregroundColor(hFillColor.Opaque.white)
@@ -161,7 +161,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             background
         )
         .border(hBorderColor.primary, width: 0.5)
-        .clipShape(Squircle.default())
+        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
         .hShadow()
         .contentShape(Rectangle())
     }
@@ -178,7 +178,7 @@ private struct StatusPill: View {
         .padding(.horizontal, .padding6)
         .foregroundColor(hTextColor.Opaque.white)
         .background(hFillColor.Translucent.tertiary).colorScheme(.light)
-        .cornerRadius(8)
+        .cornerRadius(.cornerRadiusS)
     }
 }
 
