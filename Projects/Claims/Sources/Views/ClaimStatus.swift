@@ -82,8 +82,8 @@ extension ClaimModel.ClaimOutcome {
         switch self {
         case .paid, .closed:
             hTextColor.Opaque.negative
-        case .none, .notCompensated, .notCovered:
-            hTextColor.Opaque.primary
+        case .none, .notCompensated, .notCovered, .missingReceipt:
+            hTextColor.Opaque.black
         }
     }
 
@@ -94,6 +94,8 @@ extension ClaimModel.ClaimOutcome {
             hSurfaceColor.Translucent.secondary
         case .paid, .closed:
             hBackgroundColor.negative
+        case .missingReceipt:
+            hSignalColor.Amber.highLight
         }
     }
 }
