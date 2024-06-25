@@ -235,13 +235,6 @@ public enum ChatServiceType {
     case oldChat
 }
 
-public protocol ChatServiceProtocol {
-    var type: ChatServiceType { get }
-    func getNewMessages() async throws -> ChatData
-    func getPreviousMessages() async throws -> ChatData
-    func send(message: Message) async throws -> Message
-}
-
 enum ConversationsError: Error {
     case errorMesage(message: String)
     case missingData

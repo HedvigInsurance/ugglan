@@ -2,46 +2,6 @@ import Foundation
 import hCore
 import hGraphQL
 
-public class MessagesService: ChatServiceProtocol {
-    public var type: ChatServiceType = .oldChat
-    @Inject var client: FetchMessagesClient
-    @Inject var service: SendMessageClient
-    private var previousTimeStamp: String?
-    let topic: ChatTopicType?
-
-    public init(topic: ChatTopicType?) {
-        self.topic = topic
-    }
-
-    public func getNewMessages() async throws -> ChatData {
-        let data = try await get(nil)
-        if previousTimeStamp == nil {
-            previousTimeStamp = data.olderToken
-        }
-        return .init(hasPreviousMessage: data.hasNext, messages: data.messages, banner: data.banner)
-    }
-
-    public func getPreviousMessages() async throws -> ChatData {
-        let data = try await get(previousTimeStamp)
-        previousTimeStamp = data.olderToken
-        return .init(hasPreviousMessage: data.hasNext, messages: data.messages, banner: data.banner)
-    }
-
-    public func send(message: Message) async throws -> Message {
-        return try await send(message: message, topic: topic)
-    }
-
-    public func get(_ next: String?) async throws -> MessagesData {
-        log.info("FetchMessagesService: get", error: nil, attributes: nil)
-        return try await client.get(next)
-    }
-
-    public func send(message: Message, topic: ChatTopicType?) async throws -> Message {
-        log.info("SendMessagesService: send", error: nil, attributes: nil)
-        return try await service.send(message: message, topic: topic)
-    }
-}
-
 public class FetchMessagesClientOctopus: FetchMessagesClient {
     @Inject var octopus: hOctopus
     public init() {}
