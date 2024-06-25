@@ -1,3 +1,4 @@
+import Chat
 import Contracts
 import Foundation
 import hCore
@@ -17,7 +18,8 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         targetFileUploadUri: String,
         claimType: String,
         incidentDate: String?,
-        productVariant: ProductVariant?
+        productVariant: ProductVariant?,
+        conversationId: String
     ) {
         self.id = id
         self.status = status
@@ -30,6 +32,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         self.claimType = claimType
         self.incidentDate = incidentDate
         self.productVariant = productVariant
+        self.conversationId = conversationId
     }
 
     public let claimType: String
@@ -43,6 +46,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
     public let memberFreeText: String?
     public let payoutAmount: MonetaryAmount?
     public let targetFileUploadUri: String
+    public let conversationId: String
     public var statusParagraph: String {
         switch self.status {
         case .submitted:

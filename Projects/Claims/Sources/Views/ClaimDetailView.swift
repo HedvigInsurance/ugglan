@@ -311,7 +311,8 @@ struct ClaimDetailView_Previews: PreviewProvider {
             targetFileUploadUri: "",
             claimType: "Broken item",
             incidentDate: "2024-02-15",
-            productVariant: nil
+            productVariant: nil,
+            conversationId: ""
         )
         return ClaimDetailView(claim: claim)
     }

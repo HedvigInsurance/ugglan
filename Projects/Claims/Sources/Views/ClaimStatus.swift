@@ -103,7 +103,8 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
             targetFileUploadUri: "",
             claimType: "Broken item",
             incidentDate: "2024-02-15",
-            productVariant: nil
+            productVariant: nil,
+            conversationId: ""
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -127,7 +128,8 @@ struct ClaimReopened_Previews: PreviewProvider {
             targetFileUploadUri: "",
             claimType: "Broken item",
             incidentDate: "2024-02-15",
-            productVariant: nil
+            productVariant: nil,
+            conversationId: ""
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -151,7 +153,8 @@ struct ClaimPaid_Previews: PreviewProvider {
             targetFileUploadUri: "",
             claimType: "Broken item",
             incidentDate: "2024-02-15",
-            productVariant: nil
+            productVariant: nil,
+            conversationId: ""
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -175,7 +178,8 @@ struct ClaimNotCompensated_Previews: PreviewProvider {
             targetFileUploadUri: "",
             claimType: "Broken item",
             incidentDate: "2024-02-15",
-            productVariant: nil
+            productVariant: nil,
+            conversationId: ""
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -199,7 +203,8 @@ struct ClaimNotCocered_Previews: PreviewProvider {
             targetFileUploadUri: "",
             claimType: "Broken item",
             incidentDate: "2024-02-15",
-            productVariant: nil
+            productVariant: nil,
+            conversationId: ""
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
