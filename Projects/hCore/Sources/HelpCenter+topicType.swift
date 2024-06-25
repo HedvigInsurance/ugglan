@@ -18,3 +18,11 @@ public struct ChatTopicWrapper: Equatable, Identifiable {
         self.onTop = onTop
     }
 }
+
+public enum ChatType: Equatable {
+    case none
+    case topic(topic: ChatTopicType)
+    case conversation(conversationId: String, title: String)
+    case conversationId(id: String)
+    case newConversation
+}

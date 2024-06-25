@@ -1,15 +1,18 @@
 import Foundation
 import hCore
 
-public protocol ConversationClient {
+public protocol ConversationsClient {
     func getConversations() async throws -> [Conversation]
+    func createConversation() async throws -> Conversation
+}
+
+public protocol ConversationClient {
     func getConversationMessages(
         for conversationId: String,
         olderToken: String?,
         newerToken: String?
     ) async throws -> ConversationMessagesData
     func send(message: Message, for conversationId: String) async throws -> Message
-    func createConversation() async throws -> Conversation
 }
 
 public struct ConversationMessagesData {

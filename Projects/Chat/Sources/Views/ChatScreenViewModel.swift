@@ -241,3 +241,19 @@ public protocol ChatServiceProtocol {
     func getPreviousMessages() async throws -> ChatData
     func send(message: Message) async throws -> Message
 }
+
+enum ConversationsError: Error {
+    case errorMesage(message: String)
+    case missingData
+    case uploadFailed
+}
+
+extension ConversationsError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case let .errorMesage(message): return message
+        case .missingData: return "TODO"
+        case .uploadFailed: return "TODO"
+        }
+    }
+}

@@ -26,7 +26,7 @@ public struct Conversation: Identifiable, Equatable {
 
     public let id: String
     let type: ConversationType
-    let title: String
+    public let title: String
     let subtitle: String?
     let newestMessage: Message?
     let createdAt: String?

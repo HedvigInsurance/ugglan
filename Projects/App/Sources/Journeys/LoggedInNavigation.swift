@@ -364,8 +364,7 @@ struct HomeTab: View {
             options: $homeNavigationVm.openChatOptions,
             content: { openChat in
                 ChatNavigation(
-                    openChat: openChat.chatTopicWrapper ?? .init(topic: nil, onTop: false),
-                    conversation: openChat.conversation
+                    chatType: openChat.chatType
                 ) { type, onDone in
                     AskForPushNotifications(
                         text: L10n.chatActivateNotificationsBody,

@@ -73,35 +73,40 @@ public enum ChatRedirectViewType {
 public struct ChatNavigation<Content: View>: View {
     @StateObject var router = Router()
     @StateObject var chatNavigationViewModel = ChatNavigationViewModel()
-    let openChat: ChatTopicWrapper
-    let conversation: Conversation?
+    let chatType: ChatType
     @ViewBuilder var redirectView: (_ type: ChatRedirectViewType, _ onDone: @escaping () -> Void) -> Content
     var onUpdateDate: (Date) -> Void
     public init(
-        openChat: ChatTopicWrapper,
-        conversation: Conversation?,
+        chatType: ChatType,
         @ViewBuilder redirectView: @escaping (_ type: ChatRedirectViewType, _ onDone: @escaping () -> Void) -> Content,
         onUpdateDate: @escaping (Date) -> Void
     ) {
-        self.openChat = openChat
-        self.conversation = conversation
+        self.chatType = chatType
         self.redirectView = redirectView
         self.onUpdateDate = onUpdateDate
     }
 
     public var body: some View {
         RouterHost(router: router, options: .navigationType(type: .large)) {
-            if let conversation {
-                ChatScreen(vm: .init(chatService: AllConversationsService(conversationId: conversation.id)))
-                    .configureTitle(conversation.title)
+            switch chatType {
+            case let .conversation(conversationId, title):
+                ChatScreen(vm: .init(chatService: ConversationService(conversationId: conversationId)))
+                    .configureTitle(title)
                     .withDismissButton()
-            } else if let topic = openChat.topic {
+            case let .conversationId(id):
+                ChatScreen(vm: .init(chatService: ConversationService(conversationId: id)))
+                    .configureTitle(L10n.chatTitle)
+                    .withDismissButton()
+            case let .topic(topic):
                 ChatScreen(vm: .init(chatService: MessagesService(topic: topic)))
                     .configureTitle(L10n.chatTitle)
                     .withDismissButton()
-            } else {
-                // open new conversation
-                ChatScreen(vm: .init(chatService: ConversationService()))
+            case .newConversation:
+                ChatScreen(vm: .init(chatService: NewConversationService()))
+                    .configureTitle(L10n.chatTitle)
+                    .withDismissButton()
+            case .none:
+                ChatScreen(vm: .init(chatService: MessagesService(topic: nil)))
                     .configureTitle(L10n.chatTitle)
                     .withDismissButton()
             }
@@ -134,7 +139,7 @@ public struct ChatNavigation<Content: View>: View {
 }
 
 #Preview{
-    ChatNavigation(openChat: .init(topic: nil, onTop: true), conversation: nil) { type, onDone in
+    ChatNavigation(chatType: .none) { type, onDone in
         EmptyView()
     } onUpdateDate: { _ in
 

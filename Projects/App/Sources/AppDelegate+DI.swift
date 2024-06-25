@@ -34,6 +34,9 @@ extension ApolloClient {
             let analyticsService = AnalyticsClientDemo()
             let notificationClient = NotificationClientDemo()
             let submitClaimDemoService = SubmitClaimClientDemo()
+            let conversationsClient = ConversationsDemoClient()
+            let conversationClient = ConversationDemoClient()
+
             Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlags })
             Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentService })
             Dependencies.shared.add(module: Module { () -> hFetchClaimClient in fetchClaimService })
@@ -45,6 +48,8 @@ extension ApolloClient {
             Dependencies.shared.add(module: Module { () -> AnalyticsClient in analyticsService })
             Dependencies.shared.add(module: Module { () -> NotificationClient in notificationClient })
             Dependencies.shared.add(module: Module { () -> SubmitClaimClient in submitClaimDemoService })
+            Dependencies.shared.add(module: Module { () -> ConversationsClient in conversationsClient })
+            Dependencies.shared.add(module: Module { () -> ConversationClient in conversationClient })
         } else {
             let hApollo = self.createClient()
             let paymentService = hPaymentClientOctopus()
@@ -67,7 +72,8 @@ extension ApolloClient {
             let notificationService = NotificationClientOctopus()
             let hFetchEntrypointsService = FetchEntrypointsClientOctopus()
             let submitClaimService = SubmitClaimClientOctopus()
-            let conversationClient = ConversationsClientOctopus()
+            let conversationClient = ConversationClientOctopus()
+            let conversationsClient = ConversationsClientOctopus()
             switch Environment.current {
             case .staging:
                 Dependencies.shared.add(module: Module { hApollo.octopus })
@@ -97,6 +103,7 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in hFetchEntrypointsService })
                 Dependencies.shared.add(module: Module { () -> SubmitClaimClient in submitClaimService })
                 Dependencies.shared.add(module: Module { () -> ConversationClient in conversationClient })
+                Dependencies.shared.add(module: Module { () -> ConversationsClient in conversationsClient })
             case .production, .custom:
                 Dependencies.shared.add(module: Module { hApollo.octopus })
                 Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlagsUnleash })
@@ -125,6 +132,8 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in hFetchEntrypointsService })
                 Dependencies.shared.add(module: Module { () -> SubmitClaimClient in submitClaimService })
                 Dependencies.shared.add(module: Module { () -> ConversationClient in conversationClient })
+                Dependencies.shared.add(module: Module { () -> ConversationsClient in conversationsClient })
+
             }
         }
     }

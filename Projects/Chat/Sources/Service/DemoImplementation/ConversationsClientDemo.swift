@@ -1,18 +1,8 @@
 import Foundation
 
-public class ConversationsDemoClient: ConversationClient {
-    public func getConversationMessages(
-        for conversationId: String,
-        olderToken: String?,
-        newerToken: String?
-    ) async throws -> ConversationMessagesData {
-        let messages = [
-            Message(type: .text(text: "text1")),
-            Message(type: .text(text: "text2")),
-        ]
-        return .init(messages: messages, banner: nil, olderToken: nil, newerToken: nil)
-    }
+public class ConversationsDemoClient: ConversationsClient {
 
+    public init() {}
     public func getConversations() async throws -> [Conversation] {
         return [
             Conversation(
@@ -42,14 +32,6 @@ public class ConversationsDemoClient: ConversationClient {
         ]
     }
 
-    public func send(message: Message, for conversationId: String) async throws -> Message {
-        return Message(type: .text(text: "send message"))
-    }
-
-    public func getConversations(for conversationId: String) async throws -> [Conversation] {
-        return []
-    }
-
     public func createConversation() async throws -> Conversation {
         return Conversation(
             id: "id1",
@@ -60,5 +42,26 @@ public class ConversationsDemoClient: ConversationClient {
             createdAt: nil,
             statusMessage: "status message"
         )
+    }
+}
+
+public class ConversationDemoClient: ConversationClient {
+
+    public init() {}
+
+    public func getConversationMessages(
+        for conversationId: String,
+        olderToken: String?,
+        newerToken: String?
+    ) async throws -> ConversationMessagesData {
+        let messages = [
+            Message(type: .text(text: "text1")),
+            Message(type: .text(text: "text2")),
+        ]
+        return .init(messages: messages, banner: nil, olderToken: nil, newerToken: nil)
+    }
+
+    public func send(message: Message, for conversationId: String) async throws -> Message {
+        return Message(type: .text(text: "send message"))
     }
 }

@@ -16,37 +16,32 @@ extension String: TrackingViewNameProtocol {
 
 public struct ChatConversation: Equatable, Identifiable {
     public var id: String?
-    public let chatTopicWrapper: ChatTopicWrapper?
-    public let conversation: Conversation?
+    public var chatType: ChatType
 }
 
 public class HomeNavigationViewModel: ObservableObject {
     public static var isChatPresented = false
-
     public init() {
 
         NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: nil) {
             [weak self] notification in
-
-            let isConversationBasedMessagesEnabled = Dependencies.featureFlags().isConversationBasedMessagesEnabled
-
-            if let topicWrapper = notification.object as? ChatTopicWrapper, !isConversationBasedMessagesEnabled {
-                //if conversations enabled ignore topic and open conversation - but which one?
-                self?.openChatOptions = topicWrapper.onTop ? [.alwaysOpenOnTop, .withoutGrabber] : [.withoutGrabber]
-                self?.openChat = ChatConversation(chatTopicWrapper: topicWrapper, conversation: nil)
-            } else if let conversation = notification.object as? Conversation {
-                self?.openChat = ChatConversation(chatTopicWrapper: nil, conversation: conversation)
-            } else if isConversationBasedMessagesEnabled {
+            if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
                 self?.openChatOptions = [.alwaysOpenOnTop, .withoutGrabber]
-                Task { [weak self] in
-                    let service = ConversationService()
-                    let conversation = try await service.createConversation()
-                    self?.openChat = ChatConversation(chatTopicWrapper: nil, conversation: conversation)
+                if let conversation = notification.object as? Chat.Conversation {
+                    self?.openChat = .init(
+                        chatType: .conversation(conversationId: conversation.id, title: conversation.title)
+                    )
+                } else if let id = notification.object as? String {
+                    self?.openChat = .init(chatType: .conversationId(id: id))
+                } else {
+                    self?.openChat = .init(chatType: .newConversation)
                 }
             } else {
-                self?.openChatOptions = [.alwaysOpenOnTop, .withoutGrabber]
-                //open new conversation
-                self?.openChat = ChatConversation(chatTopicWrapper: .init(topic: nil, onTop: false), conversation: nil)
+                if let topicWrapper = notification.object as? ChatTopicWrapper, let topic = topicWrapper.topic {
+                    self?.openChat = .init(chatType: .topic(topic: topic))
+                } else {
+                    self?.openChat = .init(chatType: .none)
+                }
             }
         }
     }
