@@ -37,7 +37,7 @@ public struct ConversationsView: View {
                                 .padding(.top, 8)
 
                             VStack(alignment: .leading, spacing: 4) {
-                                hText(conversation.title, style: .body)
+                                hText(conversation.title, style: .body1)
                                 HStack(spacing: 8) {
                                     hText(conversation.subtitle ?? "", style: .footnote)
                                     hText("|")

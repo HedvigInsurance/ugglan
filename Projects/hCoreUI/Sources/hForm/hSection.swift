@@ -379,7 +379,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
                         .environment(\.defaultHTextStyle, .body1)
                 }
                 .foregroundColor(hTextColor.Opaque.primary)
-                .padding(.bottom, .padding16)
+                .padding(.bottom, .padding8)
             }
             hSectionContainer {
                 content

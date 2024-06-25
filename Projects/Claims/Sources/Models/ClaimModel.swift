@@ -6,7 +6,6 @@ import hCoreUI
 import hGraphQL
 
 public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
-
     public init(
         id: String,
         status: ClaimStatus,
@@ -19,7 +18,8 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         claimType: String,
         incidentDate: String?,
         productVariant: ProductVariant?,
-        conversationId: String
+        conversation: ClaimsConversation
+
     ) {
         self.id = id
         self.status = status
@@ -32,7 +32,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         self.claimType = claimType
         self.incidentDate = incidentDate
         self.productVariant = productVariant
-        self.conversationId = conversationId
+        self.conversation = conversation
     }
 
     public let claimType: String
@@ -46,7 +46,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
     public let memberFreeText: String?
     public let payoutAmount: MonetaryAmount?
     public let targetFileUploadUri: String
-    public let conversationId: String
+    public let conversation: ClaimsConversation
     public var statusParagraph: String {
         switch self.status {
         case .submitted:
@@ -138,9 +138,13 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
     }
 }
 
+public struct ClaimsConversation: Codable, Hashable {
+    public let conversationId: String
+    public let newestMessageSentAt: Date?
+}
+
 extension ClaimModel: TrackingViewNameProtocol {
     public var nameForTracking: String {
         return .init(describing: ClaimDetailView.self)
     }
-
 }

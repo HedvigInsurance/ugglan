@@ -41,6 +41,8 @@ public struct ClaimDetailView: View {
 
                 infoAndContactSection
                 memberFreeTextSection
+                conversationSection
+                    .padding(.vertical, .padding16)
                 claimDetailsSection
                     .padding(.vertical, .padding16)
                 uploadFilesSection
@@ -106,14 +108,6 @@ public struct ClaimDetailView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .multilineTextAlignment(.leading)
             }
-            hRow {
-                ContactChatView(
-                    store: vm.store,
-                    id: vm.claim.id,
-                    status: vm.claim.status.rawValue
-                )
-                .padding(.bottom, .padding4)
-            }
         }
     }
 
@@ -130,6 +124,29 @@ public struct ClaimDetailView: View {
                     .padding(.leading, 2)
             }
             .padding(.top, .padding16)
+        }
+    }
+
+    @ViewBuilder
+    private var conversationSection: some View {
+        hSection {
+            hButton.LargeButton(
+                type: .secondary,
+                action: {
+                    // go to conversation
+                },
+                content: {
+                    HStack(spacing: 4) {
+                        Image(uiImage: hCoreUIAssets.chat.image)
+                        hText("Go to conversation")
+                            .foregroundColor(hTextColor.Opaque.primary)
+                    }
+                }
+            )
+        }
+        .withHeader {
+            hText("Claim Conversation")
+                .foregroundColor(hTextColor.Opaque.primary)
         }
     }
 
@@ -312,7 +329,7 @@ struct ClaimDetailView_Previews: PreviewProvider {
             claimType: "Broken item",
             incidentDate: "2024-02-15",
             productVariant: nil,
-            conversationId: ""
+            conversation: .init(conversationId: "", newestMessageSentAt: nil)
         )
         return ClaimDetailView(claim: claim)
     }

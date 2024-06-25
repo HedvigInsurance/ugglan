@@ -18,6 +18,9 @@ query Claims {
             incidentDate
             conversation {
                 id
+                newestMessage {
+                    sentAt
+                }
             }
         }
     }
