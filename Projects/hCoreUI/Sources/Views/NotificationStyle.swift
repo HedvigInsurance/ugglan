@@ -6,7 +6,7 @@ public enum NotificationType {
     case attention
     case error
     case campaign
-    case disabled
+    case neutral
 
     var image: UIImage {
         switch self {
@@ -18,7 +18,7 @@ public enum NotificationType {
             return hCoreUIAssets.warningTriangleFilled.image
         case .campaign:
             return hCoreUIAssets.campaignSmall.image
-        case .disabled:
+        case .neutral:
             return hCoreUIAssets.infoFilled.image
         }
     }
@@ -34,7 +34,7 @@ public enum NotificationType {
             hSignalColor.Red.text
         case .campaign:
             hSignalColor.Green.text
-        case .disabled:
+        case .neutral:
             hTextColor.Translucent.secondary
         }
     }
@@ -50,7 +50,7 @@ public enum NotificationType {
             hSignalColor.Red.element
         case .campaign:
             hSignalColor.Green.element
-        case .disabled:
+        case .neutral:
             hFillColor.Opaque.secondary
         }
     }
@@ -96,7 +96,7 @@ struct NotificationStyle: ViewModifier {
             hSignalColor.Red.fill
         case .campaign:
             hSignalColor.Green.fill
-        case .disabled:
+        case .neutral:
             hSurfaceColor.Opaque.primary
         }
     }

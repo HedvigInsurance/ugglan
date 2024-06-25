@@ -110,7 +110,7 @@ public struct ToastBarView: View {
         hSection {
             ToastBarView(
                 toastModel: .init(
-                    type: .disabled,
+                    type: .neutral,
                     text: "disabled toast bar"
                 )
             )

@@ -64,6 +64,7 @@ public struct InfoCard: View {
         .padding(.vertical, .padding12)
         .padding(.horizontal, .padding16)
         .modifier(NotificationStyle(type: type))
+        .fixedSize(horizontal: false, vertical: true)
     }
 }
 
