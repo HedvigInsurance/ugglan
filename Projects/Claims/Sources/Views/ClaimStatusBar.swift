@@ -110,7 +110,6 @@ struct ClaimStatusBar_Previews: PreviewProvider {
                 ClaimStatusBar(status: .submitted, outcome: .none)
             }
             HStack {
-                // check
                 ClaimStatusBar(status: .beingHandled, outcome: .none)
             }
             HStack {
