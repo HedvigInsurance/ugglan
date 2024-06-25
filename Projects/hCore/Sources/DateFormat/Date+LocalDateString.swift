@@ -13,6 +13,10 @@ extension Date {
         return DateFormatters.displayddMMM.string(from: self)
     }
 
+    public var displayDateMMMMDDYYYYFormat: String {
+        return DateFormatters.displayMMMMddYYYY.string(from: self)
+    }
+
     public var dateYYYYFormat: String? {
         return DateFormatters.YYYYFormat.string(from: self)
     }
@@ -42,6 +46,12 @@ public struct DateFormatters {
     static let displayddMMM: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd MMM"
+        return formatter
+    }()
+
+    static let displayMMMMddYYYY: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MMMM dd YYYY"
         return formatter
     }()
 

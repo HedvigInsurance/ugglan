@@ -30,13 +30,21 @@ struct ClaimStatus: View {
                 } : nil,
             mainContent: ClaimPills(claim: claim),
             title: claim.claimType,
-            subTitle: claim.productVariant?.displayName,
+            subTitle: getSubTitle,
             bottomComponent: {
                 HStack(spacing: 6) {
                     ClaimStatusBar(status: claim.status, outcome: claim.outcome)
                 }
             }
         )
+    }
+
+    var getSubTitle: String? {
+        if let submittedAt = claim.submittedAt {
+            return L10n.ClaimStatus.ClaimDetails.submitted + " "
+                + (submittedAt.localDateToDate?.displayDateMMMMDDYYYYFormat ?? "")
+        }
+        return nil
     }
 }
 
@@ -96,7 +104,7 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
             id: "1",
             status: .beingHandled,
             outcome: .none,
-            submittedAt: "2023-10-10",
+            submittedAt: "2023-06-10",
             signedAudioURL: "",
             memberFreeText: nil,
             payoutAmount: nil,

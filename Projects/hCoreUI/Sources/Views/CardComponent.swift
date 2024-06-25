@@ -43,6 +43,7 @@ where MainContent: View, BottomContent: View {
             VStack(alignment: .leading, spacing: 0) {
                 if let title = title {
                     hText(title)
+                        .foregroundColor(hTextColor.Opaque.primary)
                 }
                 hText(subTitle ?? " ", style: .standardSmall)
                     .foregroundColor(hTextColor.Opaque.secondary)
