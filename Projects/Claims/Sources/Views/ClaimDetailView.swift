@@ -18,9 +18,10 @@ public struct ClaimDetailView: View {
     @EnvironmentObject var homeVm: HomeNavigationViewModel
 
     public init(
-        claim: ClaimModel
+        claim: ClaimModel,
+        claimHasUnreadMessages: Bool
     ) {
-        self._vm = .init(wrappedValue: .init(claim: claim))
+        self._vm = .init(wrappedValue: .init(claim: claim, hasUnreadMessages: claimHasUnreadMessages))
         if let url = URL(string: claim.signedAudioURL) {
             self._player = State(initialValue: AudioPlayer(url: url))
         }
@@ -41,8 +42,10 @@ public struct ClaimDetailView: View {
 
                 infoAndContactSection
                 memberFreeTextSection
-                conversationSection
-                    .padding(.vertical, .padding16)
+                if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
+                    conversationSection
+                        .padding(.vertical, .padding16)
+                }
                 claimDetailsSection
                     .padding(.vertical, .padding16)
                 uploadFilesSection
@@ -108,6 +111,16 @@ public struct ClaimDetailView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .multilineTextAlignment(.leading)
             }
+            if !Dependencies.featureFlags().isConversationBasedMessagesEnabled {
+                hRow {
+                    ContactChatView(
+                        store: vm.store,
+                        id: vm.claim.id,
+                        status: vm.claim.status.rawValue
+                    )
+                    .padding(.bottom, .padding4)
+                }
+            }
         }
     }
 
@@ -133,11 +146,14 @@ public struct ClaimDetailView: View {
             hButton.LargeButton(
                 type: .secondary,
                 action: {
-                    // go to conversation
+                    /* TODO: GO TO CONVERSATION */
                 },
                 content: {
                     HStack(spacing: 4) {
-                        Image(uiImage: hCoreUIAssets.chat.image)
+                        Image(
+                            uiImage: vm.hasUnreadMessages
+                                ? hCoreUIAssets.chatQuickNavNotification.image : hCoreUIAssets.chat.image
+                        )
                         hText("Go to conversation")
                             .foregroundColor(hTextColor.Opaque.primary)
                     }
@@ -331,7 +347,7 @@ struct ClaimDetailView_Previews: PreviewProvider {
             productVariant: nil,
             conversation: .init(conversationId: "", newestMessageSentAt: nil)
         )
-        return ClaimDetailView(claim: claim)
+        return ClaimDetailView(claim: claim, claimHasUnreadMessages: true)
     }
 }
 
@@ -344,9 +360,15 @@ public class ClaimDetailViewModel: ObservableObject {
     @Published var showFilesView: FilesDto?
     let fileUploadManager = FileUploadManager()
     var fileGridViewModel: FileGridViewModel
+    let hasUnreadMessages: Bool
+
     private var cancellables = Set<AnyCancellable>()
-    public init(claim: ClaimModel) {
+    public init(
+        claim: ClaimModel,
+        hasUnreadMessages: Bool
+    ) {
         self.claim = claim
+        self.hasUnreadMessages = hasUnreadMessages
         let store: ClaimsStore = globalPresentableStoreContainer.get()
         let files = store.state.files[claim.id] ?? []
         self.fileGridViewModel = .init(files: files, options: [])
