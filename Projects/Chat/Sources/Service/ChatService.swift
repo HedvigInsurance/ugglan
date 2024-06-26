@@ -13,6 +13,8 @@ public protocol ChatServiceProtocol {
 public class ConversationService: ChatServiceProtocol {
     public var type: ChatServiceType = .conversation
     @Inject var client: ConversationClient
+    @PresentableStore var store: ChatStore
+
     private let conversationId: String
     private var olderToken: String?
     private var newerToken: String?
@@ -32,6 +34,10 @@ public class ConversationService: ChatServiceProtocol {
             olderToken = data.olderToken
         }
         newerToken = data.newerToken
+        if let sendAt = data.messages.first?.sentAt {
+            store.send(.setLastMessageTimestampForConversation(id: conversationId, date: sendAt))
+        }
+
         return .init(hasPreviousMessage: olderToken != nil, messages: data.messages, banner: data.banner)
     }
 
@@ -96,6 +102,8 @@ public class MessagesService: ChatServiceProtocol {
     public var type: ChatServiceType = .oldChat
     @Inject var client: FetchMessagesClient
     @Inject var service: SendMessageClient
+    @PresentableStore var store: ChatStore
+
     private var previousTimeStamp: String?
     let topic: ChatTopicType?
 
@@ -107,6 +115,10 @@ public class MessagesService: ChatServiceProtocol {
         let data = try await get(nil)
         if previousTimeStamp == nil {
             previousTimeStamp = data.olderToken
+        }
+
+        if let sendAt = data.messages.first?.sentAt {
+            store.send(.setLastMessageDate(date: sendAt))
         }
         return .init(hasPreviousMessage: data.hasNext, messages: data.messages, banner: data.banner)
     }

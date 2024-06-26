@@ -374,9 +374,6 @@ struct HomeTab: View {
                             onDone()
                         }
                     )
-                } onUpdateDate: { date in
-                    let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                    homeStore.send(.setChatNotificationTimeStamp(sentAt: date))
                 }
             }
         )

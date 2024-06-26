@@ -1,6 +1,8 @@
 import SwiftUI
 import hCore
 import hCoreUI
+import Presentation
+import Combine
 
 public struct ConversationsView: View {
     @StateObject var vm = ConversationsViewModel()
@@ -30,12 +32,11 @@ public struct ConversationsView: View {
                 } else {
                     hRow {
                         HStack {
-                            Circle()
+                                Circle()
                                 .frame(width: 8)
-                                .foregroundColor(hSignalColor.Red.element)
+                                .foregroundColor( getNotificationColor(for: conversation))
                                 .frame(maxHeight: .infinity, alignment: .top)
                                 .padding(.top, 8)
-
                             VStack(alignment: .leading, spacing: 4) {
                                 hText(conversation.title, style: .body1)
                                 HStack(spacing: 8) {
@@ -66,15 +67,66 @@ public struct ConversationsView: View {
         }
         .sectionContainerStyle(.transparent)
     }
+    
+    @hColorBuilder
+    private func getNotificationColor(for conversation: Conversation) -> some hColor {
+        if vm.hasNotification(conversation: conversation) {
+            hSignalColor.Red.element
+        } else {
+            hColorBase(.clear)
+        }
+    }
 }
 
 class ConversationsViewModel: ObservableObject {
     @Inject var service: ConversationsClient
     @Published var conversations: [Conversation] = []
+    @Published private var conversationsTimeStamp = [String: Date]()
+    private var conversationTimeStampCancellable: AnyCancellable?
+    private var pollTimerCancellable: AnyCancellable?
+    
+    func hasNotification(conversation: Conversation) -> Bool {
+        return conversationsTimeStamp[conversation.id] ?? Date() < conversation.newestMessage?.sentAt ?? Date()
+    }
 
     init() {
-        Task { @MainActor in
-            self.conversations = try await service.getConversations()
+        let store: ChatStore = globalPresentableStoreContainer.get()
+        conversationTimeStampCancellable = store.stateSignal.plain().publisher
+            .map({$0.conversationsTimeStamp})
+            .sink {[weak self] value in
+                self?.conversationsTimeStamp = value
+        }
+        self.conversationsTimeStamp = store.state.conversationsTimeStamp
+        Task {
+            await fetchMessages()
+        }
+        pollTimerCancellable = Timer.publish(every: TimeInterval(5), on: .main, in: .common)
+            .autoconnect()
+            .sink(receiveValue: { [weak self] _ in
+                self?.fetchMessages()
+            })
+    }
+    
+    private func fetchMessages() {
+        Task {[weak self] in
+            await self?.fetchMessages()
+        }
+    }
+    
+    @MainActor
+    func fetchMessages() async  {
+        do {
+            let conversations = try await service.getConversations()
+            let store: ChatStore = globalPresentableStoreContainer.get()
+            let conversationsTimeStamp = store.state.conversationsTimeStamp
+            for conversation in conversations {
+                if conversationsTimeStamp[conversation.id] == nil, let newestMessageSentAt = conversation.newestMessage?.sentAt {
+                    await store.sendAsync(.setLastMessageTimestampForConversation(id: conversation.id, date: newestMessageSentAt))
+                }
+            }
+            self.conversations = conversations
+        } catch let ex {
+            //TODO: EXCEPTION
         }
     }
 }

@@ -4,6 +4,7 @@ import Contracts
 import EditCoInsuredShared
 import Foundation
 import Payment
+import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
@@ -21,6 +22,8 @@ public struct ChatConversation: Equatable, Identifiable {
 
 public class HomeNavigationViewModel: ObservableObject {
     public static var isChatPresented = false
+    private var cancellables = Set<AnyCancellable>()
+
     public init() {
 
         NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: nil) {
@@ -44,6 +47,31 @@ public class HomeNavigationViewModel: ObservableObject {
                 }
             }
         }
+
+        let store: ChatStore = globalPresentableStoreContainer.get()
+        store.stateSignal.plain()
+            .publisher
+            .map({ $0.messagesTimeStamp })
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { value in
+                let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                homeStore.send(.setChatNotificationTimeStamp(sentAt: value))
+            }
+            .store(in: &cancellables)
+
+        store.stateSignal.plain()
+            .publisher
+            .map({ $0.conversationsTimeStamp })
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { value in
+                let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                if let latestDate = value.values.max() {
+                    homeStore.send(.setChatNotificationTimeStamp(sentAt: latestDate))
+                }
+            }
+            .store(in: &cancellables)
     }
 
     public var router = Router()

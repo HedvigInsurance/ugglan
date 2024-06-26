@@ -192,8 +192,6 @@ public class ChatScreenViewModel: ObservableObject {
             break
         }
 
-        handleLastMessageTimeStamp(for: newMessage)
-
         addedMessagesIds.append(remoteMessage.id)
         if let index = messages.firstIndex(where: { $0.id == localMessage.id }) {
             withAnimation {
@@ -222,11 +220,6 @@ public class ChatScreenViewModel: ObservableObject {
                 messages[index] = newMessage
             }
         }
-    }
-
-    private func handleLastMessageTimeStamp(for message: Message) {
-        let store: ChatStore = globalPresentableStoreContainer.get()
-        store.send(.setLastMessageDate(date: message.sentAt))
     }
 }
 

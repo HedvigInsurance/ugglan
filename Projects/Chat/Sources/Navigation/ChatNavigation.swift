@@ -75,15 +75,12 @@ public struct ChatNavigation<Content: View>: View {
     @StateObject var chatNavigationViewModel = ChatNavigationViewModel()
     let chatType: ChatType
     @ViewBuilder var redirectView: (_ type: ChatRedirectViewType, _ onDone: @escaping () -> Void) -> Content
-    var onUpdateDate: (Date) -> Void
     public init(
         chatType: ChatType,
-        @ViewBuilder redirectView: @escaping (_ type: ChatRedirectViewType, _ onDone: @escaping () -> Void) -> Content,
-        onUpdateDate: @escaping (Date) -> Void
+        @ViewBuilder redirectView: @escaping (_ type: ChatRedirectViewType, _ onDone: @escaping () -> Void) -> Content
     ) {
         self.chatType = chatType
         self.redirectView = redirectView
-        self.onUpdateDate = onUpdateDate
     }
 
     public var body: some View {
@@ -130,18 +127,11 @@ public struct ChatNavigation<Content: View>: View {
                 }
             }
         }
-        .onChange(of: chatNavigationViewModel.dateOfLastMessage) { value in
-            if let value = value {
-                self.onUpdateDate(value)
-            }
-        }
     }
 }
 
 #Preview{
     ChatNavigation(chatType: .none) { type, onDone in
         EmptyView()
-    } onUpdateDate: { _ in
-
     }
 }
