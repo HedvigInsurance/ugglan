@@ -152,7 +152,7 @@ public struct ClaimDetailView: View {
                     HStack(spacing: 4) {
                         Image(
                             uiImage: vm.hasUnreadMessages
-                                ? hCoreUIAssets.chatQuickNavNotification.image : hCoreUIAssets.chat.image
+                                ? hCoreUIAssets.chatNotification.image : hCoreUIAssets.chat.image
                         )
                         hText("Go to conversation")
                             .foregroundColor(hTextColor.Opaque.primary)
