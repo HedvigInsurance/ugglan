@@ -146,7 +146,7 @@ public struct ClaimDetailView: View {
             hButton.LargeButton(
                 type: .secondary,
                 action: {
-                    /* TODO: GO TO CONVERSATION */
+                    NotificationCenter.default.post(name: .openChat, object: vm.claim.conversation)
                 },
                 content: {
                     HStack(spacing: 4) {
@@ -345,7 +345,15 @@ struct ClaimDetailView_Previews: PreviewProvider {
             claimType: "Broken item",
             incidentDate: "2024-02-15",
             productVariant: nil,
-            conversation: .init(conversationId: "", newestMessageSentAt: nil)
+            conversation: .init(
+                id: "",
+                type: .claim,
+                title: "",
+                subtitle: nil,
+                newestMessage: nil,
+                createdAt: nil,
+                statusMessage: nil
+            )
         )
         return ClaimDetailView(claim: claim, claimHasUnreadMessages: true)
     }

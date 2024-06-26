@@ -104,7 +104,15 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
             claimType: "Broken item",
             incidentDate: "2024-02-15",
             productVariant: nil,
-            conversation: .init(conversationId: "", newestMessageSentAt: nil)
+            conversation: .init(
+                id: "",
+                type: .claim,
+                title: "",
+                subtitle: nil,
+                newestMessage: nil,
+                createdAt: nil,
+                statusMessage: nil
+            )
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -129,7 +137,15 @@ struct ClaimReopened_Previews: PreviewProvider {
             claimType: "Broken item",
             incidentDate: "2024-02-15",
             productVariant: nil,
-            conversation: .init(conversationId: "", newestMessageSentAt: nil)
+            conversation: .init(
+                id: "",
+                type: .claim,
+                title: "",
+                subtitle: nil,
+                newestMessage: nil,
+                createdAt: nil,
+                statusMessage: nil
+            )
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -154,7 +170,15 @@ struct ClaimPaid_Previews: PreviewProvider {
             claimType: "Broken item",
             incidentDate: "2024-02-15",
             productVariant: nil,
-            conversation: .init(conversationId: "", newestMessageSentAt: nil)
+            conversation: .init(
+                id: "",
+                type: .claim,
+                title: "",
+                subtitle: nil,
+                newestMessage: nil,
+                createdAt: nil,
+                statusMessage: nil
+            )
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -179,7 +203,15 @@ struct ClaimNotCompensated_Previews: PreviewProvider {
             claimType: "Broken item",
             incidentDate: "2024-02-15",
             productVariant: nil,
-            conversation: .init(conversationId: "", newestMessageSentAt: nil)
+            conversation: .init(
+                id: "",
+                type: .claim,
+                title: "",
+                subtitle: nil,
+                newestMessage: nil,
+                createdAt: nil,
+                statusMessage: nil
+            )
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -204,7 +236,15 @@ struct ClaimNotCocered_Previews: PreviewProvider {
             claimType: "Broken item",
             incidentDate: "2024-02-15",
             productVariant: nil,
-            conversation: .init(conversationId: "", newestMessageSentAt: nil)
+            conversation: .init(
+                id: "",
+                type: .claim,
+                title: "",
+                subtitle: nil,
+                newestMessage: nil,
+                createdAt: nil,
+                statusMessage: nil
+            )
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)

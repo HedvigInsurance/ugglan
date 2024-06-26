@@ -56,10 +56,7 @@ extension ClaimModel {
         self.incidentDate = claim.incidentDate
         self.productVariant = .init(data: claim.productVariant?.fragments.productVariantFragment)
         self.claimType = claim.claimType ?? ""
-        self.conversation = .init(
-            conversationId: claim.conversation.id,
-            newestMessageSentAt: claim.conversation.newestMessage?.sentAt.localDateToIso8601Date ?? Date()
-        )
+        self.conversation = .init(fragment: claim.conversation.fragments.conversationFragment, type: .claim)
     }
 }
 

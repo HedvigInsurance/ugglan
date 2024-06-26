@@ -17,10 +17,7 @@ query Claims {
             claimType
             incidentDate
             conversation {
-                id
-                newestMessage {
-                    sentAt
-                }
+                ...ConversationFragment
             }
         }
     }
