@@ -40,6 +40,7 @@ mutation ConversationCreate {
 fragment ConversationFragment on Conversation {
     createdAt
     id
+    isOpen
     newestMessage {
         ... MessageFragment
     }
