@@ -18,63 +18,100 @@ public struct ConversationsView: View {
     @ViewBuilder
     var displayMessages: some View {
         hSection(vm.conversations) { conversation in
-            HStack {
-                if conversation.type == .legacy {
-                    hRow {
-                        HStack(spacing: 16) {
-                            Image(uiImage: hCoreUIAssets.activeInbox.image)
-                                .resizable()
-                                .frame(width: 10, height: 9)
-                                .foregroundColor(hFillColor.Opaque.secondary)
-                            hText("Conversation history until " + Date().localDateString, style: .footnote)
-                        }
-                    }
-                } else {
-                    hRow {
-                        HStack {
-                            Circle()
-                                .frame(width: 8)
-                                .foregroundColor(getNotificationColor(for: conversation))
-                                .frame(maxHeight: .infinity, alignment: .top)
-                                .padding(.top, 8)
-                            VStack(alignment: .leading, spacing: 4) {
-                                hText(conversation.title, style: .body1)
-                                HStack(spacing: 8) {
-                                    hText(conversation.subtitle ?? "", style: .footnote)
-                                    hText("|")
-                                        .foregroundColor(hBorderColor.secondary)
-                                    hText("Submitted " + (conversation.createdAt ?? ""), style: .footnote)
-                                }
-                                .foregroundColor(hTextColor.Opaque.accordion)
-
-                                if let newestMessage = conversation.newestMessage {
-                                    switch newestMessage.type {
-                                    case let .text(text):
-                                        hText(text, style: .footnote)
-                                            .padding(.top, 4)
-                                    default:
-                                        EmptyView()
-                                    }
-                                }
-                            }
-                        }
-                    }
+            rowView(for: conversation)
+                .onTapGesture {
+                    NotificationCenter.default.post(name: .openChat, object: conversation)
                 }
-            }
-            .onTapGesture {
-                NotificationCenter.default.post(name: .openChat, object: conversation)
-            }
         }
         .sectionContainerStyle(.transparent)
     }
 
+    func rowView(for conversation: Conversation) -> some View {
+        HStack(spacing: .padding16) {
+            hRow {
+                Circle()
+                    .frame(width: 10)
+                    .foregroundColor(hColorBase(.clear))
+                    .frame(maxHeight: .infinity, alignment: .top)
+
+                if conversation.type == .legacy {
+                    legacyView(conversation: conversation)
+                } else {
+                    conversationView(conversation: conversation)
+                }
+            }
+        }
+    }
+
+    func legacyView(conversation: Conversation) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                hText("Conversation history", style: .body1)
+                Spacer()
+                if let timeStamp = conversation.newestMessage?.sentAt {
+                    hText(getDateStamp(for: timeStamp), style: .footnote)
+                }
+            }
+            getNewestMessage(conversation: conversation)
+        }
+        .foregroundColor(hTextColor.Opaque.secondary)
+    }
+
+    @ViewBuilder
+    func conversationView(conversation: Conversation) -> some View {
+        VStack(alignment: .leading, spacing: .padding4) {
+            hText(conversation.title, style: .body1)
+            hText(conversation.subtitle ?? "", style: .footnote)
+            getNewestMessage(conversation: conversation)
+        }
+
+        Spacer()
+        if let timeStamp = conversation.newestMessage?.sentAt {
+            hText(getDateStamp(for: timeStamp))
+                .foregroundColor(hTextColor.Opaque.accordion)
+        }
+    }
+
+    @ViewBuilder
+    private func getNewestMessage(conversation: Conversation) -> some View {
+        if let newestMessage = conversation.newestMessage {
+            switch newestMessage.type {
+            case let .text(text):
+                var textToDisplay: String {
+                    if newestMessage.sender == .hedvig {
+                        return "Hedvig: " + text
+                    } else {
+                        return "You: " + text
+                    }
+                }
+                hText(textToDisplay, style: .footnote)
+                    .padding(.top, 4)
+            default:
+                EmptyView()
+            }
+        }
+    }
+
     @hColorBuilder
     private func getNotificationColor(for conversation: Conversation) -> some hColor {
-        if vm.hasNotification(conversation: conversation) {
-            hSignalColor.Red.element
+        if conversation.type != .legacy {
+            if vm.hasNotification(conversation: conversation) {
+                hSignalColor.Blue.element
+            } else {
+                hColorBase(.clear)
+            }
         } else {
             hColorBase(.clear)
         }
+    }
+
+    private func getDateStamp(for date: Date) -> String {
+        if date.isToday {
+            return "Today " + date.displayTimeStamp
+        } else if date.isYesterday {
+            return "Yesterday " + date.displayTimeStamp
+        }
+        return date.displayDateDDMMMMYYYYFormat ?? ""
     }
 }
 

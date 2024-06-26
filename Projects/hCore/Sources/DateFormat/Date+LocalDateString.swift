@@ -24,6 +24,24 @@ extension Date {
     public var displayDateDDMMMYYYYFormat: String? {
         return DateFormatters.displayddMMMyyyy.string(from: self).lowercased()
     }
+
+    public var displayDateDDMMMMYYYYFormat: String? {
+        return DateFormatters.displayddMMMMyyyy.string(from: self).lowercased()
+    }
+
+    public var displayTimeStamp: String {
+        let dateFormatter = DateFormatter()
+        if !Calendar.current.isDateInWeek(from: self) {
+            dateFormatter.dateFormat = "MMM d, yyyy - HH:mm"
+            return dateFormatter.string(from: self)
+        } else if Calendar.current.isDateInToday(self) {
+            dateFormatter.dateFormat = "HH:mm"
+            return dateFormatter.string(from: self)
+        } else {
+            dateFormatter.dateFormat = "EEEE HH:mm"
+            return dateFormatter.string(from: self)
+        }
+    }
 }
 
 public struct DateFormatters {
@@ -57,6 +75,12 @@ public struct DateFormatters {
         return formatter
     }()
 
+    static let displayddMMMMyyyy: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd MMMM yyyy"
+        return formatter
+    }()
+
     static let localDateToIso8601Date: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
 
@@ -64,4 +88,13 @@ public struct DateFormatters {
         formatter.timeZone = .current
         return formatter
     }()
+}
+
+extension Calendar {
+    /// returns a boolean indicating if provided date is in the same week as current week
+    public func isDateInWeek(from date: Date) -> Bool {
+        let currentWeek = component(Calendar.Component.weekOfYear, from: Date())
+        let otherWeek = component(Calendar.Component.weekOfYear, from: date)
+        return (currentWeek == otherWeek)
+    }
 }
