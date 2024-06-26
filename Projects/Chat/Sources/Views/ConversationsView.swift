@@ -35,6 +35,7 @@ public struct ConversationsView: View {
                     .frame(width: 10)
                     .foregroundColor(getNotificationColor(for: conversation))
                     .frame(maxHeight: .infinity, alignment: .top)
+                    .padding(.top, .padding8)
 
                 if conversation.type == .legacy {
                     legacyView(conversation: conversation)
