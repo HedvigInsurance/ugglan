@@ -95,7 +95,7 @@ extension UIDevice {
                 case "i386", "x86_64", "arm64":
                     return
                         "Simulator \(mapToDevice(identifier: ProcessInfo().environment["SIMULATOR_MODEL_IDENTIFIER"] ?? "iOS"))"
-                default: return identifier
+                    defaultStyle: return identifier
                 }
             #elseif os(tvOS)
                 switch identifier {
@@ -104,12 +104,13 @@ extension UIDevice {
                 case "i386", "x86_64":
                     return
                         "Simulator \(mapToDevice(identifier: ProcessInfo().environment["SIMULATOR_MODEL_IDENTIFIER"] ?? "tvOS"))"
-                default: return identifier
+                    defaultStyle: return identifier
                 }
             #elseif os(visionOS)
                 switch identifier {
-                case "RealityDevice14,1": return "Apple Vision Pro"
-                default: return identifier
+                case "RealityDevice14,1":
+                    return "Apple Vision Pro"
+                    defaultStyle: return identifier
                 }
             #endif
         }
