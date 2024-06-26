@@ -28,7 +28,7 @@ public struct Conversation: Identifiable, Equatable, Hashable, Codable {
     let type: ConversationType
     public let title: String
     let subtitle: String?
-    let newestMessage: Message?
+    public let newestMessage: Message?
     let createdAt: String?
     let statusMessage: String?
 

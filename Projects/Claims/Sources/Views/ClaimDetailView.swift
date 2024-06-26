@@ -1,3 +1,4 @@
+import Chat
 import Combine
 import Home
 import Kingfisher
@@ -150,8 +151,8 @@ public struct ClaimDetailView: View {
                 content: {
                     HStack(spacing: 4) {
                         Image(
-                            uiImage: hCoreUIAssets.chatNotification.image
-                                //                            uiImage: hCoreUIAssets.chatNotification.image hCoreUIAssets.chat.image
+                            uiImage: vm.showChatNotification
+                                ? hCoreUIAssets.chatNotification.image : hCoreUIAssets.chat.image
                         )
                         hText("Go to conversation")
                             .foregroundColor(hTextColor.Opaque.primary)
@@ -365,6 +366,7 @@ public class ClaimDetailViewModel: ObservableObject {
     @Published var fetchFilesError: String?
     @Published var hasFiles = false
     @Published var showFilesView: FilesDto?
+    @Published var showChatNotification = false
     let fileUploadManager = FileUploadManager()
     var fileGridViewModel: FileGridViewModel
 
@@ -402,6 +404,19 @@ public class ClaimDetailViewModel: ObservableObject {
             }
             .store(in: &cancellables)
 
+        let chatStore: ChatStore = globalPresentableStoreContainer.get()
+        chatStore.stateSignal.plain().publisher
+            .map({ $0.conversationsTimeStamp })
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] conversationsTimeStamp in
+                let timeStamp = conversationsTimeStamp[claim.conversation.id]
+                self?.showChatNotification = timeStamp ?? Date() < claim.conversation.newestMessage?.sentAt ?? Date()
+            }
+            .store(in: &cancellables)
+
+        let timeStamp = chatStore.state.conversationsTimeStamp[claim.conversation.id]
+        showChatNotification = timeStamp ?? Date() < claim.conversation.newestMessage?.sentAt ?? Date()
     }
 
     @MainActor

@@ -138,11 +138,6 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
     }
 }
 
-public struct ClaimsConversation: Codable, Hashable {
-    public let conversationId: String
-    public let newestMessageSentAt: Date?
-}
-
 extension ClaimModel: TrackingViewNameProtocol {
     public var nameForTracking: String {
         return .init(describing: ClaimDetailView.self)

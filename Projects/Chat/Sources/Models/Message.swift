@@ -13,7 +13,7 @@ public struct Message: Identifiable, Codable, Hashable {
         return (localId ?? remoteId ?? "")
     }
     let sender: MessageSender
-    let sentAt: Date
+    public let sentAt: Date
     let type: MessageType
     var status: MessageStatus
 
