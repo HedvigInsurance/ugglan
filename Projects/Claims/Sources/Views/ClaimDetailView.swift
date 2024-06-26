@@ -18,10 +18,9 @@ public struct ClaimDetailView: View {
     @EnvironmentObject var homeVm: HomeNavigationViewModel
 
     public init(
-        claim: ClaimModel,
-        claimHasUnreadMessages: Bool
+        claim: ClaimModel
     ) {
-        self._vm = .init(wrappedValue: .init(claim: claim, hasUnreadMessages: claimHasUnreadMessages))
+        self._vm = .init(wrappedValue: .init(claim: claim))
         if let url = URL(string: claim.signedAudioURL) {
             self._player = State(initialValue: AudioPlayer(url: url))
         }
@@ -151,8 +150,8 @@ public struct ClaimDetailView: View {
                 content: {
                     HStack(spacing: 4) {
                         Image(
-                            uiImage: vm.hasUnreadMessages
-                                ? hCoreUIAssets.chatNotification.image : hCoreUIAssets.chat.image
+                            uiImage: hCoreUIAssets.chatNotification.image
+                                //                            uiImage: hCoreUIAssets.chatNotification.image hCoreUIAssets.chat.image
                         )
                         hText("Go to conversation")
                             .foregroundColor(hTextColor.Opaque.primary)
@@ -355,7 +354,7 @@ struct ClaimDetailView_Previews: PreviewProvider {
                 statusMessage: nil
             )
         )
-        return ClaimDetailView(claim: claim, claimHasUnreadMessages: true)
+        return ClaimDetailView(claim: claim)
     }
 }
 
@@ -368,15 +367,12 @@ public class ClaimDetailViewModel: ObservableObject {
     @Published var showFilesView: FilesDto?
     let fileUploadManager = FileUploadManager()
     var fileGridViewModel: FileGridViewModel
-    let hasUnreadMessages: Bool
 
     private var cancellables = Set<AnyCancellable>()
     public init(
-        claim: ClaimModel,
-        hasUnreadMessages: Bool
+        claim: ClaimModel
     ) {
         self.claim = claim
-        self.hasUnreadMessages = hasUnreadMessages
         let store: ClaimsStore = globalPresentableStoreContainer.get()
         let files = store.state.files[claim.id] ?? []
         self.fileGridViewModel = .init(files: files, options: [])

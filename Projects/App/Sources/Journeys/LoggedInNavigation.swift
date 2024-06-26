@@ -258,9 +258,7 @@ struct HomeTab: View {
                 }
             )
             .routerDestination(for: ClaimModel.self, options: [.hidesBottomBarWhenPushed]) { claim in
-                /* TODO: CHANGE */
-                let hasUnreadMessages = true
-                ClaimDetailView(claim: claim, claimHasUnreadMessages: hasUnreadMessages)
+                ClaimDetailView(claim: claim)
                     .environmentObject(homeNavigationVm)
                     .configureTitle(L10n.claimsYourClaim)
             }
