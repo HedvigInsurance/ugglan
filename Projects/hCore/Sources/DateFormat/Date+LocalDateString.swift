@@ -32,11 +32,14 @@ extension Date {
     public var displayTimeStamp: String {
         let dateFormatter = DateFormatter()
         if !Calendar.current.isDateInWeek(from: self) {
-            dateFormatter.dateFormat = "MMM d, yyyy - HH:mm"
+            dateFormatter.dateFormat = "dd MMMM YYYY"
             return dateFormatter.string(from: self)
         } else if Calendar.current.isDateInToday(self) {
             dateFormatter.dateFormat = "HH:mm"
-            return dateFormatter.string(from: self)
+            return "Today " + dateFormatter.string(from: self)
+        } else if Calendar.current.isDateInYesterday(self) {
+            dateFormatter.dateFormat = "HH:mm"
+            return "Yesterday " + dateFormatter.string(from: self)
         } else {
             dateFormatter.dateFormat = "EEEE HH:mm"
             return dateFormatter.string(from: self)

@@ -14,18 +14,4 @@ extension Date {
         }
         return false
     }
-
-    public var isToday: Bool {
-        if self.daysBetween(start: Date()) == 0 {
-            return true
-        }
-        return false
-    }
-
-    public var isYesterday: Bool {
-        if self == Date() - 1 {
-            return true
-        }
-        return false
-    }
 }

@@ -53,7 +53,7 @@ public struct ConversationsView: View {
                 hText("Conversation history", style: .body1)
                 Spacer()
                 if let timeStamp = conversation.newestMessage?.sentAt {
-                    hText(getDateStamp(for: timeStamp), style: .footnote)
+                    hText(timeStamp.displayTimeStamp, style: .footnote)
                 }
             }
             getNewestMessage(conversation: conversation)
@@ -72,7 +72,7 @@ public struct ConversationsView: View {
 
         Spacer()
         if let timeStamp = conversation.newestMessage?.sentAt {
-            hText(getDateStamp(for: timeStamp), style: .footnote)
+            hText(timeStamp.displayTimeStamp, style: .footnote)
                 .foregroundColor(hTextColor.Opaque.accordion)
         }
     }
@@ -121,15 +121,6 @@ public struct ConversationsView: View {
         } else {
             hColorBase(.clear)
         }
-    }
-
-    private func getDateStamp(for date: Date) -> String {
-        if date.isToday {
-            return "Today " + date.displayTimeStamp
-        } else if date.isYesterday {
-            return "Yesterday " + date.displayTimeStamp
-        }
-        return date.displayDateDDMMMMYYYYFormat ?? ""
     }
 }
 

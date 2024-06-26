@@ -5,8 +5,9 @@ public class ConversationsDemoClient: ConversationsClient {
     public init() {}
     public func getConversations() async throws -> [Conversation] {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy/MM/dd HH:mm"
-        let someDateTime = formatter.date(from: "2024/06/08 22:31")
+        formatter.dateFormat = "yyyy-MM-dd HH:mm"
+        let someDateTime = formatter.date(from: "2024-06-08 22:31")
+        let dateYesterday = formatter.date(from: "2024-06-25 22:31")
 
         let conversations = [
             Conversation(
@@ -34,6 +35,24 @@ public class ConversationsDemoClient: ConversationsClient {
                     remoteId: "remoteId2",
                     type: .text(text: "Please tell us more what happened when the phone broke."),
                     date: Date()
+                ),
+                createdAt: "2024-06-10",
+                statusMessage: "status message"
+            ),
+
+            Conversation(
+                id: "id3",
+                type: .claim,
+                title: "Claim",
+                subtitle: "Chronical gastrointestinal issues",
+                newestMessage: .init(
+                    localId: "localId2",
+                    remoteId: "remoteId2",
+                    type: .text(
+                        text:
+                            "Lorem ipsum dolor sit amet consectetur. Accumsan vitae adipiscing blandit id et interdum."
+                    ),
+                    date: dateYesterday ?? Date()
                 ),
                 createdAt: "2024-06-10",
                 statusMessage: "status message"
