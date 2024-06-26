@@ -141,7 +141,7 @@ public struct ChatScreen: View {
                         }
                     )
                 }
-                .hInfoCardLayoutStyle(.rectange)
+                .hInfoCardLayoutStyle(.bannerStyle)
         }
     }
 }

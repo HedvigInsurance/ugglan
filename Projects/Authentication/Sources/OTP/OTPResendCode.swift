@@ -85,10 +85,11 @@ class ResendOTPCodeViewModel: ObservableObject {
     }
 
     private func showToast() {
-        Toasts.shared.displayToast(
+        Toasts.shared.displayToastBar(
             toast: .init(
-                symbol: .icon(hCoreUIAssets.refresh.image),
-                body: L10n.Login.Snackbar.codeResent
+                type: .campaign,
+                icon: hCoreUIAssets.refresh.image,
+                text: L10n.Login.Snackbar.codeResent
             )
         )
     }

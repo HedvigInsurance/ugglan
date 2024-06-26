@@ -21,7 +21,7 @@ public struct SubmitClaimDeflectScreen: View {
         hForm {
             VStack(spacing: 16) {
                 hSection {
-                    let type: InfoCardType = isEmergencyStep ? .attention : .info
+                    let type: NotificationType = isEmergencyStep ? .attention : .info
                     InfoCard(text: model?.config?.infoText ?? "", type: type)
                 }
                 if isEmergencyStep {

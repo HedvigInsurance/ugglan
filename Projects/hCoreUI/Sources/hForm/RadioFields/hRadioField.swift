@@ -192,7 +192,7 @@ struct hRadioField_Previews: PreviewProvider {
 }
 
 extension hFieldSize {
-    fileprivate var minHeight: CGFloat {
+    var minHeight: CGFloat {
         switch self {
         case .small:
             return 56
@@ -203,7 +203,7 @@ extension hFieldSize {
         }
     }
 
-    fileprivate var topPadding: CGFloat {
+    var topPadding: CGFloat {
         switch self {
         case .small:
             return 15
@@ -214,8 +214,24 @@ extension hFieldSize {
         }
     }
 
-    fileprivate var bottomPadding: CGFloat {
+    var bottomPadding: CGFloat {
         topPadding + 2
+    }
+
+    var topOffset: CGFloat {
+        switch self {
+        case .small: return 17
+        case .medium: return 21
+        case .large: return 18
+        }
+    }
+
+    var bottomOffset: CGFloat {
+        switch self {
+        case .small: return 17
+        case .medium: return 21
+        case .large: return 18
+        }
     }
 }
 

@@ -10,13 +10,9 @@ public struct hCounterField: View {
     @State var textToShow: String = ""
     private let textForValue: (_ value: Int) -> String?
     @Environment(\.isEnabled) var isEnabled
+    @Environment(\.hFieldSize) var size
 
-    var shouldMoveLabel: Binding<Bool> {
-        Binding(
-            get: { !textToShow.isEmpty },
-            set: { _ in }
-        )
-    }
+    @State var shouldMoveLabel: Bool = false
     public init(
         value: Binding<Int>,
         placeholder: String? = nil,
@@ -37,46 +33,47 @@ public struct hCounterField: View {
     public var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 0) {
-                VStack(alignment: .leading, spacing: 0) {
-                    hFieldLabel(
-                        placeholder: placeholder,
-                        animate: $animate,
-                        error: $error,
-                        shouldMoveLabel: shouldMoveLabel
-                    )
-                    HStack(spacing: 0) {
-                        if !textToShow.isEmpty {
-                            getTextLabel
+                HStack {
+                    ZStack(alignment: .leading) {
+                        HStack {
+                            hFieldLabel(
+                                placeholder: placeholder,
+                                animate: $animate,
+                                error: $error,
+                                shouldMoveLabel: $shouldMoveLabel
+                            )
                         }
-                        Spacer()
-                        SwiftUI.Button {
-                            if let minValue, minValue < value {
-                                decrease()
-                            }
-                        } label: {
-                            Image(uiImage: hCoreUIAssets.minus.image)
-                                .foregroundColor(
-                                    hTextColor.Opaque.primary.opacity(value == 0 ? 0.4 : 1)
+                        .offset(y: shouldMoveLabel ? size.labelOffset : 0)
+                        getTextLabel
+                            .offset(y: shouldMoveLabel ? size.fieldOffset : 0)
+                    }
+                    Spacer()
+                    SwiftUI.Button {
+                        if let minValue, minValue < value {
+                            decrease()
+                        }
+                    } label: {
+                        Image(uiImage: hCoreUIAssets.minus.image)
+                            .foregroundColor(
+                                hTextColor.Opaque.primary.opacity(value == 0 ? 0.4 : 1)
 
-                                )
-                                .frame(width: 35, height: 35)
+                            )
+                            .frame(width: 35, height: 35)
+                    }
+                    SwiftUI.Button {
+                        if let maxValue, maxValue > value {
+                            increase()
                         }
-                        SwiftUI.Button {
-                            if let maxValue, maxValue > value {
-                                increase()
-                            }
-                        } label: {
-                            Image(uiImage: hCoreUIAssets.plusSmall.image)
-                                .foregroundColor(hTextColor.Opaque.primary)
-                                .frame(width: 35, height: 35)
-                        }
+                    } label: {
+                        Image(uiImage: hCoreUIAssets.plus.image)
+                            .foregroundColor(hTextColor.Opaque.primary)
+                            .frame(width: 35, height: 35)
                     }
                 }
-                .padding(.vertical, textToShow.isEmpty ? 3 : 9.5)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.top, size.counterTopPadding)
+                .padding(.bottom, size.counterBottomPadding)
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
         .addFieldBackground(animate: $animate, error: $error)
         .addFieldError(animate: $animate, error: $error)
         .onTapGesture {
@@ -84,6 +81,9 @@ public struct hCounterField: View {
         }
         .onAppear {
             self.textToShow = textForValue(value) ?? ""
+        }
+        .onChange(of: textToShow) { value in
+            shouldMoveLabel = placeholder != "" && value != ""
         }
     }
 
@@ -100,7 +100,7 @@ public struct hCounterField: View {
     }
 
     private var getTextLabel: some View {
-        hText(textToShow, style: .title3)
+        hText(textToShow, style: size == .large ? .body2 : .body1)
             .foregroundColor(hTextColor.Opaque.primary)
     }
 
@@ -119,15 +119,61 @@ public struct hCounterField: View {
 struct hCounterField_Previews: PreviewProvider {
     @State static var value: Int = 1
     static var previews: some View {
-        VStack {
-            hCounterField(value: $value, placeholder: "Placeholder", minValue: 0, maxValue: 5) { value in
-                if value == 0 {
-                    return nil
-                } else {
-                    return "VALUE \(value)"
-                }
+        let counerWithPlaceholder = hCounterField(value: $value, placeholder: "Placeholder", minValue: 0, maxValue: 5) {
+            value in
+            if value == 0 {
+                return nil
+            } else {
+                return "VALUE \(value)"
             }
         }
-        .background(Color.blue)
+
+        let counerWithWithoutPlaceholder = hCounterField(value: $value, placeholder: "", minValue: 0, maxValue: 5) {
+            value in
+            if value == 0 {
+                return nil
+            } else {
+                return "VALUE \(value)"
+            }
+        }
+        return VStack(alignment: .leading) {
+            Section("With placeholder") {
+                counerWithPlaceholder
+                    .hFieldSize(.large)
+
+                counerWithPlaceholder
+                    .hFieldSize(.medium)
+
+                counerWithPlaceholder
+                    .hFieldSize(.small)
+            }
+            Section("Without placeholder") {
+                counerWithWithoutPlaceholder
+                    .hFieldSize(.large)
+
+                counerWithWithoutPlaceholder
+                    .hFieldSize(.medium)
+
+                counerWithWithoutPlaceholder
+                    .hFieldSize(.small)
+            }
+        }
+    }
+}
+
+extension hFieldSize {
+    var counterTopPadding: CGFloat {
+        switch self {
+        case .small:
+            return 10
+        case .large:
+            return 15
+        case .medium:
+            return 15
+        }
+    }
+
+    var counterBottomPadding: CGFloat {
+        counterTopPadding - 1
     }
 }
