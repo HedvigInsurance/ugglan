@@ -27,12 +27,12 @@ public class ConversationsDemoClient: ConversationsClient {
             Conversation(
                 id: "id2",
                 type: .service,
-                title: "title",
-                subtitle: "subtitle",
+                title: "Claim",
+                subtitle: "Broken phone",
                 newestMessage: .init(
                     localId: "localId2",
                     remoteId: "remoteId2",
-                    type: .text(text: "text"),
+                    type: .text(text: "Please tell us more what happened when the phone broke."),
                     date: Date()
                 ),
                 createdAt: "2024-06-10",

@@ -90,6 +90,7 @@ public struct ConversationsView: View {
                     }
                 }
                 hText(textToDisplay, style: .footnote)
+                    .fixedSize(horizontal: false, vertical: true)
             default:
                 EmptyView()
             }
