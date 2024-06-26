@@ -15,7 +15,11 @@ public class ConversationsClientOctopus: ConversationsClient {
             let legacyConversation = legacyFragment.asConversation(type: .legacy)
             conversations.insert(legacyConversation, at: 0)
         }
-        return conversations
+
+        let conversationsSortedByDate = conversations.sorted(by: {
+            $0.newestMessage?.sentAt ?? Date() > $1.newestMessage?.sentAt ?? Date()
+        })
+        return conversationsSortedByDate
     }
 
     public func createConversation() async throws -> Conversation {

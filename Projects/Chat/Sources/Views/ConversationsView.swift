@@ -23,6 +23,8 @@ public struct ConversationsView: View {
                     NotificationCenter.default.post(name: .openChat, object: conversation)
                 }
         }
+        .hWithoutDividerPadding
+        .padding(.horizontal, -16)
         .sectionContainerStyle(.transparent)
     }
 
@@ -31,7 +33,7 @@ public struct ConversationsView: View {
             hRow {
                 Circle()
                     .frame(width: 10)
-                    .foregroundColor(hColorBase(.clear))
+                    .foregroundColor(getNotificationColor(for: conversation))
                     .frame(maxHeight: .infinity, alignment: .top)
 
                 if conversation.type == .legacy {
@@ -41,6 +43,7 @@ public struct ConversationsView: View {
                 }
             }
         }
+        .background(getBackgroundColor(for: conversation))
     }
 
     func legacyView(conversation: Conversation) -> some View {
@@ -63,11 +66,12 @@ public struct ConversationsView: View {
             hText(conversation.title, style: .body1)
             hText(conversation.subtitle ?? "", style: .footnote)
             getNewestMessage(conversation: conversation)
+                .padding(.top, .padding4)
         }
 
         Spacer()
         if let timeStamp = conversation.newestMessage?.sentAt {
-            hText(getDateStamp(for: timeStamp))
+            hText(getDateStamp(for: timeStamp), style: .footnote)
                 .foregroundColor(hTextColor.Opaque.accordion)
         }
     }
@@ -85,7 +89,6 @@ public struct ConversationsView: View {
                     }
                 }
                 hText(textToDisplay, style: .footnote)
-                    .padding(.top, 4)
             default:
                 EmptyView()
             }
@@ -97,6 +100,19 @@ public struct ConversationsView: View {
         if conversation.type != .legacy {
             if vm.hasNotification(conversation: conversation) {
                 hSignalColor.Blue.element
+            } else {
+                hColorBase(.clear)
+            }
+        } else {
+            hColorBase(.clear)
+        }
+    }
+
+    @hColorBuilder
+    private func getBackgroundColor(for conversation: Conversation) -> some hColor {
+        if conversation.type != .legacy {
+            if vm.hasNotification(conversation: conversation) {
+                hSurfaceColor.Opaque.primary
             } else {
                 hColorBase(.clear)
             }
@@ -174,5 +190,6 @@ class ConversationsViewModel: ObservableObject {
 
 #Preview{
     Dependencies.shared.add(module: Module { () -> ConversationClient in ConversationDemoClient() })
+    Dependencies.shared.add(module: Module { () -> ConversationsClient in ConversationsDemoClient() })
     return ConversationsView()
 }

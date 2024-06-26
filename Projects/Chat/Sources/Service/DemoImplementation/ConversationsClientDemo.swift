@@ -4,14 +4,23 @@ public class ConversationsDemoClient: ConversationsClient {
 
     public init() {}
     public func getConversations() async throws -> [Conversation] {
-        return [
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy/MM/dd HH:mm"
+        let someDateTime = formatter.date(from: "2024/06/08 22:31")
+
+        let conversations = [
             Conversation(
                 id: "id1",
                 type: .legacy,
                 title: "title",
                 subtitle: "subtitle",
-                newestMessage: nil,
-                createdAt: nil,
+                newestMessage: .init(
+                    localId: "",
+                    remoteId: "",
+                    type: .text(text: "hello hello"),
+                    date: someDateTime ?? Date()
+                ),
+                createdAt: "2024-05-06",
                 statusMessage: "status message"
             ),
 
@@ -30,6 +39,11 @@ public class ConversationsDemoClient: ConversationsClient {
                 statusMessage: "status message"
             ),
         ]
+
+        let conversationsSortedByDate = conversations.sorted(by: {
+            $0.newestMessage?.sentAt ?? Date() > $1.newestMessage?.sentAt ?? Date()
+        })
+        return conversationsSortedByDate
     }
 
     public func createConversation() async throws -> Conversation {
