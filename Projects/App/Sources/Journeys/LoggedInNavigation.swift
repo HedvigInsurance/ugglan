@@ -417,7 +417,9 @@ class LoggedInNavigationViewModel: ObservableObject {
             if let object = notification.object as? PushNotificationType {
                 switch object {
                 case .NEW_MESSAGE:
-                    NotificationCenter.default.post(name: .openChat, object: nil)
+                    let userInfo = notification.userInfo
+                    let conversationId = userInfo?["conversationId"] as? String
+                    NotificationCenter.default.post(name: .openChat, object: conversationId)
                 case .REFERRAL_SUCCESS, .REFERRALS_ENABLED:
                     UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                     self?.selectedTab = 2
