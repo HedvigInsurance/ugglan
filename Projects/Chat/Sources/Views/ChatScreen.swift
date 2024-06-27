@@ -126,7 +126,7 @@ public struct ChatScreen: View {
 
     @ViewBuilder
     private var infoCard: some View {
-        if !vm.isConversationOpen {
+        if !vm.isConversationOpen && !vm.hasDismissedInfoCard {
             InfoCard(
                 text:
                     "This conversation is closed. If you need further help related to this conversation, please write here directly.",
@@ -136,11 +136,11 @@ public struct ChatScreen: View {
                 .init(
                     buttonTitle: "I understand",
                     buttonAction: {
-                        /* TODO: DISMISS */
+                        vm.hasDismissedInfoCard = true
                     }
                 )
             ])
-        } else {
+        } else if vm.isConversationOpen {
             if let banner = vm.banner {
                 InfoCard(text: "", type: vm.chatService.type == .oldChat ? .info : .disabled)
                     .hInfoCardCustomView {
