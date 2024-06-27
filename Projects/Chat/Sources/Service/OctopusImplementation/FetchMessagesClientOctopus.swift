@@ -16,7 +16,8 @@ public class FetchMessagesClientOctopus: FetchMessagesClient {
             messages: messages,
             banner: chatData.bannerText,
             olderToken: chatData.nextUntil,
-            hasNext: chatData.hasNext
+            hasNext: chatData.hasNext,
+            title: nil
         )
     }
 }

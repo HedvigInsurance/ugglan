@@ -6,4 +6,5 @@ public struct ChatData {
     let messages: [Message]
     let banner: Markdown?
     let isConversationOpen: Bool?
+    let title: String?
 }

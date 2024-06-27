@@ -14,6 +14,7 @@ public class ChatScreenViewModel: ObservableObject {
     @Published var isConversationOpen = true
     @Published var hasDismissedInfoCard = false
     @Published var chatInputVm: ChatInputViewModel = .init()
+    @Published var title: String = L10n.chatTitle
     var chatNavigationVm: ChatNavigationViewModel?
     let chatService: ChatServiceProtocol
 
@@ -115,6 +116,7 @@ public class ChatScreenViewModel: ObservableObject {
             self.isConversationOpen = chatData.isConversationOpen ?? true
             addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
             hasNext = chatData.hasPreviousMessage
+            title = chatData.title ?? L10n.chatTitle
         } catch _ {
             if #available(iOS 16.0, *) {
                 try! await Task.sleep(for: .seconds(2))

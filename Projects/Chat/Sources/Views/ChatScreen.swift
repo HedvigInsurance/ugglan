@@ -35,6 +35,7 @@ public struct ChatScreen: View {
         .task {
             vm.chatNavigationVm = chatNavigationVm
         }
+        .configureTitle(vm.title)
     }
 
     @ViewBuilder

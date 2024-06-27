@@ -42,7 +42,8 @@ public class ConversationService: ChatServiceProtocol {
             hasPreviousMessage: olderToken != nil,
             messages: data.messages,
             banner: data.banner,
-            isConversationOpen: data.isConversationOpen ?? true
+            isConversationOpen: data.isConversationOpen ?? true,
+            title: data.title
         )
     }
 
@@ -58,7 +59,8 @@ public class ConversationService: ChatServiceProtocol {
             hasPreviousMessage: olderToken != nil,
             messages: data.messages,
             banner: data.banner,
-            isConversationOpen: data.isConversationOpen ?? true
+            isConversationOpen: data.isConversationOpen ?? true,
+            title: data.title
         )
 
     }
@@ -83,7 +85,7 @@ public class NewConversationService: ChatServiceProtocol {
         if let conversationService = conversationService {
             return try await conversationService.getNewMessages()
         }
-        return .init(hasPreviousMessage: false, messages: [], banner: nil, isConversationOpen: true)
+        return .init(hasPreviousMessage: false, messages: [], banner: nil, isConversationOpen: true, title: nil)
     }
 
     public func getPreviousMessages() async throws -> ChatData {
@@ -91,7 +93,7 @@ public class NewConversationService: ChatServiceProtocol {
         if let conversationService = conversationService {
             return try await conversationService.getPreviousMessages()
         }
-        return .init(hasPreviousMessage: false, messages: [], banner: nil, isConversationOpen: true)
+        return .init(hasPreviousMessage: false, messages: [], banner: nil, isConversationOpen: true, title: nil)
     }
 
     public func send(message: Message) async throws -> Message {
@@ -137,7 +139,8 @@ public class MessagesService: ChatServiceProtocol {
             hasPreviousMessage: data.hasNext,
             messages: data.messages,
             banner: data.banner,
-            isConversationOpen: nil
+            isConversationOpen: nil,
+            title: data.title
         )
     }
 
@@ -148,7 +151,8 @@ public class MessagesService: ChatServiceProtocol {
             hasPreviousMessage: data.hasNext,
             messages: data.messages,
             banner: data.banner,
-            isConversationOpen: nil
+            isConversationOpen: nil,
+            title: data.title
         )
     }
 

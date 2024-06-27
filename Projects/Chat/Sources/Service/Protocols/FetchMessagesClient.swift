@@ -10,4 +10,5 @@ public struct MessagesData {
     let banner: Markdown?
     let olderToken: String?
     let hasNext: Bool
+    let title: String?
 }

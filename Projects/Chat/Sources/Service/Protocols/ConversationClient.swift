@@ -21,4 +21,5 @@ public struct ConversationMessagesData {
     let olderToken: String?
     let newerToken: String?
     let isConversationOpen: Bool?
+    let title: String?
 }

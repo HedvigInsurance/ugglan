@@ -96,7 +96,8 @@ public class ConversationClientOctopus: ConversationClient {
             banner: banner,
             olderToken: olderToken,
             newerToken: newerToken,
-            isConversationOpen: isConversationOpen
+            isConversationOpen: isConversationOpen,
+            title: conversation.title
         )
     }
 }
