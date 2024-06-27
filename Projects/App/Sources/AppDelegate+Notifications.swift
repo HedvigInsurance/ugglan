@@ -55,7 +55,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     fileprivate func performPushAction(notificationType: String, userInfo: [AnyHashable: Any]) {
         NotificationCenter.default.post(
             name: .handlePushNotification,
-            object: PushNotificationType(rawValue: notificationType),
+            object: PushNotificationType(rawValue: notificationType.uppercased()),
             userInfo: userInfo
         )
     }
@@ -66,7 +66,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
         let userInfo = response.notification.request.content.userInfo
-        guard let notificationType = userInfo["TYPE"] as? String else { return }
+        guard let notificationType = (userInfo["TYPE"] as? String) ?? (userInfo["type"] as? String) else { return }
 
         if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
             performPushAction(notificationType: notificationType, userInfo: userInfo)
@@ -88,7 +88,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 
         self.bag += toast.onTap.onValue {
             let userInfo = notification.request.content.userInfo
-            guard let notificationType = userInfo["TYPE"] as? String else { return }
+            guard let notificationType = (userInfo["TYPE"] as? String) ?? (userInfo["type"] as? String) else { return }
 
             self.performPushAction(notificationType: notificationType, userInfo: userInfo)
         }
