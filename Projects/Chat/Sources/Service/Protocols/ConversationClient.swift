@@ -3,7 +3,7 @@ import hCore
 
 public protocol ConversationsClient {
     func getConversations() async throws -> [Conversation]
-    func createConversation() async throws -> Conversation
+    func createConversation(with id: UUID) async throws -> Conversation
 }
 
 public protocol ConversationClient {

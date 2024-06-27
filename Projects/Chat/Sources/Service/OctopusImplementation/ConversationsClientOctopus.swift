@@ -22,10 +22,11 @@ public class ConversationsClientOctopus: ConversationsClient {
         return conversationsSortedByDate
     }
 
-    public func createConversation() async throws -> Conversation {
-        let mutation = hGraphQL.OctopusGraphQL.ConversationCreateMutation()
+    public func createConversation(with id: UUID) async throws -> Conversation {
+        let input = OctopusGraphQL.ConversationStartInput(id: id.uuidString)
+        let mutation = hGraphQL.OctopusGraphQL.ConversationStartMutation(input: input)
         let data = try await octopus.client.perform(mutation: mutation)
-        let conversationsFragment = data.conversationCreate.fragments.conversationFragment
+        let conversationsFragment = data.conversationStart.fragments.conversationFragment
 
         return .init(fragment: conversationsFragment, type: .service)
     }
@@ -78,11 +79,16 @@ public class ConversationClientOctopus: ConversationClient {
             newerToken: .init(optionalValue: newerToken)
         )
 
-        let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
-        let messages = data.conversation.messagePage.messages.compactMap({ $0.fragments.messageFragment.asMessage() })
-        let newerToken = data.conversation.messagePage.newerToken
-        let olderToken = data.conversation.messagePage.olderToken
-        let banner = data.conversation.statusMessage
+        guard
+            let conversation = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+                .conversation
+        else {
+            throw ConversationsError.missingConversation
+        }
+        let messages = conversation.messagePage.messages.compactMap({ $0.fragments.messageFragment.asMessage() })
+        let newerToken = conversation.messagePage.newerToken
+        let olderToken = conversation.messagePage.olderToken
+        let banner = conversation.statusMessage
         return .init(
             messages: messages,
             banner: banner,

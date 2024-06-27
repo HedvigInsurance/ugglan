@@ -235,6 +235,7 @@ enum ConversationsError: Error {
     case errorMesage(message: String)
     case missingData
     case uploadFailed
+    case missingConversation
 }
 
 extension ConversationsError: LocalizedError {
@@ -243,6 +244,7 @@ extension ConversationsError: LocalizedError {
         case let .errorMesage(message): return message
         case .missingData: return "TODO"
         case .uploadFailed: return "TODO"
+        case .missingConversation: return "TODO"
         }
     }
 }

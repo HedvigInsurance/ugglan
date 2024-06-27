@@ -31,22 +31,10 @@ mutation ConversationSendMessage($input: ConversationSendMessageInput!) {
   }
 }
 
-mutation ConversationCreate {
-  conversationCreate {
+mutation ConversationStart($input: ConversationStartInput!) {
+  conversationStart(input: $input) {
     ...ConversationFragment
   }
-}
-
-fragment ConversationFragment on Conversation {
-    createdAt
-    id
-    isOpen
-    newestMessage {
-        ... MessageFragment
-    }
-    statusMessage
-    subtitle
-    title
 }
 
 fragment MessagePageFragment on ChatMessagePage {

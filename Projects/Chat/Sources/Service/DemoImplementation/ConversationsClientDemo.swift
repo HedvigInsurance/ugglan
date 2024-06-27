@@ -68,9 +68,9 @@ public class ConversationsDemoClient: ConversationsClient {
         return conversationsSortedByDate
     }
 
-    public func createConversation() async throws -> Conversation {
+    public func createConversation(with id: UUID) async throws -> Conversation {
         return Conversation(
-            id: "id1",
+            id: id.uuidString,
             type: .legacy,
             title: "title",
             subtitle: "subtitle",

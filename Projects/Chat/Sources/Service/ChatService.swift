@@ -73,7 +73,10 @@ public class NewConversationService: ChatServiceProtocol {
     @Inject var conversationsClient: ConversationsClient
     private var conversationService: ConversationService?
     private var generatingConversation = false
-    public init() {}
+    private let id: UUID
+    public init(with id: UUID = UUID()) {
+        self.id = id
+    }
 
     public func getNewMessages() async throws -> ChatData {
         log.info("\(NewConversationService.self) getConversationMessages", error: nil, attributes: [:])
@@ -95,7 +98,7 @@ public class NewConversationService: ChatServiceProtocol {
         if conversationService == nil && generatingConversation == false {
             generatingConversation = true
             do {
-                let conversation = try await conversationsClient.createConversation()
+                let conversation = try await conversationsClient.createConversation(with: id)
                 conversationService = .init(conversationId: conversation.id)
             } catch let ex {
                 generatingConversation = false
