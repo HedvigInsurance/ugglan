@@ -111,7 +111,8 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
                 subtitle: nil,
                 newestMessage: nil,
                 createdAt: nil,
-                statusMessage: nil
+                statusMessage: nil,
+                isConversationOpen: true
             )
         )
         return VStack(spacing: 20) {
@@ -144,7 +145,8 @@ struct ClaimReopened_Previews: PreviewProvider {
                 subtitle: nil,
                 newestMessage: nil,
                 createdAt: nil,
-                statusMessage: nil
+                statusMessage: nil,
+                isConversationOpen: true
             )
         )
         return VStack(spacing: 20) {
@@ -177,7 +179,8 @@ struct ClaimPaid_Previews: PreviewProvider {
                 subtitle: nil,
                 newestMessage: nil,
                 createdAt: nil,
-                statusMessage: nil
+                statusMessage: nil,
+                isConversationOpen: true
             )
         )
         return VStack(spacing: 20) {
@@ -210,7 +213,8 @@ struct ClaimNotCompensated_Previews: PreviewProvider {
                 subtitle: nil,
                 newestMessage: nil,
                 createdAt: nil,
-                statusMessage: nil
+                statusMessage: nil,
+                isConversationOpen: true
             )
         )
         return VStack(spacing: 20) {
@@ -243,7 +247,8 @@ struct ClaimNotCocered_Previews: PreviewProvider {
                 subtitle: nil,
                 newestMessage: nil,
                 createdAt: nil,
-                statusMessage: nil
+                statusMessage: nil,
+                isConversationOpen: true
             )
         )
         return VStack(spacing: 20) {

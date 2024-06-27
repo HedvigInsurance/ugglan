@@ -11,6 +11,7 @@ public class ChatScreenViewModel: ObservableObject {
     @Published var isFetchingPreviousMessages = false
     @Published var scrollToMessage: Message?
     @Published var banner: Markdown?
+    @Published var isConversationOpen = false
     @Published var chatInputVm: ChatInputViewModel = .init()
     var chatNavigationVm: ChatNavigationViewModel?
     let chatService: ChatServiceProtocol
@@ -82,6 +83,7 @@ public class ChatScreenViewModel: ObservableObject {
                     self.lastDeliveredMessage = self.messages.first(where: { $0.sender == .member })
                 }
                 self.banner = chatData.banner
+                self.isConversationOpen = chatData.isConversationOpen ?? false
                 addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
                 self.hasNext = chatData.hasPreviousMessage
 

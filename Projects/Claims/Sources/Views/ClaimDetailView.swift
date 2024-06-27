@@ -352,7 +352,8 @@ struct ClaimDetailView_Previews: PreviewProvider {
                 subtitle: nil,
                 newestMessage: nil,
                 createdAt: nil,
-                statusMessage: nil
+                statusMessage: nil,
+                isConversationOpen: true
             )
         )
         return ClaimDetailView(claim: claim)

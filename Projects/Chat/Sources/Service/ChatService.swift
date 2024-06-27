@@ -38,7 +38,12 @@ public class ConversationService: ChatServiceProtocol {
             store.send(.setLastMessageTimestampForConversation(id: conversationId, date: sendAt))
         }
 
-        return .init(hasPreviousMessage: olderToken != nil, messages: data.messages, banner: data.banner)
+        return .init(
+            hasPreviousMessage: olderToken != nil,
+            messages: data.messages,
+            banner: data.banner,
+            isConversationOpen: data.isConversationOpen
+        )
     }
 
     public func getPreviousMessages() async throws -> ChatData {
@@ -49,7 +54,12 @@ public class ConversationService: ChatServiceProtocol {
             newerToken: nil
         )
         self.olderToken = data.olderToken
-        return .init(hasPreviousMessage: olderToken != nil, messages: data.messages, banner: data.banner)
+        return .init(
+            hasPreviousMessage: olderToken != nil,
+            messages: data.messages,
+            banner: data.banner,
+            isConversationOpen: data.isConversationOpen
+        )
 
     }
 
@@ -70,7 +80,7 @@ public class NewConversationService: ChatServiceProtocol {
         if let conversationService = conversationService {
             return try await conversationService.getNewMessages()
         }
-        return .init(hasPreviousMessage: false, messages: [], banner: nil)
+        return .init(hasPreviousMessage: false, messages: [], banner: nil, isConversationOpen: nil)
     }
 
     public func getPreviousMessages() async throws -> ChatData {
@@ -78,7 +88,7 @@ public class NewConversationService: ChatServiceProtocol {
         if let conversationService = conversationService {
             return try await conversationService.getPreviousMessages()
         }
-        return .init(hasPreviousMessage: false, messages: [], banner: nil)
+        return .init(hasPreviousMessage: false, messages: [], banner: nil, isConversationOpen: nil)
     }
 
     public func send(message: Message) async throws -> Message {
@@ -120,13 +130,23 @@ public class MessagesService: ChatServiceProtocol {
         if let sendAt = data.messages.first?.sentAt {
             store.send(.setLastMessageDate(date: sendAt))
         }
-        return .init(hasPreviousMessage: data.hasNext, messages: data.messages, banner: data.banner)
+        return .init(
+            hasPreviousMessage: data.hasNext,
+            messages: data.messages,
+            banner: data.banner,
+            isConversationOpen: nil
+        )
     }
 
     public func getPreviousMessages() async throws -> ChatData {
         let data = try await get(previousTimeStamp)
         previousTimeStamp = data.olderToken
-        return .init(hasPreviousMessage: data.hasNext, messages: data.messages, banner: data.banner)
+        return .init(
+            hasPreviousMessage: data.hasNext,
+            messages: data.messages,
+            banner: data.banner,
+            isConversationOpen: nil
+        )
     }
 
     public func send(message: Message) async throws -> Message {

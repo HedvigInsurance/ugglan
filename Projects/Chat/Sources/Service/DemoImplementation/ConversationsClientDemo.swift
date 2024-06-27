@@ -22,7 +22,8 @@ public class ConversationsDemoClient: ConversationsClient {
                     date: someDateTime ?? Date()
                 ),
                 createdAt: "2024-05-06",
-                statusMessage: "status message"
+                statusMessage: "status message",
+                isConversationOpen: false
             ),
 
             Conversation(
@@ -37,7 +38,8 @@ public class ConversationsDemoClient: ConversationsClient {
                     date: Date()
                 ),
                 createdAt: "2024-06-10",
-                statusMessage: "status message"
+                statusMessage: "status message",
+                isConversationOpen: true
             ),
 
             Conversation(
@@ -55,7 +57,8 @@ public class ConversationsDemoClient: ConversationsClient {
                     date: dateYesterday ?? Date()
                 ),
                 createdAt: "2024-06-10",
-                statusMessage: "status message"
+                statusMessage: "status message",
+                isConversationOpen: true
             ),
         ]
 
@@ -73,7 +76,8 @@ public class ConversationsDemoClient: ConversationsClient {
             subtitle: "subtitle",
             newestMessage: nil,
             createdAt: nil,
-            statusMessage: "status message"
+            statusMessage: "status message",
+            isConversationOpen: true
         )
     }
 }
@@ -91,7 +95,7 @@ public class ConversationDemoClient: ConversationClient {
             Message(type: .text(text: "text1")),
             Message(type: .text(text: "text2")),
         ]
-        return .init(messages: messages, banner: nil, olderToken: nil, newerToken: nil)
+        return .init(messages: messages, banner: nil, isConversationOpen: nil, olderToken: nil, newerToken: nil)
     }
 
     public func send(message: Message, for conversationId: String) async throws -> Message {

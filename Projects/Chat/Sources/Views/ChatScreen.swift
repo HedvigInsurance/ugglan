@@ -53,7 +53,7 @@ public struct ChatScreen: View {
         ScrollView {
             LazyVStack(spacing: 8) {
                 ForEach(vm.messages, id: \.id) { message in
-                    messageView(for: message)
+                    messageView(for: message, isConversationOpen: vm.isConversationOpen)
                         .flippedUpsideDown()
                         .onAppear {
                             if message.id == vm.messages.last?.id {
@@ -76,13 +76,13 @@ public struct ChatScreen: View {
         .padding(.bottom, -8)
     }
 
-    private func messageView(for message: Message) -> some View {
+    private func messageView(for message: Message, isConversationOpen: Bool) -> some View {
         HStack(alignment: .center, spacing: 0) {
             if message.sender == .member {
                 Spacer()
             }
             VStack(alignment: message.sender == .hedvig ? .leading : .trailing, spacing: 4) {
-                MessageView(message: message)
+                MessageView(message: message, isConversationOpen: isConversationOpen)
                     .frame(
                         maxWidth: 300,
                         alignment: message.sender == .member ? .trailing : .leading
@@ -126,22 +126,38 @@ public struct ChatScreen: View {
 
     @ViewBuilder
     private var infoCard: some View {
-        if let banner = vm.banner {
-            InfoCard(text: "", type: vm.chatService.type == .oldChat ? .info : .disabled)
-                .hInfoCardCustomView {
-                    MarkdownView(
-                        config: .init(
-                            text: banner,
-                            fontStyle: .standardSmall,
-                            color: infoCardTextColor,
-                            linkColor: infoCardLinkColor,
-                            linkUnderlineStyle: .single
-                        ) { url in
-                            NotificationCenter.default.post(name: .openDeepLink, object: url)
-                        }
-                    )
-                }
-                .hInfoCardLayoutStyle(.rectange)
+        if !vm.isConversationOpen {
+            InfoCard(
+                text:
+                    "This conversation is closed. If you need further help related to this conversation, please write here directly.",
+                type: .info
+            )
+            .buttons([
+                .init(
+                    buttonTitle: "I understand",
+                    buttonAction: {
+                        /* TODO: DISMISS */
+                    }
+                )
+            ])
+        } else {
+            if let banner = vm.banner {
+                InfoCard(text: "", type: vm.chatService.type == .oldChat ? .info : .disabled)
+                    .hInfoCardCustomView {
+                        MarkdownView(
+                            config: .init(
+                                text: banner,
+                                fontStyle: .standardSmall,
+                                color: infoCardTextColor,
+                                linkColor: infoCardLinkColor,
+                                linkUnderlineStyle: .single
+                            ) { url in
+                                NotificationCenter.default.post(name: .openDeepLink, object: url)
+                            }
+                        )
+                    }
+                    .hInfoCardLayoutStyle(.rectange)
+            }
         }
     }
 
@@ -166,6 +182,7 @@ public struct ChatScreen: View {
 
 #Preview{
     let client = ChatDemoClient()
+    let conversationClient = ConversationDemoClient()
     Dependencies.shared.add(
         module: Module { () -> FetchMessagesClient in
             client

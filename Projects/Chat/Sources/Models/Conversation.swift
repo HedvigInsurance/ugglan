@@ -13,7 +13,8 @@ public struct Conversation: Identifiable, Equatable, Hashable, Codable {
         subtitle: String?,
         newestMessage: Message?,
         createdAt: String?,
-        statusMessage: String?
+        statusMessage: String?,
+        isConversationOpen: Bool?
     ) {
         self.id = id
         self.type = type
@@ -22,6 +23,7 @@ public struct Conversation: Identifiable, Equatable, Hashable, Codable {
         self.newestMessage = newestMessage
         self.createdAt = createdAt
         self.statusMessage = statusMessage
+        self.isConversationOpen = isConversationOpen
     }
 
     public let id: String
@@ -31,6 +33,7 @@ public struct Conversation: Identifiable, Equatable, Hashable, Codable {
     public let newestMessage: Message?
     let createdAt: String?
     let statusMessage: String?
+    let isConversationOpen: Bool?
 
     public init(
         fragment: OctopusGraphQL.ConversationFragment,
@@ -47,6 +50,7 @@ public struct Conversation: Identifiable, Equatable, Hashable, Codable {
         self.createdAt = fragment.createdAt
         self.statusMessage = fragment.statusMessage
         self.type = type
+        self.isConversationOpen = fragment.isOpen
     }
 }
 
