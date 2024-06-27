@@ -142,7 +142,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                         .getNotificationSettings { settings in
                             let store: ProfileStore = globalPresentableStoreContainer.get()
                             store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
-                            UIApplication.shared.registerForRemoteNotifications()
                         }
                     completed()
                 }
