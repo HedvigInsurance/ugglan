@@ -43,11 +43,6 @@ struct ContractTable: View {
                     }
                 ) { contracts in
                     VStack(spacing: 0) {
-                        if onlyTerminatedInsurances {
-                            InfoCard(text: L10n.InsurancesTab.cancelledInsurancesNote, type: .info)
-                                .padding(.bottom, .padding16)
-
-                        }
                         ForEach(contracts, id: \.id) { contract in
                             ContractRow(
                                 image: contract.pillowType?.bgImage,

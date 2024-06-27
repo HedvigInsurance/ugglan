@@ -37,14 +37,5 @@ struct Contracts: View {
         .onPullToRefresh {
             await store.sendAsync(.fetch)
         }
-        .hFormAttachToBottom {
-            if showTerminated {
-                hSection {
-                    InfoCard(text: L10n.InsurancesTab.cancelledInsurancesNote, type: .info)
-                }
-                .sectionContainerStyle(.transparent)
-                .padding(.vertical, .padding16)
-            }
-        }
     }
 }
