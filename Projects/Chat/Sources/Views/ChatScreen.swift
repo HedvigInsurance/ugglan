@@ -176,7 +176,7 @@ public struct ChatScreen: View {
             client
         }
     )
-    return ChatScreen(vm: .init(chatService: MessagesService(topic: nil)))
+    return ChatScreen(vm: .init(chatService: MessagesService(topic: nil))).environmentObject(ChatNavigationViewModel())
 }
 
 class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
