@@ -30,10 +30,6 @@ where MainContent: View, BottomContent: View {
                 HStack(alignment: .center) {
                     mainContent
                     Spacer()
-                    hCoreUIAssets.infoOutlined.view
-                        .resizable()
-                        .frame(width: 24, height: 24)
-                        .foregroundColor(hTextColor.Opaque.secondary)
                 }
             }
             .sectionContainerStyle(.transparent)
