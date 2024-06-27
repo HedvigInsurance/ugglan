@@ -42,7 +42,7 @@ public class ConversationService: ChatServiceProtocol {
             hasPreviousMessage: olderToken != nil,
             messages: data.messages,
             banner: data.banner,
-            isConversationOpen: data.isConversationOpen
+            isConversationOpen: data.isConversationOpen ?? true
         )
     }
 
@@ -58,7 +58,7 @@ public class ConversationService: ChatServiceProtocol {
             hasPreviousMessage: olderToken != nil,
             messages: data.messages,
             banner: data.banner,
-            isConversationOpen: data.isConversationOpen
+            isConversationOpen: data.isConversationOpen ?? true
         )
 
     }
@@ -83,7 +83,7 @@ public class NewConversationService: ChatServiceProtocol {
         if let conversationService = conversationService {
             return try await conversationService.getNewMessages()
         }
-        return .init(hasPreviousMessage: false, messages: [], banner: nil, isConversationOpen: nil)
+        return .init(hasPreviousMessage: false, messages: [], banner: nil, isConversationOpen: true)
     }
 
     public func getPreviousMessages() async throws -> ChatData {
@@ -91,7 +91,7 @@ public class NewConversationService: ChatServiceProtocol {
         if let conversationService = conversationService {
             return try await conversationService.getPreviousMessages()
         }
-        return .init(hasPreviousMessage: false, messages: [], banner: nil, isConversationOpen: nil)
+        return .init(hasPreviousMessage: false, messages: [], banner: nil, isConversationOpen: true)
     }
 
     public func send(message: Message) async throws -> Message {

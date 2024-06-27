@@ -12,6 +12,7 @@ query Conversations {
 query ConversationMessages($conversationId: UUID!, $olderToken: String, $newerToken: String) {
   conversation(id: $conversationId) {
     id
+    isOpen
     messagePage(olderToken: $olderToken, newerToken: $newerToken) {
         ... MessagePageFragment
     }

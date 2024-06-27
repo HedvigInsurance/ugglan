@@ -89,12 +89,14 @@ public class ConversationClientOctopus: ConversationClient {
         let newerToken = conversation.messagePage.newerToken
         let olderToken = conversation.messagePage.olderToken
         let banner = conversation.statusMessage
+        let isConversationOpen = conversation.isOpen
+
         return .init(
             messages: messages,
             banner: banner,
-            isConversationOpen: nil,
             olderToken: olderToken,
-            newerToken: newerToken
+            newerToken: newerToken,
+            isConversationOpen: isConversationOpen
         )
     }
 }
@@ -104,12 +106,12 @@ extension OctopusGraphQL.ConversationFragment {
         return .init(
             id: id,
             type: type,
-            title: "TITLE",
-            subtitle: "SUBTITLE",
+            title: self.title,
+            subtitle: self.subtitle,
             newestMessage: self.newestMessage?.fragments.messageFragment.asMessage(),
-            createdAt: "2024-06-10",
-            statusMessage: "STATUS MESSAGE",
-            isConversationOpen: true
+            createdAt: self.createdAt,
+            statusMessage: self.statusMessage,
+            isConversationOpen: self.isOpen
         )
     }
 }

@@ -95,7 +95,7 @@ public class ConversationDemoClient: ConversationClient {
             Message(type: .text(text: "text1")),
             Message(type: .text(text: "text2")),
         ]
-        return .init(messages: messages, banner: nil, isConversationOpen: nil, olderToken: nil, newerToken: nil)
+        return .init(messages: messages, banner: nil, olderToken: nil, newerToken: nil, isConversationOpen: nil)
     }
 
     public func send(message: Message, for conversationId: String) async throws -> Message {

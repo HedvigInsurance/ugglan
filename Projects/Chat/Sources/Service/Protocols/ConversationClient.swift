@@ -18,7 +18,7 @@ public protocol ConversationClient {
 public struct ConversationMessagesData {
     let messages: [Message]
     let banner: Markdown?
-    let isConversationOpen: Bool?
     let olderToken: String?
     let newerToken: String?
+    let isConversationOpen: Bool?
 }
