@@ -28,22 +28,31 @@ public class HomeNavigationViewModel: ObservableObject {
 
         NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: nil) {
             [weak self] notification in
+            var openChat: ChatConversation?
             if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
                 self?.openChatOptions = [.alwaysOpenOnTop, .withoutGrabber]
                 if let conversation = notification.object as? Chat.Conversation {
-                    self?.openChat = .init(
+                    openChat = .init(
                         chatType: .conversation(conversationId: conversation.id, title: conversation.title)
                     )
                 } else if let id = notification.object as? String {
-                    self?.openChat = .init(chatType: .conversationId(id: id))
+                    openChat = .init(chatType: .conversationId(id: id))
                 } else {
-                    self?.openChat = .init(chatType: .newConversation)
+                    openChat = .init(chatType: .newConversation)
                 }
             } else {
                 if let topicWrapper = notification.object as? ChatTopicWrapper, let topic = topicWrapper.topic {
-                    self?.openChat = .init(chatType: .topic(topic: topic))
+                    openChat = .init(chatType: .topic(topic: topic))
                 } else {
-                    self?.openChat = .init(chatType: .none)
+                    openChat = .init(chatType: .none)
+                }
+            }
+            if self?.openChat == nil {
+                self?.openChat = openChat
+            } else if self?.openChat != openChat {
+                self?.openChat = nil
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                    self?.openChat = openChat
                 }
             }
         }
