@@ -21,19 +21,24 @@ struct ClaimStatus: View {
 
     var body: some View {
         CardComponent(
-            onSelected: enableTap
-                ? {
-                    if enableTap {
-                        tapAction(claim)
-                    } else {
-                    }
-                } : nil,
+            onSelected: nil,
             mainContent: ClaimPills(claim: claim),
             title: claim.claimType,
             subTitle: getSubTitle,
             bottomComponent: {
-                HStack(spacing: 6) {
-                    ClaimStatusBar(status: claim.status, outcome: claim.outcome)
+                VStack(spacing: .padding16) {
+                    HStack(spacing: .padding6) {
+                        ClaimStatusBar(status: claim.status, outcome: claim.outcome)
+                    }
+                    if enableTap {
+                        hButton.MediumButton(
+                            type: .secondary
+                        ) {
+                            tapAction(claim)
+                        } content: {
+                            hText("Show details")
+                        }
+                    }
                 }
             }
         )
