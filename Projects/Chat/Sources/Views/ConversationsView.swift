@@ -99,12 +99,8 @@ public struct ConversationsView: View {
 
     @hColorBuilder
     private func getNotificationColor(for conversation: Conversation) -> some hColor {
-        if conversation.type != .legacy {
-            if vm.hasNotification(conversation: conversation) {
-                hSignalColor.Blue.element
-            } else {
-                hColorBase(.clear)
-            }
+        if vm.hasNotification(conversation: conversation) {
+            hSignalColor.Blue.element
         } else {
             hColorBase(.clear)
         }
@@ -130,9 +126,10 @@ class ConversationsViewModel: ObservableObject {
     @Published private var conversationsTimeStamp = [String: Date]()
     private var conversationTimeStampCancellable: AnyCancellable?
     private var pollTimerCancellable: AnyCancellable?
+    @PresentableStore var store: ChatStore
 
     func hasNotification(conversation: Conversation) -> Bool {
-        return conversationsTimeStamp[conversation.id] ?? Date() < conversation.newestMessage?.sentAt ?? Date()
+        return store.hasNotification(conversationId: conversation.id, timeStamp: conversation.newestMessage?.sentAt)
     }
 
     init() {

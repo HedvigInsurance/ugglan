@@ -7,10 +7,6 @@ public struct ChatState: StateProtocol {
     @Transient(defaultValue: false) var askedForPushNotificationsPermission: Bool
     public var conversationsTimeStamp = [String: Date]()
     public var messagesTimeStamp = Date()
-
-    public func hasNotification(conversation: Conversation) -> Bool {
-        return conversationsTimeStamp[conversation.id] ?? Date() < conversation.newestMessage?.sentAt ?? Date()
-    }
 }
 
 public enum ChatAction: ActionProtocol {
@@ -20,6 +16,15 @@ public enum ChatAction: ActionProtocol {
 }
 
 final public class ChatStore: StateStore<ChatState, ChatAction> {
+
+    public func hasNotification(conversationId: String, timeStamp: Date?) -> Bool {
+        if let stateTimeStamp = state.conversationsTimeStamp[conversationId] {
+            return stateTimeStamp < timeStamp ?? Date()
+        }
+        send(.setLastMessageTimestampForConversation(id: conversationId, date: Date()))
+        return false
+    }
+
     public override func effects(
         _ getState: @escaping () -> ChatState,
         _ action: ChatAction

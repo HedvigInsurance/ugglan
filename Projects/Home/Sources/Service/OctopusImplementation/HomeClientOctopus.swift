@@ -1,4 +1,6 @@
+import Chat
 import Foundation
+import Presentation
 import hCore
 import hGraphQL
 
@@ -84,13 +86,32 @@ public class HomeClientOctopus: HomeClient {
         return quickActions
     }
 
-    public func getLastMessagesDates() async throws -> [Date] {
-        let data = try await self.octopus.client
-            .fetch(
-                query: OctopusGraphQL.ChatMessageTimeStampQuery(until: GraphQLNullable.null),
+    public func getLastMessagesDates() async throws -> [String: Date] {
+        if featureFlags.isConversationBasedMessagesEnabled {
+            let data = try await self.octopus.client.fetch(
+                query: OctopusGraphQL.ConversationsTimeStampQuery(),
                 cachePolicy: .fetchIgnoringCacheCompletely
             )
-        return data.chat.messages.compactMap({ $0.sentAt.localDateToIso8601Date })
+            var conversationIdsWithTimestamp = Dictionary(
+                uniqueKeysWithValues: data.currentMember.conversations.map {
+                    ($0.id, $0.newestMessage?.sentAt.localDateToIso8601Date ?? Date())
+                }
+            )
+            if let legacyConversation = data.currentMember.legacyConversation {
+                conversationIdsWithTimestamp[legacyConversation.id] =
+                    legacyConversation.newestMessage?.sentAt.localDateToIso8601Date ?? Date()
+            }
+            return conversationIdsWithTimestamp
+        } else {
+            let data = try await self.octopus.client
+                .fetch(
+                    query: OctopusGraphQL.ChatMessageTimeStampQuery(until: GraphQLNullable.null),
+                    cachePolicy: .fetchIgnoringCacheCompletely
+                )
+            return Dictionary(
+                uniqueKeysWithValues: data.chat.messages.map { ("chat", $0.sentAt.localDateToIso8601Date ?? Date()) }
+            )
+        }
     }
 
     public func getNumberOfClaims() async throws -> Int {

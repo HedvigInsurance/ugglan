@@ -69,18 +69,6 @@ public class HomeNavigationViewModel: ObservableObject {
             }
             .store(in: &cancellables)
 
-        store.stateSignal.plain()
-            .publisher
-            .map({ $0.conversationsTimeStamp })
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .sink { value in
-                let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                if let latestDate = value.values.max() {
-                    homeStore.send(.setChatNotificationTimeStamp(sentAt: latestDate))
-                }
-            }
-            .store(in: &cancellables)
     }
 
     public var router = Router()
