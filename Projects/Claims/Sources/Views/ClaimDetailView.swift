@@ -2,6 +2,7 @@ import Chat
 import Combine
 import Home
 import Kingfisher
+import Payment
 import Photos
 import Presentation
 import SwiftUI
@@ -50,6 +51,21 @@ public struct ClaimDetailView: View {
                 uploadFilesSection
             }
         }
+        .setHomeNavigationBars(
+            with: vm.showChatNotification ? .constant([.chatNotification]) : .constant([.chat]),
+            action: { type in
+                switch type {
+                case .newOffer:
+                    break
+                case .firstVet:
+                    break
+                case .chat:
+                    NotificationCenter.default.post(name: .openChat, object: vm.claim.conversation)
+                case .chatNotification:
+                    NotificationCenter.default.post(name: .openChat, object: vm.claim.conversation)
+                }
+            }
+        )
         .sheet(isPresented: $showImagePicker) {
             ImagePicker { images in
                 vm.showAddFiles(with: images)
@@ -99,22 +115,6 @@ public struct ClaimDetailView: View {
             .configureTitle(L10n.ClaimStatusDetail.addedFiles)
             .embededInNavigation()
 
-        }
-        .toolbar {
-            ToolbarItem(
-                placement: .topBarTrailing
-            ) {
-                if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
-                    Image(
-                        uiImage: vm.showChatNotification
-                            ? hCoreUIAssets.inboxNotification.image : hCoreUIAssets.inbox.image
-                    )
-                    .onTapGesture {
-                        NotificationCenter.default.post(name: .openChat, object: vm.claim.conversation)
-
-                    }
-                }
-            }
         }
     }
 
@@ -328,6 +328,10 @@ public struct ClaimDetailView: View {
 struct ClaimDetailView_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> hFetchClaimClient in FetchClaimClientDemo() })
+        let featureFlags = FeatureFlagsDemo()
+        Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlags })
+        let networkClient = NetworkClient()
+        Dependencies.shared.add(module: Module { () -> AdyenClient in networkClient })
 
         let claim = ClaimModel(
             id: "claimId",
@@ -352,7 +356,7 @@ struct ClaimDetailView_Previews: PreviewProvider {
                 isConversationOpen: true
             )
         )
-        return ClaimDetailView(claim: claim)
+        return ClaimDetailView(claim: claim).environmentObject(HomeNavigationViewModel())
     }
 }
 
@@ -401,16 +405,32 @@ public class ClaimDetailViewModel: ObservableObject {
             }
             .store(in: &cancellables)
 
+        //        handleClaimChat()
+    }
+
+    private func handleClaimChat() {
         let chatStore: ChatStore = globalPresentableStoreContainer.get()
         chatStore.stateSignal.plain().publisher
             .map({ $0.conversationsTimeStamp })
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { [weak self] conversationsTimeStamp in
-                let timeStamp = conversationsTimeStamp[claim.conversation.id]
-                self?.showChatNotification = timeStamp ?? Date() < claim.conversation.newestMessage?.sentAt ?? Date()
+                let timeStamp = conversationsTimeStamp[self?.claim.conversation.id ?? ""]
+                self?.showChatNotification =
+                    timeStamp ?? Date() < self?.claim.conversation.newestMessage?.sentAt ?? Date()
             }
-            .store(in: &cancellables)
+            .store(in: &self.cancellables)
+
+        let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
+        claimStore.stateSignal.plain().publisher
+            .map({ $0.claim(for: self.claim.id) })
+            .map({ $0?.conversation.newestMessage?.sentAt })
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] value in
+                let chatStore: ChatStore = globalPresentableStoreContainer.get()
+                chatStore
+            }
 
         let timeStamp = chatStore.state.conversationsTimeStamp[claim.conversation.id]
         showChatNotification = timeStamp ?? Date() < claim.conversation.newestMessage?.sentAt ?? Date()
@@ -421,17 +441,17 @@ public class ClaimDetailViewModel: ObservableObject {
         withAnimation {
             fetchFilesError = nil
         }
-        do {
-            let files = try await claimService.getFiles()
-            store.send(.setFiles(files: files))
-            withAnimation {
-                self.fileGridViewModel.files = files[claim.id] ?? []
-            }
-        } catch let ex {
-            withAnimation {
-                fetchFilesError = ex.localizedDescription
-            }
-        }
+        //        do {
+        //            let files = try await claimService.getFiles()
+        //            store.send(.setFiles(files: files))
+        //            withAnimation {
+        //                self.fileGridViewModel.files = files[claim.id] ?? []
+        //            }
+        //        } catch let ex {
+        //            withAnimation {
+        //                fetchFilesError = ex.localizedDescription
+        //            }
+        //        }
     }
 
     func showAddFiles(with files: [FilePickerDto]) {
@@ -458,4 +478,15 @@ struct FilesDto: Identifiable, Equatable {
     let id: String
     let endPoint: String
     let files: [File]
+}
+
+extension UIView {
+    func findAllSubviews() -> [UIView] {
+        var subviewsToReturn = [UIView]()
+        for subview in subviews {
+            subviewsToReturn.append(subview)
+            subviewsToReturn.append(contentsOf: subview.findAllSubviews())
+        }
+        return subviewsToReturn
+    }
 }
