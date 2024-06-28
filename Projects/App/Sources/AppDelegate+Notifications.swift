@@ -18,12 +18,9 @@ extension AppDelegate {
         _ application: UIApplication,
         didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
     ) {
-        bag += ApplicationContext.shared.$isLoggedIn.atOnce().filter(predicate: { $0 })
-            .onValue { _ in
-                let client: NotificationClient = Dependencies.shared.resolve()
-                let deviceTokenString = deviceToken.reduce("", { $0 + String(format: "%02X", $1) })
-                client.register(for: deviceTokenString)
-            }
+        let client: NotificationClient = Dependencies.shared.resolve()
+        let deviceTokenString = deviceToken.reduce("", { $0 + String(format: "%02X", $1) })
+        client.register(for: deviceTokenString)
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
@@ -55,7 +52,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     fileprivate func performPushAction(notificationType: String, userInfo: [AnyHashable: Any]) {
         NotificationCenter.default.post(
             name: .handlePushNotification,
-            object: PushNotificationType(rawValue: notificationType),
+            object: PushNotificationType(rawValue: notificationType.uppercased()),
             userInfo: userInfo
         )
     }
@@ -66,7 +63,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
         let userInfo = response.notification.request.content.userInfo
-        guard let notificationType = userInfo["TYPE"] as? String else { return }
+        guard let notificationType = (userInfo["TYPE"] as? String) ?? (userInfo["type"] as? String) else { return }
 
         if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
             performPushAction(notificationType: notificationType, userInfo: userInfo)
@@ -95,6 +92,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         )
         if !HomeNavigationViewModel.isChatPresented { Toasts.shared.displayToastBar(toast: toast) }
     }
+
 }
 
 enum PushNotificationType: String {
