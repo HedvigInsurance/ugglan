@@ -49,10 +49,7 @@ where MainContent: View, BottomContent: View {
 
             }
             .padding(.horizontal, .padding16)
-
-            Spacer().frame(height: 20)
-            SwiftUI.Divider()
-            Spacer().frame(height: .padding16)
+            Spacer().frame(height: .padding8)
             bottomComponent()
                 .padding(.horizontal, .padding16)
         }

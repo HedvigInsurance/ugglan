@@ -7,6 +7,17 @@ import hGraphQL
 struct ClaimStatus: View {
     var claim: ClaimModel
     var enableTap: Bool
+    let extendedBottomView: AnyView?
+
+    init(
+        claim: ClaimModel,
+        enableTap: Bool,
+        extendedBottomView: AnyView? = nil
+    ) {
+        self.claim = claim
+        self.enableTap = enableTap
+        self.extendedBottomView = extendedBottomView
+    }
 
     @EnvironmentObject var homeRouter: Router
 
@@ -32,8 +43,11 @@ struct ClaimStatus: View {
             title: claim.claimType,
             subTitle: claim.productVariant?.displayName,
             bottomComponent: {
-                HStack(spacing: 6) {
-                    ClaimStatusBar(status: claim.status, outcome: claim.outcome)
+                VStack {
+                    HStack(spacing: 6) {
+                        ClaimStatusBar(status: claim.status, outcome: claim.outcome)
+                    }
+                    extendedBottomView
                 }
             }
         )

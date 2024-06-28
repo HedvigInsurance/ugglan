@@ -15,7 +15,6 @@ public struct ClaimDetailView: View {
     @State var showFilePicker = false
     @State var showCamera = false
     @StateObject var vm: ClaimDetailViewModel
-
     @EnvironmentObject var homeVm: HomeNavigationViewModel
 
     public init(
@@ -35,17 +34,17 @@ public struct ClaimDetailView: View {
         hForm {
             VStack(spacing: 8) {
                 hSection {
-                    ClaimStatus(claim: vm.claim, enableTap: false)
-                        .padding(.top, .padding8)
+                    ClaimStatus(
+                        claim: vm.claim,
+                        enableTap: false,
+                        extendedBottomView: {
+                            AnyView(infoAndContactSection)
+                        }()
+                    )
                 }
                 .sectionContainerStyle(.transparent)
 
-                infoAndContactSection
                 memberFreeTextSection
-                if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
-                    conversationSection
-                        .padding(.vertical, .padding16)
-                }
                 claimDetailsSection
                     .padding(.vertical, .padding16)
                 uploadFilesSection
@@ -101,25 +100,46 @@ public struct ClaimDetailView: View {
             .embededInNavigation()
 
         }
+        .toolbar {
+            ToolbarItem(
+                placement: .topBarTrailing
+            ) {
+                if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
+                    Image(
+                        uiImage: vm.showChatNotification
+                            ? hCoreUIAssets.inboxNotification.image : hCoreUIAssets.inbox.image
+                    )
+                    .onTapGesture {
+                        NotificationCenter.default.post(name: .openChat, object: vm.claim.conversation)
+
+                    }
+                }
+            }
+        }
     }
 
     @ViewBuilder
     private var infoAndContactSection: some View {
-        hSection {
+        Divider()
+            .padding(.horizontal, -16)
+            .padding(.vertical, .padding16)
+
+        VStack(alignment: .leading) {
+            hText("Claim status", style: .footnote)
+                .foregroundColor(hTextColor.Opaque.primary)
+            hText(statusParagraph, style: .footnote)
+                .foregroundColor(hTextColor.Opaque.secondary)
+        }
+        .fixedSize(horizontal: false, vertical: true)
+        .multilineTextAlignment(.leading)
+        if !Dependencies.featureFlags().isConversationBasedMessagesEnabled {
             hRow {
-                hText(statusParagraph)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .multilineTextAlignment(.leading)
-            }
-            if !Dependencies.featureFlags().isConversationBasedMessagesEnabled {
-                hRow {
-                    ContactChatView(
-                        store: vm.store,
-                        id: vm.claim.id,
-                        status: vm.claim.status.rawValue
-                    )
-                    .padding(.bottom, .padding4)
-                }
+                ContactChatView(
+                    store: vm.store,
+                    id: vm.claim.id,
+                    status: vm.claim.status.rawValue
+                )
+                .padding(.bottom, .padding4)
             }
         }
     }
@@ -137,32 +157,6 @@ public struct ClaimDetailView: View {
                     .padding(.leading, 2)
             }
             .padding(.top, .padding16)
-        }
-    }
-
-    @ViewBuilder
-    private var conversationSection: some View {
-        hSection {
-            hButton.LargeButton(
-                type: .secondary,
-                action: {
-                    NotificationCenter.default.post(name: .openChat, object: vm.claim.conversation)
-                },
-                content: {
-                    HStack(spacing: 4) {
-                        Image(
-                            uiImage: vm.showChatNotification
-                                ? hCoreUIAssets.chatNotification.image : hCoreUIAssets.chat.image
-                        )
-                        hText("Go to conversation")
-                            .foregroundColor(hTextColor.Opaque.primary)
-                    }
-                }
-            )
-        }
-        .withHeader {
-            hText("Claim Conversation")
-                .foregroundColor(hTextColor.Opaque.primary)
         }
     }
 
@@ -333,6 +327,8 @@ public struct ClaimDetailView: View {
 
 struct ClaimDetailView_Previews: PreviewProvider {
     static var previews: some View {
+        Dependencies.shared.add(module: Module { () -> hFetchClaimClient in FetchClaimClientDemo() })
+
         let claim = ClaimModel(
             id: "claimId",
             status: .beingHandled,
