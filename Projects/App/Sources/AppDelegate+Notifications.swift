@@ -18,12 +18,9 @@ extension AppDelegate {
         _ application: UIApplication,
         didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
     ) {
-        bag += ApplicationContext.shared.$isLoggedIn.atOnce().filter(predicate: { $0 })
-            .onValue { _ in
-                let client: NotificationClient = Dependencies.shared.resolve()
-                let deviceTokenString = deviceToken.reduce("", { $0 + String(format: "%02X", $1) })
-                client.register(for: deviceTokenString)
-            }
+        let client: NotificationClient = Dependencies.shared.resolve()
+        let deviceTokenString = deviceToken.reduce("", { $0 + String(format: "%02X", $1) })
+        client.register(for: deviceTokenString)
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
