@@ -90,9 +90,9 @@ public enum ToolbarOptionType: String, Codable {
         case .firstVet:
             return hCoreUIAssets.firstVetQuickNav.image
         case .chat:
-            return hCoreUIAssets.chatQuickNav.image
+            return hCoreUIAssets.inbox.image
         case .chatNotification:
-            return hCoreUIAssets.chatQuickNavNotification.image
+            return hCoreUIAssets.inboxNotification.image
         }
     }
 
