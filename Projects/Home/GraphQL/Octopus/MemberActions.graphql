@@ -31,6 +31,7 @@ query ChatMessageTimeStamp($until: Instant) {
     messages {
         sentAt
         sender
+        id
     }
   }
 }

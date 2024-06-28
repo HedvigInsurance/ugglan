@@ -109,7 +109,7 @@ public class HomeClientOctopus: HomeClient {
                     cachePolicy: .fetchIgnoringCacheCompletely
                 )
             return Dictionary(
-                uniqueKeysWithValues: data.chat.messages.map { ("chat", $0.sentAt.localDateToIso8601Date ?? Date()) }
+                uniqueKeysWithValues: data.chat.messages.map { ($0.id, $0.sentAt.localDateToIso8601Date ?? Date()) }
             )
         }
     }

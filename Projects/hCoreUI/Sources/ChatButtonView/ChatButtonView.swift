@@ -2,73 +2,7 @@ import Foundation
 import SwiftUI
 import hCore
 
-struct ChatButtonView: View {
-    @State var displayTooltip = false
-    var withTooltip: Bool = false
-    var action: () -> Void
-
-    init(
-        withTooltip: Bool = false,
-        action: @escaping () -> Void
-    ) {
-        self.withTooltip = withTooltip
-        self.action = action
-    }
-
-    var tooltipView: some View {
-        VStack {
-            if withTooltip {
-                TooltipView(
-                    displayTooltip: $displayTooltip,
-                    type: .chat,
-                    timeInterval: .days(numberOfDays: 30)
-                )
-                .position(x: 37, y: 74)
-                .fixedSize()
-            }
-        }
-    }
-
-    var body: some View {
-        VStack {
-            SwiftUI.Button(action: {
-                withAnimation(.spring()) {
-                    displayTooltip = false
-                }
-                action()
-            }) {
-                Image(uiImage: hCoreUIAssets.chatQuickNav.image)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 32, height: 32)
-                    .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 1)
-            }
-            .animation(nil)
-        }
-        .background(tooltipView)
-    }
-}
-
-struct ChatButtonModifier: ViewModifier {
-    let tooltip: Bool
-    let action: () -> Void
-
-    func body(content: Content) -> some View {
-        content
-            .navigationBarItems(
-                trailing:
-                    ChatButtonView(withTooltip: tooltip) {
-                        action()
-                    }
-            )
-    }
-}
-
 extension hForm {
-    public func withChatButton(tooltip: Bool = false, action: @escaping () -> Void) -> some View {
-        ModifiedContent(content: self, modifier: ChatButtonModifier(tooltip: tooltip, action: action))
-    }
-
     public func setHomeNavigationBars(
         with options: Binding<[ToolbarOptionType]>,
         action: @escaping (_: ToolbarOptionType) -> Void
@@ -102,10 +36,65 @@ public enum ToolbarOptionType: String, Codable {
             return "newOfferHint"
         case .firstVet:
             return "firstVetHint"
-        case .chat, .chatNotification:
+        case .chat:
             return "chatHint"
+        case .chatNotification:
+            return "chatHintNotification"
         }
     }
+
+    var textToShow: String? {
+        switch self {
+        case .newOffer:
+            return nil
+        case .firstVet:
+            return nil
+        case .chat:
+            return L10n.HomeTab.chatHintText
+        case .chatNotification:
+            return L10n.Toast.newMessage
+        }
+    }
+
+    var showAsTooltip: Bool {
+        switch self {
+        case .newOffer:
+            return false
+        case .firstVet:
+            return false
+        case .chat:
+            return true
+        case .chatNotification:
+            return true
+        }
+    }
+
+    var timeIntervalForShowingAgain: TimeInterval? {
+        switch self {
+        case .newOffer:
+            return nil
+        case .firstVet:
+            return nil
+        case .chat:
+            return .days(numberOfDays: 30)
+        case .chatNotification:
+            return 5
+        }
+    }
+
+    var delay: TimeInterval {
+        switch self {
+        case .newOffer:
+            return 0
+        case .firstVet:
+            return 0
+        case .chat:
+            return 1.5
+        case .chatNotification:
+            return 0.5
+        }
+    }
+
 }
 
 struct ToolbarButtonsView: View {
@@ -142,13 +131,13 @@ struct ToolbarButtonsView: View {
                 }
                 .background(
                     VStack {
-                        if type == .chat {
+                        if type.showAsTooltip {
                             TooltipView(
                                 displayTooltip: $displayTooltip,
                                 type: type,
-                                timeInterval: .days(numberOfDays: 30)
+                                timeInterval: type.timeIntervalForShowingAgain ?? .days(numberOfDays: 30)
                             )
-                            .position(x: 37, y: 74)
+                            .position(x: 26, y: 67)
                             .fixedSize()
                         }
                     }
