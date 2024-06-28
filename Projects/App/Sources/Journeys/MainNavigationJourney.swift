@@ -90,6 +90,7 @@ class MainNavigationViewModel: ObservableObject {
             Task {
                 switch state {
                 case .loggedIn:
+                    UIApplication.shared.registerForRemoteNotifications()
                     ApplicationContext.shared.isLoggedIn = true
                     withAnimation {
                         hasLaunchFinished = false
@@ -131,6 +132,7 @@ class MainNavigationViewModel: ObservableObject {
         }
         if state == .loggedIn {
             ApplicationContext.shared.isLoggedIn = true
+            UIApplication.shared.registerForRemoteNotifications()
             showLaunchScreen = false
         }
         appDelegate.configureAppBadgeTracking()

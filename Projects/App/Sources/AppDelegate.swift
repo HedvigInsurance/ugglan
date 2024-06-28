@@ -50,6 +50,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func logout() {
         bag.dispose()
+        UIApplication.shared.unregisterForRemoteNotifications()
         let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
         ugglanStore.send(.setIsDemoMode(to: false))
         Task { @MainActor in
@@ -237,7 +238,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         log.info("Starting app")
 
-        UIApplication.shared.registerForRemoteNotifications()
         forceLogoutHook = { [weak self] in
             if ApplicationState.currentState != .notLoggedIn {
                 DispatchQueue.main.async {
