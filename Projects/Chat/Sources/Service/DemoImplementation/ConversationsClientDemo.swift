@@ -7,7 +7,7 @@ public class ConversationsDemoClient: ConversationsClient {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm"
         let someDateTime = formatter.date(from: "2024-06-08 22:31")
-        let dateYesterday = formatter.date(from: "2024-06-25 22:31")
+        let dateYesterday = formatter.date(from: "2024-06-27 22:31")
 
         let conversations = [
             Conversation(
@@ -37,7 +37,7 @@ public class ConversationsDemoClient: ConversationsClient {
                     type: .text(text: "Please tell us more what happened when the phone broke."),
                     date: Date()
                 ),
-                createdAt: "2024-06-27",
+                createdAt: "2024-06-10",
                 statusMessage: "status message",
                 isConversationOpen: true
             ),
@@ -54,9 +54,28 @@ public class ConversationsDemoClient: ConversationsClient {
                         text:
                             "Lorem ipsum dolor sit amet consectetur. Accumsan vitae adipiscing blandit id et interdum."
                     ),
-                    date: dateYesterday ?? Date()
+                    date: Date()
                 ),
                 createdAt: "2024-06-10",
+                statusMessage: "status message",
+                isConversationOpen: true
+            ),
+
+            Conversation(
+                id: "id4",
+                type: .claim,
+                title: "Claim",
+                subtitle: "Chronical gastrointestinal issues",
+                newestMessage: .init(
+                    localId: "localId2",
+                    remoteId: "remoteId2",
+                    type: .text(
+                        text:
+                            "Lorem ipsum dolor sit amet consectetur. Accumsan vitae adipiscing blandit id et interdum."
+                    ),
+                    date: dateYesterday ?? Date()
+                ),
+                createdAt: "2024-06-19",
                 statusMessage: "status message",
                 isConversationOpen: true
             ),
