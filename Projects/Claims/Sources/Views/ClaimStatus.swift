@@ -47,7 +47,7 @@ struct ClaimStatus: View {
     var getSubTitle: String? {
         if let submittedAt = claim.submittedAt {
             return L10n.ClaimStatus.ClaimDetails.submitted + " "
-                + (submittedAt.localDateToDate?.displayDateMMMMDDYYYYFormat ?? "")
+                + (submittedAt.localDateToIso8601Date?.displayDateMMMMDDYYYYFormat ?? "")
         }
         return nil
     }
