@@ -64,6 +64,7 @@ public struct InfoCard: View {
         .padding(.vertical, .padding12)
         .padding(.horizontal, .padding16)
         .modifier(NotificationStyle(type: type))
+        .fixedSize(horizontal: false, vertical: true)
     }
 }
 
@@ -157,7 +158,7 @@ extension View {
 }
 
 private struct EnvironmentInfoCardLayoutStyle: EnvironmentKey {
-    static let defaultValue: InfoCardLayoutStyle = .roundedRectangle
+    static let defaultValue: InfoCardLayoutStyle = .defaultStyle
 }
 
 extension EnvironmentValues {
@@ -174,6 +175,6 @@ extension View {
 }
 
 public enum InfoCardLayoutStyle {
-    case roundedRectangle
-    case rectange
+    case defaultStyle
+    case bannerStyle
 }
