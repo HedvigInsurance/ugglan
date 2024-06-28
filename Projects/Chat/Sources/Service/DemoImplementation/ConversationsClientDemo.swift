@@ -37,7 +37,7 @@ public class ConversationsDemoClient: ConversationsClient {
                     type: .text(text: "Please tell us more what happened when the phone broke."),
                     date: Date()
                 ),
-                createdAt: "2024-06-10",
+                createdAt: "2024-06-27",
                 statusMessage: "status message",
                 isConversationOpen: true
             ),

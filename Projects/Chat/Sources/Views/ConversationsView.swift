@@ -23,7 +23,6 @@ public struct ConversationsView: View {
                     NotificationCenter.default.post(name: .openChat, object: conversation)
                 }
         }
-        .hWithoutDividerPadding
         .padding(.horizontal, -16)
         .sectionContainerStyle(.transparent)
     }
@@ -31,54 +30,47 @@ public struct ConversationsView: View {
     func rowView(for conversation: Conversation) -> some View {
         HStack(spacing: .padding16) {
             hRow {
-                Circle()
-                    .frame(width: 10)
-                    .foregroundColor(getNotificationColor(for: conversation))
-                    .frame(maxHeight: .infinity, alignment: .top)
-                    .padding(.top, .padding8)
-
-                if conversation.type == .legacy {
-                    legacyView(conversation: conversation)
-                } else {
-                    conversationView(conversation: conversation)
+                VStack(alignment: .leading, spacing: .padding4) {
+                    if conversation.type == .legacy {
+                        hText("Conversation history", style: .body1)
+                    } else {
+                        hText(conversation.title, style: .body1)
+                            .foregroundColor(hTextColor.Opaque.primary)
+                        hText(conversation.subtitle ?? "", style: .body1)
+                            .fixedSize()
+                            .foregroundColor(hTextColor.Translucent.secondary)
+                    }
+                    getNewestMessage(for: conversation)
+                        .padding(.top, .padding4)
                 }
+                Spacer()
+                getRightView(for: conversation)
             }
         }
         .background(getBackgroundColor(for: conversation))
     }
 
-    func legacyView(conversation: Conversation) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+    @ViewBuilder
+    private func getRightView(for conversation: Conversation) -> some View {
+        if vm.hasNotification(conversation: conversation) {
             HStack {
-                hText("Conversation history", style: .body1)
-                Spacer()
-                if let timeStamp = conversation.newestMessage?.sentAt {
-                    hText(timeStamp.displayTimeStamp, style: .footnote)
-                }
+                hText("New message", style: .footnote)
+                    .foregroundColor(hTextColor.Opaque.black)
             }
-            getNewestMessage(conversation: conversation)
-        }
-        .foregroundColor(hTextColor.Opaque.secondary)
-    }
-
-    @ViewBuilder
-    func conversationView(conversation: Conversation) -> some View {
-        VStack(alignment: .leading, spacing: .padding4) {
-            hText(conversation.title, style: .body1)
-            hText(conversation.subtitle ?? "", style: .footnote)
-            getNewestMessage(conversation: conversation)
-                .padding(.top, .padding4)
-        }
-
-        Spacer()
-        if let timeStamp = conversation.newestMessage?.sentAt {
+            .padding(.horizontal, .padding6)
+            .padding(.vertical, 3)
+            .background(
+                RoundedRectangle(cornerRadius: 6)
+                    .fill(hHighlightColor.Blue.fillTwo)
+            )
+        } else if let timeStamp = conversation.newestMessage?.sentAt {
             hText(timeStamp.displayTimeStamp, style: .footnote)
-                .foregroundColor(hTextColor.Opaque.accordion)
+                .foregroundColor(hTextColor.Opaque.secondary)
         }
     }
 
     @ViewBuilder
-    private func getNewestMessage(conversation: Conversation) -> some View {
+    private func getNewestMessage(for conversation: Conversation) -> some View {
         if let newestMessage = conversation.newestMessage {
             switch newestMessage.type {
             case let .text(text):
@@ -91,6 +83,7 @@ public struct ConversationsView: View {
                 }
                 hText(textToDisplay, style: .footnote)
                     .fixedSize(horizontal: false, vertical: true)
+                    .foregroundColor(getNewestMessageColor(for: conversation))
             default:
                 EmptyView()
             }
@@ -98,24 +91,24 @@ public struct ConversationsView: View {
     }
 
     @hColorBuilder
-    private func getNotificationColor(for conversation: Conversation) -> some hColor {
-        if vm.hasNotification(conversation: conversation) {
-            hSignalColor.Blue.element
+    private func getBackgroundColor(for conversation: Conversation) -> some hColor {
+        if conversation.type != .legacy {
+            if vm.hasNotification(conversation: conversation) {
+                hHighlightColor.Blue.fillOne
+            } else {
+                hColorBase(.clear)
+            }
         } else {
             hColorBase(.clear)
         }
     }
 
     @hColorBuilder
-    private func getBackgroundColor(for conversation: Conversation) -> some hColor {
-        if conversation.type != .legacy {
-            if vm.hasNotification(conversation: conversation) {
-                hSurfaceColor.Opaque.primary
-            } else {
-                hColorBase(.clear)
-            }
+    private func getNewestMessageColor(for conversation: Conversation) -> some hColor {
+        if vm.hasNotification(conversation: conversation) {
+            hTextColor.Translucent.primary
         } else {
-            hColorBase(.clear)
+            hTextColor.Opaque.secondary
         }
     }
 }
