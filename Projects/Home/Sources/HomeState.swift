@@ -22,8 +22,9 @@ public struct HomeState: StateProtocol {
     public var showChatNotification = false
     public var hasAtLeastOneClaim = false
     public var hasSentOrRecievedAtLeastOneMessage = false
-
+    public var latestConversationTimeStamp = Date()
     public var latestChatTimeStamp = Date()
+
     func getImportantMessageToShow() -> [ImportantMessage] {
         return importantMessages.filter { importantMessage in
             !hidenImportantMessages.contains(importantMessage.id)
@@ -56,6 +57,7 @@ public enum HomeAction: ActionProtocol {
     case fetchChatNotifications
     case setChatNotification(hasNew: Bool)
     case setChatNotificationTimeStamp(sentAt: Date)
+    case setChatNotificationConversationTimeStamp(date: Date)
 
     case fetchClaims
     case setHasSentOrRecievedAtLeastOneMessage(hasSent: Bool)
@@ -127,6 +129,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                     }
                     send(.setChatNotification(hasNew: !unreadConversations.isEmpty))
                     send(.setHasSentOrRecievedAtLeastOneMessage(hasSent: chatMessagesDates.count > 0))
+                    send(.setChatNotificationConversationTimeStamp(date: chatMessagesDates.values.max() ?? Date()))
                 } else {
                     if let chatMessagesDate = chatMessagesDates.first {
                         let date = chatMessagesDate.value
@@ -194,6 +197,9 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         case let .setHasSentOrRecievedAtLeastOneMessage(hasSent):
             newState.hasSentOrRecievedAtLeastOneMessage = hasSent
             setToolbarTypes(&newState)
+        case let .setChatNotificationConversationTimeStamp(timeStamp):
+            newState.latestConversationTimeStamp = timeStamp
+            setToolbarTypes(&newState)
         default:
             break
         }
@@ -213,7 +219,11 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             || Localization.Locale.currentLocale.market != .se
         {
             if state.showChatNotification {
-                types.append(.chatNotification)
+                if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
+                    types.append(.chatNotification(lastMessageTimeStamp: self.state.latestConversationTimeStamp))
+                } else {
+                    types.append(.chatNotification(lastMessageTimeStamp: nil))
+                }
             } else {
                 types.append(.chat)
             }

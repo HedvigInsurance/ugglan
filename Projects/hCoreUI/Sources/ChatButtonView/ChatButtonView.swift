@@ -11,11 +11,11 @@ extension hForm {
     }
 }
 
-public enum ToolbarOptionType: String, Codable {
+public enum ToolbarOptionType: Codable, Equatable {
     case newOffer
     case firstVet
     case chat
-    case chatNotification
+    case chatNotification(lastMessageTimeStamp: Date?)
 
     var image: UIImage {
         switch self {
@@ -40,6 +40,19 @@ public enum ToolbarOptionType: String, Codable {
             return "chatHint"
         case .chatNotification:
             return "chatHintNotification"
+        }
+    }
+
+    var identifiableId: String {
+        switch self {
+        case .newOffer:
+            return tooltipId
+        case .firstVet:
+            return tooltipId
+        case .chat:
+            return tooltipId
+        case .chatNotification(let lastMessageTimeStamp):
+            return "\(tooltipId)\(lastMessageTimeStamp)"
         }
     }
 
@@ -95,6 +108,59 @@ public enum ToolbarOptionType: String, Codable {
         }
     }
 
+    func shouldShowTooltip(for timeInterval: TimeInterval) -> Bool {
+        switch self {
+        case .newOffer:
+            return false
+        case .firstVet:
+            return false
+        case .chat:
+            if let pastDate = UserDefaults.standard.value(forKey: userDefaultsKey) as? Date {
+                let timeIntervalSincePast = abs(
+                    pastDate.timeIntervalSince(Date())
+                )
+
+                if timeIntervalSincePast > timeInterval {
+                    onShow()
+                    return true
+                }
+
+                return false
+            }
+            onShow()
+            return true
+        case .chatNotification(let lastMessageTimeStamp):
+            guard let lastMessageTimeStamp else { return false }
+            if let pastDate = UserDefaults.standard.value(forKey: userDefaultsKey) as? Date {
+                if pastDate < lastMessageTimeStamp {
+                    onShow()
+                    return true
+                }
+                return false
+            }
+            onShow()
+            return true
+        }
+    }
+
+    func onShow() {
+        switch self {
+        case .newOffer:
+            break
+        case .firstVet:
+            break
+        case .chat:
+            UserDefaults.standard.setValue(Date(), forKey: userDefaultsKey)
+        case .chatNotification(let lastMessageTimeStamp):
+            UserDefaults.standard.setValue(lastMessageTimeStamp, forKey: userDefaultsKey)
+        }
+
+    }
+
+    var userDefaultsKey: String {
+        "tooltip_\(tooltipId)_past_date"
+    }
+
 }
 
 struct ToolbarButtonsView: View {
@@ -112,7 +178,8 @@ struct ToolbarButtonsView: View {
 
     var body: some View {
         HStack(spacing: -8) {
-            ForEach(Array(types.enumerated()), id: \.element.rawValue) { index, type in
+
+            ForEach(Array(types.enumerated()), id: \.element.identifiableId) { index, type in
                 VStack {
                     withAnimation(nil) {
                         SwiftUI.Button(action: {

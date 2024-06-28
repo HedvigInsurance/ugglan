@@ -52,7 +52,7 @@ public struct ClaimDetailView: View {
             }
         }
         .setHomeNavigationBars(
-            with: vm.showChatNotification ? .constant([.chatNotification]) : .constant([.chat]),
+            with: $vm.toolbarOptionType,
             action: { type in
                 switch type {
                 case .newOffer:
@@ -367,7 +367,7 @@ public class ClaimDetailViewModel: ObservableObject {
     @Published var fetchFilesError: String?
     @Published var hasFiles = false
     @Published var showFilesView: FilesDto?
-    @Published var showChatNotification = false
+    @Published var toolbarOptionType: [ToolbarOptionType] = [.chat]
     let fileUploadManager = FileUploadManager()
     var fileGridViewModel: FileGridViewModel
 
@@ -400,8 +400,8 @@ public class ClaimDetailViewModel: ObservableObject {
         fileGridViewModel.$files
             .sink { _ in
 
-            } receiveValue: { files in
-                self.hasFiles = !files.isEmpty
+            } receiveValue: { [weak self] files in
+                self?.hasFiles = !files.isEmpty
             }
             .store(in: &cancellables)
 
@@ -415,14 +415,46 @@ public class ClaimDetailViewModel: ObservableObject {
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { [weak self] conversationsTimeStamp in
-                let timeStamp = conversationsTimeStamp[self?.claim.conversation.id ?? ""]
-                self?.showChatNotification =
-                    timeStamp ?? Date() < self?.claim.conversation.newestMessage?.sentAt ?? Date()
+                let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
+                let conversation = claimStore.state.claim(for: self?.claim.id ?? "")?.conversation
+                let conversationId = conversation?.id
+                let timeStamp = conversationsTimeStamp[conversationId ?? ""]
+                let showChatNotification = timeStamp ?? Date() < conversation?.newestMessage?.sentAt ?? Date()
+                self?.toolbarOptionType =
+                    showChatNotification ? [.chatNotification(lastMessageTimeStamp: timeStamp ?? Date())] : [.chat]
             }
             .store(in: &self.cancellables)
 
+        let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
+        claimStore.stateSignal.plain().publisher
+            .map({ $0.claim(for: self.claim.id) })
+            .map({ $0?.conversation.newestMessage?.sentAt })
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] value in
+                let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
+                let conversationId = claimStore.state.claim(for: self?.claim.id ?? "")?.conversation.id
+                let chatStore: ChatStore = globalPresentableStoreContainer.get()
+                let timeStamp = chatStore.state.conversationsTimeStamp[conversationId ?? ""]
+                let showChatNotification = timeStamp ?? Date() < value ?? Date()
+                self?.toolbarOptionType =
+                    showChatNotification ? [.chatNotification(lastMessageTimeStamp: value ?? Date())] : [.chat]
+            }
+            .store(in: &cancellables)
+
         let timeStamp = chatStore.state.conversationsTimeStamp[claim.conversation.id]
-        showChatNotification = timeStamp ?? Date() < claim.conversation.newestMessage?.sentAt ?? Date()
+        let showChatNotification = timeStamp ?? Date() < claim.conversation.newestMessage?.sentAt ?? Date()
+        self.toolbarOptionType =
+            showChatNotification ? [.chatNotification(lastMessageTimeStamp: timeStamp ?? Date())] : [.chat]
+
+        Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] timer in
+            if self == nil {
+                timer.invalidate()
+                return
+            }
+            let store: ClaimsStore = globalPresentableStoreContainer.get()
+            store.send(.fetchClaims)
+        }
     }
 
     @MainActor

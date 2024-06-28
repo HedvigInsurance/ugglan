@@ -72,6 +72,12 @@ class NavBar: UINavigationBar {
                 }
             }
         }
+        subviews.forEach { (subview) in
+            let stringFromClass = NSStringFromClass(subview.classForCoder)
+            if stringFromClass.contains("BarContent") {
+                subview.clipsToBounds = false
+            }
+        }
     }
 }
 

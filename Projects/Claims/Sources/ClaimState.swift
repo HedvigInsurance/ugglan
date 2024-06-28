@@ -26,4 +26,8 @@ public struct ClaimsState: StateProtocol {
         }
         return false
     }
+
+    public func claim(for id: String) -> ClaimModel? {
+        self.claims?.first(where: { $0.id == id })
+    }
 }

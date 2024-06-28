@@ -6,31 +6,12 @@ struct TooltipView: View {
     @Binding var displayTooltip: Bool
     let type: ToolbarOptionType
     let timeInterval: TimeInterval
-    var userDefaultsKey: String { "tooltip_\(type.tooltipId)_past_date" }
 
     func canShowTooltip() -> Bool {
         if type.showAsTooltip {
-            if let pastDate = UserDefaults.standard.value(forKey: userDefaultsKey) as? Date {
-                let timeIntervalSincePast = abs(
-                    pastDate.timeIntervalSince(Date())
-                )
-
-                if timeIntervalSincePast > timeInterval {
-                    setDefaultsTime()
-                    return true
-                }
-
-                return false
-            }
-
-            setDefaultsTime()
-            return true
+            return type.shouldShowTooltip(for: timeInterval)
         }
         return false
-    }
-
-    func setDefaultsTime() {
-        UserDefaults.standard.setValue(Date(), forKey: userDefaultsKey)
     }
 
     var body: some View {
@@ -53,7 +34,7 @@ struct TooltipView: View {
                         .cornerRadius(.cornerRadiusS)
                         .colorScheme(.light)
                 }
-                .transition(.scale(scale: 0, anchor: UnitPoint(x: 0.96, y: 0)).combined(with: .opacity))
+                .transition(.scale(scale: 0, anchor: UnitPoint(x: 0.90, y: 0)).combined(with: .opacity))
             }
         }
         .onAppear {
