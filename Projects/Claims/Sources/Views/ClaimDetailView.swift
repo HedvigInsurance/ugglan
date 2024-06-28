@@ -405,7 +405,7 @@ public class ClaimDetailViewModel: ObservableObject {
             }
             .store(in: &cancellables)
 
-        //        handleClaimChat()
+        handleClaimChat()
     }
 
     private func handleClaimChat() {
@@ -421,17 +421,6 @@ public class ClaimDetailViewModel: ObservableObject {
             }
             .store(in: &self.cancellables)
 
-        let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
-        claimStore.stateSignal.plain().publisher
-            .map({ $0.claim(for: self.claim.id) })
-            .map({ $0?.conversation.newestMessage?.sentAt })
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .sink { [weak self] value in
-                let chatStore: ChatStore = globalPresentableStoreContainer.get()
-                chatStore
-            }
-
         let timeStamp = chatStore.state.conversationsTimeStamp[claim.conversation.id]
         showChatNotification = timeStamp ?? Date() < claim.conversation.newestMessage?.sentAt ?? Date()
     }
@@ -441,17 +430,17 @@ public class ClaimDetailViewModel: ObservableObject {
         withAnimation {
             fetchFilesError = nil
         }
-        //        do {
-        //            let files = try await claimService.getFiles()
-        //            store.send(.setFiles(files: files))
-        //            withAnimation {
-        //                self.fileGridViewModel.files = files[claim.id] ?? []
-        //            }
-        //        } catch let ex {
-        //            withAnimation {
-        //                fetchFilesError = ex.localizedDescription
-        //            }
-        //        }
+        do {
+            let files = try await claimService.getFiles()
+            store.send(.setFiles(files: files))
+            withAnimation {
+                self.fileGridViewModel.files = files[claim.id] ?? []
+            }
+        } catch let ex {
+            withAnimation {
+                fetchFilesError = ex.localizedDescription
+            }
+        }
     }
 
     func showAddFiles(with files: [FilePickerDto]) {
@@ -478,15 +467,4 @@ struct FilesDto: Identifiable, Equatable {
     let id: String
     let endPoint: String
     let files: [File]
-}
-
-extension UIView {
-    func findAllSubviews() -> [UIView] {
-        var subviewsToReturn = [UIView]()
-        for subview in subviews {
-            subviewsToReturn.append(subview)
-            subviewsToReturn.append(contentsOf: subview.findAllSubviews())
-        }
-        return subviewsToReturn
-    }
 }
