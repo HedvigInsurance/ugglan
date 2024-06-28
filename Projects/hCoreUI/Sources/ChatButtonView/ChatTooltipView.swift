@@ -77,12 +77,6 @@ struct Triangle: Shape {
         var path = Path()
 
         path.move(to: CGPoint(x: rect.minX, y: rect.maxY))
-        //        path.addCurve(
-        //            to: CGPoint(x: rect.midX, y: rect.minY),
-        //            control1: .init(x: rect.minX, y: rect.minY),
-        //            control2: .init(x: rect.maxY, y: rect.maxY)
-        //
-        //        )
 
         path.addLine(to: .init(x: rect.maxX * 0.33, y: rect.maxY * 0.5))
 
@@ -91,43 +85,7 @@ struct Triangle: Shape {
             control: .init(x: rect.maxX * 0.5, y: rect.maxY * 0.2)
         )
 
-        //        path.addLine(to: .init(x: rect.maxX * 0.67, y: rect.maxY * 0.5))
-
         path.addLine(to: .init(x: rect.maxX, y: rect.maxY))
-        //        path.addQuadCurve(
-        //            to: .init(x: rect.midX, y: rect.minY),
-        //            control: .init(x: rect.maxX * 0.33, y: rect.maxY * 0.1)
-        //        )
-        //
-        //        path.addQuadCurve(
-        //            to: .init(x: rect.maxX, y: rect.maxY),
-        //            control: .init(x: rect.maxX * 0.67, y: rect.maxY * 0.1)
-        //        )
-
-        //        path.addQuadCurve(
-        //            to: .init(x: rect.midX, y: rect.minY),
-        //            control: .init(x: rect.maxX * 0.5, y: rect.minY)
-        //        )
-        //
-        //        path.addQuadCurve(
-        //            to: .init(x: rect.maxX, y: rect.maxY),
-        //            control: .init(x: rect.maxX * 0.5, y: rect.minY)
-        //        )
-
-        //        path.addLine(to: .init(x: rect.maxX, y: rect.maxY))
-        //        path.addQuadCurve(
-        //            to: .init(x: rect.maxX, y: rect.maxY),
-        //            control: .init(x: rect.maxX, y: rect.minY)
-        //        )
-        //        let circleRadius = rect.maxX / 5
-        //        print(rect)
-        //        print(rect.minX)
-        //        path.move(to: CGPoint(x: rect.midX - circleRadius, y: rect.minY + circleRadius))
-        //        path.addCurve(to: <#T##CGPoint#>, control1: <#T##CGPoint#>, control2: <#T##CGPoint#>)
-        //        path.addLine(to: CGPoint(x: rect.midX + circleRadius, y: rect.minY + circleRadius))
-        //        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
-        //        path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
-        //        path.addLine(to: CGPoint(x: rect.midX - circleRadius, y: rect.minY + circleRadius))
 
         return path
     }
