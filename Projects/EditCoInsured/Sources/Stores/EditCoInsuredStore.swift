@@ -8,7 +8,7 @@ public final class EditCoInsuredStore: LoadingStateStore<
     EditCoInsuredState, EditCoInsuredAction, EditCoInsuredLoadingAction
 >
 {
-    @Inject var editCoInsuredService: EditCoInsuredClient
+    var editCoInsuredService = EditCoInsuredService()
     let coInsuredViewModel = InsuredPeopleNewScreenModel()
     let intentViewModel = IntentViewModel()
 

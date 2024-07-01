@@ -50,7 +50,8 @@ struct EditCoInsured: ViewModifier {
     func getEditCoInsuredNavigation(coInsuredModel: EditCoInsuredNavigationModel) -> some View {
         if let contract = coInsuredModel.contractsSupportingCoInsured.first {
             EditCoInsuredNavigation(
-                config: contract
+                config: contract,
+                openSpecificScreen: coInsuredModel.openSpecificScreen
             )
             .environmentObject(vm)
         }
