@@ -118,13 +118,17 @@ class ConversationsViewModel: ObservableObject {
     @PresentableStore var store: ChatStore
 
     func hasNotification(conversation: Conversation) -> Bool {
-        return store.hasNotification(conversationId: conversation.id, timeStamp: conversation.newestMessage?.sentAt)
+        return store.hasNotification(
+            conversationId: conversation.id,
+            timeStamp: conversation.newestMessage?.sentAt ?? conversation.createdAt?.localDateToIso8601Date
+        )
     }
 
     init() {
         let store: ChatStore = globalPresentableStoreContainer.get()
         conversationTimeStampCancellable = store.stateSignal.plain().publisher
             .map({ $0.conversationsTimeStamp })
+            .receive(on: RunLoop.main)
             .sink { [weak self] value in
                 self?.conversationsTimeStamp = value
             }

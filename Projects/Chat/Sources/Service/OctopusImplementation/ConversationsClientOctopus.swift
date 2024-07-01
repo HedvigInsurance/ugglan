@@ -18,7 +18,9 @@ public class ConversationsClientOctopus: ConversationsClient {
         }
 
         let conversationsSortedByDate = conversations.sorted(by: {
-            $0.newestMessage?.sentAt ?? Date() > $1.newestMessage?.sentAt ?? Date()
+            $0.newestMessage?.sentAt ?? $0.createdAt?.localDateToIso8601Date ?? Date() > $1.newestMessage?.sentAt ?? $1
+                .createdAt?
+                .localDateToIso8601Date ?? Date()
         })
         return conversationsSortedByDate
     }
