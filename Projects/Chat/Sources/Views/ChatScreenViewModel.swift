@@ -245,9 +245,9 @@ extension ConversationsError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case let .errorMesage(message): return message
-        case .missingData: return "TODO"
-        case .uploadFailed: return "TODO"
-        case .missingConversation: return "TODO"
+        case .missingData: return L10n.somethingWentWrong
+        case .uploadFailed: return L10n.somethingWentWrong
+        case .missingConversation: return L10n.somethingWentWrong
         }
     }
 }

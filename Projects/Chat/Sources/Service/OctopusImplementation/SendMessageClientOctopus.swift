@@ -76,7 +76,7 @@ extension SendMessageError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case let .errorMesage(message): return message
-        case .missingData: return "TODO"
+        case .missingData: return L10n.somethingWentWrong
         }
     }
 }

@@ -36,10 +36,10 @@ extension Date {
             return dateFormatter.string(from: self)
         } else if Calendar.current.isDateInToday(self) {
             dateFormatter.dateFormat = "HH:mm"
-            return "Today " + dateFormatter.string(from: self)
+            return "\(L10n.generalToday) " + dateFormatter.string(from: self)
         } else if Calendar.current.isDateInYesterday(self) {
             dateFormatter.dateFormat = "HH:mm"
-            return "Yesterday " + dateFormatter.string(from: self)
+            return "\(L10n.generalYesterday) " + dateFormatter.string(from: self)
         } else {
             dateFormatter.dateFormat = "EEEE HH:mm"
             return dateFormatter.string(from: self)

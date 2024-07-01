@@ -32,7 +32,7 @@ public struct ConversationsView: View {
             hRow {
                 VStack(alignment: .leading, spacing: .padding4) {
                     if conversation.type == .legacy {
-                        hText("Conversation history", style: .body1)
+                        hText(L10n.chatConversationHistoryTitle, style: .body1)
                     } else {
                         hText(conversation.title, style: .body1)
                             .foregroundColor(hTextColor.Opaque.primary)
@@ -54,7 +54,7 @@ public struct ConversationsView: View {
     private func getRightView(for conversation: Conversation) -> some View {
         if vm.hasNotification(conversation: conversation) {
             HStack {
-                hText("New message", style: .footnote)
+                hText(L10n.chatNewMessage, style: .footnote)
                     .foregroundColor(hTextColor.Opaque.black)
             }
             .padding(.horizontal, .padding6)
@@ -76,9 +76,9 @@ public struct ConversationsView: View {
             case let .text(text):
                 var textToDisplay: String {
                     if newestMessage.sender == .hedvig {
-                        return "Hedvig: " + text
+                        return "\(L10n.chatSenderHedvig): " + text
                     } else {
-                        return "You: " + text
+                        return "\(L10n.chatSenderMember): " + text
                     }
                 }
                 hText(textToDisplay, style: .footnote)
@@ -92,12 +92,8 @@ public struct ConversationsView: View {
 
     @hColorBuilder
     private func getBackgroundColor(for conversation: Conversation) -> some hColor {
-        if conversation.type != .legacy {
-            if vm.hasNotification(conversation: conversation) {
-                hHighlightColor.Blue.fillOne
-            } else {
-                hColorBase(.clear)
-            }
+        if vm.hasNotification(conversation: conversation) {
+            hHighlightColor.Blue.fillOne
         } else {
             hColorBase(.clear)
         }

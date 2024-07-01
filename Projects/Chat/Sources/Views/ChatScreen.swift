@@ -130,12 +130,12 @@ public struct ChatScreen: View {
         if !vm.isConversationOpen && !vm.hasDismissedInfoCard {
             InfoCard(
                 text:
-                    "This conversation is closed. If you need further help related to this conversation, please write here directly.",
+                    L10n.chatConversationClosedInfo,
                 type: .info
             )
             .buttons([
                 .init(
-                    buttonTitle: "I understand",
+                    buttonTitle: L10n.generalCloseButton,
                     buttonAction: {
                         vm.hasDismissedInfoCard = true
                     }
