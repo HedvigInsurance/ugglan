@@ -26,10 +26,10 @@ public struct hPillFill<T: hColor, L: hColor>: View {
 
         func body(content: Content) -> some View {
             content
-                .padding(.horizontal, .padding10)
-                .padding(.vertical, .padding4)
+                .padding(.horizontal, .padding6)
+                .padding(.vertical, 3)
                 .background(
-                    RoundedRectangle(cornerRadius: .cornerRadiusL)
+                    RoundedRectangle(cornerRadius: 6)
                         .fill(backgroundColor)
                 )
         }

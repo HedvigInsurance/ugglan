@@ -21,22 +21,35 @@ struct ClaimStatus: View {
 
     var body: some View {
         CardComponent(
-            onSelected: enableTap
-                ? {
-                    if enableTap {
-                        tapAction(claim)
-                    } else {
-                    }
-                } : nil,
+            onSelected: nil,
             mainContent: ClaimPills(claim: claim),
             title: claim.claimType,
-            subTitle: claim.productVariant?.displayName,
+            subTitle: getSubTitle,
             bottomComponent: {
-                HStack(spacing: 6) {
-                    ClaimStatusBar(status: claim.status, outcome: claim.outcome)
+                VStack(spacing: .padding16) {
+                    HStack(spacing: .padding6) {
+                        ClaimStatusBar(status: claim.status, outcome: claim.outcome)
+                    }
+                    if enableTap {
+                        hButton.MediumButton(
+                            type: .secondary
+                        ) {
+                            tapAction(claim)
+                        } content: {
+                            hText(L10n.ClaimStatus.ClaimDetails.button)
+                        }
+                    }
                 }
             }
         )
+    }
+
+    var getSubTitle: String? {
+        if let submittedAt = claim.submittedAt {
+            return L10n.ClaimStatus.ClaimDetails.submitted + " "
+                + (submittedAt.localDateToIso8601Date?.displayDateMMMMDDYYYYFormat ?? "")
+        }
+        return nil
     }
 }
 
@@ -72,20 +85,22 @@ extension ClaimModel.ClaimOutcome {
     @hColorBuilder
     var textColor: some hColor {
         switch self {
-        case .paid, .notCompensated, .notCovered:
+        case .paid, .closed:
             hTextColor.Opaque.negative
-        case .none:
-            hTextColor.Opaque.primary
+        case .none, .notCompensated, .notCovered, .missingReceipt:
+            hTextColor.Opaque.black
         }
     }
 
     @hColorBuilder
     var backgroundColor: some hColor {
         switch self {
-        case .none:
+        case .none, .notCompensated, .notCovered:
             hSurfaceColor.Translucent.secondary
-        case .paid, .notCompensated, .notCovered:
+        case .paid, .closed:
             hBackgroundColor.negative
+        case .missingReceipt:
+            hSignalColor.Amber.highLight
         }
     }
 }
@@ -96,7 +111,7 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
             id: "1",
             status: .beingHandled,
             outcome: .none,
-            submittedAt: "2023-10-10",
+            submittedAt: "2023-06-10",
             signedAudioURL: "",
             memberFreeText: nil,
             payoutAmount: nil,
