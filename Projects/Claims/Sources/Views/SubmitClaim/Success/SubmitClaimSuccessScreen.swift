@@ -10,10 +10,10 @@ struct SubmitClaimSuccessScreen: View {
             successViewTitle: L10n.claimsSuccessTitle,
             successViewBody: L10n.claimsSuccessLabel,
             buttons: .init(
+                actionButton: nil,
                 ghostButton: .init(buttonAction: {
                     router.dismiss()
-                }),
-                actionButton: false
+                })
             )
         )
     }

@@ -63,9 +63,9 @@ public struct ProcessingView<S: Store & StoreLoading>: View {
                             successViewTitle: successViewTitle ?? "",
                             successViewBody: successViewBody ?? "",
                             buttons: .init(
+                                actionButton: nil,
                                 primaryButton: nil,
-                                ghostButton: .init(buttonAction: successViewButtonAction ?? {}),
-                                actionButton: false
+                                ghostButton: .init(buttonAction: successViewButtonAction ?? {})
                             )
                         )
                     }

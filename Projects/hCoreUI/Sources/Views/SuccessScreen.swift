@@ -37,12 +37,7 @@ public struct SuccessScreen: View {
                 BackgroundView().ignoresSafeArea()
                 VStack {
                     Spacer()
-                    StateView(
-                        type: .success,
-                        title: title ?? "",
-                        bodyText: subTitle,
-                        withButton: bottomAttachedButtons?.actionButton ?? false
-                    )
+                    content
                     Spacer()
                 }
                 hSection {
@@ -66,28 +61,36 @@ public struct SuccessScreen: View {
                 .sectionContainerStyle(.transparent)
             }
         } else {
-            StateView(
-                type: .success,
-                title: title ?? "",
-                bodyText: subTitle,
-                withButton: bottomAttachedButtons?.actionButton ?? false
-            )
+            content
             if let successBottomView = successBottomView {
                 successBottomView
             }
         }
     }
+
+    private var content: some View {
+        StateView(
+            type: .success,
+            title: title ?? "",
+            bodyText: subTitle,
+            button: (bottomAttachedButtons?.actionButton != nil)
+                ? .init(
+                    buttonTitle: bottomAttachedButtons?.actionButton?.buttonTitle,
+                    buttonAction: bottomAttachedButtons?.actionButton?.buttonAction ?? {}
+                ) : nil
+        )
+    }
 }
 
 public struct SuccessScreenButtonConfig {
+    fileprivate let actionButton: SuccessScreenButton?
     fileprivate let primaryButton: SuccessScreenButton?
     fileprivate let ghostButton: SuccessScreenButton?
-    fileprivate let actionButton: Bool
 
     public init(
+        actionButton: SuccessScreenButton?,
         primaryButton: SuccessScreenButton? = nil,
-        ghostButton: SuccessScreenButton? = nil,
-        actionButton: Bool
+        ghostButton: SuccessScreenButton? = nil
     ) {
         self.primaryButton = primaryButton
         self.ghostButton = ghostButton
@@ -111,9 +114,9 @@ struct SuccessScreen_Previews: PreviewProvider {
             successViewTitle: "SUCCESS",
             successViewBody: "success",
             buttons: SuccessScreenButtonConfig(
+                actionButton: .init(buttonAction: {}),
                 primaryButton: .init(buttonTitle: "title", buttonAction: {}),
-                ghostButton: .init(buttonTitle: "title2", buttonAction: {}),
-                actionButton: false
+                ghostButton: .init(buttonTitle: "title2", buttonAction: {})
             )
         )
     }

@@ -59,7 +59,6 @@ public struct MovingFlowHousingTypeView: View {
                         dismissButton: nil
                     )
                 )
-                .hWithoutTitle
                 VStack {
                     Spacer()
                     hButton.LargeButton(type: .ghost) {

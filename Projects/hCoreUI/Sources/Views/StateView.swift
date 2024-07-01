@@ -5,7 +5,7 @@ struct StateView: View {
     let type: StateType
     let title: String
     let bodyText: String?
-    let withButton: Bool
+    let button: StateButton?
 
     var body: some View {
         VStack(spacing: 20) {
@@ -36,11 +36,11 @@ struct StateView: View {
                     }
                 }
 
-                if withButton {
+                if let button {
                     hButton.MediumButton(type: .primary) {
-
+                        button.buttonAction()
                     } content: {
-                        hText(type.buttonText)
+                        hText(button.buttonTitle ?? type.buttonText)
                     }
                     .fixedSize()
 
@@ -99,11 +99,24 @@ enum StateType {
     }
 }
 
+public struct StateButton {
+    fileprivate let buttonTitle: String?
+    fileprivate let buttonAction: () -> Void
+
+    public init(
+        buttonTitle: String? = nil,
+        buttonAction: @escaping () -> Void
+    ) {
+        self.buttonTitle = buttonTitle
+        self.buttonAction = buttonAction
+    }
+}
+
 #Preview{
     StateView(
         type: .error,
         title: "title",
         bodyText: "body",
-        withButton: true
+        button: .init(buttonAction: {})
     )
 }

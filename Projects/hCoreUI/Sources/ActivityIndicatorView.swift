@@ -124,7 +124,6 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
                         dismissButton: nil
                     )
                 )
-                .hWithoutTitle
             } else {
                 content().transition(.opacity.animation(animation ?? .easeInOut(duration: 0.2)))
             }
@@ -313,7 +312,6 @@ struct RetryViewWithError<StoreType: StoreLoading & Store>: ViewModifier {
                         dismissButton: nil
                     )
                 )
-                .hWithoutTitle
             } else {
                 content
             }
@@ -494,7 +492,6 @@ public struct LoadingViewWithContentt: ViewModifier {
                     description: error,
                     buttons: .init()
                 )
-                .hWithoutTitle
                 .transition(.opacity.animation(.easeInOut(duration: 0.2)))
             } else {
                 content.transition(.opacity.animation(.easeInOut(duration: 0.2)))

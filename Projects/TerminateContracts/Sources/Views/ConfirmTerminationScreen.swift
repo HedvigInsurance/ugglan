@@ -22,7 +22,6 @@ struct ConfirmTerminationScreen: View {
             GenericErrorView(
                 title: L10n.General.areYouSure,
                 description: terminationText(state: state),
-                icon: .triangle,
                 buttons: .init(
                     actionButtonAttachedToBottom:
                         .init(

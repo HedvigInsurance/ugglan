@@ -316,25 +316,25 @@ struct TerminationFlowNavigation: View {
                 ? L10n.terminateContractTerminationComplete
                 : L10n.terminationFlowSuccessSubtitleWithDate((terminationDate)),
             buttons: .init(
+                actionButton: nil,
                 primaryButton: .init(buttonAction: { [weak vm] in
                     vm?.router.dismiss()
                     isFlowPresented(.done)
-                }),
-                actionButton: false
-                    //                ,
-                    //                ghostButton: .init(
-                    //                    buttonTitle: L10n.terminationFlowShareFeedback,
-                    //                    buttonAction: { [weak router] in
-                    //                        router?.dismiss()
-                    //                        log.addUserAction(type: .click, name: "terminationSurvey")
-                    //                        let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                    //                        if let surveyToURL = URL(string: store.state.successStep?.surveyUrl) {
-                    //                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                    //                                isFlowPresented(.openFeedback(url: surveyToURL))
-                    //                            }
-                    //                        }
-                    //                    }
-                    //                )
+                })
+                //                ,
+                //                ghostButton: .init(
+                //                    buttonTitle: L10n.terminationFlowShareFeedback,
+                //                    buttonAction: { [weak router] in
+                //                        router?.dismiss()
+                //                        log.addUserAction(type: .click, name: "terminationSurvey")
+                //                        let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                //                        if let surveyToURL = URL(string: store.state.successStep?.surveyUrl) {
+                //                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                //                                isFlowPresented(.openFeedback(url: surveyToURL))
+                //                            }
+                //                        }
+                //                    }
+                //                )
             )
         )
     }
@@ -343,7 +343,6 @@ struct TerminationFlowNavigation: View {
         GenericErrorView(
             title: L10n.terminationNotSuccessfulTitle,
             description: L10n.somethingWentWrong,
-            icon: .triangle,
             buttons: .init(
                 actionButton: .init(
                     buttonTitle: L10n.openChat,
