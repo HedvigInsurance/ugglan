@@ -111,13 +111,7 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
     private func handle(isPresent: Bool) {
         if isPresent {
             var withDelay = false
-            if options.contains(.replaceCurrent) {
-                if let vc = presentationViewModel.rootVC?.presentingViewController {
-                    presentationViewModel.rootVC?.dismiss(animated: true)
-                    presentationViewModel.rootVC = vc
-                    withDelay = true
-                }
-            } else if !options.contains(.alwaysOpenOnTop) {
+            if !options.contains(.alwaysOpenOnTop) {
                 if let presentedVC = presentationViewModel.rootVC?.presentedViewController {
                     presentedVC.dismiss(animated: true)
                     withDelay = true
@@ -264,7 +258,6 @@ extension UIViewController {
 public struct DetentPresentationOption: OptionSet {
     public let rawValue: UInt
     public static let alwaysOpenOnTop = DetentPresentationOption(rawValue: 1 << 0)
-    public static let replaceCurrent = DetentPresentationOption(rawValue: 1 << 1)
     public static let withoutGrabber = DetentPresentationOption(rawValue: 1 << 2)
     public static let disableDismissOnScroll = DetentPresentationOption(rawValue: 1 << 3)
 
