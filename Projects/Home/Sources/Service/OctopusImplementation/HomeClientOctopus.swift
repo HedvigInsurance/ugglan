@@ -94,14 +94,14 @@ public class HomeClientOctopus: HomeClient {
             )
             var conversationIdsWithTimestamp = Dictionary(
                 uniqueKeysWithValues: data.currentMember.conversations.map {
-                    ($0.id, $0.newestMessage?.sentAt.localDateToIso8601Date ?? Date())
+                    ($0.id, $0.newestMessage?.sentAt.localDateToIso8601Date)
                 }
             )
             if let legacyConversation = data.currentMember.legacyConversation {
                 conversationIdsWithTimestamp[legacyConversation.id] =
-                    legacyConversation.newestMessage?.sentAt.localDateToIso8601Date ?? Date()
+                    legacyConversation.newestMessage?.sentAt.localDateToIso8601Date
             }
-            return conversationIdsWithTimestamp
+            return conversationIdsWithTimestamp.compactMapValues({ $0 })
         } else {
             let data = try await self.octopus.client
                 .fetch(
