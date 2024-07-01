@@ -110,18 +110,15 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                     )
             }
         } else {
-            hColorScheme(
-                light: hTextColor.Opaque.secondary,
-                dark: hGrayscaleOpaqueColor.greyScale900
-            )
+            hFillColor.Opaque.tertiary
         }
     }
 
     @ViewBuilder var logo: some View {
-        Image(uiImage: hCoreUIAssets.helipadOutlined.image.withRenderingMode(.alwaysTemplate))
+        Image(uiImage: hCoreUIAssets.helipadBig.image)
             .resizable()
             .frame(width: 24, height: 24)
-            .foregroundColor(hTextColor.Opaque.primary)
+            .foregroundColor(hFillColor.Opaque.white)
             .colorScheme(.dark)
     }
 
@@ -151,12 +148,11 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             Spacer()
             HStack {
                 hText(contractDisplayName)
-                    .foregroundColor(hTextColor.Opaque.primary)
-                    .colorScheme(.dark)
+                    .foregroundColor(hTextColor.Opaque.white)
                 Spacer()
             }
             hText(contractExposureName)
-                .foregroundColor(hGrayscaleTranslucent.greyScaleTranslucent600)
+                .foregroundColor(hTextColor.Translucent.secondary)
                 .colorScheme(.dark)
         }
         .padding(.padding16)
@@ -165,8 +161,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             background
         )
         .border(hBorderColor.primary, width: 0.5)
-        .colorScheme(.light)
-        .clipShape(Squircle.default())
+        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
         .hShadow()
         .contentShape(Rectangle())
     }
@@ -179,19 +174,21 @@ private struct StatusPill: View {
         VStack {
             hText(text, style: .standardSmall)
         }
-        .padding(.vertical, .padding4)
-        .padding(.horizontal, .padding10)
-        .foregroundColor(hTextColor.Opaque.primary).colorScheme(.dark)
-        .background(hTextColor.Translucent.tertiary).colorScheme(.light)
-        .cornerRadius(8)
+        .padding(.vertical, 3)
+        .padding(.horizontal, .padding6)
+        .foregroundColor(hTextColor.Opaque.white)
+        .background(hFillColor.Translucent.tertiary).colorScheme(.light)
+        .cornerRadius(.cornerRadiusS)
     }
 }
 
 #Preview{
-    ContractRow(
-        image: hCoreUIAssets.pillowHome.image,
-        terminationMessage: "",
-        contractDisplayName: "",
-        contractExposureName: ""
-    )
+    hSection {
+        ContractRow(
+            image: hCoreUIAssets.pillowHome.image,
+            terminationMessage: "Active",
+            contractDisplayName: "Insurance",
+            contractExposureName: "Address ∙ Coverage"
+        )
+    }
 }
