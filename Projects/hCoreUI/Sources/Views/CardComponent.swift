@@ -53,8 +53,8 @@ where MainContent: View, BottomContent: View {
         }
         .padding(.vertical, .padding16)
         .background(
-            Squircle.default()
-                .fill(hSurfaceColor.Translucent.secondary)
+            RoundedRectangle(cornerRadius: .cornerRadiusXL)
+                .fill(hSurfaceColor.Opaque.primary)
         )
         .onTapGesture {
             if let onSelected = onSelected {
