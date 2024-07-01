@@ -92,7 +92,7 @@ enum StateType {
         case .error:
             return L10n.generalRetry
         case .information:
-            return "Confirm"
+            return L10n.generalConfirm
         default:
             return L10n.generalContinueButton
         }
