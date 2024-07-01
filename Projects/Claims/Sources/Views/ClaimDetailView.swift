@@ -123,15 +123,16 @@ public struct ClaimDetailView: View {
         Divider()
             .padding(.horizontal, -16)
             .padding(.vertical, .padding16)
-
-        VStack(alignment: .leading) {
-            hText("Claim status", style: .footnote)
-                .foregroundColor(hTextColor.Opaque.primary)
-            hText(statusParagraph, style: .footnote)
-                .foregroundColor(hTextColor.Opaque.secondary)
+        HStack {
+            VStack(alignment: .leading) {
+                hText(L10n.ClaimStatus.title, style: .footnote)
+                    .foregroundColor(hTextColor.Opaque.primary)
+                hText(statusParagraph, style: .footnote)
+                    .foregroundColor(hTextColor.Opaque.secondary)
+            }
+            .multilineTextAlignment(.leading)
+            Spacer()
         }
-        .fixedSize(horizontal: false, vertical: true)
-        .multilineTextAlignment(.leading)
         if !Dependencies.featureFlags().isConversationBasedMessagesEnabled {
             hRow {
                 ContactChatView(
@@ -141,6 +142,7 @@ public struct ClaimDetailView: View {
                 )
                 .padding(.bottom, .padding4)
             }
+            .padding(.horizontal, -16)
         }
     }
 
