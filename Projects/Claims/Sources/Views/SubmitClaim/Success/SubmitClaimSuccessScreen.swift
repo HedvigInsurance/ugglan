@@ -12,7 +12,8 @@ struct SubmitClaimSuccessScreen: View {
             buttons: .init(
                 ghostButton: .init(buttonAction: {
                     router.dismiss()
-                })
+                }),
+                actionButton: false
             )
         )
     }

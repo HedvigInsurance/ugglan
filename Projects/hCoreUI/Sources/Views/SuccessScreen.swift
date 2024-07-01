@@ -2,42 +2,33 @@ import Presentation
 import SwiftUI
 import hCore
 
-public enum SuccessScreenIcon {
-    case tick
-    case circularTick
-}
-
 public struct SuccessScreen: View {
     let title: String?
     let subTitle: String?
     let withButtons: Bool
-    let buttons: SuccessScreenButtonConfig?
-    let icon: SuccessScreenIcon
+    let bottomAttachedButtons: SuccessScreenButtonConfig?
+
     @Environment(\.hSuccessBottomAttachedView) var successBottomView
 
     public init(
         title: String? = nil,
-        subtitle: String? = nil,
-        icon: SuccessScreenIcon? = nil
+        subtitle: String? = nil
     ) {
         self.title = title
         self.withButtons = false
         self.subTitle = subtitle
-        self.buttons = nil
-        self.icon = icon ?? .tick
+        self.bottomAttachedButtons = nil
     }
 
     public init(
         successViewTitle: String,
         successViewBody: String,
-        buttons: SuccessScreenButtonConfig? = nil,
-        icon: SuccessScreenIcon? = nil
+        buttons: SuccessScreenButtonConfig? = nil
     ) {
         self.title = successViewTitle
         self.subTitle = successViewBody
-        self.buttons = buttons
+        self.bottomAttachedButtons = buttons
         self.withButtons = buttons != nil
-        self.icon = icon ?? .tick
     }
 
     public var body: some View {
@@ -46,22 +37,24 @@ public struct SuccessScreen: View {
                 BackgroundView().ignoresSafeArea()
                 VStack {
                     Spacer()
-                    Spacer()
-                    centralContent
-                    Spacer()
-                    Spacer()
+                    StateView(
+                        type: .success,
+                        title: title ?? "",
+                        bodyText: subTitle,
+                        withButton: bottomAttachedButtons?.actionButton ?? false
+                    )
                     Spacer()
                 }
                 hSection {
                     VStack(spacing: 8) {
-                        if let primaryButton = buttons?.primaryButton {
+                        if let primaryButton = bottomAttachedButtons?.primaryButton {
                             hButton.LargeButton(type: .primary) {
                                 primaryButton.buttonAction()
                             } content: {
                                 hText(primaryButton.buttonTitle ?? L10n.generalDoneButton)
                             }
                         }
-                        if let ghostButton = buttons?.ghostButton {
+                        if let ghostButton = bottomAttachedButtons?.ghostButton {
                             hButton.LargeButton(type: .ghost) {
                                 ghostButton.buttonAction()
                             } content: {
@@ -73,38 +66,15 @@ public struct SuccessScreen: View {
                 .sectionContainerStyle(.transparent)
             }
         } else {
-            VStack(spacing: 20) {
-                Spacer()
-                centralContent
-                Spacer()
-                if let successBottomView = successBottomView {
-                    successBottomView
-                }
-            }
-        }
-    }
-
-    private var centralContent: some View {
-        VStack(spacing: 16) {
-            Image(
-                uiImage: icon == .tick
-                    ? hCoreUIAssets.checkmark.image : hCoreUIAssets.checkmarkFilled.image
+            StateView(
+                type: .success,
+                title: title ?? "",
+                bodyText: subTitle,
+                withButton: bottomAttachedButtons?.actionButton ?? false
             )
-            .resizable()
-            .frame(width: icon == .tick ? 24 : 40, height: icon == .tick ? 24 : 40)
-            .foregroundColor(hSignalColor.Green.element)
-            hSection {
-                VStack(spacing: 0) {
-                    if let title {
-                        hText(title)
-                    }
-                    hText(subTitle ?? "")
-                        .foregroundColor(hTextColor.Opaque.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, .padding32)
-                }
+            if let successBottomView = successBottomView {
+                successBottomView
             }
-            .sectionContainerStyle(.transparent)
         }
     }
 }
@@ -112,13 +82,16 @@ public struct SuccessScreen: View {
 public struct SuccessScreenButtonConfig {
     fileprivate let primaryButton: SuccessScreenButton?
     fileprivate let ghostButton: SuccessScreenButton?
+    fileprivate let actionButton: Bool
 
     public init(
         primaryButton: SuccessScreenButton? = nil,
-        ghostButton: SuccessScreenButton? = nil
+        ghostButton: SuccessScreenButton? = nil,
+        actionButton: Bool
     ) {
         self.primaryButton = primaryButton
         self.ghostButton = ghostButton
+        self.actionButton = actionButton
     }
 
     public struct SuccessScreenButton {
@@ -139,7 +112,8 @@ struct SuccessScreen_Previews: PreviewProvider {
             successViewBody: "success",
             buttons: SuccessScreenButtonConfig(
                 primaryButton: .init(buttonTitle: "title", buttonAction: {}),
-                ghostButton: .init(buttonTitle: "title2", buttonAction: {})
+                ghostButton: .init(buttonTitle: "title2", buttonAction: {}),
+                actionButton: false
             )
         )
     }

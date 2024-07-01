@@ -44,7 +44,8 @@ struct DirectDebitResult: View {
                 buttons: .init(
                     ghostButton: .init(buttonAction: {
                         router.dismiss()
-                    })
+                    }),
+                    actionButton: false
                 )
             )
         case .failure:

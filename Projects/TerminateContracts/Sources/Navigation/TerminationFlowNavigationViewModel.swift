@@ -319,23 +319,23 @@ struct TerminationFlowNavigation: View {
                 primaryButton: .init(buttonAction: { [weak vm] in
                     vm?.router.dismiss()
                     isFlowPresented(.done)
-                })
-                //                ,
-                //                ghostButton: .init(
-                //                    buttonTitle: L10n.terminationFlowShareFeedback,
-                //                    buttonAction: { [weak router] in
-                //                        router?.dismiss()
-                //                        log.addUserAction(type: .click, name: "terminationSurvey")
-                //                        let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                //                        if let surveyToURL = URL(string: store.state.successStep?.surveyUrl) {
-                //                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                //                                isFlowPresented(.openFeedback(url: surveyToURL))
-                //                            }
-                //                        }
-                //                    }
-                //                )
-            ),
-            icon: .circularTick
+                }),
+                actionButton: false
+                    //                ,
+                    //                ghostButton: .init(
+                    //                    buttonTitle: L10n.terminationFlowShareFeedback,
+                    //                    buttonAction: { [weak router] in
+                    //                        router?.dismiss()
+                    //                        log.addUserAction(type: .click, name: "terminationSurvey")
+                    //                        let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                    //                        if let surveyToURL = URL(string: store.state.successStep?.surveyUrl) {
+                    //                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    //                                isFlowPresented(.openFeedback(url: surveyToURL))
+                    //                            }
+                    //                        }
+                    //                    }
+                    //                )
+            )
         )
     }
 
