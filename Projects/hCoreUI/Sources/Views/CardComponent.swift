@@ -30,12 +30,6 @@ where MainContent: View, BottomContent: View {
                 HStack(alignment: .center) {
                     mainContent
                     Spacer()
-                    if onSelected != nil {
-                        hCoreUIAssets.chevronRight.view
-                            .resizable()
-                            .frame(width: 16, height: 16)
-                            .foregroundColor(hTextColor.Opaque.secondary)
-                    }
                 }
             }
             .sectionContainerStyle(.transparent)
@@ -43,6 +37,7 @@ where MainContent: View, BottomContent: View {
             VStack(alignment: .leading, spacing: 0) {
                 if let title = title {
                     hText(title)
+                        .foregroundColor(hTextColor.Opaque.primary)
                 }
                 hText(subTitle ?? " ", style: .standardSmall)
                     .foregroundColor(hTextColor.Opaque.secondary)
@@ -58,8 +53,8 @@ where MainContent: View, BottomContent: View {
         }
         .padding(.vertical, .padding16)
         .background(
-            Squircle.default()
-                .fill(hSurfaceColor.Translucent.secondary)
+            RoundedRectangle(cornerRadius: .cornerRadiusXL)
+                .fill(hSurfaceColor.Opaque.primary)
         )
         .onTapGesture {
             if let onSelected = onSelected {
