@@ -36,7 +36,7 @@ struct ClaimStatus: View {
                         ) {
                             tapAction(claim)
                         } content: {
-                            hText("Show details")
+                            hText(L10n.ClaimStatus.ClaimDetails.button)
                         }
                     }
                 }

@@ -136,7 +136,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
             case .closed:
                 return L10n.ClaimStatusDetail.closed
             case .missingReceipt:
-                return "Missing receipt"
+                return L10n.ClaimStatusDetail.missingReceipt
             }
         }
     }
