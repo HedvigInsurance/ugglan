@@ -57,7 +57,11 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
                 return L10n.ClaimStatus.NotCompensated.supportText
             case .notCovered:
                 return L10n.ClaimStatus.NotCovered.supportText
-            case .none, .closed, .missingReceipt:
+            case .closed:
+                return L10n.ClaimStatus.Closed.supportText
+            case .missingReceipt:
+                return L10n.ClaimStatus.MissingReceipt.supportText
+            case .none:
                 return ""
             }
         case .reopened:
