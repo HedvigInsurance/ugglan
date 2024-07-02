@@ -93,7 +93,7 @@ public struct ConversationsView: View {
     @hColorBuilder
     private func getBackgroundColor(for conversation: Conversation) -> some hColor {
         if vm.hasNotification(conversation: conversation) {
-            hHighlightColor.Blue.fillOne
+            hSurfaceColor.Translucent.primary
         } else {
             hColorBase(.clear)
         }
