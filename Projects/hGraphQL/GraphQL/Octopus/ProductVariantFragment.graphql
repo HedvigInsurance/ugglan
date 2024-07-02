@@ -42,6 +42,5 @@ fragment PerilFragment on Peril {
     description
     info
     covered
-    exceptions
     colorCode
 }

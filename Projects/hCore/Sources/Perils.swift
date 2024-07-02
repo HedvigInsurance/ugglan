@@ -7,7 +7,6 @@ public struct Perils: Codable, Equatable, Hashable {
     public let info: String?
     public let color: String?
     public let covered: [String]
-    public let exceptions: [String]
 
     public init(
         id: String?,
@@ -15,8 +14,7 @@ public struct Perils: Codable, Equatable, Hashable {
         description: String,
         info: String?,
         color: String?,
-        covered: [String],
-        exceptions: [String]
+        covered: [String]
     ) {
         self.id = id
         self.title = title
@@ -24,7 +22,6 @@ public struct Perils: Codable, Equatable, Hashable {
         self.info = info
         self.color = color
         self.covered = covered
-        self.exceptions = exceptions
     }
 
     public init(
@@ -34,7 +31,6 @@ public struct Perils: Codable, Equatable, Hashable {
         title = fragment.title
         description = fragment.description
         covered = fragment.covered
-        exceptions = fragment.exceptions
         color = fragment.colorCode
         info = fragment.info
     }

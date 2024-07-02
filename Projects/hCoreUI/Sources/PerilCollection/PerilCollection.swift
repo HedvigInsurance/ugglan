@@ -118,8 +118,7 @@ struct PerilCollection_Previews: PreviewProvider {
                     description: "des",
                     info: nil,
                     color: nil,
-                    covered: [],
-                    exceptions: []
+                    covered: []
                 )
             ]
         PerilCollection(
