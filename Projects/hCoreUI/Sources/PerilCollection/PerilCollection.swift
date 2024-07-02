@@ -16,6 +16,7 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
     var peril: Perils
     var selectedPerils: [Perils]
     @State var nbOfPerils = 1
+    @Binding var fieldIsClicked: Bool
     @SwiftUI.Environment(\.hFieldSize) var fieldSize
 
     func makeBody(configuration: Configuration) -> some View {
@@ -68,6 +69,16 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
         .padding(.top, fieldSize == .small ? 15 : .padding16)
         .padding(.bottom, fieldSize == .small ? 17 : 18)
         .contentShape(Rectangle())
+        .background(getBackgroundColor)
+    }
+
+    @hColorBuilder
+    var getBackgroundColor: some hColor {
+        if fieldIsClicked {
+            hSurfaceColor.Opaque.secondary
+        } else {
+            hBackgroundColor.clear
+        }
     }
 }
 
@@ -81,6 +92,7 @@ public struct PerilCollection: View {
     public var perils: [Perils]
     public var didTapPeril: (_ peril: Perils) -> Void
     @State var selectedPerils: [Perils] = []
+    @State var fieldIsClicked = false
     @SwiftUI.Environment(\.hFieldSize) var fieldSize
 
     public init(
@@ -95,6 +107,14 @@ public struct PerilCollection: View {
         ForEach(perils, id: \.title) { peril in
             hSection {
                 SwiftUI.Button {
+                    withAnimation(.easeIn(duration: 1.0)) {
+                        fieldIsClicked = true
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                        withAnimation(.easeOut(duration: 2.0)) {
+                            fieldIsClicked = false
+                        }
+                    }
                     didTapPeril(peril)
                     if let index = self.selectedPerils.firstIndex(where: { $0 == peril }) {
                         selectedPerils.remove(at: index)
@@ -107,7 +127,8 @@ public struct PerilCollection: View {
                 .buttonStyle(
                     PerilButtonStyle(
                         peril: peril,
-                        selectedPerils: selectedPerils
+                        selectedPerils: selectedPerils,
+                        fieldIsClicked: $fieldIsClicked
                     )
                 )
             }
