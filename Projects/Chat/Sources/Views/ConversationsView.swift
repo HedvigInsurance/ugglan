@@ -64,31 +64,21 @@ public struct ConversationsView: View {
                 RoundedRectangle(cornerRadius: 6)
                     .fill(hHighlightColor.Blue.fillTwo)
             )
+            .transition(.scale.combined(with: .opacity))
         } else if let timeStamp = conversation.newestMessage?.sentAt {
             hText(timeStamp.displayTimeStamp, style: .footnote)
                 .foregroundColor(hTextColor.Opaque.secondary)
+                .transition(.scale.combined(with: .opacity))
         }
     }
 
     @ViewBuilder
     private func getNewestMessage(for conversation: Conversation) -> some View {
         if let newestMessage = conversation.newestMessage {
-            switch newestMessage.type {
-            case let .text(text):
-                var textToDisplay: String {
-                    if newestMessage.sender == .hedvig {
-                        return "\(L10n.chatSenderHedvig): " + text
-                    } else {
-                        return "\(L10n.chatSenderMember): " + text
-                    }
-                }
-                hText(textToDisplay, style: .footnote)
-                    .foregroundColor(hTextColor.Translucent.primary)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .foregroundColor(getNewestMessageColor(for: conversation))
-            default:
-                EmptyView()
-            }
+            hText(newestMessage.latestMessageText, style: .footnote)
+                .foregroundColor(hTextColor.Translucent.primary)
+                .fixedSize(horizontal: false, vertical: true)
+                .foregroundColor(getNewestMessageColor(for: conversation))
         }
     }
 
@@ -166,7 +156,9 @@ class ConversationsViewModel: ObservableObject {
                     )
                 }
             }
-            self.conversations = conversations
+            withAnimation {
+                self.conversations = conversations
+            }
         } catch let ex {
             //TODO: EXCEPTION
         }

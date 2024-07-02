@@ -92,3 +92,34 @@ extension Sequence where Iterator.Element == Message {
         return self.filter({ !alreadyAdded.contains($0.id) })
     }
 }
+
+extension Message {
+    var latestMessageText: String {
+        let senderText: String = {
+            switch sender {
+            case .member: return L10n.chatSenderMember
+            case .hedvig: return L10n.chatSenderHedvig
+            }
+        }()
+        let message: String = {
+            switch type {
+            case let .text(text):
+                return text
+            case let .file(file):
+                if file.mimeType.isImage {
+                    return L10n.chatSentAPhoto
+                }
+                return L10n.chatSentAFile
+            case .crossSell:
+                return L10n.chatSentALink
+            case .deepLink:
+                return L10n.chatSentALink
+            case .otherLink:
+                return L10n.chatSentALink
+            case .unknown:
+                return L10n.chatSentAFile
+            }
+        }()
+        return "\(senderText): \(message)"
+    }
+}

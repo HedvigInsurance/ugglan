@@ -32,7 +32,6 @@ struct TooltipView: View {
                         .foregroundColor(hTextColor.Opaque.negative)
                         .background(hFillColor.Opaque.secondary)
                         .cornerRadius(.cornerRadiusS)
-                        .colorScheme(.light)
                 }
                 .transition(.scale(scale: 0, anchor: UnitPoint(x: 0.90, y: 0)).combined(with: .opacity))
             }

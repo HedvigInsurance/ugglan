@@ -13,12 +13,15 @@ public class ChatScreenViewModel: ObservableObject {
     @Published var scrollToMessage: Message?
     @Published var banner: Markdown?
     @Published var isConversationOpen = true
+    @Published var shouldShowBanner = true
     @Published var hasDismissedInfoCard = false
-    @Published var chatInputVm: ChatInputViewModel = .init()
+    var chatInputVm: ChatInputViewModel = .init()
     @Published var title: String = L10n.chatTitle
     @Published var subTitle: String?
     var chatNavigationVm: ChatNavigationViewModel?
     let chatService: ChatServiceProtocol
+    var scrollCancellable: AnyCancellable?
+    var hideBannerCancellable: AnyCancellable?
 
     private var addedMessagesIds: [String] = []
     private var hasNext: Bool?
@@ -35,6 +38,18 @@ public class ChatScreenViewModel: ObservableObject {
                 await self?.send(message: message)
             }
         }
+
+        hideBannerCancellable = chatInputVm.$showBottomMenu.combineLatest(chatInputVm.$keyboardIsShown)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] (showBottomMenu, isKeyboardShown) in
+                let shouldShowBanner = !showBottomMenu && !isKeyboardShown
+                if self?.shouldShowBanner != false {
+                    withAnimation {
+                        self?.shouldShowBanner = shouldShowBanner
+                    }
+                }
+            }
+
         Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] timer in
             guard let self = self else {
                 timer.invalidate()

@@ -12,7 +12,6 @@ public struct ChatScreen: View {
     @State var infoViewWidth: CGFloat = 0
     @StateObject var chatScrollViewDelegate = ChatScrollViewDelegate()
     @EnvironmentObject var chatNavigationVm: ChatNavigationViewModel
-
     public init(
         vm: ChatScreenViewModel
     ) {
@@ -36,6 +35,15 @@ public struct ChatScreen: View {
             vm.chatNavigationVm = chatNavigationVm
         }
         .configureTitleView(vm)
+        .onAppear {
+            vm.scrollCancellable = chatScrollViewDelegate.isScrolling
+                .subscribe(on: RunLoop.main)
+                .sink { [weak vm] _ in
+                    withAnimation {
+                        vm?.chatInputVm.showBottomMenu = false
+                    }
+                }
+        }
     }
 
     @ViewBuilder
@@ -141,7 +149,7 @@ public struct ChatScreen: View {
                     }
                 )
             ])
-        } else if vm.isConversationOpen {
+        } else if vm.isConversationOpen && vm.shouldShowBanner {
             if let banner = vm.banner {
                 InfoCard(text: "", type: vm.chatService.type == .oldChat ? .info : .disabled)
                     .hInfoCardCustomView {
@@ -158,6 +166,7 @@ public struct ChatScreen: View {
                         )
                     }
                     .hInfoCardLayoutStyle(.rectange)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
     }
@@ -198,7 +207,11 @@ public struct ChatScreen: View {
 }
 
 class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
+
+    let isScrolling = PassthroughSubject<Bool, Never>()
+
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        isScrolling.send(true)
         let vc = findProverVC(from: scrollView.viewController)
         vc?.isModalInPresentation = true
         vc?.navigationController?.isModalInPresentation = true
@@ -210,6 +223,7 @@ class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
         withVelocity velocity: CGPoint,
         targetContentOffset: UnsafeMutablePointer<CGPoint>
     ) {
+        isScrolling.send(false)
         let vc = findProverVC(from: scrollView.viewController)
         vc?.isModalInPresentation = false
         vc?.navigationController?.isModalInPresentation = false
