@@ -108,7 +108,8 @@ public class ConversationClientOctopus: ConversationClient {
             olderToken: olderToken,
             newerToken: newerToken,
             isConversationOpen: isConversationOpen,
-            title: conversation.title
+            title: conversation.title,
+            createdAt: conversation.createdAt
         )
     }
 }

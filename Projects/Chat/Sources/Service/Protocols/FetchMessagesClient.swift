@@ -11,4 +11,5 @@ public struct MessagesData {
     let olderToken: String?
     let hasNext: Bool
     let title: String?
+    let createdAt: String?
 }

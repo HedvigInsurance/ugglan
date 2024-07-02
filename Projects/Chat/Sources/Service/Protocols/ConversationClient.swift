@@ -22,4 +22,5 @@ public struct ConversationMessagesData {
     let newerToken: String?
     let isConversationOpen: Bool?
     let title: String?
+    let createdAt: String?
 }

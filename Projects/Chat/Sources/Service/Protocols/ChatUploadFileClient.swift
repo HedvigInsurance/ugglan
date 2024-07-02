@@ -48,7 +48,7 @@ class ChatDemoClients: FetchMessagesClient, SendMessageClient {
     }
 
     func get(_ next: String?) async throws -> MessagesData {
-        return .init(messages: messages, banner: nil, olderToken: nil, hasNext: false, title: nil)
+        return .init(messages: messages, banner: nil, olderToken: nil, hasNext: false, title: nil, createdAt: nil)
     }
 
     public func send(message: Message, topic: ChatTopicType?) async throws -> Message {

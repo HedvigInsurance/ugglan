@@ -3,6 +3,7 @@ import Kingfisher
 import Presentation
 import SwiftUI
 import hCore
+import hCoreUI
 import hGraphQL
 
 public class ChatScreenViewModel: ObservableObject {
@@ -15,6 +16,7 @@ public class ChatScreenViewModel: ObservableObject {
     @Published var hasDismissedInfoCard = false
     @Published var chatInputVm: ChatInputViewModel = .init()
     @Published var title: String = L10n.chatTitle
+    @Published var subTitle: String?
     var chatNavigationVm: ChatNavigationViewModel?
     let chatService: ChatServiceProtocol
 
@@ -117,6 +119,7 @@ public class ChatScreenViewModel: ObservableObject {
             addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
             hasNext = chatData.hasPreviousMessage
             title = chatData.title ?? L10n.chatTitle
+            subTitle = chatData.createdAt ?? ""
         } catch _ {
             if #available(iOS 16.0, *) {
                 try! await Task.sleep(for: .seconds(2))
@@ -248,6 +251,30 @@ extension ConversationsError: LocalizedError {
         case .missingData: return L10n.somethingWentWrong
         case .uploadFailed: return L10n.somethingWentWrong
         case .missingConversation: return L10n.somethingWentWrong
+        }
+    }
+}
+
+extension ChatScreenViewModel: TitleView {
+    public func getTitleView() -> UIView {
+        let view: UIView = UIHostingController(rootView: titleView).view
+        view.backgroundColor = .clear
+        return view
+    }
+
+    @ViewBuilder
+    private var titleView: some View {
+        if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
+            VStack(alignment: .leading) {
+                hText(self.title).foregroundColor(hTextColor.Opaque.primary)
+                if let subTitle = subTitle?.localDateToIso8601Date?.displayDateDDMMMYYYYFormat {
+                    hText(L10n.ClaimStatus.ClaimDetails.submitted + " " + subTitle)
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        } else {
+            hText(self.title).foregroundColor(hTextColor.Opaque.primary)
         }
     }
 }

@@ -120,7 +120,8 @@ public class ConversationDemoClient: ConversationClient {
             olderToken: nil,
             newerToken: nil,
             isConversationOpen: nil,
-            title: nil
+            title: nil,
+            createdAt: nil
         )
     }
 

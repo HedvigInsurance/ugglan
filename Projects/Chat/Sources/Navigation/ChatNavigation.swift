@@ -86,25 +86,20 @@ public struct ChatNavigation<Content: View>: View {
     public var body: some View {
         RouterHost(router: router, options: .navigationType(type: .large)) {
             switch chatType {
-            case let .conversation(conversationId, title):
+            case let .conversation(conversationId):
                 ChatScreen(vm: .init(chatService: ConversationService(conversationId: conversationId)))
-                    .configureTitle(title)
                     .withDismissButton()
             case let .conversationId(id):
                 ChatScreen(vm: .init(chatService: ConversationService(conversationId: id)))
-                    .configureTitle(L10n.chatTitle)
                     .withDismissButton()
             case let .topic(topic):
                 ChatScreen(vm: .init(chatService: MessagesService(topic: topic)))
-                    .configureTitle(L10n.chatTitle)
                     .withDismissButton()
             case .newConversation:
                 ChatScreen(vm: .init(chatService: NewConversationService()))
-                    .configureTitle(L10n.chatTitle)
                     .withDismissButton()
             case .none:
                 ChatScreen(vm: .init(chatService: MessagesService(topic: nil)))
-                    .configureTitle(L10n.chatTitle)
                     .withDismissButton()
             }
         }

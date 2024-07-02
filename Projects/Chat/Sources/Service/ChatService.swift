@@ -43,7 +43,8 @@ public class ConversationService: ChatServiceProtocol {
             messages: data.messages,
             banner: data.banner,
             isConversationOpen: data.isConversationOpen ?? true,
-            title: data.title
+            title: data.title,
+            createdAt: data.createdAt
         )
     }
 
@@ -60,7 +61,8 @@ public class ConversationService: ChatServiceProtocol {
             messages: data.messages,
             banner: data.banner,
             isConversationOpen: data.isConversationOpen ?? true,
-            title: data.title
+            title: data.title,
+            createdAt: data.createdAt
         )
 
     }
@@ -85,7 +87,14 @@ public class NewConversationService: ChatServiceProtocol {
         if let conversationService = conversationService {
             return try await conversationService.getNewMessages()
         }
-        return .init(hasPreviousMessage: false, messages: [], banner: nil, isConversationOpen: true, title: nil)
+        return .init(
+            hasPreviousMessage: false,
+            messages: [],
+            banner: nil,
+            isConversationOpen: true,
+            title: nil,
+            createdAt: nil
+        )
     }
 
     public func getPreviousMessages() async throws -> ChatData {
@@ -93,7 +102,14 @@ public class NewConversationService: ChatServiceProtocol {
         if let conversationService = conversationService {
             return try await conversationService.getPreviousMessages()
         }
-        return .init(hasPreviousMessage: false, messages: [], banner: nil, isConversationOpen: true, title: nil)
+        return .init(
+            hasPreviousMessage: false,
+            messages: [],
+            banner: nil,
+            isConversationOpen: true,
+            title: nil,
+            createdAt: nil
+        )
     }
 
     public func send(message: Message) async throws -> Message {
@@ -140,7 +156,8 @@ public class MessagesService: ChatServiceProtocol {
             messages: data.messages,
             banner: data.banner,
             isConversationOpen: nil,
-            title: data.title
+            title: data.title,
+            createdAt: data.createdAt
         )
     }
 
@@ -152,7 +169,8 @@ public class MessagesService: ChatServiceProtocol {
             messages: data.messages,
             banner: data.banner,
             isConversationOpen: nil,
-            title: data.title
+            title: data.title,
+            createdAt: data.createdAt
         )
     }
 
