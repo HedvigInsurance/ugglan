@@ -69,20 +69,12 @@ public class ChatDemoClient: FetchMessagesClient, SendMessageClient {
         ]
     }
 
-    public func get(_ next: String?) async throws -> ChatData {
-        return .init(
-            hasNext: true,
-            id: UUID().uuidString,
-            messages: messages,
-            nextUntil: nil,
-            banner: """
-                Information message with deeplink asd asd as *[Help Center](https://hedvigtest.page.link/help-center)*
-                """
-        )
+    public func get(_ next: String?) async throws -> MessagesData {
+        return .init(messages: messages, banner: nil, olderToken: nil, hasNext: false, title: nil, createdAt: nil)
     }
 
-    public func send(message: Message, topic: ChatTopicType?) async throws -> SentMessageWrapper {
+    public func send(message: Message, topic: ChatTopicType?) async throws -> Message {
         self.messages.append(message)
-        return .init(message: message, status: nil)
+        return message
     }
 }

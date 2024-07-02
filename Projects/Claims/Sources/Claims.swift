@@ -78,5 +78,4 @@ class ClaimsViewModel: ObservableObject {
         //added this to reset timer after we fetch becausae we could fetch from other places so we dont fetch too often
         configureTimer()
     }
-
 }

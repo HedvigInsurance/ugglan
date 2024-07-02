@@ -7,6 +7,17 @@ import hGraphQL
 struct ClaimStatus: View {
     var claim: ClaimModel
     var enableTap: Bool
+    let extendedBottomView: AnyView?
+
+    init(
+        claim: ClaimModel,
+        enableTap: Bool,
+        extendedBottomView: AnyView? = nil
+    ) {
+        self.claim = claim
+        self.enableTap = enableTap
+        self.extendedBottomView = extendedBottomView
+    }
 
     @EnvironmentObject var homeRouter: Router
 
@@ -32,8 +43,11 @@ struct ClaimStatus: View {
             title: claim.claimType,
             subTitle: claim.productVariant?.displayName,
             bottomComponent: {
-                HStack(spacing: 6) {
-                    ClaimStatusBar(status: claim.status, outcome: claim.outcome)
+                VStack {
+                    HStack(spacing: 6) {
+                        ClaimStatusBar(status: claim.status, outcome: claim.outcome)
+                    }
+                    extendedBottomView
                 }
             }
         )
@@ -103,7 +117,17 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
             targetFileUploadUri: "",
             claimType: "Broken item",
             incidentDate: "2024-02-15",
-            productVariant: nil
+            productVariant: nil,
+            conversation: .init(
+                id: "",
+                type: .claim,
+                title: "",
+                subtitle: nil,
+                newestMessage: nil,
+                createdAt: nil,
+                statusMessage: nil,
+                isConversationOpen: true
+            )
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -127,7 +151,17 @@ struct ClaimReopened_Previews: PreviewProvider {
             targetFileUploadUri: "",
             claimType: "Broken item",
             incidentDate: "2024-02-15",
-            productVariant: nil
+            productVariant: nil,
+            conversation: .init(
+                id: "",
+                type: .claim,
+                title: "",
+                subtitle: nil,
+                newestMessage: nil,
+                createdAt: nil,
+                statusMessage: nil,
+                isConversationOpen: true
+            )
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -151,7 +185,17 @@ struct ClaimPaid_Previews: PreviewProvider {
             targetFileUploadUri: "",
             claimType: "Broken item",
             incidentDate: "2024-02-15",
-            productVariant: nil
+            productVariant: nil,
+            conversation: .init(
+                id: "",
+                type: .claim,
+                title: "",
+                subtitle: nil,
+                newestMessage: nil,
+                createdAt: nil,
+                statusMessage: nil,
+                isConversationOpen: true
+            )
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -175,7 +219,17 @@ struct ClaimNotCompensated_Previews: PreviewProvider {
             targetFileUploadUri: "",
             claimType: "Broken item",
             incidentDate: "2024-02-15",
-            productVariant: nil
+            productVariant: nil,
+            conversation: .init(
+                id: "",
+                type: .claim,
+                title: "",
+                subtitle: nil,
+                newestMessage: nil,
+                createdAt: nil,
+                statusMessage: nil,
+                isConversationOpen: true
+            )
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -199,7 +253,17 @@ struct ClaimNotCocered_Previews: PreviewProvider {
             targetFileUploadUri: "",
             claimType: "Broken item",
             incidentDate: "2024-02-15",
-            productVariant: nil
+            productVariant: nil,
+            conversation: .init(
+                id: "",
+                type: .claim,
+                title: "",
+                subtitle: nil,
+                newestMessage: nil,
+                createdAt: nil,
+                statusMessage: nil,
+                isConversationOpen: true
+            )
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)

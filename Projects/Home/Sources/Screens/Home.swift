@@ -55,7 +55,14 @@ extension HomeView {
                 case .firstVet:
                     navigationVm.navBarItems.isFirstVetPresented = true
                 case .chat, .chatNotification:
-                    NotificationCenter.default.post(name: .openChat, object: ChatTopicWrapper(topic: nil, onTop: false))
+                    if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
+                        navigationVm.router.push("Chat")
+                    } else {
+                        NotificationCenter.default.post(
+                            name: .openChat,
+                            object: ChatTopicWrapper(topic: nil, onTop: false)
+                        )
+                    }
                 }
             }
         )

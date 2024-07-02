@@ -31,6 +31,24 @@ query ChatMessageTimeStamp($until: Instant) {
     messages {
         sentAt
         sender
+        id
+    }
+  }
+}
+
+query ConversationsTimeStamp {
+  currentMember {
+    conversations {
+      id
+      newestMessage {
+        sentAt
+      }
+    }
+    legacyConversation {
+      id
+      newestMessage {
+        sentAt
+      }
     }
   }
 }

@@ -34,7 +34,7 @@ struct ChatInputView: View {
                             placeholder: L10n.chatInputPlaceholder,
                             text: $vm.inputText,
                             height: $height,
-                            showBottomMenu: $vm.showBottomMenu
+                            keyboardIsShown: $vm.keyboardIsShown
                         )
                         .frame(height: height)
                         .frame(minHeight: 40)
@@ -115,9 +115,20 @@ struct ChatInputView: View {
 
 class ChatInputViewModel: NSObject, ObservableObject {
     @Published var inputText: String = ""
+    @Published var keyboardIsShown = false {
+        didSet {
+            if keyboardIsShown {
+                withAnimation {
+                    showBottomMenu = false
+                }
+            }
+        }
+    }
+
     @Published var showBottomMenu = false {
         didSet {
             if showBottomMenu {
+                keyboardIsShown = false
                 UIApplication.dismissKeyboard()
             }
         }
@@ -169,13 +180,13 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
     let placeholder: String
     @Binding var text: String
     @Binding var height: CGFloat
-    @Binding var showBottomMenu: Bool
+    @Binding var keyboardIsShown: Bool
     func makeUIView(context: Context) -> some UIView {
         CustomTextView(
             placeholder: placeholder,
             inputText: $text,
             height: $height,
-            showBottomMenu: $showBottomMenu
+            keyboardIsShown: $keyboardIsShown
         )
     }
 
@@ -194,13 +205,13 @@ private class CustomTextView: UITextView, UITextViewDelegate {
     private let placeholder: String
     @Binding private var inputText: String
     @Binding private var height: CGFloat
-    @Binding private var showBottomMenu: Bool
+    @Binding private var keyboardIsShown: Bool
     private var textCancellable: AnyCancellable?
-    init(placeholder: String, inputText: Binding<String>, height: Binding<CGFloat>, showBottomMenu: Binding<Bool>) {
+    init(placeholder: String, inputText: Binding<String>, height: Binding<CGFloat>, keyboardIsShown: Binding<Bool>) {
         self.placeholder = placeholder
         self._inputText = inputText
         self._height = height
-        self._showBottomMenu = showBottomMenu
+        self._keyboardIsShown = keyboardIsShown
         super.init(frame: .zero, textContainer: nil)
         self.textContainerInset = .init(horizontalInset: 4, verticalInset: 4)
         self.delegate = self
@@ -242,7 +253,7 @@ private class CustomTextView: UITextView, UITextViewDelegate {
     }
 
     func textViewDidBeginEditing(_ textView: UITextView) {
-        showBottomMenu = false
+        keyboardIsShown = true
         if textView.textColor == placeholderTextColor {
             textView.text = nil
             textView.textColor = editingTextColor
@@ -258,6 +269,7 @@ private class CustomTextView: UITextView, UITextViewDelegate {
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {
+        keyboardIsShown = false
         let text = textView.text.trimmingCharacters(in: .whitespacesAndNewlines)
         if text.isEmpty {
             textView.text = placeholder

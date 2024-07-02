@@ -1,4 +1,3 @@
-
 query Chat($until: Instant) {
   chat(until: $until) {
     hasNext
@@ -9,21 +8,4 @@ query Chat($until: Instant) {
     }
     bannerText
   }
-}
-
-fragment MessageFragment on ChatMessage {
-    id
-    sender
-    sentAt
-    ... ChatMessageFileFragment
-    ... ChatMessageTextFragment
-}
-
-fragment ChatMessageFileFragment on ChatMessageFile {
-    signedUrl
-    mimeType
-}
-
-fragment ChatMessageTextFragment on ChatMessageText {
-    text
 }

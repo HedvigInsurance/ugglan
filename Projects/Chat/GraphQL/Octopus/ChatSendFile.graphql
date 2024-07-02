@@ -6,8 +6,5 @@ mutation ChatSendFile($input: ChatMessageFileInput!) {
     message {
       ... MessageFragment
     }
-    status {
-      message
-    }
   }
 }

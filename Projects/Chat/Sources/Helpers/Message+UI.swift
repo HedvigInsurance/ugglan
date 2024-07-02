@@ -3,7 +3,7 @@ import hCoreUI
 
 extension Message {
     @hColorBuilder
-    var bgColor: some hColor {
+    func bgColor(isConversationOpen: Bool) -> some hColor {
         if case .failed = status {
             hSignalColor.Red.highlight
         } else {
@@ -11,10 +11,15 @@ extension Message {
             case .hedvig:
                 hSurfaceColor.Opaque.primary
             case .member:
-                hSignalColor.Blue.fill
+                if isConversationOpen {
+                    hSignalColor.Blue.fill
+                } else {
+                    hFillColor.Opaque.disabled
+                }
             }
         }
     }
+
     @hColorBuilder
     var textColor: some hColor {
         switch self.sender {
