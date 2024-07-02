@@ -33,6 +33,7 @@ public struct ConversationsView: View {
                 VStack(alignment: .leading, spacing: .padding4) {
                     if conversation.type == .legacy {
                         hText(L10n.chatConversationHistoryTitle, style: .body1)
+                            .foregroundColor(hTextColor.Opaque.primary)
                     } else {
                         hText(conversation.title, style: .body1)
                             .foregroundColor(hTextColor.Opaque.primary)
@@ -82,6 +83,7 @@ public struct ConversationsView: View {
                     }
                 }
                 hText(textToDisplay, style: .footnote)
+                    .foregroundColor(hTextColor.Translucent.primary)
                     .fixedSize(horizontal: false, vertical: true)
                     .foregroundColor(getNewestMessageColor(for: conversation))
             default:
