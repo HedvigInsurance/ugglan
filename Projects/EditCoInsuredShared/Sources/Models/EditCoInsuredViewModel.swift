@@ -73,11 +73,14 @@ public class EditCoInsuredViewModel: ObservableObject {
 
 public struct EditCoInsuredNavigationModel: Equatable, Identifiable {
     public var contractsSupportingCoInsured: [InsuredPeopleConfig]
-
+    public let openSpecificScreen: EditCoInsuredScreenType
     public init(
+        openSpecificScreen: EditCoInsuredScreenType = .none,
         contractsSupportingCoInsured: () -> [InsuredPeopleConfig]
     ) {
+        self.openSpecificScreen = openSpecificScreen
         self.contractsSupportingCoInsured = contractsSupportingCoInsured()
+
     }
 
     public var id: String = UUID().uuidString
@@ -85,4 +88,9 @@ public struct EditCoInsuredNavigationModel: Equatable, Identifiable {
 
 public enum EditCoInsuredRedirectType: Hashable {
     case checkForAlert
+}
+
+public enum EditCoInsuredScreenType {
+    case newInsurance
+    case none
 }

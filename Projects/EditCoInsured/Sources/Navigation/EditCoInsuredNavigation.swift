@@ -16,10 +16,7 @@ public class EditCoInsuredNavigationViewModel: ObservableObject {
     @Published var isEditCoinsuredSelectPresented: InsuredPeopleConfig?
 }
 
-public enum EditCoInsuredScreenType {
-    case newInsurance
-    case none
-
+extension EditCoInsuredScreenType {
     func getTrackingType(for config: InsuredPeopleConfig) -> EditCoInsuredScreenTrackingType {
         switch self {
         case .newInsurance:
@@ -221,15 +218,9 @@ public struct EditCoInsuredNavigation: View {
     }
 }
 
-public class EditCoInsuredSelectInsuranceNavigationViewModel: ObservableObject {
-    @Published var editCoInsuredConfig: InsuredPeopleConfig?
-}
-
 public struct EditCoInsuredSelectInsuranceNavigation: View {
     let configs: [InsuredPeopleConfig]
     @StateObject var router = Router()
-    @StateObject private var editCoInsuredSelectInsuranceNavigationVm =
-        EditCoInsuredSelectInsuranceNavigationViewModel()
     @EnvironmentObject var editCoInsuredViewModel: EditCoInsuredViewModel
 
     public init(
@@ -242,14 +233,6 @@ public struct EditCoInsuredSelectInsuranceNavigation: View {
         RouterHost(router: router, options: .navigationType(type: .large)) {
             openSelectInsurance()
         }
-        .modally(
-            item: $editCoInsuredSelectInsuranceNavigationVm.editCoInsuredConfig,
-            options: .constant(.replaceCurrent),
-            content: { config in
-                EditCoInsuredNavigation(config: config)
-                    .environmentObject(editCoInsuredViewModel)
-            }
-        )
     }
 
     func openSelectInsurance() -> some View {
@@ -265,10 +248,13 @@ public struct EditCoInsuredSelectInsuranceNavigation: View {
                 }
                 return []
             },
-            onSelected: { [weak editCoInsuredSelectInsuranceNavigationVm] selectedConfigs in
+            onSelected: { [weak editCoInsuredViewModel] selectedConfigs in
                 if let selectedConfig = selectedConfigs.first {
                     if let object = selectedConfig.0 {
-                        editCoInsuredSelectInsuranceNavigationVm?.editCoInsuredConfig = object
+                        editCoInsuredViewModel?.editCoInsuredModelDetent = nil
+                        editCoInsuredViewModel?.editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
+                            return [object]
+                        })
                         let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
                         store.coInsuredViewModel.initializeCoInsured(with: object)
                     }
@@ -284,14 +270,9 @@ public struct EditCoInsuredSelectInsuranceNavigation: View {
     }
 }
 
-public class EditCoInsuredAlertNavigationViewModel: ObservableObject {
-    @Published var editCoInsuredConfig: InsuredPeopleConfig?
-}
-
 public struct EditCoInsuredAlertNavigation: View {
     let config: InsuredPeopleConfig
     @StateObject var router = Router()
-    @StateObject private var editCoInsuredAlertNavigationVm = EditCoInsuredAlertNavigationViewModel()
     @EnvironmentObject private var editCoInsuredViewModel: EditCoInsuredViewModel
 
     public init(
@@ -304,23 +285,19 @@ public struct EditCoInsuredAlertNavigation: View {
         RouterHost(router: router, options: .navigationType(type: .large)) {
             openMissingCoInsuredAlert()
         }
-        .modally(
-            item: $editCoInsuredAlertNavigationVm.editCoInsuredConfig,
-            options: .constant(.replaceCurrent)
-        ) { config in
-            EditCoInsuredNavigation(
-                config: config,
-                openSpecificScreen: .newInsurance
-            )
-            .environmentObject(editCoInsuredViewModel)
-        }
     }
 
     public func openMissingCoInsuredAlert() -> some View {
         return MissingCoInsuredAlert(
             config: config,
-            onButtonAction: { [weak editCoInsuredAlertNavigationVm] in
-                editCoInsuredAlertNavigationVm?.editCoInsuredConfig = config
+            onButtonAction: { [weak editCoInsuredViewModel] in
+                editCoInsuredViewModel?.editCoInsuredModelMissingAlert = nil
+                editCoInsuredViewModel?.editCoInsuredModelFullScreen = .init(
+                    openSpecificScreen: .newInsurance,
+                    contractsSupportingCoInsured: {
+                        [config]
+                    }
+                )
             }
         )
     }
