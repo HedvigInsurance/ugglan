@@ -87,13 +87,7 @@ private struct ModallySizeModifier<SwiftUIContent>: ViewModifier where SwiftUICo
     private func handle(isPresent: Bool) {
         if isPresent {
             var withDelay = false
-            if options.contains(.replaceCurrent) {
-                if let vc = presentationViewModel.rootVC?.presentingViewController {
-                    presentationViewModel.rootVC?.dismiss(animated: true)
-                    presentationViewModel.rootVC = vc
-                    withDelay = true
-                }
-            } else if !options.contains(.alwaysOpenOnTop) {
+            if !options.contains(.alwaysOpenOnTop) {
                 if let presentedVC = presentationViewModel.rootVC?.presentedViewController {
                     presentedVC.dismiss(animated: true)
                     withDelay = true
