@@ -94,7 +94,7 @@ public enum ToolbarOptionType: Codable, Equatable {
             return 5
         }
     }
-    
+
     var delay: TimeInterval {
         switch self {
         case .newOffer:
@@ -227,7 +227,7 @@ struct ToolbarButtonsViewModifier: ViewModifier {
 }
 
 extension TimeInterval {
-    public static func days(numberOfDays: Int) -> TimeInterval { 
+    public static func days(numberOfDays: Int) -> TimeInterval {
         Double(numberOfDays) * 24 * 60 * 60
     }
 
