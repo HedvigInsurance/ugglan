@@ -80,6 +80,9 @@ struct LoggedInNavigation: View {
         ) {
             EuroBonusNavigation(useOwnNavigation: true)
         }
+        .introspectTabBarController { tabBar in
+            vm.tabBar = tabBar
+        }
     }
 
     var homeTab: some View {
@@ -381,7 +384,13 @@ struct HomeTab: View {
 }
 
 class LoggedInNavigationViewModel: ObservableObject {
-    @Published var selectedTab = 0
+    @Published var selectedTab = 0 {
+        willSet {
+            self.previousTab = selectedTab
+        }
+    }
+    var previousTab: Int = 0
+
     let contractsNavigationVm = ContractsNavigationViewModel()
     let paymentsNavigationVm = PaymentsNavigationViewModel()
     let profileNavigationVm = ProfileNavigationViewModel()
@@ -396,7 +405,8 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isUrlPresented: URL?
 
     private var updateCoInsuredCancellable: AnyCancellable?
-
+    var onTabBarClickCancellable: AnyCancellable?
+    weak var tabBar: UITabBarController?
     init() {
         NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) {
             [weak self] notification in
@@ -445,6 +455,19 @@ class LoggedInNavigationViewModel: ObservableObject {
 
                 let homeStore: HomeStore = globalPresentableStoreContainer.get()
                 homeStore.send(.fetchQuickActions)
+            }
+
+        onTabBarClickCancellable =
+            $selectedTab
+            .receive(on: RunLoop.main)
+            .sink { [weak self] value in
+                if self?.selectedTab == self?.previousTab {
+                    if let nav = self?.tabBar?.selectedViewController?.children
+                        .first(where: { $0.isKind(of: UINavigationController.self) }) as? UINavigationController
+                    {
+                        nav.popToRootViewController(animated: true)
+                    }
+                }
             }
     }
 
