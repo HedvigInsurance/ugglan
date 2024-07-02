@@ -42,6 +42,7 @@ struct DirectDebitResult: View {
                 successViewTitle: type.headingText,
                 successViewBody: type.messageText,
                 buttons: .init(
+                    actionButton: nil,
                     ghostButton: .init(buttonAction: {
                         router.dismiss()
                     })
@@ -52,7 +53,6 @@ struct DirectDebitResult: View {
                 title: type.headingText,
                 description: type.messageText,
                 useForm: true,
-                icon: .triangle,
                 buttons: .init(
                     actionButton: .init(
                         buttonTitle: type.mainButtonText,

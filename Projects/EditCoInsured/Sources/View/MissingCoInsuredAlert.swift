@@ -36,7 +36,6 @@ public struct MissingCoInsuredAlert: View {
                     )
             )
         )
-        .hExtraBottomPadding
     }
 }
 

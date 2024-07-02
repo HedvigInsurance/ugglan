@@ -316,6 +316,7 @@ struct TerminationFlowNavigation: View {
                 ? L10n.terminateContractTerminationComplete
                 : L10n.terminationFlowSuccessSubtitleWithDate((terminationDate)),
             buttons: .init(
+                actionButton: nil,
                 primaryButton: .init(buttonAction: { [weak vm] in
                     vm?.router.dismiss()
                     isFlowPresented(.done)
@@ -334,8 +335,7 @@ struct TerminationFlowNavigation: View {
                 //                        }
                 //                    }
                 //                )
-            ),
-            icon: .circularTick
+            )
         )
     }
 
@@ -343,7 +343,6 @@ struct TerminationFlowNavigation: View {
         GenericErrorView(
             title: L10n.terminationNotSuccessfulTitle,
             description: L10n.somethingWentWrong,
-            icon: .triangle,
             buttons: .init(
                 actionButton: .init(
                     buttonTitle: L10n.openChat,

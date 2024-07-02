@@ -40,7 +40,6 @@ public struct ClaimFilesView: View {
                         dismissButton: nil
                     )
                 )
-                .hWithoutTitle
             } else {
                 hForm {
                     hSection {
