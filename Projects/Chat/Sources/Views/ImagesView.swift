@@ -147,7 +147,6 @@ struct PHPAssetPreview: View {
                     } else {
                         hText(L10n.chatUploadPresend)
                             .foregroundColor(hTextColor.Opaque.primary)
-                            .colorScheme(.light)
                     }
                 }
                 .opacity(selected ? 1 : 0)
