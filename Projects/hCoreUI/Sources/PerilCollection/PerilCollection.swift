@@ -124,9 +124,8 @@ struct PerilCollection_Previews: PreviewProvider {
                     title: "title",
                     description: "lkflihf uhreuidhf iwureahriur ekfshiuf erhfw iueherfuihgfeuihfgrui fruhfiuehf",
                     info: nil,
-                    color: "121212",
-                    covered: [],
-                    exceptions: []
+                    color: nil,
+                    covered: []
                 )
             ]
         VStack {
