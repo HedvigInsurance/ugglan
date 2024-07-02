@@ -264,7 +264,7 @@ struct HomeTab: View {
             }
             .routerDestination(for: String.self) { conversation in
                 ConversationsView()
-                    .configureTitle("Inbox")
+                    .configureTitle(L10n.chatConversationInbox)
             }
         }
         .environmentObject(homeNavigationVm)
