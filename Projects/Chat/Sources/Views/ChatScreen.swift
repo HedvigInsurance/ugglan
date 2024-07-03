@@ -135,27 +135,13 @@ public struct ChatScreen: View {
 
     @ViewBuilder
     private var infoCard: some View {
-        if !vm.isConversationOpen && !vm.hasDismissedInfoCard {
-            InfoCard(
-                text:
-                    L10n.chatConversationClosedInfo,
-                type: .info
-            )
-            .buttons([
-                .init(
-                    buttonTitle: L10n.generalCloseButton,
-                    buttonAction: {
-                        vm.hasDismissedInfoCard = true
-                    }
-                )
-            ])
-        } else if vm.isConversationOpen && vm.shouldShowBanner {
+        if vm.shouldShowBanner {
             if let banner = vm.banner {
                 InfoCard(text: "", type: .info)
                     .hInfoCardCustomView {
                         MarkdownView(
                             config: .init(
-                                text: banner,
+                                text: !vm.isConversationOpen ? L10n.chatConversationClosedInfo : banner,
                                 fontStyle: .standardSmall,
                                 color: hSignalColor.Blue.text,
                                 linkColor: hSignalColor.Blue.text,

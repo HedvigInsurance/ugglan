@@ -14,7 +14,6 @@ public class ChatScreenViewModel: ObservableObject {
     @Published var banner: Markdown?
     @Published var isConversationOpen = true
     @Published var shouldShowBanner = true
-    @Published var hasDismissedInfoCard = false
     var chatInputVm: ChatInputViewModel = .init()
     @Published var title: String = L10n.chatTitle
     @Published var subTitle: String?
