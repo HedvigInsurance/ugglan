@@ -168,7 +168,11 @@ class SurveyScreenViewModel: ObservableObject {
             return true
         }()
 
-        continueEnabled = status
+        if selectedOption?.suggestion != nil {
+            continueEnabled = false
+        } else {
+            continueEnabled = status
+        }
     }
 
     func continueClicked() {
