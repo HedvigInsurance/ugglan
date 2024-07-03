@@ -151,14 +151,14 @@ public struct ChatScreen: View {
             ])
         } else if vm.isConversationOpen && vm.shouldShowBanner {
             if let banner = vm.banner {
-                InfoCard(text: "", type: vm.chatService.type == .oldChat ? .info : .disabled)
+                InfoCard(text: "", type: .info)
                     .hInfoCardCustomView {
                         MarkdownView(
                             config: .init(
                                 text: banner,
                                 fontStyle: .standardSmall,
-                                color: infoCardTextColor,
-                                linkColor: infoCardLinkColor,
+                                color: hSignalColor.Blue.text,
+                                linkColor: hSignalColor.Blue.text,
                                 linkUnderlineStyle: .single
                             ) { url in
                                 NotificationCenter.default.post(name: .openDeepLink, object: url)
@@ -168,24 +168,6 @@ public struct ChatScreen: View {
                     .hInfoCardLayoutStyle(.rectange)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
-        }
-    }
-
-    @hColorBuilder
-    private var infoCardTextColor: some hColor {
-        if vm.chatService.type == .oldChat {
-            hSignalColor.Blue.text
-        } else {
-            hTextColor.Opaque.accordion
-        }
-    }
-
-    @hColorBuilder
-    private var infoCardLinkColor: some hColor {
-        if vm.chatService.type == .oldChat {
-            hSignalColor.Blue.text
-        } else {
-            hTextColor.Opaque.accordion
         }
     }
 }
