@@ -176,7 +176,16 @@ extension OctopusGraphQL.FlowTerminationSurveyOptionSuggestionFragment {
         if let optionActionSuggestion = self.asFlowTerminationSurveyOptionSuggestionAction,
             let action = optionActionSuggestion.action.asFlowTerminationSurveyRedirectAction
         {
-            return .action(action: .init(id: optionActionSuggestion.id, action: action))
+            let buttonTitle = optionActionSuggestion.buttonTitle
+            let description = buttonTitle.description
+            return .action(
+                action: .init(
+                    id: optionActionSuggestion.id,
+                    action: action,
+                    description: description,
+                    buttonTitle: buttonTitle
+                )
+            )
         } else if let optionRedirectSuggestion = self.asFlowTerminationSurveyOptionSuggestionRedirect {
             return .redirect(
                 redirect: .init(

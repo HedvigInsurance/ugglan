@@ -79,10 +79,10 @@ struct TerminationSurveyScreen: View {
     func buildInfo(for suggestion: TerminationFlowSurveyStepSuggestion) -> some View {
         switch suggestion {
         case .action(let action):
-            InfoCard(text: action.action.title, type: .campaign)
+            InfoCard(text: action.description, type: .campaign)
                 .buttons([
                     .init(
-                        buttonTitle: action.action.buttonTitle,
+                        buttonTitle: action.buttonTitle,
                         buttonAction: { [weak terminationFlowNavigationViewModel] in
                             terminationFlowNavigationViewModel?.redirectAction = action.action
                         }
@@ -189,7 +189,9 @@ class SurveyScreenViewModel: ObservableObject {
             suggestion: .action(
                 action: .init(
                     id: "actionId",
-                    action: .updateAddress
+                    action: .updateAddress,
+                    description: "description",
+                    buttonTitle: "button title"
                 )
             ),
             feedBack: nil,
