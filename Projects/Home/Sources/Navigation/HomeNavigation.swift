@@ -33,7 +33,7 @@ public class HomeNavigationViewModel: ObservableObject {
                 self?.openChatOptions = [.alwaysOpenOnTop, .withoutGrabber]
                 if let conversation = notification.object as? Chat.Conversation {
                     openChat = .init(
-                        chatType: .conversation(conversationId: conversation.id)
+                        chatType: .conversationId(id: conversation.id)
                     )
                 } else if let id = notification.object as? String {
                     openChat = .init(chatType: .conversationId(id: id))

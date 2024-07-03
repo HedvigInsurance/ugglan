@@ -86,9 +86,6 @@ public struct ChatNavigation<Content: View>: View {
     public var body: some View {
         RouterHost(router: router, options: .navigationType(type: .large)) {
             switch chatType {
-            case let .conversation(conversationId):
-                ChatScreen(vm: .init(chatService: ConversationService(conversationId: conversationId)))
-                    .withDismissButton()
             case let .conversationId(id):
                 ChatScreen(vm: .init(chatService: ConversationService(conversationId: id)))
                     .withDismissButton()
