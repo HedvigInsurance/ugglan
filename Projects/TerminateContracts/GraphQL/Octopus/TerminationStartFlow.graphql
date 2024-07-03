@@ -64,15 +64,17 @@ fragment FlowTerminationSurveyStepOptionFragment on FlowTerminationSurveyOption 
 }
 
 fragment FlowTerminationSurveyOptionSuggestionFragment on FlowTerminationSurveyOptionSuggestion {
+         id
          ... on FlowTerminationSurveyOptionSuggestionAction {
            action
+           buttonTitle
+           description
          }
          ... on FlowTerminationSurveyOptionSuggestionRedirect {
            url
            description
            buttonTitle
          }
-         id
 }
 
 fragment FlowTerminationSurveyOptionFeedbackFragment on FlowTerminationSurveyOptionFeedback {
