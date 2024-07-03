@@ -1,5 +1,6 @@
 import Foundation
 import hCore
+import hCoreUI
 
 public protocol ConversationsClient {
     func getConversations() async throws -> [Conversation]
@@ -23,4 +24,13 @@ public struct ConversationMessagesData {
     let isConversationOpen: Bool?
     let title: String?
     let createdAt: String?
+    let isLegacy: Bool
+
+    var subtitle: String? {
+        if isLegacy { return nil }
+        guard let date = createdAt?.localDateToIso8601Date?.displayDateDDMMMYYYYFormat else {
+            return nil
+        }
+        return "\(L10n.ClaimStatusDetail.submitted) \(date)"
+    }
 }

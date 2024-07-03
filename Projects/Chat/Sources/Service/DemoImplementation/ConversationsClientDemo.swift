@@ -121,7 +121,8 @@ public class ConversationDemoClient: ConversationClient {
             newerToken: nil,
             isConversationOpen: nil,
             title: nil,
-            createdAt: nil
+            createdAt: nil,
+            isLegacy: false
         )
     }
 

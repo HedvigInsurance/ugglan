@@ -7,5 +7,5 @@ public struct ChatData {
     let banner: Markdown?
     let isConversationOpen: Bool?
     let title: String?
-    let createdAt: String?
+    let subtitle: String?
 }

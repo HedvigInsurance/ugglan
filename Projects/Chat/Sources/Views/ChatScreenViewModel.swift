@@ -133,7 +133,7 @@ public class ChatScreenViewModel: ObservableObject {
             addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
             hasNext = chatData.hasPreviousMessage
             title = chatData.title ?? L10n.chatTitle
-            subTitle = chatData.createdAt ?? ""
+            subTitle = chatData.subtitle
         } catch _ {
             if #available(iOS 16.0, *) {
                 try! await Task.sleep(for: .seconds(2))
@@ -281,8 +281,8 @@ extension ChatScreenViewModel: TitleView {
         if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
             VStack(alignment: .leading) {
                 hText(self.title).foregroundColor(hTextColor.Opaque.primary)
-                if let subTitle = subTitle?.localDateToIso8601Date?.displayDateDDMMMYYYYFormat {
-                    hText(L10n.ClaimStatus.ClaimDetails.submitted + " " + subTitle)
+                if let subTitle = subTitle {
+                    hText(subTitle)
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
             }

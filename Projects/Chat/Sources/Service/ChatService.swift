@@ -37,14 +37,13 @@ public class ConversationService: ChatServiceProtocol {
         if let sendAt = data.messages.first?.sentAt {
             store.send(.setLastMessageTimestampForConversation(id: conversationId, date: sendAt))
         }
-
         return .init(
             hasPreviousMessage: olderToken != nil,
             messages: data.messages,
             banner: data.banner,
             isConversationOpen: data.isConversationOpen ?? true,
             title: data.title,
-            createdAt: data.createdAt
+            subtitle: data.subtitle
         )
     }
 
@@ -62,7 +61,7 @@ public class ConversationService: ChatServiceProtocol {
             banner: data.banner,
             isConversationOpen: data.isConversationOpen ?? true,
             title: data.title,
-            createdAt: data.createdAt
+            subtitle: data.subtitle
         )
 
     }
@@ -93,7 +92,7 @@ public class NewConversationService: ChatServiceProtocol {
             banner: nil,
             isConversationOpen: true,
             title: nil,
-            createdAt: nil
+            subtitle: nil
         )
     }
 
@@ -108,7 +107,7 @@ public class NewConversationService: ChatServiceProtocol {
             banner: nil,
             isConversationOpen: true,
             title: nil,
-            createdAt: nil
+            subtitle: nil
         )
     }
 
@@ -157,7 +156,7 @@ public class MessagesService: ChatServiceProtocol {
             banner: data.banner,
             isConversationOpen: nil,
             title: data.title,
-            createdAt: data.createdAt
+            subtitle: nil
         )
     }
 
@@ -170,7 +169,7 @@ public class MessagesService: ChatServiceProtocol {
             banner: data.banner,
             isConversationOpen: nil,
             title: data.title,
-            createdAt: data.createdAt
+            subtitle: nil
         )
     }
 
