@@ -61,9 +61,15 @@ public struct SuccessScreen: View {
                 .sectionContainerStyle(.transparent)
             }
         } else {
-            content
-            if let successBottomView = successBottomView {
-                successBottomView
+            ZStack(alignment: .bottom) {
+                VStack {
+                    Spacer()
+                    content
+                    Spacer()
+                }
+                if let successBottomView = successBottomView {
+                    successBottomView
+                }
             }
         }
     }
