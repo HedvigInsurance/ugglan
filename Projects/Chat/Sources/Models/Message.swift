@@ -10,7 +10,7 @@ public struct Message: Identifiable, Codable, Hashable {
     let localId: String?
     let remoteId: String?
     public var id: String {
-        return (localId ?? remoteId ?? "")
+        return remoteId ?? localId ?? ""
     }
     let sender: MessageSender
     public let sentAt: Date

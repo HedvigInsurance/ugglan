@@ -61,7 +61,7 @@ public struct ChatScreen: View {
     private func messagesContainer(with proxy: ScrollViewProxy?) -> some View {
         ScrollView {
             LazyVStack(spacing: 8) {
-                ForEach(vm.messages, id: \.id) { message in
+                ForEach(vm.messages) { message in
                     messageView(for: message, isConversationOpen: vm.isConversationOpen)
                         .flippedUpsideDown()
                         .onAppear {
