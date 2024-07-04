@@ -224,16 +224,6 @@ private class CustomTextView: UITextView, UITextViewDelegate {
             self.textColor = UIColor.black
         }
         self.backgroundColor = .clear
-        let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
-        let doneButton = UIBarButtonItem(
-            barButtonSystemItem: .done,
-            target: self,
-            action: #selector(handleDoneButtonTap)
-        )
-        let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        toolbar.setItems([space, doneButton], animated: false)
-
-        self.inputAccessoryView = toolbar
     }
 
     @objc private func handleDoneButtonTap() {
