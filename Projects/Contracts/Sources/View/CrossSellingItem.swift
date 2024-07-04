@@ -41,14 +41,7 @@ struct CrossSellingItem: View {
                     }
                     Spacer()
                     hButton.MediumButton(type: .primaryAlt) {
-                        withAnimation(.easeIn(duration: 2.0)) {
-                            fieldIsClicked = true
-                        }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                            withAnimation(.easeOut(duration: 2.0)) {
-                                fieldIsClicked = false
-                            }
-                        }
+                        fieldIsClicked.toggle()
                         openExternal()
                     } content: {
                         hText(L10n.crossSellGetPrice)
@@ -58,32 +51,20 @@ struct CrossSellingItem: View {
                 }
             }
             .onTapGesture {
-                withAnimation(.easeIn(duration: 2.0)) {
-                    fieldIsClicked = true
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                    withAnimation(.easeOut(duration: 2.0)) {
-                        fieldIsClicked = false
-                    }
-                }
+                fieldIsClicked.toggle()
                 openExternal()
                 ImpactGenerator.soft()
             }
         }
         .padding(16)
-        .background(
-            RoundedRectangle(cornerRadius: .cornerRadiusXL)
-                .fill(getBackgroundColor)
+        .modifier(
+            BackgorundColorAnimation(
+                animationTrigger: $fieldIsClicked,
+                color: hBackgroundColor.clear,
+                animationColor: hSurfaceColor.Translucent.primary
+            )
         )
-    }
-
-    @hColorBuilder
-    var getBackgroundColor: some hColor {
-        if fieldIsClicked {
-            hSurfaceColor.Translucent.primary
-        } else {
-            hBackgroundColor.clear
-        }
+        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXL))
     }
 }
 

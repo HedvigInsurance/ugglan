@@ -3,20 +3,56 @@ import SwiftUI
 import hCore
 import hGraphQL
 
-extension Array {
-    public func chunked(into size: Int) -> [[Element]] {
-        return stride(from: 0, to: count, by: size)
-            .map {
-                Array(self[$0..<Swift.min($0 + size, count)])
+public struct PerilCollection: View {
+    public var perils: [Perils]
+    @SwiftUI.Environment(\.hFieldSize) var fieldSize
+
+    public init(
+        perils: [Perils]
+    ) {
+        self.perils = perils
+    }
+
+    public var body: some View {
+        ForEach(perils, id: \.title) { peril in
+            hSection {
+                PerilView(peril: peril)
             }
+        }
+    }
+}
+
+struct PerilView: View {
+    let peril: Perils
+    @State var extended = false
+    var body: some View {
+        SwiftUI.Button {
+            withAnimation {
+                extended.toggle()
+            }
+        } label: {
+            EmptyView()
+        }
+        .buttonStyle(
+            PerilButtonStyle(
+                peril: peril,
+                extended: $extended
+            )
+        )
+        .modifier(
+            BackgorundColorAnimation(
+                animationTrigger: $extended,
+                color: hSurfaceColor.Opaque.primary,
+                animationColor: hSurfaceColor.Opaque.secondary
+            )
+        )
     }
 }
 
 struct PerilButtonStyle: SwiftUI.ButtonStyle {
     var peril: Perils
-    var selectedPerils: [Perils]
     @State var nbOfPerils = 1
-    @Binding var fieldIsClicked: Bool
+    @Binding var extended: Bool
     @SwiftUI.Environment(\.hFieldSize) var fieldSize
 
     func makeBody(configuration: Configuration) -> some View {
@@ -37,18 +73,18 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
                     .resizable()
                     .frame(width: 24, height: 24)
                     .transition(.opacity.animation(.easeOut))
-                    .rotationEffect(selectedPerils.contains(peril) ? Angle(degrees: 360) : Angle(degrees: 270))
+                    .rotationEffect(extended ? Angle(degrees: 360) : Angle(degrees: 270))
                     Image(
                         uiImage: hCoreUIAssets.minus.image
                     )
                     .resizable()
                     .frame(width: 24, height: 24)
                     .transition(.opacity.animation(.easeOut))
-                    .rotationEffect(selectedPerils.contains(peril) ? Angle(degrees: 360) : Angle(degrees: 180))
+                    .rotationEffect(extended ? Angle(degrees: 360) : Angle(degrees: 180))
                 }
             }
 
-            if selectedPerils.contains(peril) {
+            if extended {
                 VStack(alignment: .leading, spacing: 12) {
                     hText(peril.description, style: .footnote)
                         .padding(.bottom, .padding12)
@@ -69,70 +105,6 @@ struct PerilButtonStyle: SwiftUI.ButtonStyle {
         .padding(.top, fieldSize == .small ? 15 : .padding16)
         .padding(.bottom, fieldSize == .small ? 17 : 18)
         .contentShape(Rectangle())
-        .background(getBackgroundColor)
-    }
-
-    @hColorBuilder
-    var getBackgroundColor: some hColor {
-        if fieldIsClicked {
-            hSurfaceColor.Opaque.secondary
-        } else {
-            hBackgroundColor.clear
-        }
-    }
-}
-
-extension Array where Element == Perils {
-    var id: String {
-        self.map { peril in peril.title }.joined(separator: "")
-    }
-}
-
-public struct PerilCollection: View {
-    public var perils: [Perils]
-    public var didTapPeril: (_ peril: Perils) -> Void
-    @State var selectedPerils: [Perils] = []
-    @State var fieldIsClicked = false
-    @SwiftUI.Environment(\.hFieldSize) var fieldSize
-
-    public init(
-        perils: [Perils],
-        didTapPeril: @escaping (_ peril: Perils) -> Void
-    ) {
-        self.perils = perils
-        self.didTapPeril = didTapPeril
-    }
-
-    public var body: some View {
-        ForEach(perils, id: \.title) { peril in
-            hSection {
-                SwiftUI.Button {
-                    withAnimation(.easeIn(duration: 1.0)) {
-                        fieldIsClicked = true
-                    }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                        withAnimation(.easeOut(duration: 2.0)) {
-                            fieldIsClicked = false
-                        }
-                    }
-                    didTapPeril(peril)
-                    if let index = self.selectedPerils.firstIndex(where: { $0 == peril }) {
-                        selectedPerils.remove(at: index)
-                    } else {
-                        selectedPerils.append(peril)
-                    }
-                } label: {
-                    EmptyView()
-                }
-                .buttonStyle(
-                    PerilButtonStyle(
-                        peril: peril,
-                        selectedPerils: selectedPerils,
-                        fieldIsClicked: $fieldIsClicked
-                    )
-                )
-            }
-        }
     }
 }
 
@@ -151,18 +123,12 @@ struct PerilCollection_Previews: PreviewProvider {
             ]
         VStack {
             PerilCollection(
-                perils: perils,
-                didTapPeril: { peril in
-
-                }
+                perils: perils
             )
             .hFieldSize(.small)
 
             PerilCollection(
-                perils: perils,
-                didTapPeril: { _ in
-
-                }
+                perils: perils
             )
             .hFieldSize(.large)
         }
