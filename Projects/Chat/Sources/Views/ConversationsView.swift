@@ -13,6 +13,9 @@ public struct ConversationsView: View {
         hForm {
             displayMessages
         }
+        .onPullToRefresh {
+            await vm.fetchMessages()
+        }
     }
 
     @ViewBuilder
