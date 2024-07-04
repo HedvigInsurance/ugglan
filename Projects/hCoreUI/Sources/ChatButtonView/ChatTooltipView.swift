@@ -26,9 +26,10 @@ struct TooltipView: View {
                             .padding(.trailing, .padding16)
                     }
 
-                    hText(type.textToShow ?? "")
-                        .padding(.horizontal)
-                        .padding(.vertical, .padding10)
+                    hText(type.textToShow ?? "", style: .standardSmall)
+                        .padding(.horizontal, .padding12)
+                        .padding(.top, 6.5)
+                        .padding(.bottom, 7.5)
                         .foregroundColor(hTextColor.Opaque.negative)
                         .background(hFillColor.Opaque.secondary)
                         .cornerRadius(.cornerRadiusS)
