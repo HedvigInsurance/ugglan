@@ -8,11 +8,7 @@ struct StateView: View {
     let button: StateButton?
 
     var body: some View {
-        VStack(spacing: 20) {
-            Spacer()
-            centralContent
-            Spacer()
-        }
+        centralContent
     }
 
     private var centralContent: some View {
