@@ -119,9 +119,10 @@ public class NewConversationService: ChatServiceProtocol {
                 conversationService = .init(conversationId: conversation.id)
             } catch let ex {
                 generatingConversation = false
+                conversationService = nil
                 throw ex
             }
-        } else if generatingConversation == true {
+        } else if generatingConversation == true && conversationService == nil {
             throw ConversationsError.errorMesage(message: L10n.chatFailedToSend)
         }
         return try await conversationService!.send(message: message)
