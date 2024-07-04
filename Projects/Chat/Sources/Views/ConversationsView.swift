@@ -13,6 +13,7 @@ public struct ConversationsView: View {
         hForm {
             displayMessages
         }
+        .padding(.top, 8)
         .onPullToRefresh {
             await vm.fetchMessages()
         }
@@ -26,26 +27,28 @@ public struct ConversationsView: View {
                     NotificationCenter.default.post(name: .openChat, object: conversation)
                 }
         }
-        .padding(.horizontal, -16)
+        .withoutHorizontalPadding
         .sectionContainerStyle(.transparent)
     }
 
     func rowView(for conversation: Conversation) -> some View {
         HStack(spacing: .padding16) {
             hRow {
-                VStack(alignment: .leading, spacing: .padding4) {
+                VStack(alignment: .leading, spacing: 0) {
                     if conversation.type == .legacy {
                         hText(L10n.chatConversationHistoryTitle, style: .body1)
                             .foregroundColor(hTextColor.Opaque.primary)
                     } else {
                         hText(conversation.title, style: .body1)
+                            .fixedSize()
                             .foregroundColor(hTextColor.Opaque.primary)
                         hText(conversation.subtitle ?? "", style: .body1)
                             .fixedSize()
                             .foregroundColor(hTextColor.Translucent.secondary)
                     }
                     getNewestMessage(for: conversation)
-                        .padding(.top, .padding4)
+                        .padding(.top, .padding8)
+                        .padding(.bottom, 2)
                 }
                 Spacer()
                 getRightView(for: conversation)
