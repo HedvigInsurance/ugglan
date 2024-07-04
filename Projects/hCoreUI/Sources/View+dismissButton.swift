@@ -33,9 +33,11 @@ private struct DismissButton: ViewModifier {
                 ToolbarItem(
                     placement: .topBarTrailing
                 ) {
-                    hCoreUIAssets.close.view.onTapGesture {
-                        isPresented = true
-                    }
+                    hCoreUIAssets.close.view
+                        .onTapGesture {
+                            isPresented = true
+                        }
+                        .offset(x: 8)
                 }
             }
             .introspectViewController(customize: { vc in
