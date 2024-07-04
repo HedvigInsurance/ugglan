@@ -25,8 +25,7 @@ struct ContractCoverageView: View {
                     }
                     Spacer()
                     PerilCollection(
-                        perils: contract.currentAgreement?.productVariant.perils ?? [],
-                        didTapPeril: { _ in }
+                        perils: contract.currentAgreement?.productVariant.perils ?? []
                     )
                     .hFieldSize(.large)
                 }
