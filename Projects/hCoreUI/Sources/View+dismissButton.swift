@@ -73,9 +73,11 @@ private struct CloseButtonModifier: ViewModifier {
                     placement: .topBarTrailing
 
                 ) {
-                    hCoreUIAssets.close.view.onTapGesture {
-                        vm.vc?.dismiss(animated: true)
-                    }
+                    hCoreUIAssets.close.view
+                        .onTapGesture {
+                            vm.vc?.dismiss(animated: true)
+                        }
+                        .offset(x: 8)
                 }
             }
             .introspectViewController(customize: { vc in
