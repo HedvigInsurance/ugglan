@@ -69,28 +69,14 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
             performPushAction(notificationType: notificationType, userInfo: userInfo)
         }
-
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
         completionHandler()
     }
 
     func userNotificationCenter(
-        _: UNUserNotificationCenter,
-        willPresent notification: UNNotification,
-        withCompletionHandler _: @escaping (UNNotificationPresentationOptions) -> Void
-    ) {
-        let toast = Toast(
-            symbol: .none,
-            body: notification.request.content.title,
-            subtitle: notification.request.content.body
-        )
-
-        self.bag += toast.onTap.onValue {
-            let userInfo = notification.request.content.userInfo
-            guard let notificationType = (userInfo["TYPE"] as? String) ?? (userInfo["type"] as? String) else { return }
-
-            self.performPushAction(notificationType: notificationType, userInfo: userInfo)
-        }
-
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification
+    ) async -> UNNotificationPresentationOptions {
         let shouldShowNotification: Bool = {
             if let topPresentedVCDescription = UIApplication.shared.getTopVisibleVc()?.debugDescription {
                 let listToCheck: [String] = [
@@ -103,7 +89,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             return true
         }()
 
-        if shouldShowNotification { Toasts.shared.displayToast(toast: toast) }
+        return shouldShowNotification ? [.badge, .banner, .sound] : []
     }
 }
 
