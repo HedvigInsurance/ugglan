@@ -148,6 +148,9 @@ public class ChatScreenViewModel: ObservableObject {
     func send(message: Message) async {
         handleAddingLocal(for: message)
         await sendToClient(message: message)
+        if title == L10n.chatNewConversationTitle {
+            await fetchMessages()
+        }
     }
 
     @MainActor

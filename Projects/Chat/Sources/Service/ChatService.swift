@@ -91,8 +91,8 @@ public class NewConversationService: ChatServiceProtocol {
             messages: [],
             banner: nil,
             isConversationOpen: true,
-            title: nil,
-            subtitle: nil
+            title: L10n.chatNewConversationTitle,
+            subtitle: L10n.chatNewConversationSubtitle
         )
     }
 
