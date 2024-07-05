@@ -407,8 +407,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isEuroBonusPresented = false
     @Published var isUrlPresented: URL?
 
-    private var updateCoInsuredCancellable: AnyCancellable?
-    var onTabBarClickCancellable: AnyCancellable?
+    private var cancellables = Set<AnyCancellable>()
     weak var tabBar: UITabBarController?
     init() {
         NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) {
@@ -452,7 +451,7 @@ class LoggedInNavigationViewModel: ObservableObject {
             }
         }
 
-        updateCoInsuredCancellable = EditCoInsuredViewModel.updatedCoInsuredForContractId
+        EditCoInsuredViewModel.updatedCoInsuredForContractId
             .receive(on: RunLoop.main)
             .sink { contractId in
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
@@ -461,9 +460,9 @@ class LoggedInNavigationViewModel: ObservableObject {
                 let homeStore: HomeStore = globalPresentableStoreContainer.get()
                 homeStore.send(.fetchQuickActions)
             }
+            .store(in: &cancellables)
 
-        onTabBarClickCancellable =
-            $selectedTab
+        $selectedTab
             .receive(on: RunLoop.main)
             .sink { [weak self] value in
                 if self?.selectedTab == self?.previousTab {
@@ -474,6 +473,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                     }
                 }
             }
+            .store(in: &cancellables)
     }
 
     private func handleDeepLinks(deepLinkUrl: URL?) {
