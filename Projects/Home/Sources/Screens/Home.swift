@@ -146,8 +146,9 @@ extension HomeView {
 class HomeVM: ObservableObject {
     @Published var memberContractState: MemberContractState = .loading
     private var cancellables = Set<AnyCancellable>()
+    private var chatNotificationPullTimerCancellable: AnyCancellable?
     @Published var toolbarOptionTypes: [ToolbarOptionType] = []
-    let chatNotificationPullTimer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
+    private var chatNotificationPullTimer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
     init() {
         let store: HomeStore = globalPresentableStoreContainer.get()
         memberContractState = store.state.memberContractState
@@ -162,19 +163,6 @@ class HomeVM: ObservableObject {
         toolbarOptionTypes = store.state.toolbarOptionTypes
         addObserverForApplicationDidBecomeActive()
         observeToolbarOptionTypes()
-
-        chatNotificationPullTimer.receive(on: RunLoop.main)
-            .sink { _ in
-                let currentVCDescription = UIApplication.shared.getTopVisibleVc()?.debugDescription
-                let compareToDescirption = String(describing: HomeView<EmptyView>.self).components(separatedBy: "<")
-                    .first
-                if currentVCDescription == compareToDescirption {
-                    let store: HomeStore = globalPresentableStoreContainer.get()
-                    store.send(.fetchChatNotifications)
-                }
-            }
-            .store(in: &cancellables)
-
     }
 
     func fetch() {
@@ -187,6 +175,17 @@ class HomeVM: ObservableObject {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         contractStore.send(.fetch)
 
+        chatNotificationPullTimer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
+        chatNotificationPullTimerCancellable = chatNotificationPullTimer.receive(on: RunLoop.main)
+            .sink { _ in
+                let currentVCDescription = UIApplication.shared.getTopVisibleVc()?.debugDescription
+                let compareToDescirption = String(describing: HomeView<EmptyView>.self).components(separatedBy: "<")
+                    .first
+                if currentVCDescription == compareToDescirption {
+                    let store: HomeStore = globalPresentableStoreContainer.get()
+                    store.send(.fetchChatNotifications)
+                }
+            }
     }
     private func addObserverForApplicationDidBecomeActive() {
         if ApplicationContext.shared.$isLoggedIn.value {
