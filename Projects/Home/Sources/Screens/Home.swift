@@ -194,9 +194,8 @@ class HomeVM: ObservableObject {
                 forName: UIApplication.didBecomeActiveNotification,
                 object: nil,
                 queue: OperationQueue.main,
-                using: { _ in
-                    let store: HomeStore = globalPresentableStoreContainer.get()
-                    store.send(.fetchClaims)
+                using: { [weak self] _ in
+                    self?.fetch()
                 }
             )
         }
