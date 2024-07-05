@@ -1,5 +1,6 @@
 import Apollo
 import Chat
+import Claims
 import Contracts
 import CoreDependencies
 import Flow
@@ -90,7 +91,19 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             self.performPushAction(notificationType: notificationType, userInfo: userInfo)
         }
 
-        if !HomeNavigationViewModel.isChatPresented { Toasts.shared.displayToast(toast: toast) }
+        let shouldShowNotification: Bool = {
+            if let topPresentedVCDescription = UIApplication.shared.getTopVisibleVc()?.debugDescription {
+                let listToCheck: [String] = [
+                    String(describing: HomeView<EmptyView>.self).components(separatedBy: "<").first ?? "",
+                    .init(describing: ChatScreen.self),
+                ]
+                let shouldShow = !listToCheck.contains(where: { $0 == topPresentedVCDescription })
+                return shouldShow
+            }
+            return true
+        }()
+
+        if shouldShowNotification { Toasts.shared.displayToast(toast: toast) }
     }
 }
 

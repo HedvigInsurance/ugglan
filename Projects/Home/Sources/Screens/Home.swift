@@ -31,16 +31,6 @@ public struct HomeView<Claims: View>: View {
 }
 
 extension HomeView {
-    func fetch() {
-        store.send(.fetchMemberState)
-        store.send(.fetchImportantMessages)
-        store.send(.fetchQuickActions)
-        store.send(.fetchChatNotifications)
-        store.send(.fetchClaims)
-
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        contractStore.send(.fetch)
-    }
 
     public var body: some View {
         hForm {
@@ -76,7 +66,7 @@ extension HomeView {
         .hFormContentPosition(.center)
         .hFormMergeBottomViewWithContentIfNeeded
         .onAppear {
-            fetch()
+            vm.fetch()
         }
     }
 
@@ -163,8 +153,9 @@ extension HomeView {
 class HomeVM: ObservableObject {
     @Published var memberContractState: MemberContractState = .loading
     private var cancellables = Set<AnyCancellable>()
+    private var chatNotificationPullTimerCancellable: AnyCancellable?
     @Published var toolbarOptionTypes: [ToolbarOptionType] = []
-
+    private var chatNotificationPullTimer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
     init() {
         let store: HomeStore = globalPresentableStoreContainer.get()
         memberContractState = store.state.memberContractState
@@ -181,16 +172,36 @@ class HomeVM: ObservableObject {
         observeToolbarOptionTypes()
     }
 
+    func fetch() {
+        let store: HomeStore = globalPresentableStoreContainer.get()
+        store.send(.fetchMemberState)
+        store.send(.fetchImportantMessages)
+        store.send(.fetchQuickActions)
+        store.send(.fetchClaims)
+        store.send(.fetchChatNotifications)
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        contractStore.send(.fetch)
+
+        chatNotificationPullTimer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
+        chatNotificationPullTimerCancellable = chatNotificationPullTimer.receive(on: RunLoop.main)
+            .sink { _ in
+                let currentVCDescription = UIApplication.shared.getTopVisibleVc()?.debugDescription
+                let compareToDescirption = String(describing: HomeView<EmptyView>.self).components(separatedBy: "<")
+                    .first
+                if currentVCDescription == compareToDescirption {
+                    let store: HomeStore = globalPresentableStoreContainer.get()
+                    store.send(.fetchChatNotifications)
+                }
+            }
+    }
     private func addObserverForApplicationDidBecomeActive() {
         if ApplicationContext.shared.$isLoggedIn.value {
             NotificationCenter.default.addObserver(
                 forName: UIApplication.didBecomeActiveNotification,
                 object: nil,
                 queue: OperationQueue.main,
-                using: { _ in
-                    let store: HomeStore = globalPresentableStoreContainer.get()
-                    store.send(.fetchChatNotifications)
-                    store.send(.fetchClaims)
+                using: { [weak self] _ in
+                    self?.fetch()
                 }
             )
         }
