@@ -69,7 +69,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
             performPushAction(notificationType: notificationType, userInfo: userInfo)
         }
-
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
         completionHandler()
     }
 
