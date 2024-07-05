@@ -266,7 +266,7 @@ struct HomeTab: View {
                     .configureTitle(L10n.claimsYourClaim)
             }
             .routerDestination(for: String.self) { conversation in
-                ConversationsView()
+                InboxView()
                     .configureTitle(L10n.chatConversationInbox)
             }
         }
@@ -378,9 +378,9 @@ struct HomeTab: View {
                 }
             }
         )
-        .onChange(of: homeNavigationVm.openChat) { newValue in
-            HomeNavigationViewModel.isChatPresented = newValue != nil
-        }
+        //        .onChange(of: homeNavigationVm.openChat) { newValue in
+        //            HomeNavigationViewModel.isChatPresented = newValue != nil
+        //        }
 
     }
 }
@@ -391,6 +391,7 @@ class LoggedInNavigationViewModel: ObservableObject {
             self.previousTab = selectedTab
         }
     }
+
     var previousTab: Int = 0
 
     let contractsNavigationVm = ContractsNavigationViewModel()

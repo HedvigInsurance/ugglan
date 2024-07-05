@@ -4,8 +4,8 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct ConversationsView: View {
-    @StateObject var vm = ConversationsViewModel()
+public struct InboxView: View {
+    @StateObject var vm = InboxViewModel()
 
     public init() {}
 
@@ -123,7 +123,7 @@ public struct ConversationsView: View {
     }
 }
 
-class ConversationsViewModel: ObservableObject {
+class InboxViewModel: ObservableObject {
     @Inject var service: ConversationsClient
     @Published var conversations: [Conversation] = []
     @Published private var conversationsTimeStamp = [String: Date]()
@@ -219,5 +219,5 @@ class ConversationsViewModel: ObservableObject {
 #Preview{
     Dependencies.shared.add(module: Module { () -> ConversationClient in ConversationDemoClient() })
     Dependencies.shared.add(module: Module { () -> ConversationsClient in ConversationsDemoClient() })
-    return ConversationsView()
+    return InboxView()
 }

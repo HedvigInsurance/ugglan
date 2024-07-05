@@ -56,7 +56,7 @@ extension HomeView {
                     navigationVm.navBarItems.isFirstVetPresented = true
                 case .chat, .chatNotification:
                     if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
-                        navigationVm.router.push("Chat")
+                        navigationVm.router.push(String.init(describing: InboxView.self))
                     } else {
                         NotificationCenter.default.post(
                             name: .openChat,
