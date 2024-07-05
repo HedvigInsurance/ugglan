@@ -33,28 +33,40 @@ public struct ConversationsView: View {
 
     func rowView(for conversation: Conversation) -> some View {
         HStack(spacing: .padding16) {
-            hRow {
-                VStack(alignment: .leading, spacing: 0) {
-                    if conversation.type == .legacy {
-                        hText(L10n.chatConversationHistoryTitle, style: .body1)
-                            .foregroundColor(hTextColor.Opaque.primary)
-                    } else {
-                        hText(conversation.title, style: .body1)
-                            .fixedSize()
-                            .foregroundColor(hTextColor.Opaque.primary)
-                        hText(conversation.subtitle ?? "", style: .body1)
-                            .fixedSize()
-                            .foregroundColor(hTextColor.Translucent.secondary)
-                    }
-                    getNewestMessage(for: conversation)
-                        .padding(.top, .padding8)
-                        .padding(.bottom, 2)
+            if vm.shouldHideDivider(for: conversation) {
+                hRow {
+                    rowViewContent(for: conversation)
                 }
-                Spacer()
-                getRightView(for: conversation)
+                .hWithoutDivider
+            } else {
+                hRow {
+                    rowViewContent(for: conversation)
+                }
             }
         }
         .background(getBackgroundColor(for: conversation))
+    }
+
+    @ViewBuilder
+    func rowViewContent(for conversation: Conversation) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            if conversation.type == .legacy {
+                hText(L10n.chatConversationHistoryTitle, style: .body1)
+                    .foregroundColor(hTextColor.Opaque.primary)
+            } else {
+                hText(conversation.title, style: .body1)
+                    .fixedSize()
+                    .foregroundColor(hTextColor.Opaque.primary)
+                hText(conversation.subtitle ?? "", style: .body1)
+                    .fixedSize()
+                    .foregroundColor(hTextColor.Translucent.secondary)
+            }
+            getNewestMessage(for: conversation)
+                .padding(.top, .padding8)
+                .padding(.bottom, 2)
+        }
+        Spacer()
+        getRightView(for: conversation)
     }
 
     @ViewBuilder
@@ -120,6 +132,35 @@ class ConversationsViewModel: ObservableObject {
             conversationId: conversation.id,
             timeStamp: conversation.newestMessage?.sentAt ?? conversation.createdAt?.localDateToIso8601Date
         )
+    }
+
+    func shouldHideDivider(for conversation: Conversation) -> Bool {
+        let currentConversationHasNotification = hasNotification(conversation: conversation)
+
+        if !currentConversationHasNotification {
+            return false
+        }
+
+        var convWithNotificationAndOldestTimestamp = conversation
+
+        conversations.forEach { conversation in
+            if hasNotification(conversation: conversation) {
+                let oldestTimeStamp = convWithNotificationAndOldestTimestamp.newestMessage?.sentAt ?? Date()
+                let currentTimestamp = conversation.newestMessage?.sentAt ?? Date()
+
+                if oldestTimeStamp > currentTimestamp {
+                    convWithNotificationAndOldestTimestamp = conversation
+                }
+            }
+        }
+
+        // current conversation is oldest
+        if convWithNotificationAndOldestTimestamp.id == conversation.id {
+            return true
+        }
+
+        // there are older conversations
+        return false
     }
 
     init() {
