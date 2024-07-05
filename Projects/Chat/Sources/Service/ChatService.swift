@@ -42,7 +42,7 @@ public class ConversationService: ChatServiceProtocol {
             messages: data.messages,
             banner: data.banner,
             isConversationOpen: data.isConversationOpen ?? true,
-            title: data.title,
+            title: data.screenTitle,
             subtitle: data.subtitle
         )
     }
@@ -60,7 +60,7 @@ public class ConversationService: ChatServiceProtocol {
             messages: data.messages,
             banner: data.banner,
             isConversationOpen: data.isConversationOpen ?? true,
-            title: data.title,
+            title: data.screenTitle,
             subtitle: data.subtitle
         )
 
@@ -112,6 +112,8 @@ public class NewConversationService: ChatServiceProtocol {
     }
 
     public func send(message: Message) async throws -> Message {
+        log.info("\(NewConversationService.self) send message", error: nil, attributes: [:])
+
         if conversationService == nil && generatingConversation == false {
             generatingConversation = true
             do {

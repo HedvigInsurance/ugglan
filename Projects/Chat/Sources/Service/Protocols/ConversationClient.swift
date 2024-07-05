@@ -26,6 +26,11 @@ public struct ConversationMessagesData {
     let createdAt: String?
     let isLegacy: Bool
 
+    var screenTitle: String {
+        if isLegacy { return L10n.chatConversationHistoryTitle }
+        return title ?? L10n.chatTitle
+    }
+
     var subtitle: String? {
         if isLegacy { return nil }
         guard let date = createdAt?.localDateToIso8601Date?.displayDateDDMMMYYYYFormat else {
