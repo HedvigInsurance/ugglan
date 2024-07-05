@@ -49,24 +49,28 @@ public struct ConversationsView: View {
 
     @ViewBuilder
     func rowViewContent(for conversation: Conversation) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            if conversation.type == .legacy {
-                hText(L10n.chatConversationHistoryTitle, style: .body1)
-                    .foregroundColor(hTextColor.Opaque.primary)
-            } else {
-                hText(conversation.title, style: .body1)
-                    .fixedSize()
-                    .foregroundColor(hTextColor.Opaque.primary)
-                hText(conversation.subtitle ?? "", style: .body1)
-                    .fixedSize()
-                    .foregroundColor(hTextColor.Translucent.secondary)
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .top) {
+                if conversation.type == .legacy {
+                    hText(L10n.chatConversationHistoryTitle, style: .body1)
+                        .foregroundColor(hTextColor.Opaque.primary)
+                } else {
+                    VStack(alignment: .leading, spacing: 0) {
+                        hText(conversation.title, style: .body1)
+                            .fixedSize()
+                            .foregroundColor(hTextColor.Opaque.primary)
+                        hText(conversation.subtitle ?? "", style: .body1)
+                            .fixedSize()
+                            .foregroundColor(hTextColor.Translucent.secondary)
+                    }
+                }
+                Spacer()
+                getRightView(for: conversation)
             }
+
             getNewestMessage(for: conversation)
-                .padding(.top, .padding8)
                 .padding(.bottom, 2)
         }
-        Spacer()
-        getRightView(for: conversation)
     }
 
     @ViewBuilder
