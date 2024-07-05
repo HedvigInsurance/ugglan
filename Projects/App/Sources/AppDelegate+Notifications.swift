@@ -81,6 +81,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
             if let topPresentedVCDescription = UIApplication.shared.getTopVisibleVc()?.debugDescription {
                 let listToCheck: [String] = [
                     String(describing: HomeView<EmptyView>.self).components(separatedBy: "<").first ?? "",
+                    .init(describing: ClaimDetailView.self),
+                    .init(describing: InboxView.self),
                     .init(describing: ChatScreen.self),
                 ]
                 let shouldShow = !listToCheck.contains(where: { $0 == topPresentedVCDescription })
