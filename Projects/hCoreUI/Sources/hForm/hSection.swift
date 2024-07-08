@@ -278,6 +278,10 @@ extension View {
     public var hWithoutDivider: some View {
         self.environment(\.hWithoutDivider, true)
     }
+
+    public func shouldShowDivider(_ show: Bool) -> some View {
+        self.environment(\.hWithoutDivider, show)
+    }
 }
 
 private struct EnvironmentHSectionMinimumPadding: EnvironmentKey {

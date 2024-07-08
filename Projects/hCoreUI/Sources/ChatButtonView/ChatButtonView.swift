@@ -204,7 +204,7 @@ struct ToolbarButtonsView: View {
                                 type: type,
                                 timeInterval: type.timeIntervalForShowingAgain ?? .days(numberOfDays: 30)
                             )
-                            .position(x: 26, y: 67)
+                            .position(x: 26, y: 55)
                             .fixedSize()
                         }
                     }

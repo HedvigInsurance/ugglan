@@ -1,11 +1,8 @@
 import Foundation
+import Presentation
 import hGraphQL
 
-public struct Conversation: Identifiable, Equatable, Hashable, Codable {
-    public static func == (lhs: Conversation, rhs: Conversation) -> Bool {
-        return lhs.id == rhs.id
-    }
-
+public struct Conversation: Identifiable, Hashable, Codable {
     public init(
         id: String,
         type: ConversationType,

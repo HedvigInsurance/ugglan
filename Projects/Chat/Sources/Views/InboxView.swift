@@ -6,14 +6,15 @@ import hCoreUI
 
 public struct InboxView: View {
     @StateObject var vm = InboxViewModel()
+    @Namespace var animationNamespace
 
     public init() {}
 
     public var body: some View {
         hForm {
             displayMessages
+                .padding(.top, 8)
         }
-        .padding(.top, 8)
         .onPullToRefresh {
             await vm.fetchMessages()
         }
@@ -26,28 +27,19 @@ public struct InboxView: View {
                 .onTapGesture {
                     NotificationCenter.default.post(name: .openChat, object: conversation)
                 }
+                .background(getBackgroundColor(for: conversation))
         }
         .withoutHorizontalPadding
         .sectionContainerStyle(.transparent)
     }
 
     func rowView(for conversation: Conversation) -> some View {
-        HStack(spacing: .padding16) {
-            if vm.shouldHideDivider(for: conversation) {
-                hRow {
-                    rowViewContent(for: conversation)
-                }
-                .hWithoutDivider
-            } else {
-                hRow {
-                    rowViewContent(for: conversation)
-                }
-            }
+        hRow {
+            rowViewContent(for: conversation)
         }
-        .background(getBackgroundColor(for: conversation))
+        .shouldShowDivider(vm.shouldHideDivider(for: conversation))
     }
 
-    @ViewBuilder
     func rowViewContent(for conversation: Conversation) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .top) {
@@ -87,10 +79,13 @@ public struct InboxView: View {
                     .fill(hHighlightColor.Blue.fillTwo)
             )
             .transition(.scale.combined(with: .opacity))
+            .matchedGeometryEffect(id: "rightView_\(conversation.id)", in: animationNamespace)
         } else if let timeStamp = conversation.newestMessage?.sentAt {
             hText(timeStamp.displayTimeStamp, style: .footnote)
                 .foregroundColor(hTextColor.Opaque.secondary)
                 .transition(.scale.combined(with: .opacity))
+                .matchedGeometryEffect(id: "rightView_\(conversation.id)", in: animationNamespace)
+
         }
     }
 
@@ -122,7 +117,6 @@ public struct InboxView: View {
         }
     }
 }
-
 class InboxViewModel: ObservableObject {
     @Inject var service: ConversationsClient
     @Published var conversations: [Conversation] = []
@@ -139,32 +133,16 @@ class InboxViewModel: ObservableObject {
     }
 
     func shouldHideDivider(for conversation: Conversation) -> Bool {
-        let currentConversationHasNotification = hasNotification(conversation: conversation)
-
-        if !currentConversationHasNotification {
-            return false
-        }
-
-        var convWithNotificationAndOldestTimestamp = conversation
-
-        conversations.forEach { conversation in
-            if hasNotification(conversation: conversation) {
-                let oldestTimeStamp = convWithNotificationAndOldestTimestamp.newestMessage?.sentAt ?? Date()
-                let currentTimestamp = conversation.newestMessage?.sentAt ?? Date()
-
-                if oldestTimeStamp > currentTimestamp {
-                    convWithNotificationAndOldestTimestamp = conversation
-                }
-            }
-        }
-
-        // current conversation is oldest
-        if convWithNotificationAndOldestTimestamp.id == conversation.id {
+        guard let indexOfCurrent = conversations.firstIndex(where: { $0.id == conversation.id }) else {
             return true
         }
-
-        // there are older conversations
-        return false
+        let indexOfNext = indexOfCurrent + 1
+        guard indexOfNext < conversations.count else {
+            return true
+        }
+        let currentConversation = conversations[indexOfCurrent]
+        let nextConversation = conversations[indexOfNext]
+        return hasNotification(conversation: currentConversation) != hasNotification(conversation: nextConversation)
     }
 
     init() {
