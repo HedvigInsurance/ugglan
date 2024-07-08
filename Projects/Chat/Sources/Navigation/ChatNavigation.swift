@@ -63,6 +63,14 @@ public enum ChatRedirectViewType {
     case notification
 }
 
+enum ChatNavigationTracking: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        return .init(describing: ChatScreen.self)
+    }
+
+    case chatScren
+}
+
 public struct ChatNavigation<Content: View>: View {
     @StateObject var router = Router()
     @StateObject var chatNavigationViewModel = ChatNavigationViewModel()
@@ -81,7 +89,7 @@ public struct ChatNavigation<Content: View>: View {
     }
 
     public var body: some View {
-        RouterHost(router: router, options: .navigationType(type: .large)) {
+        RouterHost(router: router, options: .navigationType(type: .large), tracking: ChatNavigationTracking.chatScren) {
             ChatScreen(vm: .init(topicType: openChat.topic))
                 .navigationTitle(L10n.chatTitle)
                 .withDismissButton()
