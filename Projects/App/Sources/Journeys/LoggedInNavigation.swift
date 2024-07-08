@@ -80,6 +80,9 @@ struct LoggedInNavigation: View {
         ) {
             EuroBonusNavigation(useOwnNavigation: true)
         }
+        .introspectTabBarController { tabBar in
+            vm.tabBar = tabBar
+        }
     }
 
     var homeTab: some View {
@@ -381,7 +384,13 @@ struct HomeTab: View {
 }
 
 class LoggedInNavigationViewModel: ObservableObject {
-    @Published var selectedTab = 0
+    @Published var selectedTab = 0 {
+        willSet {
+            self.previousTab = selectedTab
+        }
+    }
+    var previousTab: Int = 0
+
     let contractsNavigationVm = ContractsNavigationViewModel()
     let paymentsNavigationVm = PaymentsNavigationViewModel()
     let profileNavigationVm = ProfileNavigationViewModel()
@@ -395,8 +404,8 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isEuroBonusPresented = false
     @Published var isUrlPresented: URL?
 
-    private var updateCoInsuredCancellable: AnyCancellable?
-
+    private var cancellables = Set<AnyCancellable>()
+    weak var tabBar: UITabBarController?
     init() {
         NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) {
             [weak self] notification in
@@ -437,7 +446,7 @@ class LoggedInNavigationViewModel: ObservableObject {
             }
         }
 
-        updateCoInsuredCancellable = EditCoInsuredViewModel.updatedCoInsuredForContractId
+        EditCoInsuredViewModel.updatedCoInsuredForContractId
             .receive(on: RunLoop.main)
             .sink { contractId in
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
@@ -446,6 +455,20 @@ class LoggedInNavigationViewModel: ObservableObject {
                 let homeStore: HomeStore = globalPresentableStoreContainer.get()
                 homeStore.send(.fetchQuickActions)
             }
+            .store(in: &cancellables)
+
+        $selectedTab
+            .receive(on: RunLoop.main)
+            .sink { [weak self] value in
+                if self?.selectedTab == self?.previousTab {
+                    if let nav = self?.tabBar?.selectedViewController?.children
+                        .first(where: { $0.isKind(of: UINavigationController.self) }) as? UINavigationController
+                    {
+                        nav.popToRootViewController(animated: true)
+                    }
+                }
+            }
+            .store(in: &cancellables)
     }
 
     private func handleDeepLinks(deepLinkUrl: URL?) {

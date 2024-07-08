@@ -1,5 +1,6 @@
 import Apollo
 import Chat
+import Claims
 import Contracts
 import CoreDependencies
 import Flow
@@ -68,29 +69,27 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
             performPushAction(notificationType: notificationType, userInfo: userInfo)
         }
-
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
         completionHandler()
     }
 
     func userNotificationCenter(
-        _: UNUserNotificationCenter,
-        willPresent notification: UNNotification,
-        withCompletionHandler _: @escaping (UNNotificationPresentationOptions) -> Void
-    ) {
-        let toast = ToastBar(
-            type: .info,
-            text: notification.request.content.title,
-            action: .init(
-                actionText: "Open message",
-                onClick: {
-                    let userInfo = notification.request.content.userInfo
-                    guard let notificationType = userInfo["TYPE"] as? String else { return }
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification
+    ) async -> UNNotificationPresentationOptions {
+        let shouldShowNotification: Bool = {
+            if let topPresentedVCDescription = UIApplication.shared.getTopVisibleVc()?.debugDescription {
+                let listToCheck: [String] = [
+                    String(describing: HomeView<EmptyView>.self).components(separatedBy: "<").first ?? "",
+                    .init(describing: ChatScreen.self),
+                ]
+                let shouldShow = !listToCheck.contains(where: { $0 == topPresentedVCDescription })
+                return shouldShow
+            }
+            return true
+        }()
 
-                    self.performPushAction(notificationType: notificationType, userInfo: userInfo)
-                }
-            )
-        )
-        if !HomeNavigationViewModel.isChatPresented { Toasts.shared.displayToastBar(toast: toast) }
+        return shouldShowNotification ? [.badge, .banner, .sound] : []
     }
 
 }

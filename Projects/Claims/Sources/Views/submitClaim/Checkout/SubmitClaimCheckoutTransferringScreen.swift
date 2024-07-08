@@ -113,7 +113,6 @@ struct SubmitClaimCheckoutTransferringScreen: View {
             VStack(spacing: 24) {
                 hText(L10n.claimsPayoutProgresLabel)
                 ProgressView(value: progress)
-                    .tint(hTextColor.Opaque.primary)
                     .frame(width: UIScreen.main.bounds.width * 0.53)
                     .onAppear {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -122,6 +121,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                             }
                         }
                     }
+                    .progressViewStyle(hProgressViewStyle())
             }
             .frame(maxHeight: .infinity)
             .scaleEffect(
