@@ -226,6 +226,7 @@ public class DatePickerViewModel: ObservableObject, Equatable, Identifiable {
         for button in buttons.filter({ $0.subviews.count > 1 }) {
             if let label = button.subviews[1].subviews.first as? UILabel {
                 label.textColor = textColor
+                label.font = Fonts.fontFor(style: .heading1)
             }
         }
 
