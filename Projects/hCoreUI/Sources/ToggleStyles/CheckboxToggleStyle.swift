@@ -4,6 +4,15 @@ import SwiftUI
 public struct CheckboxToggleStyle: ToggleStyle {
     let withSubtitle: Bool
     @Environment(\.hFieldSize) var fieldSize
+    @Binding private var animate: Bool
+
+    public init(
+        withSubtitle: Bool,
+        animate: Binding<Bool>
+    ) {
+        self.withSubtitle = withSubtitle
+        self._animate = animate
+    }
 
     public func makeBody(configuration: Configuration) -> some View {
         hSection {
@@ -16,7 +25,17 @@ public struct CheckboxToggleStyle: ToggleStyle {
             .padding(.bottom, getBottomPadding)
             .padding(.horizontal, getHorizontalPadding)
         }
-        .sectionContainerStyle(.opaque)
+        .sectionContainerStyle(animate ? .animate : .opaque)
+        .onUpdate(of: configuration.isOn) { newValue in
+            withAnimation(.easeIn(duration: 1)) {
+                animate = true
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                withAnimation(.easeOut(duration: 1)) {
+                    animate = false
+                }
+            }
+        }
     }
 
     private var getTopPadding: CGFloat {
@@ -58,6 +77,7 @@ public struct CheckboxToggleView: View {
     let subtitle: String?
     @Binding var isOn: Bool
     @Environment(\.hFieldSize) var fieldSize
+    @State private var animate = false
 
     public init(
         title: String,
@@ -73,7 +93,12 @@ public struct CheckboxToggleView: View {
         Toggle(isOn: $isOn.animation(.default)) {
             mainContent
         }
-        .toggleStyle(CheckboxToggleStyle(withSubtitle: subtitle != nil))
+        .toggleStyle(
+            CheckboxToggleStyle(
+                withSubtitle: subtitle != nil,
+                animate: $animate
+            )
+        )
     }
 
     @ViewBuilder
@@ -81,7 +106,7 @@ public struct CheckboxToggleView: View {
         VStack(alignment: .leading, spacing: .padding8) {
             HStack(alignment: .center, spacing: 0) {
                 hText(title, style: getTitleStyle(subtitle: subtitle))
-                    .foregroundColor(hTextColor.Opaque.primary)
+                    .foregroundColor(getTitleColor)
                     .fixedSize()
 
                 Spacer()
@@ -90,8 +115,26 @@ public struct CheckboxToggleView: View {
 
             if let subtitle {
                 hText(subtitle, style: .standardSmall)
-                    .foregroundColor(hTextColor.Opaque.secondary)
+                    .foregroundColor(getSubtitleColor)
             }
+        }
+    }
+
+    @hColorBuilder
+    private var getTitleColor: some hColor {
+        if animate {
+            hTextColor.Opaque.black
+        } else {
+            hTextColor.Opaque.primary
+        }
+    }
+
+    @hColorBuilder
+    private var getSubtitleColor: some hColor {
+        if animate {
+            hSignalColor.Green.text
+        } else {
+            hTextColor.Opaque.secondary
         }
     }
 
@@ -136,6 +179,7 @@ public struct CheckboxToggleView: View {
 
 struct ChecboxToggleStyle_Previews: PreviewProvider {
     @State static var isOn: Bool = true
+
     static var previews: some View {
         VStack {
             CheckboxToggleView(

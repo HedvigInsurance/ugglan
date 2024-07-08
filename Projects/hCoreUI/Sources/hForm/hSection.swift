@@ -213,6 +213,7 @@ public enum hSectionContainerStyle {
     case caution
     case alert
     case black
+    case animate
 }
 
 private struct EnvironmentHSectionContainerStyle: EnvironmentKey {
@@ -256,6 +257,11 @@ struct hSectionContainerStyleModifier: ViewModifier {
                     light: hFillColor.Opaque.black,
                     dark: hSurfaceColor.Opaque.primary
                 )
+            )
+            .clipShape(Squircle.default())
+        case .animate:
+            content.background(
+                hSignalColor.Green.fill
             )
             .clipShape(Squircle.default())
         }
