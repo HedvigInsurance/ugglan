@@ -153,26 +153,17 @@ struct MovingFlowHouseView: View {
     }
 
     private var isSubleted: some View {
-        hSection {
-            hRow {
-                Toggle(isOn: $vm.isSubleted.animation(.default)) {
-                    VStack(alignment: .leading, spacing: 0) {
-                        hText(L10n.changeAddressSubletLabel, style: .heading2)
-                    }
-                }
-                .toggleStyle(ChecboxToggleStyle(.center, spacing: 0))
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    withAnimation {
-                        vm.type = nil
-                        vm.isSubleted.toggle()
-                    }
-                }
+        CheckboxToggleView(
+            title: L10n.changeAddressSubletLabel,
+            isOn: $vm.isSubleted.animation(.default)
+        )
+        .hFieldSize(.large)
+        .onTapGesture {
+            withAnimation {
+                vm.type = nil
+                vm.isSubleted.toggle()
             }
-            .verticalPadding(0)
-            .padding(.vertical, 21)
         }
-        .sectionContainerStyle(.opaque)
     }
 
     func addExtraBuilding() {
