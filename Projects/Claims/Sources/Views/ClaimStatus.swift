@@ -196,12 +196,35 @@ struct ClaimNotCompensated_Previews: PreviewProvider {
     }
 }
 
-struct ClaimNotCocered_Previews: PreviewProvider {
+struct ClaimNotCovered_Previews: PreviewProvider {
     static var previews: some View {
         let data = ClaimModel(
             id: "1",
             status: .closed,
             outcome: .notCovered,
+            submittedAt: "2023-10-10",
+            signedAudioURL: "",
+            memberFreeText: nil,
+            payoutAmount: nil,
+            targetFileUploadUri: "",
+            claimType: "Broken item",
+            incidentDate: "2024-02-15",
+            productVariant: nil
+        )
+        return VStack(spacing: 20) {
+            ClaimStatus(claim: data, enableTap: true)
+
+        }
+        .padding(20)
+    }
+}
+
+struct ClaimClosed_Previews: PreviewProvider {
+    static var previews: some View {
+        let data = ClaimModel(
+            id: "1",
+            status: .closed,
+            outcome: .closed,
             submittedAt: "2023-10-10",
             signedAudioURL: "",
             memberFreeText: nil,
