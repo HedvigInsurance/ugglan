@@ -59,48 +59,48 @@ struct ClaimPills: View {
     var body: some View {
         HStack {
             if claim.status == .reopened {
-                hPillFill(
+                hPill<hColorBase, hColorBase>(
                     text: claim.status.title,
-                    textColor: hSignalColor.Amber.text,
-                    backgroundColor: hSignalColor.Amber.highLight
+                    color: .amber,
+                    colorLevel: .three
                 )
+                .hFieldSize(.small)
             }
-            hPillFill(
+            hPill<hColorBase, hColorBase>(
                 text: claim.outcome.text.capitalized,
-                textColor: claim.outcome.textColor,
-                backgroundColor: claim.outcome.backgroundColor
+                color: claim.outcome.color,
+                colorLevel: claim.outcome.colorLevel
             )
+            .hFieldSize(.small)
+
             if let payout = claim.payoutAmount {
-                hPillFill(
+                hPill<hColorBase, hColorBase>(
                     text: payout.formattedAmount,
-                    textColor: hSignalColor.Blue.text,
-                    backgroundColor: hSignalColor.Blue.highLight
+                    color: .blue,
+                    colorLevel: .two
                 )
+                .hFieldSize(.small)
             }
         }
     }
 }
 
 extension ClaimModel.ClaimOutcome {
-    @hColorBuilder
-    var textColor: some hColor {
+    var color: PillColor {
         switch self {
-        case .paid, .closed:
-            hTextColor.Opaque.negative
-        case .none, .notCompensated, .notCovered, .missingReceipt:
-            hTextColor.Opaque.black
+        case .none, .notCompensated, .notCovered, .paid, .closed:
+            .grey
+        case .missingReceipt:
+            .amber
         }
     }
 
-    @hColorBuilder
-    var backgroundColor: some hColor {
+    var colorLevel: PillColor.PillColorLevel {
         switch self {
         case .none, .notCompensated, .notCovered:
-            hSurfaceColor.Translucent.secondary
-        case .paid, .closed:
-            hBackgroundColor.negative
-        case .missingReceipt:
-            hSignalColor.Amber.highLight
+            .two
+        case .paid, .closed, .missingReceipt:
+            .three
         }
     }
 }
