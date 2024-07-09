@@ -45,7 +45,7 @@ public class ConversationsDemoClient: ConversationsClient {
             Conversation(
                 id: "id3",
                 type: .claim,
-                title: "Claim",
+                title: "Claim: very very very very very long title",
                 subtitle: "Chronical gastrointestinal issues",
                 newestMessage: .init(
                     localId: "localId2",
