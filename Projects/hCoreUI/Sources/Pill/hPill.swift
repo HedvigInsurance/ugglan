@@ -1,54 +1,35 @@
 import SwiftUI
 
-public struct hPill<T: hColor, L: hColor>: View {
+public struct hPill: View {
     public init(
         text: String,
-        color: PillColor?,
-        colorLevel: PillColor.PillColorLevel? = .one,
-        customizedTextColor: T? = nil,
-        customizedBackgroundColor: L? = nil
+        color: PillColor,
+        colorLevel: PillColor.PillColorLevel? = .one
     ) {
         self.text = text
         self.color = color
         self.colorLevel = colorLevel ?? .one
-        self.customizedTextColor = customizedTextColor
-        self.customizedBackgroundColor = customizedBackgroundColor
     }
 
     public let text: String
-    private let color: PillColor?
+    private let color: PillColor
     private let colorLevel: PillColor.PillColorLevel
-    private let customizedTextColor: T?
-    private let customizedBackgroundColor: L?
     @Environment(\.hFieldSize) var fieldSize
 
     public var body: some View {
         hText(text, style: fieldSize == .large ? .body1 : .standardSmall)
             .fixedSize()
-            .foregroundColor(getTextColor)
+            .foregroundColor(color.pillTextColor(level: colorLevel))
             .modifier(
                 PillModifier(
                     color: color,
-                    customizedBackgroundColor: customizedBackgroundColor,
                     colorLevel: colorLevel
                 )
             )
     }
 
-    @hColorBuilder
-    private var getTextColor: some hColor {
-        if let customizedTextColor {
-            customizedTextColor
-        } else if let pillTextColor = color?.pillTextColor(level: colorLevel) {
-            pillTextColor
-        } else {
-            hColorBase(.clear)
-        }
-    }
-
     struct PillModifier: ViewModifier {
-        let color: PillColor?
-        let customizedBackgroundColor: L?
+        let color: PillColor
         let colorLevel: PillColor.PillColorLevel
         @Environment(\.hFieldSize) var fieldSize
 
@@ -65,13 +46,7 @@ public struct hPill<T: hColor, L: hColor>: View {
 
         @hColorBuilder
         private var getBackgroundColor: some hColor {
-            if let customizedBackgroundColor {
-                customizedBackgroundColor
-            } else if let pillBackgroundColor = color?.pillBackgroundColor(level: colorLevel) {
-                pillBackgroundColor
-            } else {
-                hColorBase(.clear)
-            }
+            color.pillBackgroundColor(level: colorLevel)
         }
 
         private var getHorizontalPadding: CGFloat {
@@ -121,7 +96,7 @@ public enum PillColor {
     case pink
     case amber
     case red
-    case grey
+    case grey(translucent: Bool)
 
     @hColorBuilder
     func pillBackgroundColor(level: PillColor.PillColorLevel) -> some hColor {
@@ -198,12 +173,16 @@ public enum PillColor {
             case .three:
                 hHighlightColor.Red.fillThree
             }
-        case .grey:
+        case let .grey(translucent):
             switch level {
             case .one:
                 hSurfaceColor.Opaque.primary
             case .two:
-                hSurfaceColor.Opaque.secondary
+                if translucent {
+                    hSurfaceColor.Translucent.secondary
+                } else {
+                    hSurfaceColor.Opaque.secondary
+                }
             case .three:
                 hBackgroundColor.negative
             }
@@ -236,40 +215,40 @@ struct ClaimStatus_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
             HStack {
-                hPill<hColorBase, hColorBase>(
+                hPill(
                     text: "Highlight label",
                     color: .blue
                 )
                 .hFieldSize(.large)
 
-                hPill<hColorBase, hColorBase>(
+                hPill(
                     text: "Highlight label",
                     color: .blue
                 )
                 .hFieldSize(.medium)
 
-                hPill<hColorBase, hColorBase>(
+                hPill(
                     text: "Highlight label",
                     color: .blue
                 )
                 .hFieldSize(.small)
             }
             HStack {
-                hPill<hColorBase, hColorBase>(
+                hPill(
                     text: "Highlight label",
                     color: .blue,
                     colorLevel: .two
                 )
                 .hFieldSize(.large)
 
-                hPill<hColorBase, hColorBase>(
+                hPill(
                     text: "Highlight label",
                     color: .blue,
                     colorLevel: .two
                 )
                 .hFieldSize(.medium)
 
-                hPill<hColorBase, hColorBase>(
+                hPill(
                     text: "Highlight label",
                     color: .blue,
                     colorLevel: .two
@@ -277,21 +256,21 @@ struct ClaimStatus_Previews: PreviewProvider {
                 .hFieldSize(.small)
             }
             HStack {
-                hPill<hColorBase, hColorBase>(
+                hPill(
                     text: "Highlight label",
                     color: .blue,
                     colorLevel: .three
                 )
                 .hFieldSize(.large)
 
-                hPill<hColorBase, hColorBase>(
+                hPill(
                     text: "Highlight label",
                     color: .blue,
                     colorLevel: .three
                 )
                 .hFieldSize(.medium)
 
-                hPill<hColorBase, hColorBase>(
+                hPill(
                     text: "Highlight label",
                     color: .blue,
                     colorLevel: .three
@@ -299,21 +278,21 @@ struct ClaimStatus_Previews: PreviewProvider {
                 .hFieldSize(.small)
             }
             HStack {
-                hPill<hColorBase, hColorBase>(
+                hPill(
                     text: "Highlight label",
                     color: .pink,
                     colorLevel: .one
                 )
                 .hFieldSize(.large)
 
-                hPill<hColorBase, hColorBase>(
+                hPill(
                     text: "Highlight label",
                     color: .pink,
                     colorLevel: .two
                 )
                 .hFieldSize(.medium)
 
-                hPill<hColorBase, hColorBase>(
+                hPill(
                     text: "Highlight label",
                     color: .pink,
                     colorLevel: .three
@@ -321,73 +300,65 @@ struct ClaimStatus_Previews: PreviewProvider {
                 .hFieldSize(.small)
             }
             HStack {
-                hPill<hColorBase, hColorBase>(
+                hPill(
                     text: "Highlight label",
-                    color: .grey
+                    color: .grey(translucent: false)
                 )
 
-                hPill<hColorBase, hColorBase>(
+                hPill(
                     text: "Highlight label",
-                    color: .grey
+                    color: .grey(translucent: false)
                 )
                 .hFieldSize(.medium)
 
-                hPill<hColorBase, hColorBase>(
+                hPill(
                     text: "Highlight label",
-                    color: .grey
+                    color: .grey(translucent: false)
                 )
                 .hFieldSize(.small)
             }
             HStack {
-                hPill<hColorBase, hColorBase>(
+                hPill(
                     text: "Highlight label",
-                    color: .grey,
+                    color: .grey(translucent: false),
                     colorLevel: .two
                 )
 
-                hPill<hColorBase, hColorBase>(
+                hPill(
                     text: "Highlight label",
-                    color: .grey,
+                    color: .grey(translucent: false),
                     colorLevel: .two
                 )
                 .hFieldSize(.medium)
 
-                hPill<hColorBase, hColorBase>(
+                hPill(
                     text: "Highlight label",
-                    color: .grey,
+                    color: .grey(translucent: false),
                     colorLevel: .two
                 )
                 .hFieldSize(.small)
             }
             HStack {
-                hPill<hColorBase, hColorBase>(
+                hPill(
                     text: "Highlight label",
-                    color: .grey,
+                    color: .grey(translucent: false),
                     colorLevel: .three
                 )
 
-                hPill<hColorBase, hColorBase>(
+                hPill(
                     text: "Highlight label",
-                    color: .grey,
+                    color: .grey(translucent: false),
                     colorLevel: .three
                 )
                 .hFieldSize(.medium)
 
-                hPill<hColorBase, hColorBase>(
+                hPill(
                     text: "Highlight label",
-                    color: .grey,
+                    color: .grey(translucent: false),
                     colorLevel: .three
                 )
                 .hFieldSize(.small)
             }
-
-            // customized colors
-            hPill(
-                text: "Highlight label",
-                color: nil,
-                customizedTextColor: hTextColor.Opaque.primary,
-                customizedBackgroundColor: hHighlightColor.Pink.fillOne
-            )
         }
     }
 }

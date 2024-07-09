@@ -17,7 +17,7 @@ struct HelpCenterPill: View {
 
     @hColorBuilder
     var body: some View {
-        hPill<hColorBase, hColorBase>(text: title, color: color)
+        hPill(text: title, color: color)
             .hFieldSize(.small)
     }
 }

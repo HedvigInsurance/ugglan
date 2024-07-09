@@ -59,14 +59,14 @@ struct ClaimPills: View {
     var body: some View {
         HStack {
             if claim.status == .reopened {
-                hPill<hColorBase, hColorBase>(
+                hPill(
                     text: claim.status.title,
                     color: .amber,
                     colorLevel: .three
                 )
                 .hFieldSize(.small)
             }
-            hPill<hColorBase, hColorBase>(
+            hPill(
                 text: claim.outcome.text.capitalized,
                 color: claim.outcome.color,
                 colorLevel: claim.outcome.colorLevel
@@ -74,7 +74,7 @@ struct ClaimPills: View {
             .hFieldSize(.small)
 
             if let payout = claim.payoutAmount {
-                hPill<hColorBase, hColorBase>(
+                hPill(
                     text: payout.formattedAmount,
                     color: .blue,
                     colorLevel: .two
@@ -89,7 +89,7 @@ extension ClaimModel.ClaimOutcome {
     var color: PillColor {
         switch self {
         case .none, .notCompensated, .notCovered, .paid, .closed:
-            .grey
+            .grey(translucent: true)
         case .missingReceipt:
             .amber
         }
@@ -122,7 +122,6 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
-                .colorScheme(.dark)
 
         }
         .padding(20)
@@ -146,7 +145,6 @@ struct ClaimReopened_Previews: PreviewProvider {
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
-                .colorScheme(.dark)
 
         }
         .padding(20)
@@ -170,8 +168,6 @@ struct ClaimPaid_Previews: PreviewProvider {
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
-                .colorScheme(.dark)
-
         }
         .padding(20)
     }
@@ -194,7 +190,6 @@ struct ClaimNotCompensated_Previews: PreviewProvider {
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
-                .colorScheme(.dark)
 
         }
         .padding(20)
@@ -218,7 +213,6 @@ struct ClaimNotCocered_Previews: PreviewProvider {
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
-                .colorScheme(.dark)
 
         }
         .padding(20)
