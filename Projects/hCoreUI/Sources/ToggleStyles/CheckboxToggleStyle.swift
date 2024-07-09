@@ -15,26 +15,37 @@ public struct CheckboxToggleStyle: ToggleStyle {
     }
 
     public func makeBody(configuration: Configuration) -> some View {
-        hSection {
-            hRow {
-                configuration.label
+        ZStack {
+            Squircle.default().fill(getBackgroundColor)
+                .padding(.horizontal, 16)
+            hSection {
+                hRow {
+                    configuration.label
+                }
+                .verticalPadding(0)
+                .hWithoutHorizontalPadding
+                .padding(.top, getTopPadding)
+                .padding(.bottom, getBottomPadding)
+                .padding(.horizontal, getHorizontalPadding)
             }
-            .verticalPadding(0)
-            .hWithoutHorizontalPadding
-            .padding(.top, getTopPadding)
-            .padding(.bottom, getBottomPadding)
-            .padding(.horizontal, getHorizontalPadding)
-        }
-        .sectionContainerStyle(animate ? .animate : .opaque)
-        .onUpdate(of: configuration.isOn) { newValue in
-            withAnimation(.easeIn(duration: 1)) {
-                animate = true
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                withAnimation(.easeOut(duration: 1)) {
+            .sectionContainerStyle(.transparent)
+            .onUpdate(of: configuration.isOn) { newValue in
+                withAnimation {
+                    animate = true
+                }
+                withAnimation(.default.delay(0.4)) {
                     animate = false
                 }
             }
+        }
+    }
+
+    @hColorBuilder
+    private var getBackgroundColor: some hColor {
+        if animate {
+            hSignalColor.Green.fill
+        } else {
+            hSurfaceColor.Opaque.primary
         }
     }
 
