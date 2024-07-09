@@ -49,7 +49,6 @@ public struct InboxView: View {
                 } else {
                     VStack(alignment: .leading, spacing: 0) {
                         hText(conversation.title, style: .body1)
-                            .fixedSize()
                             .foregroundColor(hTextColor.Opaque.primary)
                         hText(conversation.subtitle ?? "", style: .body1)
                             .fixedSize()
