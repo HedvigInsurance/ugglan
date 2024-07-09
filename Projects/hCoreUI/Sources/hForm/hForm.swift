@@ -126,24 +126,60 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                         .padding(.top, shouldIgnoreTitleMargins ? 0 : hFormTitle.title.type.topMargin)
                         .padding(.bottom, shouldIgnoreTitleMargins ? 0 : hFormTitle.title.type.bottomMargin)
                         .padding(.horizontal, .padding16)
+                        .background {
+                            GeometryReader { proxy in
+                                Color.clear
+                                    .onAppear {
+                                        titleHeight = proxy.size.height
+                                        recalculateHeight()
+
+                                    }
+                                    .onChange(of: proxy.size) { size in
+                                        titleHeight = size.height
+                                        recalculateHeight()
+
+                                    }
+                            }
+                        }
                     }
                     if contentPosition == .bottom {
                         Rectangle().fill(Color.clear).frame(height: additionalSpaceFromTop)
                     }
                     content.padding(.vertical, -8)
+                        .background(
+                            GeometryReader { proxy in
+                                hBackgroundColor.primary
+                                    .onAppear {
+                                        if contentPosition == .bottom {
+                                            contentHeight = proxy.size.height
+                                            recalculateHeight()
+                                        }
+
+                                    }
+                                    .onChange(of: proxy.size) { size in
+                                        if contentPosition == .bottom {
+                                            contentHeight = size.height
+                                            recalculateHeight()
+                                        }
+                                    }
+                            }
+                        )
                 }
                 .background(
                     GeometryReader { proxy in
                         hBackgroundColor.primary
                             .onAppear {
-                                contentHeight = proxy.size.height
-                                recalculateHeight()
+                                if contentPosition != .bottom {
+                                    contentHeight = proxy.size.height
+                                    recalculateHeight()
+                                }
 
                             }
                             .onChange(of: proxy.size) { size in
-                                contentHeight = size.height
-                                recalculateHeight()
-
+                                if contentPosition != .bottom {
+                                    contentHeight = size.height
+                                    recalculateHeight()
+                                }
                             }
                     }
                 )
@@ -268,11 +304,11 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                 switch contentPosition {
                 case .top: return additionalContentOffset
                 case .center: return (maxContentHeight - contentHeight) / 2
-                case .bottom: return scrollViewHeight - bottomAttachedViewHeight - contentHeight
+                case .bottom:
+                    return max(scrollViewHeight - bottomAttachedViewHeight - contentHeight - titleHeight - 8, 20)
                 }
             }()
         }
-
         var shouldMergeContent = false
         if mergeBottomWithContentIfNeeded {
             shouldMergeContent = mergeBottomViewWithContent

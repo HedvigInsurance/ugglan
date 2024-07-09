@@ -10,69 +10,73 @@ struct TerminationSurveyScreen: View {
 
     @PresentableStore var store: TerminationContractStore
     var body: some View {
-        hForm {}
-            .hFormTitle(
-                title: .init(
-                    .small,
-                    .body2,
-                    L10n.terminationFlowCancellationTitle,
-                    alignment: .leading
-                ),
-                subTitle: .init(
-                    .small,
-                    .body2,
-                    L10n.terminationSurveySubtitle
-                )
-            )
-            .hFormIgnoreKeyboard()
-            .hDisableScroll
-            .hFormIgnoreScrollOffsetChanges
-            .hFormAttachToBottom {
-                hSection {
-                    VStack(spacing: 16) {
-                        VStack(spacing: 4) {
-                            ForEach(vm.options) { option in
-                                ZStack {
-                                    VStack(spacing: 4) {
-                                        hRadioField(
-                                            id: option.id,
-                                            content: {
-                                                hText(option.title)
-                                            },
-                                            selected: $vm.selected
-                                        )
-                                        .hFieldSize(.medium)
-                                        .zIndex(1)
-                                        if let suggestion = option.suggestion, option.id == vm.selectedOption?.id {
-                                            buildInfo(for: suggestion)
-                                                .matchedGeometryEffect(id: "buildInfo", in: animationNamespace)
-                                        }
+        hForm {
+            hSection {
+                VStack(spacing: 16) {
+                    VStack(spacing: 4) {
+                        ForEach(vm.options) { option in
+                            ZStack {
+                                VStack(spacing: 4) {
+                                    hRadioField(
+                                        id: option.id,
+                                        content: {
+                                            hText(option.title)
+                                        },
+                                        selected: $vm.selected
+                                    )
+                                    .hFieldSize(.medium)
+                                    .zIndex(1)
+                                    if let suggestion = option.suggestion, option.id == vm.selectedOption?.id {
+                                        buildInfo(for: suggestion)
+                                            .matchedGeometryEffect(id: "buildInfo", in: animationNamespace)
+                                    }
 
-                                        if let feedBack = vm.allFeedBackViewModels[option.id],
-                                            option.id == vm.selectedOption?.id
-                                        {
-                                            TerminationFlowSurveyStepFeedBackView(
-                                                vm: feedBack
-                                            )
-                                        }
+                                    if let feedBack = vm.allFeedBackViewModels[option.id],
+                                        option.id == vm.selectedOption?.id
+                                    {
+                                        TerminationFlowSurveyStepFeedBackView(
+                                            vm: feedBack
+                                        )
                                     }
                                 }
-
                             }
+
                         }
-                        hButton.LargeButton(type: .primary) { [weak vm] in
-                            vm?.continueClicked()
-                        } content: {
-                            hText(L10n.generalContinueButton)
-                        }
-                        .disabled(!vm.continueEnabled)
                     }
-                    .padding(.bottom, .padding16)
                 }
-                .sectionContainerStyle(.transparent)
+                .padding(.bottom, .padding16)
             }
-            .trackLoading(TerminationContractStore.self, action: .sendSurvey)
-            .hUseNewDesign
+            .sectionContainerStyle(.transparent)
+        }
+        .hFormTitle(
+            title: .init(
+                .small,
+                .body2,
+                L10n.terminationFlowCancellationTitle,
+                alignment: .leading
+            ),
+            subTitle: .init(
+                .small,
+                .body2,
+                L10n.terminationSurveySubtitle
+            )
+        )
+        .hFormIgnoreKeyboard()
+        .hFormContentPosition(.bottom)
+        .hFormIgnoreScrollOffsetChanges
+        .hFormAttachToBottom {
+            hSection {
+                hButton.LargeButton(type: .primary) { [weak vm] in
+                    vm?.continueClicked()
+                } content: {
+                    hText(L10n.generalContinueButton)
+                }
+                .disabled(!vm.continueEnabled)
+            }
+            .sectionContainerStyle(.transparent)
+        }
+        .trackLoading(TerminationContractStore.self, action: .sendSurvey)
+        .hUseNewDesign
     }
 
     @ViewBuilder
