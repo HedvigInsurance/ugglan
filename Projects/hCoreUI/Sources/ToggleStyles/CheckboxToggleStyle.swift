@@ -112,40 +112,20 @@ public struct CheckboxToggleView: View {
         )
     }
 
-    @ViewBuilder
     public var mainContent: some View {
         VStack(alignment: .leading, spacing: .padding8) {
             HStack(alignment: .center, spacing: 0) {
                 hText(title, style: getTitleStyle(subtitle: subtitle))
-                    .foregroundColor(getTitleColor)
+                    .foregroundColor(hTextColor.Opaque.primary)
                     .fixedSize()
-
                 Spacer()
                 checkbox
             }
 
             if let subtitle {
                 hText(subtitle, style: .standardSmall)
-                    .foregroundColor(getSubtitleColor)
+                    .foregroundColor(hTextColor.Opaque.secondary)
             }
-        }
-    }
-
-    @hColorBuilder
-    private var getTitleColor: some hColor {
-        if animate {
-            hTextColor.Opaque.black
-        } else {
-            hTextColor.Opaque.primary
-        }
-    }
-
-    @hColorBuilder
-    private var getSubtitleColor: some hColor {
-        if animate {
-            hSignalColor.Green.text
-        } else {
-            hTextColor.Opaque.secondary
         }
     }
 
@@ -154,7 +134,7 @@ public struct CheckboxToggleView: View {
             RoundedRectangle(cornerRadius: 9)
                 .fill(backgroundColor(isOn: isOn))
                 .onTapGesture {
-                    withAnimation(.spring()) {
+                    withAnimation(.spring) {
                         isOn.toggle()
                     }
                 }

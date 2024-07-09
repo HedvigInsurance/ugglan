@@ -381,7 +381,7 @@ struct CoInusuredInput: View {
     var toggleField: some View {
         CheckboxToggleView(
             title: L10n.contractAddCoinsuredNoSsn,
-            isOn: $vm.noSSN.animation(.default)
+            isOn: $vm.noSSN
         )
         .onChange(
             of: vm.noSSN,
