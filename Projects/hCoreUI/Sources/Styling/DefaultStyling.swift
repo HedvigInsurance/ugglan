@@ -797,7 +797,7 @@ extension DynamicTableViewFormStyle {
 final class ListTableView: UITableView {}
 
 extension CGFloat {
-    public static var cornerRadiusXS: CGFloat = 4
+    public static var cornerRadiusXS: CGFloat = 6
     public static var cornerRadiusS: CGFloat = 8
     public static var cornerRadiusM: CGFloat = 10
     public static var cornerRadiusL: CGFloat = 12
