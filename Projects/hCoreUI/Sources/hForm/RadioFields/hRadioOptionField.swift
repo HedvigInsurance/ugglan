@@ -1,18 +1,18 @@
 import SwiftUI
 import hCore
 
-struct hRadioOptionSelectedView: View {
+public struct hRadioOptionSelectedView: View {
     @Binding var selectedValue: String?
     @Environment(\.isEnabled) var enabled
     @Environment(\.hUseCheckbox) var useCheckbox
     let value: String
 
-    init(selectedValue: Binding<String?>, value: String) {
+    public init(selectedValue: Binding<String?>, value: String) {
         self._selectedValue = selectedValue
         self.value = value
     }
 
-    var body: some View {
+    public var body: some View {
         Group {
             if useCheckbox {
                 squareComponent

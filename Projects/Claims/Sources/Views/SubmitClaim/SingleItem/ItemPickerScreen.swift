@@ -6,6 +6,7 @@ public struct ItemPickerScreen<T>: View {
     var items: [(object: T, displayName: String)]
     let onSelected: (T) -> Void
     let onCancel: () -> Void
+
     public init(
         items: [(object: T, displayName: String)],
         onSelected: @escaping (T) -> Void,
@@ -21,17 +22,13 @@ public struct ItemPickerScreen<T>: View {
             VStack(spacing: 4) {
                 ForEach(items, id: \.displayName) { item in
                     hSection {
-                        hRow {
-                            hText(item.displayName, style: .title3)
-                                .foregroundColor(hTextColor.Opaque.primary)
-                            Spacer()
-                        }
-                        .withChevronAccessory
-                        .verticalPadding(9)
-                        .onTap {
-                            onSelected(item.object)
-                        }
-                        .foregroundColor(hTextColor.Opaque.tertiary)
+                        ListItem(
+                            title: item.displayName,
+                            onClick: {
+                                onSelected(item.object)
+                            }
+                        )
+                        .hListStyle(.chevron)
                     }
                 }
             }
