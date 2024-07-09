@@ -177,7 +177,7 @@ extension OctopusGraphQL.FlowTerminationSurveyOptionSuggestionFragment {
             let action = optionActionSuggestion.action.asFlowTerminationSurveyRedirectAction
         {
             let buttonTitle = optionActionSuggestion.buttonTitle
-            let description = buttonTitle.description
+            let description = optionActionSuggestion.description
             return .action(
                 action: .init(
                     id: optionActionSuggestion.id,
