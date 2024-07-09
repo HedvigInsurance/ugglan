@@ -98,7 +98,9 @@ public class ChatScreenViewModel: ObservableObject {
                 withAnimation {
                     self.messages.append(contentsOf: newMessages)
                     self.messages.sort(by: { $0.sentAt > $1.sentAt })
-                    self.lastDeliveredMessage = self.messages.first(where: { $0.sender == .member })
+                    self.lastDeliveredMessage = self.messages.first(where: {
+                        $0.sender == .member && $0.remoteId != nil
+                    })
                 }
                 self.banner = chatData.banner
                 self.isConversationOpen = chatData.isConversationOpen ?? true
@@ -126,7 +128,7 @@ public class ChatScreenViewModel: ObservableObject {
             withAnimation {
                 self.messages.append(contentsOf: newMessages)
                 self.messages.sort(by: { $0.sentAt > $1.sentAt })
-                self.lastDeliveredMessage = self.messages.first(where: { $0.sender == .member })
+                self.lastDeliveredMessage = self.messages.first(where: { $0.sender == .member && $0.remoteId != nil })
             }
             self.banner = chatData.banner
             self.isConversationOpen = chatData.isConversationOpen ?? true
