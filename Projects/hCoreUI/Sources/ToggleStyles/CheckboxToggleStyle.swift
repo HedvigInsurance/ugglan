@@ -16,7 +16,7 @@ public struct CheckboxToggleStyle: ToggleStyle {
 
     public func makeBody(configuration: Configuration) -> some View {
         ZStack {
-            Squircle.default().fill(getBackgroundColor)
+            RoundedRectangle(cornerRadius: .cornerRadiusL).fill(getBackgroundColor)
                 .padding(.horizontal, 16)
             hSection {
                 hRow {
