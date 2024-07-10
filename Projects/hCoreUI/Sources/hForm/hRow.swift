@@ -45,6 +45,8 @@ public struct hRow<Content: View, Accessory: View>: View {
     var accessory: Accessory
     var horizontalPadding: CGFloat = 16
     var verticalPadding: CGFloat = 16
+    var topPadding: CGFloat = 0
+    var bottomPadding: CGFloat = 0
 
     public init(
         _ accessory: Accessory,
@@ -68,6 +70,18 @@ public struct hRow<Content: View, Accessory: View>: View {
         return new
     }
 
+    public func topPadding(_ newPadding: CGFloat) -> Self {
+        var new = self
+        new.topPadding = newPadding
+        return new
+    }
+
+    public func bottomPadding(_ newPadding: CGFloat) -> Self {
+        var new = self
+        new.bottomPadding = newPadding
+        return new
+    }
+
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading) {
@@ -79,6 +93,8 @@ public struct hRow<Content: View, Accessory: View>: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, withoutHorizontalPadding ? 0 : horizontalPadding)
             .padding(.vertical, verticalPadding)
+            .padding(.top, topPadding)
+            .padding(.bottom, bottomPadding)
             if (position == .middle || position == .top) && !hWithoutDivider {
                 hRowDivider()
             }

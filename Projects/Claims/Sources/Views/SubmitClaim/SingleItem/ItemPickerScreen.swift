@@ -19,19 +19,13 @@ public struct ItemPickerScreen<T>: View {
 
     public var body: some View {
         hForm {
-            VStack(spacing: 4) {
-                ForEach(items, id: \.displayName) { item in
-                    hSection {
-                        ListItem(
-                            title: item.displayName,
-                            onClick: {
-                                onSelected(item.object)
-                            }
-                        )
-                        .hListStyle(.chevron)
-                    }
-                }
-            }
+            ListItems(
+                onClick: { item in
+                    onSelected(item)
+                },
+                items: items
+            )
+            .hListRowStyle(.filled)
         }
         .hFormAttachToBottom {
             hSection {
