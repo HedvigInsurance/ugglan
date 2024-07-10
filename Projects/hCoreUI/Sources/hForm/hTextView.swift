@@ -296,7 +296,7 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
                         .padding(.vertical, .padding12)
                     }
                     .sectionContainerStyle(.transparent)
-                    if let titleText {
+                    if titleText != nil {
                         HeroAnimationWrapper(id: "label", cornerRadius: 12) {
                             Button(
                                 action: {
@@ -574,7 +574,7 @@ private class TextView: UITextView, UITextViewDelegate {
         let labelSize = self.placeholderView.sizeThatFits(.init(width: self.frame.width, height: .infinity))
         self.placeholderView.frame = .init(x: 0, y: 0, width: frameWidth, height: labelSize.height)
         if inEdit || errorMessage != nil {
-            let pathToExclude = UIBezierPath(rect: .init(x: frameWidth - 20, y: 0, width: 20, height: 20))
+            let pathToExclude = UIBezierPath(rect: .init(x: frameWidth - 25, y: 0, width: 25, height: 25))
             self.textContainer.exclusionPaths = [pathToExclude]
             placeholderView.textContainer.exclusionPaths = [pathToExclude]
         }
