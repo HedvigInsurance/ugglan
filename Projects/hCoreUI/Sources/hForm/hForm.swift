@@ -34,6 +34,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
     @State var additionalContentOffset: CGFloat = 0
     @State var vc: UIViewController?
     var content: Content
+    @State private var enableAnimation = false
     @Namespace private var animation
     public init(
         @ViewBuilder _ builder: () -> Content
@@ -85,6 +86,11 @@ public struct hForm<Content: View>: View, KeyboardReadable {
         .background(
             BackgroundView().edgesIgnoringSafeArea(.all)
         )
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                enableAnimation = true
+            }
+        }
     }
 
     private var bottomAttachedViewWithModifier: some View {
@@ -325,7 +331,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
         }
 
         let animated = self.additionalSpaceFromTop != additionalSpaceFromTop && additionalContentOffset == 0
-        if animated {
+        if animated && enableAnimation {
             withAnimation {
                 self.additionalSpaceFromTop = additionalSpaceFromTop
                 self.mergeBottomViewWithContent = shouldMergeContent

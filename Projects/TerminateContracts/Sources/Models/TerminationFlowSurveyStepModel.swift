@@ -41,3 +41,17 @@ struct TerminationFlowSurveyStepFeedback: FlowStepModel {
     let id: String
     let isRequired: Bool
 }
+
+public enum SurveyScreenSubtitleType: Codable {
+    case `default`
+    case generic
+
+    var title: String {
+        switch self {
+        case .default:
+            return L10n.terminationSurveySubtitle
+        case .generic:
+            return L10n.terminationSurveyGenericSubtitle
+        }
+    }
+}

@@ -58,7 +58,7 @@ struct TerminationSurveyScreen: View {
             subTitle: .init(
                 .small,
                 .body2,
-                L10n.terminationSurveySubtitle
+                vm.subtitleType.title
             )
         )
         .hFormIgnoreKeyboard()
@@ -112,6 +112,7 @@ struct TerminationSurveyScreen: View {
 
 class SurveyScreenViewModel: ObservableObject {
     let options: [TerminationFlowSurveyStepModelOption]
+    let subtitleType: SurveyScreenSubtitleType
     var allFeedBackViewModels = [String: TerminationFlowSurveyStepFeedBackViewModel]()
 
     @PresentableStore var store: TerminationContractStore
@@ -124,9 +125,9 @@ class SurveyScreenViewModel: ObservableObject {
 
     private var selectedFeedBackViewModelCancellable: AnyCancellable?
     private var selectedOptionCancellable: AnyCancellable?
-    init(options: [TerminationFlowSurveyStepModelOption]) {
+    init(options: [TerminationFlowSurveyStepModelOption], subtitleType: SurveyScreenSubtitleType) {
         self.options = options
-
+        self.subtitleType = subtitleType
         selectedOptionCancellable =
             $selected
             .sink(receiveValue: { [weak self] value in
@@ -181,7 +182,9 @@ class SurveyScreenViewModel: ObservableObject {
 
     func continueClicked() {
         if let subOptions = selectedOption?.subOptions, !subOptions.isEmpty {
-            store.send(.navigationAction(action: .openTerminationSurveyStep(options: subOptions)))
+            store.send(
+                .navigationAction(action: .openTerminationSurveyStep(options: subOptions, subtitleType: .generic))
+            )
         } else if let selectedOption {
             store.send(.submitSurvey(option: selectedOption.id, feedback: selectedFeedBackViewModel?.text))
         }
@@ -238,7 +241,7 @@ class SurveyScreenViewModel: ObservableObject {
     ]
 
     return NavigationView {
-        TerminationSurveyScreen(vm: .init(options: options))
+        TerminationSurveyScreen(vm: .init(options: options, subtitleType: .default))
             .navigationBarTitleDisplayMode(.inline)
     }
 }
