@@ -61,14 +61,14 @@ struct TerminationFlowNavigation: View {
         RouterHost(router: vm.router, tracking: initialStep) {
             getView(for: initialStep)
                 .routerDestination(for: [TerminationFlowSurveyStepModelOption].self) { options in
-                    TerminationSurveyScreen(vm: .init(options: options))
+                    TerminationSurveyScreen(vm: .init(options: options, subtitleType: .generic))
                 }
                 .routerDestination(for: TerminationFlowRouterActions.self) { action in
                     switch action {
                     case let .terminationDate(config):
                         openSetTerminationDateLandingScreen(config: config, fromSelectInsurance: false)
-                    case let .surveyStep(options):
-                        openSurveyScreen(options: options)
+                    case let .surveyStep(options, type):
+                        openSurveyScreen(options: options, subtitleType: type)
                     case let .selectInsurance(configs):
                         openSelectInsuranceScreen()
                     }
@@ -113,8 +113,8 @@ struct TerminationFlowNavigation: View {
                         vm?.router.push(TerminationFlowFinalRouterActions.fail)
                     case .openTerminationUpdateAppScreen:
                         vm?.router.push(TerminationFlowFinalRouterActions.updateApp)
-                    case .openTerminationSurveyStep(let options):
-                        vm?.router.push(TerminationFlowRouterActions.surveyStep(options: options))
+                    case .openTerminationSurveyStep(let options, let type):
+                        vm?.router.push(TerminationFlowRouterActions.surveyStep(options: options, subtitleType: type))
                     case let .openSetTerminationDateLandingScreen(config):
                         vm?.router.push(TerminationFlowRouterActions.terminationDate(config: config))
                     }
@@ -149,8 +149,8 @@ struct TerminationFlowNavigation: View {
             switch action {
             case let .terminationDate(config):
                 openSetTerminationDateLandingScreen(config: config, fromSelectInsurance: false)
-            case let .surveyStep(options):
-                openSurveyScreen(options: options)
+            case let .surveyStep(options, type):
+                openSurveyScreen(options: options, subtitleType: type)
             case let .selectInsurance(configs):
                 openSelectInsuranceScreen()
             }
@@ -259,8 +259,11 @@ struct TerminationFlowNavigation: View {
         .withDismissButton()
     }
 
-    private func openSurveyScreen(options: [TerminationFlowSurveyStepModelOption]) -> some View {
-        let vm = SurveyScreenViewModel(options: options)
+    private func openSurveyScreen(
+        options: [TerminationFlowSurveyStepModelOption],
+        subtitleType: SurveyScreenSubtitleType
+    ) -> some View {
+        let vm = SurveyScreenViewModel(options: options, subtitleType: subtitleType)
         return TerminationSurveyScreen(vm: vm).withDismissButton()
     }
 
@@ -424,8 +427,10 @@ public class TerminateInsuranceViewModel: ObservableObject {
                         self?.initialStep = .init(action: .final(action: .fail))
                     case .openTerminationUpdateAppScreen:
                         self?.initialStep = .init(action: .final(action: .updateApp))
-                    case let .openTerminationSurveyStep(options):
-                        self?.initialStep = .init(action: .router(action: .surveyStep(options: options)))
+                    case let .openTerminationSurveyStep(options, type):
+                        self?.initialStep = .init(
+                            action: .router(action: .surveyStep(options: options, subtitleType: type))
+                        )
                     case let .openSetTerminationDateLandingScreen(config):
                         self?.initialStep = .init(action: .router(action: .terminationDate(config: config)))
                     }
@@ -462,7 +467,7 @@ extension TerminationFlowActions: TrackingViewNameProtocol {
 enum TerminationFlowRouterActions: Hashable {
     case selectInsurance(configs: [TerminationConfirmConfig])
     case terminationDate(config: TerminationConfirmConfig)
-    case surveyStep(options: [TerminationFlowSurveyStepModelOption])
+    case surveyStep(options: [TerminationFlowSurveyStepModelOption], subtitleType: SurveyScreenSubtitleType)
 }
 
 extension TerminationFlowRouterActions: TrackingViewNameProtocol {

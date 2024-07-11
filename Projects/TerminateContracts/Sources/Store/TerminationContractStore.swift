@@ -96,7 +96,11 @@ public final class TerminationContractStore: LoadingStateStore<
                 send(.navigationAction(action: .openTerminationFailScreen))
             case let .setTerminationSurveyStep(model):
                 newState.terminationSurveyStep = model
-                send(.navigationAction(action: .openTerminationSurveyStep(options: model.options)))
+                send(
+                    .navigationAction(
+                        action: .openTerminationSurveyStep(options: model.options, subtitleType: .default)
+                    )
+                )
             }
         case let .setTerminationDate(terminationDate):
             newState.terminationDateStep?.date = terminationDate

@@ -28,7 +28,10 @@ public enum TerminationNavigationAction: ActionProtocol, Hashable {
     case openTerminationUpdateAppScreen
     case openTerminationFailScreen
     case openSetTerminationDateLandingScreen(with: TerminationConfirmConfig)
-    case openTerminationSurveyStep(options: [TerminationFlowSurveyStepModelOption])
+    case openTerminationSurveyStep(
+        options: [TerminationFlowSurveyStepModelOption],
+        subtitleType: SurveyScreenSubtitleType
+    )
 }
 
 public enum TerminationContractLoadingAction: LoadingProtocol {
