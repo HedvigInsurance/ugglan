@@ -34,6 +34,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
     @State var additionalContentOffset: CGFloat = 0
     @State var vc: UIViewController?
     var content: Content
+    @State private var enableAnimation = false
     @Namespace private var animation
     public init(
         @ViewBuilder _ builder: () -> Content
@@ -85,6 +86,11 @@ public struct hForm<Content: View>: View, KeyboardReadable {
         .background(
             BackgroundView().edgesIgnoringSafeArea(.all)
         )
+        .onAppear {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                enableAnimation = true
+            }
+        }
     }
 
     private var bottomAttachedViewWithModifier: some View {
@@ -114,7 +120,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
             VStack(spacing: 8) {
                 VStack(spacing: 0) {
                     if let hFormTitle {
-                        VStack(alignment: hFormTitle.title.alignment == .leading ? .leading : .center) {
+                        VStack(alignment: hFormTitle.title.alignment == .leading ? .leading : .center, spacing: 0) {
                             hText(hFormTitle.title.text, style: hFormTitle.title.fontSize)
                             if let subTitle = hFormTitle.subTitle {
                                 hText(subTitle.text, style: subTitle.fontSize)
@@ -126,24 +132,60 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                         .padding(.top, shouldIgnoreTitleMargins ? 0 : hFormTitle.title.type.topMargin)
                         .padding(.bottom, shouldIgnoreTitleMargins ? 0 : hFormTitle.title.type.bottomMargin)
                         .padding(.horizontal, .padding16)
+                        .background {
+                            GeometryReader { proxy in
+                                Color.clear
+                                    .onAppear {
+                                        titleHeight = proxy.size.height
+                                        recalculateHeight()
+
+                                    }
+                                    .onChange(of: proxy.size) { size in
+                                        titleHeight = size.height
+                                        recalculateHeight()
+
+                                    }
+                            }
+                        }
                     }
                     if contentPosition == .bottom {
                         Rectangle().fill(Color.clear).frame(height: additionalSpaceFromTop)
                     }
                     content.padding(.vertical, -8)
+                        .background(
+                            GeometryReader { proxy in
+                                hBackgroundColor.primary
+                                    .onAppear {
+                                        if contentPosition == .bottom {
+                                            contentHeight = proxy.size.height
+                                            recalculateHeight()
+                                        }
+
+                                    }
+                                    .onChange(of: proxy.size) { size in
+                                        if contentPosition == .bottom {
+                                            contentHeight = size.height
+                                            recalculateHeight()
+                                        }
+                                    }
+                            }
+                        )
                 }
                 .background(
                     GeometryReader { proxy in
                         hBackgroundColor.primary
                             .onAppear {
-                                contentHeight = proxy.size.height
-                                recalculateHeight()
+                                if contentPosition != .bottom {
+                                    contentHeight = proxy.size.height
+                                    recalculateHeight()
+                                }
 
                             }
                             .onChange(of: proxy.size) { size in
-                                contentHeight = size.height
-                                recalculateHeight()
-
+                                if contentPosition != .bottom {
+                                    contentHeight = size.height
+                                    recalculateHeight()
+                                }
                             }
                     }
                 )
@@ -268,11 +310,11 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                 switch contentPosition {
                 case .top: return additionalContentOffset
                 case .center: return (maxContentHeight - contentHeight) / 2
-                case .bottom: return scrollViewHeight - bottomAttachedViewHeight - contentHeight
+                case .bottom:
+                    return max(scrollViewHeight - bottomAttachedViewHeight - contentHeight - titleHeight - 8, 20)
                 }
             }()
         }
-
         var shouldMergeContent = false
         if mergeBottomWithContentIfNeeded {
             shouldMergeContent = mergeBottomViewWithContent
@@ -289,7 +331,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
         }
 
         let animated = self.additionalSpaceFromTop != additionalSpaceFromTop && additionalContentOffset == 0
-        if animated {
+        if animated && enableAnimation {
             withAnimation {
                 self.additionalSpaceFromTop = additionalSpaceFromTop
                 self.mergeBottomViewWithContent = shouldMergeContent

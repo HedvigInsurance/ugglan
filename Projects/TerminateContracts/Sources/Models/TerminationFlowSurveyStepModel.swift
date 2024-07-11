@@ -22,24 +22,12 @@ enum TerminationFlowSurveyStepSuggestion: FlowStepModel {
 public struct TerminationFlowSurveyStepSuggestionAction: FlowStepModel {
     let id: String
     public let action: FlowTerminationSurveyRedirectAction
+    let description: String
+    let buttonTitle: String
 }
 
 public enum FlowTerminationSurveyRedirectAction: FlowStepModel {
     case updateAddress
-
-    var title: String {
-        switch self {
-        case .updateAddress:
-            return L10n.terminationSurveyMovingSuggestion
-        }
-    }
-
-    var buttonTitle: String {
-        switch self {
-        case .updateAddress:
-            return L10n.terminationSurveyMovingButton
-        }
-    }
 }
 
 struct TerminationFlowSurveyStepSuggestionRedirection: FlowStepModel {
@@ -52,4 +40,18 @@ struct TerminationFlowSurveyStepSuggestionRedirection: FlowStepModel {
 struct TerminationFlowSurveyStepFeedback: FlowStepModel {
     let id: String
     let isRequired: Bool
+}
+
+public enum SurveyScreenSubtitleType: Codable {
+    case `default`
+    case generic
+
+    var title: String {
+        switch self {
+        case .default:
+            return L10n.terminationSurveySubtitle
+        case .generic:
+            return L10n.terminationSurveyGenericSubtitle
+        }
+    }
 }
