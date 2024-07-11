@@ -64,12 +64,13 @@ struct SetTerminationDateLandingScreen: View {
         if let config = store.state.config {
             hSection {
                 hRow {
-                    VStack(alignment: .leading) {
+                    VStack(alignment: .leading, spacing: 0) {
                         hText(config.contractDisplayName)
-                        hText(config.contractExposureName, style: .standardSmall)
+                        hText(config.contractExposureName, style: .label)
                             .foregroundColor(hTextColor.Translucent.secondary)
                     }
                 }
+                .verticalPadding(10.5)
             }
         }
     }
@@ -111,6 +112,7 @@ struct SetTerminationDateLandingScreen: View {
                         terminationNavigationVm.isDatePickerPresented = true
                     }
                 )
+                .hFieldSize(.medium)
             }
         }
     }
