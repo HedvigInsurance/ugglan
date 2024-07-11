@@ -42,6 +42,7 @@ public struct MovingFlowHousingTypeView: View {
                     }
                     .sectionContainerStyle(.transparent)
                 }
+                .hDisableScroll
         } onLoading: {
             DotsActivityIndicator(.standard).useDarkColor
         } onError: { error in

@@ -75,6 +75,7 @@ struct MovingFlowConfirm: View {
                         totalAmountComponent
                         buttonComponent(proxy: proxy)
                     }
+                    .padding(.top, .padding16)
                 }
             }
         }

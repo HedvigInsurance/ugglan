@@ -27,7 +27,7 @@ struct ContractCoverageView: View {
                     PerilCollection(
                         perils: contract.currentAgreement?.productVariant.perils ?? []
                     )
-                    .hFieldSize(.large)
+                    .hFieldSize(.small)
                 }
             }
         }
