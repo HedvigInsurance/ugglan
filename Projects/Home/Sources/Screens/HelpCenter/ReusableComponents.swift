@@ -3,14 +3,6 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-enum PillColor {
-    case green
-    case yellow
-    case blue
-    case purple
-    case pink
-}
-
 struct HelpCenterPill: View {
     private let title: String
     private let color: PillColor
@@ -25,38 +17,8 @@ struct HelpCenterPill: View {
 
     @hColorBuilder
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                hText(title, style: .standardSmall)
-                    .foregroundColor(hTextColor.Translucent.primary)
-                    .colorScheme(.light)
-            }
-            .padding(.horizontal, .padding8)
-            .padding(.vertical, .padding4)
-            .background(pillBackgroundColor)
-            .border(
-                hBorderColor.primary,
-                width: 0.5
-            )
-            .cornerRadius(8)
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-
-    @hColorBuilder
-    var pillBackgroundColor: some hColor {
-        switch color {
-        case .blue:
-            hHighlightColor.Blue.fillOne
-        case .green:
-            hSignalColor.Green.fill
-        case .yellow:
-            hHighlightColor.Yellow.fillOne
-        case .purple:
-            hHighlightColor.Purple.fillOne
-        case .pink:
-            hHighlightColor.Pink.fillOne
-        }
+        hPill(text: title, color: color)
+            .hFieldSize(.small)
     }
 }
 

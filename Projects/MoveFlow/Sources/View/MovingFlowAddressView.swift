@@ -41,10 +41,7 @@ struct MovingFlowAddressView: View {
                         accessDateField()
                     }
                     if vm.isStudentEnabled {
-                        hSection {
-                            isStudentField()
-                        }
-                        .sectionContainerStyle(.opaque)
+                        isStudentField()
                     }
                 }
                 .disableOn(MoveFlowStore.self, [.requestMoveIntent])
@@ -141,20 +138,16 @@ struct MovingFlowAddressView: View {
         )
     }
     func isStudentField() -> some View {
-        Toggle(isOn: $vm.isStudent.animation(.default)) {
-            VStack(alignment: .leading, spacing: 0) {
-                hText(L10n.changeAddressStudentLabel, style: .heading2)
-            }
-        }
-        .toggleStyle(ChecboxToggleStyle(.center, spacing: 0))
-        .contentShape(Rectangle())
+        CheckboxToggleView(
+            title: L10n.changeAddressStudentLabel,
+            isOn: $vm.isStudent.animation(.default)
+        )
+        .hFieldSize(.large)
         .onTapGesture {
             withAnimation {
                 vm.isStudent.toggle()
             }
         }
-        .padding(.vertical, .padding16)
-        .padding(.horizontal, .padding16)
     }
 
     func continuePressed() {

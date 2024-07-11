@@ -8,6 +8,7 @@ import hGraphQL
 struct CrossSellingItem: View {
     @PresentableStore var store: ContractStore
     let crossSell: CrossSell
+    @State var fieldIsClicked = false
 
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
 
@@ -20,37 +21,50 @@ struct CrossSellingItem: View {
     }
 
     var body: some View {
-        HStack(spacing: 16) {
-            Image(uiImage: crossSell.image)
-                .resizable()
-                .frame(width: 48, height: 48)
-                .aspectRatio(contentMode: .fill)
-            HStack(spacing: 0) {
-                VStack(alignment: .leading, spacing: 0) {
-                    hText(crossSell.title, style: .body1).foregroundColor(hTextColor.Opaque.primary)
-                    MarqueeText(
-                        text: crossSell.description,
-                        font: Fonts.fontFor(style: .standardSmall),
-                        leftFade: 3,
-                        rightFade: 3,
-                        startDelay: 2
-                    )
-                    .foregroundColor(hTextColor.Opaque.secondary)
+        HStack {
+            HStack(spacing: 16) {
+                Image(uiImage: crossSell.image)
+                    .resizable()
+                    .frame(width: 48, height: 48)
+                    .aspectRatio(contentMode: .fill)
+                HStack(spacing: 0) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        hText(crossSell.title, style: .body1).foregroundColor(hTextColor.Opaque.primary)
+                        MarqueeText(
+                            text: crossSell.description,
+                            font: Fonts.fontFor(style: .standardSmall),
+                            leftFade: 3,
+                            rightFade: 3,
+                            startDelay: 2
+                        )
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                    }
+                    Spacer()
+                    hButton.MediumButton(type: .primaryAlt) {
+                        fieldIsClicked.toggle()
+                        openExternal()
+                    } content: {
+                        hText(L10n.crossSellGetPrice)
+                            .foregroundColor(hTextColor.Opaque.primary).colorScheme(.light)
+                    }
+                    .fixedSize(horizontal: true, vertical: true)
                 }
-                Spacer()
-                hButton.MediumButton(type: .primaryAlt) {
-                    openExternal()
-                } content: {
-                    hText(L10n.crossSellGetPrice)
-                        .foregroundColor(hTextColor.Opaque.primary).colorScheme(.light)
-                }
-                .fixedSize(horizontal: true, vertical: true)
+            }
+            .onTapGesture {
+                fieldIsClicked.toggle()
+                openExternal()
+                ImpactGenerator.soft()
             }
         }
-        .onTapGesture {
-            openExternal()
-            ImpactGenerator.soft()
-        }
+        .padding(16)
+        .modifier(
+            BackgorundColorAnimation(
+                animationTrigger: $fieldIsClicked,
+                color: hBackgroundColor.clear,
+                animationColor: hSurfaceColor.Translucent.primary
+            )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXL))
     }
 }
 

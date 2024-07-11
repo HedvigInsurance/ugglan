@@ -78,6 +78,21 @@ public struct ListScreen: View {
             }
         }
         .sectionContainerStyle(.transparent)
+        .onAppear {
+            Task {
+                await vm.fetchTravelCertificateList()
+            }
+        }
+        .onPullToRefresh {
+            await vm.fetchTravelCertificateList()
+        }
+        .onChange(of: travelCertificateNavigationVm.isStartDateScreenPresented) { value in
+            if value == nil {
+                Task {
+                    await vm.fetchTravelCertificateList()
+                }
+            }
+        }
     }
 
     func createNewPressed() {
@@ -106,20 +121,19 @@ class ListScreenViewModel: ObservableObject {
     @Published var error: String?
     @Published var isLoading = false
     @Published var isCreateNewLoading: Bool = false
-
-    init() {
-        Task {
-            await getTravelCertificateList()
-        }
-    }
+    init() {}
 
     @MainActor
-    private func getTravelCertificateList() async {
-        isLoading = true
+    func fetchTravelCertificateList() async {
+        if list.isEmpty {
+            isLoading = true
+        }
         do {
             let (list, canCreateTravelInsurance) = try await self.service.getList()
-            self.list = list
-            self.canCreateTravelInsurance = canCreateTravelInsurance
+            withAnimation {
+                self.list = list
+                self.canCreateTravelInsurance = canCreateTravelInsurance
+            }
         } catch _ {
             self.error = L10n.General.errorBody
         }

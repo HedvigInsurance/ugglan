@@ -40,7 +40,6 @@ public struct ClaimFilesView: View {
                         dismissButton: nil
                     )
                 )
-                .hWithoutTitle
             } else {
                 hForm {
                     hSection {
@@ -153,8 +152,8 @@ public struct ClaimFilesView: View {
                 Spacer()
                 hText(L10n.fileUploadIsUploading)
                 ProgressView(value: vm.progress)
-                    .tint(hTextColor.Opaque.primary)
                     .frame(width: UIScreen.main.bounds.width * 0.53)
+                    .progressViewStyle(hProgressViewStyle())
                 Spacer()
             }
         }

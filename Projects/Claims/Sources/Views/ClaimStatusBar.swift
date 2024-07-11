@@ -11,36 +11,44 @@ struct ClaimStatusBar: View {
         switch status {
         case .submitted:
             if segment == .submitted {
-                hTextColor.Opaque.primary
+                hSignalColor.Green.element
             } else {
-                hTextColor.Opaque.tertiary
+                hFillColor.Opaque.disabled
             }
         case .beingHandled:
             switch segment {
             case .submitted:
-                hTextColor.Opaque.secondary
+                hSignalColor.Green.element
             case .beingHandled:
-                hTextColor.Opaque.primary
+                if outcome == .missingReceipt {
+                    hSignalColor.Amber.element
+                } else {
+                    hSignalColor.Green.element
+                }
             default:
-                hTextColor.Opaque.tertiary
+                hFillColor.Opaque.disabled
             }
         case .closed:
             if outcome == .paid {
-                hSignalColor.Blue.element
+                hSignalColor.Green.element
             } else {
-                hTextColor.Opaque.primary
+                hSignalColor.Green.element
             }
         case .reopened:
             switch segment {
             case .submitted:
-                hTextColor.Opaque.secondary
+                hSignalColor.Green.element
             case .beingHandled:
-                hSignalColor.Amber.element
+                if outcome == .missingReceipt {
+                    hSignalColor.Amber.element
+                } else {
+                    hSignalColor.Green.element
+                }
             default:
-                hTextColor.Opaque.tertiary
+                hFillColor.Opaque.disabled
             }
         default:
-            hTextColor.Opaque.secondary
+            hFillColor.Opaque.disabled
         }
     }
 
@@ -57,20 +65,14 @@ struct ClaimStatusBar: View {
                 }
             case .beingHandled:
                 switch segment {
-                case .submitted:
-                    hTextColor.Opaque.secondary
-                case .beingHandled:
+                case .submitted, .beingHandled:
                     hTextColor.Opaque.primary
-                case .closed:
-                    hTextColor.Opaque.tertiary
                 default:
                     hTextColor.Opaque.tertiary
                 }
             case .reopened:
                 switch segment {
-                case .submitted:
-                    hTextColor.Opaque.secondary
-                case .beingHandled:
+                case .submitted, .beingHandled:
                     hTextColor.Opaque.primary
                 default:
                     hTextColor.Opaque.tertiary
@@ -78,7 +80,7 @@ struct ClaimStatusBar: View {
             case .closed:
                 hTextColor.Opaque.primary
             default:
-                hTextColor.Opaque.secondary
+                hTextColor.Opaque.tertiary
             }
         }
     }
@@ -90,7 +92,7 @@ struct ClaimStatusBar: View {
                     Rectangle()
                         .fill(barColor(segment: segment))
                         .frame(height: 4)
-                        .cornerRadius(2)
+                        .cornerRadius(.cornerRadiusXS)
                     hText(segment.title, style: .standardSmall)
                         .foregroundColor(textColor(segment: segment))
                         .lineLimit(1)
@@ -103,12 +105,25 @@ struct ClaimStatusBar: View {
 
 struct ClaimStatusBar_Previews: PreviewProvider {
     static var previews: some View {
-        HStack {
-            ClaimStatusBar(status: .beingHandled, outcome: .none)
-            ClaimStatusBar(status: .closed, outcome: .notCompensated)
-            ClaimStatusBar(status: .reopened, outcome: .none)
-            ClaimStatusBar(status: .submitted, outcome: .none)
-            ClaimStatusBar(status: .none, outcome: .none)
+        VStack {
+            HStack {
+                ClaimStatusBar(status: .submitted, outcome: .none)
+            }
+            HStack {
+                ClaimStatusBar(status: .beingHandled, outcome: .none)
+            }
+            HStack {
+                ClaimStatusBar(status: .closed, outcome: .paid)
+            }
+            HStack {
+                ClaimStatusBar(status: .closed, outcome: .notCovered)
+            }
+            HStack {
+                ClaimStatusBar(status: .closed, outcome: .notCompensated)
+            }
+            HStack {
+                ClaimStatusBar(status: .beingHandled, outcome: .missingReceipt)
+            }
         }
     }
 }

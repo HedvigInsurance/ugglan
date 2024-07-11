@@ -82,11 +82,16 @@ struct ContractTable: View {
                                 router.push(ContractsRouterType.terminatedContracts)
                             } content: {
                                 hRow {
-                                    hText(L10n.InsurancesTab.cancelledInsurancesLabel("\(terminatedContracts.count)"))
+                                    HStack {
+                                        hText(
+                                            L10n.InsurancesTab.cancelledInsurancesLabel("\(terminatedContracts.count)")
+                                        )
                                         .foregroundColor(hTextColor.Opaque.primary)
-                                    Spacer()
+                                        Spacer()
+                                    }
                                 }
                                 .withChevronAccessory
+                                .verticalPadding(0)
                                 .foregroundColor(hTextColor.Opaque.secondary)
                             }
                         }

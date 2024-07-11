@@ -5,26 +5,21 @@ public struct GenericErrorView: View {
     private let title: String?
     private let description: String?
     private let useForm: Bool
-    private let icon: ErrorIconType
     private let buttons: ErrorViewButtonConfig
     private let attachContentToTheBottom: Bool
-    @Environment(\.hWithoutTitle) var withoutTitle
-    @Environment(\.hExtraBottomPadding) var extraBottomPadding
+
     @Environment(\.hExtraTopPadding) var extraTopPadding
-    @Environment(\.hUseNewDesign) var hUseNewDesign
 
     public init(
         title: String? = nil,
         description: String? = L10n.General.errorBody,
         useForm: Bool = true,
-        icon: ErrorIconType = .triangle,
         buttons: ErrorViewButtonConfig,
         attachContentToTheBottom: Bool = false
     ) {
         self.title = title
         self.description = description
         self.useForm = useForm
-        self.icon = icon
         self.buttons = buttons
         self.attachContentToTheBottom = attachContentToTheBottom
     }
@@ -72,50 +67,17 @@ public struct GenericErrorView: View {
     }
 
     private var content: some View {
-        let imageDimension: CGFloat = hUseNewDesign ? 40 : 24
-        return VStack(spacing: 16) {
-            switch icon {
-            case .triangle:
-                hCoreUIAssets.warningTriangleFilled.view
-                    .resizable()
-                    .frame(width: imageDimension, height: imageDimension)
-                    .foregroundColor(hSignalColor.Amber.element)
-            case .circle:
-                hCoreUIAssets.infoFilled.view
-                    .resizable()
-                    .frame(width: imageDimension, height: imageDimension)
-                    .foregroundColor(hSignalColor.Blue.element)
-            }
-            VStack {
-                if !withoutTitle {
-                    hText(title ?? L10n.somethingWentWrong, style: .body1)
-                        .foregroundColor(hTextColor.Translucent.primary)
-                        .multilineTextAlignment(.center)
-                }
-                if let description {
-                    hText(description, style: .body1)
-                        .padding(.horizontal, .padding32)
-                        .multilineTextAlignment(.center)
-                        .foregroundColor(hTextColor.Translucent.secondary)
-                }
-            }
-            if let actionButton = buttons.actionButton {
-                hButton.MediumButton(type: .primary) {
-                    actionButton.buttonAction()
-                } content: {
-                    hText(actionButton.buttonTitle ?? L10n.generalRetry, style: .body1)
-                }
-                .fixedSize()
-            }
-        }
-        .padding(.horizontal, .padding32)
-        .padding(.bottom, extraBottomPadding ? 32 : 0)
+        StateView(
+            type: .error,
+            title: title ?? L10n.somethingWentWrong,
+            bodyText: description,
+            button: buttons.actionButton != nil
+                ? .init(
+                    buttonTitle: buttons.actionButton?.buttonTitle,
+                    buttonAction: buttons.actionButton?.buttonAction ?? {}
+                ) : nil
+        )
     }
-}
-
-public enum ErrorIconType {
-    case triangle
-    case circle
 }
 
 public struct ErrorViewButtonConfig {
@@ -144,59 +106,46 @@ public struct ErrorViewButtonConfig {
     }
 }
 
-#Preview{
-    GenericErrorView(
-        icon: .circle,
-        buttons:
-            .init(
-                actionButton:
-                    .init(
-                        buttonAction: {}),
-                actionButtonAttachedToBottom:
-                    .init(
-                        buttonTitle: "Extra button",
-                        buttonAction: {}
-                    ),
-                dismissButton:
-                    .init(
-                        buttonTitle: "Close",
-                        buttonAction: {}
-                    )
-            )
-    )
-}
-
-private struct EnvironmenthWithoutTitle: EnvironmentKey {
-    static let defaultValue: Bool = false
-}
-
-extension EnvironmentValues {
-    public var hWithoutTitle: Bool {
-        get { self[EnvironmenthWithoutTitle.self] }
-        set { self[EnvironmenthWithoutTitle.self] = newValue }
+struct Error_Previews: PreviewProvider {
+    static var previews: some View {
+        GenericErrorView(
+            buttons:
+                .init(
+                    actionButton: .init(buttonTitle: nil, buttonAction: {}),
+                    actionButtonAttachedToBottom:
+                        .init(
+                            buttonTitle: "Extra button",
+                            buttonAction: {}
+                        ),
+                    dismissButton:
+                        .init(
+                            buttonTitle: "Close",
+                            buttonAction: {}
+                        )
+                )
+        )
     }
 }
 
-extension GenericErrorView {
-    public var hWithoutTitle: some View {
-        self.environment(\.hWithoutTitle, true)
-    }
-}
-
-private struct EnvironmenthExtraBottomPadding: EnvironmentKey {
-    static let defaultValue: Bool = false
-}
-
-extension EnvironmentValues {
-    public var hExtraBottomPadding: Bool {
-        get { self[EnvironmenthExtraBottomPadding.self] }
-        set { self[EnvironmenthExtraBottomPadding.self] = newValue }
-    }
-}
-
-extension GenericErrorView {
-    public var hExtraBottomPadding: some View {
-        self.environment(\.hExtraBottomPadding, true)
+struct ErrorAttachToBottom_Previews: PreviewProvider {
+    static var previews: some View {
+        GenericErrorView(
+            buttons:
+                .init(
+                    actionButton: .init(buttonTitle: nil, buttonAction: {}),
+                    actionButtonAttachedToBottom:
+                        .init(
+                            buttonTitle: "Extra button",
+                            buttonAction: {}
+                        ),
+                    dismissButton:
+                        .init(
+                            buttonTitle: "Close",
+                            buttonAction: {}
+                        )
+                ),
+            attachContentToTheBottom: true
+        )
     }
 }
 

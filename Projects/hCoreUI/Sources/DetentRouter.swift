@@ -315,5 +315,5 @@ extension String {
     }
 }
 
-public var logStartView: ((_ key: String, _ name: String) -> Void)!
-public var logStopView: ((_ key: String) -> Void)!
+public var logStartView: ((_ key: String, _ name: String) -> Void) = { _, _ in }
+public var logStopView: ((_ key: String) -> Void) = { _ in }

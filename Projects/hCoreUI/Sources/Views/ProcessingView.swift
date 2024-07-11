@@ -63,6 +63,7 @@ public struct ProcessingView<S: Store & StoreLoading>: View {
                             successViewTitle: successViewTitle ?? "",
                             successViewBody: successViewBody ?? "",
                             buttons: .init(
+                                actionButton: nil,
                                 primaryButton: nil,
                                 ghostButton: .init(buttonAction: successViewButtonAction ?? {})
                             )
@@ -109,8 +110,8 @@ public struct ProcessingView<S: Store & StoreLoading>: View {
             Spacer()
             hText(loadingViewText)
             ProgressView(value: vm.progress)
-                .tint(hTextColor.Opaque.primary)
                 .frame(width: UIScreen.main.bounds.width * 0.53)
+                .progressViewStyle(hProgressViewStyle())
             Spacer()
             Spacer()
             if let onDismiss = onLoadingDismiss {
@@ -227,8 +228,8 @@ public struct ProcesssingView: View {
             Spacer()
             hText(loadingViewText)
             ProgressView(value: vm.progress)
-                .tint(hTextColor.Opaque.primary)
                 .frame(width: UIScreen.main.bounds.width * 0.53)
+                .progressViewStyle(hProgressViewStyle())
             Spacer()
             Spacer()
             if let onDismiss = onLoadingDismiss {
@@ -242,5 +243,21 @@ public struct ProcesssingView: View {
                 .sectionContainerStyle(.transparent)
             }
         }
+    }
+}
+
+public struct hProgressViewStyle: ProgressViewStyle {
+
+    public init() {}
+    public func makeBody(configuration: LinearProgressViewStyle.Configuration) -> some View {
+        return RoundedRectangle(cornerRadius: 2).fill(hSurfaceColor.Translucent.secondary)
+            .overlay {
+                GeometryReader(content: { geometry in
+                    RoundedRectangle(cornerRadius: 2, style: .continuous)
+                        .fill(hFillColor.Opaque.primary)
+                        .frame(width: geometry.size.width * (configuration.fractionCompleted ?? 0))
+                })
+            }
+            .frame(height: 4)
     }
 }

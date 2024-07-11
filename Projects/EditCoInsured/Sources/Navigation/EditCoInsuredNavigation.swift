@@ -237,34 +237,36 @@ public struct EditCoInsuredSelectInsuranceNavigation: View {
 
     func openSelectInsurance() -> some View {
         CheckboxPickerScreen<InsuredPeopleConfig>(
-            items: {
-                return configs.compactMap({
-                    (object: $0, displayName: .init(title: $0.displayName))
-                })
-            }(),
-            preSelectedItems: {
-                if let first = configs.first {
-                    return [first]
-                }
-                return []
-            },
-            onSelected: { [weak editCoInsuredViewModel] selectedConfigs in
-                if let selectedConfig = selectedConfigs.first {
-                    if let object = selectedConfig.0 {
-                        editCoInsuredViewModel?.editCoInsuredModelDetent = nil
-                        editCoInsuredViewModel?.editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
-                            return [object]
-                        })
-                        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-                        store.coInsuredViewModel.initializeCoInsured(with: object)
+            config: .init(
+                items: {
+                    return configs.compactMap({
+                        (object: $0, displayName: .init(title: $0.displayName))
+                    })
+                }(),
+                preSelectedItems: {
+                    if let first = configs.first {
+                        return [first]
                     }
-                }
-            },
-            onCancel: { [weak router] in
-                router?.dismiss()
-            },
-            singleSelect: true,
-            hButtonText: L10n.generalContinueButton
+                    return []
+                },
+                onSelected: { [weak editCoInsuredViewModel] selectedConfigs in
+                    if let selectedConfig = selectedConfigs.first {
+                        if let object = selectedConfig.0 {
+                            editCoInsuredViewModel?.editCoInsuredModelDetent = nil
+                            editCoInsuredViewModel?.editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
+                                return [object]
+                            })
+                            let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
+                            store.coInsuredViewModel.initializeCoInsured(with: object)
+                        }
+                    }
+                },
+                onCancel: { [weak router] in
+                    router?.dismiss()
+                },
+                singleSelect: true,
+                hButtonText: L10n.generalContinueButton
+            )
         )
         .configureTitle(L10n.SelectInsurance.NavigationBar.CenterElement.title)
     }

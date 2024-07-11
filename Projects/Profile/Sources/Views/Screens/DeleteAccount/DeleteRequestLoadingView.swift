@@ -91,7 +91,6 @@ public struct DeleteRequestLoadingView: View {
                         dismissButton: nil
                     )
                 )
-                .hWithoutTitle
                 Spacer()
                 hSection {
                     hButton.LargeButton(type: .ghost) {
