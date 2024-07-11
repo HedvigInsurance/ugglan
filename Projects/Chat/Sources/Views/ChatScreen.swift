@@ -112,8 +112,8 @@ public struct ChatScreen: View {
                     }
 
                 }
-                .hTextStyle(.standardSmall)
-                .foregroundColor(hTextColor.Opaque.tertiary)
+                .hTextStyle(.label)
+                .foregroundColor(hTextColor.Opaque.secondary)
                 .padding(.bottom, 3)
 
             }

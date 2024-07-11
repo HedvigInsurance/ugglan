@@ -48,6 +48,36 @@ public enum MimeType: Codable, Equatable, Hashable {
         }
     }
 
+    public var name: String {
+        switch self {
+        case .PDF: return "pdf"
+        case .DOCX: return "docx"
+        case .PPTX: return "pptx"
+        case .XLSX: return "xlsx"
+        case .TXT: return "txt"
+        case .JPEG: return "jpeg"
+        case .JPG: return "jpg"
+        case .PNG: return "png"
+        case .HEIC: return "heic"
+        case .GIF: return "gif"
+        case .BMP: return "bmp"
+        case .SVG: return "svg"
+        case .MP3: return "mp3"
+        case .WAV: return "wav"
+        case .FLAC: return "flac"
+        case .MP4: return "mp4"
+        case .AVI: return "avi"
+        case .MKV: return "mkv"
+        case .HTML: return "html"
+        case .CSS: return "css"
+        case .CSV: return "csv"
+        case .JSON: return "json"
+        case .M4A: return "m4a"
+        case .MOV: return "mov"
+        case .other(let type): return L10n.genericUnknown
+        }
+    }
+
     public static func findBy(mimeType: String) -> MimeType {
         switch mimeType {
         case MimeType.PDF.mime: return MimeType.PDF

@@ -32,12 +32,6 @@ struct ImagesView: View {
                             PHPAssetPreview(asset: file) { message in
                                 self.vm.sendMessage(message)
                             }
-                            .frame(width: 205, height: 256)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                            .contentShape(RoundedRectangle(cornerRadius: 12))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.primary, lineWidth: 0.5)
-                            )
                         }
                     }
                     .clipped()
@@ -106,6 +100,11 @@ class ImagesViewModel: ObservableObject {
     ImagesView(vm: .init())
 }
 
+#Preview{
+    PHPAssetPreview(asset: .init()) { _ in
+
+    }
+}
 struct PHPAssetPreview: View {
     let asset: PHAsset
     @State private var image: UIImage?
@@ -114,59 +113,67 @@ struct PHPAssetPreview: View {
     let onSend: (_ message: Message) -> Void
     @ViewBuilder
     var body: some View {
-        if let image {
-            ZStack(alignment: .center) {
-                Image(uiImage: image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .onTapGesture {
-                        withAnimation {
-                            self.selected.toggle()
-                        }
-                    }
-                    .blur(radius: selected ? 10 : 0, opaque: true)
-                hButton.MediumButton(type: .secondaryAlt) {
-                    Task {
-                        withAnimation {
-                            loading = true
-                        }
-                        do {
-                            if let file = try? await asset.getFile() {
-                                onSend(.init(type: .file(file: file)))
+        Group {
+            if let image {
+                ZStack(alignment: .center) {
+                    Image(uiImage: image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .onTapGesture {
+                            withAnimation {
+                                self.selected.toggle()
                             }
                         }
-                        withAnimation {
-                            loading = false
-                            self.selected = false
+                        .blur(radius: selected ? 20 : 0, opaque: true)
+                    hButton.MediumButton(type: .secondaryAlt) {
+                        Task {
+                            withAnimation {
+                                loading = true
+                            }
+                            do {
+                                if let file = try? await asset.getFile() {
+                                    onSend(.init(type: .file(file: file)))
+                                }
+                            }
+                            withAnimation {
+                                loading = false
+                                self.selected = false
+                            }
+                        }
+                    } content: {
+                        if loading {
+                            ProgressView()
+                                .foregroundColor(hTextColor.Opaque.primary)
+                        } else {
+                            hText(L10n.chatUploadPresend)
+                                .foregroundColor(hTextColor.Opaque.primary)
                         }
                     }
-                } content: {
-                    if loading {
-                        ProgressView()
-                            .foregroundColor(hTextColor.Opaque.primary)
-                    } else {
-                        hText(L10n.chatUploadPresend)
-                            .foregroundColor(hTextColor.Opaque.primary)
-                    }
+                    .opacity(selected ? 1 : 0)
+                    .fixedSize()
                 }
-                .opacity(selected ? 1 : 0)
-                .fixedSize()
+            } else {
+                ProgressView()
+                    .onAppear {
+                        PHImageManager.default()
+                            .requestImage(
+                                for: asset,
+                                targetSize: .init(width: 600, height: 600),
+                                contentMode: .aspectFit,
+                                options: nil,
+                                resultHandler: { image, _ in
+                                    self.image = image
+                                }
+                            )
+                    }
             }
-        } else {
-            ProgressView()
-                .onAppear {
-                    PHImageManager.default()
-                        .requestImage(
-                            for: asset,
-                            targetSize: .init(width: 600, height: 600),
-                            contentMode: .aspectFit,
-                            options: nil,
-                            resultHandler: { image, _ in
-                                self.image = image
-                            }
-                        )
-                }
         }
+        .frame(width: 205, height: 256)
+        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+        .contentShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+        .overlay(
+            RoundedRectangle(cornerRadius: .cornerRadiusL).stroke(hBorderColor.primary, lineWidth: 0.5)
+        )
     }
 }
 
