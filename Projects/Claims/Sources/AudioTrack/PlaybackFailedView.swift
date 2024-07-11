@@ -32,7 +32,7 @@ struct PlaybackFailedView: View {
                 .sectionContainerStyle(.transparent)
             }
             .frame(height: 36)
-            .cornerRadius(6)
+            .cornerRadius(.cornerRadiusXS)
             .background(hHighlightColor.Yellow.fillThree)
             .padding(.bottom, .padding16)
 
