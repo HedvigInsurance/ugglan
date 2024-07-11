@@ -13,25 +13,27 @@ struct ContractsScreen: View {
 
     public var body: some View {
         CheckboxPickerScreen<TravelInsuranceContractSpecification>(
-            items: {
-                return specifications.map {
-                    (object: $0, displayName: .init(title: $0.street))
-                }
-            }(),
-            preSelectedItems: {
-                guard let preSelected = specifications.first else {
-                    return []
-                }
-                return [preSelected]
-            },
-            onSelected: { selected in
-                if let selected = selected.first?.0 {
-                    router.push(TravelCertificateRouterActions.startDate(specification: selected))
-                }
-            },
-            singleSelect: true,
-            attachToBottom: true,
-            hButtonText: L10n.generalContinueButton
+            config: .init(
+                items: {
+                    return specifications.map {
+                        (object: $0, displayName: .init(title: $0.street))
+                    }
+                }(),
+                preSelectedItems: {
+                    guard let preSelected = specifications.first else {
+                        return []
+                    }
+                    return [preSelected]
+                },
+                onSelected: { selected in
+                    if let selected = selected.first?.0 {
+                        router.push(TravelCertificateRouterActions.startDate(specification: selected))
+                    }
+                },
+                singleSelect: true,
+                attachToBottom: true,
+                hButtonText: L10n.generalContinueButton
+            )
         )
         .padding(.bottom, .padding16)
         .hFormTitle(title: .init(.standard, .title1, L10n.TravelCertificate.selectContractTitle))

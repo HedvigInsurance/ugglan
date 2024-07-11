@@ -19,8 +19,8 @@ struct TerminationSurveyScreen: View {
                                 VStack(spacing: 4) {
                                     hRadioField(
                                         id: option.id,
-                                        content: {
-                                            hText(option.title)
+                                        leftView: {
+                                            hText(option.title).asAnyView
                                         },
                                         selected: $vm.selected
                                     )
@@ -76,7 +76,6 @@ struct TerminationSurveyScreen: View {
             .sectionContainerStyle(.transparent)
         }
         .trackLoading(TerminationContractStore.self, action: .sendSurvey)
-        .hUseNewDesign
     }
 
     @ViewBuilder

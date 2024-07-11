@@ -233,7 +233,6 @@ public struct ClaimDetailView: View {
                                 dismissButton: nil
                             )
                         )
-                        .hWithoutTitle
                     }
                     .sectionContainerStyle(.transparent)
                 } else {

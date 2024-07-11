@@ -120,7 +120,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
             VStack(spacing: 8) {
                 VStack(spacing: 0) {
                     if let hFormTitle {
-                        VStack(alignment: hFormTitle.title.alignment == .leading ? .leading : .center) {
+                        VStack(alignment: hFormTitle.title.alignment == .leading ? .leading : .center, spacing: 0) {
                             hText(hFormTitle.title.text, style: hFormTitle.title.fontSize)
                             if let subTitle = hFormTitle.subTitle {
                                 hText(subTitle.text, style: subTitle.fontSize)

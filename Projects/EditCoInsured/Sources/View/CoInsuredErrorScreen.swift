@@ -54,7 +54,6 @@ public struct CoInsuredInputErrorView: View {
                     )
                 )
         )
-        .hExtraBottomPadding
     }
 }
 

@@ -8,6 +8,7 @@ import hCore
 public struct hTextView: View {
     private let placeholder: String
     private let required: Bool
+    private let titleText: String?
     private let maxCharacters: Int
     @State private var height: CGFloat = 50
     @State private var width: CGFloat = 0
@@ -18,10 +19,11 @@ public struct hTextView: View {
     @State private var popoverHeight: CGFloat = 0
     @State private var numberOfLines: Int = 0
     @State private var popoverNumberOfLines: Int = 0
-
+    @Environment(\.colorScheme) var colorSchema
     private let onContinue: (_ text: String) -> Void
     public init(
         selectedValue: String,
+        titleText: String? = nil,
         placeholder: String,
         required: Bool,
         maxCharacters: Int,
@@ -32,14 +34,26 @@ public struct hTextView: View {
         self.onContinue = onContinue
         self.required = required
         self.maxCharacters = maxCharacters
+        self.titleText = titleText
     }
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             ZStack(alignment: .topTrailing) {
-                HeroAnimationWrapper {}
+                HeroAnimationWrapper(id: "root") { Color.clear }
+
                 hSection {
-                    VStack(spacing: 4) {
+                    VStack(alignment: .trailing, spacing: 4) {
+                        if let titleText {
+                            HStack {
+                                HeroAnimationWrapper(id: "label", cornerRadius: 0) {
+                                    hText(titleText, style: .label)
+                                        .foregroundColor(hTextColor.Translucent.secondary)
+                                }
+                                .fixedSize()
+                                Spacer()
+                            }
+                        }
                         SwiftUITextView(
                             placeholder: placeholder,
                             text: $selectedValue,
@@ -52,16 +66,27 @@ public struct hTextView: View {
                         )
                         .frame(height: max(height, 48))
                         Spacer()
+                        HeroAnimationWrapper(id: "counter", cornerRadius: 0) {
+                            HStack(spacing: .padding4) {
+                                hText("\(value.count)/\(maxCharacters)", style: .label)
+                                    .foregroundColor(hTextColor.Opaque.tertiary)
+                            }
+                        }
+                        .padding(.bottom, .padding12)
+                        .fixedSize()
+                        .id(UUID().uuidString)
                     }
                 }
                 .hSectionMinimumPadding
                 .padding(.top, .padding12)
                 .sectionContainerStyle(.transparent)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
                 .frame(minHeight: 100)
                 if errorMessage != nil {
                     hCoreUIAssets.warningTriangleFilled.view
                         .foregroundColor(hSignalColor.Amber.element)
+                        .frame(width: 24, height: 24)
+
                         .padding(.top, .padding12)
                         .padding(.trailing, .padding16)
                 }
@@ -72,7 +97,7 @@ public struct hTextView: View {
                     }
             }
             if let errorMessage {
-                hText(errorMessage, style: .standardSmall).foregroundColor(hTextColor.Opaque.secondary)
+                hText(errorMessage, style: .label).foregroundColor(hTextColor.Translucent.secondary)
                     .padding(.horizontal, .padding16)
             }
         }
@@ -93,7 +118,7 @@ public struct hTextView: View {
         let cancelAction = ReferenceAction {}
 
         value = selectedValue
-        let textViewHeigth = TextView.getHeight(forText: selectedValue, and: width)
+        let textViewHeigth = TextView.getHeight(forText: selectedValue, placeholder: placeholder, and: width)
         popoverHeight = textViewHeigth + 12
         let view = FreeTextInputView(
             continueAction: continueAction,
@@ -102,9 +127,11 @@ public struct hTextView: View {
             placeholder: placeholder,
             maxCharacters: maxCharacters,
             height: $popoverHeight,
-            numberOfLines: $popoverNumberOfLines
+            numberOfLines: $popoverNumberOfLines,
+            titleText: titleText
         )
-        .colorScheme(.dark)
+        .hTextFieldError(errorMessage)
+        .colorScheme(colorSchema)
 
         let vc = hHostingController(rootView: view, contentName: "EnterCommentTextView")
         vc.modalPresentationStyle = .overFullScreen
@@ -133,81 +160,55 @@ public struct hTextView: View {
 }
 
 #Preview{
-    @State var valuee = ""
-    return VStack(spacing: 4) {
-        VStack {
-            hForm {}
-                .hFormTitle(title: .init(.standard, .heading2, "TITLE"))
-                .hFormMergeBottomViewWithContentIfNeeded
-                .hFormAttachToBottom {
-                    VStack(spacing: 20) {
-                        Rectangle().frame(height: 20)
-                        hSection {
-                            hTextView(
-                                selectedValue: valuee,
-                                placeholder: "placeholder",
-                                required: true,
-                                maxCharacters: 2000
-                            ) { value in
-                                valuee = value
-                            }
-                        }
-                        hSection {
-                            hTextView(
-                                selectedValue: valuee,
-                                placeholder: "placeholder",
-                                required: true,
-                                maxCharacters: 140
-                            ) { value in
-                                valuee = value
-                            }
-                        }
-                        hSection {
-                            hTextView(
-                                selectedValue: valuee,
-                                placeholder: "placeholder",
-                                required: true,
-                                maxCharacters: 140
-                            ) { value in
-                                valuee = value
-                            }
-                        }
-                        hSection {
-                            hTextView(
-                                selectedValue: valuee,
-                                placeholder: "placeholder",
-                                required: true,
-                                maxCharacters: 140
-                            ) { value in
-                                valuee = value
-                            }
-                        }
-                        hSection {
-                            hTextView(
-                                selectedValue: valuee,
-                                placeholder: "placeholder",
-                                required: true,
-                                maxCharacters: 140
-                            ) { value in
-                                valuee = value
-                            }
-                        }
-                        hSection {
-                            hTextView(
-                                selectedValue: valuee,
-                                placeholder: "placeholder",
-                                required: true,
-                                maxCharacters: 140
-                            ) { value in
-                                valuee = value
-                            }
-                        }
-                        Rectangle().frame(height: 20)
-                    }
 
+    struct PreviewWrapper: View {
+        @State var valuee = ""
+        @State var error: String? = nil
+
+        var body: some View {
+            VStack(spacing: 4) {
+                VStack {
+                    hForm {}
+                        .hFormTitle(title: .init(.standard, .heading2, "TITLE"))
+                        .hFormMergeBottomViewWithContentIfNeeded
+                        .hFormAttachToBottom {
+                            VStack(spacing: 20) {
+                                Rectangle().frame(height: 20)
+                                hSection {
+                                    hTextView(
+                                        selectedValue: valuee,
+                                        titleText: "TITLE LABEL",
+                                        placeholder: "Placeholder LONG ONE PLACE H O L D E R THAT NEEDS more rows",
+                                        required: true,
+                                        maxCharacters: 2000
+                                    ) { value in
+                                        valuee = value
+                                    }
+                                    .hTextFieldError(error)
+                                }
+                                .sectionContainerStyle(.transparent)
+
+                                .onAppear {
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                        withAnimation {
+                                            error = "ERROR"
+                                        }
+                                    }
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+                                        withAnimation {
+                                            error = nil
+                                        }
+                                    }
+                                }
+                                Rectangle().frame(height: 20)
+                            }
+
+                        }
                 }
+            }
         }
     }
+    return PreviewWrapper()
 }
 
 private struct FreeTextInputView: View, KeyboardReadableHeight {
@@ -215,6 +216,7 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
     fileprivate let maxCharacters: Int
     fileprivate let continueAction: ReferenceAction
     fileprivate let cancelAction: ReferenceAction
+    fileprivate let titleText: String?
     @Binding fileprivate var value: String
     @Binding private var height: CGFloat
     @State var showButtons = false
@@ -223,7 +225,8 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
     @Binding var numberOfLines: Int
     @State private var inEdit: Bool = false
     let initDate = Date()
-    @State var showCounter = true
+    @Environment(\.hTextFieldError) var errorMessage
+    @Environment(\.colorScheme) var colorScheme
     public init(
         continueAction: ReferenceAction,
         cancelAction: ReferenceAction,
@@ -231,7 +234,8 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
         placeholder: String,
         maxCharacters: Int,
         height: Binding<CGFloat>,
-        numberOfLines: Binding<Int>
+        numberOfLines: Binding<Int>,
+        titleText: String?
     ) {
         self.continueAction = continueAction
         self.cancelAction = cancelAction
@@ -240,29 +244,40 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
         self.maxCharacters = maxCharacters
         self._height = height
         self._numberOfLines = numberOfLines
+        self.titleText = titleText
     }
 
     public var body: some View {
         ZStack(alignment: .top) {
             Color.clear.ignoresSafeArea()
             VStack(spacing: 8) {
-                ZStack {
-                    HeroAnimationWrapper {
-                        hSection {
-                            VStack {
+                ZStack(alignment: .topTrailing) {
+                    HeroAnimationWrapper(id: "root") { Color.clear }
+                    hSection {
+                        HStack {
+                            Spacer()
+                            VStack(alignment: .trailing) {
                                 Spacer()
-                                if showCounter {
-                                    hText("\(value.count)/\(maxCharacters)", style: .standardSmall)
-                                        .foregroundColor(getTextColor)
-                                        .frame(maxWidth: .infinity, alignment: .trailing)
+                                HeroAnimationWrapper(id: "counter", cornerRadius: 0) {
+                                    HStack(spacing: .padding4) {
+                                        Spacer()
+                                        if value.count > maxCharacters {
+                                            hCoreUIAssets.warningTriangleFilled.view
+                                                .resizable()
+                                                .frame(width: 20, height: 20)
+                                                .foregroundColor(hSignalColor.Amber.element)
+                                        }
+                                        hText("\(value.count)/\(maxCharacters)", style: .label)
+                                            .foregroundColor(getTextColor)
+                                    }
                                 }
+                                .id(UUID().uuidString)
+                                .fixedSize()
                             }
-                            .padding(.vertical, .padding12)
                         }
-                        .colorScheme(.light)
+                        .padding(.vertical, .padding12)
                     }
-                    .id(UUID().uuidString)
-                    .colorScheme(.light)
+                    .sectionContainerStyle(.transparent)
                     hSection {
                         VStack {
                             SwiftUITextView(
@@ -277,15 +292,40 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
                             )
                             .frame(maxHeight: height)
                             Spacer()
-                            hText("\(value.count)/\(maxCharacters)", style: .standardSmall)
-                                .foregroundColor(getTextColor)
-                                .frame(maxWidth: .infinity, alignment: .trailing)
-
                         }
                         .padding(.vertical, .padding12)
                     }
-                    .colorScheme(.light)
                     .sectionContainerStyle(.transparent)
+                    if titleText != nil {
+                        HeroAnimationWrapper(id: "label", cornerRadius: 12) {
+                            Button(
+                                action: {
+                                    cancelAction.execute()
+                                },
+                                label: {
+                                    hCoreUIAssets.close.view
+                                        .resizable()
+                                        .frame(width: 24, height: 24)
+                                        .padding(12)
+                                        .foregroundColor(hFillColor.Opaque.primary)
+                                }
+                            )
+                        }
+                        .fixedSize()
+                    } else {
+                        Button(
+                            action: {
+                                cancelAction.execute()
+                            },
+                            label: {
+                                hCoreUIAssets.close.view
+                                    .resizable()
+                                    .frame(width: 24, height: 24)
+                                    .padding(12)
+                                    .foregroundColor(hFillColor.Opaque.primary)
+                            }
+                        )
+                    }
 
                 }
                 .padding(.horizontal, .padding16)
@@ -306,6 +346,7 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
                         }
                         .padding(.bottom, .padding8)
                     }
+                    .colorScheme(.dark)
                     .sectionContainerStyle(.transparent)
                 }
                 .transition(.move(edge: .bottom))
@@ -313,7 +354,6 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
             .frame(height: UIScreen.main.bounds.height - safeAreaInsets.top - safeAreaInsets.bottom - keyboard)
             .padding(.horizontal, -8)
         }
-        .hUseNewDesign
         .onReceive(keyboardHeightPublisher) { newHeight in
             if let newHeight {
                 keyboard = newHeight - 44 + 12
@@ -328,11 +368,7 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
                 }
             }
         }
-        .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                showCounter = false
-            }
-        }
+
     }
 
     @hColorBuilder
@@ -343,6 +379,7 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
             hSignalColor.Red.element
         }
     }
+
 }
 
 private struct SwiftUITextView: UIViewRepresentable {
@@ -355,6 +392,7 @@ private struct SwiftUITextView: UIViewRepresentable {
     @Binding var numberOfLines: Int
     @Binding var inEdit: Bool
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.hTextFieldError) var errorMessage
     internal func makeUIView(context: Context) -> UIView {
         let view = UIView()
         view.backgroundColor = .clear
@@ -369,6 +407,7 @@ private struct SwiftUITextView: UIViewRepresentable {
             inEdit: $inEdit
         )
         textView.setText(text: text)
+        textView.colorSchema = colorScheme
         view.addSubview(textView)
         textView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(-4)
@@ -390,25 +429,32 @@ private struct SwiftUITextView: UIViewRepresentable {
                 textView.updateHeight()
             }
             textView.colorSchema = colorScheme
+            textView.errorMessage = errorMessage
         }
         uiView.backgroundColor = hSurfaceColor.Opaque.primary.colorFor(.init(.init(colorScheme))!, .base).color
             .uiColor()
 
     }
+
 }
 
 private class TextView: UITextView, UITextViewDelegate {
-    private let placeholder: String
     private let disabled: Bool
     @Binding private var inputText: String
     @Binding private var height: CGFloat
     @Binding private var width: CGFloat
     @Binding private var numberOfLines: Int
     @Binding private var inEdit: Bool
+    private let placeholderView = UITextView()
+    var errorMessage: String? {
+        didSet {
+            layoutSubviews()
+        }
+    }
     var colorSchema: ColorScheme = .light {
         didSet {
             self.textColor = getTextColor()
-
+            self.placeholderView.textColor = getPlaceholderColor()
         }
     }
     init(
@@ -421,7 +467,6 @@ private class TextView: UITextView, UITextViewDelegate {
         numberOfLines: Binding<Int>,
         inEdit: Binding<Bool>
     ) {
-        self.placeholder = placeholder
         self._inputText = inputText
         self.disabled = disabled
         self._height = height
@@ -440,10 +485,17 @@ private class TextView: UITextView, UITextViewDelegate {
         self.textContainer.maximumNumberOfLines = disabled ? 3 : 0
         self.textContainer.lineBreakMode = .byTruncatingTail
         self.keyboardAppearance = .dark
+        self.addSubview(placeholderView)
+        placeholderView.textColor = getPlaceholderColor()
+        placeholderView.isUserInteractionEnabled = false
+        placeholderView.backgroundColor = .clear
+        placeholderView.textContainerInset = .init(horizontalInset: 0, verticalInset: 0)
+        placeholderView.text = placeholder
+        placeholderView.font = Fonts.fontFor(style: .body1)
+        placeholderView.isHidden = inputText.wrappedValue != ""
         if becomeFirstResponder {
             self.becomeFirstResponder()
         }
-
         updateHeight()
     }
 
@@ -457,11 +509,6 @@ private class TextView: UITextView, UITextViewDelegate {
 
     func textViewDidBeginEditing(_ textView: UITextView) {
         inEdit = true
-        let text = textView.text.trimmingCharacters(in: .whitespacesAndNewlines)
-        if text == placeholder {
-            textView.text = nil
-            textView.textColor = getTextColor()
-        }
     }
 
     func textViewDidChange(_ textView: UITextView) {
@@ -471,55 +518,67 @@ private class TextView: UITextView, UITextViewDelegate {
     }
 
     func setText(text: String) {
-        let text = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        if text.isEmpty {
-            self.text = placeholder
-        } else {
-            self.text = text
-        }
+        self.text = text
         self.textColor = getTextColor()
+        self.placeholderView.isHidden = text != ""
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {
         inEdit = false
         let text = textView.text.trimmingCharacters(in: .whitespacesAndNewlines)
         inputText = text
-        if text.isEmpty {
-            textView.text = placeholder
-            textView.textColor = getTextColor()
-        }
     }
 
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         guard text.rangeOfCharacter(from: CharacterSet.newlines) == nil else {
             return false
         }
-
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) { [weak self] in
+            self?.updateHeight()
+            self?.placeholderView.isHidden = self?.text != ""
+        }
         return true
     }
 
     private func getTextColor() -> UIColor {
-        if text.isEmpty || placeholder == text {
-            return hTextColor.Opaque.tertiary.colorFor(.init(.init(colorSchema))!, .base).color.uiColor()
-        } else {
-            if disabled {
-                return hTextColor.Translucent.secondary.colorFor(.init(.init(colorSchema))!, .base).color.uiColor()
-            }
-            return hTextColor.Opaque.primary.colorFor(.init(.init(colorSchema))!, .base).color.uiColor()
+        if disabled {
+            return hTextColor.Translucent.secondary.colorFor(.init(.init(colorSchema))!, .base).color.uiColor()
         }
+        return hTextColor.Opaque.primary.colorFor(.init(.init(colorSchema))!, .base).color.uiColor()
+    }
+
+    private func getPlaceholderColor() -> UIColor {
+        return hTextColor.Opaque.tertiary.colorFor(.init(.init(colorSchema))!, .base).color.uiColor()
     }
 
     func updateHeight() {
         DispatchQueue.main.async { [weak self] in guard let self = self else { return }
             withAnimation {
-                let newSize = self.sizeThatFits(.init(width: self.frame.width, height: .infinity))
+
                 if self.frame.width > 0 {
-                    self.height = newSize.height + 12
+                    let contentSize = self.sizeThatFits(.init(width: self.frame.width, height: .infinity)).height
+                    let labelHeight = self.placeholderView
+                        .sizeThatFits(.init(width: self.frame.width, height: .infinity)).height
+                    let height = max(contentSize, labelHeight)
+                    self.height = height + 12
                     self.numberOfLines = self.currentNumberOfLines()
                     self.width = self.frame.width
                 }
             }
         }
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        let frameWidth = self.frame.width
+        let labelSize = self.placeholderView.sizeThatFits(.init(width: self.frame.width, height: .infinity))
+        self.placeholderView.frame = .init(x: 0, y: 0, width: frameWidth, height: labelSize.height)
+        if inEdit || errorMessage != nil {
+            let pathToExclude = UIBezierPath(rect: .init(x: frameWidth - 25, y: 0, width: 25, height: 25))
+            self.textContainer.exclusionPaths = [pathToExclude]
+            placeholderView.textContainer.exclusionPaths = [pathToExclude]
+        }
+
     }
 }
 
@@ -555,9 +614,9 @@ extension UITextView {
 }
 
 extension TextView {
-    fileprivate static func getHeight(forText text: String, and width: CGFloat) -> CGFloat {
+    fileprivate static func getHeight(forText text: String, placeholder: String, and width: CGFloat) -> CGFloat {
         let textView = TextView(
-            placeholder: "",
+            placeholder: placeholder,
             inputText: .constant(text),
             height: .constant(0),
             width: .constant(0),
@@ -566,6 +625,8 @@ extension TextView {
             numberOfLines: .constant(0),
             inEdit: .constant(false)
         )
-        return textView.sizeThatFits(.init(width: width, height: .infinity)).height
+        let textViewHeight = textView.sizeThatFits(.init(width: width, height: .infinity)).height
+        let labelHeight = textView.placeholderView.sizeThatFits(.init(width: width, height: .infinity)).height
+        return max(textViewHeight, labelHeight)
     }
 }

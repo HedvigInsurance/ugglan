@@ -71,20 +71,15 @@ struct MovingFlowAddExtraBuildingView: View {
     }
 
     private var connectedToWater: some View {
-        hSection {
-            Toggle(isOn: $vm.connectedToWater.animation(.default)) {
-                VStack(alignment: .leading, spacing: 0) {
-                    hText(L10n.changeAddressExtraBuildingsWaterInputLabel, style: .heading2)
-                }
+        CheckboxToggleView(
+            title: L10n.changeAddressExtraBuildingsWaterInputLabel,
+            isOn: $vm.connectedToWater.animation(.default)
+        )
+        .hFieldSize(.large)
+        .onTapGesture {
+            withAnimation {
+                vm.connectedToWater.toggle()
             }
-            .toggleStyle(ChecboxToggleStyle(.center, spacing: 0))
-            .contentShape(Rectangle())
-            .onTapGesture {
-                withAnimation {
-                    vm.connectedToWater.toggle()
-                }
-            }
-            .padding(.vertical, 21)
         }
     }
 

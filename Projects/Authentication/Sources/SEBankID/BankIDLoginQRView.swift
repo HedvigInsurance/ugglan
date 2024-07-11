@@ -5,7 +5,7 @@ import hCoreUI
 import hGraphQL
 
 public struct BankIDLoginQRView: View {
-    @StateObject var vm = BandIDViewModel()
+    @StateObject var vm = BankIDViewModel()
     @EnvironmentObject var router: Router
     @EnvironmentObject var otpVM: OTPState
 
@@ -109,7 +109,7 @@ public struct BankIDLoginQRView: View {
     }
 }
 
-class BandIDViewModel: ObservableObject {
+class BankIDViewModel: ObservableObject {
     @Published var showAlert: Bool = false
     @Published var token: String?
     @Published var image: UIImage?
