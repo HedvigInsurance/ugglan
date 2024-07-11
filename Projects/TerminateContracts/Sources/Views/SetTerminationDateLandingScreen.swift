@@ -103,20 +103,14 @@ struct SetTerminationDateLandingScreen: View {
                 }
                 .sectionContainerStyle(.transparent)
             } else {
-                hSection {
-                    hFloatingField(
-                        value: vm.terminationDate?.displayDateDDMMMYYYYFormat
-                            ?? L10n.terminationFlowDateFieldPlaceholder,
-                        placeholder: L10n.terminationFlowDateFieldText,
-                        onTap: {
-                            terminationNavigationVm.isDatePickerPresented = true
-                        }
-                    )
-                    .hFieldTrailingView {
-                        hCoreUIAssets.chevronDownSmall.view
-                            .frame(width: 24, height: 24)
+                DropdownView(
+                    value: vm.terminationDate?.displayDateDDMMMYYYYFormat
+                        ?? L10n.terminationFlowDateFieldPlaceholder,
+                    placeHolder: L10n.terminationFlowDateFieldText,
+                    onTap: {
+                        terminationNavigationVm.isDatePickerPresented = true
                     }
-                }
+                )
             }
         }
     }
