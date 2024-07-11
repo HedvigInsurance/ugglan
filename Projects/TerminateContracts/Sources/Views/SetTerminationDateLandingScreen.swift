@@ -64,12 +64,13 @@ struct SetTerminationDateLandingScreen: View {
         if let config = store.state.config {
             hSection {
                 hRow {
-                    VStack(alignment: .leading) {
+                    VStack(alignment: .leading, spacing: 0) {
                         hText(config.contractDisplayName)
-                        hText(config.contractExposureName, style: .standardSmall)
+                        hText(config.contractExposureName, style: .label)
                             .foregroundColor(hTextColor.Translucent.secondary)
                     }
                 }
+                .verticalPadding(10.5)
             }
         }
     }
@@ -90,7 +91,6 @@ struct SetTerminationDateLandingScreen: View {
                             hCoreUIAssets.lock.view
                                 .frame(width: 24, height: 24)
                         }
-                        .hFontSize(.body1)
                         .hFieldLockedState
                         .hWithoutDisabledColor
                         .disabled(true)
@@ -104,22 +104,15 @@ struct SetTerminationDateLandingScreen: View {
                 }
                 .sectionContainerStyle(.transparent)
             } else {
-                hSection {
-                    hFloatingField(
-                        value: vm.terminationDate?.displayDateDDMMMYYYYFormat
-                            ?? L10n.terminationFlowDateFieldPlaceholder,
-                        placeholder: L10n.terminationFlowDateFieldText,
-                        onTap: {
-                            terminationNavigationVm.isDatePickerPresented = true
-                        }
-                    )
-                    .hFontSize(.body1)
-                    .hFieldTrailingView {
-                        hCoreUIAssets.chevronDownSmall.view
-                            .frame(width: 24, height: 24)
+                DropdownView(
+                    value: vm.terminationDate?.displayDateDDMMMYYYYFormat
+                        ?? L10n.terminationFlowDateFieldPlaceholder,
+                    placeHolder: L10n.terminationFlowDateFieldText,
+                    onTap: {
+                        terminationNavigationVm.isDatePickerPresented = true
                     }
-                    .hUseNewDesign
-                }
+                )
+                .hFieldSize(.medium)
             }
         }
     }

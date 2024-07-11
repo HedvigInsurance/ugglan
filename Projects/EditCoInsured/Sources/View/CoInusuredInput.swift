@@ -379,31 +379,21 @@ struct CoInusuredInput: View {
     }
 
     var toggleField: some View {
-        hSection {
-            Toggle(isOn: $vm.noSSN.animation(.default)) {
-                VStack(alignment: .leading, spacing: 0) {
-                    hText(L10n.contractAddCoinsuredNoSsn, style: .body1)
-                        .foregroundColor(hTextColor.Opaque.secondary)
-                }
-            }
-            .toggleStyle(ChecboxToggleStyle(.center, spacing: 0))
-            .contentShape(Rectangle())
-            .onChange(
-                of: vm.noSSN,
-                perform: { value in
-                    vm.SSN = ""
-                    if !value {
-                        withAnimation {
-                            vm.showInfoForMissingSSN = false
-                        }
+        CheckboxToggleView(
+            title: L10n.contractAddCoinsuredNoSsn,
+            isOn: $vm.noSSN
+        )
+        .onChange(
+            of: vm.noSSN,
+            perform: { value in
+                vm.SSN = ""
+                if !value {
+                    withAnimation {
+                        vm.showInfoForMissingSSN = false
                     }
                 }
-            )
-            .padding(.vertical, .padding12)
-            .padding(.horizontal, .padding16)
-        }
-        .frame(height: 56)
-        .sectionContainerStyle(.opaque)
+            }
+        )
     }
 
     var buttonIsDisabled: Bool {

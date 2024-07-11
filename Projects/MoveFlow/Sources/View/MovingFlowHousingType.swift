@@ -23,8 +23,9 @@ public struct MovingFlowHousingTypeView: View {
                                 ForEach(HousingType.allCases, id: \.self) { type in
                                     hRadioField(
                                         id: type.rawValue,
-                                        content: {
+                                        leftView: {
                                             hText(type.title, style: .heading2)
+                                                .asAnyView
                                         },
                                         selected: $vm.selectedHousingType
                                     )
@@ -41,6 +42,7 @@ public struct MovingFlowHousingTypeView: View {
                     }
                     .sectionContainerStyle(.transparent)
                 }
+                .hDisableScroll
         } onLoading: {
             DotsActivityIndicator(.standard).useDarkColor
         } onError: { error in
@@ -58,7 +60,6 @@ public struct MovingFlowHousingTypeView: View {
                         dismissButton: nil
                     )
                 )
-                .hWithoutTitle
                 VStack {
                     Spacer()
                     hButton.LargeButton(type: .ghost) {

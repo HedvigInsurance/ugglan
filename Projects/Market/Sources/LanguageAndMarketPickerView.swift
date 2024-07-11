@@ -79,7 +79,7 @@ public struct LanguageAndMarketPickerView: View {
                 ForEach(Market.activatedMarkets, id: \.title) { market in
                     hRadioField(
                         id: market.rawValue,
-                        content: {
+                        leftView: {
                             HStack(spacing: 16) {
                                 Image(uiImage: market.icon)
                                     .resizable()
@@ -87,6 +87,7 @@ public struct LanguageAndMarketPickerView: View {
                                 hText(market.title, style: .title3)
                                     .foregroundColor(hTextColor.Opaque.primary)
                             }
+                            .asAnyView
                         },
                         selected: $vm.selectedMarketCode
                     )
@@ -101,7 +102,7 @@ public struct LanguageAndMarketPickerView: View {
                 ForEach(vm.selectedMarket.languages, id: \.lprojCode) { locale in
                     hRadioField(
                         id: locale.rawValue,
-                        content: {
+                        leftView: {
                             HStack(spacing: 16) {
                                 Image(uiImage: locale.icon)
                                     .resizable()
@@ -109,6 +110,7 @@ public struct LanguageAndMarketPickerView: View {
                                 hText(locale.displayName, style: .title3)
                                     .foregroundColor(hTextColor.Opaque.primary)
                             }
+                            .asAnyView
                         },
                         selected: $vm.selectedLocaleCode
                     )

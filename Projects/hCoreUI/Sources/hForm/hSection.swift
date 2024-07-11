@@ -213,6 +213,7 @@ public enum hSectionContainerStyle {
     case caution
     case alert
     case black
+    case animate
 }
 
 private struct EnvironmentHSectionContainerStyle: EnvironmentKey {
@@ -227,7 +228,6 @@ extension EnvironmentValues {
 }
 
 struct hSectionContainerStyleModifier: ViewModifier {
-    @Environment(\.hUseNewDesign) var useNewDesign
     @Environment(\.hSectionContainerStyle) var containerStyle
 
     public func body(content: Content) -> some View {
@@ -238,7 +238,7 @@ struct hSectionContainerStyleModifier: ViewModifier {
             content.background(
                 hSurfaceColor.Opaque.primary
             )
-            .clipShape(Squircle.default())
+            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
         case .caution:
             content.background(
                 hSignalColor.Amber.element
@@ -250,7 +250,7 @@ struct hSectionContainerStyleModifier: ViewModifier {
             content.background(
                 hSignalColor.Amber.fill
             )
-            .clipShape(Squircle.default())
+            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
         case .black:
             content.background(
                 hColorScheme(
@@ -258,7 +258,12 @@ struct hSectionContainerStyleModifier: ViewModifier {
                     dark: hSurfaceColor.Opaque.primary
                 )
             )
-            .clipShape(Squircle.default())
+            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+        case .animate:
+            content.background(
+                hSignalColor.Green.fill
+            )
+            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
         }
     }
 }
@@ -298,6 +303,23 @@ extension EnvironmentValues {
 extension View {
     public var hSectionMinimumPadding: some View {
         self.environment(\.minimumPadding, true)
+    }
+}
+
+private struct EnvironmentHEmbeddedHeader: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    public var hEmbeddedHeader: Bool {
+        get { self[EnvironmentHEmbeddedHeader.self] }
+        set { self[EnvironmentHEmbeddedHeader.self] = newValue }
+    }
+}
+
+extension View {
+    public var hEmbeddedHeader: some View {
+        self.environment(\.hEmbeddedHeader, true)
     }
 }
 
@@ -350,6 +372,7 @@ struct hSectionContainer<Content: View>: View {
 public struct hSection<Header: View, Content: View, Footer: View>: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.minimumPadding) var minimumPadding
+    @Environment(\.hEmbeddedHeader) var embeddedHeader
 
     var header: Header?
     var content: Content
@@ -377,7 +400,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            if header != nil {
+            if header != nil && !embeddedHeader {
                 VStack(alignment: .leading) {
                     header
                         .environment(\.defaultHTextStyle, .body1)
@@ -386,6 +409,13 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
                 .padding(.bottom, .padding8)
             }
             hSectionContainer {
+                if header != nil && embeddedHeader {
+                    header
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, .padding16)
+                        .padding(.top, .padding12)
+                        .padding(.bottom, -8)
+                }
                 content
             }
             if footer != nil {

@@ -93,6 +93,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 
         return shouldShowNotification ? [.badge, .banner, .sound] : []
     }
+
 }
 
 enum PushNotificationType: String {

@@ -13,46 +13,48 @@ struct WhoIsTravelingScreen: View {
 
     var body: some View {
         CheckboxPickerScreen<CoInsuredModel>(
-            items: {
-                return vm.coInsuredModelData.compactMap({
-                    (object: $0, displayName: CheckboxItemModel(title: $0.fullName ?? ""))
-                })
-            }(),
-            preSelectedItems: {
-                if let first = vm.coInsuredModelData.first {
-                    return [first]
-                }
-                return []
-            },
-            onSelected: { selectedCoInsured in
-                let listOfIncludedTravellers = selectedCoInsured.map {
-                    PolicyCoinsuredPersonModel(
-                        fullName: ($0.0?.fullName ?? $0.0?.firstName) ?? "",
-                        personalNumber: $0.0?.SSN,
-                        birthDate: $0.0?.birthDate
-                    )
-                }
-                vm.setCoInsured(data: listOfIncludedTravellers)
-                validateAndSubmit()
-            },
-            attachToBottom: true,
-            hButtonText: L10n.General.submit,
-            infoCard: vm.hasMissingCoInsuredData
-                ? .init(
-                    text: L10n.TravelCertificate.missingCoinsuredInfo,
-                    buttons: [
-                        .init(
-                            buttonTitle: L10n.TravelCertificate.missingCoinsuredButton,
-                            buttonAction: {
-                                router.dismiss()
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                                    travelCertificateNavigationVm.editCoInsuredVm.start()
-                                }
-                            }
+            config: .init(
+                items: {
+                    return vm.coInsuredModelData.compactMap({
+                        (object: $0, displayName: ItemModel(title: $0.fullName ?? ""))
+                    })
+                }(),
+                preSelectedItems: {
+                    if let first = vm.coInsuredModelData.first {
+                        return [first]
+                    }
+                    return []
+                },
+                onSelected: { selectedCoInsured in
+                    let listOfIncludedTravellers = selectedCoInsured.map {
+                        PolicyCoinsuredPersonModel(
+                            fullName: ($0.0?.fullName ?? $0.0?.firstName) ?? "",
+                            personalNumber: $0.0?.SSN,
+                            birthDate: $0.0?.birthDate
                         )
-                    ],
-                    placement: .bottom
-                ) : nil
+                    }
+                    vm.setCoInsured(data: listOfIncludedTravellers)
+                    validateAndSubmit()
+                },
+                attachToBottom: true,
+                hButtonText: L10n.General.submit,
+                infoCard: vm.hasMissingCoInsuredData
+                    ? .init(
+                        text: L10n.TravelCertificate.missingCoinsuredInfo,
+                        buttons: [
+                            .init(
+                                buttonTitle: L10n.TravelCertificate.missingCoinsuredButton,
+                                buttonAction: {
+                                    router.dismiss()
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                                        travelCertificateNavigationVm.editCoInsuredVm.start()
+                                    }
+                                }
+                            )
+                        ],
+                        placement: .bottom
+                    ) : nil
+            )
         )
         .padding(.bottom, .padding16)
         .hFormTitle(title: .init(.standard, .title1, L10n.TravelCertificate.whoIsTraveling))

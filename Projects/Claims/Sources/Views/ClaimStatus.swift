@@ -32,25 +32,36 @@ struct ClaimStatus: View {
 
     var body: some View {
         CardComponent(
-            onSelected: enableTap
-                ? {
-                    if enableTap {
-                        tapAction(claim)
-                    } else {
-                    }
-                } : nil,
+            onSelected: nil,
             mainContent: ClaimPills(claim: claim),
             title: claim.claimType,
-            subTitle: claim.productVariant?.displayName,
+            subTitle: getSubTitle,
             bottomComponent: {
-                VStack {
-                    HStack(spacing: 6) {
+                VStack(spacing: .padding16) {
+                    HStack(spacing: .padding6) {
                         ClaimStatusBar(status: claim.status, outcome: claim.outcome)
+                    }
+                    if enableTap {
+                        hButton.MediumButton(
+                            type: .secondary
+                        ) {
+                            tapAction(claim)
+                        } content: {
+                            hText(L10n.ClaimStatus.ClaimDetails.button)
+                        }
                     }
                     extendedBottomView
                 }
             }
         )
+    }
+
+    var getSubTitle: String? {
+        if let submittedAt = claim.submittedAt {
+            return L10n.ClaimStatus.ClaimDetails.submitted + " "
+                + (submittedAt.localDateToIso8601Date?.displayDateMMMMDDYYYYFormat ?? "")
+        }
+        return nil
     }
 }
 
@@ -60,46 +71,48 @@ struct ClaimPills: View {
     var body: some View {
         HStack {
             if claim.status == .reopened {
-                hPillFill(
+                hPill(
                     text: claim.status.title,
-                    textColor: hSignalColor.Amber.text,
-                    backgroundColor: hSignalColor.Amber.highLight
+                    color: .amber,
+                    colorLevel: .three
                 )
+                .hFieldSize(.small)
             }
-            hPillFill(
+            hPill(
                 text: claim.outcome.text.capitalized,
-                textColor: claim.outcome.textColor,
-                backgroundColor: claim.outcome.backgroundColor
+                color: claim.outcome.color,
+                colorLevel: claim.outcome.colorLevel
             )
+            .hFieldSize(.small)
+
             if let payout = claim.payoutAmount {
-                hPillFill(
+                hPill(
                     text: payout.formattedAmount,
-                    textColor: hSignalColor.Blue.text,
-                    backgroundColor: hSignalColor.Blue.highLight
+                    color: .blue,
+                    colorLevel: .two
                 )
+                .hFieldSize(.small)
             }
         }
     }
 }
 
 extension ClaimModel.ClaimOutcome {
-    @hColorBuilder
-    var textColor: some hColor {
+    var color: PillColor {
         switch self {
-        case .paid, .notCompensated, .notCovered:
-            hTextColor.Opaque.negative
-        case .none:
-            hTextColor.Opaque.primary
+        case .none, .notCompensated, .notCovered, .paid, .closed:
+            .grey(translucent: true)
+        case .missingReceipt:
+            .amber
         }
     }
 
-    @hColorBuilder
-    var backgroundColor: some hColor {
+    var colorLevel: PillColor.PillColorLevel {
         switch self {
-        case .none:
-            hSurfaceColor.Translucent.secondary
-        case .paid, .notCompensated, .notCovered:
-            hBackgroundColor.negative
+        case .none, .notCompensated, .notCovered:
+            .two
+        case .paid, .closed, .missingReceipt:
+            .three
         }
     }
 }
@@ -110,7 +123,7 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
             id: "1",
             status: .beingHandled,
             outcome: .none,
-            submittedAt: "2023-10-10",
+            submittedAt: "2023-06-10",
             signedAudioURL: "",
             memberFreeText: nil,
             payoutAmount: nil,
@@ -131,7 +144,6 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
-                .colorScheme(.dark)
 
         }
         .padding(20)
@@ -165,7 +177,6 @@ struct ClaimReopened_Previews: PreviewProvider {
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
-                .colorScheme(.dark)
 
         }
         .padding(20)
@@ -199,8 +210,6 @@ struct ClaimPaid_Previews: PreviewProvider {
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
-                .colorScheme(.dark)
-
         }
         .padding(20)
     }
@@ -233,14 +242,13 @@ struct ClaimNotCompensated_Previews: PreviewProvider {
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
-                .colorScheme(.dark)
 
         }
         .padding(20)
     }
 }
 
-struct ClaimNotCocered_Previews: PreviewProvider {
+struct ClaimNotCovered_Previews: PreviewProvider {
     static var previews: some View {
         let data = ClaimModel(
             id: "1",
@@ -267,7 +275,39 @@ struct ClaimNotCocered_Previews: PreviewProvider {
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
-                .colorScheme(.dark)
+
+        }
+        .padding(20)
+    }
+}
+
+struct ClaimClosed_Previews: PreviewProvider {
+    static var previews: some View {
+        let data = ClaimModel(
+            id: "1",
+            status: .closed,
+            outcome: .closed,
+            submittedAt: "2023-10-10",
+            signedAudioURL: "",
+            memberFreeText: nil,
+            payoutAmount: nil,
+            targetFileUploadUri: "",
+            claimType: "Broken item",
+            incidentDate: "2024-02-15",
+            productVariant: nil,
+            conversation: .init(
+                id: "convId",
+                type: .claim,
+                title: "Title",
+                subtitle: "SUBTITLE",
+                newestMessage: nil,
+                createdAt: nil,
+                statusMessage: nil,
+                isConversationOpen: true
+            )
+        )
+        return VStack(spacing: 20) {
+            ClaimStatus(claim: data, enableTap: true)
 
         }
         .padding(20)

@@ -14,26 +14,28 @@ struct SelectContractScreen: View {
             }
         ) { contractStep in
             CheckboxPickerScreen<FlowClaimContractSelectOptionModel>(
-                items: {
-                    return contractStep?.availableContractOptions
-                        .compactMap({ (object: $0, displayName: .init(title: $0.displayName)) }) ?? []
-                }(),
-                preSelectedItems: {
-                    if let preselected = contractStep?.availableContractOptions
-                        .first(where: { $0.id == contractStep?.selectedContractId })
-                    {
-                        return [preselected]
-                    }
-                    return []
-                },
-                onSelected: { selectedContract in
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    if let object = selectedContract.first?.0 {
-                        store.send(.contractSelectRequest(contractId: object.id))
-                    }
-                },
-                singleSelect: true,
-                attachToBottom: true
+                config: .init(
+                    items: {
+                        return contractStep?.availableContractOptions
+                            .compactMap({ (object: $0, displayName: .init(title: $0.displayName)) }) ?? []
+                    }(),
+                    preSelectedItems: {
+                        if let preselected = contractStep?.availableContractOptions
+                            .first(where: { $0.id == contractStep?.selectedContractId })
+                        {
+                            return [preselected]
+                        }
+                        return []
+                    },
+                    onSelected: { selectedContract in
+                        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                        if let object = selectedContract.first?.0 {
+                            store.send(.contractSelectRequest(contractId: object.id))
+                        }
+                    },
+                    singleSelect: true,
+                    attachToBottom: true
+                )
             )
             .padding(.bottom, .padding16)
             .hFormTitle(title: .init(.small, .title1, L10n.claimTriagingAboutTitile))

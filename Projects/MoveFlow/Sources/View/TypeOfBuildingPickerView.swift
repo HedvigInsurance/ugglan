@@ -16,30 +16,32 @@ struct TypeOfBuildingPickerView: View {
 
     var body: some View {
         CheckboxPickerScreen<ExtraBuildingType>(
-            items: {
-                let store: MoveFlowStore = globalPresentableStoreContainer.get()
-                return store.state.movingFlowModel?.extraBuildingTypes
-                    .compactMap({ (object: $0, displayName: .init(title: $0.translatedValue)) }) ?? []
-            }(),
-            preSelectedItems: {
-                if let currentlySelected {
-                    return [currentlySelected]
-                }
-                return []
-            },
-            onSelected: { selected in
-                let store: MoveFlowStore = globalPresentableStoreContainer.get()
-                if let selected = selected.first {
-                    isBuildingTypePickerPresented = nil
-                    if let object = selected.0 {
-                        store.send(.setExtraBuildingType(with: object))
+            config: .init(
+                items: {
+                    let store: MoveFlowStore = globalPresentableStoreContainer.get()
+                    return store.state.movingFlowModel?.extraBuildingTypes
+                        .compactMap({ (object: $0, displayName: .init(title: $0.translatedValue)) }) ?? []
+                }(),
+                preSelectedItems: {
+                    if let currentlySelected {
+                        return [currentlySelected]
                     }
-                }
-            },
-            onCancel: {
-                isBuildingTypePickerPresented = nil
-            },
-            singleSelect: true
+                    return []
+                },
+                onSelected: { selected in
+                    let store: MoveFlowStore = globalPresentableStoreContainer.get()
+                    if let selected = selected.first {
+                        isBuildingTypePickerPresented = nil
+                        if let object = selected.0 {
+                            store.send(.setExtraBuildingType(with: object))
+                        }
+                    }
+                },
+                onCancel: {
+                    isBuildingTypePickerPresented = nil
+                },
+                singleSelect: true
+            )
         )
     }
 }

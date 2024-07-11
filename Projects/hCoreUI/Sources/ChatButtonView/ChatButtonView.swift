@@ -24,9 +24,15 @@ public enum ToolbarOptionType: Codable, Equatable {
         case .firstVet:
             return hCoreUIAssets.firstVetQuickNav.image
         case .chat:
-            return hCoreUIAssets.inbox.image
+            if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
+                return hCoreUIAssets.inbox.image
+            }
+            return hCoreUIAssets.chatQuickNav.image
         case .chatNotification:
-            return hCoreUIAssets.inboxNotification.image
+            if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
+                return hCoreUIAssets.inboxNotification.image
+            }
+            return hCoreUIAssets.chatQuickNavNotification.image
         }
     }
 

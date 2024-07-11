@@ -74,9 +74,7 @@ public struct ContractsNavigation<Content: View>: View {
                 updateDate: insuranceUpdate.upcomingChangedAgreement?.activeFrom ?? "",
                 upcomingAgreement: insuranceUpdate.upcomingChangedAgreement
             )
-            .onDisappear {
-                contractsNavigationVm.insuranceUpdate = nil
-            }
+            .environmentObject(contractsNavigationVm)
         }
         .handleTerminateInsurance(vm: contractsNavigationVm.terminateInsuranceVm) { dismissType in
             redirectAction(.termination(action: dismissType))

@@ -13,7 +13,6 @@ struct EmailPreferencesConfirmView: View {
             title: vm.isUnsubscribed ? L10n.SettingsScreen.subscribeTitle : L10n.General.areYouSure,
             description: vm.isUnsubscribed
                 ? L10n.SettingsScreen.subscribeDescription : L10n.SettingsScreen.unsubscribeDescription,
-            icon: vm.isUnsubscribed ? .circle : .triangle,
             buttons: .init(
                 actionButtonAttachedToBottom:
                     .init(
@@ -38,7 +37,6 @@ struct EmailPreferencesConfirmView: View {
         .hExtraTopPadding
         .hDisableScroll
         .hButtonIsLoading(vm.isLoading)
-        .hUseNewDesign
     }
 }
 

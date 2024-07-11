@@ -108,7 +108,8 @@ extension UIDevice {
                 }
             #elseif os(visionOS)
                 switch identifier {
-                case "RealityDevice14,1": return "Apple Vision Pro"
+                case "RealityDevice14,1":
+                    return "Apple Vision Pro"
                 default: return identifier
                 }
             #endif

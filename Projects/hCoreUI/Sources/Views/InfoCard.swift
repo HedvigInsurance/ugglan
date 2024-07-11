@@ -3,13 +3,13 @@ import hCore
 
 public struct InfoCard: View {
     let text: String
-    let type: InfoCardType
+    let type: NotificationType
     @Environment(\.hInfoCardButtonConfig) var buttonsConfig
     @Environment(\.hInfoCardCustomView) var customContentView
 
     public init(
         text: String,
-        type: InfoCardType
+        type: NotificationType
     ) {
         self.text = text
         self.type = type
@@ -17,13 +17,11 @@ public struct InfoCard: View {
 
     public var body: some View {
         HStack(alignment: .top, spacing: 0) {
-            VStack(spacing: 0) {
-                Rectangle().fill(Color.clear)
-                    .frame(width: 0, height: 2)
+            VStack(spacing: .padding8) {
                 Image(uiImage: type.image)
                     .resizable()
-                    .foregroundColor(imageColor)
-                    .frame(width: 16, height: 16)
+                    .foregroundColor(type.imageColor)
+                    .frame(width: 20, height: 20)
             }
             if let customContentView = customContentView {
                 customContentView
@@ -32,11 +30,11 @@ public struct InfoCard: View {
             } else {
                 VStack(alignment: .leading) {
                     hText(text, style: .footnote)
-                        .foregroundColor(getTextColor)
+                        .foregroundColor(type.textColor)
                         .multilineTextAlignment(.leading)
                     if let buttonsConfig {
                         if buttonsConfig.count > 1 {
-                            HStack(spacing: 8) {
+                            HStack(spacing: 4) {
                                 ForEach(buttonsConfig, id: \.buttonTitle) { config in
                                     hButton.SmallButton(type: .secondaryAlt) {
                                         config.buttonAction()
@@ -63,86 +61,88 @@ public struct InfoCard: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.top, 14)
-        .padding(.bottom, .padding16)
-        .padding(.leading, .padding12)
-        .padding(.trailing, .padding16)
-        .modifier(InfoCardStyle(type: type))
+        .padding(.vertical, .padding12)
+        .padding(.horizontal, .padding16)
+        .modifier(NotificationStyle(type: type))
         .fixedSize(horizontal: false, vertical: true)
     }
-
-    @hColorBuilder
-    var getTextColor: some hColor {
-        switch type {
-        case .info:
-            hSignalColor.Blue.text
-        case .attention:
-            hSignalColor.Amber.text
-        case .error:
-            hSignalColor.Red.text
-        case .campaign:
-            hSignalColor.Green.text
-        case .disabled:
-            hTextColor.Opaque.accordion
-        }
-    }
-
-    @hColorBuilder
-    var imageColor: some hColor {
-        switch type {
-        case .info:
-            hSignalColor.Blue.element
-        case .attention:
-            hSignalColor.Amber.element
-        case .error:
-            hSignalColor.Red.element
-        case .campaign:
-            hSignalColor.Green.element
-        case .disabled:
-            hFillColor.Opaque.secondary
-        }
-    }
+    //<<<<<<< HEAD
+    //
+    //    @hColorBuilder
+    //    var getTextColor: some hColor {
+    //        switch type {
+    //        case .info:
+    //            hSignalColor.Blue.text
+    //        case .attention:
+    //            hSignalColor.Amber.text
+    //        case .error:
+    //            hSignalColor.Red.text
+    //        case .campaign:
+    //            hSignalColor.Green.text
+    //        case .disabled:
+    //            hTextColor.Opaque.accordion
+    //        }
+    //    }
+    //
+    //    @hColorBuilder
+    //    var imageColor: some hColor {
+    //        switch type {
+    //        case .info:
+    //            hSignalColor.Blue.element
+    //        case .attention:
+    //            hSignalColor.Amber.element
+    //        case .error:
+    //            hSignalColor.Red.element
+    //        case .campaign:
+    //            hSignalColor.Green.element
+    //        case .disabled:
+    //            hFillColor.Opaque.secondary
+    //        }
+    //    }
+    //=======
+    //>>>>>>> main
 }
 
 struct InfoCard_Previews: PreviewProvider {
     static var previews: some View {
-        VStack {
-            InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
-                .buttons([
-                    .init(
-                        buttonTitle: "Title",
-                        buttonAction: {
+        hSection {
+            VStack {
+                InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
+                    .buttons([
+                        .init(
+                            buttonTitle: "Title",
+                            buttonAction: {
 
-                        }
-                    ),
-                    .init(
-                        buttonTitle: "Title 2",
-                        buttonAction: {
+                            }
+                        ),
+                        .init(
+                            buttonTitle: "Title 2",
+                            buttonAction: {
 
-                        }
-                    ),
-                ])
+                            }
+                        ),
+                    ])
 
-            InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
-                .buttons([
-                    .init(
-                        buttonTitle: "Title",
-                        buttonAction: {
+                InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
+                    .buttons([
+                        .init(
+                            buttonTitle: "Title",
+                            buttonAction: {
 
-                        }
-                    )
-                ])
+                            }
+                        )
+                    ])
 
-            InfoCard(text: L10n.changeAddressCoverageInfoText, type: .attention)
+                InfoCard(text: L10n.changeAddressCoverageInfoText, type: .attention)
 
-            InfoCard(text: L10n.changeAddressCoverageInfoText, type: .campaign)
-            InfoCard(text: L10n.changeAddressCoverageInfoText, type: .error)
+                InfoCard(text: L10n.changeAddressCoverageInfoText, type: .campaign)
+                InfoCard(text: L10n.changeAddressCoverageInfoText, type: .error)
+                InfoCard(text: "", type: .error)
+                    .hInfoCardCustomView {
+                        Text("Testing custom texzt view")
 
-            InfoCard(text: "", type: .error)
-                .hInfoCardCustomView {
-                    Text("Testing custom texzt view")
-
-                }
+                    }
+            }
         }
     }
 }
@@ -215,7 +215,7 @@ extension View {
 }
 
 private struct EnvironmentInfoCardLayoutStyle: EnvironmentKey {
-    static let defaultValue: InfoCardLayoutStyle = .roundedRectangle
+    static let defaultValue: InfoCardLayoutStyle = .defaultStyle
 }
 
 extension EnvironmentValues {
@@ -232,51 +232,51 @@ extension View {
 }
 
 public enum InfoCardLayoutStyle {
-    case roundedRectangle
-    case rectange
+    case defaultStyle
+    case bannerStyle
 }
 
-struct InfoCardStyle: ViewModifier {
-    let type: InfoCardType
-    @Environment(\.hInfoCardLayoutStyle) var layoutStyle
-    func body(content: Content) -> some View {
-        switch layoutStyle {
-        case .rectange:
-            content
-                .background(
-                    Rectangle()
-                        .fill(getBackgroundColor)
-                        .overlay(
-                            Rectangle()
-                                .strokeBorder(hBorderColor.primary, lineWidth: 0.5)
-                        )
-                )
-        case .roundedRectangle:
-            content
-                .background(
-                    Squircle.default()
-                        .fill(getBackgroundColor)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: .cornerRadiusL)
-                                .strokeBorder(hBorderColor.primary, lineWidth: 0.5)
-                        )
-                )
-        }
-    }
-
-    @hColorBuilder
-    var getBackgroundColor: some hColor {
-        switch type {
-        case .info:
-            hSignalColor.Blue.fill
-        case .attention:
-            hSignalColor.Amber.fill
-        case .error:
-            hSignalColor.Red.fill
-        case .campaign:
-            hSignalColor.Green.fill
-        case .disabled:
-            hSurfaceColor.Opaque.primary
-        }
-    }
-}
+//struct InfoCardStyle: ViewModifier {
+//    let type: InfoCardType
+//    @Environment(\.hInfoCardLayoutStyle) var layoutStyle
+//    func body(content: Content) -> some View {
+//        switch layoutStyle {
+//        case .rectange:
+//            content
+//                .background(
+//                    Rectangle()
+//                        .fill(getBackgroundColor)
+//                        .overlay(
+//                            Rectangle()
+//                                .strokeBorder(hBorderColor.primary, lineWidth: 0.5)
+//                        )
+//                )
+//        case .roundedRectangle:
+//            content
+//                .background(
+//                    Squircle.default()
+//                        .fill(getBackgroundColor)
+//                        .overlay(
+//                            RoundedRectangle(cornerRadius: .cornerRadiusL)
+//                                .strokeBorder(hBorderColor.primary, lineWidth: 0.5)
+//                        )
+//                )
+//        }
+//    }
+//
+//    @hColorBuilder
+//    var getBackgroundColor: some hColor {
+//        switch type {
+//        case .info:
+//            hSignalColor.Blue.fill
+//        case .attention:
+//            hSignalColor.Amber.fill
+//        case .error:
+//            hSignalColor.Red.fill
+//        case .campaign:
+//            hSignalColor.Green.fill
+//        case .disabled:
+//            hSurfaceColor.Opaque.primary
+//        }
+//    }
+//}

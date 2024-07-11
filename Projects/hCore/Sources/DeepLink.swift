@@ -1,7 +1,7 @@
 import Foundation
 import hGraphQL
 
-public enum DeepLink: String, Codable {
+public enum DeepLink: String, Codable, CaseIterable {
     case forever
     case directDebit = "direct-debit"
     case profile
@@ -52,6 +52,9 @@ public enum DeepLink: String, Codable {
     }
 
     public static func getType(from url: URL) -> DeepLink? {
+        let rootUrls = [Environment.staging.deepLinkUrl, Environment.production.deepLinkUrl].compactMap({ $0.host })
+        guard rootUrls.contains(url.host ?? "") else { return nil }
+
         guard let type = url.pathComponents.compactMap({ DeepLink(rawValue: $0) }).first else {
             return nil
         }

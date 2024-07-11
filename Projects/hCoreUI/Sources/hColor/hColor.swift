@@ -306,12 +306,12 @@ public struct hTextColor {
             )
         }
 
-        public static var black: some hColor {
-            hGrayscaleOpaqueColor.black
-        }
-
         public static var white: some hColor {
             hGrayscaleOpaqueColor.white
+        }
+
+        public static var black: some hColor {
+            hGrayscaleOpaqueColor.black
         }
     }
 
@@ -942,6 +942,52 @@ public struct hHighlightColor {
             hColorScheme(
                 light: hPurpleColor.purple300,
                 dark: hPurpleColor.purple500
+            )
+        }
+    }
+
+    public struct Amber {
+        public static var fillOne: some hColor {
+            hColorScheme(
+                light: hAmberColor.amber100,
+                dark: hAmberColor.amber200
+            )
+        }
+
+        public static var fillTwo: some hColor {
+            hColorScheme(
+                light: hAmberColor.amber200,
+                dark: hAmberColor.amber300
+            )
+        }
+
+        public static var fillThree: some hColor {
+            hColorScheme(
+                light: hAmberColor.amber300,
+                dark: hAmberColor.amber500
+            )
+        }
+    }
+
+    public struct Red {
+        public static var fillOne: some hColor {
+            hColorScheme(
+                light: hRedColor.red100,
+                dark: hRedColor.red200
+            )
+        }
+
+        public static var fillTwo: some hColor {
+            hColorScheme(
+                light: hRedColor.red200,
+                dark: hRedColor.red300
+            )
+        }
+
+        public static var fillThree: some hColor {
+            hColorScheme(
+                light: hRedColor.red300,
+                dark: hRedColor.red500
             )
         }
     }

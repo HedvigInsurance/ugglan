@@ -61,6 +61,10 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
                 return L10n.ClaimStatus.NotCompensated.supportText
             case .notCovered:
                 return L10n.ClaimStatus.NotCovered.supportText
+            case .closed:
+                return L10n.ClaimStatus.Closed.supportText
+            case .missingReceipt:
+                return L10n.ClaimStatus.MissingReceipt.supportText
             case .none:
                 return ""
             }
@@ -111,6 +115,8 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         case notCompensated
         case notCovered
         case none
+        case closed
+        case missingReceipt
 
         public init?(
             rawValue: RawValue
@@ -119,6 +125,8 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
             case "PAID": self = .paid
             case "NOT_COMPENSATED": self = .notCompensated
             case "NOT_COVERED": self = .notCovered
+            case "CLOSED": self = .closed
+            case "MISSING_RECIEPT": self = .missingReceipt
             default: self = .none
             }
         }
@@ -133,6 +141,10 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
                 return L10n.Claim.Decision.notCovered
             case .none:
                 return L10n.Home.ClaimCard.Pill.claim
+            case .closed:
+                return L10n.ClaimStatusDetail.closed
+            case .missingReceipt:
+                return L10n.ClaimStatusDetail.missingReceipt
             }
         }
     }
