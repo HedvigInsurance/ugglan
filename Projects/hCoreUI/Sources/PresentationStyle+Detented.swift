@@ -725,13 +725,13 @@ public class BlurredSheetPresenationController: UISheetPresentationController {
         if self.traitCollection.userInterfaceStyle == .dark {
             return .light
         } else {
-            return .regular
+            return .light
         }
     }
 
     public override func presentationTransitionWillBegin() {
         super.presentationTransitionWillBegin()
-        if let effectView {
+        if let effectView, effectView.superview == nil {
             containerView?.addSubview(effectView)
             effectView.snp.makeConstraints { make in
                 make.top.leading.bottom.trailing.equalToSuperview()
