@@ -38,7 +38,7 @@ public struct Conversation: Identifiable, Hashable, Codable {
     ) {
         self.id = fragment.id
         self.title = fragment.title
-        self.subtitle = fragment.title
+        self.subtitle = fragment.subtitle
         if let newestMessage = fragment.newestMessage?.fragments.messageFragment.asMessage() {
             self.newestMessage = .init(newestMessage)
         } else {
