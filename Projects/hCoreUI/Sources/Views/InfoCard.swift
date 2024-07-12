@@ -66,41 +66,6 @@ public struct InfoCard: View {
         .modifier(NotificationStyle(type: type))
         .fixedSize(horizontal: false, vertical: true)
     }
-    //<<<<<<< HEAD
-    //
-    //    @hColorBuilder
-    //    var getTextColor: some hColor {
-    //        switch type {
-    //        case .info:
-    //            hSignalColor.Blue.text
-    //        case .attention:
-    //            hSignalColor.Amber.text
-    //        case .error:
-    //            hSignalColor.Red.text
-    //        case .campaign:
-    //            hSignalColor.Green.text
-    //        case .disabled:
-    //            hTextColor.Opaque.accordion
-    //        }
-    //    }
-    //
-    //    @hColorBuilder
-    //    var imageColor: some hColor {
-    //        switch type {
-    //        case .info:
-    //            hSignalColor.Blue.element
-    //        case .attention:
-    //            hSignalColor.Amber.element
-    //        case .error:
-    //            hSignalColor.Red.element
-    //        case .campaign:
-    //            hSignalColor.Green.element
-    //        case .disabled:
-    //            hFillColor.Opaque.secondary
-    //        }
-    //    }
-    //=======
-    //>>>>>>> main
 }
 
 struct InfoCard_Previews: PreviewProvider {

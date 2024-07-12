@@ -135,9 +135,10 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                     rootView: content,
                     contentName: tracking?.nameForTracking ?? "\(Content.self)"
                 )
+                let shouldUseBlur = style.contains(.height)
                 let delegate = DetentedTransitioningDelegate(
                     detents: style.asDetent(),
-                    options: [.blurredBackground],
+                    options: shouldUseBlur ? [.blurredBackground] : [],
                     wantsGrabber: options.contains(.withoutGrabber) ? false : true,
                     viewController: vc
                 )

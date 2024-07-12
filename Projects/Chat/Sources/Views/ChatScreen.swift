@@ -121,8 +121,8 @@ public struct ChatScreen: View {
                     }
 
                 }
-                .hTextStyle(.standardSmall)
-                .foregroundColor(hTextColor.Opaque.tertiary)
+                .hTextStyle(.label)
+                .foregroundColor(hTextColor.Opaque.secondary)
                 .padding(.bottom, 3)
 
             }
@@ -135,7 +135,6 @@ public struct ChatScreen: View {
 
     @ViewBuilder
     private var infoCard: some View {
-        //<<<<<<< HEAD
         if vm.shouldShowBanner {
             if let banner = vm.banner {
                 InfoCard(text: "", type: .info)
@@ -155,24 +154,6 @@ public struct ChatScreen: View {
                     .hInfoCardLayoutStyle(.bannerStyle)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
-            //=======
-            //        if let banner = vm.banner {
-            //            InfoCard(text: "", type: .info)
-            //                .hInfoCardCustomView {
-            //                    MarkdownView(
-            //                        config: .init(
-            //                            text: banner,
-            //                            fontStyle: .standardSmall,
-            //                            color: hSignalColor.Blue.text,
-            //                            linkColor: hSignalColor.Blue.text,
-            //                            linkUnderlineStyle: .single
-            //                        ) { url in
-            //                            NotificationCenter.default.post(name: .openDeepLink, object: url)
-            //                        }
-            //                    )
-            //                }
-            //                .hInfoCardLayoutStyle(.bannerStyle)
-            //>>>>>>> main
         }
     }
 }
