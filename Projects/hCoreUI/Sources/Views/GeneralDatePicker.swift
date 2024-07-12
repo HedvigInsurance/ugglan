@@ -178,20 +178,22 @@ public class DatePickerViewModel: ObservableObject, Equatable, Identifiable {
     }
 
     func updateColors() {
-        if let datePicker {
-            if let datePickerSubviews = datePicker.subviews.first?.subviews.first?.subviews.first?.subviews,
-                datePickerSubviews.count > 2
-            {
-                let header = datePickerSubviews[0]
-                configure(header: header)
-                let weekdays = datePickerSubviews[1]
-                configure(sectionHeader: weekdays)
-                if let dates = datePickerSubviews[2] as? UICollectionView {
-                    update(collection: dates)
+        if #available(iOS 18.0, *) {
+        } else {
+            if let datePicker {
+                if let datePickerSubviews = datePicker.subviews.first?.subviews.first?.subviews.first?.subviews,
+                    datePickerSubviews.count > 2
+                {
+                    let header = datePickerSubviews[0]
+                    configure(header: header)
+                    let weekdays = datePickerSubviews[1]
+                    configure(sectionHeader: weekdays)
+                    if let dates = datePickerSubviews[2] as? UICollectionView {
+                        update(collection: dates)
+                    }
                 }
             }
         }
-
     }
     /// labels representing days (mon, tue...)
     private func configure(sectionHeader: UIView) {
