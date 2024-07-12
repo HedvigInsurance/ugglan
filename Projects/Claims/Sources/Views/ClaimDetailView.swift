@@ -45,6 +45,12 @@ public struct ClaimDetailView: View {
                 }
                 .sectionContainerStyle(.transparent)
 
+                if !Dependencies.featureFlags().isConversationBasedMessagesEnabled {
+                    hSection {
+                        chatSection
+                    }
+                }
+
                 memberFreeTextSection
                 claimDetailsSection
                     .padding(.vertical, .padding16)
@@ -132,10 +138,11 @@ public struct ClaimDetailView: View {
             .multilineTextAlignment(.leading)
             Spacer()
         }
+    }
 
-        if !Dependencies.featureFlags().isConversationBasedMessagesEnabled {
-            Divider()
-                .padding(.horizontal, -16)
+    @ViewBuilder
+    private var chatSection: some View {
+        hRow {
             ContactChatView(
                 store: vm.store,
                 id: vm.claim.id,
