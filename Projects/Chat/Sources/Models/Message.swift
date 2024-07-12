@@ -2,14 +2,18 @@ import Foundation
 import hCore
 import hGraphQL
 
-public struct Message: Identifiable {
+public struct Message: Identifiable, Codable, Hashable {
+    public static func == (lhs: Message, rhs: Message) -> Bool {
+        return lhs.localId == rhs.localId || lhs.remoteId == rhs.remoteId
+    }
+
     let localId: String?
     let remoteId: String?
     public var id: String {
-        return (localId ?? remoteId ?? "")
+        return remoteId ?? localId ?? ""
     }
     let sender: MessageSender
-    let sentAt: Date
+    public let sentAt: Date
     let type: MessageType
     var status: MessageStatus
 
@@ -54,13 +58,12 @@ public struct Message: Identifiable {
     }
 }
 
-enum MessageSender {
+enum MessageSender: Codable, Hashable {
     case member
     case hedvig
 }
 
-enum MessageStatus {
-
+enum MessageStatus: Codable, Hashable {
     case draft
     case sent
     case received
@@ -75,7 +78,7 @@ enum MessageStatus {
         }
     }
 }
-enum MessageType {
+enum MessageType: Codable, Hashable {
     case text(text: String)
     case file(file: File)
     case crossSell(url: URL)
@@ -87,5 +90,36 @@ enum MessageType {
 extension Sequence where Iterator.Element == Message {
     func filterNotAddedIn(list alreadyAdded: [String]) -> [Message] {
         return self.filter({ !alreadyAdded.contains($0.id) })
+    }
+}
+
+extension Message {
+    var latestMessageText: String {
+        let senderText: String = {
+            switch sender {
+            case .member: return L10n.chatSenderMember
+            case .hedvig: return L10n.chatSenderHedvig
+            }
+        }()
+        let message: String = {
+            switch type {
+            case let .text(text):
+                return text
+            case let .file(file):
+                if file.mimeType.isImage {
+                    return L10n.chatSentAPhoto
+                }
+                return L10n.chatSentAFile
+            case .crossSell:
+                return L10n.chatSentALink
+            case .deepLink:
+                return L10n.chatSentALink
+            case .otherLink:
+                return L10n.chatSentALink
+            case .unknown:
+                return L10n.chatSentAFile
+            }
+        }()
+        return "\(senderText): \(message)"
     }
 }

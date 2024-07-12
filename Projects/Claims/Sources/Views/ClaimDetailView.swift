@@ -1,6 +1,8 @@
+import Chat
 import Combine
 import Home
 import Kingfisher
+import Payment
 import Photos
 import Presentation
 import SwiftUI
@@ -14,7 +16,6 @@ public struct ClaimDetailView: View {
     @State var showFilePicker = false
     @State var showCamera = false
     @StateObject var vm: ClaimDetailViewModel
-
     @EnvironmentObject var homeVm: HomeNavigationViewModel
 
     public init(
@@ -34,18 +35,43 @@ public struct ClaimDetailView: View {
         hForm {
             VStack(spacing: 8) {
                 hSection {
-                    ClaimStatus(claim: vm.claim, enableTap: false)
-                        .padding(.top, .padding8)
+                    ClaimStatus(
+                        claim: vm.claim,
+                        enableTap: false,
+                        extendedBottomView: {
+                            AnyView(infoAndContactSection)
+                        }()
+                    )
                 }
                 .sectionContainerStyle(.transparent)
 
-                infoAndContactSection
+                if !Dependencies.featureFlags().isConversationBasedMessagesEnabled {
+                    hSection {
+                        chatSection
+                    }
+                }
+
                 memberFreeTextSection
                 claimDetailsSection
                     .padding(.vertical, .padding16)
                 uploadFilesSection
             }
         }
+        .setHomeNavigationBars(
+            with: $vm.toolbarOptionType,
+            action: { type in
+                switch type {
+                case .newOffer:
+                    break
+                case .firstVet:
+                    break
+                case .chat:
+                    NotificationCenter.default.post(name: .openChat, object: vm.claim.conversation)
+                case .chatNotification:
+                    NotificationCenter.default.post(name: .openChat, object: vm.claim.conversation)
+                }
+            }
+        )
         .sheet(isPresented: $showImagePicker) {
             ImagePicker { images in
                 vm.showAddFiles(with: images)
@@ -100,20 +126,28 @@ public struct ClaimDetailView: View {
 
     @ViewBuilder
     private var infoAndContactSection: some View {
-        hSection {
-            hRow {
-                hText(statusParagraph)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .multilineTextAlignment(.leading)
+        Divider()
+            .padding(.horizontal, -16)
+        HStack {
+            VStack(alignment: .leading, spacing: 0) {
+                hText(L10n.ClaimStatus.title, style: .footnote)
+                    .foregroundColor(hTextColor.Opaque.primary)
+                hText(statusParagraph, style: .footnote)
+                    .foregroundColor(hTextColor.Opaque.secondary)
             }
-            hRow {
-                ContactChatView(
-                    store: vm.store,
-                    id: vm.claim.id,
-                    status: vm.claim.status.rawValue
-                )
-                .padding(.bottom, .padding4)
-            }
+            .multilineTextAlignment(.leading)
+            Spacer()
+        }
+    }
+
+    @ViewBuilder
+    private var chatSection: some View {
+        hRow {
+            ContactChatView(
+                store: vm.store,
+                id: vm.claim.id,
+                status: vm.claim.status.rawValue
+            )
         }
     }
 
@@ -299,6 +333,12 @@ public struct ClaimDetailView: View {
 
 struct ClaimDetailView_Previews: PreviewProvider {
     static var previews: some View {
+        Dependencies.shared.add(module: Module { () -> hFetchClaimClient in FetchClaimClientDemo() })
+        let featureFlags = FeatureFlagsDemo()
+        Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlags })
+        let networkClient = NetworkClient()
+        Dependencies.shared.add(module: Module { () -> AdyenClient in networkClient })
+
         let claim = ClaimModel(
             id: "claimId",
             status: .beingHandled,
@@ -310,9 +350,19 @@ struct ClaimDetailView_Previews: PreviewProvider {
             targetFileUploadUri: "",
             claimType: "Broken item",
             incidentDate: "2024-02-15",
-            productVariant: nil
+            productVariant: nil,
+            conversation: .init(
+                id: "",
+                type: .claim,
+                title: "",
+                subtitle: nil,
+                newestMessage: nil,
+                createdAt: nil,
+                statusMessage: nil,
+                isConversationOpen: true
+            )
         )
-        return ClaimDetailView(claim: claim)
+        return ClaimDetailView(claim: claim).environmentObject(HomeNavigationViewModel())
     }
 }
 
@@ -323,10 +373,14 @@ public class ClaimDetailViewModel: ObservableObject {
     @Published var fetchFilesError: String?
     @Published var hasFiles = false
     @Published var showFilesView: FilesDto?
+    @Published var toolbarOptionType: [ToolbarOptionType] = [.chat]
     let fileUploadManager = FileUploadManager()
     var fileGridViewModel: FileGridViewModel
+
     private var cancellables = Set<AnyCancellable>()
-    public init(claim: ClaimModel) {
+    public init(
+        claim: ClaimModel
+    ) {
         self.claim = claim
         let store: ClaimsStore = globalPresentableStoreContainer.get()
         let files = store.state.files[claim.id] ?? []
@@ -352,11 +406,78 @@ public class ClaimDetailViewModel: ObservableObject {
         fileGridViewModel.$files
             .sink { _ in
 
-            } receiveValue: { files in
-                self.hasFiles = !files.isEmpty
+            } receiveValue: { [weak self] files in
+                self?.hasFiles = !files.isEmpty
             }
             .store(in: &cancellables)
 
+        handleClaimChat()
+    }
+
+    private func handleClaimChat() {
+        if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
+            let chatStore: ChatStore = globalPresentableStoreContainer.get()
+            chatStore.stateSignal.plain().publisher
+                .map({ $0.conversationsTimeStamp })
+                .removeDuplicates()
+                .receive(on: RunLoop.main)
+                .sink { [weak self] conversationsTimeStamp in
+                    let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
+                    let conversation = claimStore.state.claim(for: self?.claim.id ?? "")?.conversation
+                    let conversationId = conversation?.id
+                    let timeStamp = conversationsTimeStamp[conversationId ?? ""]
+                    if let newestMessage = conversation?.newestMessage?.sentAt {
+                        let showChatNotification = timeStamp ?? Date() < newestMessage
+                        self?.toolbarOptionType =
+                            showChatNotification
+                            ? [.chatNotification(lastMessageTimeStamp: timeStamp ?? Date())] : [.chat]
+                    } else {
+                        self?.toolbarOptionType = [.chat]
+                    }
+                }
+                .store(in: &self.cancellables)
+
+            let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
+            claimStore.stateSignal.plain().publisher
+                .map({ $0.claim(for: self.claim.id) })
+                .map({ $0?.conversation.newestMessage?.sentAt })
+                .removeDuplicates()
+                .receive(on: RunLoop.main)
+                .sink { [weak self] value in
+                    if let value {
+                        let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
+                        let conversationId = claimStore.state.claim(for: self?.claim.id ?? "")?.conversation.id
+                        let chatStore: ChatStore = globalPresentableStoreContainer.get()
+                        let timeStamp = chatStore.state.conversationsTimeStamp[conversationId ?? ""]
+                        let showChatNotification = timeStamp ?? Date() < value
+                        self?.toolbarOptionType =
+                            showChatNotification ? [.chatNotification(lastMessageTimeStamp: value)] : [.chat]
+                    } else {
+                        self?.toolbarOptionType = [.chat]
+                    }
+                }
+                .store(in: &cancellables)
+
+            let timeStamp = chatStore.state.conversationsTimeStamp[claim.conversation.id]
+            if let newestMessage = claim.conversation.newestMessage?.sentAt {
+                let showChatNotification = timeStamp ?? Date() < newestMessage
+                self.toolbarOptionType =
+                    showChatNotification ? [.chatNotification(lastMessageTimeStamp: timeStamp ?? Date())] : [.chat]
+            } else {
+                self.toolbarOptionType = [.chat]
+            }
+
+            Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] timer in
+                if self == nil {
+                    timer.invalidate()
+                    return
+                }
+                let store: ClaimsStore = globalPresentableStoreContainer.get()
+                store.send(.fetchClaims)
+            }
+        } else {
+            self.toolbarOptionType = []
+        }
     }
 
     @MainActor

@@ -99,7 +99,7 @@ struct LoggedInNavigation: View {
         ContractsNavigation(contractsNavigationVm: vm.contractsNavigationVm) { redirectType in
             switch redirectType {
             case .chat:
-                ChatScreen(vm: .init(topicType: nil))
+                ChatScreen(vm: .init(chatService: MessagesService(topic: nil)))
             case .movingFlow:
                 MovingFlowNavigation()
             case let .pdf(document):
@@ -248,12 +248,11 @@ struct LoggedInNavigation: View {
 struct HomeTab: View {
     @ObservedObject var homeNavigationVm: HomeNavigationViewModel
     @ObservedObject var loggedInVm: LoggedInNavigationViewModel
-    @StateObject var homeRouter = Router()
 
     var body: some View {
         let claims = Claims()
 
-        return RouterHost(router: homeRouter, tracking: self) {
+        return RouterHost(router: homeNavigationVm.router, tracking: self) {
             HomeView(
                 claimsContent: claims,
                 memberId: {
@@ -265,6 +264,10 @@ struct HomeTab: View {
                 ClaimDetailView(claim: claim)
                     .environmentObject(homeNavigationVm)
                     .configureTitle(L10n.claimsYourClaim)
+            }
+            .routerDestination(for: String.self) { conversation in
+                InboxView()
+                    .configureTitle(L10n.chatConversationInbox)
             }
         }
         .environmentObject(homeNavigationVm)
@@ -363,22 +366,21 @@ struct HomeTab: View {
             style: .large,
             options: $homeNavigationVm.openChatOptions,
             content: { openChat in
-                ChatNavigation(openChat: openChat) { type, onDone in
+                ChatNavigation(
+                    chatType: openChat.chatType
+                ) { type, onDone in
                     AskForPushNotifications(
                         text: L10n.chatActivateNotificationsBody,
                         onActionExecuted: {
                             onDone()
                         }
                     )
-                } onUpdateDate: { date in
-                    let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                    homeStore.send(.setChatNotificationTimeStamp(sentAt: date))
                 }
             }
         )
-        .onChange(of: homeNavigationVm.openChat) { newValue in
-            HomeNavigationViewModel.isChatPresented = newValue != nil
-        }
+        //        .onChange(of: homeNavigationVm.openChat) { newValue in
+        //            HomeNavigationViewModel.isChatPresented = newValue != nil
+        //        }
 
     }
 }
@@ -389,6 +391,7 @@ class LoggedInNavigationViewModel: ObservableObject {
             self.previousTab = selectedTab
         }
     }
+
     var previousTab: Int = 0
 
     let contractsNavigationVm = ContractsNavigationViewModel()
@@ -424,7 +427,9 @@ class LoggedInNavigationViewModel: ObservableObject {
             if let object = notification.object as? PushNotificationType {
                 switch object {
                 case .NEW_MESSAGE:
-                    NotificationCenter.default.post(name: .openChat, object: nil)
+                    let userInfo = notification.userInfo
+                    let conversationId = userInfo?["conversationId"] as? String
+                    NotificationCenter.default.post(name: .openChat, object: conversationId)
                 case .REFERRAL_SUCCESS, .REFERRALS_ENABLED:
                     UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                     self?.selectedTab = 2

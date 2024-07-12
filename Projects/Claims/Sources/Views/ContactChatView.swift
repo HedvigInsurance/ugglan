@@ -22,7 +22,7 @@ struct ContactChatView: View {
 
     var body: some View {
         HStack(alignment: .center) {
-            VStack(alignment: .leading, spacing: 3) {
+            VStack(alignment: .leading, spacing: 0) {
                 hText(L10n.ClaimStatus.Contact.Generic.subtitle, style: .standardSmall)
                     .foregroundColor(hTextColor.Opaque.secondary)
                 hText(L10n.ClaimStatus.Contact.Generic.title, style: .body1)
@@ -43,6 +43,6 @@ struct ChatButtonStyle: ButtonStyle {
         hCoreUIAssets.chatQuickNav.view
             .resizable()
             .aspectRatio(contentMode: .fit)
-            .frame(width: 32, height: 32)
+            .frame(width: 40, height: 40)
     }
 }

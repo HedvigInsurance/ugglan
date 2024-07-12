@@ -283,6 +283,10 @@ extension View {
     public var hWithoutDivider: some View {
         self.environment(\.hWithoutDivider, true)
     }
+
+    public func shouldShowDivider(_ show: Bool) -> some View {
+        self.environment(\.hWithoutDivider, show)
+    }
 }
 
 private struct EnvironmentHSectionMinimumPadding: EnvironmentKey {
@@ -402,7 +406,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
                         .environment(\.defaultHTextStyle, .body1)
                 }
                 .foregroundColor(hTextColor.Opaque.primary)
-                .padding(.bottom, .padding16)
+                .padding(.bottom, .padding8)
             }
             hSectionContainer {
                 if header != nil && embeddedHeader {

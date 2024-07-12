@@ -3,46 +3,63 @@ import Kingfisher
 import Presentation
 import SwiftUI
 import hCore
+import hCoreUI
 import hGraphQL
 
 public class ChatScreenViewModel: ObservableObject {
     @Published var messages: [Message] = []
     @Published var lastDeliveredMessage: Message?
-    @Published var isFetchingNext = false
+    @Published var isFetchingPreviousMessages = false
     @Published var scrollToMessage: Message?
     @Published var banner: Markdown?
-    @Published var chatInputVm: ChatInputViewModel = .init()
-    private var fetchMessagesService = FetchMessagesService()
-    private var sendMessageService = SendMessagesService()
+    @Published var isConversationOpen = true
+    @Published var shouldShowBanner = true
+    var chatInputVm: ChatInputViewModel = .init()
+    @Published var title: String = L10n.chatTitle
+    @Published var subTitle: String?
+    var chatNavigationVm: ChatNavigationViewModel?
+    let chatService: ChatServiceProtocol
+    var scrollCancellable: AnyCancellable?
+    var hideBannerCancellable: AnyCancellable?
+
     private var addedMessagesIds: [String] = []
-    private var nextUntil: String?
     private var hasNext: Bool?
     private var isFetching = false
-    private let topicType: ChatTopicType?
     private var haveSentAMessage = false
-    private var storeActionSignal: AnyCancellable?
-    var chatNavigationVm: ChatNavigationViewModel?
+
     public init(
-        topicType: ChatTopicType?
+        chatService: ChatServiceProtocol
     ) {
-        self.topicType = topicType
+        self.chatService = chatService
 
         chatInputVm.sendMessage = { [weak self] message in
             Task { [weak self] in
                 await self?.send(message: message)
             }
         }
+
+        hideBannerCancellable = chatInputVm.$showBottomMenu.combineLatest(chatInputVm.$keyboardIsShown)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] (showBottomMenu, isKeyboardShown) in
+                let shouldShowBanner = !showBottomMenu && !isKeyboardShown
+                if self?.shouldShowBanner != false {
+                    withAnimation {
+                        self?.shouldShowBanner = shouldShowBanner
+                    }
+                }
+            }
+
         Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] timer in
             guard let self = self else {
                 timer.invalidate()
                 return
             }
             Task { [weak self] in
-                await self?.fetch()
+                await self?.fetchMessages()
             }
         }
         Task { [weak self] in
-            await self?.fetch()
+            await self?.fetchMessages()
         }
         let fileUploadManager = FileUploadManager()
         fileUploadManager.resetuploadFilesPath()
@@ -72,81 +89,70 @@ public class ChatScreenViewModel: ObservableObject {
     }
 
     @MainActor
-    func fetchNext() async {
-        if let hasNext, let nextUntil, hasNext, !isFetchingNext {
-            withAnimation {
-                isFetchingNext = true
-            }
-            await fetch(with: nextUntil)
-            withAnimation {
-                isFetchingNext = false
-            }
-        }
-    }
-
-    @MainActor
-    private func fetch(with next: String? = nil) async {
-        do {
-            let chatData = try await fetchMessagesService.get(next)
-            let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
-            if !newMessages.isEmpty {
-                if next != nil {
-                    handleNext(messages: newMessages)
-                } else {
-                    withAnimation {
-                        self.banner = chatData.banner
-                    }
-                    handleInitial(messages: newMessages)
+    func fetchPreviousMessages() async {
+        if let hasNext, hasNext, !isFetchingPreviousMessages {
+            do {
+                isFetchingPreviousMessages = true
+                let chatData = try await chatService.getPreviousMessages()
+                let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
+                withAnimation {
+                    self.messages.append(contentsOf: newMessages)
+                    self.messages.sort(by: { $0.sentAt > $1.sentAt })
+                    self.lastDeliveredMessage = self.messages.first(where: {
+                        $0.sender == .member && $0.remoteId != nil
+                    })
                 }
+                self.banner = chatData.banner
+                self.isConversationOpen = chatData.isConversationOpen ?? true
                 addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
-            }
-            if next == nil && nextUntil == nil {
-                self.hasNext = chatData.hasNext
-                if self.hasNext == true {
-                    self.nextUntil = chatData.nextUntil
-                }
-            } else if next != nil {
-                self.hasNext = chatData.hasNext
-                self.nextUntil = chatData.nextUntil
-            }
-        } catch _ {
-            if let next = next {
+                self.hasNext = chatData.hasPreviousMessage
+
+                isFetchingPreviousMessages = false
+            } catch _ {
+                isFetchingPreviousMessages = false
                 if #available(iOS 16.0, *) {
                     try! await Task.sleep(for: .seconds(2))
                 } else {
                     try! await Task.sleep(nanoseconds: 2_000_000_000)
                 }
-                await fetch(with: next)
+                await fetchPreviousMessages()
             }
         }
     }
 
-    private func handleInitial(messages: [Message]) {
-        withAnimation {
-            self.messages.insert(contentsOf: messages, at: 0)
-            sortMessages()
+    @MainActor
+    private func fetchMessages() async {
+        do {
+            let chatData = try await chatService.getNewMessages()
+            let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
+            withAnimation {
+                self.messages.append(contentsOf: newMessages)
+                self.messages.sort(by: { $0.sentAt > $1.sentAt })
+                self.lastDeliveredMessage = self.messages.first(where: { $0.sender == .member && $0.remoteId != nil })
+            }
+            self.banner = chatData.banner
+            self.isConversationOpen = chatData.isConversationOpen ?? true
+            addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
+            hasNext = chatData.hasPreviousMessage
+            title = chatData.title ?? L10n.chatTitle
+            subTitle = chatData.subtitle
+        } catch _ {
+            if #available(iOS 16.0, *) {
+                try! await Task.sleep(for: .seconds(2))
+            } else {
+                try! await Task.sleep(nanoseconds: 2_000_000_000)
+            }
+            await fetchMessages()
         }
-        if let lastMessage = messages.first {
-            handleLastMessageTimeStamp(for: lastMessage)
-        }
-    }
-
-    private func handleNext(messages: [Message]) {
-        withAnimation {
-            self.messages.append(contentsOf: messages)
-            sortMessages()
-        }
-    }
-
-    private func sortMessages() {
-        self.messages.sort(by: { $0.sentAt > $1.sentAt })
-        self.lastDeliveredMessage = self.messages.first(where: { $0.sender == .member })
     }
 
     @MainActor
     func send(message: Message) async {
         handleAddingLocal(for: message)
         await sendToClient(message: message)
+        if title == L10n.chatNewConversationTitle {
+            await fetchMessages()
+        }
     }
 
     @MainActor
@@ -156,10 +162,8 @@ public class ChatScreenViewModel: ObservableObject {
 
     private func sendToClient(message: Message) async {
         do {
-            let data = try await sendMessageService.send(message: message, topic: topicType)
-            if let remoteMessage = data.message {
-                await handleSuccessAdding(for: remoteMessage, to: message)
-            }
+            let sentMessage = try await chatService.send(message: message)
+            await handleSuccessAdding(for: sentMessage, to: message)
             haveSentAMessage = true
         } catch let ex {
             await handleSendFail(for: message, with: ex.localizedDescription)
@@ -216,18 +220,17 @@ public class ChatScreenViewModel: ObservableObject {
             break
         }
 
-        handleLastMessageTimeStamp(for: newMessage)
-
         addedMessagesIds.append(remoteMessage.id)
         if let index = messages.firstIndex(where: { $0.id == localMessage.id }) {
             withAnimation {
                 messages[index] = newMessage
+                self.messages.sort(by: { $0.sentAt > $1.sentAt })
             }
         }
         withAnimation {
             lastDeliveredMessage = self.messages.first(where: { message in
                 if case .sent = message.status {
-                    return true
+                    return message.sender == .member
                 }
                 return false
             })
@@ -247,9 +250,51 @@ public class ChatScreenViewModel: ObservableObject {
             }
         }
     }
+}
 
-    private func handleLastMessageTimeStamp(for message: Message) {
-        let store: ChatStore = globalPresentableStoreContainer.get()
-        store.send(.setLastMessageDate(date: message.sentAt))
+public enum ChatServiceType {
+    case conversation
+    case oldChat
+}
+
+enum ConversationsError: Error {
+    case errorMesage(message: String)
+    case missingData
+    case uploadFailed
+    case missingConversation
+}
+
+extension ConversationsError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case let .errorMesage(message): return message
+        case .missingData: return L10n.somethingWentWrong
+        case .uploadFailed: return L10n.somethingWentWrong
+        case .missingConversation: return L10n.somethingWentWrong
+        }
+    }
+}
+
+extension ChatScreenViewModel: TitleView {
+    public func getTitleView() -> UIView {
+        let view: UIView = UIHostingController(rootView: titleView).view
+        view.backgroundColor = .clear
+        return view
+    }
+
+    @ViewBuilder
+    private var titleView: some View {
+        if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
+            VStack(alignment: .leading) {
+                hText(self.title).foregroundColor(hTextColor.Opaque.primary)
+                if let subTitle = subTitle {
+                    hText(subTitle)
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        } else {
+            hText(self.title).foregroundColor(hTextColor.Opaque.primary)
+        }
     }
 }

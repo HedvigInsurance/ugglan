@@ -12,7 +12,6 @@ public struct ChatScreen: View {
     @State var infoViewWidth: CGFloat = 0
     @StateObject var chatScrollViewDelegate = ChatScrollViewDelegate()
     @EnvironmentObject var chatNavigationVm: ChatNavigationViewModel
-
     public init(
         vm: ChatScreenViewModel
     ) {
@@ -35,11 +34,21 @@ public struct ChatScreen: View {
         .task {
             vm.chatNavigationVm = chatNavigationVm
         }
+        .configureTitleView(vm)
+        .onAppear {
+            vm.scrollCancellable = chatScrollViewDelegate.isScrolling
+                .subscribe(on: RunLoop.main)
+                .sink { [weak vm] _ in
+                    withAnimation {
+                        vm?.chatInputVm.showBottomMenu = false
+                    }
+                }
+        }
     }
 
     @ViewBuilder
     private var loadingPreviousMessages: some View {
-        if vm.isFetchingNext {
+        if vm.isFetchingPreviousMessages {
             DotsActivityIndicator(.standard)
                 .useDarkColor
                 .fixedSize()
@@ -52,13 +61,13 @@ public struct ChatScreen: View {
     private func messagesContainer(with proxy: ScrollViewProxy?) -> some View {
         ScrollView {
             LazyVStack(spacing: 8) {
-                ForEach(vm.messages, id: \.id) { message in
-                    messageView(for: message)
+                ForEach(vm.messages) { message in
+                    messageView(for: message, isConversationOpen: vm.isConversationOpen)
                         .flippedUpsideDown()
                         .onAppear {
                             if message.id == vm.messages.last?.id {
                                 Task {
-                                    await vm.fetchNext()
+                                    await vm.fetchPreviousMessages()
                                 }
                             }
                         }
@@ -76,13 +85,13 @@ public struct ChatScreen: View {
         .padding(.bottom, -8)
     }
 
-    private func messageView(for message: Message) -> some View {
+    private func messageView(for message: Message, isConversationOpen: Bool) -> some View {
         HStack(alignment: .center, spacing: 0) {
             if message.sender == .member {
                 Spacer()
             }
             VStack(alignment: message.sender == .hedvig ? .leading : .trailing, spacing: 4) {
-                MessageView(message: message)
+                MessageView(message: message, isConversationOpen: isConversationOpen)
                     .frame(
                         maxWidth: 300,
                         alignment: message.sender == .member ? .trailing : .leading
@@ -126,28 +135,32 @@ public struct ChatScreen: View {
 
     @ViewBuilder
     private var infoCard: some View {
-        if let banner = vm.banner {
-            InfoCard(text: "", type: .info)
-                .hInfoCardCustomView {
-                    MarkdownView(
-                        config: .init(
-                            text: banner,
-                            fontStyle: .standardSmall,
-                            color: hSignalColor.Blue.text,
-                            linkColor: hSignalColor.Blue.text,
-                            linkUnderlineStyle: .single
-                        ) { url in
-                            NotificationCenter.default.post(name: .openDeepLink, object: url)
-                        }
-                    )
-                }
-                .hInfoCardLayoutStyle(.bannerStyle)
+        if vm.shouldShowBanner {
+            if let banner = vm.banner {
+                InfoCard(text: "", type: .info)
+                    .hInfoCardCustomView {
+                        MarkdownView(
+                            config: .init(
+                                text: !vm.isConversationOpen ? L10n.chatConversationClosedInfo : banner,
+                                fontStyle: .standardSmall,
+                                color: hSignalColor.Blue.text,
+                                linkColor: hSignalColor.Blue.text,
+                                linkUnderlineStyle: .single
+                            ) { url in
+                                NotificationCenter.default.post(name: .openDeepLink, object: url)
+                            }
+                        )
+                    }
+                    .hInfoCardLayoutStyle(.bannerStyle)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
         }
     }
 }
 
 #Preview{
     let client = ChatDemoClient()
+    let conversationClient = ConversationDemoClient()
     Dependencies.shared.add(
         module: Module { () -> FetchMessagesClient in
             client
@@ -158,11 +171,15 @@ public struct ChatScreen: View {
             client
         }
     )
-    return ChatScreen(vm: .init(topicType: nil))
+    return ChatScreen(vm: .init(chatService: MessagesService(topic: nil))).environmentObject(ChatNavigationViewModel())
 }
 
 class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
+
+    let isScrolling = PassthroughSubject<Bool, Never>()
+
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        isScrolling.send(true)
         let vc = findProverVC(from: scrollView.viewController)
         vc?.isModalInPresentation = true
         vc?.navigationController?.isModalInPresentation = true
@@ -174,6 +191,7 @@ class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
         withVelocity velocity: CGPoint,
         targetContentOffset: UnsafeMutablePointer<CGPoint>
     ) {
+        isScrolling.send(false)
         let vc = findProverVC(from: scrollView.viewController)
         vc?.isModalInPresentation = false
         vc?.navigationController?.isModalInPresentation = false

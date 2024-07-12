@@ -1,0 +1,49 @@
+query Conversations {
+  currentMember {
+    conversations {
+        ...ConversationFragment
+    }
+    legacyConversation {
+        ...ConversationFragment
+    }
+  }
+}
+
+query ConversationMessages($conversationId: UUID!, $olderToken: String, $newerToken: String) {
+  conversation(id: $conversationId) {
+    title
+    id
+    isOpen
+    messagePage(olderToken: $olderToken, newerToken: $newerToken) {
+        ... MessagePageFragment
+    }
+    statusMessage
+    createdAt
+    isLegacy
+  }
+}
+
+mutation ConversationSendMessage($input: ConversationSendMessageInput!) {
+  conversationSendMessage(input: $input) {
+    message {
+        ... MessageFragment
+    }
+    userError {
+      message
+    }
+  }
+}
+
+mutation ConversationStart($input: ConversationStartInput!) {
+  conversationStart(input: $input) {
+    ...ConversationFragment
+  }
+}
+
+fragment MessagePageFragment on ChatMessagePage {
+    messages {
+        ... MessageFragment
+    }
+    newerToken
+    olderToken
+}

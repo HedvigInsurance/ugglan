@@ -2,24 +2,24 @@ import Foundation
 import hCore
 import hGraphQL
 
-public class FetchMessagesService {
-    @Inject var client: FetchMessagesClient
-
-    public func get(_ next: String?) async throws -> ChatData {
-        log.info("FetchMessagesService: get", error: nil, attributes: nil)
-        return try await client.get(next)
-    }
-}
-
 public class FetchMessagesClientOctopus: FetchMessagesClient {
     @Inject var octopus: hOctopus
     public init() {}
-    public func get(_ next: String?) async throws -> ChatData {
+    public func get(_ next: String?) async throws -> MessagesData {
         let data = try await octopus.client.fetch(
             query: OctopusGraphQL.ChatQuery(until: GraphQLNullable(optionalValue: next)),
             cachePolicy: .fetchIgnoringCacheCompletely
         )
-        return .init(with: data.chat)
+        let messages = data.chat.messages.compactMap({ $0.fragments.messageFragment.asMessage() })
+        let chatData = data.chat
+        return .init(
+            messages: messages,
+            banner: chatData.bannerText,
+            olderToken: chatData.nextUntil,
+            hasNext: chatData.hasNext,
+            title: nil,
+            createdAt: nil
+        )
     }
 }
 
@@ -58,15 +58,5 @@ extension OctopusGraphQL.MessageFragment {
         } else {
             return .unknown
         }
-    }
-}
-
-extension ChatData {
-    init(with data: OctopusGraphQL.ChatQuery.Data.Chat) {
-        self.id = data.id
-        self.hasNext = data.hasNext
-        self.nextUntil = data.nextUntil
-        self.messages = data.messages.compactMap({ $0.fragments.messageFragment.asMessage() })
-        self.banner = data.bannerText
     }
 }

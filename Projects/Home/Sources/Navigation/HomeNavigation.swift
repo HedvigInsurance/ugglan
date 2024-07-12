@@ -1,26 +1,77 @@
+import Chat
+import Combine
 import Contracts
 import EditCoInsuredShared
 import Foundation
 import Payment
+import Presentation
 import SwiftUI
 import hCore
 import hCoreUI
 
+extension String: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        return self
+    }
+}
+
+public struct ChatConversation: Equatable, Identifiable {
+    public var id: String?
+    public var chatType: ChatType
+}
+
 public class HomeNavigationViewModel: ObservableObject {
     public static var isChatPresented = false
+    private var cancellables = Set<AnyCancellable>()
+
     public init() {
 
         NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: nil) {
             [weak self] notification in
-            if let topicWrapper = notification.object as? ChatTopicWrapper {
-                self?.openChatOptions = topicWrapper.onTop ? [.alwaysOpenOnTop, .withoutGrabber] : [.withoutGrabber]
-                self?.openChat = topicWrapper
-            } else {
+            var openChat: ChatConversation?
+            if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
                 self?.openChatOptions = [.alwaysOpenOnTop, .withoutGrabber]
-                self?.openChat = .init(topic: nil, onTop: false)
+                if let conversation = notification.object as? Chat.Conversation {
+                    openChat = .init(
+                        chatType: .conversationId(id: conversation.id)
+                    )
+                } else if let id = notification.object as? String {
+                    openChat = .init(chatType: .conversationId(id: id))
+                } else {
+                    openChat = .init(chatType: .newConversation)
+                }
+            } else {
+                if let topicWrapper = notification.object as? ChatTopicWrapper, let topic = topicWrapper.topic {
+                    openChat = .init(chatType: .topic(topic: topic))
+                } else {
+                    openChat = .init(chatType: .none)
+                }
+            }
+            if self?.openChat == nil {
+                self?.openChat = openChat
+            } else if self?.openChat != openChat {
+                self?.openChat = nil
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                    self?.openChat = openChat
+                }
             }
         }
+
+        let store: ChatStore = globalPresentableStoreContainer.get()
+        store.stateSignal.plain()
+            .publisher
+            .map({ $0.messagesTimeStamp })
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { value in
+                let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                homeStore.send(.setChatNotificationTimeStamp(sentAt: value))
+            }
+            .store(in: &cancellables)
+
     }
+
+    public var router = Router()
 
     @Published public var isSubmitClaimPresented = false
     @Published public var isHelpCenterPresented = false
@@ -30,7 +81,7 @@ public class HomeNavigationViewModel: ObservableObject {
 
     @Published public var navBarItems = NavBarItems()
 
-    @Published public var openChat: ChatTopicWrapper?
+    @Published public var openChat: ChatConversation?
     @Published public var openChatOptions: DetentPresentationOption = []
 
     public struct NavBarItems {

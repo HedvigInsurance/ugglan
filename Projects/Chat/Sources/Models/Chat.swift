@@ -2,9 +2,10 @@ import Foundation
 import hCore
 
 public struct ChatData {
-    let hasNext: Bool
-    let id: String
+    let hasPreviousMessage: Bool
     let messages: [Message]
-    let nextUntil: String?
     let banner: Markdown?
+    let isConversationOpen: Bool?
+    let title: String?
+    let subtitle: String?
 }

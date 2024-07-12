@@ -102,13 +102,35 @@ struct InfoCard_Previews: PreviewProvider {
 
                 InfoCard(text: L10n.changeAddressCoverageInfoText, type: .campaign)
                 InfoCard(text: L10n.changeAddressCoverageInfoText, type: .error)
-
                 InfoCard(text: "", type: .error)
                     .hInfoCardCustomView {
                         Text("Testing custom texzt view")
 
                     }
             }
+        }
+    }
+}
+
+public enum InfoCardType {
+    case info
+    case attention
+    case error
+    case campaign
+    case disabled
+
+    var image: UIImage {
+        switch self {
+        case .info:
+            return hCoreUIAssets.infoFilled.image
+        case .attention:
+            return hCoreUIAssets.warningTriangleFilled.image
+        case .error:
+            return hCoreUIAssets.warningTriangleFilled.image
+        case .campaign:
+            return hCoreUIAssets.campaignSmall.image
+        case .disabled:
+            return hCoreUIAssets.infoFilled.image
         }
     }
 }
@@ -178,3 +200,48 @@ public enum InfoCardLayoutStyle {
     case defaultStyle
     case bannerStyle
 }
+
+//struct InfoCardStyle: ViewModifier {
+//    let type: InfoCardType
+//    @Environment(\.hInfoCardLayoutStyle) var layoutStyle
+//    func body(content: Content) -> some View {
+//        switch layoutStyle {
+//        case .rectange:
+//            content
+//                .background(
+//                    Rectangle()
+//                        .fill(getBackgroundColor)
+//                        .overlay(
+//                            Rectangle()
+//                                .strokeBorder(hBorderColor.primary, lineWidth: 0.5)
+//                        )
+//                )
+//        case .roundedRectangle:
+//            content
+//                .background(
+//                    Squircle.default()
+//                        .fill(getBackgroundColor)
+//                        .overlay(
+//                            RoundedRectangle(cornerRadius: .cornerRadiusL)
+//                                .strokeBorder(hBorderColor.primary, lineWidth: 0.5)
+//                        )
+//                )
+//        }
+//    }
+//
+//    @hColorBuilder
+//    var getBackgroundColor: some hColor {
+//        switch type {
+//        case .info:
+//            hSignalColor.Blue.fill
+//        case .attention:
+//            hSignalColor.Amber.fill
+//        case .error:
+//            hSignalColor.Red.fill
+//        case .campaign:
+//            hSignalColor.Green.fill
+//        case .disabled:
+//            hSurfaceColor.Opaque.primary
+//        }
+//    }
+//}

@@ -63,36 +63,43 @@ public enum ChatRedirectViewType {
     case notification
 }
 
-enum ChatNavigationTracking: TrackingViewNameProtocol {
-    var nameForTracking: String {
+public enum ChatNavigationViewName: TrackingViewNameProtocol {
+    public var nameForTracking: String {
         return .init(describing: ChatScreen.self)
     }
 
-    case chatScren
+    case chat
 }
 
 public struct ChatNavigation<Content: View>: View {
     @StateObject var router = Router()
     @StateObject var chatNavigationViewModel = ChatNavigationViewModel()
-    let openChat: ChatTopicWrapper
+    let chatType: ChatType
     @ViewBuilder var redirectView: (_ type: ChatRedirectViewType, _ onDone: @escaping () -> Void) -> Content
-    var onUpdateDate: (Date) -> Void
     public init(
-        openChat: ChatTopicWrapper,
-        @ViewBuilder redirectView: @escaping (_ type: ChatRedirectViewType, _ onDone: @escaping () -> Void) -> Content,
-        onUpdateDate: @escaping (Date) -> Void
+        chatType: ChatType,
+        @ViewBuilder redirectView: @escaping (_ type: ChatRedirectViewType, _ onDone: @escaping () -> Void) -> Content
     ) {
-        self.openChat = openChat
+        self.chatType = chatType
         self.redirectView = redirectView
-        self.onUpdateDate = onUpdateDate
-
     }
 
     public var body: some View {
-        RouterHost(router: router, options: .navigationType(type: .large), tracking: ChatNavigationTracking.chatScren) {
-            ChatScreen(vm: .init(topicType: openChat.topic))
-                .navigationTitle(L10n.chatTitle)
-                .withDismissButton()
+        RouterHost(router: router, options: .navigationType(type: .large), tracking: ChatNavigationViewName.chat) {
+            switch chatType {
+            case let .conversationId(id):
+                ChatScreen(vm: .init(chatService: ConversationService(conversationId: id)))
+                    .withDismissButton()
+            case let .topic(topic):
+                ChatScreen(vm: .init(chatService: MessagesService(topic: topic)))
+                    .withDismissButton()
+            case .newConversation:
+                ChatScreen(vm: .init(chatService: NewConversationService()))
+                    .withDismissButton()
+            case .none:
+                ChatScreen(vm: .init(chatService: MessagesService(topic: nil)))
+                    .withDismissButton()
+            }
         }
         .environmentObject(chatNavigationViewModel)
         .detent(
@@ -113,18 +120,11 @@ public struct ChatNavigation<Content: View>: View {
                 }
             }
         }
-        .onChange(of: chatNavigationViewModel.dateOfLastMessage) { value in
-            if let value = value {
-                self.onUpdateDate(value)
-            }
-        }
     }
 }
 
 #Preview{
-    ChatNavigation(openChat: .init(topic: nil, onTop: true)) { type, onDone in
+    ChatNavigation(chatType: .none) { type, onDone in
         EmptyView()
-    } onUpdateDate: { _ in
-
     }
 }

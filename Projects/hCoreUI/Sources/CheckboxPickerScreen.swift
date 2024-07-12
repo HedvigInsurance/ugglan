@@ -341,15 +341,26 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
                 if itemDisplayName == L10n.manualInputListOther {
                     let _ = displayName = .init(title: L10n.manualInputListOther, subTitle: nil)
                 }
-
-                hRadioOptionSelectedView(
-                    selectedValue: .constant(isSelected ? displayName?.title : nil),
-                    value: displayName?.title ?? ""
-                )
-                .hUseCheckbox
+                getRightView(isSelected: isSelected, title: displayName?.title)
             }
         }
         .frame(width: 24, height: 24)
+    }
+
+    @ViewBuilder
+    private func getRightView(isSelected: Bool, title: String?) -> some View {
+        if let singleSelect = config.singleSelect, singleSelect {
+            hRadioOptionSelectedView(
+                selectedValue: .constant(isSelected ? title : nil),
+                value: title ?? ""
+            )
+        } else {
+            hRadioOptionSelectedView(
+                selectedValue: .constant(isSelected ? title : nil),
+                value: title ?? ""
+            )
+            .hUseCheckbox
+        }
     }
 }
 

@@ -6,8 +6,5 @@ mutation chatSendText($input: ChatMessageTextInput!) {
     message {
       ... MessageFragment
     }
-    status {
-      message
-    }
   }
 }
