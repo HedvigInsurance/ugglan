@@ -18,16 +18,13 @@ struct ChatInputView: View {
                             self.vm.showBottomMenu.toggle()
                         }
                     } label: {
-                        Image(uiImage: hCoreUIAssets.plusSmall.image)
-                            .resizable().frame(width: 16, height: 16)
+                        Image(uiImage: hCoreUIAssets.plus.image)
+                            .resizable().frame(width: 24, height: 24)
                             .rotationEffect(vm.showBottomMenu ? .degrees(45) : .zero)
                             .foregroundColor(hTextColor.Opaque.primary)
-                            .padding(.padding12)
-                            .background(hBackgroundColor.primary)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.primary, lineWidth: 0.5)
-                            )
+                            .padding(.padding8)
+                            .background(hSurfaceColor.Opaque.primary)
+                            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusM))
                     }
                     HStack(alignment: .bottom, spacing: 0) {
                         CustomTextViewRepresentable(
@@ -49,11 +46,8 @@ struct ChatInputView: View {
                         }
                     }
                     .padding(.leading, .padding4)
-                    .background(hBackgroundColor.primary)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.primary, lineWidth: 0.5)
-                    )
+                    .background(hSurfaceColor.Opaque.primary)
+                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusM))
                 }
                 .padding([.horizontal, .top], 16)
                 .fixedSize(horizontal: false, vertical: true)
@@ -66,7 +60,7 @@ struct ChatInputView: View {
                             bottomMenuItem(with: hCoreUIAssets.image.image) {
                                 vm.openImagePicker()
                             }
-                            bottomMenuItem(with: hCoreUIAssets.documents.image) {
+                            bottomMenuItem(with: hCoreUIAssets.document.image) {
                                 vm.openFilePicker()
                             }
                         }
@@ -88,20 +82,14 @@ struct ChatInputView: View {
         Button {
             action()
         } label: {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(hBackgroundColor.primary)
-                .aspectRatio(1, contentMode: .fit)
-                .overlay(
-                    Image(uiImage: image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: 24)
-                        .foregroundColor(hTextColor.Opaque.primary)
-                )
-                .frame(height: 80)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12).stroke(hBorderColor.primary, lineWidth: 0.5)
-                )
+            Image(uiImage: image)
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 24, height: 24)
+                .foregroundColor(hFillColor.Opaque.primary)
+                .padding(28)
+                .background(hSurfaceColor.Opaque.primary)
+                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
         }
     }
 }
@@ -170,6 +158,7 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
     @Binding var text: String
     @Binding var height: CGFloat
     @Binding var showBottomMenu: Bool
+    @Environment(\.colorScheme) var schema
     func makeUIView(context: Context) -> some UIView {
         CustomTextView(
             placeholder: placeholder,
@@ -191,13 +180,12 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
 }
 
 private class CustomTextView: UITextView, UITextViewDelegate {
-    private let placeholder: String
     @Binding private var inputText: String
     @Binding private var height: CGFloat
     @Binding private var showBottomMenu: Bool
+    private var placeholderLabel = UILabel()
     private var textCancellable: AnyCancellable?
     init(placeholder: String, inputText: Binding<String>, height: Binding<CGFloat>, showBottomMenu: Binding<Bool>) {
-        self.placeholder = placeholder
         self._inputText = inputText
         self._height = height
         self._showBottomMenu = showBottomMenu
@@ -205,24 +193,16 @@ private class CustomTextView: UITextView, UITextViewDelegate {
         self.textContainerInset = .init(horizontalInset: 4, verticalInset: 4)
         self.delegate = self
         self.font = Fonts.fontFor(style: .body1)
-        if inputText.wrappedValue.isEmpty {
-            self.text = placeholder
-            self.textColor = UIColor.lightGray
-        } else {
-            self.text = inputText.wrappedValue
-            self.textColor = UIColor.black
-        }
+        self.text = inputText.wrappedValue
+        self.textColor = UIColor.black
         self.backgroundColor = .clear
-        let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
-        let doneButton = UIBarButtonItem(
-            barButtonSystemItem: .done,
-            target: self,
-            action: #selector(handleDoneButtonTap)
-        )
-        let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        toolbar.setItems([space, doneButton], animated: false)
-
-        self.inputAccessoryView = toolbar
+        placeholderLabel.font = Fonts.fontFor(style: .body1)
+        placeholderLabel.text = placeholder
+        self.addSubview(placeholderLabel)
+        placeholderLabel.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(4)
+            make.leading.equalToSuperview().offset(8)
+        }
     }
 
     @objc private func handleDoneButtonTap() {
@@ -243,35 +223,24 @@ private class CustomTextView: UITextView, UITextViewDelegate {
 
     func textViewDidBeginEditing(_ textView: UITextView) {
         showBottomMenu = false
-        if textView.textColor == placeholderTextColor {
-            textView.text = nil
-            textView.textColor = editingTextColor
-        }
     }
 
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) { [weak self] in
             self?.inputText = textView.text
             self?.updateHeight()
+            self?.updateColors()
         }
         return true
     }
 
     func textViewDidEndEditing(_ textView: UITextView) {
-        let text = textView.text.trimmingCharacters(in: .whitespacesAndNewlines)
-        if text.isEmpty {
-            textView.text = placeholder
-            textView.textColor = placeholderTextColor
-        }
     }
 
     func updateColors() {
-        if text.isEmpty {
-            self.text = placeholder
-            self.textColor = placeholderTextColor
-        } else {
-            self.textColor = editingTextColor
-        }
+        self.placeholderLabel.isHidden = !text.isEmpty
+        self.placeholderLabel.textColor = placeholderTextColor
+        self.textColor = editingTextColor
     }
 
     private var editingTextColor: UIColor {

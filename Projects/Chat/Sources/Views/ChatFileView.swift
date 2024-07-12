@@ -18,49 +18,63 @@ struct ChatFileView: View {
     var body: some View {
         Group {
             if file.mimeType.isImage {
-                if file.mimeType == .GIF {
-                    KFAnimatedImage(
-                        source: Kingfisher.Source.network(
-                            Kingfisher.KF.ImageResource(downloadURL: file.url, cacheKey: file.id)
-                        )
-                    )
-                    .targetCache(ImageCache.default)
-                    .aspectRatio(
-                        contentMode: .fit
-                    )
-                } else {
-                    KFImage(
-                        source: getSource()
-                    )
-                    .fade(duration: 0.25)
-                    .placeholder({ progress in
-                        ProgressView()
-                            .foregroundColor(hTextColor.Opaque.primary)
-                            .environment(\.colorScheme, .light)
-
-                    })
-                    .targetCache(ImageCache.default)
-                    .setProcessor(processor)
-                    .resizable()
-                    .aspectRatio(
-                        contentMode: .fit
-                    )
-                    .frame(minWidth: 50)
-                }
+                imageView
             } else {
-                HStack {
-                    hCoreUIAssets.documents.view
-                    hText(L10n.chatFileDownload)
-                }
-                .padding(.padding12)
-                .background(
-                    RoundedRectangle(cornerRadius: 12).stroke()
-                )
+                otherFile
             }
         }
         .onTapGesture {
             showFile()
         }
+    }
+
+    @ViewBuilder
+    var imageView: some View {
+        if file.mimeType == .GIF {
+            KFAnimatedImage(
+                source: Kingfisher.Source.network(
+                    Kingfisher.KF.ImageResource(downloadURL: file.url, cacheKey: file.id)
+                )
+            )
+            .targetCache(ImageCache.default)
+            .aspectRatio(
+                contentMode: .fit
+            )
+        } else {
+            KFImage(
+                source: getSource()
+            )
+            .fade(duration: 0.25)
+            .placeholder({ progress in
+                ProgressView()
+                    .foregroundColor(hTextColor.Opaque.primary)
+                    .environment(\.colorScheme, .light)
+
+            })
+            .targetCache(ImageCache.default)
+            .setProcessor(processor)
+            .resizable()
+            .aspectRatio(
+                contentMode: .fill
+            )
+            .frame(width: 140, height: 140)
+        }
+    }
+
+    var otherFile: some View {
+        RoundedRectangle(cornerRadius: .cornerRadiusL)
+            .fill(hSurfaceColor.Opaque.primary)
+            .frame(width: 140, height: 140)
+            .overlay {
+                VStack {
+                    hText("." + file.mimeType.name, style: .heading2)
+                        .foregroundColor(hTextColor.Opaque.primary)
+
+                    // we are missing name so we dont show it
+                    // hText(file.name, style: .finePrint)
+                    // .foregroundColor(hTextColor.Opaque.secondary)
+                }
+            }
     }
 
     func showFile() {
