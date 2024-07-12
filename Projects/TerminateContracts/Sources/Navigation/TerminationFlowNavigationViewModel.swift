@@ -493,9 +493,9 @@ extension TerminationFlowFinalRouterActions: TrackingViewNameProtocol {
     var nameForTracking: String {
         switch self {
         case .success:
-            return .init(describing: SetTerminationDateLandingScreen.self)
+            return "TerminationSuccessScreen"
         case .fail:
-            return "Termination Fail Screen"
+            return "TerminationFailScreen"
         case .updateApp:
             return .init(describing: UpdateAppScreen.self)
         }
