@@ -245,7 +245,7 @@ public class DatePickerViewModel: ObservableObject, Equatable, Identifiable {
                         {
                             if !backgroundView.isHidden {
                                 if let label = cell.subviews.first?.subviews.first?.subviews[1] as? UILabel {
-                                    if UIColor.clear != backgroundView.backgroundColor! {
+                                    if UIColor.clear != backgroundView.backgroundColor {
                                         let bgColor = hSignalColor.Green.element
                                             .colorFor(
                                                 .init(UITraitCollection.current.userInterfaceStyle) ?? .light,
