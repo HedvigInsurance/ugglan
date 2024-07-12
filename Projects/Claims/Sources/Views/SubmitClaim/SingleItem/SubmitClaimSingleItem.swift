@@ -51,8 +51,12 @@ public struct SubmitClaimSingleItem: View {
             }
             displayDamageField(claim: singleItemStep)
         }
-        InfoCard(text: L10n.claimsSingleItemNoticeLabel, type: .info)
-            .padding(.vertical, .padding12)
+        InfoCard(
+            text: (singleItemStep?.purchasePriceApplicable ?? false)
+                ? L10n.claimsSingleItemNoticeLabel : L10n.claimsSingleItemNoticeWithoutPriceLabel,
+            type: .info
+        )
+        .padding(.vertical, .padding12)
     }
 
     @ViewBuilder func displayBrandAndModelField(singleItemStep: FlowClamSingleItemStepModel?) -> some View {
