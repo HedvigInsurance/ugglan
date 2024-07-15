@@ -97,7 +97,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .svgkit:
             return [
-                .package(url: "https://github.com/SVGKit/SVGKit", .upToNextMajor(from: "3.0.0"))
+                .package(url: "https://github.com/SVGKit/SVGKit", .branch("3.x"))
             ]
         case .unleashProxyClientSwift:
             return [

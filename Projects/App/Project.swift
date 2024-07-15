@@ -116,7 +116,12 @@ var prodAppDependencies: [TargetDependency] = {
 }()
 
 let targetScripts: [TargetScript] = [
-    .post(path: "../../scripts/post-build-action.sh", arguments: [], name: "Clean frameworks")
+    .post(
+        path: "../../scripts/post-build-action.sh",
+        arguments: [],
+        name: "Clean frameworks",
+        basedOnDependencyAnalysis: false
+    )
 ]
 
 let project = Project(
