@@ -39,7 +39,7 @@ public enum ExternalDependencies: CaseIterable {
     public func swiftPackages() -> [Package] {
         switch self {
         case .hero: return [.package(url: "https://github.com/HeroTransitions/Hero", .upToNextMajor(from: "1.6.3"))]
-        case .apollo: return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("1.9.0"))]
+        case .apollo: return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("1.13.0"))]
         case .flow:
             return [.package(url: "https://github.com/HedvigInsurance/Flow", .upToNextMajor(from: "1.8.10"))]
         case .form:
@@ -105,7 +105,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .apolloIosCodegen:
             return [
-                .package(url: "https://github.com/apollographql/apollo-ios-codegen", .upToNextMajor(from: "1.9.0"))
+                .package(url: "https://github.com/apollographql/apollo-ios-codegen", .upToNextMajor(from: "1.13.0"))
             ]
         case .argumentParser:
             return [
