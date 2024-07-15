@@ -12,7 +12,7 @@ struct ContractsScreen: View {
     }
 
     public var body: some View {
-        CheckboxPickerScreen<TravelInsuranceContractSpecification>(
+        ItemPickerScreen<TravelInsuranceContractSpecification>(
             config: .init(
                 items: {
                     return specifications.map {

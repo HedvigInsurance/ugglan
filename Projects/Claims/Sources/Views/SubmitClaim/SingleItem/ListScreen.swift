@@ -2,7 +2,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct ItemPickerScreen<T>: View {
+public struct ListScreen<T>: View {
     var items: [(object: T, displayName: String)]
     let onSelected: (T) -> Void
     let onCancel: () -> Void
@@ -48,7 +48,7 @@ struct ItemPickerScreen_Previews: PreviewProvider {
         let name: String
     }
     static var previews: some View {
-        ItemPickerScreen<ModelForPreview>(
+        ListScreen<ModelForPreview>(
             items: {
                 let items = [
                     ModelForPreview(id: "id", name: "name"),

@@ -6,7 +6,7 @@ import hCoreUI
 struct BrandPickerView: View {
     @EnvironmentObject var router: Router
     var body: some View {
-        ItemPickerScreen<ClaimFlowItemBrandOptionModel>(
+        ListScreen<ClaimFlowItemBrandOptionModel>(
             items: {
                 let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                 return store.state.singleItemStep?.availableItemBrandOptions

@@ -11,7 +11,7 @@ struct ModelPickerView: View {
     var body: some View {
         let step = store.state.singleItemStep
         let customName = step?.selectedItemBrand == brand.itemBrandId ? step?.customName : nil
-        return CheckboxPickerScreen<ClaimFlowItemModelOptionModel>(
+        return ItemPickerScreen<ClaimFlowItemModelOptionModel>(
             config: .init(
                 items: {
                     return step?.getListOfModels(for: brand.itemBrandId)?

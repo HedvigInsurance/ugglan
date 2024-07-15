@@ -200,7 +200,7 @@ struct TerminationFlowNavigation: View {
     }
 
     private func openSelectInsuranceScreen() -> some View {
-        CheckboxPickerScreen<TerminationConfirmConfig>(
+        ItemPickerScreen<TerminationConfirmConfig>(
             config: .init(
                 items: {
                     let items = configs.map({

@@ -433,7 +433,7 @@ public struct ClaimsNavigation: View {
     }
 
     private func openDamagePickerScreen() -> some View {
-        CheckboxPickerScreen<ClaimFlowItemProblemOptionModel>(
+        ItemPickerScreen<ClaimFlowItemProblemOptionModel>(
             config: .init(
                 items: {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()

@@ -3,7 +3,10 @@ query ImportantMessages {
     importantMessages {
       id
       message
-      link
+      linkInfo {
+        buttonText
+        url
+      }
     }
   }
 }

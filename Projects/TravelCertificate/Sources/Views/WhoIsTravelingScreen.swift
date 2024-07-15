@@ -12,7 +12,7 @@ struct WhoIsTravelingScreen: View {
     @EnvironmentObject var travelCertificateNavigationVm: TravelCertificateNavigationViewModel
 
     var body: some View {
-        CheckboxPickerScreen<CoInsuredModel>(
+        ItemPickerScreen<CoInsuredModel>(
             config: .init(
                 items: {
                     return vm.coInsuredModelData.compactMap({

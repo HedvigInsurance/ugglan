@@ -31,7 +31,7 @@ struct ClaimStatus: View {
     }
 
     var body: some View {
-        CardComponent(
+        ClaimStatusCard(
             onSelected: nil,
             mainContent: ClaimPills(claim: claim),
             title: claim.claimType,
