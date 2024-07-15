@@ -58,7 +58,7 @@ public enum ToolbarOptionType: Codable, Equatable {
         case .chat:
             return tooltipId
         case .chatNotification(let lastMessageTimeStamp):
-            return "\(tooltipId)\(lastMessageTimeStamp)"
+            return "\(tooltipId)\(lastMessageTimeStamp ?? Date())"
         }
     }
 

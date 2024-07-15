@@ -145,7 +145,7 @@ class MainNavigationViewModel: ObservableObject {
     }
 
     func fetchFeatureFlag() async {
-        await withCheckedContinuation { [weak self] data in
+        await withCheckedContinuation { @MainActor [weak self] data in
             if let self = self {
                 self.appDelegate.setupFeatureFlags { _ in
                     data.resume()

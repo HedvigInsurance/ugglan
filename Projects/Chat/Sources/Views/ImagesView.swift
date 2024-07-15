@@ -1,6 +1,7 @@
 import CoreServices
 import Photos
 import SwiftUI
+import UniformTypeIdentifiers
 import hCore
 import hCoreUI
 
@@ -211,7 +212,7 @@ extension PHAsset {
 
                                     let fileName = url.path
 
-                                    guard let data = try? Data(contentsOf: url)
+                                    guard (try? Data(contentsOf: url)) != nil
                                     else {
                                         inCont.resume(throwing: GenerateFileUploadError.failedToGetVideoData)
                                         return

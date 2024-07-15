@@ -164,7 +164,7 @@ class SurveyScreenViewModel: ObservableObject {
 
     func checkContinueButtonStatus() {
         let status: Bool = {
-            guard let selectedOption = selectedOption else { return false }
+            guard selectedOption != nil else { return false }
             guard let feedBack = selectedFeedBackViewModel else { return true }
             if feedBack.required && feedBack.text.count < 10 {
                 return false

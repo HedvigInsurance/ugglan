@@ -62,8 +62,8 @@ public struct hPagerDotsBinded: View {
                     .frame(width: 6, height: 6)
             }
         }
-        .onChange(of: self.currentIndex) { index in
-            let ss = index
+        .onChange(of: self.currentIndex) { _ in
+
         }
     }
 }

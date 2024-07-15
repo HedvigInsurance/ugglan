@@ -106,7 +106,6 @@ struct CoInsuredSelectScreen: View {
         )
         .hCheckboxPickerBottomAttachedView {
             hButton.LargeButton(type: .ghost) {
-                let contractStore: EditCoInsuredStore = globalPresentableStoreContainer.get()
                 editCoInsuredNavigation.coInsuredInputModel = .init(
                     actionType: .add,
                     coInsuredModel: .init(),

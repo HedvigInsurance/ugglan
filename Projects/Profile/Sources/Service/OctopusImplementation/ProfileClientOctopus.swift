@@ -143,6 +143,9 @@ public class ProfileClientOctopus: ProfileClient {
             subscribe: GraphQLNullable(booleanLiteral: subscribed)
         )
         let data = try await octopus.client.perform(mutation: mutation)
+        if data.memberUpdateSubscriptionPreference?.message != nil {
+            throw ProfileError.error(message: L10n.General.errorBody)
+        }
     }
 
 }

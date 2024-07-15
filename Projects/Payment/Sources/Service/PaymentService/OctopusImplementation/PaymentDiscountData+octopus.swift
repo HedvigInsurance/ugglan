@@ -61,7 +61,7 @@ extension GraphQLEnum<OctopusGraphQL.MemberReferralStatus> {
             case .terminated:
                 return .terminated
             }
-        case .unknown(let string):
+        case .unknown:
             return .unknown
         }
     }

@@ -160,7 +160,6 @@ public struct ChatScreen: View {
 
 #Preview{
     let client = ChatDemoClient()
-    let conversationClient = ConversationDemoClient()
     Dependencies.shared.add(
         module: Module { () -> FetchMessagesClient in
             client
@@ -215,7 +214,7 @@ class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
                 if let navigation = vc.navigationController {
                     return findProverVC(from: navigation)
                 } else {
-                    if let vccc = vc.presentationController as? BlurredSheetPresenationController {
+                    if vc.presentationController is BlurredSheetPresenationController {
                         return vc
                     } else if let superviewVc = vc.view.superview?.viewController {
                         return findProverVC(from: superviewVc)

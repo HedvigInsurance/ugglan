@@ -69,7 +69,7 @@ struct TerminationFlowNavigation: View {
                         openSetTerminationDateLandingScreen(config: config, fromSelectInsurance: false)
                     case let .surveyStep(options, type):
                         openSurveyScreen(options: options, subtitleType: type)
-                    case let .selectInsurance(configs):
+                    case .selectInsurance:
                         openSelectInsuranceScreen()
                     }
                 }
@@ -151,7 +151,7 @@ struct TerminationFlowNavigation: View {
                 openSetTerminationDateLandingScreen(config: config, fromSelectInsurance: false)
             case let .surveyStep(options, type):
                 openSurveyScreen(options: options, subtitleType: type)
-            case let .selectInsurance(configs):
+            case .selectInsurance:
                 openSelectInsuranceScreen()
             }
         case let .final(action):

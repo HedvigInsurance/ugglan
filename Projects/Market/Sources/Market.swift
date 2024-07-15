@@ -34,7 +34,7 @@ public enum Market: String, CaseIterable, Codable {
     }
 
     static var activatedMarkets: [Market] {
-        var activatedMarkets: [Market] = [.denmark, .sweden, .norway]
+        let activatedMarkets: [Market] = [.denmark, .sweden, .norway]
         return activatedMarkets
     }
 

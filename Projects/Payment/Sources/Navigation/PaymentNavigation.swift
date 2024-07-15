@@ -90,7 +90,7 @@ extension PaymentsRouterAction: TrackingViewNameProtocol {
             return .init(describing: PaymentsDiscountsRootView.self)
         case .history:
             return .init(describing: PaymentHistoryView.self)
-        case .openUrl(let url):
+        case .openUrl:
             return ""
         }
     }
@@ -106,7 +106,7 @@ extension PaymentsRedirectType: TrackingViewNameProtocol {
         switch self {
         case .forever:
             return "Forever"
-        case .openUrl(let url):
+        case .openUrl:
             return ""
         }
     }

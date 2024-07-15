@@ -88,7 +88,9 @@ public struct FileView: View {
                 .aspectRatio(1, contentMode: .fill)
                 .background(
                     KFImage(
-                        source: Kingfisher.Source.network(Kingfisher.ImageResource(downloadURL: url, cacheKey: file.id))
+                        source: Kingfisher.Source.network(
+                            Kingfisher.KF.ImageResource(downloadURL: url, cacheKey: file.id)
+                        )
                     )
                     .fade(duration: 0.25)
                     .targetCache(ImageCache.default)
