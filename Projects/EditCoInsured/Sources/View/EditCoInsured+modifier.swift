@@ -79,7 +79,7 @@ extension InsuredPeopleConfigType: TrackingViewNameProtocol {
         case .oneItem:
             return .init(describing: InsuredPeopleNewScreen.self)
         case .list:
-            return .init(describing: CheckboxPickerScreen<InsuredPeopleConfig>.self)
+            return .init(describing: ItemPickerScreen<InsuredPeopleConfig>.self)
         }
     }
 }

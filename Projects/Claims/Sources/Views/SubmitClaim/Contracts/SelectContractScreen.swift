@@ -13,7 +13,7 @@ struct SelectContractScreen: View {
                 state.contractStep
             }
         ) { contractStep in
-            CheckboxPickerScreen<FlowClaimContractSelectOptionModel>(
+            ItemPickerScreen<FlowClaimContractSelectOptionModel>(
                 config: .init(
                     items: {
                         return contractStep?.availableContractOptions

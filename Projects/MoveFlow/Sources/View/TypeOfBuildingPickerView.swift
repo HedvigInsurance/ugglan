@@ -15,7 +15,7 @@ struct TypeOfBuildingPickerView: View {
     }
 
     var body: some View {
-        CheckboxPickerScreen<ExtraBuildingType>(
+        ItemPickerScreen<ExtraBuildingType>(
             config: .init(
                 items: {
                     let store: MoveFlowStore = globalPresentableStoreContainer.get()

@@ -236,7 +236,7 @@ public struct EditCoInsuredSelectInsuranceNavigation: View {
     }
 
     func openSelectInsurance() -> some View {
-        CheckboxPickerScreen<InsuredPeopleConfig>(
+        ItemPickerScreen<InsuredPeopleConfig>(
             config: .init(
                 items: {
                     return configs.compactMap({

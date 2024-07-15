@@ -7,7 +7,7 @@ struct LocationView: View {
     @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
     @EnvironmentObject var router: Router
     var body: some View {
-        CheckboxPickerScreen<ClaimFlowLocationOptionModel>(
+        ItemPickerScreen<ClaimFlowLocationOptionModel>(
             config: .init(
                 items: {
                     let store: SubmitClaimStore = globalPresentableStoreContainer.get()

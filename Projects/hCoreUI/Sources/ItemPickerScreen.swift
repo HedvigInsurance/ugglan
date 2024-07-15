@@ -1,7 +1,7 @@
 import SwiftUI
 import hCore
 
-public class CheckboxConfig<T>: ObservableObject where T: Equatable & Hashable {
+public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
     typealias PickerModel = (object: T, displayName: ItemModel)
 
     var items: [PickerModel]
@@ -13,13 +13,13 @@ public class CheckboxConfig<T>: ObservableObject where T: Equatable & Hashable {
     let disableIfNoneSelected: Bool
     let manualInputPlaceholder: String
     let hButtonText: String
-    let infoCard: CheckboxInfoCard?
+    let infoCard: ItemPickerInfoCard?
     let listTitle: String?
 
     var fieldSize: hFieldSize
     let manualInputId = "manualInputId"
 
-    @Published var type: CheckboxFieldType? = nil
+    @Published var type: ItemPickerFieldType? = nil
     @Published var manualBrandName: String = ""
     @Published var manualInput: Bool = false
     @Published var selectedItems: [T] = []
@@ -36,7 +36,7 @@ public class CheckboxConfig<T>: ObservableObject where T: Equatable & Hashable {
         manualBrandName: String? = nil,
         withTitle: String? = nil,
         hButtonText: String? = L10n.generalSaveButton,
-        infoCard: CheckboxInfoCard? = nil,
+        infoCard: ItemPickerInfoCard? = nil,
         fieldSize: hFieldSize? = nil
     ) {
         self.items = items
@@ -67,7 +67,7 @@ public class CheckboxConfig<T>: ObservableObject where T: Equatable & Hashable {
         self.infoCard = infoCard
     }
 
-    public struct CheckboxInfoCard {
+    public struct ItemPickerInfoCard {
         let text: String
         let buttons: [InfoCardButtonConfig]
         let placement: InfoCardPlacement
@@ -89,15 +89,15 @@ public class CheckboxConfig<T>: ObservableObject where T: Equatable & Hashable {
     }
 }
 
-public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
+public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     @Environment(\.hButtonIsLoading) var isLoading
-    @Environment(\.hCheckboxPickerBottomAttachedView) var bottomAttachedView
+    @Environment(\.hItemPickerBottomAttachedView) var bottomAttachedView
     @Environment(\.hIncludeManualInput) var includeManualInput
-    @ObservedObject private var config: CheckboxConfig<T>
+    @ObservedObject private var config: ItemConfig<T>
 
     let leftView: ((T?) -> AnyView?)?
     public init(
-        config: CheckboxConfig<T>,
+        config: ItemConfig<T>,
         leftView: ((T?) -> AnyView?)? = nil
     ) {
         self.config = config
@@ -299,7 +299,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
             leftViewWithItem: leftView,
             cellView: {
                 AnyView(
-                    checkBox(
+                    selectionField(
                         isSelected: isSelected,
                         item,
                         itemDisplayName
@@ -330,7 +330,7 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
         }
     }
 
-    func checkBox(isSelected: Bool, _ item: T?, _ itemDisplayName: String?) -> some View {
+    func selectionField(isSelected: Bool, _ item: T?, _ itemDisplayName: String?) -> some View {
         Group {
             ZStack {
                 let isSelected =
@@ -364,14 +364,14 @@ public struct CheckboxPickerScreen<T>: View where T: Equatable & Hashable {
     }
 }
 
-struct CheckboxPickerScreen_Previews: PreviewProvider {
+struct ItemPickerScreen_Previews: PreviewProvider {
     struct ModelForPreview: Equatable, Hashable {
         let id: String
         let name: ItemModel
     }
     static var previews: some View {
         VStack {
-            CheckboxPickerScreen<ModelForPreview>(
+            ItemPickerScreen<ModelForPreview>(
                 config:
                     .init(
                         items: {
@@ -420,29 +420,29 @@ struct CheckboxPickerScreen_Previews: PreviewProvider {
     }
 }
 
-private struct EnvironmentHCheckboxPickerBottomAttachedView: EnvironmentKey {
+private struct EnvironmentHItemPickerBottomAttachedView: EnvironmentKey {
     static let defaultValue: AnyView? = nil
 }
 
 extension EnvironmentValues {
-    public var hCheckboxPickerBottomAttachedView: AnyView? {
-        get { self[EnvironmentHCheckboxPickerBottomAttachedView.self] }
-        set { self[EnvironmentHCheckboxPickerBottomAttachedView.self] = newValue }
+    public var hItemPickerBottomAttachedView: AnyView? {
+        get { self[EnvironmentHItemPickerBottomAttachedView.self] }
+        set { self[EnvironmentHItemPickerBottomAttachedView.self] = newValue }
     }
 }
 
 extension View {
-    public func hCheckboxPickerBottomAttachedView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
-        self.environment(\.hCheckboxPickerBottomAttachedView, AnyView(content()))
+    public func hItemPickerBottomAttachedView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        self.environment(\.hItemPickerBottomAttachedView, AnyView(content()))
     }
 }
 
-enum CheckboxFieldType: hTextFieldFocusStateCompliant {
-    static var last: CheckboxFieldType {
-        return CheckboxFieldType.inputField
+enum ItemPickerFieldType: hTextFieldFocusStateCompliant {
+    static var last: ItemPickerFieldType {
+        return ItemPickerFieldType.inputField
     }
 
-    var next: CheckboxFieldType? {
+    var next: ItemPickerFieldType? {
         switch self {
         case .inputField:
             return nil

@@ -41,7 +41,7 @@ struct CoInsuredSelectScreen: View {
     }
 
     var picker: some View {
-        CheckboxPickerScreen<CoInsuredModel>(
+        ItemPickerScreen<CoInsuredModel>(
             config: .init(
                 items: {
                     return
@@ -104,7 +104,7 @@ struct CoInsuredSelectScreen: View {
                 attachToBottom: true
             )
         )
-        .hCheckboxPickerBottomAttachedView {
+        .hItemPickerBottomAttachedView {
             hButton.LargeButton(type: .ghost) {
                 let contractStore: EditCoInsuredStore = globalPresentableStoreContainer.get()
                 editCoInsuredNavigation.coInsuredInputModel = .init(
