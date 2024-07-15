@@ -1,4 +1,5 @@
 import CoreServices
+import MobileCoreServices
 import Photos
 import SwiftUI
 import UniformTypeIdentifiers
@@ -228,17 +229,11 @@ extension PHAsset {
                                 })
                         }
                 case .image:
-                    guard let uti = contentInput?.uniformTypeIdentifier else {
+                    guard let ext = contentInput?.fullSizeImageURL?.pathExtension else {
                         inCont.resume(throwing: GenerateFileUploadError.failedToGenerateMimeType)
                         return
                     }
-                    guard
-                        let mimeType = UTTypeCopyPreferredTagWithClass(
-                            uti as CFString,
-                            kUTTagClassMIMEType as CFString
-                        )?
-                        .takeRetainedValue() as String?
-                    else {
+                    guard let mimeType = UTType(filenameExtension: ext)?.preferredMIMEType else {
                         inCont.resume(throwing: GenerateFileUploadError.failedToGenerateMimeType)
                         return
                     }
@@ -250,7 +245,7 @@ extension PHAsset {
                                 return
                             }
 
-                            if fileName.lowercased().contains("heic") {
+                            if mimeType.lowercased().contains("heic") {
                                 guard let image = UIImage(data: data),
                                     let jpegData = image.jpegData(
                                         compressionQuality: 0.9
