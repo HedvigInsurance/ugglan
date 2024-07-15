@@ -410,12 +410,7 @@ struct ItemPickerScreen_Previews: PreviewProvider {
                 }
             )
             .hEmbeddedHeader
-            //            .hFormTitle(
-            //                title: .init(.small, .title3, "title", alignment: .leading)
-            //            )
             .hIncludeManualInput
-            //            .hFieldLeftAttachedView
-            //            .disabled(true)
         }
     }
 }
