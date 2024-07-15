@@ -1,8 +1,9 @@
 import Foundation
 import SwiftUI
 import hCore
+import hCoreUI
 
-public struct CardComponent<MainContent, BottomContent>: View
+public struct ClaimStatusCard<MainContent, BottomContent>: View
 where MainContent: View, BottomContent: View {
     var onSelected: (() -> Void)?
     let mainContent: MainContent?
@@ -65,7 +66,7 @@ struct CardComponent_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
             Spacer()
-            CardComponent(
+            ClaimStatusCard(
                 onSelected: {
 
                 },
@@ -86,7 +87,7 @@ struct FCardComponent_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
             Spacer()
-            CardComponent(
+            ClaimStatusCard(
                 onSelected: {
 
                 },
