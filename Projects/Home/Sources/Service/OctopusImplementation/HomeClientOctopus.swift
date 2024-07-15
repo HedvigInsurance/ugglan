@@ -14,7 +14,13 @@ public class HomeClientOctopus: HomeClient {
             .client
             .fetch(query: OctopusGraphQL.ImportantMessagesQuery(), cachePolicy: .fetchIgnoringCacheCompletely)
         let messages = data.currentMember.importantMessages.map { data in
-            ImportantMessage(id: data.id, message: data.message, link: data.link)
+            let link: ImportantMessage.LinkInfo? = {
+                if let linkInfo = data.linkInfo, let url = URL(string: linkInfo.url) {
+                    return .init(link: url, text: linkInfo.buttonText)
+                }
+                return nil
+            }()
+            return ImportantMessage(id: data.id, message: data.message, linkInfo: link)
         }
         return messages
     }
