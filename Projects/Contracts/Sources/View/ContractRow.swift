@@ -1,6 +1,7 @@
 import Combine
 import SwiftUI
 import hCore
+import hCoreUI
 
 public struct ContractRow: View {
     @State var frameWidth: CGFloat = 0
