@@ -9,9 +9,9 @@ struct ImportantMessageView: View {
     @State var showSafariView = false
     @State var urlLink: URL?
     var body: some View {
-        if let message = importantMessage.message {
-            if let link = importantMessage.link, let urlLink = URL(string: link) {
-                InfoCard(text: message, type: .attention)
+        if importantMessage.message != "" {
+            if let linkInfo = importantMessage.linkInfo {
+                InfoCard(text: importantMessage.message, type: .attention)
                     .buttons(
                         [
                             .init(
@@ -21,9 +21,9 @@ struct ImportantMessageView: View {
                                 }
                             ),
                             .init(
-                                buttonTitle: L10n.ImportantMessage.readMore,
+                                buttonTitle: linkInfo.text,
                                 buttonAction: {
-                                    self.urlLink = urlLink
+                                    self.urlLink = linkInfo.link
                                     showSafariView = true
                                 }
                             ),
@@ -33,7 +33,7 @@ struct ImportantMessageView: View {
                         SafariView(url: $urlLink)
                     }
             } else {
-                InfoCard(text: message, type: .attention)
+                InfoCard(text: importantMessage.message, type: .attention)
                     .buttons(
                         [
                             .init(
