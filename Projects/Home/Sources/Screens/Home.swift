@@ -177,7 +177,6 @@ class HomeVM: ObservableObject {
         store.send(.fetchMemberState)
         store.send(.fetchImportantMessages)
         store.send(.fetchQuickActions)
-        store.send(.fetchClaims)
         store.send(.fetchChatNotifications)
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         contractStore.send(.fetch)
