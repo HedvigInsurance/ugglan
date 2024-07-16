@@ -119,15 +119,6 @@ public class HomeClientOctopus: HomeClient {
             )
         }
     }
-
-    public func getNumberOfClaims() async throws -> Int {
-        let data = try await self.octopus.client
-            .fetch(
-                query: OctopusGraphQL.ClaimsFileQuery(),
-                cachePolicy: .fetchIgnoringCacheCompletely
-            )
-        return data.currentMember.claims.count
-    }
 }
 
 extension OctopusGraphQL.HomeQuery.Data.CurrentMember {

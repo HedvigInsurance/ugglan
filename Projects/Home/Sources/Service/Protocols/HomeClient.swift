@@ -5,7 +5,6 @@ public protocol HomeClient {
     func getMemberState() async throws -> MemberState
     func getQuickActions() async throws -> [QuickAction]
     func getLastMessagesDates() async throws -> [String: Date]
-    func getNumberOfClaims() async throws -> Int
 }
 
 public struct MemberState {

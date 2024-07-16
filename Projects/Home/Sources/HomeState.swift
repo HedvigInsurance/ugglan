@@ -20,7 +20,6 @@ public struct HomeState: StateProtocol {
         return contracts.filter { $0.upcomingRenewal != nil }
     }
     public var showChatNotification = false
-    public var hasAtLeastOneClaim = false
     public var hasSentOrRecievedAtLeastOneMessage = false
     public var latestConversationTimeStamp = Date()
     public var latestChatTimeStamp = Date()
@@ -58,10 +57,7 @@ public enum HomeAction: ActionProtocol {
     case setChatNotification(hasNew: Bool)
     case setChatNotificationTimeStamp(sentAt: Date)
     case setChatNotificationConversationTimeStamp(date: Date)
-
-    case fetchClaims
     case setHasSentOrRecievedAtLeastOneMessage(hasSent: Bool)
-    case setHasAtLeastOneClaim(has: Bool)
 
     case dismissOtherServices
     case hideImportantMessage(id: String)
@@ -150,16 +146,6 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                     }
                 }
             } catch {}
-
-        case .fetchClaims:
-            do {
-                let nbOfClaims = try await self.homeService.getNumberOfClaims()
-                if nbOfClaims != 0 {
-                    send(.setHasAtLeastOneClaim(has: true))
-                } else {
-                    send(.setHasAtLeastOneClaim(has: false))
-                }
-            } catch {}
         default:
             break
         }
@@ -187,9 +173,6 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         case let .setChatNotification(hasNew):
             newState.showChatNotification = hasNew
             setToolbarTypes(&newState)
-        case let .setHasAtLeastOneClaim(has):
-            newState.hasAtLeastOneClaim = has
-            setToolbarTypes(&newState)
         case let .setChatNotificationTimeStamp(sentAt):
             newState.latestChatTimeStamp = sentAt
             newState.showChatNotification = false
@@ -215,7 +198,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             types.append(.firstVet)
         }
 
-        if state.hasAtLeastOneClaim || state.hasSentOrRecievedAtLeastOneMessage
+        if state.hasSentOrRecievedAtLeastOneMessage
             || Localization.Locale.currentLocale.market != .se
         {
             if state.showChatNotification {
