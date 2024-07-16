@@ -18,7 +18,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         claimType: String,
         incidentDate: String?,
         productVariant: ProductVariant?,
-        conversation: Conversation
+        conversation: Conversation?
 
     ) {
         self.id = id
@@ -46,7 +46,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
     public let memberFreeText: String?
     public let payoutAmount: MonetaryAmount?
     public let targetFileUploadUri: String
-    public let conversation: Conversation
+    public let conversation: Conversation?
     public var statusParagraph: String {
         switch self.status {
         case .submitted:
