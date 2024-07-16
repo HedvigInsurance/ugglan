@@ -50,6 +50,7 @@ public class MockNetworkFetchInterceptor: ApolloInterceptor, Cancellable {
             chain.proceedAsync(
                 request: request,
                 response: response,
+                interceptor: self,
                 completion: completion
             )
         }
