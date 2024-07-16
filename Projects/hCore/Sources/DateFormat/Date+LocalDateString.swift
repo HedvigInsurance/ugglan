@@ -29,10 +29,6 @@ extension Date {
         return DateFormatters.displayddMMMyyyy.string(from: self).lowercased()
     }
 
-    public var displayDateDDMMMMYYYYFormat: String? {
-        return DateFormatters.displayddMMMMyyyy.string(from: self).lowercased()
-    }
-
     public var displayTimeStamp: String {
         let dateFormatter = DateFormatter()
         if !Calendar.current.isDateInWeek(from: self) {
@@ -85,12 +81,6 @@ public struct DateFormatters {
     static let displayddMMMyyyy: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd MMM yyyy"
-        return formatter
-    }()
-
-    static let displayddMMMMyyyy: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "dd MMMM yyyy"
         return formatter
     }()
 
