@@ -74,13 +74,11 @@ struct NotificationStyle: ViewModifier {
                 )
         case .defaultStyle:
             content
-                .background(
-                    Squircle.default()
-                        .fill(backgroundColor)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: .cornerRadiusL)
-                                .strokeBorder(hBorderColor.primary, lineWidth: 0.5)
-                        )
+                .background(backgroundColor)
+                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+                .overlay(
+                    RoundedRectangle(cornerRadius: .cornerRadiusL)
+                        .strokeBorder(hBorderColor.primary, lineWidth: 0.5)
                 )
         }
     }

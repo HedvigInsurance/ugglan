@@ -784,12 +784,6 @@ extension CGFloat {
 
 }
 
-extension Squircle {
-    public static func `default`(lineWidth: CGFloat = 0.0) -> Squircle {
-        Squircle(radius: 27.0, smooth: 100.0, lineWidth: lineWidth)
-    }
-}
-
 extension CGFloat {
     public static var padding4: CGFloat = 4
     public static var padding6: CGFloat = 6

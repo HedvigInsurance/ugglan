@@ -56,7 +56,7 @@ struct SubmitClaimFilesUploadScreen: View {
 
                             }
                             .fixedSize(horizontal: false, vertical: true)
-                            .clipShape(Squircle.default())
+                            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
                             .hShadow()
 
                         }

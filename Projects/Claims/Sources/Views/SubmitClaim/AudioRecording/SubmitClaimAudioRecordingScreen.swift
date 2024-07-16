@@ -69,10 +69,8 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                         .foregroundColor(hTextColor.Opaque.primary)
                                 }
                                 .padding(.padding16)
-                                .background(
-                                    Squircle.default()
-                                        .fill(hSurfaceColor.Opaque.primary)
-                                )
+                                .background(hSurfaceColor.Opaque.primary)
+                                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
                                 .padding(.trailing, .padding88)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .slideUpAppearAnimation()
@@ -92,10 +90,8 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                         .foregroundColor(hTextColor.Opaque.primary)
                                 }
                                 .padding(.padding16)
-                                .background(
-                                    Squircle.default()
-                                        .fill(hSurfaceColor.Opaque.primary)
-                                )
+                                .background(hSurfaceColor.Opaque.primary)
+                                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
                                 .padding(.trailing, .padding88)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .slideUpAppearAnimation()
@@ -133,10 +129,8 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                     .foregroundColor(hTextColor.Opaque.primary)
                             }
                             .padding(.padding16)
-                            .background(
-                                Squircle.default()
-                                    .fill(hSurfaceColor.Opaque.primary)
-                            )
+                            .background(hSurfaceColor.Opaque.primary)
+                            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
                             .padding(.vertical, .padding12)
                             .padding(.trailing, .padding88)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -154,10 +148,8 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                     .foregroundColor(hTextColor.Opaque.primary)
                             }
                             .padding(.padding16)
-                            .background(
-                                Squircle.default()
-                                    .fill(hSurfaceColor.Opaque.primary)
-                            )
+                            .background(hSurfaceColor.Opaque.primary)
+                            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
                             .padding(.vertical, .padding12)
                             .padding(.trailing, .padding88)
                             .frame(maxWidth: .infinity, alignment: .leading)
