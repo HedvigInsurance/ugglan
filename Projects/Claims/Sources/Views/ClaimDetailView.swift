@@ -440,28 +440,31 @@ public class ClaimDetailViewModel: ObservableObject {
             let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
             claimStore.stateSignal.plain().publisher
                 .map({ $0.claim(for: self.claim.id) })
-                .compactMap({ $0?.conversation?.newestMessage?.sentAt })
+                .map({ $0?.conversation.newestMessage?.sentAt })
                 .removeDuplicates()
                 .receive(on: RunLoop.main)
                 .sink { [weak self] value in
-                    let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
-                    let conversationId = claimStore.state.claim(for: self?.claim.id ?? "")?.conversation?.id
-                    let chatStore: ChatStore = globalPresentableStoreContainer.get()
-                    let timeStamp = chatStore.state.conversationsTimeStamp[conversationId ?? ""]
-                    let showChatNotification = timeStamp ?? Date() < value
-                    self?.toolbarOptionType =
-                        showChatNotification ? [.chatNotification(lastMessageTimeStamp: value)] : [.chat]
+                    if let value {
+                        let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
+                        let conversationId = claimStore.state.claim(for: self?.claim.id ?? "")?.conversation.id
+                        let chatStore: ChatStore = globalPresentableStoreContainer.get()
+                        let timeStamp = chatStore.state.conversationsTimeStamp[conversationId ?? ""]
+                        let showChatNotification = timeStamp ?? Date() < value
+                        self?.toolbarOptionType =
+                            showChatNotification ? [.chatNotification(lastMessageTimeStamp: value)] : [.chat]
+                    } else {
+                        self?.toolbarOptionType = [.chat]
+                    }
                 }
                 .store(in: &cancellables)
-            if let conversation = claim.conversation {
-                let timeStamp = chatStore.state.conversationsTimeStamp[conversation.id]
-                if let newestMessage = conversation.newestMessage?.sentAt {
-                    let showChatNotification = timeStamp ?? Date() < newestMessage
-                    self.toolbarOptionType =
-                        showChatNotification ? [.chatNotification(lastMessageTimeStamp: timeStamp ?? Date())] : [.chat]
-                } else {
-                    self.toolbarOptionType = [.chat]
-                }
+
+            let timeStamp = chatStore.state.conversationsTimeStamp[claim.conversation.id]
+            if let newestMessage = claim.conversation.newestMessage?.sentAt {
+                let showChatNotification = timeStamp ?? Date() < newestMessage
+                self.toolbarOptionType =
+                    showChatNotification ? [.chatNotification(lastMessageTimeStamp: timeStamp ?? Date())] : [.chat]
+            } else {
+                self.toolbarOptionType = [.chat]
             }
 
             Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] timer in
