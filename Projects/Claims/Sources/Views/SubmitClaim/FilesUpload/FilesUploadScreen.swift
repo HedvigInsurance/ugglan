@@ -56,7 +56,6 @@ struct SubmitClaimFilesUploadScreen: View {
 
                             }
                             .fixedSize(horizontal: false, vertical: true)
-                            .background(hSurfaceColor.Opaque.primary)
                             .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
                             .hShadow()
 
