@@ -1,4 +1,4 @@
-query Claims {
+query ClaimsQueryWithConversation {
     currentMember {
         claims {
             targetFileUploadUri
@@ -16,6 +16,9 @@ query Claims {
             }
             claimType
             incidentDate
+            conversation {
+                ...ConversationFragment
+            }
         }
     }
 }
