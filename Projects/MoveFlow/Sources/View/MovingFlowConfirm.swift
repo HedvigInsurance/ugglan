@@ -211,10 +211,8 @@ struct MovingFlowConfirm: View {
                         .padding(.horizontal, .padding8)
 
                 }
-                .background(
-                    Squircle.default()
-                        .fill(whatIsCoveredBgColorScheme)
-                )
+                .background(whatIsCoveredBgColorScheme)
+                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             .sectionContainerStyle(.transparent)

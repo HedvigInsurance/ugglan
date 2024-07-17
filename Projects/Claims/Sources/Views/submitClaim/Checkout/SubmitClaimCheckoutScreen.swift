@@ -57,10 +57,8 @@ public struct SubmitClaimCheckoutScreen: View {
                     )
                     .foregroundColor(hTextColor.Opaque.primary)
                 }
-                .background(
-                    Squircle.default()
-                        .fill(Color.clear)
-                )
+                .background(Color.clear)
+                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
                 .padding(.vertical, .padding6)
             }
             .padding(.vertical, .padding8)
