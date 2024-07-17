@@ -50,7 +50,7 @@ public class ConversationClientOctopus: ConversationClient {
             do {
                 let uploadResponse = try await chatFileUploaderService.upload(files: [file]) { _ in }
                 fileUplaodTokenToSend = uploadResponse.first?.uploadToken ?? ""
-            } catch let ex {
+            } catch _ {
                 throw ConversationsError.uploadFailed
             }
         default:

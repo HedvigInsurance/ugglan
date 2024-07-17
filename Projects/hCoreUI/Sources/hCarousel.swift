@@ -68,7 +68,8 @@ public struct hCarousel<Content: View, hCarouselItem: Identifiable>: View {
             .frame(width: cardWidth)
             .offset(x: calcOffset, y: 0)
             .animation(
-                .easeInOut(duration: 0.15)
+                .easeInOut(duration: 0.15),
+                value: UUID()
             )
             .gesture(dragOverTap, including: .gesture)
 

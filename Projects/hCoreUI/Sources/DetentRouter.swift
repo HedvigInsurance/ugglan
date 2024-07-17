@@ -199,7 +199,7 @@ public class hHostingController<Content: View>: UIHostingController<Content> {
 
     public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        if let name = self.debugDescription.getViewName() {
+        if self.debugDescription.getViewName() != nil {
             logStopView(key)
         }
         onViewWillDisappear()

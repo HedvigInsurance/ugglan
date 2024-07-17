@@ -11,7 +11,6 @@ class HeadersInterceptor: ApolloInterceptor {
     let acceptLanguageHeader: String
     let userAgent: String
     let deviceIdentifier: String
-
     init(
         acceptLanguageHeader: String,
         userAgent: String,
@@ -45,10 +44,10 @@ class HeadersInterceptor: ApolloInterceptor {
                 }
 
                 httpAdditionalHeaders.forEach { key, value in request.addHeader(name: key, value: value) }
-
                 chain.proceedAsync(
                     request: request,
                     response: response,
+                    interceptor: self,
                     completion: completion
                 )
             } catch let error {

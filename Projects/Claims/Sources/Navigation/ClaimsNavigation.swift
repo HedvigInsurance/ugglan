@@ -36,11 +36,11 @@ extension ClaimsRouterActions: TrackingViewNameProtocol {
             return .init(describing: SelectClaimEntrypointType.self)
         case .triagingOption:
             return .init(describing: SelectClaimEntrypointOption.self)
-        case .dateOfOccurrancePlusLocation(let option):
+        case .dateOfOccurrancePlusLocation:
             return .init(describing: SubmitClaimOccurrencePlusLocationScreen.self)
         case .selectContract:
             return .init(describing: SelectContractScreen.self)
-        case .phoneNumber(let model):
+        case .phoneNumber:
             return .init(describing: SubmitClaimContactScreen.self)
         case .audioRecording:
             return .init(describing: SubmitClaimAudioRecordingScreen.self)

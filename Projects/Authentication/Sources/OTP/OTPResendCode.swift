@@ -19,7 +19,8 @@ struct ResendOTPCode: View {
                             .frame(width: 20, height: 20)
                             .rotationEffect(otpVM.isResending ? Angle(degrees: 0) : Angle(degrees: -360))
                             .animation(
-                                otpVM.isResending ? .linear(duration: 1).repeatForever(autoreverses: false) : .default
+                                otpVM.isResending ? .linear(duration: 1).repeatForever(autoreverses: false) : .default,
+                                value: UUID()
                             )
                         hText(L10n.Login.SmediumButton.Active.resendCode, style: .subheadline)
                     }

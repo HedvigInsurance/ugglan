@@ -431,8 +431,15 @@ extension PresentationStyle {
                     + additionalNavigationHeight
                     + additionalViewHeight
                 if keyboardHeight > 0 {
-                    if let window = UIApplication.shared.windows.first {
-                        let bottomPadding = window.safeAreaInsets.bottom
+                    let keyWindow = UIApplication.shared.connectedScenes
+                        .filter({ $0.activationState == .foregroundActive })
+                        .map({ $0 as? UIWindowScene })
+                        .compactMap({ $0 })
+                        .first?
+                        .windows
+                        .filter({ $0.isKeyWindow }).first
+                    if let keyWindow {
+                        let bottomPadding = keyWindow.safeAreaInsets.bottom
                         totalHeight -= bottomPadding
                     }
                 }

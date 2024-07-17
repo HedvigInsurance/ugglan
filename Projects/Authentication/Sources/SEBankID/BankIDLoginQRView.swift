@@ -260,7 +260,7 @@ extension AuthentificationRouterType: TrackingViewNameProtocol {
             return .init(describing: OTPEntryView.self)
         case .otpCodeEntry:
             return .init(describing: OTPCodeEntryView.self)
-        case .error(let message):
+        case .error:
             return .init(describing: LoginErrorView.self)
         }
     }

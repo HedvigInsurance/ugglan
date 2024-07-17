@@ -35,8 +35,6 @@ public final class ForeverStore: LoadingStateStore<ForeverState, ForeverAction, 
         case let .setForeverData(data):
             self.removeLoading(for: .fetchForeverData)
             newState.foreverData = data
-        default:
-            break
         }
 
         return newState

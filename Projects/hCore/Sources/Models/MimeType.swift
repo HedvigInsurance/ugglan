@@ -74,7 +74,7 @@ public enum MimeType: Codable, Equatable, Hashable {
         case .JSON: return "json"
         case .M4A: return "m4a"
         case .MOV: return "mov"
-        case .other(let type): return L10n.genericUnknown
+        case .other: return L10n.genericUnknown
         }
     }
 
