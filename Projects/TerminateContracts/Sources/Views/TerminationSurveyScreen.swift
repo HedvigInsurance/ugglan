@@ -63,6 +63,7 @@ struct TerminationSurveyScreen: View {
         )
         .hFormIgnoreKeyboard()
         .hFormContentPosition(.bottom)
+        .hFormDontUseInitialAnimation
         .hFormIgnoreScrollOffsetChanges
         .hFormAttachToBottom {
             hSection {
