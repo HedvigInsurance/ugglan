@@ -56,28 +56,28 @@ public struct CoInsuredField<Content: View>: View {
                     .fixedSize()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            if let includeStatusPill {
-                statusPill
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
+            statusPill
+
         }
     }
 
     @ViewBuilder
     var statusPill: some View {
-        VStack {
-            hText(
-                includeStatusPill?
-                    .text(date: (date.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""))
-                    ?? "",
-                style: .standardSmall
-            )
+        if let includeStatusPill {
+            VStack {
+                hText(
+                    includeStatusPill
+                        .text(date: (date.localDateToDate?.displayDateDDMMMYYYYFormat ?? "")),
+                    style: .standardSmall
+                )
+            }
+            .padding(.vertical, .padding4)
+            .padding(.horizontal, .padding10)
+            .foregroundColor(includeStatusPill.textColor)
+            .background(includeStatusPill.backgroundColor)
+            .cornerRadius(8)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(.vertical, .padding4)
-        .padding(.horizontal, .padding10)
-        .foregroundColor(includeStatusPill?.textColor)
-        .background(includeStatusPill?.backgroundColor)
-        .cornerRadius(8)
     }
 }
 

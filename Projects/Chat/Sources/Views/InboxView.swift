@@ -187,7 +187,7 @@ class InboxViewModel: ObservableObject {
             withAnimation {
                 self.conversations = conversations
             }
-        } catch let ex {
+        } catch _ {
             //TODO: EXCEPTION
         }
     }

@@ -166,7 +166,7 @@ struct SetTerminationDateLandingScreen: View {
                                                     hBorderColor.secondary,
                                                     lineWidth: 2
                                                 )
-                                                .animation(.easeInOut)
+                                                .animation(.easeInOut, value: UUID())
                                         )
                                         .colorScheme(.light)
                                         .hUseLightMode

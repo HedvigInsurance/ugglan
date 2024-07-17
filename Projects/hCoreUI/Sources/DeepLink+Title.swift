@@ -23,7 +23,7 @@ extension DeepLink {
                     .uiColor(),
             ]
         )
-        var deepLinkText = AttributedString(displayText, attributes: deeplinkAttributes)
+        let deepLinkText = AttributedString(displayText, attributes: deeplinkAttributes)
         result.append(deepLinkText)
         return result
     }

@@ -51,7 +51,10 @@ public struct BlurredProgressOverlay<Content: View>: View {
                         .rotationEffect(Angle(degrees: isAnimating ? -25 : 25), anchor: .top)
                         .blur(radius: 50)
                 }
-                .animation(isAnimating ? .easeInOut(duration: 6).repeatForever(autoreverses: true) : .none)
+                .animation(
+                    isAnimating ? .easeInOut(duration: 6).repeatForever(autoreverses: true) : .none,
+                    value: isAnimating
+                )
                 .id(colorScheme)
             }
             .ignoresSafeArea()

@@ -100,8 +100,6 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
         case let .setHistory(data):
             removeLoading(for: .getHistory)
             newState.paymentHistory = data
-        default:
-            break
         }
         return newState
     }

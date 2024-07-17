@@ -109,8 +109,8 @@ class MemberSubscriptionPreferenceViewModel: ObservableObject {
                 }
             }
 
-        } catch let ex {
-            let ss = ""
+        } catch _ {
+            //TODO: Add error handling
         }
 
         withAnimation {

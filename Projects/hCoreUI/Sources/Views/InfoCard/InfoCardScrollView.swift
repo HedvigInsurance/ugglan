@@ -37,7 +37,7 @@ public struct InfoCardScrollView<Content: View, cardItem: Identifiable>: View {
             }
         }
         .transition(.offset(.zero))
-        .animation(.easeInOut(duration: 0.1))
+        .animation(.easeInOut(duration: 0.1), value: UUID())
         .frame(width: vm.cardWidth, height: vm.scrollViewHeight)
         .introspectScrollView { scrollView in
             scrollView.delegate = vm

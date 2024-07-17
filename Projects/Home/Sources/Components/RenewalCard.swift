@@ -32,7 +32,7 @@ public struct RenewalCardView: View {
 
     private func openDocument(_ contract: HomeContract) {
         if let draftCertificateUrl = contract.upcomingRenewal?.draftCertificateUrl,
-            let url = URL(string: draftCertificateUrl)
+            URL(string: draftCertificateUrl) != nil
         {
             self.document = InsuranceTerm(
                 displayName: contract.displayName,

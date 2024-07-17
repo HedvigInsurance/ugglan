@@ -153,7 +153,7 @@ public enum Environment: Hashable {
         switch self {
         case .staging: return URL(string: "https://auth.dev.hedvigit.com")!
         case .production: return URL(string: "https://auth.prod.hedvigit.com")!
-        case let .custom(_, _, _, _): return URL(string: "https://auth.dev.hedvigit.com")!
+        case .custom(_, _, _, _): return URL(string: "https://auth.dev.hedvigit.com")!
         }
     }
 }
