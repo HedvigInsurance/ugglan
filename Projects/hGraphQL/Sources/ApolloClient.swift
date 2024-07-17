@@ -1,7 +1,6 @@
 import Apollo
 import ApolloWebSocket
 import Disk
-import Flow
 import Foundation
 import SwiftUI
 
@@ -121,14 +120,6 @@ extension ApolloClient {
 
     public static func saveToken(token: OAuthorizationToken) {
         KeychainHelper.standard.save(token, key: "oAuthorizationToken")
-    }
-
-    public static func initClients() -> Future<hApollo> {
-        Future { completion in
-            let result = self.createClient()
-            completion(.success(result))
-            return NilDisposer()
-        }
     }
 
     public static func retreiveMembersWithDeleteRequests() -> Set<String> {
