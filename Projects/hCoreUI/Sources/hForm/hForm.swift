@@ -210,12 +210,14 @@ public struct hForm<Content: View>: View, KeyboardReadable {
             }
             .frame(maxWidth: .infinity)
             .tint(hForm<Content>.returnTintColor())
-            Color.clear
-                .frame(height: mergeBottomWithContentIfNeeded ? 0 : bottomAttachedViewHeight)
+            if !mergeBottomViewWithContent {
+                Color.clear
+                    .frame(height: bottomAttachedViewHeight)
+            }
         }
         .modifier(
             ForceScrollViewIndicatorInset(
-                insetBottom: mergeBottomWithContentIfNeeded ? 0 : bottomAttachedViewHeight
+                insetBottom: mergeBottomViewWithContent ? 0 : bottomAttachedViewHeight
             )
         )
         .modifier(
