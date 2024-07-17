@@ -45,7 +45,7 @@ final class TestChatViewModelBanner: XCTestCase {
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
         assert(model.banner == banner)
-        await model.fetchPreviousMessages()
+        await model.fetchPreviousMessages(retry: false)
         assert(model.banner == updatedBanner)
         self.sut = mockService
     }

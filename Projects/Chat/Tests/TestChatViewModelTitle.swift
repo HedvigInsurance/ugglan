@@ -53,7 +53,7 @@ final class TestChatViewModelTitle: XCTestCase {
         await model.startFetchingNewMessages()
         assert(model.title == title)
         assert(model.subTitle == subtitle)
-        await model.fetchPreviousMessages()
+        await model.fetchPreviousMessages(retry: false)
         assert(model.title == title)
         assert(model.subTitle == subtitle)
         self.sut = mockService

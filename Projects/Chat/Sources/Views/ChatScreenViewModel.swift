@@ -90,7 +90,7 @@ public class ChatScreenViewModel: ObservableObject {
     }
 
     @MainActor
-    func fetchPreviousMessages() async {
+    func fetchPreviousMessages(retry withAutomaticRetry: Bool = true) async {
         if let hasNext, hasNext, !isFetchingPreviousMessages {
             do {
                 isFetchingPreviousMessages = true
@@ -107,10 +107,16 @@ public class ChatScreenViewModel: ObservableObject {
                 self.isConversationOpen = chatData.isConversationOpen ?? true
                 addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
                 self.hasNext = chatData.hasPreviousMessage
+                isFetchingPreviousMessages = false
             } catch _ {
-                //TODO: handle error
+                if withAutomaticRetry {
+                    try! await Task.sleep(nanoseconds: 2_000_000_000)
+                    isFetchingPreviousMessages = false
+                    await fetchPreviousMessages()
+                } else {
+                    isFetchingPreviousMessages = false
+                }
             }
-            isFetchingPreviousMessages = false
         }
     }
 
@@ -127,11 +133,13 @@ public class ChatScreenViewModel: ObservableObject {
             self.banner = chatData.banner
             self.isConversationOpen = chatData.isConversationOpen ?? true
             addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
-            hasNext = chatData.hasPreviousMessage
+            if hasNext == nil {
+                hasNext = chatData.hasPreviousMessage
+            }
             title = chatData.title ?? L10n.chatTitle
             subTitle = chatData.subtitle
         } catch _ {
-            //TODO: handle error
+            //We ignore this errors since we will fetch this every 5 seconds
         }
     }
 
