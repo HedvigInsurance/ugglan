@@ -106,7 +106,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                 if masking.keyboardType == .numberPad {
                     let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 200, height: 44))
                     let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-                    if let next = equals?.next {
+                    if (equals?.next) != nil {
                         let button = UIButton(type: .custom)
                         button.setTitle(L10n.generalDoneButton)
                         button.backgroundColor = .clear

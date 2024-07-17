@@ -75,7 +75,10 @@ public struct WordmarkActivityIndicator: View {
 
             hText("H", style: .title1).minimumScaleFactor(0.1).padding(1.5)
                 .rotationEffect(rotating ? Angle(degrees: 0) : Angle(degrees: -360))
-                .animation(self.rotating ? .linear(duration: 1.5).repeatForever(autoreverses: false) : .default)
+                .animation(
+                    rotating ? .linear(duration: 1.5).repeatForever(autoreverses: false) : .default,
+                    value: rotating
+                )
         }
         .frame(width: frameSize, height: frameSize)
         .scaleEffect(hasEntered ? 1 : 0.8)

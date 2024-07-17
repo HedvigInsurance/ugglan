@@ -208,7 +208,7 @@ extension GraphQLEnum<OctopusGraphQL.FlowTerminationSurveyRedirectAction> {
             case .updateAddress:
                 return .updateAddress
             }
-        case .unknown(let string):
+        case .unknown:
             return nil
         }
     }

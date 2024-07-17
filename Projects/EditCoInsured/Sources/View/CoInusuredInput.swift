@@ -49,7 +49,7 @@ struct CoInusuredInput: View {
     }
 
     var body: some View {
-        if let error = vm.SSNError ?? intentVm.errorMessageForInput ?? intentVm.errorMessageForCoinsuredList {
+        if (vm.SSNError ?? intentVm.errorMessageForInput ?? intentVm.errorMessageForCoinsuredList) != nil {
             CoInsuredInputErrorView(vm: vm)
         } else {
             mainView

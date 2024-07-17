@@ -58,7 +58,7 @@ extension ApolloClient {
     static func createOctopusClient() -> hOctopus {
         let environment = Environment.current
 
-        let httpAdditionalHeaders = headers()
+        _ = headers()
 
         let store = ApolloStore(cache: ApolloClient.cache)
 

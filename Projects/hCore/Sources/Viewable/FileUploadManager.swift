@@ -30,7 +30,7 @@ public class FileUploadManager {
                     withIntermediateDirectories: true
                 )
             }
-        } catch let _ {
+        } catch _ {
 
         }
     }

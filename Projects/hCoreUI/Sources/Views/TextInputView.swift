@@ -119,6 +119,6 @@ public class TextInputViewModel: ObservableObject {
     func dismiss() async {
         do {
             try await onDismiss?()
-        } catch let error {}
+        } catch _ {}
     }
 }

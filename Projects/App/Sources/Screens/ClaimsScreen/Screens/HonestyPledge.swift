@@ -79,7 +79,7 @@ struct SlideDragger: View {
                         .colorScheme(.light)
                         .clipShape(Circle())
                     }
-                    .animation(.interpolatingSpring(stiffness: 300, damping: 20))
+                    .animation(.interpolatingSpring(stiffness: 300, damping: 20), value: UUID())
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .modifier(
@@ -89,7 +89,7 @@ struct SlideDragger: View {
                     )
                 )
             }
-            .animation(shouldAnimate && dragOffsetX == 0 ? .spring() : nil)
+            .animation(shouldAnimate && dragOffsetX == 0 ? .spring() : nil, value: UUID())
         }
     }
 

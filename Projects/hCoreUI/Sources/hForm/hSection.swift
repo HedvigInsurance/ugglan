@@ -438,16 +438,16 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
             .padding(.horizontal, horizontalSizeClass == .regular ? -60 : -16)
     }
 
-    public func withHeader<Header: View>(
-        @ViewBuilder _ builder: @escaping () -> Header
-    ) -> hSection<Header, Content, Footer> {
-        return hSection<Header, Content, Footer>(header: builder(), content: content, footer: footer)
+    public func withHeader<HeaderView: View>(
+        @ViewBuilder _ builder: @escaping () -> HeaderView
+    ) -> hSection<HeaderView, Content, Footer> {
+        return hSection<HeaderView, Content, Footer>(header: builder(), content: content, footer: footer)
     }
 
-    public func withFooter<Footer: View>(
-        @ViewBuilder _ builder: @escaping () -> Footer
-    ) -> hSection<Header, Content, Footer> {
-        return hSection<Header, Content, Footer>(header: header, content: content, footer: builder())
+    public func withFooter<FooterView: View>(
+        @ViewBuilder _ builder: @escaping () -> FooterView
+    ) -> hSection<Header, Content, FooterView> {
+        return hSection<Header, Content, FooterView>(header: header, content: content, footer: builder())
     }
 }
 

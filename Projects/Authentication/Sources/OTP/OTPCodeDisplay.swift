@@ -55,18 +55,18 @@ struct OTPCodeDisplay: View {
                 VStack {
                     VStack {
                         hText(digit, style: .title1)
-                            .animation(nil)
+                            .animation(nil, value: UUID())
                             .frame(maxWidth: .infinity)
                             .frame(height: 60, alignment: .center)
                             .contentShape(Rectangle())
                     }
                     .scaleEffect(hasValue ? 1 : 0.5)
-                    .animation(.interpolatingSpring(stiffness: 400, damping: 20))
+                    .animation(.interpolatingSpring(stiffness: 400, damping: 20), value: UUID())
                 }
                 .overlay(
                     RoundedRectangle(cornerRadius: .cornerRadiusL)
                         .strokeBorder(digitStroke(focused: focused), lineWidth: 1)
-                        .animation(.easeInOut)
+                        .animation(.easeInOut, value: UUID())
                 )
             }
         }

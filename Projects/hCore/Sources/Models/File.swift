@@ -19,7 +19,7 @@ public struct File: Codable, Equatable, Identifiable, Hashable {
 
     public var url: URL {
         switch source {
-        case .localFile(let url, let thumbnailURL):
+        case .localFile(let url, _):
             return url
         case .url(let url):
             return url
@@ -68,7 +68,7 @@ extension FilePickerDto {
                 name: name,
                 source: .localFile(url: dataUrl, thumbnailURL: useThumbnailUrl ? thumbnailUrl : nil)
             )
-        } catch let ex {
+        } catch _ {
             return nil
         }
     }

@@ -27,7 +27,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
     @Environment(\.hFormBottomBackgroundStyle) var bottomBackgroundStyle
     @Environment(\.hObserveKeyboard) var hObserveKeyboard
     @Environment(\.hIgnoreScrollOffsetChanges) var hIgnoreScrollOffsetChanges
-
+    @Environment(\.hUseInitialAnimation) var hUseInitialAnimation
     @Environment(\.colorScheme) private var colorScheme
     @State var lastTimeChangedMergeBottomViewWithContent = Date()
     @State var cancellable: AnyCancellable?
@@ -331,7 +331,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
         }
 
         let animated = self.additionalSpaceFromTop != additionalSpaceFromTop && additionalContentOffset == 0
-        if animated && enableAnimation {
+        if animated && (enableAnimation || hUseInitialAnimation) {
             withAnimation {
                 self.additionalSpaceFromTop = additionalSpaceFromTop
                 self.mergeBottomViewWithContent = shouldMergeContent
@@ -570,6 +570,23 @@ extension EnvironmentValues {
 extension View {
     public var hFormObserveKeyboard: some View {
         self.environment(\.hObserveKeyboard, true)
+    }
+}
+
+private struct EnvironmentHUseInitialAnimation: EnvironmentKey {
+    static let defaultValue = true
+}
+
+extension EnvironmentValues {
+    public var hUseInitialAnimation: Bool {
+        get { self[EnvironmentHUseInitialAnimation.self] }
+        set { self[EnvironmentHUseInitialAnimation.self] = newValue }
+    }
+}
+
+extension View {
+    public var hFormDontUseInitialAnimation: some View {
+        self.environment(\.hUseInitialAnimation, false)
     }
 }
 

@@ -43,6 +43,7 @@ extension NetworkClient: ChatFileUploaderClient {
             }
             task.resume()
         }
+        observation?.invalidate()
         return response
     }
 }

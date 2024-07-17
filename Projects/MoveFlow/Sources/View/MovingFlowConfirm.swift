@@ -347,18 +347,6 @@ struct MovingFlowConfirm_Previews: PreviewProvider {
         return MovingFlowConfirm()
             .onAppear {
                 let store: MoveFlowStore = globalPresentableStoreContainer.get()
-                let quote = OctopusGraphQL.MoveIntentFragment.init(
-                    _dataDict: .init(
-                        data: [:],
-                        fulfilledFragments: .init()
-                    )
-                )
-                let quote2 = OctopusGraphQL.MoveIntentFragment.Quote.init(
-                    _dataDict: .init(
-                        data: [:],
-                        fulfilledFragments: .init()
-                    )
-                )
                 let fragment = OctopusGraphQL.MoveIntentFragment.init(
                     _dataDict: .init(
                         data: [:],

@@ -21,7 +21,7 @@ public func generateGaussianHeights(
     var numbers: [Int] = []
     for _ in 1...count {
         let diceRoll: Int = {
-            var nextValue = distribution.nextInt()
+            let nextValue = distribution.nextInt()
             if nextValue < 0 {
                 return 0
             } else if nextValue > maxValue {
