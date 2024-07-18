@@ -3,14 +3,13 @@ import SwiftUI
 import hCore
 
 public indirect enum SubmitClaimsAction: ActionProtocol, Hashable {
-    case dissmissNewClaimFlow
+    case dismissNewClaimFlow
     case popClaimFlow
     case submitClaimOpenFreeTextChat
 
     case fetchEntrypointGroups
     case setClaimEntrypointsForSelection([ClaimEntryPointResponseModel])
     case setClaimEntrypointGroupsForSelection([ClaimEntryPointGroupResponseModel])
-    case commonClaimOriginSelected(commonClaim: ClaimsOrigin)
 
     case submitAudioRecording(type: SubmitAudioRecordingType)
     case resetAudioRecording
@@ -42,7 +41,6 @@ public indirect enum SubmitClaimsAction: ActionProtocol, Hashable {
     case navigationAction(action: SubmitClaimsNavigationAction)
     case stepModelAction(action: ClaimsStepModelAction)
     case setSelectedEntrypoints(entrypoints: [ClaimEntryPointResponseModel])
-    case setSelectedEntrypoint(entrypoint: ClaimEntryPointResponseModel)
     case setSelectedEntrypointOptions(entrypoints: [ClaimEntryPointOptionResponseModel], entrypointId: String?)
 }
 
@@ -58,18 +56,16 @@ public enum SubmitClaimsNavigationAction: ActionProtocol, Hashable {
     case openSuccessScreen
     case openSingleItemScreen
     case openSummaryScreen
-    case openSummaryEditScreen
     case openClaimCheckoutScreen
-    case openCheckoutTransferringScreen
     case openFailureSceen
     case openUpdateAppScreen
     case openSelectContractScreen
-    case openTriagingGroupScreen
     case openTriagingEntrypointScreen
     case openTriagingOptionScreen
     case openDeflectScreen(type: FlowClaimDeflectStepType)
     case openConfirmEmergencyScreen
     case openFileUploadScreen
+    case openCheckoutTransferringScreen
 
     public struct SubmitClaimOption: OptionSet, ActionProtocol, Hashable {
         public let rawValue: UInt

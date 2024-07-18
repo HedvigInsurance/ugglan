@@ -81,7 +81,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
             )
             Spacer()
             hButton.LargeButton(type: .ghost) {
-                store.send(.dissmissNewClaimFlow)
+                store.send(.dismissNewClaimFlow)
             } content: {
                 hText(L10n.generalCloseButton, style: .body1)
                     .foregroundColor(hTextColor.Opaque.primary)
@@ -177,7 +177,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
 
             hSection {
                 hButton.LargeButton(type: .primary) {
-                    store.send(.dissmissNewClaimFlow)
+                    store.send(.dismissNewClaimFlow)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                         store.send(.submitClaimOpenFreeTextChat)
                     }
@@ -189,7 +189,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
             .sectionContainerStyle(.transparent)
             HStack {
                 Button {
-                    store.send(.dissmissNewClaimFlow)
+                    store.send(.dismissNewClaimFlow)
                 } label: {
                     HStack {
                         hText(L10n.generalCloseButton, style: .body1)
