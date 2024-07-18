@@ -20,6 +20,7 @@ public class ChatScreenViewModel: ObservableObject {
     var chatNavigationVm: ChatNavigationViewModel?
     let chatService: ChatServiceProtocol
     var scrollCancellable: AnyCancellable?
+    private var pollTimerCancellable: AnyCancellable?
     var hideBannerCancellable: AnyCancellable?
 
     private var addedMessagesIds: [String] = []
@@ -49,18 +50,6 @@ public class ChatScreenViewModel: ObservableObject {
                 }
             }
 
-        Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] timer in
-            guard let self = self else {
-                timer.invalidate()
-                return
-            }
-            Task { [weak self] in
-                await self?.fetchMessages()
-            }
-        }
-        Task { [weak self] in
-            await self?.fetchMessages()
-        }
         let fileUploadManager = FileUploadManager()
         fileUploadManager.resetuploadFilesPath()
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -89,7 +78,19 @@ public class ChatScreenViewModel: ObservableObject {
     }
 
     @MainActor
-    func fetchPreviousMessages() async {
+    func startFetchingNewMessages() async {
+        pollTimerCancellable = Timer.publish(every: 5, on: .main, in: .common)
+            .autoconnect()
+            .sink(receiveValue: { [weak self] _ in
+                Task { @MainActor [weak self] in
+                    await self?.fetchMessages()
+                }
+            })
+        await self.fetchMessages()
+    }
+
+    @MainActor
+    func fetchPreviousMessages(retry withAutomaticRetry: Bool = true) async {
         if let hasNext, hasNext, !isFetchingPreviousMessages {
             do {
                 isFetchingPreviousMessages = true
@@ -106,16 +107,15 @@ public class ChatScreenViewModel: ObservableObject {
                 self.isConversationOpen = chatData.isConversationOpen ?? true
                 addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
                 self.hasNext = chatData.hasPreviousMessage
-
                 isFetchingPreviousMessages = false
             } catch _ {
-                isFetchingPreviousMessages = false
-                if #available(iOS 16.0, *) {
-                    try! await Task.sleep(for: .seconds(2))
-                } else {
+                if withAutomaticRetry {
                     try! await Task.sleep(nanoseconds: 2_000_000_000)
+                    isFetchingPreviousMessages = false
+                    await fetchPreviousMessages()
+                } else {
+                    isFetchingPreviousMessages = false
                 }
-                await fetchPreviousMessages()
             }
         }
     }
@@ -133,16 +133,13 @@ public class ChatScreenViewModel: ObservableObject {
             self.banner = chatData.banner
             self.isConversationOpen = chatData.isConversationOpen ?? true
             addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
-            hasNext = chatData.hasPreviousMessage
+            if hasNext == nil {
+                hasNext = chatData.hasPreviousMessage
+            }
             title = chatData.title ?? L10n.chatTitle
             subTitle = chatData.subtitle
         } catch _ {
-            if #available(iOS 16.0, *) {
-                try! await Task.sleep(for: .seconds(2))
-            } else {
-                try! await Task.sleep(nanoseconds: 2_000_000_000)
-            }
-            await fetchMessages()
+            //We ignore this errors since we will fetch this every 5 seconds
         }
     }
 

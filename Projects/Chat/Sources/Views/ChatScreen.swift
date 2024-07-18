@@ -42,6 +42,9 @@ public struct ChatScreen: View {
                         vm?.chatInputVm.showBottomMenu = false
                     }
                 }
+            Task {
+                await vm.startFetchingNewMessages()
+            }
         }
     }
 
