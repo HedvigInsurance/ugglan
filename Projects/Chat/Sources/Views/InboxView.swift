@@ -41,24 +41,28 @@ public struct InboxView: View {
     }
 
     func rowViewContent(for conversation: Conversation) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .top) {
-                if conversation.type == .legacy {
-                    hText(L10n.chatConversationHistoryTitle, style: .body1)
-                        .foregroundColor(hTextColor.Opaque.primary)
-                } else {
-                    VStack(alignment: .leading, spacing: 0) {
-                        hText(conversation.title, style: .body1)
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 0) {
+                HStack(alignment: .top, spacing: 0) {
+                    if conversation.type == .legacy {
+                        hText(L10n.chatConversationHistoryTitle, style: .body1)
                             .foregroundColor(hTextColor.Opaque.primary)
-                        hText(conversation.subtitle ?? "", style: .body1)
-                            .fixedSize()
-                            .foregroundColor(hTextColor.Translucent.secondary)
+                    } else {
+                        hText(conversation.title, style: .body1)
+                            .lineLimit(3)
                     }
-                }
-                Spacer()
-                getRightView(for: conversation)
-            }
+                    Spacer()
+                    getRightView(for: conversation)
+                        .fixedSize()
 
+                }
+                if let subtitle = conversation.subtitle {
+                    hText(subtitle, style: .body1)
+                        .foregroundColor(hTextColor.Translucent.secondary)
+                        .lineLimit(3)
+                }
+            }
+            .padding(.bottom, 8)
             getNewestMessage(for: conversation)
                 .padding(.bottom, 2)
         }
@@ -67,24 +71,24 @@ public struct InboxView: View {
     @ViewBuilder
     private func getRightView(for conversation: Conversation) -> some View {
         if vm.hasNotification(conversation: conversation) {
-            HStack {
-                hText(L10n.chatNewMessage, style: .footnote)
-                    .foregroundColor(hTextColor.Opaque.black)
-            }
-            .padding(.horizontal, .padding6)
-            .padding(.vertical, 3)
-            .background(
-                RoundedRectangle(cornerRadius: 6)
-                    .fill(hHighlightColor.Blue.fillTwo)
-            )
-            .transition(.scale.combined(with: .opacity))
-            .matchedGeometryEffect(id: "rightView_\(conversation.id)", in: animationNamespace)
-        } else if let timeStamp = conversation.newestMessage?.sentAt {
-            hText(timeStamp.displayTimeStamp, style: .footnote)
-                .foregroundColor(hTextColor.Opaque.secondary)
+            hText(L10n.chatNewMessage, style: .footnote)
+                .foregroundColor(hTextColor.Opaque.black)
+                .padding(.horizontal, .padding6)
+                .padding(.vertical, 3)
+                .background(
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(hHighlightColor.Blue.fillTwo)
+                )
                 .transition(.scale.combined(with: .opacity))
                 .matchedGeometryEffect(id: "rightView_\(conversation.id)", in: animationNamespace)
-
+        } else if let timeStamp = conversation.newestMessage?.sentAt {
+            ZStack {
+                hText(" ", style: .body1)
+                hText(timeStamp.displayTimeStamp, style: .footnote)
+                    .foregroundColor(hTextColor.Opaque.secondary)
+            }
+            .transition(.scale.combined(with: .opacity))
+            .matchedGeometryEffect(id: "rightView_\(conversation.id)", in: animationNamespace)
         }
     }
 
@@ -93,6 +97,7 @@ public struct InboxView: View {
         if let newestMessage = conversation.newestMessage {
             hText(newestMessage.latestMessageText, style: .footnote)
                 .foregroundColor(hTextColor.Translucent.primary)
+                .lineLimit(3)
                 .fixedSize(horizontal: false, vertical: true)
                 .foregroundColor(getNewestMessageColor(for: conversation))
         }
