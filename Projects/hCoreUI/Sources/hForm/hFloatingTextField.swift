@@ -254,7 +254,6 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
 class TextFieldVM: ObservableObject {
     @Published var textField: UITextField?
     let disposeBag = DisposeBag()
-
 }
 
 struct hFloatingTextField_Previews: PreviewProvider {
