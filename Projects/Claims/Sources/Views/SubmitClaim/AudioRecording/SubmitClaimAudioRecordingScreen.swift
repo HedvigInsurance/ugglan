@@ -36,7 +36,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
 
     public var body: some View {
         if isAudioInput {
-            audioInputForm
+            mainContent
                 .claimErrorTrackerFor([.postAudioRecording])
                 .onAppear {
                     UIApplication.shared.isIdleTimerDisabled = true
@@ -45,12 +45,12 @@ public struct SubmitClaimAudioRecordingScreen: View {
                     UIApplication.shared.isIdleTimerDisabled = false
                 }
         } else {
-            textInputForm
+            mainContent
                 .claimErrorTrackerFor([.postAudioRecording])
         }
     }
 
-    private var audioInputForm: some View {
+    private var mainContent: some View {
         hForm {
             PresentableStoreLens(
                 SubmitClaimStore.self,
@@ -67,8 +67,14 @@ public struct SubmitClaimAudioRecordingScreen: View {
         }
         .hDisableScroll
         .hFormAttachToBottom {
-            audioElements
-                .slideUpAppearAnimation()
+            Group {
+                if isAudioInput {
+                    audioElements
+                } else {
+                    textElements
+                }
+            }
+            .slideUpAppearAnimation()
         }
     }
 
@@ -93,64 +99,6 @@ public struct SubmitClaimAudioRecordingScreen: View {
             .padding(.top, .padding8)
         }
         .sectionContainerStyle(.transparent)
-    }
-
-    private var textInputForm: some View {
-        hForm {
-            PresentableStoreLens(
-                SubmitClaimStore.self,
-                getter: { state in
-                    state.audioRecordingStep
-                }
-            ) { audioRecordingStep in
-                if isAudioInput {
-                    hSection {
-                        ForEach(Array((audioRecordingStep?.questions ?? []).enumerated()), id: \.element) {
-                            index,
-                            question in
-                            HStack {
-                                hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
-                                    .foregroundColor(hTextColor.Opaque.primary)
-                            }
-                            .padding(.padding16)
-                            .background(hSurfaceColor.Opaque.primary)
-                            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-                            .padding(.vertical, .padding12)
-                            .padding(.trailing, .padding88)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .slideUpAppearAnimation()
-                        }
-                    }
-                    .sectionContainerStyle(.transparent)
-                } else {
-                    hSection {
-                        ForEach(Array((audioRecordingStep?.textQuestions ?? []).enumerated()), id: \.element) {
-                            index,
-                            question in
-                            HStack {
-                                hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
-                                    .foregroundColor(hTextColor.Opaque.primary)
-                            }
-                            .padding(.padding16)
-                            .background(hSurfaceColor.Opaque.primary)
-                            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-                            .padding(.vertical, .padding12)
-                            .padding(.trailing, .padding88)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .slideUpAppearAnimation()
-
-                        }
-                    }
-                    .sectionContainerStyle(.transparent)
-                }
-            }
-        }
-        .hDisableScroll
-        .hFormAttachToBottom {
-            textElements
-                .slideUpAppearAnimation()
-
-        }
     }
 
     private var audioElements: some View {
