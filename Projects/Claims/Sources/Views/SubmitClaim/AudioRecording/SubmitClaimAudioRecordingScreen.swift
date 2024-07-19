@@ -59,48 +59,9 @@ public struct SubmitClaimAudioRecordingScreen: View {
                 }
             ) { audioRecordingStep in
                 if isAudioInput {
-                    hSection {
-                        VStack(spacing: 8) {
-                            ForEach(Array((audioRecordingStep?.questions ?? []).enumerated()), id: \.element) {
-                                index,
-                                question in
-                                HStack {
-                                    hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
-                                        .foregroundColor(hTextColor.Opaque.primary)
-                                }
-                                .padding(.padding16)
-                                .background(hSurfaceColor.Opaque.primary)
-                                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-                                .padding(.trailing, .padding88)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .slideUpAppearAnimation()
-                            }
-                        }
-                        .padding(.top, .padding8)
-                    }
-                    .sectionContainerStyle(.transparent)
+                    textSection(questions: audioRecordingStep?.questions)
                 } else {
-                    hSection {
-                        VStack(spacing: 8) {
-                            ForEach(Array((audioRecordingStep?.textQuestions ?? []).enumerated()), id: \.element) {
-                                index,
-                                question in
-                                HStack {
-                                    hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
-                                        .foregroundColor(hTextColor.Opaque.primary)
-                                }
-                                .padding(.padding16)
-                                .background(hSurfaceColor.Opaque.primary)
-                                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-                                .padding(.trailing, .padding88)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .slideUpAppearAnimation()
-
-                            }
-                        }
-                        .padding(.top, .padding8)
-                    }
-                    .sectionContainerStyle(.transparent)
+                    textSection(questions: audioRecordingStep?.textQuestions)
                 }
             }
         }
@@ -109,6 +70,29 @@ public struct SubmitClaimAudioRecordingScreen: View {
             audioElements
                 .slideUpAppearAnimation()
         }
+    }
+
+    private func textSection(questions: [String]?) -> some View {
+        hSection {
+            VStack(spacing: 8) {
+                if let questions = questions {
+                    ForEach(questions, id: \.self) { question in
+                        HStack {
+                            hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
+                                .foregroundColor(hTextColor.Opaque.primary)
+                        }
+                        .padding(.padding16)
+                        .background(hSurfaceColor.Opaque.primary)
+                        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+                        .padding(.trailing, .padding88)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .slideUpAppearAnimation()
+                    }
+                }
+            }
+            .padding(.top, .padding8)
+        }
+        .sectionContainerStyle(.transparent)
     }
 
     private var textInputForm: some View {
