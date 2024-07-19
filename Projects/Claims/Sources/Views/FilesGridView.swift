@@ -1,4 +1,3 @@
-import Flow
 import Foundation
 import Home
 import Kingfisher
@@ -83,7 +82,7 @@ class FileGridViewModel: ObservableObject {
     @Published var files: [File]
     @Published private(set) var options: ClaimFilesViewModel.ClaimFilesViewOptions
     var onDelete: ((_ file: File) -> Void)?
-    var disposeBag = DisposeBag()
+
     init(
         files: [File],
         options: ClaimFilesViewModel.ClaimFilesViewOptions,

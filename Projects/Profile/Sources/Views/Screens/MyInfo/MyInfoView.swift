@@ -1,5 +1,4 @@
 import Combine
-import Flow
 import Presentation
 import SwiftUI
 import hCore
@@ -136,7 +135,7 @@ public class MyInfoViewModel: ObservableObject {
     private var originalPhone: String
     private var originalEmail: String
     private var cancellables = Set<AnyCancellable>()
-    private let bag = DisposeBag()
+
     init() {
         let store: ProfileStore = globalPresentableStoreContainer.get()
         originalPhone = store.state.memberDetails?.phone ?? ""

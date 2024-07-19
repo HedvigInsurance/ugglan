@@ -34,25 +34,12 @@ extension UIColor {
         case primaryBackground(_ negative: Bool = false)
         case secondaryBackground(_ negative: Bool = false)
         case primaryBorderColor
-        case secondaryBorderColor
         case primaryText(_ negative: Bool = false)
         case secondaryText
-        case messageBackground(_ my: Bool = false)
-        case navigationButton
-        case chatTimeStamp
-        case chatMessage
-        case chatMessageImportant
-        case toasterBackground
-        case toasterBorder
-        case toasterTitle
-        case toasterSubtitle
-        case chatTextView
         case alert
         case caution
-        case adyenWebViewBg
-        case adyenWebViewText
+
         case datePickerSelectionColor
-        case opaqueFillOne
 
         func color(with style: UIUserInterfaceStyle?) -> UIColor {
             switch self {
@@ -80,11 +67,6 @@ extension UIColor {
                 })
             case .primaryBorderColor:
                 return BrandColorBase.primaryBorder
-            case .secondaryBorderColor:
-                return UIColor(dynamic: { trait -> UIColor in
-                    style ?? trait.userInterfaceStyle == .dark
-                        ? BrandColorBase.grayScale800 : BrandColorBase.grayScale1000.withAlphaComponent(0.07)
-                })
             case let .primaryText(negative):
                 if negative {
                     return UIColor(dynamic: { trait -> UIColor in
@@ -101,71 +83,6 @@ extension UIColor {
                 return UIColor(dynamic: { trait -> UIColor in
                     BrandColorBase.grayScale700
                 })
-            case let .messageBackground(my):
-                return UIColor(dynamic: { trait -> UIColor in
-                    if my {
-                        return hSignalColor.Blue.fill
-                            .colorFor(style ?? trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
-                            .uiColor()
-                    } else {
-                        return UIColor(dynamic: { trait -> UIColor in
-                            style ?? trait.userInterfaceStyle == .dark
-                                ? BrandColorBase.grayScale100 : BrandColorBase.grayScale100
-                        })
-                    }
-                })
-            case .navigationButton:
-                return UIColor(dynamic: { trait -> UIColor in
-                    style ?? trait.userInterfaceStyle == .dark ? BrandColorBase.white : BrandColorBase.black
-                })
-            case .chatTimeStamp:
-                return UIColor(dynamic: { trait -> UIColor in
-                    hTextColor.Opaque.tertiary
-                        .colorFor(style ?? trait.userInterfaceStyle == .dark ? .dark : .light, .base)
-                        .color
-                        .uiColor()
-                })
-            case .chatMessage:
-                return UIColor(dynamic: { trait -> UIColor in
-                    style ?? trait.userInterfaceStyle == .dark
-                        ? BrandColorBase.grayScale1000 : BrandColorBase.grayScale1000
-                })
-            case .chatMessageImportant:
-                return UIColor(dynamic: { trait -> UIColor in
-                    hSignalColor.Blue.element
-                        .colorFor(style ?? trait.userInterfaceStyle == .dark ? .dark : .light, .base).color
-                        .uiColor()
-                })
-            case .toasterBackground:
-                return UIColor(dynamic: { trait -> UIColor in
-                    hSignalColor.Green.fill.colorFor(style ?? trait.userInterfaceStyle == .dark ? .dark : .light, .base)
-                        .color
-                        .uiColor()
-                })
-            case .toasterBorder:
-                return UIColor(dynamic: { trait -> UIColor in
-                    hBorderColor.primary
-                        .colorFor(style ?? trait.userInterfaceStyle == .dark ? .dark : .light, .base)
-                        .color
-                        .uiColor()
-                })
-            case .toasterTitle:
-                return UIColor(dynamic: { trait -> UIColor in
-                    hSignalColor.Green.text.colorFor(style ?? trait.userInterfaceStyle == .dark ? .dark : .light, .base)
-                        .color
-                        .uiColor()
-                })
-            case .toasterSubtitle:
-                return UIColor(dynamic: { trait -> UIColor in
-                    hSignalColor.Green.text.colorFor(style ?? trait.userInterfaceStyle == .dark ? .dark : .light, .base)
-                        .color
-                        .uiColor()
-                })
-            case .chatTextView:
-                return UIColor(dynamic: { trait -> UIColor in
-                    style ?? trait.userInterfaceStyle == .dark
-                        ? BrandColorBase.grayScale900 : BrandColorBase.grayScale1000.withAlphaComponent(0.045)
-                })
             case .caution:
                 return UIColor(dynamic: { trait -> UIColor in
                     style ?? trait.userInterfaceStyle == .dark
@@ -180,15 +97,6 @@ extension UIColor {
                 return UIColor(dynamic: { trait -> UIColor in
                     style ?? trait.userInterfaceStyle == .dark
                         ? BrandColorBase.grayScale500 : BrandColorBase.grayScale1000
-                })
-            case .adyenWebViewBg:
-                return BrandColorBase.grayScale25
-            case .adyenWebViewText:
-                return BrandColorBase.grayScale1000
-            case .opaqueFillOne:
-                return UIColor(dynamic: { trait -> UIColor in
-                    style ?? trait.userInterfaceStyle == .dark
-                        ? BrandColorBase.grayScale100 : BrandColorBase.grayScale900
                 })
             }
         }
@@ -208,23 +116,11 @@ extension UIColor {
             case .primaryBackground: return Fonts.fontFor(style: .heading3)
             case .secondaryBackground: return Fonts.fontFor(style: .heading3)
             case .primaryBorderColor: return Fonts.fontFor(style: .heading3)
-            case .secondaryBorderColor: return Fonts.fontFor(style: .heading3)
             case .primaryText: return Fonts.fontFor(style: .title2)
             case .secondaryText: return Fonts.fontFor(style: .title3)
-            case .messageBackground: return Fonts.fontFor(style: .headline)
-            case .navigationButton: return Fonts.fontFor(style: .body1)
-            case .chatTimeStamp: return Fonts.fontFor(style: .finePrint)
-            case .chatMessage, .chatMessageImportant: return Fonts.fontFor(style: .body1)
-            case .toasterBackground: return Fonts.fontFor(style: .heading3)
-            case .toasterBorder: return Fonts.fontFor(style: .body1)
-            case .toasterTitle: return Fonts.fontFor(style: .standardSmall)
-            case .toasterSubtitle: return Fonts.fontFor(style: .finePrint)
-            case .chatTextView: return Fonts.fontFor(style: .body1)
             case .caution: return Fonts.fontFor(style: .body1)
             case .alert: return Fonts.fontFor(style: .body1)
-            case .adyenWebViewBg, .adyenWebViewText: return Fonts.fontFor(style: .body1)
             case .datePickerSelectionColor: return Fonts.fontFor(style: .body1)
-            case .opaqueFillOne: return Fonts.fontFor(style: .body1)
             }
         }
     }

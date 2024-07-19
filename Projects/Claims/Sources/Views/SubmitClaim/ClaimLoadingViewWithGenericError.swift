@@ -13,7 +13,7 @@ private struct ClaimLoadingViewWithGenericError<StoreType: StoreLoading & Store>
             loading,
             showLoading: false,
             bottomAction: {
-                store.send(.dissmissNewClaimFlow)
+                store.send(.dismissNewClaimFlow)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     store.send(.submitClaimOpenFreeTextChat)
                 }

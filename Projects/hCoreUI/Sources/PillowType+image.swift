@@ -8,10 +8,6 @@ extension PillowType {
         asset.image
     }
 
-    public var name: String {
-        asset.name
-    }
-
     private var asset: ImageAsset {
         switch self {
         case .accident:

@@ -32,7 +32,7 @@ struct SubmitClaimCarScreen: View {
                             UIApplication.shared.open(url)
                             let delayTime = 60.0 * 3
                             DispatchQueue.main.asyncAfter(deadline: .now() + delayTime) {
-                                store.send(.dissmissNewClaimFlow)
+                                store.send(.dismissNewClaimFlow)
                             }
                         }
                     } content: {

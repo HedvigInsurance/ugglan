@@ -1,4 +1,3 @@
-import Flow
 import Presentation
 import SwiftUI
 import hCore
@@ -199,18 +198,14 @@ public class AddressInputModel: ObservableObject {
     @Published var nbOfCoInsured: Int = 0
     @Published var accessDate: Date?
     @Published var isStudent = false
-
     @Published var addressError: String?
     @Published var postalCodeError: String?
     @Published var squareAreaError: String?
     @Published var accessDateError: String?
-
     @Published var type: MovingFlowNewAddressViewFieldType?
-
+    @Published var error: String?
     @PresentableStore var store: MoveFlowStore
 
-    @Published var error: String?
-    var disposeBag = DisposeBag()
     init() {}
 
     func isInputValid() -> Bool {

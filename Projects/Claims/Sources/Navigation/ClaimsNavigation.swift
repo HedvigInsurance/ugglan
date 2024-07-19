@@ -152,7 +152,7 @@ public struct ClaimsNavigation: View {
             cancellable = store.actionSignal.publisher.sink { _ in
             } receiveValue: { action in
                 switch action {
-                case .dissmissNewClaimFlow:
+                case .dismissNewClaimFlow:
                     router.dismiss()
                 case let .navigationAction(navigationAction):
                     switch navigationAction {
@@ -395,7 +395,7 @@ public struct ClaimsNavigation: View {
                     buttonTitle: L10n.openChat,
                     buttonAction: {
                         let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                        store.send(.dissmissNewClaimFlow)
+                        store.send(.dismissNewClaimFlow)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                             store.send(.submitClaimOpenFreeTextChat)
                         }

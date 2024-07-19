@@ -7,20 +7,11 @@ import hCoreUI
 import hGraphQL
 
 struct UgglanState: StateProtocol {
-    var selectedTabIndex: Int = 0
     var isDemoMode: Bool = false
     init() {}
 }
 
 enum UgglanAction: ActionProtocol {
-    case setSelectedTabIndex(index: Int)
-    case makeTabActive(deeplink: DeepLink)
-    case showLoggedIn
-    case openChat
-    case closeChat
-    case dismissHelpCenter
-    case dismissScreen
-
     case setIsDemoMode(to: Bool)
 }
 
@@ -34,12 +25,8 @@ final class UgglanStore: StateStore<UgglanState, UgglanAction> {
         var newState = state
 
         switch action {
-        case let .setSelectedTabIndex(tabIndex):
-            newState.selectedTabIndex = tabIndex
         case let .setIsDemoMode(to):
             newState.isDemoMode = to
-        default:
-            break
         }
 
         return newState

@@ -1,4 +1,3 @@
-import Flow
 import Foundation
 import Presentation
 import SwiftUI
@@ -92,7 +91,6 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
     @State var error = ""
     @State var isLoading = false
     let retryActions: [StoreType.Action]
-    var disposeBag = DisposeBag()
     private let showLoading: Bool
     public init(
         _ type: StoreType.Type,

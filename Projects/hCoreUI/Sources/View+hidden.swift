@@ -25,7 +25,7 @@ struct HideViewController: ViewModifier {
                 UIView.animate(withDuration: 0.4) {
                     let properVC: UIViewController? = {
                         if #available(iOS 16.0, *) {
-                            return self.findProverVC(from: vc)
+                            return self.findProperVC(from: vc)
                         } else {
                             return vc.navigationController?.view.superview?.viewController ?? vc
                         }
@@ -36,15 +36,15 @@ struct HideViewController: ViewModifier {
         }
     }
 
-    private func findProverVC(from vc: UIViewController?) -> UIViewController? {
+    private func findProperVC(from vc: UIViewController?) -> UIViewController? {
         if let vc {
             if let navigation = vc.navigationController {
-                return findProverVC(from: navigation)
+                return findProperVC(from: navigation)
             } else {
                 if vc.presentationController is BlurredSheetPresenationController {
                     return vc
                 } else if let superviewVc = vc.view.superview?.viewController {
-                    return findProverVC(from: superviewVc)
+                    return findProperVC(from: superviewVc)
                 }
             }
         }

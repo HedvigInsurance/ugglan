@@ -17,7 +17,7 @@ struct SupportView: View {
                     .multilineTextAlignment(.center)
             }
             hButton.MediumButton(type: .primary) {
-                store.send(.dissmissNewClaimFlow)
+                store.send(.dismissNewClaimFlow)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     openChat()
                 }

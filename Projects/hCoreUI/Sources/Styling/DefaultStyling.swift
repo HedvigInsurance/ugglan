@@ -256,17 +256,6 @@ extension DefaultStyling {
 
         ListTableView.appearance().backgroundColor = .brand(.primaryBackground())
 
-        for view in [FormScrollView.self, FormTableView.self] {
-            view.appearance(
-                for: UITraitCollection(userInterfaceIdiom: .pad)
-            )
-            .backgroundColor = .brand(.primaryBackground())
-            view.appearance().backgroundColor = .brand(.primaryBackground())
-
-            view.appearance(for: UITraitCollection(userInterfaceLevel: .elevated)).backgroundColor =
-                .brand(.primaryBackground())
-        }
-
         UIRefreshControl.appearance().tintColor = .brand(.primaryText())
         setNavigationBarAppearance()
         setTabBarAppearance()
@@ -469,10 +458,10 @@ extension DefaultStyling {
             topSeparator: .none,
             bottomSeparator: .none
         ),
-        scrollView: FormScrollView.self,
+        scrollView: UIScrollView.self,
         plainTableView: ListTableView.self,
-        groupedTableView: FormTableView.self,
-        insetGroupedTableView: FormTableView.self,
+        groupedTableView: UITableView.self,
+        insetGroupedTableView: UITableView.self,
         collectionView: UICollectionView.self
     )
 }
