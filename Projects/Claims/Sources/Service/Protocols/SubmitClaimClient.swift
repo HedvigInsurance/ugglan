@@ -1,4 +1,3 @@
-import Flow
 import Presentation
 
 public protocol SubmitClaimClient {

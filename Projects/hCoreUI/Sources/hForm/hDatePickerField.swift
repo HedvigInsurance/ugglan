@@ -1,4 +1,3 @@
-import Flow
 import SwiftUI
 import hCore
 
@@ -18,7 +17,6 @@ public struct hDatePickerField: View {
     private var selectedDate: Date?
 
     @Binding var error: String?
-    @State private var disposeBag = DisposeBag()
     private var placeholderText: String?
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hFieldSize) var size

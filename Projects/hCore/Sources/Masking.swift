@@ -1,4 +1,3 @@
-import Flow
 import Foundation
 import Introspect
 import SwiftUI
@@ -34,24 +33,6 @@ public struct Masking {
         textField.textContentType = textContentType
         textField.autocapitalizationType = autocapitalizationType
 
-    }
-
-    public func isValidSignal(_ textField: UITextField) -> ReadSignal<Bool> {
-        textField.distinct().map { text in isValid(text: text) }
-    }
-
-    public func applyMasking(_ textField: UITextField) -> Disposable {
-        let bag = DisposeBag()
-
-        bag += textField.distinct()
-            .onValue { text in
-                let newValue = maskValue(text: text, previousText: previousText)
-                    .replacingOccurrences(of: " ", with: "\u{00a0}")
-                $previousText.value = newValue
-                textField.text = newValue
-            }
-
-        return bag
     }
 
     public func isValid(text: String) -> Bool {

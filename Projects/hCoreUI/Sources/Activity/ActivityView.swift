@@ -3,7 +3,6 @@ import Foundation
 import Presentation
 import SwiftUI
 
-//
 extension PresentationStyle {
     public static let activityView = PresentationStyle(name: "activityView") { viewController, from, _ in
         let future = Future<Void> { completion in

@@ -1,4 +1,3 @@
-import Flow
 import Foundation
 import Hero
 import Presentation
@@ -14,7 +13,6 @@ public struct hTextView: View {
     @State private var width: CGFloat = 0
     @Environment(\.hTextFieldError) var errorMessage
     @State private var value: String = ""
-    @State private var disposeBag = DisposeBag()
     @State private var selectedValue: String = ""
     @State private var popoverHeight: CGFloat = 0
     @State private var numberOfLines: Int = 0
