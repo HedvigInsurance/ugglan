@@ -26,7 +26,7 @@ public class ChatNavigationViewModel: ObservableObject {
 
     struct FileUrlModel: Identifiable, Equatable {
         public var id: String?
-        var url: URL
+        var file: File
     }
 
     private var toastPublisher: AnyCancellable?
@@ -102,11 +102,11 @@ public struct ChatNavigation<Content: View>: View {
             }
         }
         .environmentObject(chatNavigationViewModel)
-        .detent(
+        .modally(
             item: $chatNavigationViewModel.isFilePresented,
-            style: .large
+            options: .constant(.enableHero)
         ) { urlModel in
-            DocumentPreview(vm: .init(type: .url(url: urlModel.url)))
+            DocumentPreview(vm: .init(id: "\(urlModel.file.id)", type: urlModel.file.asDocumentPreviewType!))
         }
         .detent(
             presented: $chatNavigationViewModel.isAskForPushNotificationsPresented,

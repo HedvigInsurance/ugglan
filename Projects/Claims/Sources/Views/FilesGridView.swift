@@ -22,8 +22,10 @@ struct FilesGridView: View {
         LazyVGrid(columns: adaptiveColumn, spacing: 8) {
             ForEach(vm.files, id: \.id) { file in
                 ZStack(alignment: Alignment(horizontal: .trailing, vertical: .top)) {
-                    FileView(file: file) {
-                        show(file: file)
+                    HeroAnimationWrapper(id: "imagePreviewId_\(file.id)") {
+                        FileView(file: file) {
+                            show(file: file)
+                        }
                     }
                     .aspectRatio(1, contentMode: .fit)
                     .cornerRadius(12)
@@ -58,11 +60,11 @@ struct FilesGridView: View {
                 .transition(.scale.combined(with: .opacity))
             }
         }
-        .detent(
+        .modally(
             item: $fileModel,
-            style: .large
+            options: .constant(.enableHero)
         ) { model in
-            DocumentPreview(vm: .init(type: model.type.asDocumentPreviewModelType))
+            DocumentPreview(vm: .init(id: model.id, type: model.type.asDocumentPreviewModelType))
         }
     }
 
@@ -71,10 +73,10 @@ struct FilesGridView: View {
         switch file.source {
         case let .localFile(url, _):
             if let data = FileManager.default.contents(atPath: url.path) {
-                fileModel = .init(type: .data(data: data, mimeType: file.mimeType))
+                fileModel = .init(id: file.id, type: .data(data: data, mimeType: file.mimeType))
             }
         case .url(let url):
-            fileModel = .init(type: .url(url: url))
+            fileModel = .init(id: file.id, type: .url(url: url))
         }
     }
 }

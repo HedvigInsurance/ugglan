@@ -261,7 +261,7 @@ public struct DetentPresentationOption: OptionSet {
     public static let alwaysOpenOnTop = DetentPresentationOption(rawValue: 1 << 0)
     public static let withoutGrabber = DetentPresentationOption(rawValue: 1 << 2)
     public static let disableDismissOnScroll = DetentPresentationOption(rawValue: 1 << 3)
-
+    public static let enableHero = DetentPresentationOption(rawValue: 1 << 4)
     public init(rawValue: UInt) {
         self.rawValue = rawValue
     }

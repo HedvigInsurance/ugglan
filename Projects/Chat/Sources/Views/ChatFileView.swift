@@ -16,16 +16,22 @@ struct ChatFileView: View {
     )
     @ViewBuilder
     var body: some View {
-        Group {
-            if file.mimeType.isImage {
-                imageView
-            } else {
-                otherFile
+        HeroAnimationWrapper(id: "imagePreviewId_\(file.id)") {
+            Group {
+                if file.mimeType.isImage {
+                    imageView
+                } else {
+                    otherFile
+                }
             }
+            .onTapGesture {
+                showFile()
+            }
+            .frame(width: 140, height: 140)
         }
-        .onTapGesture {
-            showFile()
-        }
+        .id(UUID().uuidString)
+        .frame(width: 140, height: 140)
+
     }
 
     @ViewBuilder
@@ -57,19 +63,16 @@ struct ChatFileView: View {
             .aspectRatio(
                 contentMode: .fill
             )
-            .frame(width: 140, height: 140)
         }
     }
 
     var otherFile: some View {
         RoundedRectangle(cornerRadius: .cornerRadiusL)
             .fill(hSurfaceColor.Opaque.primary)
-            .frame(width: 140, height: 140)
             .overlay {
                 VStack {
                     hText("." + file.mimeType.name, style: .heading2)
                         .foregroundColor(hTextColor.Opaque.primary)
-
                     // we are missing name so we dont show it
                     // hText(file.name, style: .finePrint)
                     // .foregroundColor(hTextColor.Opaque.secondary)
@@ -78,12 +81,7 @@ struct ChatFileView: View {
     }
 
     func showFile() {
-        switch file.source {
-        case let .localFile(url, _):
-            chatNavigationVm.isFilePresented = .init(url: url)
-        case .url(let url):
-            chatNavigationVm.isFilePresented = .init(url: url)
-        }
+        chatNavigationVm.isFilePresented = .init(id: file.id, file: file)
     }
 
     private func getSource() -> Kingfisher.Source {

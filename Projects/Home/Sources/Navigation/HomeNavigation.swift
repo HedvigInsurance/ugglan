@@ -90,12 +90,14 @@ public class HomeNavigationViewModel: ObservableObject {
     }
 
     public struct FileUrlModel: Identifiable, Equatable {
-        public var id: String?
+        public var id: String
         public var type: FileUrlModelType
 
         public init(
+            id: String,
             type: FileUrlModelType
         ) {
+            self.id = id
             self.type = type
         }
 

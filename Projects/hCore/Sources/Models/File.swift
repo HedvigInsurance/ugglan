@@ -27,6 +27,7 @@ public struct File: Codable, Equatable, Identifiable, Hashable {
     }
 }
 
+
 public enum FileSource: Codable, Equatable, Hashable {
     case localFile(url: URL, thumbnailURL: URL?)
     case url(url: URL)

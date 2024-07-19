@@ -112,12 +112,18 @@ private struct ModallySizeModifier<SwiftUIContent>: ViewModifier where SwiftUICo
                     contentName: tracking?.nameForTracking ?? "\(Content.self)"
                 )
                 vc.modalPresentationStyle = .overFullScreen
-                vc.transitioningDelegate = .none
+                if options.contains(.enableHero) {
+                    vc.enableHero()
+                    vc.view.backgroundColor = .brand(.primaryBackground()).withAlphaComponent(0.99999)
+                } else {
+                    vc.transitioningDelegate = .none
+                }
                 vc.onDeinit = {
                     presented = false
                 }
                 presentationViewModel.presentingVC = vc
                 vcToPresent?.present(vc, animated: true)
+
             }
         } else {
             presentationViewModel.presentingVC?.dismiss(animated: true)
