@@ -23,7 +23,6 @@ struct ContractCoverageView: View {
                     ) { limit in
                         contractsNavigationVm.insurableLimit = limit
                     }
-                    Spacer()
                     PerilCollection(
                         perils: contract.currentAgreement?.productVariant.perils ?? []
                     )

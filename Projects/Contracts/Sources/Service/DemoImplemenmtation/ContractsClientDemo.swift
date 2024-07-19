@@ -26,7 +26,7 @@ public class FetchContractsClientDemo: FetchContractsClient {
                         "Travel insurance covers you during the first 45 days of your trip and is valid worldwide."
                 ),
             ],
-            documents: [],
+            documents: [.init(displayName: "Display name", url: "https://www.hedvig.com", type: .generalTerms)],
             displayName: "Home Insurance Rent"
         )
         let agreement = Agreement(

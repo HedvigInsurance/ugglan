@@ -30,41 +30,17 @@ enum ContractDetailsViews: String, CaseIterable, Identifiable {
     }
 }
 
-class TabControllerContext: ObservableObject {
-    private typealias Views = ContractDetailsViews
-
-    public init() {}
-
-    @Published var selected = Views.overview {
-        didSet {
-            if previous != selected {
-                insertion = selected.move(previous)
-                removal = previous.move(selected)
-
-                withAnimation {
-                    trigger = selected
-                    previous = selected
-                }
-            }
-        }
-    }
-
-    @Published var trigger = Views.overview
-    @Published var previous = Views.overview
-    var insertion: AnyTransition = .move(edge: .leading)
-    var removal: AnyTransition = .move(edge: .trailing)
-}
-
 public struct ContractDetail: View {
     @PresentableStore var store: ContractStore
-    @StateObject var context = TabControllerContext()
     @StateObject private var vm: ContractDetailsViewModel
     var id: String
 
     let contractOverview: ContractInformationView
     let contractCoverage: ContractCoverageView
     let contractDocuments: ContractDocumentsView
-
+    @StateObject var crollableSegmentedViewModel = ScrollableSegmentedViewModel(
+        pageModels: ContractDetailsViews.allCases.compactMap({ .init(id: $0.id, title: $0.title) })
+    )
     @State private var selectedView = ContractDetailsViews.overview
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
 
@@ -114,39 +90,40 @@ public struct ContractDetail: View {
     public var body: some View {
         if let contract = store.state.contractForId(id) {
             hForm {
-                hSection {
-                    ContractRow(
-                        image: contract.pillowType?.bgImage,
-                        terminationMessage: contract.terminationMessage,
-                        contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
-                        contractExposureName: contract.exposureDisplayName,
-                        activeFrom: contract.upcomingChangedAgreement?.activeFrom,
-                        activeInFuture: contract.activeInFuture,
-                        masterInceptionDate: contract.masterInceptionDate
-                    )
-                    Picker("View", selection: $context.selected) {
-                        ForEach(ContractDetailsViews.allCases) { view in
-                            hText(view.title, style: .standardSmall).tag(view)
-                        }
+                VStack(spacing: 0) {
+                    hSection {
+                        ContractRow(
+                            image: contract.pillowType?.bgImage,
+                            terminationMessage: contract.terminationMessage,
+                            contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
+                            contractExposureName: contract.exposureDisplayName,
+                            activeFrom: contract.upcomingChangedAgreement?.activeFrom,
+                            activeInFuture: contract.activeInFuture,
+                            masterInceptionDate: contract.masterInceptionDate
+                        )  //.fixedSize(horizontal: false, vertical: true)
                     }
-                    .pickerStyle(.segmented)
+                    ScrollableSegmentedView(
+                        vm: crollableSegmentedViewModel,
+                        contentFor: { id in
+                            Group {
+                                switch ContractDetailsViews(rawValue: id) {
+                                case .coverage:
+                                    ContractCoverageView(id: contract.id)
+                                case .details:
+                                    ContractDocumentsView(id: contract.id)
+                                case .overview:
+                                    ContractInformationView(id: contract.id)
+                                case .none:
+                                    EmptyView()
+                                }
+                            }
+                        }
+                    )
                     .padding(.top, .padding16)
                     .padding(.bottom, .padding8)
                 }
                 .sectionContainerStyle(.transparent)
                 .padding(.top, .padding8)
-                VStack(spacing: 4) {
-                    ForEach(ContractDetailsViews.allCases) { panel in
-                        if context.trigger == panel {
-                            withAnimation(.interpolatingSpring(stiffness: 300, damping: 70).speed(2)) {
-                                viewFor(view: panel)
-                                    .transition(.asymmetric(insertion: context.insertion, removal: context.removal))
-                            }
-                        }
-                    }
-                }
-                .padding(.top, .padding16)
-                .padding(.bottom, .padding8)
             }
             .presentableStoreLensAnimation(.default)
             .introspectViewController { [weak vm] vc in
