@@ -47,6 +47,7 @@ public struct AccordionView: View {
                 animationColor: hSurfaceColor.Opaque.secondary
             )
         )
+        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
     }
 }
 
@@ -110,6 +111,7 @@ struct AccordionButtonStyle: SwiftUI.ButtonStyle {
         .padding(.top, fieldSize == .small ? 15 : .padding16)
         .padding(.bottom, fieldSize == .small ? 17 : 18)
         .contentShape(Rectangle())
+
     }
 }
 
