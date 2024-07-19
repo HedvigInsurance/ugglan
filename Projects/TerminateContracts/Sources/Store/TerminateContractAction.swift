@@ -12,15 +12,12 @@ public enum TerminationStepModelAction: ActionProtocol, Hashable {
 public enum TerminationContractAction: ActionProtocol, Hashable {
     case stepModelAction(action: TerminationStepModelAction)
     case navigationAction(action: TerminationNavigationAction)
-
     case submitSurvey(option: String, feedback: String?)
-
     case startTermination(config: TerminationConfirmConfig)
     case setTerminationDate(terminationDate: Date)
     case sendTerminationDate
     case sendConfirmDelete
     case setTerminationContext(context: String)
-    case sendTermination(terminationDate: Date, surveyUrl: String)
 }
 
 public enum TerminationNavigationAction: ActionProtocol, Hashable {
