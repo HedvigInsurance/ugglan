@@ -41,7 +41,7 @@ public struct InboxView: View {
     }
 
     func rowViewContent(for conversation: Conversation) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
+        VStack(alignment: .leading, spacing: .padding8) {
             VStack(alignment: .leading, spacing: 0) {
                 HStack(alignment: .top, spacing: 0) {
                     if conversation.type == .legacy {
@@ -62,7 +62,6 @@ public struct InboxView: View {
                         .lineLimit(3)
                 }
             }
-            .padding(.bottom, 8)
             getNewestMessage(for: conversation)
                 .padding(.bottom, 2)
         }
