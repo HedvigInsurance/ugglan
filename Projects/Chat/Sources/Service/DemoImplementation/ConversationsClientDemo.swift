@@ -6,22 +6,23 @@ public class ConversationsDemoClient: ConversationsClient {
     public func getConversations() async throws -> [Conversation] {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm"
-        let someDateTime = formatter.date(from: "2024-06-08 22:31")
-        let dateYesterday = formatter.date(from: "2024-06-27 22:31")
 
         let conversations = [
             Conversation(
                 id: "id1",
                 type: .legacy,
-                title: "title",
+                title: "Lorem ipsum dolor sit amet title",
                 subtitle: "subtitle",
                 newestMessage: .init(
                     localId: "",
                     remoteId: "",
-                    type: .text(text: "hello hello"),
-                    date: someDateTime ?? Date()
+                    type: .text(
+                        text:
+                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+                    ),
+                    date: Date()
                 ),
-                createdAt: "2024-05-06",
+                createdAt: "2024-06-20",
                 statusMessage: "status message",
                 isConversationOpen: false
             ),
@@ -29,8 +30,10 @@ public class ConversationsDemoClient: ConversationsClient {
             Conversation(
                 id: "id2",
                 type: .service,
-                title: "Claim",
-                subtitle: "Broken phone",
+                title:
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+                subtitle:
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
                 newestMessage: .init(
                     localId: "localId2",
                     remoteId: "remoteId2",
@@ -54,7 +57,7 @@ public class ConversationsDemoClient: ConversationsClient {
                         text:
                             "Lorem ipsum dolor sit amet consectetur. Accumsan vitae adipiscing blandit id et interdum."
                     ),
-                    date: Date()
+                    date: Date().addingTimeInterval(-60)
                 ),
                 createdAt: "2024-06-10",
                 statusMessage: "status message",
@@ -73,7 +76,7 @@ public class ConversationsDemoClient: ConversationsClient {
                         text:
                             "Lorem ipsum dolor sit amet consectetur. Accumsan vitae adipiscing blandit id et interdum."
                     ),
-                    date: dateYesterday ?? Date()
+                    date: Date().addingTimeInterval(-60 * 60 * 24)
                 ),
                 createdAt: "2024-06-19",
                 statusMessage: "status message",
