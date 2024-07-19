@@ -116,7 +116,9 @@ extension HomeView {
                         }
                     }
                 case .loading:
-                    EmptyView()
+                    VStack(spacing: 8) {
+                        openHelpCenter
+                    }
                 }
             }
         }
