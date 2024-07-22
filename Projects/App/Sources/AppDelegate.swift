@@ -2,10 +2,10 @@ import Apollo
 import Authentication
 import Chat
 import Claims
+import Combine
 import Contracts
 import CoreDependencies
 import DatadogLogs
-import Flow
 import Forever
 import Form
 import Foundation
@@ -28,8 +28,8 @@ import hGraphQL
 #endif
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    let bag = DisposeBag()
-    let featureFlagsBag = DisposeBag()
+    var cancellables = Set<AnyCancellable>()
+
     let window: UIWindow = {
         var window = UIWindow(frame: UIScreen.main.bounds)
         window.rootViewController = UIViewController()
@@ -49,7 +49,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func logout() {
-        bag.dispose()
         UIApplication.shared.unregisterForRemoteNotifications()
         let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
         ugglanStore.send(.setIsDemoMode(to: false))
@@ -201,11 +200,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             return InterceptingURLSessionClient()
         }
         setupAnalyticsAndTracking()
-        bag += Localization.Locale.$currentLocale
-            .onValue { locale in
+
+        Localization.Locale.$currentLocale
+            .plain()
+            .publisher
+            .receive(on: RunLoop.main)
+            .sink { locale in
                 ApplicationState.setPreferredLocale(locale)
                 ApolloClient.acceptLanguageHeader = locale.acceptLanguageHeader
             }
+            .store(in: &cancellables)
 
         ApolloClient.bundle = Bundle.main
         ApolloClient.acceptLanguageHeader = Localization.Locale.currentLocale.acceptLanguageHeader

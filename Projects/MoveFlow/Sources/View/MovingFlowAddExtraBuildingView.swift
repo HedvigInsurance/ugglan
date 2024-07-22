@@ -131,8 +131,8 @@ class MovingFlowAddExtraBuildingViewModel: ObservableObject {
         store.actionSignal
             .publisher
             .receive(on: RunLoop.main)
-            .sink { [weak self] value in
-                if case let .setExtraBuildingType(type) = value {
+            .sink { [weak self] action in
+                if case let .setExtraBuildingType(type) = action {
                     self?.buildingType = type
                 }
             }

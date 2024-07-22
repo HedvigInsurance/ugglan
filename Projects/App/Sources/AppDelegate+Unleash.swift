@@ -1,4 +1,3 @@
-import Flow
 import Foundation
 import Presentation
 import Profile
@@ -27,22 +26,30 @@ extension AppDelegate {
     }
 
     private func observeUpdate() {
-        featureFlagsBag.dispose()
-        featureFlagsBag += Localization.Locale.$currentLocale
+        Localization.Locale.$currentLocale
             .atOnce()
             .distinct()
-            .onValue { locale in
+            .plain()
+            .publisher
+            .receive(on: RunLoop.main)
+            .sink { locale in
                 DispatchQueue.main.async {
                     Dependencies.featureFlags().updateContext(context: self.getContext)
                 }
             }
+            .store(in: &cancellables)
 
         let profileStore: ProfileStore = globalPresentableStoreContainer.get()
-        featureFlagsBag += profileStore.stateSignal
-            .map({ $0.memberDetails?.id })
+
+        profileStore.stateSignal
             .distinct()
-            .onValue { memberId in
+            .map({ $0.memberDetails?.id })
+            .plain()
+            .publisher
+            .receive(on: RunLoop.main)
+            .sink { memberId in
                 Dependencies.featureFlags().updateContext(context: self.getContext)
             }
+            .store(in: &cancellables)
     }
 }
