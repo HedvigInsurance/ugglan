@@ -397,7 +397,7 @@ public class ClaimDetailViewModel: ObservableObject {
             }
             .sink { _ in
 
-            } receiveValue: { value in
+            } receiveValue: { [weak self] value in
                 Task { [weak self] in
                     await self?.fetchFiles()
                 }
@@ -438,8 +438,9 @@ public class ClaimDetailViewModel: ObservableObject {
                 .store(in: &self.cancellables)
 
             let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
+            let claimId = self.claim.id
             claimStore.stateSignal.plain().publisher
-                .map({ $0.claim(for: self.claim.id) })
+                .map({ $0.claim(for: claimId) })
                 .compactMap({ $0?.conversation?.newestMessage?.sentAt })
                 .removeDuplicates()
                 .receive(on: RunLoop.main)
@@ -464,14 +465,12 @@ public class ClaimDetailViewModel: ObservableObject {
                 }
             }
 
-            Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { [weak self] timer in
-                if self == nil {
-                    timer.invalidate()
-                    return
+            Timer.publish(every: 5, on: .main, in: .common).autoconnect()
+                .sink { _ in
+                    let store: ClaimsStore = globalPresentableStoreContainer.get()
+                    store.send(.fetchClaims)
                 }
-                let store: ClaimsStore = globalPresentableStoreContainer.get()
-                store.send(.fetchClaims)
-            }
+                .store(in: &cancellables)
         } else {
             self.toolbarOptionType = []
         }
@@ -485,12 +484,12 @@ public class ClaimDetailViewModel: ObservableObject {
         do {
             let files = try await claimService.getFiles()
             store.send(.setFiles(files: files))
-            withAnimation {
-                self.fileGridViewModel.files = files[claim.id] ?? []
+            withAnimation { [weak self] in
+                self?.fileGridViewModel.files = files[claim.id] ?? []
             }
         } catch let ex {
-            withAnimation {
-                fetchFilesError = ex.localizedDescription
+            withAnimation { [weak self] in
+                self?.fetchFilesError = ex.localizedDescription
             }
         }
     }
