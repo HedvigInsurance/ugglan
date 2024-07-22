@@ -1,4 +1,4 @@
-import Flow
+import Combine
 import SwiftUI
 import hCore
 import hCoreUI
@@ -121,19 +121,23 @@ class MovingFlowAddExtraBuildingViewModel: ObservableObject {
 
     @Published var livingAreaError: String?
     @Published var buildingTypeError: String?
+    private var cancellables = Set<AnyCancellable>()
 
     init() {
         trackBuildingTypeAction()
     }
 
     func trackBuildingTypeAction() {
-        disposeBag += store.actionSignal.onValue { [weak self] action in
-            if case let .setExtraBuildingType(type) = action {
-                self?.buildingType = type
+        store.actionSignal
+            .publisher
+            .receive(on: RunLoop.main)
+            .sink { [weak self] value in
+                if case let .setExtraBuildingType(type) = value {
+                    self?.buildingType = type
+                }
             }
-        }
+            .store(in: &cancellables)
     }
-    var disposeBag = DisposeBag()
 
     func isValid() -> Bool {
         livingAreaError = (Int(livingArea) ?? 0) > 0 ? nil : L10n.changeAddressExtraBuildingSizeError
