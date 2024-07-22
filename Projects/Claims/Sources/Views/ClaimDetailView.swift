@@ -485,7 +485,7 @@ public class ClaimDetailViewModel: ObservableObject {
             let files = try await claimService.getFiles()
             store.send(.setFiles(files: files))
             withAnimation { [weak self] in
-                self?.fileGridViewModel.files = files[claim.id] ?? []
+                self?.fileGridViewModel.files = files[self?.claim.id ?? ""] ?? []
             }
         } catch let ex {
             withAnimation { [weak self] in

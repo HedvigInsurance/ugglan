@@ -237,7 +237,7 @@ struct PageModel: Identifiable {
 }
 
 #Preview{
-    var store: ContractStore = globalPresentableStoreContainer.get()
+    let store: ContractStore = globalPresentableStoreContainer.get()
 
     let fetchContractsService = FetchContractsClientDemo()
     Dependencies.shared.add(module: Module { () -> FetchContractsClient in fetchContractsService })
