@@ -1,4 +1,4 @@
-import Flow
+import Combine
 import Form
 import Foundation
 import Presentation
@@ -63,12 +63,15 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
     var options: PresentationOptions
     var wantsGrabber: Bool
     var viewController: UIViewController
-    let bag = DisposeBag()
     var keyboardFrame: CGRect = .zero
+    var cancellables = Set<AnyCancellable>()
 
     func listenToKeyboardFrame() {
-        bag += viewController.view.keyboardSignal(priority: .highest)
-            .onValue { [weak self] event in guard let self = self else { return }
+
+        viewController.view.keyboardSignal(priority: .highest)
+            .publisher
+            .receive(on: RunLoop.main)
+            .sink { [weak self] event in guard let self = self else { return }
                 switch event {
                 case let .willShow(frame, _): self.keyboardFrame = frame
                 case .willHide: self.keyboardFrame = .zero
@@ -110,8 +113,8 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
                         }
                     }
                 }
-
             }
+            .store(in: &cancellables)
     }
 
     init(
@@ -187,16 +190,15 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
                 unanimated: true
             )
 
-            Signal(after: 0.001).future
-                .onValue { [weak presentationController] _ in
-                    guard let presentationController = presentationController else { return }
-                    PresentationStyle.Detent.set(
-                        self.detents,
-                        on: presentationController,
-                        viewController: self.viewController,
-                        unanimated: true
-                    )
-                }
+            Task { @MainActor in
+                try! await Task.sleep(nanoseconds: 1_000_000_000)
+                PresentationStyle.Detent.set(
+                    self.detents,
+                    on: presentationController,
+                    viewController: self.viewController,
+                    unanimated: true
+                )
+            }
         } else {
             PresentationStyle.Detent.set(
                 [
@@ -212,16 +214,15 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
                 unanimated: false
             )
 
-            Signal(after: 0.05).future
-                .onValue { [weak presentationController] _ in
-                    guard let presentationController = presentationController else { return }
-                    PresentationStyle.Detent.set(
-                        self.detents,
-                        on: presentationController,
-                        viewController: self.viewController,
-                        unanimated: false
-                    )
-                }
+            Task { @MainActor in
+                try! await Task.sleep(nanoseconds: 50_000_000)
+                PresentationStyle.Detent.set(
+                    self.detents,
+                    on: presentationController,
+                    viewController: self.viewController,
+                    unanimated: false
+                )
+            }
         }
 
         setGrabber(on: presentationController, to: wantsGrabber)
@@ -309,41 +310,6 @@ extension UIViewController {
                     completion: nil
                 )
             }
-        }
-    }
-
-    public var currentDetentSignal: ReadWriteSignal<PresentationStyle.Detent?> {
-        Signal { [weak self] callback in guard let self = self else { return NilDisposer() }
-            let bag = DisposeBag()
-
-            bag += (self.view as? UIScrollView)?.panGestureRecognizer
-                .onValue { _ in
-                    callback(self.currentDetent)
-                }
-            bag += self.view.didLayoutSignal.onValue({ _ in
-                callback(self.currentDetent)
-            })
-
-            bag += self.view.didLayoutSignal
-                .map({ _ in
-                    self.currentDetent
-                })
-                .distinct()
-                .onValue({ _ in
-                    if let scrollView = self.view as? UIScrollView {
-                        let desiredOffset = CGPoint(x: 0, y: -scrollView.adjustedContentInset.top)
-                        scrollView.setContentOffset(desiredOffset, animated: true)
-                    }
-                })
-
-            return bag
-        }
-        .distinct()
-        .readable { [weak self] in
-            self?.currentDetent
-        }
-        .writable { [weak self] detent in
-            self?.currentDetent = detent
         }
     }
 
@@ -556,152 +522,6 @@ extension PresentationStyle {
                 }
             }
         }
-    }
-
-    private static func presentDetentedHandler(
-        _ viewController: UIViewController,
-        _ from: UIViewController,
-        _ options: PresentationOptions,
-        detents: [Detent],
-        modally: Bool,
-        bgColor: UIColor?
-    ) -> PresentingViewController.Result {
-        viewController.setLargeTitleDisplayMode(options)
-
-        if modally {
-            let vc = viewController.embededInNavigationController(options)
-
-            let bag = DisposeBag()
-
-            let delegate = DetentedTransitioningDelegate(
-                detents: detents,
-                options: options,
-                wantsGrabber: options.contains(.wantsGrabber),
-                viewController: viewController
-            )
-            bag.hold(delegate)
-            vc.transitioningDelegate = delegate
-            vc.modalPresentationStyle = .custom
-            vc.view.backgroundColor = bgColor
-            return from.modallyPresentQueued(vc, options: options) {
-                return Future { completion in
-                    let dismissal =
-                        PresentationStyle.modalPresentationDismissalSetup(
-                            for: vc,
-                            options: options
-                        )
-                        .onResult(completion)
-                    return Disposer {
-                        bag.dispose()
-                        dismissal.cancel()
-                    }
-                }
-            }
-        } else {
-            let bag = DisposeBag()
-
-            if let navigationController = from.navigationController,
-                let presentationController = navigationController.presentationController
-            {
-                from.lastDetentIndex = getDetentIndex(on: presentationController)
-
-                bag += navigationController
-                    .willShowViewControllerSignal
-                    .filter {
-                        $0.viewController == viewController
-                    }
-                    .onFirstValue { _ in
-                        DispatchQueue.main.async {
-                            Self.Detent.set(
-                                detents,
-                                on: presentationController,
-                                viewController: viewController,
-                                unanimated: options.contains(.unanimated)
-                            )
-                            setGrabber(
-                                on: presentationController,
-                                to: options.contains(.wantsGrabber)
-                            )
-                        }
-                    }
-
-                bag += navigationController.willPopViewControllerSignal
-                    .wait(
-                        until: navigationController
-                            .interactivePopGestureRecognizer?
-                            .map {
-                                $0 == .possible || $0 == .ended || $0 == .failed
-                            }
-                            ?? ReadSignal(true)
-                    )
-                    .filter(predicate: { $0 == viewController })
-                    .onValue { _ in
-                        guard
-                            let previousViewController =
-                                navigationController.viewControllers
-                                .last
-                        else { return }
-
-                        func handleDismiss() {
-                            Self.Detent.set(
-                                previousViewController.appliedDetents,
-                                on: presentationController,
-                                viewController: previousViewController,
-                                lastDetentIndex: previousViewController
-                                    .lastDetentIndex,
-                                unanimated: options.contains(.unanimated)
-                            )
-                        }
-
-                        if navigationController.interactivePopGestureRecognizer?
-                            .state == .ended,
-                            !(navigationController.transitionCoordinator?
-                                .isCancelled ?? false)
-                        {
-                            handleDismiss()
-                        } else if navigationController
-                            .interactivePopGestureRecognizer?
-                            .state == .possible
-                        {
-                            handleDismiss()
-                        }
-                    }
-            }
-
-            let defaultPresentation = PresentationStyle.default.present(
-                viewController,
-                from: from,
-                options: options
-            )
-
-            return (
-                defaultPresentation.result,
-                {
-                    bag.dispose()
-                    return defaultPresentation.dismisser()
-                }
-            )
-        }
-    }
-
-    public static func detented(
-        _ detents: Detent...,
-        modally: Bool = true,
-        bgColor: UIColor? = .brand(.primaryBackground())
-    ) -> PresentationStyle {
-        PresentationStyle(
-            name: "detented",
-            present: { viewController, from, options in
-                return presentDetentedHandler(
-                    viewController,
-                    from,
-                    options,
-                    detents: detents,
-                    modally: modally,
-                    bgColor: bgColor
-                )
-            }
-        )
     }
 }
 
