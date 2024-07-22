@@ -1,5 +1,4 @@
 import Combine
-import Flow
 import Foundation
 import Introspect
 import SwiftUI
@@ -115,10 +114,14 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                         button.setTitleColor(color, for: .normal)
                         let nextButton = UIBarButtonItem(button: button)
 
-                        vm.disposeBag += button.signal(for: .touchUpInside)
-                            .onValue { _ in
+                        button.signal(for: .touchUpInside)
+                            .publisher
+                            .receive(on: RunLoop.main)
+                            .sink { _ in
                                 equals = equals?.next
                             }
+                            .store(in: &vm.cancellables)
+
                         toolbar.setItems([space, nextButton], animated: false)
                     } else {
                         let doneButton = UIBarButtonItem(
@@ -253,7 +256,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
 
 class TextFieldVM: ObservableObject {
     @Published var textField: UITextField?
-    let disposeBag = DisposeBag()
+    var cancellables = Set<AnyCancellable>()
 }
 
 struct hFloatingTextField_Previews: PreviewProvider {
