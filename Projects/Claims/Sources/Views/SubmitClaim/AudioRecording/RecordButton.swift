@@ -59,6 +59,11 @@ struct RecordButtonStyle: SwiftUI.ButtonStyle {
         .background(Circle().fill(outerCircleRecordingColorScheme))
         .hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4), show: !isRecording)
         .hShadow(type: .custom(opacity: 0.1, radius: 1, xOffset: 0, yOffset: 2), show: !isRecording)
+        .overlay {
+            Circle()
+                .inset(by: -0.5)
+                .strokeBorder(hBorderColor.primary, lineWidth: isRecording ? 0 : 1)
+        }
     }
 }
 
