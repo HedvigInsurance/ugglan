@@ -7,14 +7,14 @@ import hGraphQL
 public class AnalyticsService {
     @Inject var client: AnalyticsClient
 
-    func fetchAndSetUserId() {
+    func fetchAndSetUserId() async throws {
         log.info("AnalyticsService: fetchAndSetUserId", error: nil, attributes: nil)
-        client.fetchAndSetUserId()
+        try await client.fetchAndSetUserId()
     }
 
-    func setWith(userId: String) {
+    func setWith(userId: String) async throws {
         log.info("AnalyticsService: setWith", error: nil, attributes: nil)
-        client.setWith(userId: userId)
+        try await client.setWith(userId: userId)
     }
 }
 
@@ -23,12 +23,13 @@ struct AnalyticsClientOctopus: AnalyticsClient {
 
     init() {}
 
-    func fetchAndSetUserId() {
-        octopus.client.fetch(query: OctopusGraphQL.CurrentMemberIdQuery(), cachePolicy: .fetchIgnoringCacheCompletely)
-            .compactMap { $0.currentMember.id }
-            .onValue { id in
-                setWith(userId: id)
-            }
+    func fetchAndSetUserId() async throws {
+        let data = try await octopus.client.fetch(
+            query: OctopusGraphQL.CurrentMemberIdQuery(),
+            cachePolicy: .fetchIgnoringCacheCompletely
+        )
+
+        setWith(userId: data.currentMember.id)
     }
 
     func setWith(userId: String) {

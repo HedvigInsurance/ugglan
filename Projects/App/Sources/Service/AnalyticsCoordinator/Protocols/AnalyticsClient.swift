@@ -6,6 +6,6 @@ import hCore
 import hGraphQL
 
 protocol AnalyticsClient {
-    func fetchAndSetUserId()
-    func setWith(userId: String)
+    func fetchAndSetUserId() async throws
+    func setWith(userId: String) async throws
 }
