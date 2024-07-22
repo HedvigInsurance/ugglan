@@ -38,6 +38,7 @@ struct ContractDocumentsView: View {
                                     contractsNavigationViewModel.document = .init(url: url, title: document.displayName)
                                 }
                             }
+                            .sectionContainerStyle(.opaque)
                         }
                     }
                 }
