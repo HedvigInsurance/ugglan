@@ -1,4 +1,4 @@
-import Flow
+import Combine
 import Foundation
 import SwiftUI
 
@@ -46,7 +46,7 @@ public struct PasteView: UIViewRepresentable {
     }
 
     public class Coordinator: NSObject, UIGestureRecognizerDelegate {
-        let bag = DisposeBag()
+        public var cancellables = Set<AnyCancellable>()
 
         public func gestureRecognizer(
             _ gestureRecognizer: UIGestureRecognizer,
@@ -65,15 +65,16 @@ public struct PasteView: UIViewRepresentable {
 
         let longPressGesture = UILongPressGestureRecognizer()
         longPressGesture.delegate = context.coordinator
-        context.coordinator.bag += view.install(longPressGesture)
+        view.addGestureRecognizer(longPressGesture)
 
-        context.coordinator.bag += longPressGesture.signal(forState: .began)
-            .onValue { _ in
+        longPressGesture.signal(forState: .began).publisher
+            .sink { _ in
                 let menu = UIMenuController.shared
                 guard !menu.isMenuVisible else { return }
                 view.becomeFirstResponder()
                 menu.showMenu(from: view, rect: view.bounds)
             }
+            .store(in: &context.coordinator.cancellables)
 
         return view
     }
