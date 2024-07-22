@@ -29,7 +29,14 @@ public struct SubmitClaimAudioRecordingScreen: View {
         let store: SubmitClaimStore = globalPresentableStoreContainer.get()
         let path = store.state.claimAudioRecordingPath
         audioRecorder = AudioRecorder(filePath: path)
-
+        self._isAudioInput = State(initialValue: store.state.audioRecordingStep?.isAudioInput() ?? false)
+        let inputText: String? = {
+            if store.state.audioRecordingStep?.optionalAudio == false {
+                return nil
+            }
+            return store.state.audioRecordingStep?.inputTextContent
+        }()
+        self._inputText = State(initialValue: inputText ?? "")
         func myFunc(_: URL) {}
         self.onSubmit = myFunc
     }

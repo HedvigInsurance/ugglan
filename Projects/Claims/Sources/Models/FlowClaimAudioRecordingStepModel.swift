@@ -35,13 +35,18 @@ public struct FlowClaimAudioRecordingStepModel: FlowClaimStepModel {
         self.questions = data.questions
         self.audioContent = .init(with: (data.audioContent?.fragments.flowClaimAudioContentFragment))
         self.textQuestions = data.freeTextQuestions
-        self.inputTextContent = nil
+        self.inputTextContent = data.freeText
         self.optionalAudio = data.freeTextAvailable
     }
 
     func getUrl() -> URL? {
         guard let url = audioContent?.signedUrl else { return nil }
         return URL(string: url)
+    }
+
+    func isAudioInput() -> Bool {
+        guard optionalAudio else { return true }
+        return inputTextContent == nil
     }
 }
 
