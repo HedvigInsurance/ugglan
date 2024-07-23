@@ -12,15 +12,10 @@ public indirect enum ProfileAction: ActionProtocol, Hashable {
     case isTravelCertificateEnabled(has: Bool)
     case fetchProfileStateCompleted
     case languageChanged
-
     case setMemberDetails(details: MemberDetails)
     case fetchMemberDetails
-
-    case sendAccountDeleteRequest(details: MemberDetails)
-
     case setPushNotificationStatus(status: Int?)
     case setPushNotificationsTo(date: Date?)
-
     case updateLanguage
 }
 
