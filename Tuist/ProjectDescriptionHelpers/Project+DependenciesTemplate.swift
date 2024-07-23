@@ -105,7 +105,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .apolloIosCodegen:
             return [
-                .package(url: "https://github.com/apollographql/apollo-ios-codegen", .upToNextMajor(from: "1.13.0"))
+                .package(url: "https://github.com/apollographql/apollo-ios-codegen", .exact("1.13.0"))
             ]
         case .argumentParser:
             return [
