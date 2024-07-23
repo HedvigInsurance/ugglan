@@ -64,11 +64,11 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
     var wantsGrabber: Bool
     var viewController: UIViewController
     var keyboardFrame: CGRect = .zero
-    var cancellables = Set<AnyCancellable>()
+    var keyboardCancellable: AnyCancellable?
 
     func listenToKeyboardFrame() {
 
-        viewController.view.keyboardSignal(priority: .highest)
+        keyboardCancellable = viewController.view.keyboardSignal(priority: .highest)
             .publisher
             .receive(on: RunLoop.main)
             .sink { [weak self] event in guard let self = self else { return }
@@ -114,7 +114,6 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
                     }
                 }
             }
-            .store(in: &cancellables)
     }
 
     init(
