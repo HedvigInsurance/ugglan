@@ -90,19 +90,23 @@ class AudioRecorder: ObservableObject {
 
 struct AudioPulseBackground: View {
     @EnvironmentObject var audioRecorder: AudioRecorder
-
+    @State var scaleEffect: CGFloat = 0
     private let backgroundColorScheme: some hColor = hBorderColor.secondary
 
     var body: some View {
-        withAnimation(.spring()) {
-            Circle().fill(backgroundColorScheme)
-                .onReceive(audioRecorder.recordingTimer) { input in
-                    audioRecorder.refresh()
+        Circle().fill(backgroundColorScheme)
+            .onReceive(audioRecorder.recordingTimer) { input in
+                audioRecorder.refresh()
+            }
+            .scaleEffect(
+                scaleEffect
+            )
+            .onChange(of: audioRecorder.decibelScale) { value in
+                withAnimation(.spring) {
+                    scaleEffect =
+                        audioRecorder.isRecording ? pow(((audioRecorder.decibelScale.last ?? 0.0) + 0.95), 4) : 0.95
                 }
-                .scaleEffect(
-                    audioRecorder.isRecording ? pow(((audioRecorder.decibelScale.last ?? 0.0) + 0.95), 4) : 0.95
-                )
-        }
+            }
     }
 }
 
