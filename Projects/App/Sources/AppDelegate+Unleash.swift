@@ -26,6 +26,7 @@ extension AppDelegate {
     }
 
     private func observeUpdate() {
+        cancellables.removeAll()
         Localization.Locale.$currentLocale
             .atOnce()
             .distinct()
