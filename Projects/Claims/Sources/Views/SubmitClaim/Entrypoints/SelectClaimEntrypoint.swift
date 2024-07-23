@@ -225,7 +225,6 @@ struct ShowTagList: View {
                         HStack(spacing: 0) {
                             getPillText(claimId: tag)
                                 .lineLimit(1)
-                                .scaleEffect(animate && selection == tag ? 1 / scaleSize : 1)
                         }
                         .onAppear {
                             selection = oldValue
@@ -244,8 +243,10 @@ struct ShowTagList: View {
                         }
                         .padding(.horizontal, .padding12)  // 16 - tag list horizontal spacing
                         .padding(.vertical, .padding8)
-                        .background(getColorAndShadow(claimId: tag))
-                        .scaleEffect(animate && selection == tag ? scaleSize : 1)
+                        .background(
+                            getColorAndShadow(claimId: tag)
+                                .scaleEffect(animate && selection == tag ? scaleSize : 1)
+                        )
                         .transition(
                             .scale.animation(
                                 .spring(response: 0.55, dampingFraction: 0.725, blendDuration: 1)
