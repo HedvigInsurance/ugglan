@@ -106,9 +106,7 @@ public struct ChatNavigation<Content: View>: View {
             item: $chatNavigationViewModel.isFilePresented,
             style: .large
         ) { urlModel in
-            DocumentPreview(url: urlModel.url)
-                .withDismissButton()
-                .embededInNavigation()
+            DocumentPreview(vm: .init(type: .url(url: urlModel.url)))
         }
         .detent(
             presented: $chatNavigationViewModel.isAskForPushNotificationsPresented,

@@ -91,12 +91,17 @@ public class HomeNavigationViewModel: ObservableObject {
 
     public struct FileUrlModel: Identifiable, Equatable {
         public var id: String?
-        public var url: URL
+        public var type: FileUrlModelType
 
         public init(
-            url: URL
+            type: FileUrlModelType
         ) {
-            self.url = url
+            self.type = type
+        }
+
+        public enum FileUrlModelType: Codable, Equatable {
+            case url(url: URL)
+            case data(data: Data, mimeType: MimeType)
         }
     }
 
@@ -106,4 +111,15 @@ public class HomeNavigationViewModel: ObservableObject {
 
     public var connectPaymentVm = ConnectPaymentViewModel()
     public var editCoInsuredVm = EditCoInsuredViewModel()
+}
+
+extension HomeNavigationViewModel.FileUrlModel.FileUrlModelType {
+    public var asDocumentPreviewModelType: DocumentPreviewModel.DocumentPreviewType {
+        switch self {
+        case .url(let url):
+            return .url(url: url)
+        case .data(let data, let mimeType):
+            return .data(data: data, mimeType: mimeType)
+        }
+    }
 }

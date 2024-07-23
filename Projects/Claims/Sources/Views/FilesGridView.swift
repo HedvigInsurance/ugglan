@@ -61,9 +61,7 @@ struct FilesGridView: View {
             item: $fileModel,
             style: .large
         ) { model in
-            DocumentPreview(url: model.url)
-                .withDismissButton()
-                .embededInNavigation()
+            DocumentPreview(vm: .init(type: model.type.asDocumentPreviewModelType))
         }
     }
 
@@ -71,9 +69,11 @@ struct FilesGridView: View {
     func show(file: File) {
         switch file.source {
         case let .localFile(url, _):
-            fileModel = .init(url: url)
+            if let data = FileManager.default.contents(atPath: url.path) {
+                fileModel = .init(type: .data(data: data, mimeType: file.mimeType))
+            }
         case .url(let url):
-            fileModel = .init(url: url)
+            fileModel = .init(type: .url(url: url))
         }
     }
 }
