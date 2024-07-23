@@ -47,12 +47,29 @@ public struct PasteView: UIViewRepresentable {
 
     public class Coordinator: NSObject, UIGestureRecognizerDelegate {
         public var cancellables = Set<AnyCancellable>()
+        let longPressGesture = UILongPressGestureRecognizer()
 
+        override init() {
+            super.init()
+            longPressGesture.delegate = self
+            longPressGesture.addTarget(self, action: #selector(longGesture(_:)))
+        }
+
+        public var longGestureDidBeginPublisher: AnyPublisher<Bool, Never> {
+            return longGestureDidBegin.eraseToAnyPublisher()
+        }
+        private let longGestureDidBegin = PassthroughSubject<Bool, Never>()
         public func gestureRecognizer(
             _ gestureRecognizer: UIGestureRecognizer,
             shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
         ) -> Bool {
             return true
+        }
+
+        @objc func longGesture(_ sender: UILongPressGestureRecognizer) {
+            if sender.state == UIGestureRecognizer.State.began {
+                longGestureDidBegin.send(true)
+            }
         }
     }
 
@@ -62,20 +79,16 @@ public struct PasteView: UIViewRepresentable {
 
     public func makeUIView(context: Context) -> some UIView {
         let view = _PasteView(onPaste: onPaste)
-
-        let longPressGesture = UILongPressGestureRecognizer()
-        longPressGesture.delegate = context.coordinator
-        view.addGestureRecognizer(longPressGesture)
-
-        longPressGesture.signal(forState: .began).publisher
+        view.addGestureRecognizer(context.coordinator.longPressGesture)
+        context.coordinator.longGestureDidBeginPublisher
             .sink { _ in
+                print("Long tap begin")
                 let menu = UIMenuController.shared
                 guard !menu.isMenuVisible else { return }
                 view.becomeFirstResponder()
                 menu.showMenu(from: view, rect: view.bounds)
             }
             .store(in: &context.coordinator.cancellables)
-
         return view
     }
 
