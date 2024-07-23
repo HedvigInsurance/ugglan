@@ -29,7 +29,7 @@ import hGraphQL
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var cancellables = Set<AnyCancellable>()
-
+    private var localizationObserverTask: AnyCancellable?
     let window: UIWindow = {
         var window = UIWindow(frame: UIScreen.main.bounds)
         window.rootViewController = UIViewController()
@@ -201,7 +201,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         setupAnalyticsAndTracking()
 
-        Localization.Locale.$currentLocale
+        localizationObserverTask = Localization.Locale.$currentLocale
             .plain()
             .publisher
             .receive(on: RunLoop.main)
@@ -209,7 +209,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 ApplicationState.setPreferredLocale(locale)
                 ApolloClient.acceptLanguageHeader = locale.acceptLanguageHeader
             }
-            .store(in: &cancellables)
 
         ApolloClient.bundle = Bundle.main
         ApolloClient.acceptLanguageHeader = Localization.Locale.currentLocale.acceptLanguageHeader
