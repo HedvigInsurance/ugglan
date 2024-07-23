@@ -114,13 +114,12 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                         button.setTitleColor(color, for: .normal)
                         let nextButton = UIBarButtonItem(button: button)
 
-                        button.signal(for: .touchUpInside)
+                        vm.buttonCancellable = button.signal(for: .touchUpInside)
                             .publisher
                             .receive(on: RunLoop.main)
                             .sink { _ in
                                 equals = equals?.next
                             }
-                            .store(in: &vm.cancellables)
 
                         toolbar.setItems([space, nextButton], animated: false)
                     } else {
@@ -256,7 +255,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
 
 class TextFieldVM: ObservableObject {
     @Published var textField: UITextField?
-    var cancellables = Set<AnyCancellable>()
+    var buttonCancellable: AnyCancellable?
 }
 
 struct hFloatingTextField_Previews: PreviewProvider {
