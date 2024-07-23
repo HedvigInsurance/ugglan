@@ -12,9 +12,9 @@ public class AnalyticsService {
         try await client.fetchAndSetUserId()
     }
 
-    func setWith(userId: String) async throws {
+    func setWith(userId: String) {
         log.info("AnalyticsService: setWith", error: nil, attributes: nil)
-        try await client.setWith(userId: userId)
+        client.setWith(userId: userId)
     }
 }
 

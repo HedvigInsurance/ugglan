@@ -34,9 +34,7 @@ extension AppDelegate {
         let store: ProfileStore = globalPresentableStoreContainer.get()
         if let userId = store.state.memberDetails?.id {
             let analyticsService: AnalyticsClient = Dependencies.shared.resolve()
-            Task {
-                try await analyticsService.setWith(userId: userId)
-            }
+            analyticsService.setWith(userId: userId)
         }
         Logs.enable()
 

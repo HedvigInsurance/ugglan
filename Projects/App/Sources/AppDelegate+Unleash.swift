@@ -33,9 +33,7 @@ extension AppDelegate {
             .publisher
             .receive(on: RunLoop.main)
             .sink { locale in
-                DispatchQueue.main.async {
-                    Dependencies.featureFlags().updateContext(context: self.getContext)
-                }
+                Dependencies.featureFlags().updateContext(context: self.getContext)
             }
             .store(in: &cancellables)
 
