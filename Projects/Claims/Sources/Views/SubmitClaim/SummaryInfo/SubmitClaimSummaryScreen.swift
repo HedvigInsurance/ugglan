@@ -38,14 +38,9 @@ public struct SubmitClaimSummaryScreen: View {
                 hSection {
                     hRowDivider()
                 }
+                memberFreeTextSection
+                uploadedFilesView
 
-                hSection {
-                    uploadedFilesView
-                }
-                .withHeader {
-                    hText(L10n.ClaimStatusDetail.uploadedFiles)
-                }
-                .sectionContainerStyle(.transparent)
             }
         }
         .hFormAttachToBottom {
@@ -169,17 +164,25 @@ public struct SubmitClaimSummaryScreen: View {
                 state.audioRecordingStep
             }
         ) { audioRecordingStep in
-            VStack(spacing: 8) {
-                if let audioRecordingStep {
-                    let audioPlayer = AudioPlayer(url: audioRecordingStep.getUrl())
-                    TrackPlayerView(
-                        audioPlayer: audioPlayer
-                    )
+            if audioRecordingStep?.audioContent != nil || vm.model?.fileGridViewModel.files.count ?? 0 > 0 {
+                hSection {
+                    VStack(spacing: 8) {
+                        if let audioRecordingStep, audioRecordingStep.audioContent != nil {
+                            let audioPlayer = AudioPlayer(url: audioRecordingStep.getUrl())
+                            TrackPlayerView(
+                                audioPlayer: audioPlayer
+                            )
+                        }
+                        if let files = vm.model?.fileGridViewModel.files {
+                            let fileGridVm = FileGridViewModel(files: files, options: [])
+                            FilesGridView(vm: fileGridVm)
+                        }
+                    }
                 }
-                if let files = vm.model?.fileGridViewModel.files {
-                    let fileGridVm = FileGridViewModel(files: files, options: [])
-                    FilesGridView(vm: fileGridVm)
+                .withHeader {
+                    hText(L10n.ClaimStatusDetail.uploadedFiles)
                 }
+                .sectionContainerStyle(.transparent)
             }
         }
     }
@@ -191,6 +194,29 @@ public struct SubmitClaimSummaryScreen: View {
                 title.hText(.body1).foregroundColor(hTextColor.Opaque.secondary)
                 Spacer()
                 value.hText(.body1).foregroundColor(hTextColor.Opaque.secondary)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var memberFreeTextSection: some View {
+        PresentableStoreLens(
+            SubmitClaimStore.self,
+            getter: { state in
+                state.audioRecordingStep
+            }
+        ) { audioStep in
+            if let inputText = audioStep?.inputTextContent, audioStep?.optionalAudio == true {
+                hSection {
+                    hRow {
+                        hText(inputText)
+                    }
+                }
+                .withHeader {
+                    hText(L10n.ClaimStatusDetail.submittedMessage)
+                        .padding(.leading, 2)
+                }
+                .padding(.top, .padding16)
             }
         }
     }

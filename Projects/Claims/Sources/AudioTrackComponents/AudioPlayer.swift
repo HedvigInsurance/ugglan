@@ -72,7 +72,6 @@ class AudioPlayer: NSObject, ObservableObject {
             try session.overrideOutputAudioPort(AVAudioSession.PortOverride.speaker)
             try session.setActive(true)
         } catch {
-            //            self.playbackState = .error(message: "Playing over the device's speakers failed")
             try? session.setCategory(.playback)
             try? session.setActive(true)
         }

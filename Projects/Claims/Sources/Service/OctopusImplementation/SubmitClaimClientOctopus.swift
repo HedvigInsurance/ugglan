@@ -75,7 +75,8 @@ public class SubmitClaimClientOctopus: SubmitClaimClient {
             do {
                 if let url = store.state.audioRecordingStep?.audioContent?.audioUrl {
                     let audioInput = OctopusGraphQL.FlowClaimAudioRecordingInput(
-                        audioUrl: GraphQLNullable(optionalValue: url)
+                        audioUrl: GraphQLNullable(optionalValue: url),
+                        freeText: .none
                     )
                     let mutation = OctopusGraphQL.FlowClaimAudioRecordingNextMutation(
                         input: audioInput,
@@ -96,7 +97,10 @@ public class SubmitClaimClientOctopus: SubmitClaimClient {
                     )
 
                     let mutation = OctopusGraphQL.FlowClaimAudioRecordingNextMutation(
-                        input: .init(audioUrl: GraphQLNullable(optionalValue: fileUploaderData.audioUrl)),
+                        input: .init(
+                            audioUrl: GraphQLNullable(optionalValue: fileUploaderData.audioUrl),
+                            freeText: .none
+                        ),
                         context: context
                     )
                     return try await mutation.execute(
@@ -108,6 +112,7 @@ public class SubmitClaimClientOctopus: SubmitClaimClient {
             }
         case let .text(text):
             let audioInput = OctopusGraphQL.FlowClaimAudioRecordingInput(
+                audioUrl: .none,
                 freeText: GraphQLNullable(optionalValue: text)
             )
             let mutation = OctopusGraphQL.FlowClaimAudioRecordingNextMutation(

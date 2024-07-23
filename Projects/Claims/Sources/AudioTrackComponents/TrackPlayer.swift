@@ -23,6 +23,7 @@ struct TrackPlayer: View {
         .foregroundColor(hFillColor.Opaque.primary)
         .background {
             Circle().fill(hSurfaceColor.Translucent.secondary)
+                .frame(width: 32, height: 32)
         }
     }
 

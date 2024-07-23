@@ -18,12 +18,10 @@ public struct PaymentState: StateProtocol {
 public enum PaymentAction: ActionProtocol {
     case load
     case setPaymentData(data: PaymentData?)
-    case setSchema(schema: String)
     case fetchPaymentStatus
     case setPaymentStatus(data: PaymentStatusData)
     case fetchDiscountsData
     case setDiscountsData(data: PaymentDiscountsData)
-    case setConnectionID(id: String)
     case getHistory
     case setHistory(to: [PaymentHistoryListData])
 }
@@ -76,15 +74,11 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
         var newState = state
 
         switch action {
-        case let .setSchema(schema):
-            newState.schema = schema
         case .load:
             setLoading(for: .getPaymentData)
         case let .setPaymentData(data):
             removeLoading(for: .getPaymentData)
             newState.paymentData = data
-        case let .setConnectionID(id):
-            newState.paymentConnectionID = id
         case .fetchPaymentStatus:
             setLoading(for: .getPaymentStatus)
         case let .setPaymentStatus(data):
