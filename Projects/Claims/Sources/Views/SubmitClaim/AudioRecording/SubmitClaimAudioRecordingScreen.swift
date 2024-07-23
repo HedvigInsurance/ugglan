@@ -36,7 +36,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
 
     public var body: some View {
         if isAudioInput {
-            audioInputForm
+            mainContent
                 .claimErrorTrackerFor([.postAudioRecording])
                 .onAppear {
                     UIApplication.shared.isIdleTimerDisabled = true
@@ -45,12 +45,12 @@ public struct SubmitClaimAudioRecordingScreen: View {
                     UIApplication.shared.isIdleTimerDisabled = false
                 }
         } else {
-            textInputForm
+            mainContent
                 .claimErrorTrackerFor([.postAudioRecording])
         }
     }
 
-    private var audioInputForm: some View {
+    private var mainContent: some View {
         hForm {
             PresentableStoreLens(
                 SubmitClaimStore.self,
@@ -59,114 +59,46 @@ public struct SubmitClaimAudioRecordingScreen: View {
                 }
             ) { audioRecordingStep in
                 if isAudioInput {
-                    hSection {
-                        VStack(spacing: 8) {
-                            ForEach(Array((audioRecordingStep?.questions ?? []).enumerated()), id: \.element) {
-                                index,
-                                question in
-                                HStack {
-                                    hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
-                                        .foregroundColor(hTextColor.Opaque.primary)
-                                }
-                                .padding(.padding16)
-                                .background(hSurfaceColor.Opaque.primary)
-                                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-                                .padding(.trailing, .padding88)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .slideUpAppearAnimation()
-                            }
-                        }
-                        .padding(.top, .padding8)
-                    }
-                    .sectionContainerStyle(.transparent)
+                    textSection(questions: audioRecordingStep?.questions)
                 } else {
-                    hSection {
-                        VStack(spacing: 8) {
-                            ForEach(Array((audioRecordingStep?.textQuestions ?? []).enumerated()), id: \.element) {
-                                index,
-                                question in
-                                HStack {
-                                    hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
-                                        .foregroundColor(hTextColor.Opaque.primary)
-                                }
-                                .padding(.padding16)
-                                .background(hSurfaceColor.Opaque.primary)
-                                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-                                .padding(.trailing, .padding88)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .slideUpAppearAnimation()
-
-                            }
-                        }
-                        .padding(.top, .padding8)
-                    }
-                    .sectionContainerStyle(.transparent)
+                    textSection(questions: audioRecordingStep?.textQuestions)
                 }
             }
         }
         .hDisableScroll
         .hFormAttachToBottom {
-            audioElements
-                .slideUpAppearAnimation()
+            Group {
+                if isAudioInput {
+                    audioElements
+                } else {
+                    textElements
+                }
+            }
+            .slideUpAppearAnimation()
         }
     }
 
-    private var textInputForm: some View {
-        hForm {
-            PresentableStoreLens(
-                SubmitClaimStore.self,
-                getter: { state in
-                    state.audioRecordingStep
-                }
-            ) { audioRecordingStep in
-                if isAudioInput {
-                    hSection {
-                        ForEach(Array((audioRecordingStep?.questions ?? []).enumerated()), id: \.element) {
-                            index,
-                            question in
-                            HStack {
-                                hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
-                                    .foregroundColor(hTextColor.Opaque.primary)
-                            }
-                            .padding(.padding16)
-                            .background(hSurfaceColor.Opaque.primary)
-                            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-                            .padding(.vertical, .padding12)
-                            .padding(.trailing, .padding88)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .slideUpAppearAnimation()
+    private func textSection(questions: [String]?) -> some View {
+        hSection {
+            VStack(spacing: 8) {
+                if let questions = questions {
+                    ForEach(questions, id: \.self) { question in
+                        HStack {
+                            hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
+                                .foregroundColor(hTextColor.Opaque.primary)
                         }
+                        .padding(.padding16)
+                        .background(hSurfaceColor.Opaque.primary)
+                        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+                        .padding(.trailing, .padding88)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .slideUpAppearAnimation()
                     }
-                    .sectionContainerStyle(.transparent)
-                } else {
-                    hSection {
-                        ForEach(Array((audioRecordingStep?.textQuestions ?? []).enumerated()), id: \.element) {
-                            index,
-                            question in
-                            HStack {
-                                hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
-                                    .foregroundColor(hTextColor.Opaque.primary)
-                            }
-                            .padding(.padding16)
-                            .background(hSurfaceColor.Opaque.primary)
-                            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-                            .padding(.vertical, .padding12)
-                            .padding(.trailing, .padding88)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .slideUpAppearAnimation()
-
-                        }
-                    }
-                    .sectionContainerStyle(.transparent)
                 }
             }
+            .padding(.top, .padding8)
         }
-        .hDisableScroll
-        .hFormAttachToBottom {
-            textElements
-                .slideUpAppearAnimation()
-
-        }
+        .sectionContainerStyle(.transparent)
     }
 
     private var audioElements: some View {
@@ -175,7 +107,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                 Group {
                     if let url = audioRecorder.recording?.url ?? store.state.audioRecordingStep?.getUrl() {
                         VStack(spacing: 12) {
-                            TrackPlayer(audioPlayer: audioPlayer)
+                            TrackPlayerView(audioPlayer: audioPlayer)
                                 .onAppear {
                                     minutes = 0
                                     seconds = 0
