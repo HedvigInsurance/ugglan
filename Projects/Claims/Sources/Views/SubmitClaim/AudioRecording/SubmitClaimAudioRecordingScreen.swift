@@ -17,7 +17,6 @@ public struct SubmitClaimAudioRecordingScreen: View {
     @State var inputText: String = ""
     @State var inputTextError: String?
     @State var animateField: Bool = false
-
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     let onSubmit: (_ url: URL) -> Void
@@ -29,7 +28,14 @@ public struct SubmitClaimAudioRecordingScreen: View {
         let store: SubmitClaimStore = globalPresentableStoreContainer.get()
         let path = store.state.claimAudioRecordingPath
         audioRecorder = AudioRecorder(filePath: path)
-
+        self._isAudioInput = State(initialValue: store.state.audioRecordingStep?.isAudioInput() ?? false)
+        let inputText: String? = {
+            if store.state.audioRecordingStep?.optionalAudio == false {
+                return nil
+            }
+            return store.state.audioRecordingStep?.inputTextContent
+        }()
+        self._inputText = State(initialValue: inputText ?? "")
         func myFunc(_: URL) {}
         self.onSubmit = myFunc
     }
@@ -65,6 +71,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                 }
             }
         }
+        .hFormIgnoreKeyboard()
         .hDisableScroll
         .hFormAttachToBottom {
             Group {
@@ -229,12 +236,18 @@ public struct SubmitClaimAudioRecordingScreen: View {
     @ViewBuilder
     private var textField: some View {
         hSection {
-            CustomTextViewRepresentable(placeholder: L10n.claimsTextInputPlaceholder, text: $inputText)
-                .cornerRadius(12)
-                .frame(height: 128)
-                .padding(.vertical, .padding16)
-                .addFieldError(animate: $animateField, error: $inputTextError)
+            hTextView(
+                selectedValue: inputText,
+                placeholder: L10n.terminationSurveyFeedbackHint,
+                required: true,
+                maxCharacters: 2000
+            ) { text in
+                inputText = text
+                inputTextError = nil
+            }
+            .hTextFieldError(inputTextError)
         }
+        .sectionContainerStyle(.transparent)
     }
 
     private func validate() -> Bool {
@@ -258,83 +271,17 @@ struct SubmitClaimAudioRecordingScreen_Previews: PreviewProvider {
                 let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                 let model = FlowClaimAudioRecordingStepModel(
                     id: "ID",
-                    questions: [],
+                    questions: ["question", "qustion 12"],
                     audioContent: .init(
                         audioUrl: "https://filesamples.com/samples/audio/m4a/sample4.m4a",
                         signedUrl: "https://filesamples.com/samples/audio/m4a/sample4.m4a"
                     ),
-                    textQuestions: [],
+                    textQuestions: ["question", "qustion 12"],
 
-                    inputTextContent: nil,
-                    optionalAudio: false
+                    inputTextContent: "test",
+                    optionalAudio: true
                 )
                 store.send(.stepModelAction(action: .setAudioStep(model: model)))
             }
-    }
-}
-
-struct CustomTextViewRepresentable: UIViewRepresentable {
-    let placeholder: String
-    @Binding var text: String
-    public func makeUIView(context: Context) -> some UIView {
-        CustomTextView(placeholder: placeholder, inputText: $text)
-    }
-
-    public func updateUIView(_ uiView: UIViewType, context: Context) {}
-}
-
-private class CustomTextView: UITextView, UITextViewDelegate {
-    let placeholder: String
-    @Binding var inputText: String
-
-    init(placeholder: String, inputText: Binding<String>) {
-        self.placeholder = placeholder
-        self._inputText = inputText
-        super.init(frame: .zero, textContainer: nil)
-        self.textContainerInset = .init(horizontalInset: 4, verticalInset: 4)
-        self.delegate = self
-        self.font = Fonts.fontFor(style: .body1)
-        if inputText.wrappedValue.isEmpty {
-            self.text = placeholder
-            self.textColor = UIColor.lightGray
-        } else {
-            self.text = inputText.wrappedValue
-            self.textColor = UIColor.black
-        }
-        self.backgroundColor = UIColor(hSurfaceColor.Opaque.primary.colorFor(.light, .base).color)
-        let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
-        let doneButton = UIBarButtonItem(
-            barButtonSystemItem: .done,
-            target: self,
-            action: #selector(handleDoneButtonTap)
-        )
-        let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        toolbar.setItems([space, doneButton], animated: false)
-
-        self.inputAccessoryView = toolbar
-    }
-
-    @objc private func handleDoneButtonTap() {
-        self.resignFirstResponder()
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.textColor == UIColor.lightGray {
-            textView.text = nil
-            textView.textColor = UIColor.black
-        }
-    }
-
-    func textViewDidEndEditing(_ textView: UITextView) {
-        let text = textView.text.trimmingCharacters(in: .whitespacesAndNewlines)
-        inputText = text
-        if text.isEmpty {
-            textView.text = placeholder
-            textView.textColor = UIColor.lightGray
-        }
     }
 }
