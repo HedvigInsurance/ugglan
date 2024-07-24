@@ -1,4 +1,5 @@
 import Foundation
+import hCore
 
 @testable import TravelCertificate
 
@@ -22,6 +23,7 @@ struct MockData {
             submit: submit,
             fetchList: fetchList
         )
+        Dependencies.shared.add(module: Module { () -> TravelInsuranceClient in service })
         return service
     }
 }

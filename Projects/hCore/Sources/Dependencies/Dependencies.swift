@@ -20,6 +20,10 @@ public class Dependencies {
 
         return component
     }
+
+    public func remove<T>(for: T.Type) {
+        modules.removeValue(forKey: String(describing: T.self))
+    }
 }
 
 public struct Module {

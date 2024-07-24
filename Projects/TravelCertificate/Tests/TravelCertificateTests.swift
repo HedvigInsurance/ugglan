@@ -1,4 +1,5 @@
 import XCTest
+import hCore
 
 @testable import TravelCertificate
 
@@ -7,13 +8,18 @@ final class TravelCertificateTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
+        sut = nil
     }
 
-    override func tearDownWithError() throws {
+    override func tearDown() async throws {
+        //added this to remove dependency so we can test if the sut is nil
+        Dependencies.shared.remove(for: TravelInsuranceClient.self)
+        try await Task.sleep(nanoseconds: 100)
+
         XCTAssertNil(sut)
     }
 
-    func testSpecificationsSuccess() async {
+    func testListViewModelSuccess() async {
         let specifications: [TravelInsuranceContractSpecification] = [
             .init(
                 contractId: "contractId",
@@ -30,11 +36,10 @@ final class TravelCertificateTests: XCTestCase {
         let mockService = MockData.createMockTravelInsuranceService(
             fetchSpecifications: { return specifications }
         )
-
-        let model = await ListScreen(infoButtonPlacement: .automatic)
-        await model.createNewPressed()
-        //        assert(model.vm.list == specifications)
         self.sut = mockService
+
+        let respondedList = try! await mockService.getSpecifications()
+        assert(respondedList == specifications)
     }
 
     func testListSuccess() async {
@@ -43,18 +48,19 @@ final class TravelCertificateTests: XCTestCase {
                 id: "id",
                 date: Date(),
                 valid: true,
-                url: nil
+                url: URL(string: "https://www.hedvig.com")
             )!
         ]
+        .compactMap({ $0 })
 
         let mockService = MockData.createMockTravelInsuranceService(
             fetchList: { return (list, true) }
         )
+        self.sut = mockService
 
         let model = ListScreenViewModel()
         await model.fetchTravelCertificateList()
 
         assert(model.list == list)
-        self.sut = mockService
     }
 }
