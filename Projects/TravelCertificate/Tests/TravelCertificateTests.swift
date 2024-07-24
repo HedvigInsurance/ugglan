@@ -42,6 +42,31 @@ final class TravelCertificateTests: XCTestCase {
         assert(respondedList == specifications)
     }
 
+    func testSubmitForm() async {
+        let dto: TravelInsuranceFormDTO = .init(
+            contractId: "contractId",
+            startDate: "2024-08-08",
+            isMemberIncluded: true,
+            coInsured: [],
+            email: "email@email.com"
+        )
+
+        let urlPath = URL(string: dto.contractId)
+
+        let mockService = MockData.createMockTravelInsuranceService(
+            submit: { dto in
+                if let urlPath = URL(string: dto.contractId) {
+                    return urlPath
+                }
+                throw TravelInsuranceError.missingURL
+            }
+        )
+        self.sut = mockService
+
+        let respondedUrl = try! await mockService.submitForm(dto: dto)
+        assert(respondedUrl == urlPath)
+    }
+
     func testListSuccess() async {
         let list: [TravelCertificateModel] = [
             .init(
