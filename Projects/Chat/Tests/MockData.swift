@@ -87,7 +87,6 @@ class MockConversationService: ChatServiceProtocol {
         self.fetchNewMessages = fetchNewMessages
         self.fetchPreviousMessages = fetchPreviousMessages
         self.sendMessage = sendMessage
-
     }
 
     func getNewMessages() async throws -> Chat.ChatData {

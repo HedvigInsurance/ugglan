@@ -10,7 +10,7 @@ public class TravelInsuranceService {
         return try await service.getSpecifications()
     }
 
-    public func submitForm(dto: TravenInsuranceFormDTO) async throws -> URL {
+    public func submitForm(dto: TravelInsuranceFormDTO) async throws -> URL {
         log.info("TravelInsuranceClient: submitForm", error: nil, attributes: ["data": dto])
         return try await service.submitForm(dto: dto)
     }
@@ -41,7 +41,7 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
         }
     }
 
-    public func submitForm(dto: TravenInsuranceFormDTO) async throws -> URL {
+    public func submitForm(dto: TravelInsuranceFormDTO) async throws -> URL {
         let input = dto.asOctopusInput
         let mutation = OctopusGraphQL.CreateTravelCertificateMutation(input: input)
         do {
@@ -97,7 +97,7 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
 
 }
 
-extension TravenInsuranceFormDTO {
+extension TravelInsuranceFormDTO {
     fileprivate var asOctopusInput: OctopusGraphQL.TravelCertificateCreateInput {
         return .init(
             contractId: contractId,
