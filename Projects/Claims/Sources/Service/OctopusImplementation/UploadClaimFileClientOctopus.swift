@@ -24,7 +24,7 @@ extension NetworkClient: hClaimFileUploadClient {
         files: [File],
         withProgress: ((_ progress: Double) -> Void)?
     ) async throws -> [ClaimFileUploadResponse] {
-        let request = try? await ClaimsRequest.uploadFile(endPoint: endPoint, files: files).asRequest()
+        let request = try await ClaimsRequest.uploadFile(endPoint: endPoint, files: files).asRequest()
         var observation: NSKeyValueObservation?
         let response = try await withCheckedThrowingContinuation {
             (inCont: CheckedContinuation<[ClaimFileUploadResponse], Error>) -> Void in
