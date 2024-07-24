@@ -18,9 +18,9 @@ extension AppDelegate {
         _ application: UIApplication,
         didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
     ) {
-        let client: NotificationClient = Dependencies.shared.resolve()
-        let deviceTokenString = deviceToken.reduce("", { $0 + String(format: "%02X", $1) })
         Task {
+            let client: NotificationClient = Dependencies.shared.resolve()
+            let deviceTokenString = deviceToken.reduce("", { $0 + String(format: "%02X", $1) })
             try await client.register(for: deviceTokenString)
         }
     }
