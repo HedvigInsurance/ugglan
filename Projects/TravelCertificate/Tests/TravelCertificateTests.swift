@@ -12,7 +12,6 @@ final class TravelCertificateTests: XCTestCase {
     }
 
     override func tearDown() async throws {
-        //added this to remove dependency so we can test if the sut is nil
         Dependencies.shared.remove(for: TravelInsuranceClient.self)
         try await Task.sleep(nanoseconds: 100)
 
