@@ -66,56 +66,6 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
     var keyboardFrame: CGRect = .zero
     var keyboardCancellable: AnyCancellable?
 
-    func listenToKeyboardFrame() {
-
-        keyboardCancellable = viewController.view.keyboardSignal(priority: .highest)
-            .publisher
-            .receive(on: RunLoop.main)
-            .sink { [weak self] event in guard let self = self else { return }
-                switch event {
-                case let .willShow(frame, _): self.keyboardFrame = frame
-                case .willHide: self.keyboardFrame = .zero
-                }
-
-                guard let navigationController = self.viewController.navigationController else {
-                    return
-                }
-
-                guard
-                    ![
-                        .changed,
-                        .began,
-                        .cancelled,
-                    ]
-                    .contains(navigationController.interactivePopGestureRecognizer?.state)
-                else {
-                    return
-                }
-
-                if var topController = navigationController.view.window?.rootViewController {
-                    while let presentedViewController = topController.presentedViewController {
-                        topController = presentedViewController
-                    }
-
-                    if topController == navigationController {
-                        if let presentationController = navigationController
-                            .presentationController,
-                            let lastViewController = navigationController
-                                .visibleViewController
-                        {
-                            PresentationStyle.Detent.set(
-                                lastViewController.appliedDetents,
-                                on: presentationController,
-                                viewController: lastViewController,
-                                keyboardAnimation: event.animation,
-                                unanimated: false
-                            )
-                        }
-                    }
-                }
-            }
-    }
-
     init(
         detents: [PresentationStyle.Detent],
         options: PresentationOptions,
@@ -127,7 +77,6 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
         self.wantsGrabber = wantsGrabber
         self.viewController = viewController
         super.init()
-        listenToKeyboardFrame()
     }
 
     func animationController(
@@ -430,7 +379,6 @@ extension PresentationStyle {
             on presentationController: UIPresentationController,
             viewController: UIViewController,
             lastDetentIndex: Int? = nil,
-            keyboardAnimation: KeyboardAnimation? = nil,
             unanimated: Bool
         ) {
             guard !detents.isEmpty else { return }
