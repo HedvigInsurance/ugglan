@@ -1,11 +1,39 @@
 import Foundation
 
+@testable import TerminateContracts
+
 typealias StartTermination = (String) async throws -> TerminateStepResponse
 typealias SendTerminationDate = (String, String) async throws -> TerminateStepResponse
 typealias SendConfirmDelete = (String) async throws -> TerminateStepResponse
 typealias SendSurvey = (String, String, String?) async throws -> TerminateStepResponse
 
 class MockTerminateContractsService: TerminateContractsClient {
+
+    static func createMockService(
+        startTermination: @escaping StartTermination = { _ in
+            return .init(
+                context: "",
+                action: .startTermination(
+                    config: .init(contractId: "", contractDisplayName: "", contractExposureName: "", activeFrom: "")
+                )
+            )
+        },
+        sendTerminationDate: @escaping SendTerminationDate = { _, _ in
+            return .init(context: "", action: .sendTerminationDate)
+        },
+        sendConfirmDelete: @escaping SendConfirmDelete = { _ in return .init(context: "", action: .sendConfirmDelete) },
+        sendSurvey: @escaping SendSurvey = { _, _, _ in
+            return .init(context: "", action: .submitSurvey(option: "", feedback: nil))
+        }
+    ) -> MockTerminateContractsService {
+        MockTerminateContractsService(
+            start: startTermination,
+            sendDate: sendTerminationDate,
+            confirmDelete: sendConfirmDelete,
+            survey: sendSurvey
+        )
+    }
+
     var events = [Event]()
 
     var start: StartTermination
