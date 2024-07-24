@@ -41,8 +41,8 @@ extension AppDelegate {
         let profileStore: ProfileStore = globalPresentableStoreContainer.get()
 
         profileStore.stateSignal
-            .distinct()
             .map({ $0.memberDetails?.id })
+            .distinct()
             .plain()
             .publisher
             .receive(on: RunLoop.main)
