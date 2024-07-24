@@ -49,6 +49,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func logout() {
+        cancellables.removeAll()
         UIApplication.shared.unregisterForRemoteNotifications()
         let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
         ugglanStore.send(.setIsDemoMode(to: false))

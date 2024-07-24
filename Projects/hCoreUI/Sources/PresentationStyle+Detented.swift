@@ -137,14 +137,17 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
                 unanimated: true
             )
 
-            Task { @MainActor in
+            Task { @MainActor [weak presentationController, weak self] in
                 try! await Task.sleep(nanoseconds: 1_000_000_000)
-                PresentationStyle.Detent.set(
-                    self.detents,
-                    on: presentationController,
-                    viewController: self.viewController,
-                    unanimated: true
-                )
+
+                if let self, let presentationController {
+                    PresentationStyle.Detent.set(
+                        self.detents,
+                        on: presentationController,
+                        viewController: self.viewController,
+                        unanimated: true
+                    )
+                }
             }
         } else {
             PresentationStyle.Detent.set(
@@ -161,14 +164,17 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
                 unanimated: false
             )
 
-            Task { @MainActor in
+            Task { @MainActor [weak presentationController, weak self] in
                 try! await Task.sleep(nanoseconds: 50_000_000)
-                PresentationStyle.Detent.set(
-                    self.detents,
-                    on: presentationController,
-                    viewController: self.viewController,
-                    unanimated: false
-                )
+
+                if let self, let presentationController {
+                    PresentationStyle.Detent.set(
+                        self.detents,
+                        on: presentationController,
+                        viewController: self.viewController,
+                        unanimated: false
+                    )
+                }
             }
         }
 
