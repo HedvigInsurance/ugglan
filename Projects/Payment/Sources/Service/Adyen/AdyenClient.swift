@@ -7,6 +7,15 @@ public protocol AdyenClient {
     func getAdyenUrl() async throws -> URL
 }
 
+public class AdyenClientDemo: AdyenClient {
+
+    public init() {}
+
+    public func getAdyenUrl() async throws -> URL {
+        throw NetworkError.parsingError(message: L10n.General.errorBody)
+    }
+}
+
 extension NetworkClient: AdyenClient {
     public func getAdyenUrl() async throws -> URL {
         let request = try await AdyenRequest.getAuthorizationCode.asRequest()
