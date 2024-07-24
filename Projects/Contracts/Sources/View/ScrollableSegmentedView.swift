@@ -169,7 +169,7 @@ class ScrollableSegmentedViewModel: NSObject, ObservableObject {
     }
 
     func updateContentHeight(for id: String, height: CGFloat) {
-        heights[id] = height
+        heights[id] = CGFloat(Int(height))
         if id == currentId, let height = heights[id] {
             withAnimation {
                 currentHeight = height
@@ -178,9 +178,14 @@ class ScrollableSegmentedViewModel: NSObject, ObservableObject {
     }
 
     func updateTitleStartPositions(for id: String, position: CGRect) {
-        titlesPositions[id] = position
-        selectedIndicatorWidth = position.width
-        selectedIndicatorHeight = position.height
+        titlesPositions[id] = CGRect(
+            x: position.origin.x,
+            y: position.origin.y,
+            width: CGFloat(Int(position.width)),
+            height: CGFloat(Int(position.height))
+        )
+        selectedIndicatorWidth = CGFloat(Int(position.width))
+        selectedIndicatorHeight = CGFloat(Int(position.height))
     }
 
     func scrollToNearestWith(offset: CGFloat) {
