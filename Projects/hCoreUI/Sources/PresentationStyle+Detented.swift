@@ -138,7 +138,7 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
             )
 
             Task { @MainActor [weak presentationController, weak self] in
-                try! await Task.sleep(nanoseconds: 1_000_000_000)
+                try! await Task.sleep(nanoseconds: 1)
 
                 if let self, let presentationController {
                     PresentationStyle.Detent.set(
