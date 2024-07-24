@@ -64,7 +64,6 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
     var wantsGrabber: Bool
     var viewController: UIViewController
     var keyboardFrame: CGRect = .zero
-    var keyboardCancellable: AnyCancellable?
 
     init(
         detents: [PresentationStyle.Detent],
