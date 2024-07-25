@@ -1,6 +1,62 @@
 import Foundation
+import hCore
 
 @testable import Payment
+
+struct MockData {
+    static func createMockTravelInsuranceService(
+        fetchPaymentData: @escaping FetchPaymentData = {
+            .init(
+                id: "id",
+                payment: .init(
+                    gross: .init(amount: "230", currency: "SEK"),
+                    net: .init(amount: "230", currency: "SEK"),
+                    carriedAdjustment: .init(amount: "230", currency: "SEK"),
+                    settlementAdjustment: nil,
+                    date: .init()
+                ),
+                status: .success,
+                contracts: [],
+                discounts: [],
+                paymentDetails: nil,
+                addedToThePayment: nil
+            )
+        },
+        fetchPaymentStatusData: @escaping FetchPaymentStatusData = {
+            .init(status: .active, displayName: nil, descriptor: nil)
+        },
+        fetchPaymentDiscountsData: @escaping FetchPaymentDiscountsData = {
+            .init(
+                discounts: [],
+                referralsData: .init(
+                    code: "code",
+                    discountPerMember: .init(amount: "10", currency: "SEK"),
+                    discount: .init(amount: "10", currency: "SEK"),
+                    referrals: []
+                )
+            )
+        },
+        fetchPaymentHistoryData: @escaping FetchPaymentHistoryData = {
+            .init()
+        },
+        fetchConnectPaymentUrl: @escaping FetchConnectPaymentUrl = {
+            if let url = URL(string: "") {
+                return url
+            }
+            throw PaymentError.missingDataError(message: L10n.General.errorBody)
+        }
+    ) -> MockPaymentService {
+        let service = MockPaymentService(
+            fetchPaymentData: fetchPaymentData,
+            fetchPaymentStatusData: fetchPaymentStatusData,
+            fetchPaymentDiscountsData: fetchPaymentDiscountsData,
+            fetchPaymentHistoryData: fetchPaymentHistoryData,
+            fetchConnectPaymentUrl: fetchConnectPaymentUrl
+        )
+        Dependencies.shared.add(module: Module { () -> hPaymentClient in service })
+        return service
+    }
+}
 
 typealias FetchPaymentData = () async throws -> PaymentData?
 typealias FetchPaymentStatusData = () async throws -> PaymentStatusData
