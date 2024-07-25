@@ -3,11 +3,11 @@ import hCore
 
 public protocol TravelInsuranceClient {
     func getSpecifications() async throws -> [TravelInsuranceContractSpecification]
-    func submitForm(dto: TravenInsuranceFormDTO) async throws -> URL
+    func submitForm(dto: TravelInsuranceFormDTO) async throws -> URL
     func getList() async throws -> (list: [TravelCertificateModel], canAddTravelInsurance: Bool)
 }
 
-public struct TravenInsuranceFormDTO: Encodable {
+public struct TravelInsuranceFormDTO: Encodable {
     let contractId: String
     let startDate: String
     let isMemberIncluded: Bool

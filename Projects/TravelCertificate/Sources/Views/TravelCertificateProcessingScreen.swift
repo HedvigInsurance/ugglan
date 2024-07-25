@@ -76,7 +76,7 @@ class ProcessingViewModel: ObservableObject {
             if let startDateViewModel = startDateViewModel,
                 let whoIsTravelingViewModel = whoIsTravelingViewModel
             {
-                let dto = TravenInsuranceFormDTO(
+                let dto = TravelInsuranceFormDTO(
                     contractId: startDateViewModel.specification.contractId,
                     startDate: startDateViewModel.date.localDateString,
                     isMemberIncluded: whoIsTravelingViewModel.isPolicyHolderIncluded,
