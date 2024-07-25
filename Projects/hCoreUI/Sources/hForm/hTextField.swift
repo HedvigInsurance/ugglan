@@ -173,7 +173,6 @@ class TextFieldObserver: NSObject, UITextFieldDelegate {
     var onReturnTap: () -> Void = {}
     var onDidEndEditing: () -> Void = {}
     var onBeginEditing: () -> Void = {}
-    weak var textField: UITextField?
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         onReturnTap()
         return true
@@ -184,7 +183,6 @@ class TextFieldObserver: NSObject, UITextFieldDelegate {
     }
 
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        self.textField = textField
         onBeginEditing()
     }
 }

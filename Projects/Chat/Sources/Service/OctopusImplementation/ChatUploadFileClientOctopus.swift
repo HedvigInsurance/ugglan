@@ -22,7 +22,7 @@ extension NetworkClient: ChatFileUploaderClient {
         files: [File],
         withProgress: ((_ progress: Double) -> Void)?
     ) async throws -> [ChatUploadFileResponseModel] {
-        let request = try! await FileUploadRequest.uploadFile(files: files).asRequest()
+        let request = try await FileUploadRequest.uploadFile(files: files).asRequest()
         var observation: NSKeyValueObservation?
         let response = try await withCheckedThrowingContinuation {
             (inCont: CheckedContinuation<[ChatUploadFileResponseModel], Error>) -> Void in

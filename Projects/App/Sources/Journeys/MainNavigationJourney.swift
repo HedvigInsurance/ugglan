@@ -98,7 +98,9 @@ class MainNavigationViewModel: ObservableObject {
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()
                     await contractStore.sendAsync(.fetchContracts)
                     await checkForFeatureFlags()
-                    AnalyticsService().fetchAndSetUserId()
+                    Task {
+                        try? await AnalyticsService().fetchAndSetUserId()
+                    }
                     withAnimation {
                         hasLaunchFinished = true
                     }

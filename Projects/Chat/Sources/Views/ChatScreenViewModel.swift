@@ -110,7 +110,7 @@ public class ChatScreenViewModel: ObservableObject {
                 isFetchingPreviousMessages = false
             } catch _ {
                 if withAutomaticRetry {
-                    try! await Task.sleep(nanoseconds: 2_000_000_000)
+                    try? await Task.sleep(nanoseconds: 2_000_000_000)
                     isFetchingPreviousMessages = false
                     await fetchPreviousMessages()
                 } else {
