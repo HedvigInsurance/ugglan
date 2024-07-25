@@ -72,5 +72,4 @@ class MockTravelInsuranceService: TravelInsuranceClient {
         let data = try await fetchList()
         return data
     }
-
 }

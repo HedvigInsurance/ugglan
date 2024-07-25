@@ -35,7 +35,7 @@ final class PaymentTests: XCTestCase {
             addedToThePayment: nil
         )
 
-        let mockService = MockData.createMockTravelInsuranceService(
+        let mockService = MockData.createMockPaymentService(
             fetchPaymentData: { paymentData }
         )
         self.sut = mockService
@@ -51,7 +51,7 @@ final class PaymentTests: XCTestCase {
             descriptor: "descriptor"
         )
 
-        let mockService = MockData.createMockTravelInsuranceService(
+        let mockService = MockData.createMockPaymentService(
             fetchPaymentStatusData: { paymentStatusData }
         )
         self.sut = mockService
@@ -71,7 +71,7 @@ final class PaymentTests: XCTestCase {
             )
         )
 
-        let mockService = MockData.createMockTravelInsuranceService(
+        let mockService = MockData.createMockPaymentService(
             fetchPaymentDiscountsData: { paymentDiscountsData }
         )
         self.sut = mockService
@@ -89,7 +89,7 @@ final class PaymentTests: XCTestCase {
             )
         ]
 
-        let mockService = MockData.createMockTravelInsuranceService(
+        let mockService = MockData.createMockPaymentService(
             fetchPaymentHistoryData: { paymentHistoryData }
         )
         self.sut = mockService
@@ -101,7 +101,7 @@ final class PaymentTests: XCTestCase {
     func fetchConnectPaymentUrlSuccess() async {
         let connectPaymentUrl = URL(string: "https://hedvig.se")
 
-        let mockService = MockData.createMockTravelInsuranceService(
+        let mockService = MockData.createMockPaymentService(
             fetchConnectPaymentUrl: {
                 if let connectPaymentUrl {
                     return connectPaymentUrl
