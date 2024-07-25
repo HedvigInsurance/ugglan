@@ -18,7 +18,7 @@ final class PaymentTests: XCTestCase {
         XCTAssertNil(sut)
     }
 
-    func fetchPaymentDataSuccess() async {
+    func testFetchPaymentDataSuccess() async {
         let paymentData: PaymentData = .init(
             id: "id",
             payment: .init(
@@ -44,7 +44,7 @@ final class PaymentTests: XCTestCase {
         assert(respondedPaymentData == paymentData)
     }
 
-    func fetchPaymentStatusDataSuccess() async {
+    func testFetchPaymentStatusDataSuccess() async {
         let paymentStatusData: PaymentStatusData = .init(
             status: .active,
             displayName: "displayName",
@@ -60,7 +60,7 @@ final class PaymentTests: XCTestCase {
         assert(respondedPaymentStatusData == paymentStatusData)
     }
 
-    func fetchPaymentDiscountsDataSuccess() async {
+    func testFetchPaymentDiscountsDataSuccess() async {
         let paymentDiscountsData: PaymentDiscountsData = .init(
             discounts: [],
             referralsData: .init(
@@ -80,7 +80,7 @@ final class PaymentTests: XCTestCase {
         assert(respondedPaymentDiscountsData == paymentDiscountsData)
     }
 
-    func fetchPaymentHistoryDataSuccess() async {
+    func testFetchPaymentHistoryDataSuccess() async {
         let paymentHistoryData: [PaymentHistoryListData] = [
             .init(
                 id: "id",
@@ -98,7 +98,7 @@ final class PaymentTests: XCTestCase {
         assert(respondedPaymentHistoryData == paymentHistoryData)
     }
 
-    func fetchConnectPaymentUrlSuccess() async {
+    func testFetchConnectPaymentUrlSuccess() async {
         let connectPaymentUrl = URL(string: "https://hedvig.se")
 
         let mockService = MockData.createMockPaymentService(
