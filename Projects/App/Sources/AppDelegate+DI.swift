@@ -36,7 +36,7 @@ extension ApolloClient {
             let submitClaimDemoService = SubmitClaimClientDemo()
             let conversationsClient = ConversationsDemoClient()
             let conversationClient = ConversationDemoClient()
-
+            let adyenClient = AdyenClientDemo()
             Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlags })
             Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentService })
             Dependencies.shared.add(module: Module { () -> hFetchClaimClient in fetchClaimService })
@@ -50,6 +50,7 @@ extension ApolloClient {
             Dependencies.shared.add(module: Module { () -> SubmitClaimClient in submitClaimDemoService })
             Dependencies.shared.add(module: Module { () -> ConversationsClient in conversationsClient })
             Dependencies.shared.add(module: Module { () -> ConversationClient in conversationClient })
+            Dependencies.shared.add(module: Module { () -> AdyenClient in adyenClient })
         } else {
             let hApollo = self.createClient()
             let paymentService = hPaymentClientOctopus()

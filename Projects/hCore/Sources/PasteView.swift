@@ -1,4 +1,4 @@
-import Flow
+import Combine
 import Foundation
 import SwiftUI
 
@@ -46,13 +46,30 @@ public struct PasteView: UIViewRepresentable {
     }
 
     public class Coordinator: NSObject, UIGestureRecognizerDelegate {
-        let bag = DisposeBag()
+        public var cancellables = Set<AnyCancellable>()
+        let longPressGesture = UILongPressGestureRecognizer()
 
+        override init() {
+            super.init()
+            longPressGesture.delegate = self
+            longPressGesture.addTarget(self, action: #selector(longGesture(_:)))
+        }
+
+        public var longGestureDidBeginPublisher: AnyPublisher<Bool, Never> {
+            return longGestureDidBegin.eraseToAnyPublisher()
+        }
+        private let longGestureDidBegin = PassthroughSubject<Bool, Never>()
         public func gestureRecognizer(
             _ gestureRecognizer: UIGestureRecognizer,
             shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer
         ) -> Bool {
             return true
+        }
+
+        @objc func longGesture(_ sender: UILongPressGestureRecognizer) {
+            if sender.state == UIGestureRecognizer.State.began {
+                longGestureDidBegin.send(true)
+            }
         }
     }
 
@@ -62,19 +79,16 @@ public struct PasteView: UIViewRepresentable {
 
     public func makeUIView(context: Context) -> some UIView {
         let view = _PasteView(onPaste: onPaste)
-
-        let longPressGesture = UILongPressGestureRecognizer()
-        longPressGesture.delegate = context.coordinator
-        context.coordinator.bag += view.install(longPressGesture)
-
-        context.coordinator.bag += longPressGesture.signal(forState: .began)
-            .onValue { _ in
+        view.addGestureRecognizer(context.coordinator.longPressGesture)
+        context.coordinator.longGestureDidBeginPublisher
+            .sink { _ in
+                print("Long tap begin")
                 let menu = UIMenuController.shared
                 guard !menu.isMenuVisible else { return }
                 view.becomeFirstResponder()
                 menu.showMenu(from: view, rect: view.bounds)
             }
-
+            .store(in: &context.coordinator.cancellables)
         return view
     }
 

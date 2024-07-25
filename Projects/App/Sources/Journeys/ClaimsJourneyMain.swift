@@ -26,12 +26,12 @@ public struct ClaimsJourneyMain: View {
                 .routerDestination(
                     for: ClaimsRouterActionsWithoutBackButton.self,
                     options: .hidesBackButton
-                ) { destination in
+                ) { [weak claimsNavigationVm] destination in
                     if destination == .askForPushNotifications {
                         AskForPushNotifications(
                             text: L10n.claimsActivateNotificationsBody,
                             onActionExecuted: {
-                                claimsNavigationVm.isClaimsFlowPresented = true
+                                claimsNavigationVm?.isClaimsFlowPresented = true
                             },
                             wrapWithForm: true
                         )
@@ -54,12 +54,12 @@ public struct ClaimsJourneyMain: View {
     }
 
     func honestyPledge(from origin: ClaimsOrigin) -> some View {
-        HonestyPledge(onConfirmAction: {
+        HonestyPledge(onConfirmAction: { [weak claimsNavigationVm, weak claimsRouter] in
             let profileStore: ProfileStore = globalPresentableStoreContainer.get()
             if profileStore.state.pushNotificationCurrentStatus() != .authorized {
-                claimsRouter.push(ClaimsRouterActionsWithoutBackButton.askForPushNotifications)
+                claimsRouter?.push(ClaimsRouterActionsWithoutBackButton.askForPushNotifications)
             } else {
-                claimsNavigationVm.isClaimsFlowPresented = true
+                claimsNavigationVm?.isClaimsFlowPresented = true
             }
         })
     }
