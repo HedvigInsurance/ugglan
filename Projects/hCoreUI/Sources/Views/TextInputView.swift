@@ -79,7 +79,7 @@ public struct TextInputView: View {
 }
 
 public class TextInputViewModel: ObservableObject {
-    @Published var input: String
+    @Published public var input: String
     @Published var error: String?
     @Published var isLoading: Bool = false
     @Published var type: TextInputView.InputViewFocus? = .textField
