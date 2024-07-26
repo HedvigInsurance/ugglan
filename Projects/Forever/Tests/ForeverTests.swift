@@ -1,5 +1,6 @@
 import XCTest
 import hCore
+import hCoreUI
 
 @testable import Forever
 
@@ -39,17 +40,16 @@ final class ForeverTests: XCTestCase {
         assert(respondedInformation == memberReferralInformation)
     }
 
-    //    func testCodeChangeSuccess() async {
-    //        let code = "new code"
-    //
-    //        let mockService = MockData.createMockForeverService(
-    //            changeCode: { code in }
-    //        )
-    //        self.sut = mockService
-    //
-    //        let model = ChangeCodeViewModel()
-    //        model.inputVm.onSave = { code in }
-    //        try! await model.handleOnSave()
-    //        assert(model.inputVm.input == code)
-    //    }
+    func testCodeChangeSuccess() async {
+        let code = "new code"
+
+        let model = TextInputViewModel(
+            masking: .init(type: .none),
+            input: code,
+            title: L10n.ReferralsEmpty.Code.headline
+        )
+
+        await model.save()
+        assert(model.input == code)
+    }
 }

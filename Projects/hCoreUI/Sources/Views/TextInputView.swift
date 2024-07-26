@@ -100,7 +100,7 @@ public class TextInputViewModel: ObservableObject {
     }
 
     @MainActor
-    func save() async {
+    public func save() async {
         withAnimation {
             self.type = nil
             self.error = nil
