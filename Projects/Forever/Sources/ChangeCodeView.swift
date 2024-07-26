@@ -44,7 +44,7 @@ class ChangeCodeViewModel: ObservableObject {
     }
 
     @MainActor
-    func handleOnSave() async throws {
+    private func handleOnSave() async throws {
         inputVm.onSave = { [weak self] text in
             try await self?.foreverService.changeCode(code: text)
             let store: ForeverStore = globalPresentableStoreContainer.get()
