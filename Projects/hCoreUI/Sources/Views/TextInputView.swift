@@ -79,7 +79,7 @@ public struct TextInputView: View {
 }
 
 public class TextInputViewModel: ObservableObject {
-    @Published var input: String
+    @Published public var input: String
     @Published var error: String?
     @Published var isLoading: Bool = false
     @Published var type: TextInputView.InputViewFocus? = .textField
@@ -100,7 +100,7 @@ public class TextInputViewModel: ObservableObject {
     }
 
     @MainActor
-    func save() async {
+    public func save() async {
         withAnimation {
             self.type = nil
             self.error = nil

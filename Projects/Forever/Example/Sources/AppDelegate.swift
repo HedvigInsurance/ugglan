@@ -1,12 +1,10 @@
-import Flow
-import Forever
+import ExampleUtil
 import Foundation
 import SwiftUI
 import hCoreUI
 
 @UIApplicationMain class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
-    let bag = DisposeBag()
 
     internal func application(
         _ application: UIApplication,
