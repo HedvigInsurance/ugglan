@@ -8,5 +8,5 @@ public protocol FetchContractsClient {
 public struct ContractsStack {
     public let activeContracts: [Contract]
     public let pendingContracts: [Contract]
-    public let termiantedContracts: [Contract]
+    public let terminatedContracts: [Contract]
 }

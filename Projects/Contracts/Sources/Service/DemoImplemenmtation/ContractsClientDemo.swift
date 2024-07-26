@@ -61,7 +61,7 @@ public class FetchContractsClientDemo: FetchContractsClient {
             typeOfContract: Contract.TypeOfContract.seHouse,
             coInsured: []
         )
-        return .init(activeContracts: [contract], pendingContracts: [], termiantedContracts: [])
+        return .init(activeContracts: [contract], pendingContracts: [], terminatedContracts: [])
     }
 
     public func getCrossSell() async throws -> [CrossSell] {
