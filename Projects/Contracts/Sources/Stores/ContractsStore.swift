@@ -22,7 +22,7 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
             do {
                 let data = try await self.fetchContractsService.getContracts()
                 send(.setActiveContracts(contracts: data.activeContracts))
-                send(.setTerminatedContracts(contracts: data.termiantedContracts))
+                send(.setTerminatedContracts(contracts: data.terminatedContracts))
                 send(.setPendingContracts(contracts: data.pendingContracts))
             } catch let error {
                 self.setError(error.localizedDescription, for: .fetchContracts)

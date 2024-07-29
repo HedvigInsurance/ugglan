@@ -41,7 +41,7 @@ public class FetchContractsClientOctopus: FetchContractsClient {
         return .init(
             activeContracts: activeContracts,
             pendingContracts: pendingContracts,
-            termiantedContracts: terminatedContracts
+            terminatedContracts: terminatedContracts
         )
     }
 
