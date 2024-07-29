@@ -40,6 +40,16 @@ public struct ClaimEntryPointResponseModel: Codable, Equatable, Hashable {
         options =
             data.options?.map({ ClaimEntryPointOptionResponseModel(with: $0.fragments.entrypointOptionFragment) }) ?? []
     }
+
+    init(
+        id: String,
+        displayName: String,
+        options: [ClaimEntryPointOptionResponseModel]
+    ) {
+        self.id = id
+        self.displayName = displayName
+        self.options = options
+    }
 }
 
 public struct ClaimEntryPointOptionResponseModel: Codable, Equatable, Hashable {
@@ -51,5 +61,13 @@ public struct ClaimEntryPointOptionResponseModel: Codable, Equatable, Hashable {
     ) {
         self.id = data.id
         self.displayName = data.displayName
+    }
+
+    init(
+        id: String,
+        displayName: String
+    ) {
+        self.id = id
+        self.displayName = displayName
     }
 }
