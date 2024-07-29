@@ -1,7 +1,8 @@
 import hCore
 
-struct MockData {
+@testable import Claims
 
+struct MockData {
     static func createMockFetchClaimService(
         fetch: @escaping FetchClaims = {
             .init(
