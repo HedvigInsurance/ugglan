@@ -85,6 +85,17 @@ struct PaymentStatusView_Previews: PreviewProvider {
             PaymentStatusView(status: .success) { _ in }
             PaymentStatusView(status: .addedtoFuture(date: "2023-10-11")) { _ in }
             PaymentStatusView(status: .failedForPrevious(from: "2023-10-11", to: "2023-11-11")) { _ in }
+
+            let dateFrom: Date? = "2024-05-06".localDateToDate
+            let dateTo: Date? = "2024-06-06".localDateToDate
+
+            if let dateFrom, let dateTo {
+                let serverDateFrom: ServerBasedDate = dateFrom.localDateString
+
+                let serverDateTo: ServerBasedDate = dateTo.localDateString
+
+                PaymentStatusView(status: .failedForPrevious(from: serverDateFrom, to: serverDateTo)) { _ in }
+            }
             Spacer()
         }
     }

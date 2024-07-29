@@ -60,7 +60,7 @@ extension PaymentData.PaymentStatus {
                 let from = previousChargesPeriods.compactMap({ $0.fromDate.localDateToDate }).min()
                 let to = previousChargesPeriods.compactMap({ $0.toDate.localDateToDate }).max()
                 if let from, let to {
-                    return .failedForPrevious(from: from.displayDateDDMMMFormat, to: to.displayDateDDMMMFormat)
+                    return .failedForPrevious(from: from.localDateString, to: to.localDateString)
                 }
                 return .upcoming
             }
