@@ -44,4 +44,35 @@ final class AuthenticationTests: XCTestCase {
         )
         assert(respondedState == submit)
     }
+
+    func testStartSuccess() async {
+        let startData: (verifyUrl: URL, resendUrl: URL, maskedEmail: String?) = (
+            verifyUrl: URL(string: "verifyURL")!,
+            resendUrl: URL(string: "resendUrl")!,
+            maskedEmail: "email@email.com"
+        )
+
+        let mockService = MockData.createAuthenticationService(
+            startAuth: { state in
+                startData
+            }
+        )
+        self.sut = mockService
+
+        let respondedState = try! await mockService.startAuth(
+            .init(
+                isLoading: false,
+                isResending: false,
+                resendUrl: startData.resendUrl,
+                verifyUrl: startData.verifyUrl,
+                code: "code",
+                codeErrorMessage: nil,
+                otpInputErrorMessage: nil,
+                input: "input",
+                maskedEmail: startData.maskedEmail,
+                canResendAt: nil
+            )
+        )
+        assert(respondedState == startData)
+    }
 }
