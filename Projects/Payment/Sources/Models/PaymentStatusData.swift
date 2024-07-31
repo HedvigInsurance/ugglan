@@ -48,18 +48,16 @@ public enum PayinMethodStatus: Equatable {
         switch self {
         case .active, .pending:
             return L10n.myPaymentDirectDebitReplaceButton
-        case .needsSetup, .unknown, .noNeedToConnect:
+        case .needsSetup, .unknown, .noNeedToConnect, .contactUs:
             return L10n.myPaymentDirectDebitButton
-        case .contactUs:
-            return L10n.General.chatButton
         }
     }
 
     public var showConnectPayment: Bool {
         switch self {
-        case .contactUs, .needsSetup:
+        case .needsSetup:
             return true
-        case .noNeedToConnect, .pending, .active, .unknown:
+        case .noNeedToConnect, .pending, .active, .unknown, .contactUs:
             return false
         }
     }
