@@ -12,25 +12,13 @@ Hedvig is a new approach to insurance currently available in Sweden, Norway and 
 
    `get it from the Mac App Store`
 
-2. Install tuist
+2. Install tuist by following this guide
 
-   `bash <(curl -Ls https://install.tuist.io)`
+   `[bash <(curl -Ls https://install.tuist.io)](https://docs.tuist.io/guides/quick-start/install-tuist)`
 
 3. Run post-checkout
 
    `scripts/post-checkout.sh`
-   
-4. Install swift-format
-
-   `scripts/install-swift-format.sh`
-
-5. Run tuist generate
-
-   `tuist generate`
-   
-6. Open workspace
-
-   `open Ugglan.xcworkspace`
    
 ## Formatting
 
