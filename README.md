@@ -14,7 +14,7 @@ Hedvig is a new approach to insurance currently available in Sweden, Norway and 
 
 2. Install tuist by following this guide
 
-   `[bash <(curl -Ls https://install.tuist.io)](https://docs.tuist.io/guides/quick-start/install-tuist)`
+   `https://install.tuist.io)](https://docs.tuist.io/guides/quick-start/install-tuist)`
 
 3. Run post-checkout
 
@@ -34,16 +34,23 @@ We use swift-format for formatting, it's ran on all staged files automatically i
    
 ## How to release
 
+### Before release 
+
 Before release making sure you `Cancel` or release any pending releases on App Store Connect.
 
-1. Go to `Actions` -> `ProductionDeploy`
+1. Go to `Actions` -> `CreateRelease`
 
 2. Click `Run workflow`
 
-3. Enter desired App Store version number
+3. Wait for the build to complete and get processed by App Store Connect
 
-4. Click `Run workflow`
+### After release
 
-5. Wait for the build to complete and get processed by App Store Connect
+1.  Go to `Actions` -> `IncreaseVersionNumber`
+
+5. Enter desired App Store version number
+
+6. Click `Run workflow`
+
 
 
