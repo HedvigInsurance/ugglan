@@ -14,7 +14,7 @@ Hedvig is a new approach to insurance currently available in Sweden, Norway and 
 
 2. Install tuist by following this guide
 
-   `https://install.tuist.io)](https://docs.tuist.io/guides/quick-start/install-tuist)`
+   `https://docs.tuist.io/guides/quick-start/install-tuist`
 
 3. Run post-checkout
 
