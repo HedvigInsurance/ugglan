@@ -4,8 +4,8 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct LanguageAndMarketPickerView: View {
-    @StateObject private var vm = LanguageAndMarketPickerViewModel()
+public struct LanguagePickerView: View {
+    @StateObject private var vm = LanguagePickerViewModel()
     @EnvironmentObject var router: Router
 
     public init() {}
@@ -13,17 +13,7 @@ public struct LanguageAndMarketPickerView: View {
     public var body: some View {
         hForm {
             VStack(spacing: 8) {
-                hSection {
-                    Picker("View", selection: $vm.selected) {
-                        ForEach(LanguageAndMarketPicker.allCases) { view in
-                            hText(view.title, style: .standardSmall).tag(view)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                }
-                .sectionContainerStyle(.transparent)
-
-                ForEach(LanguageAndMarketPicker.allCases) { panel in
+                ForEach(LanguagePicker.allCases) { panel in
                     if vm.selected == panel {
                         withAnimation(.easeInOut(duration: 0.4)) {
                             viewFor(view: panel)
@@ -64,37 +54,37 @@ public struct LanguageAndMarketPickerView: View {
     }
 
     @ViewBuilder
-    func viewFor(view: LanguageAndMarketPicker) -> some View {
+    func viewFor(view: LanguagePicker) -> some View {
         switch view {
-        case .market:
-            marketView
+        //        case .market:
+        //            marketView
         case .language:
             languageView
         }
     }
 
-    private var marketView: some View {
-        hSection {
-            VStack(spacing: 4) {
-                ForEach(Market.activatedMarkets, id: \.title) { market in
-                    hRadioField(
-                        id: market.rawValue,
-                        leftView: {
-                            HStack(spacing: 16) {
-                                Image(uiImage: market.icon)
-                                    .resizable()
-                                    .frame(width: 24, height: 24)
-                                hText(market.title, style: .title3)
-                                    .foregroundColor(hTextColor.Opaque.primary)
-                            }
-                            .asAnyView
-                        },
-                        selected: $vm.selectedMarketCode
-                    )
-                }
-            }
-        }
-    }
+    //    private var marketView: some View {
+    //        hSection {
+    //            VStack(spacing: 4) {
+    //                ForEach(Market.activatedMarkets, id: \.title) { market in
+    //                    hRadioField(
+    //                        id: market.rawValue,
+    //                        leftView: {
+    //                            HStack(spacing: 16) {
+    //                                Image(uiImage: market.icon)
+    //                                    .resizable()
+    //                                    .frame(width: 24, height: 24)
+    //                                hText(market.title, style: .title3)
+    //                                    .foregroundColor(hTextColor.Opaque.primary)
+    //                            }
+    //                            .asAnyView
+    //                        },
+    //                        selected: $vm.selectedMarketCode
+    //                    )
+    //                }
+    //            }
+    //        }
+    //    }
 
     private var languageView: some View {
         hSection {
@@ -120,27 +110,27 @@ public struct LanguageAndMarketPickerView: View {
     }
 }
 
-struct LanguageAndMarketPickerView_Previews: PreviewProvider {
+struct LanguagePickerView_Previews: PreviewProvider {
     static var previews: some View {
-        LanguageAndMarketPickerView()
+        LanguagePickerView()
     }
 }
 
-class LanguageAndMarketPickerViewModel: ObservableObject {
+class LanguagePickerViewModel: ObservableObject {
     @Published var selectedLocale = Localization.Locale.currentLocale
     @Published var selectedLocaleCode: String? = Localization.Locale.currentLocale.rawValue
 
     @Published var selectedMarket: Market
     @Published var selectedMarketCode: String?
 
-    @Published var trigger = LanguageAndMarketPicker.language
-    @Published var previous = LanguageAndMarketPicker.language
+    @Published var trigger = LanguagePicker.language
+    @Published var previous = LanguagePicker.language
 
     @Published var insertion: AnyTransition = .move(edge: .leading)
     @Published var removal: AnyTransition = .move(edge: .trailing)
     var cancellables = Set<AnyCancellable>()
 
-    @Published var selected: LanguageAndMarketPicker = .market {
+    @Published var selected: LanguagePicker = .language {
         willSet {
             if previous != selected {
                 insertion = previous.move(selected)
@@ -185,22 +175,20 @@ class LanguageAndMarketPickerViewModel: ObservableObject {
     }
 }
 
-enum LanguageAndMarketPicker: Int, CaseIterable, Identifiable {
-    case market
+enum LanguagePicker: Int, CaseIterable, Identifiable {
+    //    case market
     case language
 
     var id: Int { self.rawValue }
 
     var title: String {
         switch self {
-        case .market:
-            return L10n.MarketPickerModal.title
         case .language:
             return L10n.LanguagePickerModal.title
         }
     }
 
-    func move(_ otherPanel: LanguageAndMarketPicker) -> AnyTransition {
+    func move(_ otherPanel: LanguagePicker) -> AnyTransition {
         return otherPanel.rawValue < self.rawValue ? .move(edge: .trailing) : .move(edge: .leading)
     }
 }

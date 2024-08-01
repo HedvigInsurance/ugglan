@@ -53,10 +53,6 @@ class OTPEntryViewModel: ObservableObject {
     weak var router: Router?
     var masking: Masking {
         switch Localization.Locale.currentLocale.market {
-        case .dk:
-            return Masking(type: .danishPersonalNumber)
-        case .no:
-            return Masking(type: .norwegianPersonalNumber)
         case .se:
             return Masking(type: .email)
         }
@@ -64,8 +60,6 @@ class OTPEntryViewModel: ObservableObject {
 
     var title: String {
         switch Localization.Locale.currentLocale.market {
-        case .dk, .no:
-            return L10n.zignsecLoginScreenTitle
         case .se:
             return L10n.Login.enterYourEmailAddress
         }

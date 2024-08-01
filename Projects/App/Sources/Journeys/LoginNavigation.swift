@@ -19,16 +19,14 @@ struct LoginNavigation: View {
             NotLoggedInView(vm: vm)
         }
         .detent(presented: $vm.showLanguagePicker, style: .height) {
-            LanguageAndMarketPickerView()
-                .navigationTitle(L10n.loginMarketPickerPreferences)
+            LanguagePickerView()
+                .navigationTitle(L10n.loginLanguagePreferences)
                 .embededInNavigation()
 
         }
         .detent(presented: $vm.showLogin, style: .large, tracking: Localization.Locale.currentLocale.market) {
             Group {
                 switch Localization.Locale.currentLocale.market {
-                case .no, .dk:
-                    OTPEntryView()
                 case .se:
                     BankIDLoginQRView {
                         let store: UgglanStore = globalPresentableStoreContainer.get()
@@ -74,8 +72,8 @@ public struct NotLoggedInView: View {
                     switch vm.viewState {
                     case .loading:
                         ZStack {}
-                    case .marketAndLanguage:
-                        marketAndLanguage
+                    case .language:
+                        language
                     }
                 }
                 .environment(\.colorScheme, .light)
@@ -86,24 +84,16 @@ public struct NotLoggedInView: View {
     }
 
     @ViewBuilder
-    var marketAndLanguage: some View {
+    var language: some View {
         ZStack {
             VStack {
                 HStack {
                     Spacer()
-                    PresentableStoreLens(
-                        MarketStore.self,
-                        getter: { state in
-                            state.market
-                        }
-                    ) { market in
-                        Button {
-                            vm.showLanguagePicker = true
-                        } label: {
-                            Image(uiImage: market.icon)
-                                .padding(.padding8)
-                        }
-
+                    Button {
+                        vm.showLanguagePicker = true
+                    } label: {
+                        Image(uiImage: Localization.Locale.currentLocale.icon)
+                            .padding(.padding8)
                     }
 
                 }
@@ -165,7 +155,7 @@ public class NotLoggedViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .sink { [weak self] value in
                 if value {
-                    self?.viewState = .marketAndLanguage
+                    self?.viewState = .language
                     self?.onLoad()
                 }
             }
@@ -203,7 +193,7 @@ public class NotLoggedViewModel: ObservableObject {
 
     enum ViewState {
         case loading
-        case marketAndLanguage
+        case language
     }
 }
 
@@ -305,8 +295,6 @@ private class PlayerUIView: UIView {
 extension Localization.Locale.Market: TrackingViewNameProtocol {
     public var nameForTracking: String {
         switch self {
-        case .no, .dk:
-            return .init(describing: OTPEntryView.self)
         case .se:
             return .init(describing: BankIDLoginQRView.self)
 
