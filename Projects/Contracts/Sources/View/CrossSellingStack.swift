@@ -14,11 +14,11 @@ struct CrossSellingStack: View {
         ) { crossSells in
             if !crossSells.isEmpty {
                 hSection {
-                    ForEach(crossSells, id: \.title) { crossSell in
-                        VStack {
+                    VStack(spacing: 16) {
+                        ForEach(crossSells, id: \.title) { crossSell in
                             CrossSellingItem(crossSell: crossSell)
+                                .transition(.slide)
                         }
-                        .transition(.slide)
                     }
                 }
                 .withHeader {
@@ -34,6 +34,7 @@ struct CrossSellingStack: View {
                             Divider()
                                 .overlay(hSurfaceColor.Opaque.primary)
                                 .frame(height: 1)
+                                .padding(.bottom, .padding8)
                         }
                     }
                 }

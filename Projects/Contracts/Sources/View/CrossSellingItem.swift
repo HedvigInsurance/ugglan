@@ -56,7 +56,7 @@ struct CrossSellingItem: View {
                 ImpactGenerator.soft()
             }
         }
-        .padding(16)
+        .padding(.vertical, .padding8)
         .modifier(
             BackgorundColorAnimation(
                 animationTrigger: $fieldIsClicked,
