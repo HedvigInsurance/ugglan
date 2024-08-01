@@ -56,35 +56,10 @@ public struct LanguagePickerView: View {
     @ViewBuilder
     func viewFor(view: LanguagePicker) -> some View {
         switch view {
-        //        case .market:
-        //            marketView
         case .language:
             languageView
         }
     }
-
-    //    private var marketView: some View {
-    //        hSection {
-    //            VStack(spacing: 4) {
-    //                ForEach(Market.activatedMarkets, id: \.title) { market in
-    //                    hRadioField(
-    //                        id: market.rawValue,
-    //                        leftView: {
-    //                            HStack(spacing: 16) {
-    //                                Image(uiImage: market.icon)
-    //                                    .resizable()
-    //                                    .frame(width: 24, height: 24)
-    //                                hText(market.title, style: .title3)
-    //                                    .foregroundColor(hTextColor.Opaque.primary)
-    //                            }
-    //                            .asAnyView
-    //                        },
-    //                        selected: $vm.selectedMarketCode
-    //                    )
-    //                }
-    //            }
-    //        }
-    //    }
 
     private var languageView: some View {
         hSection {
@@ -176,7 +151,6 @@ class LanguagePickerViewModel: ObservableObject {
 }
 
 enum LanguagePicker: Int, CaseIterable, Identifiable {
-    //    case market
     case language
 
     var id: Int { self.rawValue }
