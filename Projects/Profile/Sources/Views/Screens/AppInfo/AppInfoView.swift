@@ -91,7 +91,7 @@ public struct AppInfoView: View {
                     .minimumScaleFactor(0.2)
                     .lineLimit(1)
                     .foregroundColor(hTextColor.Opaque.secondary)
-
+                    .frame(maxHeight: .infinity, alignment: .center)
             }
         }
         .onTap {
