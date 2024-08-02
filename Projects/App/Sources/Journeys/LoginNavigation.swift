@@ -73,7 +73,7 @@ public struct NotLoggedInView: View {
                     case .loading:
                         ZStack {}
                     case .language:
-                        language
+                        languageView
                     }
                 }
                 .environment(\.colorScheme, .light)
@@ -84,7 +84,7 @@ public struct NotLoggedInView: View {
     }
 
     @ViewBuilder
-    var language: some View {
+    var languageView: some View {
         ZStack {
             VStack {
                 HStack {
