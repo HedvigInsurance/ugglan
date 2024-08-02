@@ -85,7 +85,7 @@ public struct hRow<Content: View, Accessory: View>: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading) {
-                HStack(alignment: .center) {
+                HStack(alignment: .top) {
                     content
                     accessory
                 }
