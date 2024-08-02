@@ -93,7 +93,7 @@ struct PaymentsDiscountsView: View {
                     .foregroundColor(hTextColor.Opaque.secondary)
                 }
             }
-            .padding(.bottom, -16)
+            .padding(.bottom, data.referralsData.referrals.isEmpty ? 0 : -16)
         }
         hSection {
             InfoCard(
