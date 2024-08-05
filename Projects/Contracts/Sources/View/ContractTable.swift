@@ -63,7 +63,6 @@ struct ContractTable: View {
                     }
                 }
             }
-            .hSectionMinimumPadding
             .presentableStoreLensAnimation(.spring())
             .sectionContainerStyle(.transparent)
         }
@@ -96,7 +95,6 @@ struct ContractTable: View {
                                 .foregroundColor(hTextColor.Opaque.secondary)
                             }
                         }
-                        .hSectionMinimumPadding
                         .transition(.slide)
                     }
                 }
