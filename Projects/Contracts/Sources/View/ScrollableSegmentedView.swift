@@ -34,19 +34,20 @@ struct ScrollableSegmentedView<Content: View>: View {
     }
 
     var headerControl: some View {
-        ZStack(alignment: .leading) {
-            selectedPageHeaderBackground
-            HStack(spacing: .padding4) {
-                ForEach(vm.pageModels) { model in
-                    headerElement(for: model)
+        hSection {
+            ZStack(alignment: .leading) {
+                selectedPageHeaderBackground
+                HStack(spacing: .padding4) {
+                    ForEach(vm.pageModels) { model in
+                        headerElement(for: model)
+                    }
                 }
             }
+            .padding(.padding4)
+            .background {
+                hSurfaceColor.Opaque.primary.clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
+            }
         }
-        .padding(.padding4)
-        .background {
-            hSurfaceColor.Opaque.primary.clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
-        }
-        .padding(.horizontal, .padding16)
     }
 
     var selectedPageHeaderBackground: some View {
