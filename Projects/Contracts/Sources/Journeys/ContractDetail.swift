@@ -123,6 +123,7 @@ public struct ContractDetail: View {
                     .padding(.bottom, .padding8)
                 }
                 .sectionContainerStyle(.transparent)
+                .hSectionMinimumPadding
                 .padding(.top, .padding8)
             }
             .presentableStoreLensAnimation(.default)
