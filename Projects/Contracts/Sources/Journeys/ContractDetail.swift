@@ -100,7 +100,7 @@ public struct ContractDetail: View {
                             activeFrom: contract.upcomingChangedAgreement?.activeFrom,
                             activeInFuture: contract.activeInFuture,
                             masterInceptionDate: contract.masterInceptionDate
-                        )  //.fixedSize(horizontal: false, vertical: true)
+                        )
                     }
                     ScrollableSegmentedView(
                         vm: crollableSegmentedViewModel,
