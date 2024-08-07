@@ -1,44 +1,43 @@
 import Foundation
 import Presentation
+import hCore
 import hGraphQL
 
 public struct Conversation: Identifiable, Hashable, Codable {
     public init(
         id: String,
         type: ConversationType,
-        title: String,
-        subtitle: String?,
         newestMessage: Message?,
         createdAt: String?,
         statusMessage: String?,
-        isConversationOpen: Bool?
+        isConversationOpen: Bool?,
+        hasClaim: Bool,
+        claimType: String?
     ) {
         self.id = id
         self.type = type
-        self.title = title
-        self.subtitle = subtitle
         self.newestMessage = newestMessage
         self.createdAt = createdAt
         self.statusMessage = statusMessage
         self.isConversationOpen = isConversationOpen
+        self.hasClaim = hasClaim
+        self.claimType = claimType
     }
 
     public let id: String
     let type: ConversationType
-    public let title: String
-    let subtitle: String?
     public let newestMessage: Message?
     let createdAt: String?
     let statusMessage: String?
     let isConversationOpen: Bool?
+    let hasClaim: Bool
+    let claimType: String?
 
     public init(
         fragment: OctopusGraphQL.ConversationFragment,
         type: ConversationType
     ) {
         self.id = fragment.id
-        self.title = fragment.title
-        self.subtitle = fragment.subtitle
         if let newestMessage = fragment.newestMessage?.fragments.messageFragment.asMessage() {
             self.newestMessage = .init(newestMessage)
         } else {
@@ -48,6 +47,29 @@ public struct Conversation: Identifiable, Hashable, Codable {
         self.statusMessage = fragment.statusMessage
         self.type = type
         self.isConversationOpen = fragment.isOpen
+        self.hasClaim = fragment.claim != nil
+        self.claimType = fragment.claim?.claimType
+    }
+
+    var getConversationTitle: String {
+        if self.type == .legacy {
+            return L10n.chatConversationHistoryTitle
+        } else if self.hasClaim {
+            return L10n.chatConversationClaimTitle
+        }
+        return L10n.chatConversationQuestionTitle
+    }
+
+    var getConversationSubTitle: String? {
+        if self.type == .legacy {
+            return nil
+        } else if self.hasClaim {
+            if let type = self.claimType {
+                return type
+            }
+            return nil
+        }
+        return nil
     }
 }
 

@@ -354,12 +354,12 @@ struct ClaimDetailView_Previews: PreviewProvider {
             conversation: .init(
                 id: "",
                 type: .claim,
-                title: "",
-                subtitle: nil,
                 newestMessage: nil,
                 createdAt: nil,
                 statusMessage: nil,
-                isConversationOpen: true
+                isConversationOpen: true,
+                hasClaim: true,
+                claimType: "claim type"
             )
         )
         return ClaimDetailView(claim: claim).environmentObject(HomeNavigationViewModel())

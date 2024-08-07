@@ -101,6 +101,7 @@ public class ConversationClientOctopus: ConversationClient {
         let olderToken = conversation.messagePage.olderToken
         let banner = conversation.statusMessage
         let isConversationOpen = conversation.isOpen
+        let hasClaim = conversation.claim != nil
 
         return .init(
             messages: messages,
@@ -108,9 +109,10 @@ public class ConversationClientOctopus: ConversationClient {
             olderToken: olderToken,
             newerToken: newerToken,
             isConversationOpen: isConversationOpen,
-            title: conversation.title,
             createdAt: conversation.createdAt,
-            isLegacy: conversation.isLegacy
+            isLegacy: conversation.isLegacy,
+            hasClaim: hasClaim,
+            claimType: conversation.claim?.claimType
         )
     }
 }
@@ -120,12 +122,12 @@ extension OctopusGraphQL.ConversationFragment {
         return .init(
             id: id,
             type: type,
-            title: self.title,
-            subtitle: self.subtitle,
             newestMessage: self.newestMessage?.fragments.messageFragment.asMessage(),
             createdAt: self.createdAt,
             statusMessage: self.statusMessage,
-            isConversationOpen: self.isOpen
+            isConversationOpen: self.isOpen,
+            hasClaim: self.claim != nil,
+            claimType: self.claim?.claimType
         )
     }
 }
