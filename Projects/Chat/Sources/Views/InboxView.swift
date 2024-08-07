@@ -44,13 +44,8 @@ public struct InboxView: View {
         VStack(alignment: .leading, spacing: .padding8) {
             VStack(alignment: .leading, spacing: 0) {
                 HStack(alignment: .top, spacing: 0) {
-                    if conversation.type == .legacy {
-                        hText(L10n.chatConversationHistoryTitle, style: .body1)
-                            .foregroundColor(hTextColor.Opaque.primary)
-                    } else {
-                        hText(conversation.getConversationTitle, style: .body1)
-                            .lineLimit(3)
-                    }
+                    hText(conversation.getConversationTitle, style: .body1)
+                        .lineLimit(3)
                     Spacer()
                     getRightView(for: conversation)
                         .fixedSize()
