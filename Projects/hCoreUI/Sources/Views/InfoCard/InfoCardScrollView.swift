@@ -17,7 +17,6 @@ public struct InfoCardScrollView<Content: View, cardItem: Identifiable>: View {
     }
 
     public var body: some View {
-        let _ = print("items is: ", items)
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(alignment: .bottom, spacing: vm.spacing) {
                 ForEach(items) { item in
@@ -46,7 +45,6 @@ public struct InfoCardScrollView<Content: View, cardItem: Identifiable>: View {
         if items.count > 1 {
             hPagerDotsBinded(currentIndex: $vm.activeCard, totalCount: items.count)
         }
-
     }
 }
 
@@ -94,7 +92,7 @@ public class InfoCardScrollViewModel: NSObject, ObservableObject, UIScrollViewDe
         itemsCount: Int
     ) {
         self.spacing = spacing
-        self.cardWidth = UIScreen.main.bounds.width * zoomFactor
+        self.cardWidth = min(UIScreen.main.bounds.width * zoomFactor, 700)
         self.itemsCount = CGFloat(itemsCount)
         self.cardWithSpacing = cardWidth + spacing
         self.scrollViewHeight = 0

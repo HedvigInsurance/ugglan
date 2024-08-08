@@ -82,6 +82,7 @@ struct ContractDetails: View {
                 }
             }
             .withoutHorizontalPadding
+            .hSectionMinimumPadding
             .transition(.opacity)
         }
     }

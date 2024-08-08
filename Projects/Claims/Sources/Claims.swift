@@ -20,10 +20,10 @@ extension Claims: View {
                 Spacer().frame(height: 40)
             } else if claims.count == 1, let claim = claims.first {
                 ClaimStatus(claim: claim, enableTap: true)
-                    .padding([.bottom, .top])
+                    .padding(.vertical)
             } else {
                 ClaimSection(claims: claims)
-                    .padding([.bottom, .top])
+                    .padding(.vertical)
             }
         }
     }
