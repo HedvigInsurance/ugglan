@@ -22,13 +22,18 @@ public struct ConversationMessagesData {
     let olderToken: String?
     let newerToken: String?
     let isConversationOpen: Bool?
-    let title: String?
     let createdAt: String?
     let isLegacy: Bool
+    let hasClaim: Bool
+    let claimType: String?
 
     var screenTitle: String {
-        if isLegacy { return L10n.chatConversationHistoryTitle }
-        return title ?? L10n.chatTitle
+        if isLegacy {
+            return L10n.chatConversationHistoryTitle
+        } else if self.hasClaim {
+            return L10n.chatConversationClaimTitle
+        }
+        return L10n.chatConversationQuestionTitle
     }
 
     var subtitle: String? {
