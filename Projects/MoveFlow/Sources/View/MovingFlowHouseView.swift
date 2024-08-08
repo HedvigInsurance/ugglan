@@ -176,7 +176,7 @@ struct MovingFlowHouseView: View {
 
 struct MovingFlowHouseView_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .nb_NO
+        Localization.Locale.currentLocale = .sv_SE
         return MovingFlowHouseView(vm: HouseInformationInputModel())
     }
 }

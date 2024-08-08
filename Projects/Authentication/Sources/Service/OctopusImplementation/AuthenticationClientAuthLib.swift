@@ -80,8 +80,6 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
     public func start(with otpState: OTPState) async throws -> (verifyUrl: URL, resendUrl: URL, maskedEmail: String?) {
         let personalNumber: String? = {
             switch Localization.Locale.currentLocale.market {
-            case .no, .dk:
-                return otpState.input.replacingOccurrences(of: "-", with: "")
             case .se:
                 return nil
             }
@@ -89,8 +87,6 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
 
         let email: String? = {
             switch Localization.Locale.currentLocale.market {
-            case .no, .dk:
-                return nil
             case .se:
                 return otpState.input
             }
@@ -285,9 +281,7 @@ extension hGraphQL.Environment {
 extension Localization.Locale.Market {
     fileprivate var asOtpMarket: OtpMarket {
         switch self {
-        case .no: return .no
         case .se: return .se
-        case .dk: return .dk
         }
     }
 }

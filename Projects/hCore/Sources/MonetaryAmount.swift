@@ -35,10 +35,6 @@ extension MonetaryAmount {
         switch currency {
         case "SEK":
             return Locale(identifier: "sv_SE")
-        case "NOK":
-            return Locale(identifier: "nb_NO")
-        case "DKK":
-            return Locale(identifier: "da_DK")
         default:
             return Localization.Locale.currentLocale.foundation
         }
