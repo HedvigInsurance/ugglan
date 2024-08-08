@@ -134,12 +134,12 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
             conversation: .init(
                 id: "",
                 type: .claim,
-                title: "",
-                subtitle: nil,
                 newestMessage: nil,
                 createdAt: nil,
                 statusMessage: nil,
-                isConversationOpen: true
+                isConversationOpen: true,
+                hasClaim: true,
+                claimType: "claim type"
             )
         )
         return VStack(spacing: 20) {
@@ -167,12 +167,12 @@ struct ClaimReopened_Previews: PreviewProvider {
             conversation: .init(
                 id: "",
                 type: .claim,
-                title: "",
-                subtitle: nil,
                 newestMessage: nil,
                 createdAt: nil,
                 statusMessage: nil,
-                isConversationOpen: true
+                isConversationOpen: true,
+                hasClaim: true,
+                claimType: "claim type"
             )
         )
         return VStack(spacing: 20) {
@@ -200,12 +200,12 @@ struct ClaimPaid_Previews: PreviewProvider {
             conversation: .init(
                 id: "",
                 type: .claim,
-                title: "",
-                subtitle: nil,
                 newestMessage: nil,
                 createdAt: nil,
                 statusMessage: nil,
-                isConversationOpen: true
+                isConversationOpen: true,
+                hasClaim: true,
+                claimType: "claim type"
             )
         )
         return VStack(spacing: 20) {
@@ -232,12 +232,12 @@ struct ClaimNotCompensated_Previews: PreviewProvider {
             conversation: .init(
                 id: "",
                 type: .claim,
-                title: "",
-                subtitle: nil,
                 newestMessage: nil,
                 createdAt: nil,
                 statusMessage: nil,
-                isConversationOpen: true
+                isConversationOpen: true,
+                hasClaim: true,
+                claimType: "claim type"
             )
         )
         return VStack(spacing: 20) {
@@ -265,12 +265,12 @@ struct ClaimNotCovered_Previews: PreviewProvider {
             conversation: .init(
                 id: "",
                 type: .claim,
-                title: "",
-                subtitle: nil,
                 newestMessage: nil,
                 createdAt: nil,
                 statusMessage: nil,
-                isConversationOpen: true
+                isConversationOpen: true,
+                hasClaim: true,
+                claimType: "claim type"
             )
         )
         return VStack(spacing: 20) {
@@ -298,12 +298,12 @@ struct ClaimClosed_Previews: PreviewProvider {
             conversation: .init(
                 id: "convId",
                 type: .claim,
-                title: "Title",
-                subtitle: "SUBTITLE",
                 newestMessage: nil,
                 createdAt: nil,
                 statusMessage: nil,
-                isConversationOpen: true
+                isConversationOpen: true,
+                hasClaim: true,
+                claimType: "claim type"
             )
         )
         return VStack(spacing: 20) {

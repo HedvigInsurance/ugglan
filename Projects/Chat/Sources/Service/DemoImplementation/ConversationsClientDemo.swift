@@ -11,8 +11,6 @@ public class ConversationsDemoClient: ConversationsClient {
             Conversation(
                 id: "id1",
                 type: .legacy,
-                title: "Lorem ipsum dolor sit amet title",
-                subtitle: "subtitle",
                 newestMessage: .init(
                     localId: "",
                     remoteId: "",
@@ -24,16 +22,14 @@ public class ConversationsDemoClient: ConversationsClient {
                 ),
                 createdAt: "2024-06-20",
                 statusMessage: "status message",
-                isConversationOpen: false
+                isConversationOpen: false,
+                hasClaim: false,
+                claimType: nil
             ),
 
             Conversation(
                 id: "id2",
                 type: .service,
-                title:
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-                subtitle:
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
                 newestMessage: .init(
                     localId: "localId2",
                     remoteId: "remoteId2",
@@ -42,14 +38,14 @@ public class ConversationsDemoClient: ConversationsClient {
                 ),
                 createdAt: "2024-06-10",
                 statusMessage: "status message",
-                isConversationOpen: true
+                isConversationOpen: true,
+                hasClaim: false,
+                claimType: nil
             ),
 
             Conversation(
                 id: "id3",
                 type: .claim,
-                title: "Claim: very very very very very long title",
-                subtitle: "Chronical gastrointestinal issues",
                 newestMessage: .init(
                     localId: "localId2",
                     remoteId: "remoteId2",
@@ -61,14 +57,14 @@ public class ConversationsDemoClient: ConversationsClient {
                 ),
                 createdAt: "2024-06-10",
                 statusMessage: "status message",
-                isConversationOpen: true
+                isConversationOpen: true,
+                hasClaim: true,
+                claimType: nil
             ),
 
             Conversation(
                 id: "id4",
                 type: .claim,
-                title: "Claim",
-                subtitle: "Chronical gastrointestinal issues",
                 newestMessage: .init(
                     localId: "localId2",
                     remoteId: "remoteId2",
@@ -80,7 +76,9 @@ public class ConversationsDemoClient: ConversationsClient {
                 ),
                 createdAt: "2024-06-19",
                 statusMessage: "status message",
-                isConversationOpen: true
+                isConversationOpen: true,
+                hasClaim: true,
+                claimType: "claim type"
             ),
         ]
 
@@ -94,12 +92,12 @@ public class ConversationsDemoClient: ConversationsClient {
         return Conversation(
             id: id.uuidString,
             type: .legacy,
-            title: "title",
-            subtitle: "subtitle",
             newestMessage: nil,
             createdAt: nil,
             statusMessage: "status message",
-            isConversationOpen: true
+            isConversationOpen: true,
+            hasClaim: false,
+            claimType: nil
         )
     }
 }
@@ -123,9 +121,10 @@ public class ConversationDemoClient: ConversationClient {
             olderToken: nil,
             newerToken: nil,
             isConversationOpen: nil,
-            title: nil,
             createdAt: nil,
-            isLegacy: false
+            isLegacy: false,
+            hasClaim: false,
+            claimType: nil
         )
     }
 
