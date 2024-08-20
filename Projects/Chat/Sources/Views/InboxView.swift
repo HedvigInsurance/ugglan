@@ -89,7 +89,7 @@ public struct InboxView: View {
     private func getNewestMessage(for conversation: Conversation) -> some View {
         if let newestMessage = conversation.newestMessage {
             hText(newestMessage.latestMessageText, style: .footnote)
-                .foregroundColor(hTextColor.Translucent.primary)
+                .foregroundColor(hTextColor.Translucent.secondary)
                 .lineLimit(3)
                 .fixedSize(horizontal: false, vertical: true)
                 .foregroundColor(getNewestMessageColor(for: conversation))
