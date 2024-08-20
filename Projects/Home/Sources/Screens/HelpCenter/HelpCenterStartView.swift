@@ -25,7 +25,7 @@ public struct HelpCenterStartView: View {
         hForm {
             VStack(spacing: 0) {
                 hSection {
-                    VStack(spacing: 40) {
+                    VStack(alignment: .leading, spacing: 40) {
                         if vm.searchInProgress {
                             VStack(spacing: 40) {
                                 displayQuickActions(from: vm.searchResultsQuickActions)
@@ -122,46 +122,7 @@ public struct HelpCenterStartView: View {
                         }
                     }
                     .withoutHorizontalPadding
-                    .sectionContainerStyle(.opaque)
-                }
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func displayResultsInQuickActions(
-        `let` quickActions: [QuickAction]
-    ) -> some View {
-        if !quickActions.isEmpty {
-            VStack(alignment: .leading, spacing: 4) {
-
-                HelpCenterPill(title: L10n.hcQuickActionsTitle, color: .green)
-                    .padding(.bottom, .padding4)
-
-                ForEach(quickActions, id: \.displayTitle) { quickAction in
-                    hSection {
-                        hRow {
-                            VStack(alignment: .leading, spacing: 0) {
-                                hText(quickAction.displayTitle)
-                                hText(quickAction.displaySubtitle, style: .standardSmall)
-                                    .foregroundColor(hTextColor.Opaque.secondary)
-
-                            }
-
-                            Spacer()
-                        }
-                        .withChevronAccessory
-                        .verticalPadding(12)
-                        .onTap {
-                            log.addUserAction(
-                                type: .click,
-                                name: "help center quick action",
-                                attributes: ["action": quickAction.id]
-                            )
-                            onQuickAction(quickAction)
-                        }
-                    }
-                    .withoutHorizontalPadding
+                    .hSectionMinimumPadding
                     .sectionContainerStyle(.opaque)
                 }
             }

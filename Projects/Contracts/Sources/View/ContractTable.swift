@@ -33,74 +33,77 @@ struct ContractTable: View {
     }
 
     var body: some View {
-        LoadingViewWithContent(ContractStore.self, [.fetchContracts], [.fetchContracts], showLoading: false) {
-            hSection {
-                PresentableStoreLens(
-                    ContractStore.self,
-                    getter: { state in
-                        getContractsToShow(for: state)
+        VStack {
+            LoadingViewWithContent(ContractStore.self, [.fetchContracts], [.fetchContracts], showLoading: false) {
+                hSection {
+                    PresentableStoreLens(
+                        ContractStore.self,
+                        getter: { state in
+                            getContractsToShow(for: state)
 
-                    }
-                ) { contracts in
-                    VStack(spacing: 0) {
-                        ForEach(contracts, id: \.id) { contract in
-                            ContractRow(
-                                image: contract.pillowType?.bgImage,
-                                terminationMessage: contract.terminationMessage,
-                                contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
-                                contractExposureName: contract.exposureDisplayName,
-                                activeFrom: contract.upcomingChangedAgreement?.activeFrom,
-                                activeInFuture: contract.activeInFuture,
-                                masterInceptionDate: contract.masterInceptionDate,
-                                onClick: {
-                                    router.push(contract)
-                                }
-                            )
-                            .fixedSize(horizontal: false, vertical: true)
-                            .padding(.bottom, .padding8)
-                            .transition(.slide)
                         }
-                    }
-                }
-            }
-            .presentableStoreLensAnimation(.spring())
-            .sectionContainerStyle(.transparent)
-        }
-        if !showTerminated {
-            VStack(spacing: 16) {
-                CrossSellingStack(withHeader: true)
-                    .padding(.top, .padding24)
-                PresentableStoreLens(
-                    ContractStore.self,
-                    getter: { state in
-                        state.terminatedContracts
-                    }
-                ) { terminatedContracts in
-                    if !(terminatedContracts.isEmpty || onlyTerminatedInsurances) {
-                        hSection {
-                            hButton.LargeButton(type: .secondary) {
-                                router.push(ContractsRouterType.terminatedContracts)
-                            } content: {
-                                hRow {
-                                    HStack {
-                                        hText(
-                                            L10n.InsurancesTab.cancelledInsurancesLabel("\(terminatedContracts.count)")
-                                        )
-                                        .foregroundColor(hTextColor.Opaque.primary)
-                                        Spacer()
+                    ) { contracts in
+                        VStack(spacing: .padding8) {
+                            ForEach(contracts, id: \.id) { contract in
+                                ContractRow(
+                                    image: contract.pillowType?.bgImage,
+                                    terminationMessage: contract.terminationMessage,
+                                    contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
+                                    contractExposureName: contract.exposureDisplayName,
+                                    activeFrom: contract.upcomingChangedAgreement?.activeFrom,
+                                    activeInFuture: contract.activeInFuture,
+                                    masterInceptionDate: contract.masterInceptionDate,
+                                    onClick: {
+                                        router.push(contract)
                                     }
-                                }
-                                .withChevronAccessory
-                                .verticalPadding(0)
-                                .foregroundColor(hTextColor.Opaque.secondary)
+                                )
+                                .fixedSize(horizontal: false, vertical: true)
+                                .transition(.slide)
                             }
                         }
-                        .transition(.slide)
                     }
                 }
                 .presentableStoreLensAnimation(.spring())
                 .sectionContainerStyle(.transparent)
-                .padding(.bottom, .padding24)
+            }
+            if !showTerminated {
+                VStack(spacing: 16) {
+                    CrossSellingStack(withHeader: true)
+                        .padding(.top, .padding24)
+                    PresentableStoreLens(
+                        ContractStore.self,
+                        getter: { state in
+                            state.terminatedContracts
+                        }
+                    ) { terminatedContracts in
+                        if !(terminatedContracts.isEmpty || onlyTerminatedInsurances) {
+                            hSection {
+                                hButton.LargeButton(type: .secondary) {
+                                    router.push(ContractsRouterType.terminatedContracts)
+                                } content: {
+                                    hRow {
+                                        HStack {
+                                            hText(
+                                                L10n.InsurancesTab.cancelledInsurancesLabel(
+                                                    "\(terminatedContracts.count)"
+                                                )
+                                            )
+                                            .foregroundColor(hTextColor.Opaque.primary)
+                                            Spacer()
+                                        }
+                                    }
+                                    .withChevronAccessory
+                                    .verticalPadding(0)
+                                    .foregroundColor(hTextColor.Opaque.secondary)
+                                }
+                            }
+                            .transition(.slide)
+                        }
+                    }
+                    .presentableStoreLensAnimation(.spring())
+                    .sectionContainerStyle(.transparent)
+                    .padding(.bottom, .padding24)
+                }
             }
         }
     }
