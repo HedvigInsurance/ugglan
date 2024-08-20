@@ -44,7 +44,7 @@ public struct PaymentHistoryView: View {
                                             VStack(alignment: .leading, spacing: 0) {
                                                 hText(month.paymentData.payment.date.displayDateShort)
                                                 if month.paymentData.status.hasFailed {
-                                                    hText(L10n.paymentsOutstandingPayment, style: .standardSmall)
+                                                    hText(L10n.paymentsOutstandingPayment, style: .label)
                                                 }
                                             }
                                             Spacer()

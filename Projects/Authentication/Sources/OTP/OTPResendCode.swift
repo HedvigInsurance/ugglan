@@ -22,14 +22,14 @@ struct ResendOTPCode: View {
                                 otpVM.isResending ? .linear(duration: 1).repeatForever(autoreverses: false) : .default,
                                 value: UUID()
                             )
-                        hText(L10n.Login.SmediumButton.Active.resendCode, style: .subheadline)
+                        hText(L10n.Login.SmediumButton.Active.resendCode, style: .label)
                     }
                 }
                 .tint(hTextColor.Opaque.primary)
             } else {
                 hText(
                     vm.canResendAtText,
-                    style: .subheadline
+                    style: .label
                 )
                 .foregroundColor(hTextColor.Opaque.tertiary)
                 .onReceive(vm.timer) { _ in

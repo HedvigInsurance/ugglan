@@ -36,7 +36,7 @@ struct ContractsScreen: View {
             )
         )
         .padding(.bottom, .padding16)
-        .hFormTitle(title: .init(.standard, .title1, L10n.TravelCertificate.selectContractTitle))
+        .hFormTitle(title: .init(.standard, .displayXSLong, L10n.TravelCertificate.selectContractTitle))
         .hButtonIsLoading(isLoading)
         .hDisableScroll
     }

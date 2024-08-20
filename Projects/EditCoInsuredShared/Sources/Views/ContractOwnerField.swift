@@ -40,7 +40,7 @@ public struct ContractOwnerField: View {
                     Image(uiImage: hCoreUIAssets.lock.image)
                         .foregroundColor(hTextColor.Opaque.tertiary)
                 }
-                hText(SSN, style: .footnote)
+                hText(SSN, style: .label)
                     .foregroundColor(getSubTitleColor)
             }
             .frame(maxWidth: .infinity, alignment: .leading)

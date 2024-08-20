@@ -54,7 +54,7 @@ struct OTPCodeDisplay: View {
 
                 VStack {
                     VStack {
-                        hText(digit, style: .title1)
+                        hText(digit, style: .displayXSLong)
                             .animation(nil, value: UUID())
                             .frame(maxWidth: .infinity)
                             .frame(height: 60, alignment: .center)

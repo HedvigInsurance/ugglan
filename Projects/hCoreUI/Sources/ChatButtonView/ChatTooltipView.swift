@@ -26,7 +26,7 @@ struct TooltipView: View {
                             .padding(.trailing, .padding16)
                     }
 
-                    hText(type.textToShow ?? "", style: .standardSmall)
+                    hText(type.textToShow ?? "", style: .label)
                         .padding(.horizontal, .padding12)
                         .padding(.top, 6.5)
                         .padding(.bottom, 7.5)

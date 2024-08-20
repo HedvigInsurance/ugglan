@@ -12,7 +12,7 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
     }
     public var body: some View {
         hForm {}
-            .hFormTitle(title: .init(.small, .title1, L10n.claimsConfirmNumberTitle))
+            .hFormTitle(title: .init(.small, .displayXSLong, L10n.claimsConfirmNumberTitle))
             .hFormAttachToBottom {
                 hSection {
                     VStack(spacing: 16) {

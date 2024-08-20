@@ -34,28 +34,39 @@ public enum HFontTextStyle {
     case display1
     case display2
     case display3
-    case heading3
-    case heading2
+
     case heading1
+    case heading2
+    case heading3
+
     case body1
     case body2
     case body3
+
     case label
     case finePrint
 
-    case title
-    case title1
-    case title2
-    case title3
-    case headline
-    case subheadline
-    case callout
-    case footnote
-    case standardSmall
-    case badge
+    case displayXXLShort
+    case displayXXLLong
+
+    case displayXLShort
+    case displayXLLong
+
+    case displayLShort
+    case displayLLong
+
+    case displayMShort
+    case displayMLong
+
+    case displaySShort
+    case displaySLong
+
+    case displayXSShort
+    case displayXSLong
 
     var fontSize: CGFloat {
         switch self {
+        // Standard
         case .display1: return 54
         case .display2: return 68
         case .display3: return 84
@@ -71,16 +82,24 @@ public enum HFontTextStyle {
         case .label: return 14
         case .finePrint: return 12
 
-        case .title: return 32
-        case .title1: return 28
-        case .title2: return 26
-        case .title3: return 24
-        case .headline: return 17
-        case .subheadline: return 15
-        case .callout: return 16
-        case .footnote: return 14
-        case .standardSmall: return 14
-        case .badge: return 42
+        // Big
+        case .displayXXLShort: return 92
+        case .displayXXLLong: return 84
+
+        case .displayXLShort: return 84
+        case .displayXLLong: return 76
+
+        case .displayLShort: return 76
+        case .displayLLong: return 68
+
+        case .displayMShort: return 68
+        case .displayMLong: return 54
+
+        case .displaySShort: return 48
+        case .displaySLong: return 32
+
+        case .displayXSShort: return 32
+        case .displayXSLong: return 28
         }
     }
 
@@ -108,42 +127,27 @@ public enum HFontTextStyle {
         case .display1: return .title1
         case .display2: return .title1
         case .display3: return .title1
-        case .heading3:
-            return .title3
-        case .heading2:
-            return .title2
-        case .heading1:
-            return .title1
-        case .body1:
-            return .body
-        case .body2:
-            return .body
-        case .body3:
-            return .body
-        case .label:
-            return .footnote
-        case .finePrint:
-            return .footnote
-        case .title:
-            return .title1
-        case .title1:
-            return .title1
-        case .title2:
-            return .title2
-        case .title3:
-            return .title3
-        case .headline:
-            return .headline
-        case .footnote:
-            return .footnote
-        case .standardSmall:
-            return .body  //14
-        case .subheadline:
-            return .body
-        case .callout:
-            return .body
-        case .badge:
-            return .title1
+        case .heading3: return .title3
+        case .heading2: return .title2
+        case .heading1: return .title1
+        case .body1: return .body
+        case .body2: return .body
+        case .body3: return .body
+        case .label: return .footnote
+        case .finePrint: return .footnote
+
+        case .displayXXLShort: return .largeTitle
+        case .displayXXLLong: return .largeTitle
+        case .displayXLShort: return .largeTitle
+        case .displayXLLong: return .largeTitle
+        case .displayLShort: return .largeTitle
+        case .displayLLong: return .largeTitle
+        case .displayMShort: return .largeTitle
+        case .displayMLong: return .largeTitle
+        case .displaySShort: return .largeTitle
+        case .displaySLong: return .largeTitle
+        case .displayXSShort: return .largeTitle
+        case .displayXSLong: return .largeTitle
         }
     }
 }
@@ -160,28 +164,56 @@ public struct hFontModifier: ViewModifier {
 
     var lineSpacing: CGFloat {
         switch style {
-        case .title1:
-            return 32 - font.lineHeight
-        case .title2:
-            return 28 - font.lineHeight
-        case .title3:
+        case .display1:
+            return 64 - font.lineHeight
+        case .display2:
+            return 78 - font.lineHeight
+        case .display3:
+            return 94 - font.lineHeight
+
+        case .heading1:
             return 24 - font.lineHeight
-        case .headline:
-            return 22 - font.lineHeight
-        case .subheadline:
-            return 20 - font.lineHeight
+        case .heading2:
+            return 30 - font.lineHeight
+        case .heading3:
+            return 40 - font.lineHeight
+
         case .body1:
-            return 22 - font.lineHeight
+            return 24 - font.lineHeight
         case .body2:
             return 30 - font.lineHeight
-        case .callout:
-            return 21 - font.lineHeight
-        case .footnote:
-            return 18 - font.lineHeight
+        case .body3:
+            return 40 - font.lineHeight
+
         case .label:
             return 18 - font.lineHeight
-        default:
-            return 0
+        case .finePrint:
+            return 16 - font.lineHeight
+
+        case .displayXXLShort:
+            return 102 - font.lineHeight
+        case .displayXXLLong:
+            return 94 - font.lineHeight
+        case .displayXLShort:
+            return 94 - font.lineHeight
+        case .displayXLLong:
+            return 86 - font.lineHeight
+        case .displayLShort:
+            return 86 - font.lineHeight
+        case .displayLLong:
+            return 78 - font.lineHeight
+        case .displayMShort:
+            return 78 - font.lineHeight
+        case .displayMLong:
+            return 64 - font.lineHeight
+        case .displaySShort:
+            return 56 - font.lineHeight
+        case .displaySLong:
+            return 40 - font.lineHeight
+        case .displayXSShort:
+            return 40 - font.lineHeight
+        case .displayXSLong:
+            return 36 - font.lineHeight
         }
     }
 

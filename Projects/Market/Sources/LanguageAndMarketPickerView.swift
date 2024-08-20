@@ -16,7 +16,7 @@ public struct LanguageAndMarketPickerView: View {
                 hSection {
                     Picker("View", selection: $vm.selected) {
                         ForEach(LanguageAndMarketPicker.allCases) { view in
-                            hText(view.title, style: .standardSmall).tag(view)
+                            hText(view.title, style: .label).tag(view)
                         }
                     }
                     .pickerStyle(.segmented)
@@ -84,7 +84,7 @@ public struct LanguageAndMarketPickerView: View {
                                 Image(uiImage: market.icon)
                                     .resizable()
                                     .frame(width: 24, height: 24)
-                                hText(market.title, style: .title3)
+                                hText(market.title, style: .heading2)
                                     .foregroundColor(hTextColor.Opaque.primary)
                             }
                             .asAnyView
@@ -107,7 +107,7 @@ public struct LanguageAndMarketPickerView: View {
                                 Image(uiImage: locale.icon)
                                     .resizable()
                                     .frame(width: 24, height: 24)
-                                hText(locale.displayName, style: .title3)
+                                hText(locale.displayName, style: .heading2)
                                     .foregroundColor(hTextColor.Opaque.primary)
                             }
                             .asAnyView

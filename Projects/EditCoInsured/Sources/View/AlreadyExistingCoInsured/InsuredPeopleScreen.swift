@@ -185,7 +185,7 @@ struct ConfirmChangesView: View {
                         L10n.contractAddCoinsuredStartsFrom(
                             intentVm.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                         ),
-                        style: .footnote
+                        style: .label
                     )
                     .foregroundColor(hTextColor.Opaque.secondary)
                     .frame(maxWidth: .infinity, alignment: .trailing)

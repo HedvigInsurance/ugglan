@@ -232,7 +232,7 @@ struct MovingFlowConfirm: View {
                     HStack(spacing: 1) {
                         hText(document.displayName)
                         if #available(iOS 16.0, *) {
-                            hText(L10n.documentPdfLabel, style: .footnote)
+                            hText(L10n.documentPdfLabel, style: .label)
                                 .baselineOffset(6.0)
                         }
                     }
@@ -288,7 +288,7 @@ struct MovingFlowConfirm: View {
                             .verticalPadding(.padding12)
                             if expanded, let description = faq.description {
                                 hRow {
-                                    hText(description, style: .standardSmall)
+                                    hText(description, style: .label)
                                         .foregroundColor(hTextColor.Opaque.secondary)
 
                                 }

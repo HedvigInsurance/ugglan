@@ -50,7 +50,7 @@ public struct PickLanguage: View {
                                         Image(uiImage: locale.icon)
                                             .resizable()
                                             .frame(width: 24, height: 24)
-                                        hText(locale.displayName, style: .title3)
+                                        hText(locale.displayName, style: .heading2)
                                             .foregroundColor(hTextColor.Opaque.primary)
                                     }
                                     .asAnyView

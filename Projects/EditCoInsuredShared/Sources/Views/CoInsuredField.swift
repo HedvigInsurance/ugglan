@@ -51,7 +51,7 @@ public struct CoInsuredField<Content: View>: View {
                     Spacer()
                     accessoryView
                 }
-                hText(displaySubTitle, style: .standardSmall)
+                hText(displaySubTitle, style: .label)
                     .foregroundColor(hTextColor.Opaque.secondary)
                     .fixedSize()
             }
@@ -68,7 +68,7 @@ public struct CoInsuredField<Content: View>: View {
                 hText(
                     includeStatusPill
                         .text(date: (date.localDateToDate?.displayDateDDMMMYYYYFormat ?? "")),
-                    style: .standardSmall
+                    style: .label
                 )
             }
             .padding(.vertical, .padding4)

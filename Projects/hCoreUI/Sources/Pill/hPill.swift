@@ -17,7 +17,7 @@ public struct hPill: View {
     @Environment(\.hFieldSize) var fieldSize
 
     public var body: some View {
-        hText(text, style: fieldSize == .large ? .body1 : .standardSmall)
+        hText(text, style: fieldSize == .large ? .body1 : .label)
             .fixedSize()
             .foregroundColor(color.pillTextColor(level: colorLevel))
             .modifier(

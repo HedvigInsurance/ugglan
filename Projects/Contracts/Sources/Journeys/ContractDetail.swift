@@ -67,7 +67,7 @@ public struct ContractDetail: View {
         contractCoverage = ContractCoverageView(id: id)
         contractDocuments = ContractDocumentsView(id: id)
 
-        let font = Fonts.fontFor(style: .standardSmall)
+        let font = Fonts.fontFor(style: .label)
         UISegmentedControl.appearance()
             .setTitleTextAttributes(
                 [

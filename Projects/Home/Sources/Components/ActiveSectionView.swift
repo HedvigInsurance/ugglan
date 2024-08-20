@@ -18,7 +18,7 @@ struct ActiveSectionView<Claims: View>: View {
             }
         ) { memberStateData in
             hSection {
-                hText(L10n.HomeTab.welcomeTitleWithoutName, style: .title1)
+                hText(L10n.HomeTab.welcomeTitleWithoutName, style: .displayXSLong)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
                 claimsContent

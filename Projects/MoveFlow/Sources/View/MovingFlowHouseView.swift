@@ -38,7 +38,7 @@ struct MovingFlowHouseView: View {
             .padding(.top, .padding16)
 
         }
-        .hFormTitle(title: .init(.standard, .title1, L10n.changeAddressInformationAboutYourHouse))
+        .hFormTitle(title: .init(.standard, .displayXSLong, L10n.changeAddressInformationAboutYourHouse))
         .sectionContainerStyle(.transparent)
         .retryView(MoveFlowStore.self, forAction: .requestMoveIntent, binding: $vm.error)
         .presentableStoreLensAnimation(.default)
@@ -99,7 +99,7 @@ struct MovingFlowHouseView: View {
             hRow {
                 VStack(alignment: .leading, spacing: 0) {
                     HStack {
-                        hText(L10n.changeAddressExtraBuildingsLabel, style: .standardSmall)
+                        hText(L10n.changeAddressExtraBuildingsLabel, style: .label)
                         Spacer()
                     }
                     ForEach(Array(vm.extraBuildings.enumerated()), id: \.element.id) { offset, extraBuilding in
@@ -107,7 +107,7 @@ struct MovingFlowHouseView: View {
                             VStack(alignment: .leading, spacing: 0) {
                                 hText(extraBuilding.type.translatedValue, style: .body1)
                                 HStack(spacing: 0) {
-                                    hText(extraBuilding.descriptionText, style: .standardSmall)
+                                    hText(extraBuilding.descriptionText, style: .label)
                                         .foregroundColor(hTextColor.Opaque.secondary)
                                 }
                             }

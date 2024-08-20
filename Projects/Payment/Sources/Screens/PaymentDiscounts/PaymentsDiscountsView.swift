@@ -78,7 +78,7 @@ struct PaymentsDiscountsView: View {
                     )
                 }
                 HStack {
-                    hText(data.referralsData.code, style: .standardSmall)
+                    hText(data.referralsData.code, style: .label)
                         .padding(.horizontal, .padding8)
                         .padding(.vertical, .padding4)
                         .background(
@@ -216,7 +216,7 @@ struct ReferralView: View {
             if referral.invitedYou {
                 HStack(spacing: 8) {
                     Circle().fill(Color.clear).frame(width: 14, height: 14)
-                    hText(L10n.ReferallsInviteeStates.invitedYou, style: .standardSmall)
+                    hText(L10n.ReferallsInviteeStates.invitedYou, style: .label)
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
             }

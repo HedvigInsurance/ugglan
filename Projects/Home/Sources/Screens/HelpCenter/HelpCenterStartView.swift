@@ -104,7 +104,7 @@ public struct HelpCenterStartView: View {
                         hRow {
                             VStack(alignment: .leading, spacing: 0) {
                                 hText(quickAction.displayTitle)
-                                hText(quickAction.displaySubtitle, style: .standardSmall)
+                                hText(quickAction.displaySubtitle, style: .label)
                                     .foregroundColor(hTextColor.Opaque.secondary)
 
                             }
@@ -143,7 +143,7 @@ public struct HelpCenterStartView: View {
                         hRow {
                             VStack(alignment: .leading, spacing: 0) {
                                 hText(quickAction.displayTitle)
-                                hText(quickAction.displaySubtitle, style: .standardSmall)
+                                hText(quickAction.displaySubtitle, style: .label)
                                     .foregroundColor(hTextColor.Opaque.secondary)
 
                             }

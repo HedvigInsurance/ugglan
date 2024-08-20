@@ -144,7 +144,7 @@ public struct ChatScreen: View {
                         MarkdownView(
                             config: .init(
                                 text: !vm.isConversationOpen ? L10n.chatConversationClosedInfo : banner,
-                                fontStyle: .standardSmall,
+                                fontStyle: .label,
                                 color: hSignalColor.Blue.text,
                                 linkColor: hSignalColor.Blue.text,
                                 linkUnderlineStyle: .single

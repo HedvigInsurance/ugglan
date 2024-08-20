@@ -87,7 +87,7 @@ public struct AppInfoView: View {
         .withCustomAccessory {
             HStack {
                 Spacer(minLength: 20)
-                hText(deviceId, style: .standardSmall)
+                hText(deviceId, style: .label)
                     .minimumScaleFactor(0.2)
                     .lineLimit(1)
                     .foregroundColor(hTextColor.Opaque.secondary)

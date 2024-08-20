@@ -14,7 +14,7 @@ public struct SubmitClaimSingleItem: View {
     public var body: some View {
         hForm {
         }
-        .hFormTitle(title: .init(.small, .title1, L10n.claimsSingleItemDetails))
+        .hFormTitle(title: .init(.small, .displayXSLong, L10n.claimsSingleItemDetails))
         .hFormAttachToBottom {
             VStack(spacing: 4) {
                 PresentableStoreLens(

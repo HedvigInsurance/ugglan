@@ -40,7 +40,7 @@ where MainContent: View, BottomContent: View {
                     hText(title)
                         .foregroundColor(hTextColor.Opaque.primary)
                 }
-                hText(subTitle ?? " ", style: .standardSmall)
+                hText(subTitle ?? " ", style: .label)
                     .foregroundColor(hTextColor.Opaque.secondary)
 
             }

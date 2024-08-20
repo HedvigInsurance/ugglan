@@ -23,7 +23,7 @@ struct ContactChatView: View {
     var body: some View {
         HStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 0) {
-                hText(L10n.ClaimStatus.Contact.Generic.subtitle, style: .standardSmall)
+                hText(L10n.ClaimStatus.Contact.Generic.subtitle, style: .label)
                     .foregroundColor(hTextColor.Opaque.secondary)
                 hText(L10n.ClaimStatus.Contact.Generic.title, style: .body1)
             }
