@@ -25,7 +25,7 @@ public struct HelpCenterStartView: View {
         hForm {
             VStack(spacing: 0) {
                 hSection {
-                    VStack(spacing: 40) {
+                    VStack(alignment: .leading, spacing: 40) {
                         if vm.searchInProgress {
                             VStack(spacing: 40) {
                                 displayQuickActions(from: vm.searchResultsQuickActions)
