@@ -40,11 +40,15 @@ public struct HelpCenterStartView: View {
                             }
                             .padding(.top, 20)
                         } else {
-                            Image(uiImage: hCoreUIAssets.bigPillowBlack.image)
-                                .resizable()
-                                .frame(width: 160, height: 160)
-                                .padding(.bottom, 26)
-                                .padding(.top, 39)
+                            HStack {
+                                Spacer()
+                                Image(uiImage: hCoreUIAssets.bigPillowBlack.image)
+                                    .resizable()
+                                    .frame(width: 160, height: 160)
+                                    .padding(.bottom, 26)
+                                    .padding(.top, 39)
+                                Spacer()
+                            }
 
                             VStack(alignment: .leading, spacing: 8) {
                                 hText(vm.helpCenterModel.title)
