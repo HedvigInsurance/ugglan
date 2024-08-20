@@ -19,9 +19,6 @@ struct ImpersonationSettings: View {
                     }
                     .onTap {
                         Task {
-                            if let realMarket = Market(rawValue: locale.market.rawValue) {
-                                marketStore.send(.selectMarket(market: realMarket))
-                            }
                             Localization.Locale.currentLocale = locale
                             await marketStore.sendAsync(.selectLanguage(language: locale.rawValue))
                             ApplicationState.preserveState(.loggedIn)

@@ -7,34 +7,6 @@ public enum Localization {
         case sv_SE
         case en_SE
 
-        public enum Market: String, Codable, CaseIterable {
-            case se = "SE"
-
-            public var currencyCode: String {
-                switch self {
-                case .se: return "SEK"
-                }
-            }
-
-            public var availableLocales: [Localization.Locale] {
-                switch self {
-                case .se: return [.sv_SE, .en_SE]
-                }
-            }
-
-            public var marketName: String {
-                switch self {
-                case .se: return L10n.marketSweden
-                }
-            }
-        }
-
-        public var market: Market {
-            switch self {
-            case .sv_SE, .en_SE: return .se
-            }
-        }
-
         public var acceptLanguageHeader: String {
             switch self {
             case .sv_SE: return "sv-SE"

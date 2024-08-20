@@ -52,17 +52,11 @@ class OTPEntryViewModel: ObservableObject {
     @hTextFieldFocusState var focusInputField = false
     weak var router: Router?
     var masking: Masking {
-        switch Localization.Locale.currentLocale.market {
-        case .se:
-            return Masking(type: .email)
-        }
+        return Masking(type: .email)
     }
 
     var title: String {
-        switch Localization.Locale.currentLocale.market {
-        case .se:
-            return L10n.Login.enterYourEmailAddress
-        }
+        return L10n.Login.enterYourEmailAddress
     }
 
     func onSubmit(otpState: OTPState) {

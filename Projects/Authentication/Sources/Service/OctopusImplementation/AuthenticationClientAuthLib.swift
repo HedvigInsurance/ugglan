@@ -79,22 +79,16 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
 
     public func start(with otpState: OTPState) async throws -> (verifyUrl: URL, resendUrl: URL, maskedEmail: String?) {
         let personalNumber: String? = {
-            switch Localization.Locale.currentLocale.market {
-            case .se:
-                return nil
-            }
+            return nil
         }()
 
         let email: String? = {
-            switch Localization.Locale.currentLocale.market {
-            case .se:
-                return otpState.input
-            }
+            return otpState.input
         }()
         do {
             let data = try await self.networkAuthRepository.startLoginAttempt(
                 loginMethod: .otp,
-                market: Localization.Locale.currentLocale.market.asOtpMarket,
+                market: .se,
                 personalNumber: personalNumber,
                 email: email
             )
@@ -124,7 +118,7 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
         do {
             let data = try await self.networkAuthRepository.startLoginAttempt(
                 loginMethod: .seBankid,
-                market: Localization.Locale.currentLocale.market.asOtpMarket,
+                market: .se,
                 personalNumber: nil,
                 email: nil
             )
@@ -274,14 +268,6 @@ extension hGraphQL.Environment {
         case .staging: return .staging
         case .production: return .production
         case .custom(_, _, _, _): return .staging
-        }
-    }
-}
-
-extension Localization.Locale.Market {
-    fileprivate var asOtpMarket: OtpMarket {
-        switch self {
-        case .se: return .se
         }
     }
 }

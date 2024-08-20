@@ -140,8 +140,7 @@ extension ProfileRedirectType: TrackingViewNameProtocol {
         case .deleteRequestLoading:
             return .init(describing: DeleteRequestLoadingView.self)
         case .pickLanguage:
-            return .init(describing: PickLanguage.self)
+            return .init(describing: LanguagePickerView.self)
         }
     }
-
 }

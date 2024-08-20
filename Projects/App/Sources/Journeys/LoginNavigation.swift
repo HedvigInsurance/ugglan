@@ -24,15 +24,12 @@ struct LoginNavigation: View {
                 .embededInNavigation()
 
         }
-        .detent(presented: $vm.showLogin, style: .large, tracking: Localization.Locale.currentLocale.market) {
+        .detent(presented: $vm.showLogin, style: .large, tracking: Localization.Locale.currentLocale.rawValue) {
             Group {
-                switch Localization.Locale.currentLocale.market {
-                case .se:
-                    BankIDLoginQRView {
-                        let store: UgglanStore = globalPresentableStoreContainer.get()
-                        await store.sendAsync(.setIsDemoMode(to: true))
-                        ApolloClient.initAndRegisterClient()
-                    }
+                BankIDLoginQRView {
+                    let store: UgglanStore = globalPresentableStoreContainer.get()
+                    await store.sendAsync(.setIsDemoMode(to: true))
+                    ApolloClient.initAndRegisterClient()
                 }
             }
             .environmentObject(otpState)
@@ -186,7 +183,7 @@ public class NotLoggedViewModel: ObservableObject {
             webUrl
             .appending("utm_source", value: "ios")
             .appending("utm_medium", value: "hedvig-app")
-            .appending("utm_campaign", value: Localization.Locale.currentLocale.market.rawValue.lowercased())
+            .appending("utm_campaign", value: "se")
         UIApplication.shared.open(webUrl)
 
     }
@@ -289,15 +286,5 @@ private class PlayerUIView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         playerLayer.frame = bounds
-    }
-}
-
-extension Localization.Locale.Market: TrackingViewNameProtocol {
-    public var nameForTracking: String {
-        switch self {
-        case .se:
-            return .init(describing: BankIDLoginQRView.self)
-
-        }
     }
 }
