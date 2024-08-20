@@ -27,14 +27,14 @@ where MainContent: View, BottomContent: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            hSection {
+            hRow {
                 HStack(alignment: .center) {
                     mainContent
                     Spacer()
                 }
             }
-            .sectionContainerStyle(.transparent)
-            .padding(.bottom, .padding16)
+            .verticalPadding(0)
+            .padding(.bottom, .padding8)
             VStack(alignment: .leading, spacing: 0) {
                 if let title = title {
                     hText(title)
