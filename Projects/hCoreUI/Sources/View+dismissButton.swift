@@ -61,13 +61,15 @@ private class DismissButtonViewModel: ObservableObject {
 }
 
 extension View {
-    public func withDismissButton() -> some View {
-        modifier(CloseButtonModifier())
+    public func withDismissButton(reducedTopSpacing: Int = 0) -> some View {
+        modifier(CloseButtonModifier(reducedTopSpacing: reducedTopSpacing))
     }
 }
 
 private struct CloseButtonModifier: ViewModifier {
     @StateObject var vm = DismissButtonViewModel()
+    let reducedTopSpacing: Int
+
     func body(content: Content) -> some View {
         content
             .toolbar {
@@ -79,7 +81,7 @@ private struct CloseButtonModifier: ViewModifier {
                         .onTapGesture {
                             vm.vc?.dismiss(animated: true)
                         }
-                        .offset(x: 8)
+                        .offset(x: 8, y: CGFloat(-reducedTopSpacing))
                 }
             }
             .introspectViewController(customize: { vc in
