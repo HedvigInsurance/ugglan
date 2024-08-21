@@ -1,8 +1,5 @@
-<img src="https://github.com/HedvigInsurance/ugglan/blob/main/Projects/App/Config/Test/Resources/Icons.xcassets/AppIcon.appiconset/Icon-60%403x.png" width="50" height="auto" />
-<img src="https://github.com/HedvigInsurance/ugglan/blob/main/Projects/App/Config/Production/Resources/Icons.xcassets/AppIcon.appiconset/iOS-60%403x.png" width="50" height="auto" />
-Hedvig is a new approach to insurance currently available in Sweden, Norway and Denmark, we belive in transparency hence we code in the open and publish all our source code here on Github, feel free to take a peek, if you are interested in working with us check out our [jobs page](https://jobs.lever.co/hedvig).
+Hedvig is a new approach to insurance currently available in Sweden, Norway and Denmark, we belive in transparency hence we code in the open and publish all our source code here on Github, feel free to take a peek, if you are interested in working with us check out our [jobs page](https://www.hedvig.com/se/hedvig/karriar).
 
-# ugglan ![WorkspaceTests](https://github.com/HedvigInsurance/ugglan/workflows/WorkspaceTests/badge.svg) ![WorkspaceApps](https://github.com/HedvigInsurance/ugglan/workflows/WorkspaceApps/badge.svg) 
 
 🦉 It's just an insurance app for iOS
 
