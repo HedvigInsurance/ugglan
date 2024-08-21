@@ -52,7 +52,7 @@ public struct PaymentsNavigation<Content: View>: View {
                     case let .openUrl(url):
                         redirect(.openUrl(url: url))
                     case .history:
-                        PaymentHistoryView(vm: .init())
+                        PaymentHistoryView()
                             .configureTitle(L10n.paymentHistoryTitle)
                     }
                 }

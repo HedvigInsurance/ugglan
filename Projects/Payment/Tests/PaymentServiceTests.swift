@@ -3,7 +3,7 @@ import hCore
 
 @testable import Payment
 
-final class PaymentTests: XCTestCase {
+final class PaymentServiceTests: XCTestCase {
     weak var sut: MockPaymentService?
 
     override func setUp() {
@@ -35,7 +35,7 @@ final class PaymentTests: XCTestCase {
             addedToThePayment: nil
         )
 
-        let mockService = MockData.createMockPaymentService(
+        let mockService = MockPaymentData.createMockPaymentService(
             fetchPaymentData: { paymentData }
         )
         self.sut = mockService
@@ -51,7 +51,7 @@ final class PaymentTests: XCTestCase {
             descriptor: "descriptor"
         )
 
-        let mockService = MockData.createMockPaymentService(
+        let mockService = MockPaymentData.createMockPaymentService(
             fetchPaymentStatusData: { paymentStatusData }
         )
         self.sut = mockService
@@ -71,7 +71,7 @@ final class PaymentTests: XCTestCase {
             )
         )
 
-        let mockService = MockData.createMockPaymentService(
+        let mockService = MockPaymentData.createMockPaymentService(
             fetchPaymentDiscountsData: { paymentDiscountsData }
         )
         self.sut = mockService
@@ -89,7 +89,7 @@ final class PaymentTests: XCTestCase {
             )
         ]
 
-        let mockService = MockData.createMockPaymentService(
+        let mockService = MockPaymentData.createMockPaymentService(
             fetchPaymentHistoryData: { paymentHistoryData }
         )
         self.sut = mockService
@@ -101,7 +101,7 @@ final class PaymentTests: XCTestCase {
     func testFetchConnectPaymentUrlSuccess() async {
         let connectPaymentUrl = URL(string: "https://hedvig.se")
 
-        let mockService = MockData.createMockPaymentService(
+        let mockService = MockPaymentData.createMockPaymentService(
             fetchConnectPaymentUrl: {
                 if let connectPaymentUrl {
                     return connectPaymentUrl
