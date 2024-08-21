@@ -51,9 +51,9 @@ Before release making sure you `Cancel` or release any pending releases on App S
 
 ## Additional requirements
 ### .netrc file in root folder - you will need access to the hedvig authlib repository
-* machine maven.pkg.github.com
-* login <github-login>
-* password <password>
+`machine maven.pkg.github.com`
+`login <github-login>`
+`password <password>`
 
 
 `login` is your github login
