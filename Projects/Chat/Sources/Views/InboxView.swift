@@ -90,7 +90,7 @@ public struct InboxView: View {
         if let newestMessage = conversation.newestMessage {
             hText(newestMessage.latestMessageText, style: .label)
                 .foregroundColor(hTextColor.Translucent.secondary)
-                .lineLimit(3)
+                .lineLimit(1)
                 .fixedSize(horizontal: false, vertical: true)
                 .foregroundColor(getNewestMessageColor(for: conversation))
         }
