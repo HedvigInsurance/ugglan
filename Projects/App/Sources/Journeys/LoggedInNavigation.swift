@@ -211,6 +211,8 @@ struct LoggedInNavigation: View {
                     //show loading screen since we everything needs to be updated
                     mainNavigationVm?.hasLaunchFinished = false
                     profileNavigationVm?.isLanguagePickerPresented = false
+                    let store: ProfileStore = globalPresentableStoreContainer.get()
+                    store.send(.languageChanged)
                     //show home screen with updated langauge
                     mainNavigationVm?.loggedInVm = .init()
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
