@@ -54,23 +54,27 @@ Before release making sure you `Cancel` or release any pending releases on App S
 
 ### Additional requirements
 1. .netrc file in root folder - you will need access to the hedvig authlib repository
-`machine maven.pkg.github.com
-`
-`login <github-login>
-`
-`password <password>
-`
+`machine maven.pkg.github.com`
+
+`login <github-login>`
+
+`password <password>`
 
 `github-login` is your github login
+
 `password` is token generated at [github](https://github.com/settings/tokens)
 
 ### Known issues
 
 ##### Run post-checkout issue
 This issue is related to Xcode caching
+
 `xcodebuild: error: Could not resolve package dependencies: failed downloading 'https://maven.pkg.github.com/HedvigInsurance/authlib/com/hedvig/authlib/authlib-kmmbridge/1.3.21-alpha-20240313135116/authlib-kmmbridge-1.3.21-alpha-20240313135116.zip' which is required by binary target 'authlib': badResponseStatusCode(401)`
 ###### Running this commands in the terminal should resolve it:
 `rm -rf ~/Library/Caches/org.swift.swiftpm`
+
 `rm -rf ~/Library/org.swift.swiftpm`
+
 and deleteing everything inside
+
 /Users/<yourusername>/Library/Developer/Xcode/DerivedData/
