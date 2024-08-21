@@ -55,17 +55,17 @@ public struct ToastBarView: View {
                     .resizable()
                     .foregroundColor(iconColor)
                     .frame(width: 20, height: 20)
-                hText(toastModel.text, style: .footnote)
+                hText(toastModel.text, style: .label)
                     .foregroundColor(toastModel.type.textColor)
 
                 if let action = toastModel.action {
                     Spacer()
                     if #available(iOS 16.0, *) {
-                        hText(action.actionText, style: .footnote)
+                        hText(action.actionText, style: .label)
                             .underline()
                             .foregroundColor(toastModel.type.textColor)
                     } else {
-                        hText(action.actionText, style: .footnote)
+                        hText(action.actionText, style: .label)
                             .foregroundColor(toastModel.type.textColor)
                     }
                 }

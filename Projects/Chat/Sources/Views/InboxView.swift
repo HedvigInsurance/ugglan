@@ -64,7 +64,7 @@ public struct InboxView: View {
     @ViewBuilder
     private func getRightView(for conversation: Conversation) -> some View {
         if vm.hasNotification(conversation: conversation) {
-            hText(L10n.chatNewMessage, style: .footnote)
+            hText(L10n.chatNewMessage, style: .label)
                 .foregroundColor(hTextColor.Opaque.black)
                 .padding(.horizontal, .padding6)
                 .padding(.vertical, 3)
@@ -77,7 +77,7 @@ public struct InboxView: View {
         } else if let timeStamp = conversation.newestMessage?.sentAt {
             ZStack {
                 hText(" ", style: .body1)
-                hText(timeStamp.displayTimeStamp, style: .footnote)
+                hText(timeStamp.displayTimeStamp, style: .label)
                     .foregroundColor(hTextColor.Opaque.secondary)
             }
             .transition(.scale.combined(with: .opacity))
@@ -88,7 +88,7 @@ public struct InboxView: View {
     @ViewBuilder
     private func getNewestMessage(for conversation: Conversation) -> some View {
         if let newestMessage = conversation.newestMessage {
-            hText(newestMessage.latestMessageText, style: .footnote)
+            hText(newestMessage.latestMessageText, style: .label)
                 .foregroundColor(hTextColor.Translucent.secondary)
                 .lineLimit(3)
                 .fixedSize(horizontal: false, vertical: true)

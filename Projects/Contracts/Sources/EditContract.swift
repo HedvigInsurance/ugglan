@@ -29,7 +29,7 @@ struct EditContract: View {
                         hSection {
                             hRow {
                                 HStack(spacing: 0) {
-                                    hText(editType.title, style: .title3)
+                                    hText(editType.title, style: .heading2)
                                         .foregroundColor(hTextColor.Opaque.primary)
                                     Spacer()
                                     Circle()

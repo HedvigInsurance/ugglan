@@ -123,7 +123,7 @@ public struct CheckboxToggleView: View {
             }
 
             if let subtitle {
-                hText(subtitle, style: .standardSmall)
+                hText(subtitle, style: .label)
                     .foregroundColor(hTextColor.Opaque.secondary)
             }
         }
@@ -153,7 +153,7 @@ public struct CheckboxToggleView: View {
             }
             return .heading2
         } else if subtitle != nil {
-            return .standardSmall
+            return .label
         }
         return .body1
     }

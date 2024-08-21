@@ -32,7 +32,7 @@ struct CrossSellingItem: View {
                         hText(crossSell.title, style: .body1).foregroundColor(hTextColor.Opaque.primary)
                         MarqueeText(
                             text: crossSell.description,
-                            font: Fonts.fontFor(style: .standardSmall),
+                            font: Fonts.fontFor(style: .label),
                             leftFade: 3,
                             rightFade: 3,
                             startDelay: 2

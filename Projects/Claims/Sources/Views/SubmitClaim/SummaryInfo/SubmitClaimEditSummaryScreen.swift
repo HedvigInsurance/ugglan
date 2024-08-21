@@ -13,7 +13,7 @@ public struct SubmitClaimEditSummaryScreen: View {
     public var body: some View {
         hForm {
             hSection(
-                header: hText(L10n.Claims.Incident.Screen.header, style: .subheadline)
+                header: hText(L10n.Claims.Incident.Screen.header, style: .body1)
                     .foregroundColor(hTextColor.Opaque.secondary)
             ) {
 
@@ -23,7 +23,7 @@ public struct SubmitClaimEditSummaryScreen: View {
             }
 
             hSection(
-                header: hText(L10n.Claims.Item.Screen.title, style: .subheadline)
+                header: hText(L10n.Claims.Item.Screen.title, style: .body1)
                     .foregroundColor(hTextColor.Opaque.secondary)
             ) {
                 displayPlaceOfIncidentField()

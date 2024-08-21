@@ -130,9 +130,9 @@ public struct ClaimDetailView: View {
             .padding(.horizontal, -16)
         HStack {
             VStack(alignment: .leading, spacing: 0) {
-                hText(L10n.ClaimStatus.title, style: .footnote)
+                hText(L10n.ClaimStatus.title, style: .label)
                     .foregroundColor(hTextColor.Opaque.primary)
-                hText(statusParagraph, style: .footnote)
+                hText(statusParagraph, style: .label)
                     .foregroundColor(hTextColor.Opaque.secondary)
             }
             .multilineTextAlignment(.leading)

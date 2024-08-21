@@ -63,13 +63,13 @@ public struct hFieldTextContent<T>: View {
                 VStack(spacing: 0) {
                     Group {
                         let titleFont: HFontTextStyle =
-                            (fieldSize != .large) ? .body1 : .title3
+                            (fieldSize != .large) ? .body1 : .heading2
 
                         hText(item?.title ?? itemDisplayName ?? "", style: titleFont)
                             .foregroundColor(getTitleColor)
 
                         if let subTitle = item?.subTitle {
-                            hText(subTitle, style: .standardSmall)
+                            hText(subTitle, style: .label)
                                 .foregroundColor(getSubTitleColor)
                         }
                     }

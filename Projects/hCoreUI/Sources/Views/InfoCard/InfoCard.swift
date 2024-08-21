@@ -29,7 +29,7 @@ public struct InfoCard: View {
                     .hUseLightMode
             } else {
                 VStack(alignment: .leading) {
-                    hText(text, style: .footnote)
+                    hText(text, style: .label)
                         .foregroundColor(type.textColor)
                         .multilineTextAlignment(.leading)
                     if let buttonsConfig {
@@ -39,7 +39,7 @@ public struct InfoCard: View {
                                     hButton.SmallButton(type: .secondaryAlt) {
                                         config.buttonAction()
                                     } content: {
-                                        hText(config.buttonTitle, style: .standardSmall)
+                                        hText(config.buttonTitle, style: .label)
                                             .frame(maxWidth: .infinity)
                                     }
                                 }
@@ -49,7 +49,7 @@ public struct InfoCard: View {
                                 hButton.SmallButton(type: .secondaryAlt) {
                                     config.buttonAction()
                                 } content: {
-                                    hText(config.buttonTitle, style: .standardSmall)
+                                    hText(config.buttonTitle, style: .label)
                                         .frame(maxWidth: .infinity)
                                 }
                             }

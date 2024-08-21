@@ -61,7 +61,7 @@ struct MovingFlowAddressView: View {
             .padding(.top, .padding16)
 
         }
-        .hFormTitle(title: .init(.standard, .title1, L10n.changeAddressEnterNewAddressTitle))
+        .hFormTitle(title: .init(.standard, .displayXSLong, L10n.changeAddressEnterNewAddressTitle))
         .sectionContainerStyle(.transparent)
         .presentableStoreLensAnimation(.default)
     }

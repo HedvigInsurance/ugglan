@@ -64,7 +64,7 @@ struct ContractDetails: View {
 
                         }
                         if let desciption = period.desciption {
-                            hText(desciption, style: .standardSmall)
+                            hText(desciption, style: .label)
                                 .foregroundColor(
                                     getColor(hTextColor.Opaque.secondary, isOutstanding: period.isOutstanding)
                                 )

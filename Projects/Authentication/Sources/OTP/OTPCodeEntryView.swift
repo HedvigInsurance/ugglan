@@ -13,7 +13,7 @@ public struct OTPCodeEntryView: View {
             hSection {
                 VStack(spacing: 50) {
                     VStack(spacing: 16) {
-                        hText(L10n.Login.Title.checkYourEmail, style: .title1)
+                        hText(L10n.Login.Title.checkYourEmail, style: .displayXSLong)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         hText(
                             L10n.Login.Subtitle.verificationCodeEmail(otpVM.maskedEmail ?? L10n.authOtpYourEmail),
@@ -50,7 +50,7 @@ public struct OTPCodeEntryView: View {
                         if let errorMessage = otpVM.codeErrorMessage {
                             hText(
                                 errorMessage,
-                                style: .footnote
+                                style: .label
                             )
                             .foregroundColor(hSignalColor.Red.text)
                             .transition(.opacity)

@@ -69,7 +69,7 @@ struct AskForPushNotifications: View {
                     let store: ProfileStore = globalPresentableStoreContainer.get()
                     store.send(.setPushNotificationStatus(status: nil))
                 } content: {
-                    hText(L10n.claimsActivateNotificationsDismiss, style: .footnote)
+                    hText(L10n.claimsActivateNotificationsDismiss, style: .label)
                         .foregroundColor(hTextColor.Opaque.primary)
                 }
                 .padding(.bottom, .padding16)

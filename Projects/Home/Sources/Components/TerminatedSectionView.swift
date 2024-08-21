@@ -11,7 +11,7 @@ struct TerminatedSectionView<Claims: View>: View {
     var body: some View {
         hSection {
             VStack(alignment: .leading, spacing: 16) {
-                hText(L10n.HomeTab.welcomeTitleWithoutName, style: .title1)
+                hText(L10n.HomeTab.welcomeTitleWithoutName, style: .displayXSLong)
                     .multilineTextAlignment(.center)
             }
             claimsContent

@@ -73,7 +73,7 @@ public struct WordmarkActivityIndicator: View {
                 .stroke(lineWidth: 2.0)
                 .foregroundColor(hTextColor.Opaque.primary)
 
-            hText("H", style: .title1).minimumScaleFactor(0.1).padding(1.5)
+            hText("H", style: .heading3).minimumScaleFactor(0.1).padding(1.5)
                 .rotationEffect(rotating ? Angle(degrees: 0) : Angle(degrees: -360))
                 .animation(
                     rotating ? .linear(duration: 1.5).repeatForever(autoreverses: false) : .default,

@@ -173,7 +173,7 @@ private struct StatusPill: View {
 
     var body: some View {
         VStack {
-            hText(text, style: .standardSmall)
+            hText(text, style: .label)
         }
         .padding(.vertical, 3)
         .padding(.horizontal, .padding6)

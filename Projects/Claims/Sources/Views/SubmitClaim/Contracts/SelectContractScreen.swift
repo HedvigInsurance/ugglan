@@ -38,7 +38,7 @@ struct SelectContractScreen: View {
                 )
             )
             .padding(.bottom, .padding16)
-            .hFormTitle(title: .init(.small, .title1, L10n.claimTriagingAboutTitile))
+            .hFormTitle(title: .init(.small, .displayXSLong, L10n.claimTriagingAboutTitile))
             .hButtonIsLoading(isLoading)
             .hDisableScroll
             .onReceive(

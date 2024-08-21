@@ -60,7 +60,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
 
                     hText(
                         (singleItemCheckoutStep?.compensation.payoutAmount.formattedAmount ?? ""),
-                        style: .title1
+                        style: .displayXSLong
                     )
                     .foregroundColor(hTextColor.Opaque.primary)
                 }
@@ -161,7 +161,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 40, height: 40)
-                hText(L10n.HomeTab.errorTitle, style: .title3)
+                hText(L10n.HomeTab.errorTitle, style: .heading2)
                     .foregroundColor(hTextColor.Opaque.primary)
                 hText(error, style: .body1)
                     .multilineTextAlignment(.center)

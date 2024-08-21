@@ -95,7 +95,7 @@ public struct ListItem: View {
 
     @ViewBuilder
     private var getMainContent: some View {
-        hText(title, style: .title3)
+        hText(title, style: .heading2)
             .fixedSize()
             .foregroundColor(hTextColor.Opaque.primary)
         Spacer()
