@@ -77,7 +77,11 @@ struct MainNavigationJourney: App {
 }
 
 class MainNavigationViewModel: ObservableObject {
-    @Published var hasLaunchFinished = false
+    @Published var hasLaunchFinished = false {
+        didSet {
+            loggedInVm.hasLaunchFinished.send(hasLaunchFinished)
+        }
+    }
     @Published var showLaunchScreen = true
     @Published var shouldUpdateApp = false
     @Published var osVersionTooLow = false
