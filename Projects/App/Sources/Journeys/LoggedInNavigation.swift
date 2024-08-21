@@ -391,7 +391,8 @@ class LoggedInNavigationViewModel: ObservableObject {
             self.previousTab = selectedTab
         }
     }
-
+    let hasLaunchFinished = CurrentValueSubject<Bool, Never>(false)
+    var hasLaunchFinishedCancellable: AnyCancellable?
     var previousTab: Int = 0
 
     let contractsNavigationVm = ContractsNavigationViewModel()
@@ -424,31 +425,16 @@ class LoggedInNavigationViewModel: ObservableObject {
         NotificationCenter.default.addObserver(forName: .handlePushNotification, object: nil, queue: nil) {
             [weak self]
             notification in
-            if let object = notification.object as? PushNotificationType {
-                switch object {
-                case .NEW_MESSAGE:
-                    let userInfo = notification.userInfo
-                    let conversationId = userInfo?["conversationId"] as? String
-                    NotificationCenter.default.post(name: .openChat, object: conversationId)
-                case .REFERRAL_SUCCESS, .REFERRALS_ENABLED:
-                    UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                    self?.selectedTab = 2
-                case .CONNECT_DIRECT_DEBIT:
-                    self?.homeNavigationVm.connectPaymentVm.set(for: nil)
-                case .PAYMENT_FAILED:
-                    UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                    self?.selectedTab = 3
-                case .OPEN_FOREVER_TAB:
-                    UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                    self?.selectedTab = 2
-                case .OPEN_INSURANCE_TAB:
-                    UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                    self?.selectedTab = 1
-                case .CROSS_SELL:
-                    UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                    self?.selectedTab = 1
-                }
+            if self?.hasLaunchFinished.value == true {
+                self?.handle(notification: notification)
+            } else {
+                self?.hasLaunchFinishedCancellable = self?.hasLaunchFinished.filter({ $0 })
+                    .sink { value in
+                        self?.handle(notification: notification)
+                        self?.hasLaunchFinishedCancellable = nil
+                    }
             }
+
         }
 
         EditCoInsuredViewModel.updatedCoInsuredForContractId
@@ -474,6 +460,34 @@ class LoggedInNavigationViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellables)
+    }
+
+    private func handle(notification: Notification) {
+        if let object = notification.object as? PushNotificationType {
+            switch object {
+            case .NEW_MESSAGE:
+                let userInfo = notification.userInfo
+                let conversationId = userInfo?["conversationId"] as? String
+                NotificationCenter.default.post(name: .openChat, object: conversationId)
+            case .REFERRAL_SUCCESS, .REFERRALS_ENABLED:
+                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+                self.selectedTab = 2
+            case .CONNECT_DIRECT_DEBIT:
+                self.homeNavigationVm.connectPaymentVm.set(for: nil)
+            case .PAYMENT_FAILED:
+                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+                self.selectedTab = 3
+            case .OPEN_FOREVER_TAB:
+                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+                self.selectedTab = 2
+            case .OPEN_INSURANCE_TAB:
+                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+                self.selectedTab = 1
+            case .CROSS_SELL:
+                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+                self.selectedTab = 1
+            }
+        }
     }
 
     private func handleDeepLinks(deepLinkUrl: URL?) {
