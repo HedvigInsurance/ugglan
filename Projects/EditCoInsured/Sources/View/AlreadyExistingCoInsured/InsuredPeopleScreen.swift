@@ -236,7 +236,12 @@ class InsuredPeopleNewScreenModel: ObservableObject {
     var config: InsuredPeopleConfig = InsuredPeopleConfig()
 
     @PresentableStore var store: EditCoInsuredStore
-    func completeList() -> [CoInsuredModel] {
+    func completeList(
+        coInsuredAdded: [CoInsuredModel]? = nil,
+        coInsuredDeleted: [CoInsuredModel]? = nil
+    ) -> [CoInsuredModel] {
+        let coInsuredAdded = coInsuredAdded ?? self.coInsuredAdded
+        let coInsuredDeleted = coInsuredDeleted ?? self.coInsuredDeleted
         var filterList: [CoInsuredModel] = []
         let existingList = config.contractCoInsured
         let nbOfCoInsured = config.numberOfMissingCoInsuredWithoutTermination
@@ -269,6 +274,26 @@ class InsuredPeopleNewScreenModel: ObservableObject {
             } + coInsuredAdded
 
         return finalList.filter({ $0.terminatesOn == nil })
+    }
+
+    func listForGettingIntentFor(addCoInsured: CoInsuredModel) -> [CoInsuredModel] {
+        var coInsuredAdded = self.coInsuredAdded
+        coInsuredAdded.append(addCoInsured)
+        return completeList(coInsuredAdded: coInsuredAdded)
+    }
+
+    func listForGettingIntentFor(removedCoInsured: CoInsuredModel) -> [CoInsuredModel] {
+        var coInsuredAdded = self.coInsuredAdded
+        var coInsuredDeleted = self.coInsuredDeleted
+        if let index = coInsuredAdded.firstIndex(where: { coInsured in
+            coInsured == removedCoInsured
+        }) {
+            coInsuredAdded.remove(at: index)
+        } else {
+            coInsuredDeleted.append(removedCoInsured)
+        }
+
+        return completeList(coInsuredAdded: coInsuredAdded, coInsuredDeleted: coInsuredDeleted)
     }
 
     func initializeCoInsured(with config: InsuredPeopleConfig) {
