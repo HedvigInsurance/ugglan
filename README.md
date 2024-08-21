@@ -54,13 +54,12 @@ Before release making sure you `Cancel` or release any pending releases on App S
 
 ### Additional requirements
 1. .netrc file in root folder - you will need access to the hedvig authlib repository
-`machine maven.pkg.github.com`
+* machine maven.pkg.github.com
+* login <github-login>
+* password <password>
 
-`login <github-login>`
 
-`password <password>`
-
-`github-login` is your github login
+`login` is your github login
 
 `password` is token generated at [github](https://github.com/settings/tokens)
 
@@ -75,6 +74,6 @@ This issue is related to Xcode caching
 
 `rm -rf ~/Library/org.swift.swiftpm`
 
-and deleteing everything inside
+and deleting everything inside
 
 /Users/<yourusername>/Library/Developer/Xcode/DerivedData/
