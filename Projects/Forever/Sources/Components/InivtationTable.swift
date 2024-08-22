@@ -1,4 +1,5 @@
 import Foundation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -47,7 +48,7 @@ extension Referral {
 }
 
 struct InvitationTable: View {
-    @PresentableStore var store: ForeverStore
+    @hPresentableStore var store: ForeverStore
 
     var body: some View {
         PresentableStoreLens(
@@ -121,7 +122,7 @@ struct InvitationRow: View {
 }
 
 struct InvitationTable_Previews: PreviewProvider {
-    @PresentableStore static var store: ForeverStore
+    @hPresentableStore static var store: ForeverStore
 
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE

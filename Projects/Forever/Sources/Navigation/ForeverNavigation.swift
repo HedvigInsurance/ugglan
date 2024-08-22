@@ -1,4 +1,4 @@
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -9,7 +9,7 @@ public class ForeverNavigationViewModel: ObservableObject {
     var modalPresentationSourceWrapperViewModel = ModalPresentationSourceWrapperViewModel()
 
     func shareCode(code: String) {
-        let store: ForeverStore = globalPresentableStoreContainer.get()
+        let store: ForeverStore = hGlobalPresentableStoreContainer.get()
         let discount = store.state.foreverData?.monthlyDiscountPerReferral.formattedAmount
         let url =
             "\(hGraphQL.Environment.current.webBaseURL)/\(hCore.Localization.Locale.currentLocale.webPath)/forever/\(code)"

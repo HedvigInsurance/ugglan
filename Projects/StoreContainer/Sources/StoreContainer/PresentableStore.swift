@@ -116,6 +116,7 @@ public protocol Store {
     static func getKey() -> UnsafeMutablePointer<Int>
 
     var logger: (_ message: String) -> Void { get set }
+    var state: State { get }
     var stateSignal: AnyPublisher<State, Never> { get }
     var actionSignal: AnyPublisher<Action, Never> { get }
 
@@ -249,7 +250,7 @@ public enum LoadingState<T>: Codable & Equatable & Hashable where T: Codable & E
 
 public protocol StoreLoading {
     associatedtype Loading: LoadingProtocol
-
+    var loadingState: [Loading: LoadingState<String>] { get }
     var loadingSignal: AnyPublisher<[Loading: LoadingState<String>], Never> { get }
     func removeLoading(for action: Loading)
 
@@ -266,6 +267,10 @@ open class LoadingStateStore<State: StateProtocol, Action: ActionProtocol, Loadi
     State, Action
 >, StoreLoading
 {
+    public var loadingState: [Loading: LoadingState<String>] {
+        return loadingStates
+    }
+
     private var loadingStates: [Loading: LoadingState<String>] = [:] {
         didSet {
             loadingWriteSignal.value = loadingStates
