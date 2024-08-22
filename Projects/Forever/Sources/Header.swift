@@ -1,9 +1,9 @@
 import Foundation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
-import StoreContainer
 
 struct HeaderView: View {
     @hPresentableStore var store: ForeverStore

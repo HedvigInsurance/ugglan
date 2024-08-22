@@ -1,10 +1,3 @@
-//
-//  PresentableStoreLenses.swift
-//
-//
-//  Created by Sladan Nimcevic on 2024-08-22.
-//
-
 import Combine
 import Foundation
 import SwiftUI
@@ -67,10 +60,6 @@ public struct PresentableStoreLens<S: Store, Value: Equatable, Content: View>: V
                 .removeDuplicates(by: { lhs, rhs in
                     self.getter(lhs) == self.getter(rhs)
                 })
-//                .distinct({ lhs, rhs in
-//                    self.getter(lhs) == self.getter(rhs)
-//                })
-//                .publisher
         ) { _ in
             if let animation = animation {
                 withAnimation(animation) {
