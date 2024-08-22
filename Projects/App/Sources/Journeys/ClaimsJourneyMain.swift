@@ -1,6 +1,7 @@
 import Claims
 import Presentation
 import Profile
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -55,7 +56,7 @@ public struct ClaimsJourneyMain: View {
 
     func honestyPledge(from origin: ClaimsOrigin) -> some View {
         HonestyPledge(onConfirmAction: { [weak claimsNavigationVm, weak claimsRouter] in
-            let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+            let profileStore: ProfileStore = hGlobalPresentableStoreContainer.get()
             if profileStore.state.pushNotificationCurrentStatus() != .authorized {
                 claimsRouter?.push(ClaimsRouterActionsWithoutBackButton.askForPushNotifications)
             } else {

@@ -1,4 +1,4 @@
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -46,7 +46,7 @@ class MemberSubscriptionPreferenceViewModel: ObservableObject {
     init() {}
 
     func setMemberId() {
-        let store: ProfileStore = globalPresentableStoreContainer.get()
+        let store: ProfileStore = hGlobalPresentableStoreContainer.get()
         memberId = store.state.memberDetails?.id ?? ""
         updateUnsubscibed()
 
@@ -66,7 +66,7 @@ class MemberSubscriptionPreferenceViewModel: ObservableObject {
             isLoading = true
         }
 
-        let store: ProfileStore = globalPresentableStoreContainer.get()
+        let store: ProfileStore = hGlobalPresentableStoreContainer.get()
         let memberId = store.state.memberDetails?.id ?? ""
         do {
             try await profileService.updateSubscriptionPreference(to: isUnsubscribed)

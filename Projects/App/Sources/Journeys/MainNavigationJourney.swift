@@ -8,6 +8,7 @@ import Payment
 import Presentation
 import Profile
 import SafariServices
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -102,7 +103,7 @@ class MainNavigationViewModel: ObservableObject {
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()
                     await contractStore.sendAsync(.fetchContracts)
                     await checkForFeatureFlags()
-                    let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+                    let profileStore: ProfileStore = hGlobalPresentableStoreContainer.get()
                     await profileStore.sendAsync(.updateLanguage)
                     Task {
                         try? await AnalyticsService().fetchAndSetUserId()

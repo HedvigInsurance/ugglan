@@ -1,4 +1,4 @@
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -7,7 +7,7 @@ struct EmailPreferencesConfirmView: View {
     @ObservedObject var vm: MemberSubscriptionPreferenceViewModel
     @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
 
-    @PresentableStore var store: ProfileStore
+    @hPresentableStore var store: ProfileStore
     var body: some View {
         GenericErrorView(
             title: vm.isUnsubscribed ? L10n.SettingsScreen.subscribeTitle : L10n.General.areYouSure,

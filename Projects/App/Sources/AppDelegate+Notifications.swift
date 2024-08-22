@@ -6,8 +6,8 @@ import CoreDependencies
 import Foundation
 import Home
 import Payment
-import Presentation
 import Profile
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -37,14 +37,14 @@ extension AppDelegate {
             using: { _ in
                 UNUserNotificationCenter.current()
                     .getNotificationSettings { settings in
-                        let store: ProfileStore = globalPresentableStoreContainer.get()
+                        let store: ProfileStore = hGlobalPresentableStoreContainer.get()
                         store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
                     }
             }
         )
         UNUserNotificationCenter.current()
             .getNotificationSettings { settings in
-                let store: ProfileStore = globalPresentableStoreContainer.get()
+                let store: ProfileStore = hGlobalPresentableStoreContainer.get()
                 store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
             }
     }

@@ -1,6 +1,7 @@
 import Foundation
 import Presentation
 import Profile
+import StoreContainer
 import SwiftUI
 import hCore
 
@@ -11,7 +12,7 @@ extension AppDelegate {
     }
 
     private var getContext: [String: String] {
-        let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+        let profileStore: ProfileStore = hGlobalPresentableStoreContainer.get()
         let memberId = profileStore.state.memberDetails?.id
 
         let optionalDictionary: [String: String?] = [
@@ -38,13 +39,11 @@ extension AppDelegate {
             }
             .store(in: &cancellables)
 
-        let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+        let profileStore: ProfileStore = hGlobalPresentableStoreContainer.get()
 
         profileStore.stateSignal
             .map({ $0.memberDetails?.id })
-            .distinct()
-            .plain()
-            .publisher
+            .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { memberId in
                 Dependencies.featureFlags().updateContext(context: self.getContext)

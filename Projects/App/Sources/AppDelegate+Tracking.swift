@@ -4,8 +4,8 @@ import DatadogLogs
 import DatadogRUM
 import DatadogTrace
 import Introspect
-import Presentation
 import Profile
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -31,7 +31,7 @@ extension AppDelegate {
             with: configuration,
             trackingConsent: .granted
         )
-        let store: ProfileStore = globalPresentableStoreContainer.get()
+        let store: ProfileStore = hGlobalPresentableStoreContainer.get()
         if let userId = store.state.memberDetails?.id {
             let analyticsService: AnalyticsClient = Dependencies.shared.resolve()
             analyticsService.setWith(userId: userId)
