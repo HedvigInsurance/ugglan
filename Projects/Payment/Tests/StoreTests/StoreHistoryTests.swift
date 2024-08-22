@@ -34,8 +34,12 @@ final class StoreHistoryTests: XCTestCase {
         self.store = store
         await store.sendAsync(.getHistory)
 
-        assert(store.loadingSignal.value[.getHistory] == nil)
+        await waitUntil(description: "loading state") {
+            store.loadingSignal.value[.getHistory] == nil
+        }
         assert(store.state.paymentHistory == historyData)
+        assert(mockService.events.count == 1)
+        assert(mockService.events.first == .getPaymentHistoryData)
     }
 
     func testGetHistoryFailure() async {
@@ -45,8 +49,11 @@ final class StoreHistoryTests: XCTestCase {
         let store = PaymentStore()
         self.store = store
         await store.sendAsync(.getHistory)
-
-        assert(store.loadingSignal.value[.getHistory] != nil)
+        await waitUntil(description: "loading state") {
+            store.loadingSignal.value[.getHistory] != nil
+        }
         assert(store.state.paymentHistory.isEmpty)
+        assert(mockService.events.count == 1)
+        assert(mockService.events.first == .getPaymentHistoryData)
     }
 }
