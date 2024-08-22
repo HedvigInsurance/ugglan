@@ -1,5 +1,5 @@
 import Foundation
-import Presentation
+import StoreContainer
 import hCore
 
 public struct ChatState: StateProtocol {

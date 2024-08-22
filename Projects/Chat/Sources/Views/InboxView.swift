@@ -1,5 +1,5 @@
 import Combine
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -121,7 +121,7 @@ class InboxViewModel: ObservableObject {
     @Published private var conversationsTimeStamp = [String: Date]()
     private var conversationTimeStampCancellable: AnyCancellable?
     private var pollTimerCancellable: AnyCancellable?
-    @PresentableStore var store: ChatStore
+    @hPresentableStore var store: ChatStore
 
     func hasNotification(conversation: Conversation) -> Bool {
         return store.hasNotification(
@@ -144,8 +144,8 @@ class InboxViewModel: ObservableObject {
     }
 
     init() {
-        let store: ChatStore = globalPresentableStoreContainer.get()
-        conversationTimeStampCancellable = store.stateSignal.plain().publisher
+        let store: ChatStore = hGlobalPresentableStoreContainer.get()
+        conversationTimeStampCancellable = store.stateSignal
             .map({ $0.conversationsTimeStamp })
             .receive(on: RunLoop.main)
             .sink { [weak self] value in
@@ -172,7 +172,7 @@ class InboxViewModel: ObservableObject {
     func fetchMessages() async {
         do {
             let conversations = try await service.getConversations()
-            let store: ChatStore = globalPresentableStoreContainer.get()
+            let store: ChatStore = hGlobalPresentableStoreContainer.get()
             let conversationsTimeStamp = store.state.conversationsTimeStamp
             for conversation in conversations {
                 if conversationsTimeStamp[conversation.id] == nil,

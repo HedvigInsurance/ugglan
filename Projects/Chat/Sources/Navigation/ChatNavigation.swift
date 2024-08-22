@@ -1,5 +1,5 @@
 import Combine
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -10,8 +10,8 @@ public class ChatNavigationViewModel: ObservableObject {
     @Published var dateOfLastMessage: Date?
     private var dateOfLastMessageCancellable: AnyCancellable?
     init() {
-        let store: ChatStore = globalPresentableStoreContainer.get()
-        dateOfLastMessageCancellable = store.actionSignal.publisher
+        let store: ChatStore = hGlobalPresentableStoreContainer.get()
+        dateOfLastMessageCancellable = store.actionSignal
             .receive(on: RunLoop.main)
             .sink { _ in
             } receiveValue: { [weak self] action in

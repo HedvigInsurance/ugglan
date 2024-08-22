@@ -1,6 +1,6 @@
 import Combine
 import Kingfisher
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -168,7 +168,7 @@ public class ChatScreenViewModel: ObservableObject {
     }
 
     private func handleAddingLocal(for message: Message) {
-        let store: ChatStore = globalPresentableStoreContainer.get()
+        let store: ChatStore = hGlobalPresentableStoreContainer.get()
         if !store.state.askedForPushNotificationsPermission {
             store.send(.checkPushNotificationStatus)
             Task {

@@ -1,5 +1,5 @@
 import Foundation
-import Presentation
+import StoreContainer
 import hCore
 import hGraphQL
 
@@ -64,7 +64,7 @@ public class ConversationClientOctopus: ConversationClient {
         let mutation = hGraphQL.OctopusGraphQL.ConversationSendMessageMutation(input: input)
         let data = try await octopus.client.perform(mutation: mutation)
         if let message = data.conversationSendMessage.message?.fragments.messageFragment {
-            let store: ChatStore = globalPresentableStoreContainer.get()
+            let store: ChatStore = hGlobalPresentableStoreContainer.get()
             store.send(
                 .setLastMessageTimestampForConversation(
                     id: conversationId,

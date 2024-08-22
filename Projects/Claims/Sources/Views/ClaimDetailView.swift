@@ -5,6 +5,7 @@ import Kingfisher
 import Payment
 import Photos
 import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -416,8 +417,8 @@ public class ClaimDetailViewModel: ObservableObject {
 
     private func handleClaimChat() {
         if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
-            let chatStore: ChatStore = globalPresentableStoreContainer.get()
-            chatStore.stateSignal.plain().publisher
+            let chatStore: ChatStore = hGlobalPresentableStoreContainer.get()
+            chatStore.stateSignal
                 .map({ $0.conversationsTimeStamp })
                 .removeDuplicates()
                 .receive(on: RunLoop.main)
@@ -447,7 +448,7 @@ public class ClaimDetailViewModel: ObservableObject {
                 .sink { [weak self] value in
                     let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
                     let conversationId = claimStore.state.claim(for: self?.claim.id ?? "")?.conversation?.id
-                    let chatStore: ChatStore = globalPresentableStoreContainer.get()
+                    let chatStore: ChatStore = hGlobalPresentableStoreContainer.get()
                     let timeStamp = chatStore.state.conversationsTimeStamp[conversationId ?? ""]
                     let showChatNotification = timeStamp ?? Date() < value
                     self?.toolbarOptionType =

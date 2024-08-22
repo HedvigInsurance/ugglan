@@ -5,6 +5,7 @@ import EditCoInsuredShared
 import Foundation
 import Payment
 import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -57,9 +58,8 @@ public class HomeNavigationViewModel: ObservableObject {
             }
         }
 
-        let store: ChatStore = globalPresentableStoreContainer.get()
-        store.stateSignal.plain()
-            .publisher
+        let store: ChatStore = hGlobalPresentableStoreContainer.get()
+        store.stateSignal
             .map({ $0.messagesTimeStamp })
             .removeDuplicates()
             .receive(on: RunLoop.main)

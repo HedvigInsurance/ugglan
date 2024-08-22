@@ -1,4 +1,5 @@
 import Foundation
+import StoreContainer
 import hCore
 import hCoreUI
 import hGraphQL
@@ -13,7 +14,7 @@ public protocol ChatServiceProtocol {
 public class ConversationService: ChatServiceProtocol {
     public var type: ChatServiceType = .conversation
     @Inject var client: ConversationClient
-    @PresentableStore var store: ChatStore
+    @hPresentableStore var store: ChatStore
 
     private let conversationId: String
     private var olderToken: String?
@@ -135,7 +136,7 @@ public class MessagesService: ChatServiceProtocol {
     public var type: ChatServiceType = .oldChat
     @Inject var client: FetchMessagesClient
     @Inject var service: SendMessageClient
-    @PresentableStore var store: ChatStore
+    @hPresentableStore var store: ChatStore
 
     private var previousTimeStamp: String?
     let topic: ChatTopicType?
