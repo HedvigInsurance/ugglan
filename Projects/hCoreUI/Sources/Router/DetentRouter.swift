@@ -5,7 +5,7 @@ import SwiftUI
 extension View {
     public func detent<SwiftUIContent: View>(
         presented: Binding<Bool>,
-        style: DetentPresentationStyle,
+        style: [Detent],
         options: Binding<DetentPresentationOption> = .constant([]),
         tracking: TrackingViewNameProtocol? = nil,
         @ViewBuilder content: @escaping () -> SwiftUIContent
@@ -23,7 +23,7 @@ extension View {
 
     public func detent<Item, Content>(
         item: Binding<Item?>,
-        style: DetentPresentationStyle,
+        style: [Detent],
         options: Binding<DetentPresentationOption> = .constant([]),
         tracking: TrackingViewNameProtocol? = nil,
         @ViewBuilder content: @escaping (Item) -> Content
@@ -39,7 +39,7 @@ where SwiftUIContent: View, Item: Identifiable & Equatable {
     @Binding var item: Item?
     @State var itemToRenderFrom: Item?
     @State var present: Bool = false
-    let style: DetentPresentationStyle
+    let style: [Detent]
     @Binding var options: DetentPresentationOption
     let tracking: TrackingViewNameProtocol?
 
@@ -76,13 +76,13 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
 
     @Binding var presented: Bool
     let content: () -> SwiftUIContent
-    private let style: DetentPresentationStyle
+    private let style: [Detent]
     @Binding var options: DetentPresentationOption
     @StateObject private var presentationViewModel = PresentationViewModel()
     let tracking: TrackingViewNameProtocol?
     init(
         presented: Binding<Bool>,
-        style: DetentPresentationStyle,
+        style: [Detent],
         options: Binding<DetentPresentationOption>,
         tracking: TrackingViewNameProtocol? = nil,
         @ViewBuilder content: @escaping () -> SwiftUIContent
@@ -137,8 +137,8 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                 )
                 let shouldUseBlur = style.contains(.height)
                 let delegate = DetentedTransitioningDelegate(
-                    detents: style.asDetent(),
-                    options: shouldUseBlur ? [.blurredBackground] : [],
+                    detents: style,
+                    options: shouldUseBlur ? [PresentationOptions.useBlur] : [],
                     wantsGrabber: options.contains(.withoutGrabber) ? false : true,
                     viewController: vc
                 )
@@ -222,31 +222,6 @@ public class hHostingController<Content: View>: UIHostingController<Content> {
 
     public override var debugDescription: String {
         return contentName
-    }
-}
-
-public struct DetentPresentationStyle: OptionSet {
-    public let rawValue: UInt
-    public static let medium = DetentPresentationStyle(rawValue: 1 << 0)
-    public static let large = DetentPresentationStyle(rawValue: 1 << 1)
-    public static let height = DetentPresentationStyle(rawValue: 1 << 2)
-
-    public init(rawValue: UInt) {
-        self.rawValue = rawValue
-    }
-
-    func asDetent() -> [PresentationStyle.Detent] {
-        var detents = [PresentationStyle.Detent]()
-        if self.contains(.medium) {
-            detents.append(.medium)
-        }
-        if self.contains(.large) {
-            detents.append(.large)
-        }
-        if self.contains(.height) {
-            detents.append(.scrollViewContentSize)
-        }
-        return detents
     }
 }
 

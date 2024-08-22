@@ -277,14 +277,14 @@ struct HomeTab: View {
         .handleEditCoInsured(with: homeNavigationVm.editCoInsuredVm)
         .detent(
             presented: $homeNavigationVm.isSubmitClaimPresented,
-            style: .height,
+            style: [.height],
             options: .constant(.withoutGrabber)
         ) {
             ClaimsJourneyMain(from: .generic)
         }
         .detent(
             item: $homeNavigationVm.document,
-            style: .large
+            style: [.large]
         ) { document in
             if let url = URL(string: document.url) {
                 PDFPreview(document: .init(url: url, title: document.displayName))
@@ -348,7 +348,7 @@ struct HomeTab: View {
         }
         .detent(
             presented: $homeNavigationVm.navBarItems.isFirstVetPresented,
-            style: .height
+            style: [.height]
         ) {
             let store: HomeStore = globalPresentableStoreContainer.get()
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
@@ -358,14 +358,14 @@ struct HomeTab: View {
         }
         .detent(
             presented: $homeNavigationVm.navBarItems.isNewOfferPresented,
-            style: .height
+            style: [.height]
         ) {
             CrossSellingScreen()
                 .embededInNavigation(options: .navigationType(type: .large))
         }
         .detent(
             item: $homeNavigationVm.openChat,
-            style: .large,
+            style: [.large],
             options: $homeNavigationVm.openChatOptions,
             content: { openChat in
                 ChatNavigation(
@@ -380,10 +380,6 @@ struct HomeTab: View {
                 }
             }
         )
-        //        .onChange(of: homeNavigationVm.openChat) { newValue in
-        //            HomeNavigationViewModel.isChatPresented = newValue != nil
-        //        }
-
     }
 }
 
