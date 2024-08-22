@@ -4,7 +4,7 @@ import hCore
 @testable import Payment
 @testable import hCoreUI
 
-final class PaymentViewModelTests: XCTestCase {
+final class CampaignViewModelTests: XCTestCase {
     weak var sut: MockCampaignService?
 
     override func setUp() {
