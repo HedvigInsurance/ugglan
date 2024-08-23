@@ -1,4 +1,4 @@
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -11,7 +11,7 @@ struct MovingFlowAddressView: View {
     var body: some View {
         switch vm.store.state.selectedHousingType {
         case .apartment, .rental:
-            form.retryView(MoveFlowStore.self, forAction: .requestMoveIntent, binding: $vm.error)
+            form.hRetryView(MoveFlowStore.self, forAction: .requestMoveIntent, binding: $vm.error)
                 .onDisappear {
                     vm.clearErrors()
                 }
@@ -43,7 +43,7 @@ struct MovingFlowAddressView: View {
                         isStudentField()
                     }
                 }
-                .disableOn(MoveFlowStore.self, [.requestMoveIntent])
+                .hDisableOn(MoveFlowStore.self, [.requestMoveIntent])
                 hSection {
                     InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
                 }
@@ -53,7 +53,7 @@ struct MovingFlowAddressView: View {
                     } content: {
                         hText(vm.continueButtonTitle, style: .body1)
                     }
-                    .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
+                    .hTrackLoading(MoveFlowStore.self, action: .requestMoveIntent)
                 }
 
             }
@@ -204,7 +204,7 @@ public class AddressInputModel: ObservableObject {
     @Published var accessDateError: String?
     @Published var type: MovingFlowNewAddressViewFieldType?
     @Published var error: String?
-    @PresentableStore var store: MoveFlowStore
+    @hPresentableStore var store: MoveFlowStore
 
     init() {}
 

@@ -1,5 +1,5 @@
 import Contracts
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -7,7 +7,7 @@ import hGraphQL
 
 struct MovingFlowConfirm: View {
     private let whatIsCoveredId = "whatIsCoveredId"
-    @PresentableStore var store: MoveFlowStore
+    @hPresentableStore var store: MoveFlowStore
     @State var isMultipleOffer = true
     @State var selectedInsurances: [String] = [""]
     @State var selectedFaq: [String] = [""]
@@ -346,7 +346,7 @@ struct MovingFlowConfirm_Previews: PreviewProvider {
         Localization.Locale.currentLocale = .nb_NO
         return MovingFlowConfirm()
             .onAppear {
-                let store: MoveFlowStore = globalPresentableStoreContainer.get()
+                let store: MoveFlowStore = hGlobalPresentableStoreContainer.get()
                 let fragment = OctopusGraphQL.MoveIntentFragment.init(
                     _dataDict: .init(
                         data: [:],

@@ -1,4 +1,5 @@
 import Combine
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -112,7 +113,7 @@ enum AddExtraBuildingType: hTextFieldFocusStateCompliant {
 }
 
 class MovingFlowAddExtraBuildingViewModel: ObservableObject {
-    @PresentableStore var store: MoveFlowStore
+    @hPresentableStore var store: MoveFlowStore
     @Published var type: AddExtraBuildingType?
 
     @Published var buildingType: ExtraBuildingType?
@@ -129,7 +130,6 @@ class MovingFlowAddExtraBuildingViewModel: ObservableObject {
 
     func trackBuildingTypeAction() {
         store.actionSignal
-            .publisher
             .receive(on: RunLoop.main)
             .sink { [weak self] action in
                 if case let .setExtraBuildingType(type) = action {
