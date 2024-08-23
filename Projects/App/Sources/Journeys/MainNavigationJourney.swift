@@ -100,7 +100,7 @@ class MainNavigationViewModel: ObservableObject {
                     withAnimation {
                         hasLaunchFinished = false
                     }
-                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                    let contractStore: ContractStore = hGlobalPresentableStoreContainer.get()
                     await contractStore.sendAsync(.fetchContracts)
                     await checkForFeatureFlags()
                     let profileStore: ProfileStore = hGlobalPresentableStoreContainer.get()

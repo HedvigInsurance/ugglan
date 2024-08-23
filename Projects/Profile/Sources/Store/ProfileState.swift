@@ -21,7 +21,8 @@ public struct ProfileState: StateProtocol {
     }
 
     public var canCreateTravelInsurance: Bool {
-        return !getContractStore().state.activeContracts.filter({ $0.supportsTravelCertificate }).isEmpty
+        let store: ContractStore = hGlobalPresentableStoreContainer.get()
+        return store.state.activeContracts.filter({ $0.supportsTravelCertificate }).isEmpty
     }
 
     public init() {

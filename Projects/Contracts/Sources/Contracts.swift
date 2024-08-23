@@ -1,6 +1,6 @@
 import EditCoInsuredShared
 import Foundation
-import Presentation
+import StoreContainer
 import SwiftUI
 import TerminateContracts
 import hCore
@@ -8,7 +8,7 @@ import hCoreUI
 import hGraphQL
 
 struct Contracts: View {
-    @PresentableStore var store: ContractStore
+    @hPresentableStore var store: ContractStore
     let pollTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
     let showTerminated: Bool
 

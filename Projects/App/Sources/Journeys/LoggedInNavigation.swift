@@ -30,7 +30,7 @@ struct LoggedInNavigation: View {
             homeTab
             contractsTab
 
-            let store: ContractStore = globalPresentableStoreContainer.get()
+            let store: ContractStore = hGlobalPresentableStoreContainer.get()
             if !store.state.activeContracts.allSatisfy({ $0.isNonPayingMember })
                 || store.state.activeContracts.isEmpty
             {
@@ -63,7 +63,7 @@ struct LoggedInNavigation: View {
         .handleTerminateInsurance(vm: vm.terminateInsuranceVm) { dismissType in
             switch dismissType {
             case .done:
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                let contractStore: ContractStore = hGlobalPresentableStoreContainer.get()
                 contractStore.send(.fetchContracts)
                 let homeStore: HomeStore = globalPresentableStoreContainer.get()
                 homeStore.send(.fetchQuickActions)
@@ -111,7 +111,7 @@ struct LoggedInNavigation: View {
             case let .termination(terminateAction):
                 switch terminateAction {
                 case .done:
-                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                    let contractStore: ContractStore = hGlobalPresentableStoreContainer.get()
                     contractStore.send(.fetchContracts)
                     let homeStore: HomeStore = globalPresentableStoreContainer.get()
                     homeStore.send(.fetchQuickActions)
@@ -181,7 +181,7 @@ struct LoggedInNavigation: View {
                 .handleEditCoInsured(with: vm.travelCertificateNavigationVm.editCoInsuredVm)
             case let .deleteAccount(memberDetails):
                 let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
-                let contractsStore: ContractStore = globalPresentableStoreContainer.get()
+                let contractsStore: ContractStore = hGlobalPresentableStoreContainer.get()
                 let model = DeleteAccountViewModel(
                     memberDetails: memberDetails,
                     claimsStore: claimsStore,
@@ -439,7 +439,7 @@ class LoggedInNavigationViewModel: ObservableObject {
         EditCoInsuredViewModel.updatedCoInsuredForContractId
             .receive(on: RunLoop.main)
             .sink { contractId in
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                let contractStore: ContractStore = hGlobalPresentableStoreContainer.get()
                 contractStore.send(.fetchContracts)
 
                 let homeStore: HomeStore = globalPresentableStoreContainer.get()
@@ -514,7 +514,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                 self.selectedTab = 1
                 let contractId = self.getContractId(from: url)
 
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                let contractStore: ContractStore = hGlobalPresentableStoreContainer.get()
                 if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
                         self?.contractsNavigationVm.contractsRouter.popToRoot()
@@ -535,7 +535,7 @@ class LoggedInNavigationViewModel: ObservableObject {
             case .moveContract:
                 self.isMoveContractPresented = true
             case .terminateContract:
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                let contractStore: ContractStore = hGlobalPresentableStoreContainer.get()
 
                 let contractsConfig: [TerminationConfirmConfig] = contractStore.state.activeContracts
                     .filter({ $0.canTerminate })
@@ -558,7 +558,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     public func openUrl(url: URL) {
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        let contractStore: ContractStore = hGlobalPresentableStoreContainer.get()
         contractStore.send(.fetchContracts)
         let homeStore: HomeStore = globalPresentableStoreContainer.get()
         homeStore.send(.fetchQuickActions)

@@ -1,6 +1,6 @@
 import Combine
 import Foundation
-import Presentation
+import StoreContainer
 import SwiftUI
 import TerminateContracts
 import hCore
@@ -31,7 +31,7 @@ enum ContractDetailsViews: String, CaseIterable, Identifiable {
 }
 
 public struct ContractDetail: View {
-    @PresentableStore var store: ContractStore
+    @hPresentableStore var store: ContractStore
     @StateObject private var vm: ContractDetailsViewModel
     var id: String
 
@@ -125,7 +125,7 @@ public struct ContractDetail: View {
                 .sectionContainerStyle(.transparent)
                 .padding(.top, .padding8)
             }
-            .presentableStoreLensAnimation(.default)
+            .hPresentableStoreLensAnimation(.default)
             .introspectViewController { [weak vm] vc in
                 vm?.vc = vc
             }
@@ -135,7 +135,7 @@ public struct ContractDetail: View {
 
 class ContractDetailsViewModel: ObservableObject {
     private let id: String
-    @PresentableStore var store: ContractStore
+    @hPresentableStore var store: ContractStore
     weak var vc: UIViewController?
     var observeContractStateCancellable: AnyCancellable?
     init(id: String) {
@@ -145,8 +145,7 @@ class ContractDetailsViewModel: ObservableObject {
 
     private func observeContractState() {
         let id = self.id
-        observeContractStateCancellable = store.stateSignal.plain()
-            .publisher
+        observeContractStateCancellable = store.stateSignal
             .map({ $0.contractForId(id)?.id })
             .eraseToAnyPublisher()
             .removeDuplicates()

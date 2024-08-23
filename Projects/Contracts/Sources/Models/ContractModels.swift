@@ -1,6 +1,6 @@
 import EditCoInsuredShared
 import Foundation
-import Presentation
+import StoreContainer
 import TerminateContracts
 import hCore
 import hCoreUI
@@ -543,7 +543,7 @@ extension InsuredPeopleConfig {
         contract: Contract,
         fromInfoCard: Bool
     ) {
-        let store: ContractStore = globalPresentableStoreContainer.get()
+        let store: ContractStore = hGlobalPresentableStoreContainer.get()
         self.init(
             id: contract.id,
             contractCoInsured: contract.coInsured,

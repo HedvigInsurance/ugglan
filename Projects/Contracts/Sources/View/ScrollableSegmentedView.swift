@@ -1,5 +1,5 @@
 import Combine
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -243,7 +243,7 @@ struct PageModel: Identifiable {
 }
 
 #Preview{
-    let store: ContractStore = globalPresentableStoreContainer.get()
+    let store: ContractStore = hGlobalPresentableStoreContainer.get()
 
     let fetchContractsService = FetchContractsClientDemo()
     Dependencies.shared.add(module: Module { () -> FetchContractsClient in fetchContractsService })

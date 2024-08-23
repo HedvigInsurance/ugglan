@@ -2,6 +2,7 @@ import Apollo
 import Contracts
 import Foundation
 import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
