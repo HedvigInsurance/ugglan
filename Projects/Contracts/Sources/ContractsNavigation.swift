@@ -41,7 +41,7 @@ public struct ContractsNavigation<Content: View>: View {
         }
         .detent(
             item: $contractsNavigationVm.insurableLimit,
-            style: .height
+            style: [.height]
         ) { insurableLimit in
             InfoView(
                 title: L10n.contractCoverageMoreInfo,
@@ -50,13 +50,13 @@ public struct ContractsNavigation<Content: View>: View {
         }
         .detent(
             item: $contractsNavigationVm.document,
-            style: .large
+            style: [.large]
         ) { document in
             redirect(.pdf(document: document))
         }
         .detent(
             item: $contractsNavigationVm.changeYourInformationContract,
-            style: .height
+            style: [.height]
         ) { contract in
             EditContract(id: contract.id)
                 .configureTitle(L10n.contractChangeInformationTitle)
@@ -68,7 +68,7 @@ public struct ContractsNavigation<Content: View>: View {
         }
         .detent(
             item: $contractsNavigationVm.insuranceUpdate,
-            style: .height
+            style: [.height]
         ) { insuranceUpdate in
             UpcomingChangesScreen(
                 updateDate: insuranceUpdate.upcomingChangedAgreement?.activeFrom ?? "",

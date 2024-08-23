@@ -125,14 +125,14 @@ struct TerminationFlowNavigation: View {
         }
         .detent(
             presented: $vm.isDatePickerPresented,
-            style: .height
+            style: [.height]
         ) {
             openSetTerminationDatePickerScreen()
                 .environmentObject(vm)
         }
         .detent(
             presented: $vm.isConfirmTerminationPresented,
-            style: .height
+            style: [.height]
         ) {
             openConfirmTerminationScreen()
                 .environmentObject(vm)
