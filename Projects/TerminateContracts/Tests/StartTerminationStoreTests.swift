@@ -25,7 +25,7 @@ final class StartTerminationStoreTests: XCTestCase {
             activeFrom: nil
         )
 
-        let mockService = MockData.createMockTerminateContractsService(
+        MockData.createMockTerminateContractsService(
             start: { contractId in
                 .init(
                     context: "context",
@@ -51,7 +51,7 @@ final class StartTerminationStoreTests: XCTestCase {
             activeFrom: nil
         )
 
-        let mockService = MockData.createMockTerminateContractsService(
+        MockData.createMockTerminateContractsService(
             start: { contractId in
                 .init(context: "context", action: .stepModelAction(action: .setFailedStep(model: .init(id: "id"))))
             }
@@ -77,7 +77,7 @@ final class StartTerminationStoreTests: XCTestCase {
             activeFrom: nil
         )
 
-        let mockService = MockData.createMockTerminateContractsService(
+        MockData.createMockTerminateContractsService(
             start: { contractId in
                 throw TerminationError.error
             }

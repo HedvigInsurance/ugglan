@@ -20,7 +20,7 @@ final class SendTerminationDateStoreTests: XCTestCase {
     func testSendTerminationDateSuccess() async {
         let terminationDate = "2024-09-25".localDateToDate
 
-        let mockService = MockData.createMockTerminateContractsService(
+        MockData.createMockTerminateContractsService(
             sendDate: { inputDateToString, context in
                 .init(
                     context: context,
@@ -55,7 +55,7 @@ final class SendTerminationDateStoreTests: XCTestCase {
     func testSendTerminationDateResponseFailure() async {
         let terminationDate = "2024-09-25".localDateToDate
 
-        let mockService = MockData.createMockTerminateContractsService(
+        MockData.createMockTerminateContractsService(
             sendDate: { inputDateToString, context in
                 .init(context: context, action: .stepModelAction(action: .setFailedStep(model: .init(id: "id"))))
             }
@@ -90,7 +90,7 @@ final class SendTerminationDateStoreTests: XCTestCase {
     func testSendTerminationDateThrowFailure() async {
         let terminationDate = "2024-09-25".localDateToDate
 
-        let mockService = MockData.createMockTerminateContractsService(
+        MockData.createMockTerminateContractsService(
             sendDate: { inputDateToString, context in
                 throw TerminationError.error
             }
@@ -122,7 +122,6 @@ final class SendTerminationDateStoreTests: XCTestCase {
     }
 }
 
-/* TODO: MOVE LATER */
 extension XCTestCase {
     public func waitUntil(description: String, closure: @escaping () -> Bool) async {
         let exc = expectation(description: description)

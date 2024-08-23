@@ -4,6 +4,7 @@ import hCore
 @testable import TerminateContracts
 
 struct MockData {
+    @discardableResult
     static func createMockTerminateContractsService(
         start: @escaping StartTermination = { contractId in
             .init(

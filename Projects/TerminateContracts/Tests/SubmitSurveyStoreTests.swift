@@ -31,7 +31,7 @@ final class SubmitSurveyStoreTests: XCTestCase {
     }
 
     func testSubmitSurveySuccess() async {
-        let mockService = MockData.createMockTerminateContractsService(
+        MockData.createMockTerminateContractsService(
             surveySend: { context, option, inputData in
                 .init(
                     context: context,
@@ -52,7 +52,7 @@ final class SubmitSurveyStoreTests: XCTestCase {
     }
 
     func testSubmitSurveyResponseFailure() async {
-        let mockService = MockData.createMockTerminateContractsService(
+        MockData.createMockTerminateContractsService(
             surveySend: { context, option, inputData in
                 .init(context: context, action: .stepModelAction(action: .setFailedStep(model: .init(id: "id"))))
             }
@@ -72,7 +72,7 @@ final class SubmitSurveyStoreTests: XCTestCase {
     }
 
     func testSubmitSurveyThrowFailure() async {
-        let mockService = MockData.createMockTerminateContractsService(
+        MockData.createMockTerminateContractsService(
             surveySend: { context, option, inputData in
                 throw TerminationError.error
             }

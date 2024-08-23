@@ -20,7 +20,7 @@ final class ConfirmDeleteStoreTests: XCTestCase {
     func testSendConfirmDeleteSuccess() async {
         let terminationDeleteStep: TerminationFlowDeletionNextModel = .init(id: "id")
 
-        let mockService = MockData.createMockTerminateContractsService(
+        MockData.createMockTerminateContractsService(
             confirmDelete: { context in
                 .init(
                     context: context,
@@ -42,7 +42,7 @@ final class ConfirmDeleteStoreTests: XCTestCase {
     func testSendConfirmDeleteResponseFailure() async {
         let terminationDeleteStep: TerminationFlowDeletionNextModel = .init(id: "id")
 
-        let mockService = MockData.createMockTerminateContractsService(
+        MockData.createMockTerminateContractsService(
             confirmDelete: { context in
                 .init(context: context, action: .stepModelAction(action: .setFailedStep(model: .init(id: "id"))))
             }
@@ -52,6 +52,11 @@ final class ConfirmDeleteStoreTests: XCTestCase {
         self.store = store
         await store.sendAsync(.stepModelAction(action: .setTerminationDeletion(model: terminationDeleteStep)))
         await store.sendAsync(.sendConfirmDelete)
+
+        await waitUntil(description: "loading state") {
+            store.loadingSignal.value[.sendTerminationDate] != .loading
+                && store.loadingSignal.value[.sendTerminationDate] == nil
+        }
         assert(store.state.successStep == nil)
         assert(store.state.failedStep != nil)
     }
@@ -59,7 +64,7 @@ final class ConfirmDeleteStoreTests: XCTestCase {
     func testSendConfirmDeleteThrowFailure() async {
         let terminationDeleteStep: TerminationFlowDeletionNextModel = .init(id: "id")
 
-        let mockService = MockData.createMockTerminateContractsService(
+        MockData.createMockTerminateContractsService(
             confirmDelete: { context in
                 throw TerminationError.error
             }
@@ -71,7 +76,8 @@ final class ConfirmDeleteStoreTests: XCTestCase {
         await store.sendAsync(.sendConfirmDelete)
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.getInitialStep] == nil
+            store.loadingSignal.value[.sendTerminationDate] != .loading
+                && store.loadingSignal.value[.sendTerminationDate] != nil
         }
         assert(store.state.successStep == nil)
         assert(store.state.failedStep == nil)
