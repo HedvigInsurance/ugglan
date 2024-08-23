@@ -219,3 +219,34 @@ extension OctopusGraphQL.FlowTerminationSurveyOptionFeedbackFragment {
         .init(id: self.id, isRequired: self.isRequired)
     }
 }
+
+extension TerminationFlowDateNextStepModel {
+    fileprivate init(
+        with data: OctopusGraphQL.FlowTerminationDateStepFragment
+    ) {
+        self.id = data.id
+        self.minDate = data.minDate
+        self.maxDate = data.maxDate
+        self.date = nil
+    }
+}
+
+extension TerminationFlowFailedNextModel {
+    fileprivate init(
+        with data: OctopusGraphQL.FlowTerminationFailedFragment
+    ) {
+        self.id = data.id
+    }
+}
+
+extension TerminationFlowDeletionNextModel {
+    init(
+        with data: OctopusGraphQL.FlowTerminationDeletionFragment
+    ) {
+        self.id = data.id
+    }
+
+    public func returnDeltionInput() -> OctopusGraphQL.FlowTerminationDeletionInput {
+        return OctopusGraphQL.FlowTerminationDeletionInput(confirmed: true)
+    }
+}

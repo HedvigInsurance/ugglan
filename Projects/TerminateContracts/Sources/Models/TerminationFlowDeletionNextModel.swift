@@ -5,12 +5,8 @@ public struct TerminationFlowDeletionNextModel: FlowStepModel {
     let id: String
 
     init(
-        with data: OctopusGraphQL.FlowTerminationDeletionFragment
+        id: String
     ) {
-        self.id = data.id
-    }
-
-    public func returnDeltionInput() -> OctopusGraphQL.FlowTerminationDeletionInput {
-        return OctopusGraphQL.FlowTerminationDeletionInput(confirmed: true)
+        self.id = id
     }
 }
