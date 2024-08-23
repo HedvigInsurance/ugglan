@@ -29,7 +29,7 @@ public struct InfoViewHolder: View {
         }
         .detent(
             item: $infoViewNavigationModel.isInfoViewPresented,
-            style: .height,
+            style: [.height],
             options: .constant(.withoutGrabber)
         ) { freeTextPickerVm in
             InfoView(
