@@ -41,8 +41,12 @@ final class StoreLoadTests: XCTestCase {
         self.store = store
         await store.sendAsync(.load)
 
-        assert(store.loadingSignal.value[.getPaymentData] == nil)
+        await waitUntil(description: "loading state") {
+            store.loadingSignal.value[.getPaymentData] == nil
+        }
         assert(store.state.paymentData == paymentData)
+        assert(mockService.events.count == 1)
+        assert(mockService.events.first == .getPaymentData)
     }
 
     func testLoadPaymentFailure() async {
@@ -53,8 +57,12 @@ final class StoreLoadTests: XCTestCase {
         self.store = store
         await store.sendAsync(.load)
 
-        assert(store.loadingSignal.value[.getPaymentData] != nil)
+        await waitUntil(description: "loading state") {
+            store.loadingSignal.value[.getPaymentData] != nil
+        }
         assert(store.state.paymentData == nil)
+        assert(mockService.events.count == 1)
+        assert(mockService.events.first == .getPaymentData)
     }
 }
 

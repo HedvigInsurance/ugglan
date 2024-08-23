@@ -105,13 +105,13 @@ public struct ChatNavigation<Content: View>: View {
         .environmentObject(chatNavigationViewModel)
         .detent(
             item: $chatNavigationViewModel.isFilePresented,
-            style: .large
+            style: [.large]
         ) { urlModel in
             DocumentPreview(vm: .init(type: .url(url: urlModel.url)))
         }
         .detent(
             presented: $chatNavigationViewModel.isAskForPushNotificationsPresented,
-            style: .large
+            style: [.large]
         ) {
             redirectView(.notification) {
                 Task { @MainActor in
