@@ -105,7 +105,7 @@ public struct TravelCertificateNavigation: View {
         .environmentObject(vm)
         .detent(
             item: $vm.isDocumentPresented,
-            style: .large,
+            style: [.large],
             options: .constant(.withoutGrabber)
         ) { model in
             PDFPreview(

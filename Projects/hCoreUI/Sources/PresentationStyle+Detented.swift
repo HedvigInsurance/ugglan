@@ -1,7 +1,5 @@
 import Combine
-import Form
 import Foundation
-import Presentation
 import SwiftUI
 import hCore
 
@@ -58,15 +56,24 @@ extension Notification {
     }
 }
 
+public struct PresentationOptions: OptionSet {
+    public let rawValue: Int
+    public init(rawValue: Int) {
+        self.rawValue = rawValue
+    }
+    static let useBlur = PresentationOptions()
+
+}
+
 class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDelegate {
-    var detents: [PresentationStyle.Detent]
+    var detents: [Detent]
     var options: PresentationOptions
     var wantsGrabber: Bool
     var viewController: UIViewController
     var keyboardFrame: CGRect = .zero
 
     init(
-        detents: [PresentationStyle.Detent],
+        detents: [Detent],
         options: PresentationOptions,
         wantsGrabber: Bool,
         viewController: UIViewController
@@ -91,13 +98,12 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
         presenting: UIViewController?,
         source _: UIViewController
     ) -> UIPresentationController? {
-
         let presentationController: UIPresentationController = {
             if #available(iOS 16.0, *) {
                 let presentationController = BlurredSheetPresenationController(
                     presentedViewController: presented,
                     presenting: presenting,
-                    useBlur: options.contains(.blurredBackground)
+                    useBlur: options.contains(.useBlur)
                 )
                 presentationController.preferredCornerRadius = .cornerRadiusXL
                 return presentationController
@@ -122,59 +128,30 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
             }
         }
 
-        if options.contains(.unanimated) {
-            PresentationStyle.Detent.set(
-                [
-                    .custom(
-                        "zero",
-                        { viewController, containerView in
-                            return -50
-                        }
-                    )
-                ],
-                on: presentationController,
-                viewController: viewController,
-                unanimated: true
-            )
+        Detent.set(
+            [
+                .custom(
+                    "zero",
+                    { viewController, containerView in
+                        return -50
+                    }
+                )
+            ],
+            on: presentationController,
+            viewController: viewController,
+            unanimated: false
+        )
 
-            Task { @MainActor [weak presentationController, weak self] in
-                try? await Task.sleep(nanoseconds: 1_000_000)
+        Task { @MainActor [weak presentationController] in
+            try? await Task.sleep(nanoseconds: 50_000_000)
 
-                if let self, let presentationController {
-                    PresentationStyle.Detent.set(
-                        self.detents,
-                        on: presentationController,
-                        viewController: self.viewController,
-                        unanimated: true
-                    )
-                }
-            }
-        } else {
-            PresentationStyle.Detent.set(
-                [
-                    .custom(
-                        "zero",
-                        { viewController, containerView in
-                            return -50
-                        }
-                    )
-                ],
-                on: presentationController,
-                viewController: viewController,
-                unanimated: false
-            )
-
-            Task { @MainActor [weak presentationController] in
-                try? await Task.sleep(nanoseconds: 50_000_000)
-
-                if let presentationController {
-                    PresentationStyle.Detent.set(
-                        self.detents,
-                        on: presentationController,
-                        viewController: self.viewController,
-                        unanimated: false
-                    )
-                }
+            if let presentationController {
+                Detent.set(
+                    self.detents,
+                    on: presentationController,
+                    viewController: self.viewController,
+                    unanimated: false
+                )
             }
         }
 
@@ -184,27 +161,13 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
     }
 }
 
-extension PresentationOptions {
-    // adds a grabber to DetentedModals
-    public static let wantsGrabber = PresentationOptions()
-    public static let blurredBackground = PresentationOptions()
-    public static let preffersLargerNavigationBar = PresentationOptions()
-    public static let withAdditionalSpaceForProgressBar = PresentationOptions()
-    public static let largeNavigationBar: PresentationOptions = [
-        embedInNavigationController, .preffersLargerNavigationBar, .wantsGrabber,
-    ]
-    public static let largeNavigationBarWithoutGrabber: PresentationOptions = [
-        embedInNavigationController, .preffersLargerNavigationBar,
-    ]
-}
-
 extension UIViewController {
     private static var _appliedDetents: UInt8 = 1
 
-    public var appliedDetents: [PresentationStyle.Detent] {
+    public var appliedDetents: [Detent] {
         get {
             if let appliedDetents = objc_getAssociatedObject(self, &UIViewController._appliedDetents)
-                as? [PresentationStyle.Detent]
+                as? [Detent]
             {
                 return appliedDetents
             }
@@ -221,7 +184,7 @@ extension UIViewController {
         }
     }
 
-    public var currentDetent: PresentationStyle.Detent? {
+    public var currentDetent: Detent? {
         get {
             guard let presentationController = navigationController?.presentationController else {
                 return nil
@@ -289,193 +252,192 @@ extension UIViewController {
     }
 }
 
-extension PresentationStyle {
-    public enum Detent: Equatable {
-        public static func == (lhs: PresentationStyle.Detent, rhs: PresentationStyle.Detent) -> Bool {
-            switch (lhs, rhs) {
-            case (.large, .large): return true
-            case (.medium, .medium): return true
-            case let (.custom(lhsName, _), .custom(rhsName, _)): return lhsName == rhsName
-            default: return false
-            }
+public enum Detent: Equatable {
+    public static func == (lhs: Detent, rhs: Detent) -> Bool {
+        switch (lhs, rhs) {
+        case (.large, .large): return true
+        case (.medium, .medium): return true
+        case let (.custom(lhsName, _), .custom(rhsName, _)): return lhsName == rhsName
+        default: return false
         }
+    }
 
-        case medium, large
-        case custom(
-            _ name: String,
-            _ containerViewBlock: (_ viewController: UIViewController, _ containerView: UIView) -> CGFloat
-        )
+    case medium, large
+    case custom(
+        _ name: String,
+        _ containerViewBlock: (_ viewController: UIViewController, _ containerView: UIView) -> CGFloat
+    )
 
-        public static var scrollViewContentSize: Detent {
-            .custom("scrollViewContentSize") { viewController, containerView in
-                let allScrollViewDescendants = viewController.view.allDescendants(ofType: UIScrollView.self)
+    public static var height: Detent {
+        .custom("scrollViewContentSize") { viewController, containerView in
+            let allScrollViewDescendants = viewController.view.allDescendants(ofType: UIScrollView.self)
 
-                guard
-                    let scrollView = allScrollViewDescendants.first(where: { _ in
-                        true
-                    })
-                else {
-                    return 0
+            guard
+                let scrollView = allScrollViewDescendants.first(where: { _ in
+                    true
+                })
+            else {
+                return 0
+            }
+            let navigationController =
+                viewController.navigationController ?? findNavigationController(from: viewController)
+            let transitioningDelegate =
+                navigationController?.transitioningDelegate
+                as? DetentedTransitioningDelegate
+            let keyboardHeight = transitioningDelegate?.keyboardFrame.height ?? 0
+
+            let largeTitleDisplayMode = viewController.navigationItem.largeTitleDisplayMode
+
+            let hasLargeTitle =
+                (navigationController?.navigationBar.prefersLargeTitles ?? false)
+                && (largeTitleDisplayMode == .automatic || largeTitleDisplayMode == .always)
+            let hasNavigationBar =
+                navigationController?.navigationBar != nil
+                && (navigationController?.isNavigationBarHidden ?? true) == false
+
+            let navigationBarDynamicHeight = navigationController?.navigationBar.frame.height
+
+            let navigationBarHeight: CGFloat = hasLargeTitle ? 107 : navigationBarDynamicHeight ?? 52
+
+            let additionalNavigationSafeAreaInsets =
+                navigationController?.additionalSafeAreaInsets ?? UIEdgeInsets()
+            let additionalNavigationHeight =
+                additionalNavigationSafeAreaInsets.top + additionalNavigationSafeAreaInsets.bottom
+
+            let additionalViewHeight =
+                viewController.additionalSafeAreaInsets.top + viewController.additionalSafeAreaInsets.bottom
+            var totalHeight: CGFloat =
+                scrollView.contentSize.height
+                + (hasNavigationBar ? navigationBarHeight : 0)
+                + additionalNavigationHeight
+                + additionalViewHeight
+            if keyboardHeight > 0 {
+                let keyWindow = UIApplication.shared.connectedScenes
+                    .filter({ $0.activationState == .foregroundActive })
+                    .map({ $0 as? UIWindowScene })
+                    .compactMap({ $0 })
+                    .first?
+                    .windows
+                    .filter({ $0.isKeyWindow }).first
+                if let keyWindow {
+                    let bottomPadding = keyWindow.safeAreaInsets.bottom
+                    totalHeight -= bottomPadding
                 }
-                let navigationController =
-                    viewController.navigationController ?? findNavigationController(from: viewController)
-                let transitioningDelegate =
-                    navigationController?.transitioningDelegate
-                    as? DetentedTransitioningDelegate
-                let keyboardHeight = transitioningDelegate?.keyboardFrame.height ?? 0
-
-                let largeTitleDisplayMode = viewController.navigationItem.largeTitleDisplayMode
-
-                let hasLargeTitle =
-                    (navigationController?.navigationBar.prefersLargeTitles ?? false)
-                    && (largeTitleDisplayMode == .automatic || largeTitleDisplayMode == .always)
-                let hasNavigationBar =
-                    navigationController?.navigationBar != nil
-                    && (navigationController?.isNavigationBarHidden ?? true) == false
-
-                let navigationBarDynamicHeight = navigationController?.navigationBar.frame.height
-
-                let navigationBarHeight: CGFloat = hasLargeTitle ? 107 : navigationBarDynamicHeight ?? 52
-
-                let additionalNavigationSafeAreaInsets =
-                    navigationController?.additionalSafeAreaInsets ?? UIEdgeInsets()
-                let additionalNavigationHeight =
-                    additionalNavigationSafeAreaInsets.top + additionalNavigationSafeAreaInsets.bottom
-
-                let additionalViewHeight =
-                    viewController.additionalSafeAreaInsets.top + viewController.additionalSafeAreaInsets.bottom
-                var totalHeight: CGFloat =
-                    scrollView.contentSize.height
-                    + (hasNavigationBar ? navigationBarHeight : 0)
-                    + additionalNavigationHeight
-                    + additionalViewHeight
-                if keyboardHeight > 0 {
-                    let keyWindow = UIApplication.shared.connectedScenes
-                        .filter({ $0.activationState == .foregroundActive })
-                        .map({ $0 as? UIWindowScene })
-                        .compactMap({ $0 })
-                        .first?
-                        .windows
-                        .filter({ $0.isKeyWindow }).first
-                    if let keyWindow {
-                        let bottomPadding = keyWindow.safeAreaInsets.bottom
-                        totalHeight -= bottomPadding
-                    }
-                }
-                return totalHeight
             }
+            return totalHeight
         }
+    }
 
-        private static func findNavigationController(from vc: UIViewController?) -> UINavigationController? {
-            if let viewController = vc?.children.first as? UINavigationController {
-                return viewController
-            }
-            return nil
+    private static func findNavigationController(from vc: UIViewController?) -> UINavigationController? {
+        if let viewController = vc?.children.first as? UINavigationController {
+            return viewController
         }
+        return nil
+    }
 
-        public static var preferredContentSize: Detent {
-            .custom("preferredContentSize") { viewController, _ in
-                viewController.preferredContentSize.height
-            }
+    public static var preferredContentSize: Detent {
+        .custom("preferredContentSize") { viewController, _ in
+            viewController.preferredContentSize.height
         }
+    }
 
-        static func set(
-            _ detents: [Detent],
-            on presentationController: UIPresentationController,
-            viewController: UIViewController,
-            lastDetentIndex: Int? = nil,
-            unanimated: Bool
-        ) {
-            guard !detents.isEmpty else { return }
-            weak var weakViewController = viewController
-            weak var weakPresentationController = presentationController
-            func apply() {
-                if #available(iOS 16.0, *) {
-                    weakViewController?.sheetPresentationController?.prefersEdgeAttachedInCompactHeight = true
-                    weakViewController?.appliedDetents = detents
-                    weakViewController?.sheetPresentationController?.detents =
-                        weakViewController?.appliedDetents
-                        .map({
-                            switch $0 {
-                            case .large:
-                                return .large()
-                            case .medium:
-                                return .medium()
-                            case let .custom(name, block):
-                                return UISheetPresentationController.Detent.custom(
-                                    identifier: UISheetPresentationController.Detent.Identifier.init(name)
-                                ) { context in
-                                    if let weakViewController {
-                                        return block(weakViewController, weakViewController.view)
-                                    }
-                                    return 0
+    static func set(
+        _ detents: [Detent],
+        on presentationController: UIPresentationController,
+        viewController: UIViewController,
+        lastDetentIndex: Int? = nil,
+        unanimated: Bool
+    ) {
+        guard !detents.isEmpty else { return }
+        weak var weakViewController = viewController
+        weak var weakPresentationController = presentationController
+        func apply() {
+            if #available(iOS 16.0, *) {
+                weakViewController?.sheetPresentationController?.prefersEdgeAttachedInCompactHeight = true
+                weakViewController?.appliedDetents = detents
+                weakViewController?.sheetPresentationController?.detents =
+                    weakViewController?.appliedDetents
+                    .map({
+                        switch $0 {
+                        case .large:
+                            return .large()
+                        case .medium:
+                            return .medium()
+                        case let .custom(name, block):
+                            return UISheetPresentationController.Detent.custom(
+                                identifier: UISheetPresentationController.Detent.Identifier.init(name)
+                            ) { context in
+                                if let weakViewController {
+                                    return block(weakViewController, weakViewController.view)
                                 }
+                                return 0
                             }
-                        }) ?? [.medium()]
-                    if let lastDetentIndex = lastDetentIndex {
-                        setDetentIndex(on: presentationController, index: lastDetentIndex)
-                    }
-                } else {
-                    let key = ["_", "set", "Detents", ":"]
-                    let selector = NSSelectorFromString(key.joined())
-                    weakViewController?.appliedDetents = detents
-                    if let weakViewController {
-                        weakPresentationController?
-                            .perform(
-                                selector,
-                                with: NSArray(array: detents.map { $0.getDetent(weakViewController) })
-                            )
+                        }
+                    }) ?? [.medium()]
+                if let lastDetentIndex = lastDetentIndex {
+                    setDetentIndex(on: presentationController, index: lastDetentIndex)
+                }
+            } else {
+                let key = ["_", "set", "Detents", ":"]
+                let selector = NSSelectorFromString(key.joined())
+                weakViewController?.appliedDetents = detents
+                if let weakViewController {
+                    weakPresentationController?
+                        .perform(
+                            selector,
+                            with: NSArray(array: detents.map { $0.getDetent(weakViewController) })
+                        )
 
-                    }
-                    if let weakPresentationController {
-                        setWantsBottomAttachedInCompactHeight(on: weakPresentationController, to: true)
-                    }
+                }
+                if let weakPresentationController {
+                    setWantsBottomAttachedInCompactHeight(on: weakPresentationController, to: true)
+                }
 
-                    if let lastDetentIndex = lastDetentIndex, let weakPresentationController {
-                        setDetentIndex(on: weakPresentationController, index: lastDetentIndex)
-                    }
+                if let lastDetentIndex = lastDetentIndex, let weakPresentationController {
+                    setDetentIndex(on: weakPresentationController, index: lastDetentIndex)
                 }
             }
-            if unanimated {
+        }
+        if unanimated {
+            apply()
+        } else if let sheetPresentationController = presentationController as? UISheetPresentationController {
+            sheetPresentationController.animateChanges {
                 apply()
-            } else if let sheetPresentationController = presentationController as? UISheetPresentationController {
-                sheetPresentationController.animateChanges {
-                    apply()
-                }
             }
         }
+    }
 
-        var rawValue: String {
-            switch self {
-            case .large: return "large"
-            case .medium: return "medium"
-            case .custom: return "custom"
-            }
+    var rawValue: String {
+        switch self {
+        case .large: return "large"
+        case .medium: return "medium"
+        case .custom: return "custom"
         }
+    }
 
-        func getDetent(_ presentedViewController: UIViewController) -> NSObject {
-            let key = ["_", "U", "I", "S", "h", "e", "e", "t", "D", "e", "t", "e", "n", "t"]
+    func getDetent(_ presentedViewController: UIViewController) -> NSObject {
+        let key = ["_", "U", "I", "S", "h", "e", "e", "t", "D", "e", "t", "e", "n", "t"]
 
-            let DetentsClass = NSClassFromString(key.joined()) as! NSObject.Type
+        let DetentsClass = NSClassFromString(key.joined()) as! NSObject.Type
 
-            switch self {
-            case .large, .medium: return DetentsClass.value(forKey: "_\(rawValue)Detent") as! NSObject
-            case let .custom(_, containerViewBlock):
-                typealias ContainerViewBlockMethod = @convention(c) (
-                    NSObject.Type, Selector, @escaping (_ containerView: UIView) -> Double
-                ) -> NSObject
-                let customKey = ["_detent", "WithContainerViewBlock", ":"]
-                let selector = NSSelectorFromString(customKey.joined())
-                let method = DetentsClass.method(for: selector)
-                let castedMethod = unsafeBitCast(method, to: ContainerViewBlockMethod.self)
+        switch self {
+        case .large, .medium: return DetentsClass.value(forKey: "_\(rawValue)Detent") as! NSObject
+        case let .custom(_, containerViewBlock):
+            typealias ContainerViewBlockMethod = @convention(c) (
+                NSObject.Type, Selector, @escaping (_ containerView: UIView) -> Double
+            ) -> NSObject
+            let customKey = ["_detent", "WithContainerViewBlock", ":"]
+            let selector = NSSelectorFromString(customKey.joined())
+            let method = DetentsClass.method(for: selector)
+            let castedMethod = unsafeBitCast(method, to: ContainerViewBlockMethod.self)
 
-                return castedMethod(DetentsClass, selector) { view in
-                    Double(containerViewBlock(presentedViewController, view))
-                }
+            return castedMethod(DetentsClass, selector) { view in
+                Double(containerViewBlock(presentedViewController, view))
             }
         }
     }
 }
+//}
 
 @available(iOS 16.0, *)
 public class BlurredSheetPresenationController: UISheetPresentationController {
