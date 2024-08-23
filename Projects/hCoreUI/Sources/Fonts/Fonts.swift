@@ -4,9 +4,7 @@ import SwiftUI
 class FontBundleToken {}
 
 public enum Fonts {
-    private static let favoritStdBookFontName = "FavoritStd-Book"
     private static let hedvigLettersStandardFontName = "HedvigLetters-Standard"
-    private static let hedvigLettersSmallFontName = "HedvigLetters-Small"
     private static let hedvigLettersBigFontName = "HedvigLetters-Big"
 
     private static func loadFont(resourceName: String) -> UIFont {
@@ -28,16 +26,8 @@ public enum Fonts {
         loadFont(resourceName: hedvigLettersStandardFontName)
     }()
 
-    public static var hedvigLettersSmall: UIFont = {
-        loadFont(resourceName: hedvigLettersSmallFontName)
-    }()
-
     public static var hedvigLettersBig: UIFont = {
         loadFont(resourceName: hedvigLettersBigFontName)
-    }()
-
-    public static var favoritStdBook: UIFont = {
-        loadFont(resourceName: favoritStdBookFontName)
     }()
 
     public static var forceTraitCollection: UITraitCollection? = nil
@@ -55,7 +45,8 @@ public enum Fonts {
         }
 
         switch style {
-        case .title1:
+        case .displayXXLShort, .displayXXLLong, .displayXLShort, .displayXLLong, .displayLShort, .displayLLong,
+            .displayMShort, .displayMLong, .displaySShort, .displaySLong, .displayXSShort, .displayXSLong:
             return getFont(hedvigLettersBig)
         default:
             return getFont(hedvigLettersStandard)

@@ -246,7 +246,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     }
 
     private var getSuffixLabel: some View {
-        hText(suffix ?? "", style: .title3)
+        hText(suffix ?? "", style: .body2)
             .foregroundColor(hTextColor.Opaque.secondary)
     }
 }

@@ -421,7 +421,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
             if footer != nil {
                 VStack(alignment: .leading) {
                     footer
-                        .environment(\.defaultHTextStyle, .footnote)
+                        .environment(\.defaultHTextStyle, .label)
                 }
                 .foregroundColor(hTextColor.Opaque.secondary)
                 .padding(.horizontal, 15)

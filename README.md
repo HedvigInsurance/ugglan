@@ -1,8 +1,5 @@
-<img src="https://i.imgur.com/awvfy5Q.png" width="50" height="auto" />
+Hedvig is a new approach to insurance currently available in Sweden, Norway and Denmark, we belive in transparency hence we code in the open and publish all our source code here on Github, feel free to take a peek, if you are interested in working with us check out our [jobs page](https://www.hedvig.com/se/hedvig/karriar).
 
-Hedvig is a new approach to insurance currently available in Sweden, Norway and Denmark, we belive in transparency hence we code in the open and publish all our source code here on Github, feel free to take a peek, if you are interested in working with us check out our [jobs page](https://jobs.lever.co/hedvig).
-
-# ugglan ![WorkspaceTests](https://github.com/HedvigInsurance/ugglan/workflows/WorkspaceTests/badge.svg) ![WorkspaceApps](https://github.com/HedvigInsurance/ugglan/workflows/WorkspaceApps/badge.svg) 
 
 🦉 It's just an insurance app for iOS
 
@@ -52,5 +49,32 @@ Before release making sure you `Cancel` or release any pending releases on App S
 
 6. Click `Run workflow`
 
+## Additional requirements
+### .netrc file in root folder - you will need access to the hedvig authlib repository
+
+> machine maven.pkg.github.com
+> 
+> login <github-login>
+>
+> password <password>
 
 
+
+`login` is your github login
+
+`password` is token generated at [github](https://github.com/settings/tokens)
+
+## Known issues
+
+### Run post-checkout issue
+This issue is related to the Xcode caching
+
+`xcodebuild: error: Could not resolve package dependencies: failed downloading 'https://maven.pkg.github.com/HedvigInsurance/authlib/com/hedvig/authlib/authlib-kmmbridge/1.3.21-alpha-20240313135116/authlib-kmmbridge-1.3.21-alpha-20240313135116.zip' which is required by binary target 'authlib': badResponseStatusCode(401)`
+###### Running this commands in the terminal should resolve it:
+`rm -rf ~/Library/Caches/org.swift.swiftpm`
+
+`rm -rf ~/Library/org.swift.swiftpm`
+
+and deleting everything inside
+
+/Users/youruser/Library/Developer/Xcode/DerivedData/

@@ -124,7 +124,7 @@ public struct hTextField: View {
             }
             if let errorMessage = errorMessage {
                 HStack {
-                    hText(errorMessage, style: .footnote)
+                    hText(errorMessage, style: .label)
                         .padding(.top, 7)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .foregroundColor(hSignalColor.Red.text)

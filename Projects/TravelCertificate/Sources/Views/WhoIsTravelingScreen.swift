@@ -57,7 +57,7 @@ struct WhoIsTravelingScreen: View {
             )
         )
         .padding(.bottom, .padding16)
-        .hFormTitle(title: .init(.standard, .title1, L10n.TravelCertificate.whoIsTraveling))
+        .hFormTitle(title: .init(.standard, .displayXSLong, L10n.TravelCertificate.whoIsTraveling))
         .hDisableScroll
         .disabled(vm.isLoading)
     }

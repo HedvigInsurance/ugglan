@@ -14,7 +14,7 @@ public struct OTPEntryView: View {
                 VStack(spacing: 50) {
                     hText(
                         vm.title,
-                        style: .title1
+                        style: .displayXSLong
                     )
                     .frame(maxWidth: .infinity, alignment: .leading)
                     hTextField(

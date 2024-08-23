@@ -3,7 +3,7 @@ import hCore
 
 @testable import Payment
 
-struct MockData {
+struct MockPaymentData {
     static func createMockPaymentService(
         fetchPaymentData: @escaping FetchPaymentData = {
             .init(

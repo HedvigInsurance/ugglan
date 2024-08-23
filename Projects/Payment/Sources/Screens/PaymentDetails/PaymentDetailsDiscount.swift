@@ -14,7 +14,7 @@ struct PaymentDetailsDiscountView: View {
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     HStack(spacing: 8) {
-                        hText(vm.discount.code, style: .standardSmall)
+                        hText(vm.discount.code, style: .label)
                             .foregroundColor(getCodeTextColor)
                             .padding(.vertical, .padding4)
                         if vm.shouldShowRemove {
@@ -41,28 +41,28 @@ struct PaymentDetailsDiscountView: View {
                 VStack(alignment: .leading, spacing: 0) {
                     HStack(alignment: .top) {
                         if vm.options.contains(.forPayment) {
-                            hText(vm.discount.title, style: .standardSmall)
+                            hText(vm.discount.title, style: .label)
                         } else {
                             VStack(alignment: .leading, spacing: 0) {
                                 ForEach(vm.discount.listOfAffectedInsurances) { affectedInsurance in
-                                    hText(affectedInsurance.displayName, style: .standardSmall)
+                                    hText(affectedInsurance.displayName, style: .label)
                                 }
                             }
                         }
                         Spacer()
                         if let validUntil = vm.discount.validUntil {
                             if vm.shouldShowExpire {
-                                hText(L10n.paymentsExpiredDate(validUntil.displayDate), style: .standardSmall)
+                                hText(L10n.paymentsExpiredDate(validUntil.displayDate), style: .label)
                                     .foregroundColor(hSignalColor.Red.element)
                             } else {
-                                hText(L10n.paymentsValidUntil(validUntil.displayDate), style: .standardSmall)
+                                hText(L10n.paymentsValidUntil(validUntil.displayDate), style: .label)
                             }
                         }
                     }
                     if vm.options.contains(.forPayment) {
                         VStack(alignment: .leading, spacing: 0) {
                             ForEach(vm.discount.listOfAffectedInsurances) { affectedInsurance in
-                                hText(affectedInsurance.displayName, style: .standardSmall)
+                                hText(affectedInsurance.displayName, style: .label)
                             }
                         }
                     }
@@ -94,7 +94,6 @@ class PaymentDetailsDiscountViewModel: ObservableObject {
     let options: PaymentDetailsDiscountOptions
     let discount: Discount
     @PresentableStore private var store: PaymentStore
-    private var campaignService = hCampaignService()
 
     init(options: PaymentDetailsDiscountOptions, discount: Discount) {
         self.options = options

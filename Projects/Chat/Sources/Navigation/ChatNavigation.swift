@@ -86,31 +86,32 @@ public struct ChatNavigation<Content: View>: View {
 
     public var body: some View {
         RouterHost(router: router, options: .navigationType(type: .large), tracking: ChatNavigationViewName.chat) {
-            switch chatType {
-            case let .conversationId(id):
-                ChatScreen(vm: .init(chatService: ConversationService(conversationId: id)))
-                    .withDismissButton()
-            case let .topic(topic):
-                ChatScreen(vm: .init(chatService: MessagesService(topic: topic)))
-                    .withDismissButton()
-            case .newConversation:
-                ChatScreen(vm: .init(chatService: NewConversationService()))
-                    .withDismissButton()
-            case .none:
-                ChatScreen(vm: .init(chatService: MessagesService(topic: nil)))
-                    .withDismissButton()
+            Group {
+                switch chatType {
+                case let .conversationId(id):
+                    ChatScreen(vm: .init(chatService: ConversationService(conversationId: id)))
+                case let .topic(topic):
+                    ChatScreen(vm: .init(chatService: MessagesService(topic: topic)))
+                case .newConversation:
+                    ChatScreen(vm: .init(chatService: NewConversationService()))
+                case .none:
+                    ChatScreen(vm: .init(chatService: MessagesService(topic: nil)))
+                }
             }
+            .withDismissButton(
+                reducedTopSpacing: Dependencies.featureFlags().isConversationBasedMessagesEnabled ? 8 : 0
+            )
         }
         .environmentObject(chatNavigationViewModel)
         .detent(
             item: $chatNavigationViewModel.isFilePresented,
-            style: .large
+            style: [.large]
         ) { urlModel in
             DocumentPreview(vm: .init(type: .url(url: urlModel.url)))
         }
         .detent(
             presented: $chatNavigationViewModel.isAskForPushNotificationsPresented,
-            style: .large
+            style: [.large]
         ) {
             redirectView(.notification) {
                 Task { @MainActor in

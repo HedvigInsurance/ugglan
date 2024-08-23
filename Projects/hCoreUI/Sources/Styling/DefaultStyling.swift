@@ -240,20 +240,6 @@ extension DefaultStyling {
     }
 
     public static func installCustom() {
-        customNavigationController = { options in
-            if options.contains(.preffersLargerNavigationBar) {
-                return hNavigationControllerWithLargerNavBar()
-            } else {
-                let additionalHeight: CGFloat? = {
-                    if options.contains(.withAdditionalSpaceForProgressBar) {
-                        return 4
-                    }
-                    return nil
-                }()
-                return hNavigationController(additionalHeight: additionalHeight)
-            }
-        }
-
         ListTableView.appearance().backgroundColor = .brand(.primaryBackground())
 
         UIRefreshControl.appearance().tintColor = .brand(.primaryText())
@@ -266,7 +252,7 @@ extension DefaultStyling {
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [hNavigationController.self])
             .setTitleTextAttributes(
                 [
-                    NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)
+                    NSAttributedString.Key.font: Fonts.fontFor(style: .label)
                 ],
                 for: .normal
             )
@@ -274,7 +260,7 @@ extension DefaultStyling {
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [hNavigationController.self])
             .setTitleTextAttributes(
                 [
-                    NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)
+                    NSAttributedString.Key.font: Fonts.fontFor(style: .label)
                 ],
                 for: .highlighted
             )
@@ -282,7 +268,7 @@ extension DefaultStyling {
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [hNavigationControllerWithLargerNavBar.self])
             .setTitleTextAttributes(
                 [
-                    NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)
+                    NSAttributedString.Key.font: Fonts.fontFor(style: .label)
                 ],
                 for: .normal
             )
@@ -290,7 +276,7 @@ extension DefaultStyling {
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [hNavigationControllerWithLargerNavBar.self])
             .setTitleTextAttributes(
                 [
-                    NSAttributedString.Key.font: Fonts.fontFor(style: .footnote)
+                    NSAttributedString.Key.font: Fonts.fontFor(style: .label)
                 ],
                 for: .highlighted
             )
@@ -335,7 +321,7 @@ extension DefaultStyling {
                     appearance.badgePositionAdjustment.vertical = -4
                     appearance.badgeTextAttributes = [
                         NSAttributedString.Key.foregroundColor: UIColor.brand(.alert),
-                        NSAttributedString.Key.font: Fonts.fontFor(style: .badge),
+                        NSAttributedString.Key.font: Fonts.fontFor(style: .display1),
                     ]
                 }
                 configureBadge(appearance: itemAppearance.normal)
@@ -399,7 +385,7 @@ extension DefaultStyling {
     }
 
     private static func setSegmentedControllAppearance() {
-        let font = Fonts.fontFor(style: .standardSmall)
+        let font = Fonts.fontFor(style: .label)
 
         UISegmentedControl.appearance()
             .setTitleTextAttributes(

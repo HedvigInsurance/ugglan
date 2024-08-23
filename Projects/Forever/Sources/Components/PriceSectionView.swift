@@ -13,7 +13,7 @@ struct AnimatableMonetaryAmountModifier: AnimatableModifier {
     }
 
     func body(content: Content) -> some View {
-        hText("\(amount.formattedAmount)", style: .title2)
+        hText("\(amount.formattedAmount)", style: .heading2)
     }
 }
 

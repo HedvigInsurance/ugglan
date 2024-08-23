@@ -132,7 +132,7 @@ public struct SubmitClaimCheckoutScreen: View {
                     ForEach(payoutMethods, id: \.id) { element in
                         hSection {
                             hRow {
-                                hText(element.getDisplayName(), style: .title3)
+                                hText(element.getDisplayName(), style: .heading2)
                                     .foregroundColor(hTextColor.Opaque.primary)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                             }
@@ -198,7 +198,7 @@ public struct SubmitClaimCheckoutScreen: View {
             let shouldShowCheckmark = payoutMethods.count > 1
             ForEach(payoutMethods, id: \.id) { element in
                 hRow {
-                    hText(element.getDisplayName(), style: .headline)
+                    hText(element.getDisplayName(), style: .body1)
                         .foregroundColor(hTextColor.Opaque.primary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.bottom, .padding4)

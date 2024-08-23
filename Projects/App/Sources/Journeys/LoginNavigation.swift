@@ -18,13 +18,13 @@ struct LoginNavigation: View {
         RouterHost(router: router, options: .navigationBarHidden) {
             NotLoggedInView(vm: vm)
         }
-        .detent(presented: $vm.showLanguagePicker, style: .height) {
+        .detent(presented: $vm.showLanguagePicker, style: [.height]) {
             LanguagePickerView()
                 .navigationTitle(L10n.loginLanguagePreferences)
                 .embededInNavigation()
 
         }
-        .detent(presented: $vm.showLogin, style: .large, tracking: Localization.Locale.currentLocale.rawValue) {
+        .detent(presented: $vm.showLogin, style: [.large], tracking: Localization.Locale.currentLocale.market) {
             Group {
                 BankIDLoginQRView {
                     let store: UgglanStore = globalPresentableStoreContainer.get()

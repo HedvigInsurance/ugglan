@@ -52,7 +52,7 @@ public struct PaymentsNavigation<Content: View>: View {
                     case let .openUrl(url):
                         redirect(.openUrl(url: url))
                     case .history:
-                        PaymentHistoryView(vm: .init())
+                        PaymentHistoryView()
                             .configureTitle(L10n.paymentHistoryTitle)
                     }
                 }
@@ -60,7 +60,7 @@ public struct PaymentsNavigation<Content: View>: View {
         .environmentObject(paymentsNavigationVm)
         .detent(
             presented: $paymentsNavigationVm.isAddCampaignPresented,
-            style: .height
+            style: [.height]
         ) {
             AddCampaingCodeView()
                 .configureTitle(L10n.paymentsAddCampaignCode)
@@ -68,7 +68,7 @@ public struct PaymentsNavigation<Content: View>: View {
         }
         .detent(
             item: $paymentsNavigationVm.isDeleteCampaignPresented,
-            style: .height
+            style: [.height]
         ) { discount in
             DeleteCampaignView(vm: .init(discount: discount))
                 .embededInNavigation(options: .navigationType(type: .large))

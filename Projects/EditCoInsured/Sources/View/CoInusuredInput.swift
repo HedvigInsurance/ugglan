@@ -85,35 +85,34 @@ struct CoInusuredInput: View {
                         if vm.actionType == .delete {
                             hButton.LargeButton(type: .alert) {
                                 Task {
-                                    if vm.personalData.firstName == "" && vm.SSN == "" {
-                                        store.coInsuredViewModel.removeCoInsured(.init())
-                                    } else if vm.SSN != "" {
-                                        store.coInsuredViewModel.removeCoInsured(
-                                            .init(
+                                    let coInsuredToDelete: CoInsuredModel = {
+                                        if vm.personalData.firstName == "" && vm.SSN == "" {
+                                            return .init()
+                                        } else if vm.SSN != "" {
+                                            return .init(
                                                 firstName: vm.personalData.firstName,
                                                 lastName: vm.personalData.lastName,
                                                 SSN: vm.SSN,
                                                 needsMissingInfo: false
                                             )
-                                        )
-                                    } else {
-                                        store.coInsuredViewModel.removeCoInsured(
-                                            .init(
+                                        } else {
+                                            return .init(
                                                 firstName: vm.personalData.firstName,
                                                 lastName: vm.personalData.lastName,
                                                 birthDate: vm.birthday,
                                                 needsMissingInfo: false
                                             )
+                                        }
+                                    }()
+                                    await intentVm.getIntent(
+                                        contractId: vm.contractId,
+                                        origin: .coinsuredInput,
+                                        coInsured: insuredPeopleVm.listForGettingIntentFor(
+                                            removedCoInsured: coInsuredToDelete
                                         )
-                                    }
-                                    if insuredPeopleVm.coInsuredDeleted.count > 0 {
-                                        await intentVm.getIntent(
-                                            contractId: vm.contractId,
-                                            origin: .coinsuredInput,
-                                            coInsured: insuredPeopleVm.completeList()
-                                        )
-                                    }
+                                    )
                                     if !intentVm.showErrorViewForCoInsuredInput {
+                                        store.coInsuredViewModel.removeCoInsured(coInsuredToDelete)
                                         router.push(CoInsuredAction.delete)
                                     } else {
                                         // add back
@@ -172,32 +171,42 @@ struct CoInusuredInput: View {
                                                         )
                                                     )
                                                 }
+                                                await intentVm.getIntent(
+                                                    contractId: vm.contractId,
+                                                    origin: .coinsuredInput,
+                                                    coInsured: insuredPeopleVm.completeList()
+                                                )
                                             } else {
-                                                if vm.noSSN {
-                                                    store.coInsuredViewModel.addCoInsured(
-                                                        .init(
+                                                let coInsuredToAdd: CoInsuredModel = {
+                                                    if vm.noSSN {
+                                                        return .init(
                                                             firstName: vm.personalData.firstName,
                                                             lastName: vm.personalData.lastName,
                                                             birthDate: vm.birthday,
                                                             needsMissingInfo: false
                                                         )
-                                                    )
-                                                } else {
-                                                    store.coInsuredViewModel.addCoInsured(
-                                                        .init(
+                                                    } else {
+                                                        return .init(
                                                             firstName: vm.personalData.firstName,
                                                             lastName: vm.personalData.lastName,
                                                             SSN: vm.SSN,
                                                             needsMissingInfo: false
                                                         )
+                                                    }
+                                                }()
+
+                                                await intentVm.getIntent(
+                                                    contractId: vm.contractId,
+                                                    origin: .coinsuredInput,
+                                                    coInsured: insuredPeopleVm.listForGettingIntentFor(
+                                                        addCoInsured: coInsuredToAdd
                                                     )
+                                                )
+                                                if !intentVm.showErrorViewForCoInsuredInput {
+                                                    insuredPeopleVm.addCoInsured(coInsuredToAdd)
                                                 }
                                             }
-                                            await intentVm.getIntent(
-                                                contractId: vm.contractId,
-                                                origin: .coinsuredInput,
-                                                coInsured: insuredPeopleVm.completeList()
-                                            )
+
                                             if !intentVm.showErrorViewForCoInsuredInput {
                                                 router.push(CoInsuredAction.add)
                                             } else {

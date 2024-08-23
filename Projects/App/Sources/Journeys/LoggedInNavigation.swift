@@ -263,14 +263,14 @@ struct HomeTab: View {
         .handleEditCoInsured(with: homeNavigationVm.editCoInsuredVm)
         .detent(
             presented: $homeNavigationVm.isSubmitClaimPresented,
-            style: .height,
+            style: [.height],
             options: .constant(.withoutGrabber)
         ) {
             ClaimsJourneyMain(from: .generic)
         }
         .detent(
             item: $homeNavigationVm.document,
-            style: .large
+            style: [.large]
         ) { document in
             if let url = URL(string: document.url) {
                 PDFPreview(document: .init(url: url, title: document.displayName))
@@ -334,7 +334,7 @@ struct HomeTab: View {
         }
         .detent(
             presented: $homeNavigationVm.navBarItems.isFirstVetPresented,
-            style: .height
+            style: [.height]
         ) {
             let store: HomeStore = globalPresentableStoreContainer.get()
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
@@ -344,14 +344,14 @@ struct HomeTab: View {
         }
         .detent(
             presented: $homeNavigationVm.navBarItems.isNewOfferPresented,
-            style: .height
+            style: [.height]
         ) {
             CrossSellingScreen()
                 .embededInNavigation(options: .navigationType(type: .large))
         }
         .detent(
             item: $homeNavigationVm.openChat,
-            style: .large,
+            style: [.large],
             options: $homeNavigationVm.openChatOptions,
             content: { openChat in
                 ChatNavigation(
@@ -366,10 +366,6 @@ struct HomeTab: View {
                 }
             }
         )
-        //        .onChange(of: homeNavigationVm.openChat) { newValue in
-        //            HomeNavigationViewModel.isChatPresented = newValue != nil
-        //        }
-
     }
 }
 
@@ -379,7 +375,8 @@ class LoggedInNavigationViewModel: ObservableObject {
             self.previousTab = selectedTab
         }
     }
-
+    let hasLaunchFinished = CurrentValueSubject<Bool, Never>(false)
+    var hasLaunchFinishedCancellable: AnyCancellable?
     var previousTab: Int = 0
 
     let contractsNavigationVm = ContractsNavigationViewModel()
@@ -412,31 +409,16 @@ class LoggedInNavigationViewModel: ObservableObject {
         NotificationCenter.default.addObserver(forName: .handlePushNotification, object: nil, queue: nil) {
             [weak self]
             notification in
-            if let object = notification.object as? PushNotificationType {
-                switch object {
-                case .NEW_MESSAGE:
-                    let userInfo = notification.userInfo
-                    let conversationId = userInfo?["conversationId"] as? String
-                    NotificationCenter.default.post(name: .openChat, object: conversationId)
-                case .REFERRAL_SUCCESS, .REFERRALS_ENABLED:
-                    UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                    self?.selectedTab = 2
-                case .CONNECT_DIRECT_DEBIT:
-                    self?.homeNavigationVm.connectPaymentVm.set(for: nil)
-                case .PAYMENT_FAILED:
-                    UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                    self?.selectedTab = 3
-                case .OPEN_FOREVER_TAB:
-                    UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                    self?.selectedTab = 2
-                case .OPEN_INSURANCE_TAB:
-                    UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                    self?.selectedTab = 1
-                case .CROSS_SELL:
-                    UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                    self?.selectedTab = 1
-                }
+            if self?.hasLaunchFinished.value == true {
+                self?.handle(notification: notification)
+            } else {
+                self?.hasLaunchFinishedCancellable = self?.hasLaunchFinished.filter({ $0 })
+                    .sink { value in
+                        self?.handle(notification: notification)
+                        self?.hasLaunchFinishedCancellable = nil
+                    }
             }
+
         }
 
         EditCoInsuredViewModel.updatedCoInsuredForContractId
@@ -462,6 +444,34 @@ class LoggedInNavigationViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellables)
+    }
+
+    private func handle(notification: Notification) {
+        if let object = notification.object as? PushNotificationType {
+            switch object {
+            case .NEW_MESSAGE:
+                let userInfo = notification.userInfo
+                let conversationId = userInfo?["conversationId"] as? String
+                NotificationCenter.default.post(name: .openChat, object: conversationId)
+            case .REFERRAL_SUCCESS, .REFERRALS_ENABLED:
+                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+                self.selectedTab = 2
+            case .CONNECT_DIRECT_DEBIT:
+                self.homeNavigationVm.connectPaymentVm.set(for: nil)
+            case .PAYMENT_FAILED:
+                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+                self.selectedTab = 3
+            case .OPEN_FOREVER_TAB:
+                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+                self.selectedTab = 2
+            case .OPEN_INSURANCE_TAB:
+                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+                self.selectedTab = 1
+            case .CROSS_SELL:
+                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+                self.selectedTab = 1
+            }
+        }
     }
 
     private func handleDeepLinks(deepLinkUrl: URL?) {

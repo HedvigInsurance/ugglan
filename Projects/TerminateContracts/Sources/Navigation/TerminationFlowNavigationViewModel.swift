@@ -125,14 +125,14 @@ struct TerminationFlowNavigation: View {
         }
         .detent(
             presented: $vm.isDatePickerPresented,
-            style: .height
+            style: [.height]
         ) {
             openSetTerminationDatePickerScreen()
                 .environmentObject(vm)
         }
         .detent(
             presented: $vm.isConfirmTerminationPresented,
-            style: .height
+            style: [.height]
         ) {
             openConfirmTerminationScreen()
                 .environmentObject(vm)
@@ -236,8 +236,8 @@ struct TerminationFlowNavigation: View {
             )
         )
         .hFormTitle(
-            title: .init(.small, .title3, L10n.terminationFlowTitle, alignment: .leading),
-            subTitle: .init(.small, .title3, L10n.terminationFlowBody)
+            title: .init(.small, .heading2, L10n.terminationFlowTitle, alignment: .leading),
+            subTitle: .init(.small, .heading2, L10n.terminationFlowBody)
         )
         .withDismissButton()
         .hFieldSize(.small)

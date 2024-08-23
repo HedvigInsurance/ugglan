@@ -63,7 +63,7 @@ public struct ProfileNavigation<Content: View>: View {
         .environmentObject(profileNavigationViewModel)
         .detent(
             item: $profileNavigationViewModel.isDeleteAccountPresented,
-            style: .height,
+            style: [.height],
             options: .constant(.withoutGrabber),
             tracking: ProfileRedirectType.deleteAccount(
                 memberDetails: .init(
@@ -84,7 +84,7 @@ public struct ProfileNavigation<Content: View>: View {
         }
         .detent(
             presented: $profileNavigationViewModel.isLanguagePickerPresented,
-            style: .height,
+            style: [.height],
             tracking: ProfileRedirectType.pickLanguage,
             content: {
                 redirect(.pickLanguage)

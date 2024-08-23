@@ -16,7 +16,7 @@ struct PaymentStatusView: View {
                     .resizable()
                     .frame(width: 16, height: 16)
                     .foregroundColor(hSignalColor.Green.element)
-                hText(L10n.paymentsPaymentSuccessful, style: .standardSmall)
+                hText(L10n.paymentsPaymentSuccessful, style: .label)
                     .foregroundColor(hSignalColor.Green.text)
                 Spacer()
             }
@@ -37,7 +37,7 @@ struct PaymentStatusView: View {
                     .frame(width: 16, height: 16)
                     .foregroundColor(hSignalColor.Blue.element)
 
-                hText(L10n.paymentsPaymentInProgress, style: .standardSmall)
+                hText(L10n.paymentsPaymentInProgress, style: .label)
                     .foregroundColor(hSignalColor.Blue.text)
                 Spacer()
             }

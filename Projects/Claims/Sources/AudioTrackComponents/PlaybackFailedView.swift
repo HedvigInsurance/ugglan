@@ -9,11 +9,11 @@ struct PlaybackFailedView: View {
         VStack {
             HStack {
                 Image(uiImage: hCoreUIAssets.warningTriangleOutlined.image)
-                hText(L10n.ClaimStatusDetail.InfoError.title, style: .headline)
+                hText(L10n.ClaimStatusDetail.InfoError.title, style: .body1)
             }
             .padding(.vertical, 18)
 
-            hText(L10n.ClaimStatusDetail.InfoError.body, style: .subheadline)
+            hText(L10n.ClaimStatusDetail.InfoError.body, style: .label)
                 .foregroundColor(hTextColor.Opaque.secondary)
                 .fixedSize(horizontal: false, vertical: true)
                 .multilineTextAlignment(.leading)
@@ -25,7 +25,7 @@ struct PlaybackFailedView: View {
                 buttonAction()
             } label: {
                 hSection {
-                    hText(L10n.ClaimStatusDetail.InfoError.button, style: .subheadline)
+                    hText(L10n.ClaimStatusDetail.InfoError.button, style: .label)
                         .foregroundColor(hTextColor.Opaque.primary)
                         .padding(.vertical, .padding8)
                 }

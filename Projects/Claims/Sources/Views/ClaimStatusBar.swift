@@ -93,7 +93,7 @@ struct ClaimStatusBar: View {
                         .fill(barColor(segment: segment))
                         .frame(height: 4)
                         .cornerRadius(.cornerRadiusXS)
-                    hText(segment.title, style: .standardSmall)
+                    hText(segment.title, style: .label)
                         .foregroundColor(textColor(segment: segment))
                         .lineLimit(1)
                 }

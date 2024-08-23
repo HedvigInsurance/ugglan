@@ -171,7 +171,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                         .id(item.object)
                 }
                 .withHeader({
-                    hText(listTitle, style: .footnote)
+                    hText(listTitle, style: .label)
                         .foregroundColor(hTextColor.Translucent.secondary)
                 })
                 .hEmbeddedHeader
