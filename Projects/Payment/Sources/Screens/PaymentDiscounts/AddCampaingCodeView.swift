@@ -58,7 +58,7 @@ class AddCampaingCodeViewModel: ObservableObject {
     }
 
     @MainActor
-    func onSuccessAdd() async {
+    private func onSuccessAdd() async {
         hideTitle = true
         withAnimation(.easeInOut(duration: 0.2)) {
             codeAdded = true

@@ -94,7 +94,6 @@ class PaymentDetailsDiscountViewModel: ObservableObject {
     let options: PaymentDetailsDiscountOptions
     let discount: Discount
     @PresentableStore private var store: PaymentStore
-    private var campaignService = hCampaignService()
 
     init(options: PaymentDetailsDiscountOptions, discount: Discount) {
         self.options = options

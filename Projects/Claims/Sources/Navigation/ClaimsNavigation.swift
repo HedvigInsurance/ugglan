@@ -196,14 +196,14 @@ public struct ClaimsNavigation: View {
         }
         .detent(
             presented: $claimsNavigationVm.isLocationPickerPresented,
-            style: .height
+            style: [.height]
         ) {
             openLocationScreen()
                 .embededInNavigation(options: .navigationType(type: .large))
         }
         .detent(
             presented: $claimsNavigationVm.isBrandPickerPresented,
-            style: .large
+            style: [.large]
         ) {
             openBrandPickerScreen()
                 .routerDestination(
@@ -215,21 +215,21 @@ public struct ClaimsNavigation: View {
         }
         .detent(
             presented: $claimsNavigationVm.isPriceInputPresented,
-            style: .height
+            style: [.height]
         ) {
             openPriceInputScreen()
                 .embededInNavigation(options: .navigationType(type: .large))
         }
         .detent(
             presented: $claimsNavigationVm.isDamagePickerPresented,
-            style: .height
+            style: [.height]
         ) {
             openDamagePickerScreen()
                 .embededInNavigation(options: .navigationType(type: .large))
         }
         .detent(
             item: $claimsNavigationVm.isInfoViewPresented,
-            style: .height
+            style: [.height]
         ) { infoViewModel in
             openInfoView(model: infoViewModel)
         }

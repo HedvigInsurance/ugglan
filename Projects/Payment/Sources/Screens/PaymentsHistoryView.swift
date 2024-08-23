@@ -7,7 +7,6 @@ import hCoreUI
 import hGraphQL
 
 public struct PaymentHistoryView: View {
-    @ObservedObject var vm: PaymentsHistoryViewModel
     @EnvironmentObject var router: Router
 
     public var body: some View {
@@ -94,6 +93,10 @@ public struct PaymentHistoryView: View {
             }
             .presentableStoreLensAnimation(.default)
         }
+        .task {
+            let store: PaymentStore = globalPresentableStoreContainer.get()
+            store.send(.getHistory)
+        }
     }
 
     @hColorBuilder
@@ -106,19 +109,10 @@ public struct PaymentHistoryView: View {
     }
 }
 
-class PaymentsHistoryViewModel: ObservableObject {
-    private var paymentService = hPaymentService()
-
-    init() {
-        let store: PaymentStore = globalPresentableStoreContainer.get()
-        store.send(.getHistory)
-    }
-}
-
 struct PaymentHistoryView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale = .sv_SE
         Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
-        return PaymentHistoryView(vm: .init())
+        return PaymentHistoryView()
     }
 }
