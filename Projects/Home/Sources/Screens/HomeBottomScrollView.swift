@@ -4,6 +4,7 @@ import Contracts
 import EditCoInsuredShared
 import Payment
 import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -82,7 +83,7 @@ class HomeButtonScrollViewModel: ObservableObject {
     }
 
     private func handlePayments() {
-        let paymentStore: PaymentStore = globalPresentableStoreContainer.get()
+        let paymentStore: PaymentStore = hGlobalPresentableStoreContainer.get()
         let homeStore: HomeStore = globalPresentableStoreContainer.get()
         homeStore.stateSignal
             .map({ $0.memberContractState })
@@ -103,10 +104,9 @@ class HomeButtonScrollViewModel: ObservableObject {
         default:
             handleItem(.terminated, with: false)
         }
-        let needsPaymentSetupPublisher = paymentStore.stateSignal.plain()
+        let needsPaymentSetupPublisher = paymentStore.stateSignal
             .map({ $0.paymentStatusData?.status })
-            .distinct()
-            .publisher
+            .removeDuplicates()
         let memberStatePublisher = homeStore.stateSignal.plain()
             .map({ $0.memberContractState })
             .distinct()

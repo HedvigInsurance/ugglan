@@ -1,4 +1,4 @@
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -37,7 +37,7 @@ public struct PaymentsNavigation<Content: View>: View {
                     case .discounts:
                         PaymentsDiscountsRootView()
                             .onAppear {
-                                let store: PaymentStore = globalPresentableStoreContainer.get()
+                                let store: PaymentStore = hGlobalPresentableStoreContainer.get()
                                 store.send(.fetchDiscountsData)
                             }
                             .routerDestination(for: PaymentsRedirectType.self) { redirectType in

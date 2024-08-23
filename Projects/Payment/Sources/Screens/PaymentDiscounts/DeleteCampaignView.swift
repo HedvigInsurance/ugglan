@@ -1,4 +1,4 @@
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -77,7 +77,7 @@ struct DeleteCampaignView: View {
 class DeleteCampaignViewModel: ObservableObject {
     let discount: Discount
     private var campaignService = hCampaignService()
-    @PresentableStore private var store: PaymentStore
+    @hPresentableStore private var store: PaymentStore
     @Published var codeRemoved = false
     @Published var isLoading = false
     @Published var error: String? = nil

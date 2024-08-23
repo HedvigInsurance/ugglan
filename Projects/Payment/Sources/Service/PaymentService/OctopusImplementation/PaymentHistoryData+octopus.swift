@@ -1,5 +1,5 @@
 import Foundation
-import Presentation
+import StoreContainer
 import hGraphQL
 
 extension PaymentHistoryListData {
@@ -12,7 +12,7 @@ extension PaymentHistoryListData {
         var nextPayment: PaymentData?
         for item in data.pastCharges.enumerated() {
             if item.offset == 0 {
-                let store: PaymentStore = globalPresentableStoreContainer.get()
+                let store: PaymentStore = hGlobalPresentableStoreContainer.get()
                 nextPayment = store.state.paymentData
             }
             let paymentData = PaymentData(

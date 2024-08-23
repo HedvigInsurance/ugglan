@@ -1,11 +1,11 @@
 import Foundation
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct ConnectPaymentCardView: View {
-    @PresentableStore var store: PaymentStore
+    @hPresentableStore var store: PaymentStore
     @EnvironmentObject var connectPaymentVm: ConnectPaymentViewModel
     @EnvironmentObject var router: Router
     public init() {}
