@@ -1,5 +1,5 @@
 import EditCoInsuredShared
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -8,7 +8,7 @@ struct CoInsuredProcessingScreen: View {
     @StateObject var vm = ProcessingViewModel()
     @ObservedObject var intentVm: IntentViewModel
     var showSuccessScreen: Bool
-    @PresentableStore var store: EditCoInsuredStore
+    @hPresentableStore var store: EditCoInsuredStore
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @EnvironmentObject private var editCoInsuredViewModel: EditCoInsuredViewModel
     @StateObject var router = Router()
@@ -16,13 +16,13 @@ struct CoInsuredProcessingScreen: View {
         showSuccessScreen: Bool
     ) {
         self.showSuccessScreen = showSuccessScreen
-        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
+        let store: EditCoInsuredStore = hGlobalPresentableStoreContainer.get()
         intentVm = store.intentViewModel
     }
 
     var body: some View {
         RouterHost(router: router, options: [.navigationBarHidden]) {
-            ProcessingView(
+            hProcessingView(
                 showSuccessScreen: showSuccessScreen,
                 EditCoInsuredStore.self,
                 loading: .postCoInsured,
@@ -69,14 +69,14 @@ struct CoInsuredProcessingScreen: View {
 
 class ProcessingViewModel: ObservableObject {
     @Published var progress: Float = 0
-    @PresentableStore var store: EditCoInsuredStore
+    @hPresentableStore var store: EditCoInsuredStore
 }
 
 struct SuccessScreen_Previews: PreviewProvider {
     static var previews: some View {
         CoInsuredProcessingScreen(showSuccessScreen: true)
             .onAppear {
-                let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
+                let store: EditCoInsuredStore = hGlobalPresentableStoreContainer.get()
                 store.setLoading(for: .postCoInsured)
                 store.setError("error", for: .postCoInsured)
             }

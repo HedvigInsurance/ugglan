@@ -1,7 +1,7 @@
 import Apollo
 import EditCoInsuredShared
 import Foundation
-import Presentation
+import StoreContainer
 import hCore
 
 public final class EditCoInsuredStore: LoadingStateStore<

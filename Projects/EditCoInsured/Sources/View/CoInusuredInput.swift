@@ -1,6 +1,6 @@
 import Combine
 import EditCoInsuredShared
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -9,7 +9,7 @@ import hGraphQL
 struct CoInusuredInput: View {
     @ObservedObject var insuredPeopleVm: InsuredPeopleNewScreenModel
     @ObservedObject var intentVm: IntentViewModel
-    @PresentableStore var store: EditCoInsuredStore
+    @hPresentableStore var store: EditCoInsuredStore
     @ObservedObject var vm: CoInusuredInputViewModel
     let title: String
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
@@ -19,7 +19,7 @@ struct CoInusuredInput: View {
         vm: CoInusuredInputViewModel,
         title: String
     ) {
-        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
+        let store: EditCoInsuredStore = hGlobalPresentableStoreContainer.get()
         insuredPeopleVm = store.coInsuredViewModel
         intentVm = store.intentViewModel
         self.vm = vm

@@ -1,12 +1,12 @@
 import EditCoInsuredShared
 import Foundation
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct RemoveCoInsuredScreen: View {
-    @PresentableStore var store: EditCoInsuredStore
+    @hPresentableStore var store: EditCoInsuredStore
     @ObservedObject var vm: InsuredPeopleNewScreenModel
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @EnvironmentObject private var router: Router
