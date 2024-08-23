@@ -1,5 +1,5 @@
 import EditCoInsuredShared
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -16,7 +16,7 @@ struct CoInsuredSelectScreen: View {
         contractId: String
     ) {
         self.contractId = contractId
-        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
+        let store: EditCoInsuredStore = hGlobalPresentableStoreContainer.get()
         vm = store.coInsuredViewModel
         intentVm = store.intentViewModel
         alreadyAddedCoinsuredMembers = store.coInsuredViewModel.config.preSelectedCoInsuredList.filter({
@@ -53,7 +53,7 @@ struct CoInsuredSelectScreen: View {
                 preSelectedItems: { [] },
                 onSelected: { selectedCoinsured in
                     if let selectedCoinsured = selectedCoinsured.first {
-                        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
+                        let store: EditCoInsuredStore = hGlobalPresentableStoreContainer.get()
 
                         if let object = selectedCoinsured.0 {
                             store.coInsuredViewModel.addCoInsured(
