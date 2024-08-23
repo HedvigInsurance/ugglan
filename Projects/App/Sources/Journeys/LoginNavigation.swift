@@ -5,6 +5,7 @@ import Combine
 import Foundation
 import Market
 import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -134,7 +135,7 @@ struct NotLoggedInView_Previews: PreviewProvider {
 }
 
 public class NotLoggedViewModel: ObservableObject {
-    @PresentableStore var store: MarketStore
+    @hPresentableStore var store: MarketStore
     @Published var blurHash: String = ""
     @Published var imageURL: String = ""
     @Published var bootStrapped: Bool = false
