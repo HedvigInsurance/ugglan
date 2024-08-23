@@ -59,7 +59,7 @@ struct FilesGridView: View {
         }
         .detent(
             item: $fileModel,
-            style: .large
+            style: [.large]
         ) { model in
             DocumentPreview(vm: .init(type: model.type.asDocumentPreviewModelType))
         }

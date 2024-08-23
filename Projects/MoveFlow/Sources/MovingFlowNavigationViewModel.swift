@@ -90,9 +90,9 @@ public struct MovingFlowNavigation: View {
                 }
             }
         }
-        .detent(presented: $movingFlowVm.isAddExtraBuildingPresented, style: .height) {
+        .detent(presented: $movingFlowVm.isAddExtraBuildingPresented, style: [.height]) {
             MovingFlowAddExtraBuildingView(isBuildingTypePickerPresented: $isBuildingTypePickerPresented)
-                .detent(item: $isBuildingTypePickerPresented, style: .height) { extraBuildingType in
+                .detent(item: $isBuildingTypePickerPresented, style: [.height]) { extraBuildingType in
                     openTypeOfBuildingPicker(for: extraBuildingType.extraBuildingType)
                 }
                 .environmentObject(movingFlowVm)
@@ -101,7 +101,7 @@ public struct MovingFlowNavigation: View {
         }
         .detent(
             item: $movingFlowVm.document,
-            style: .large
+            style: [.large]
         ) { document in
             PDFPreview(document: .init(url: document.url, title: document.title))
         }

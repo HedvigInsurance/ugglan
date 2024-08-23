@@ -142,7 +142,7 @@ public struct RenewalCardView: View {
                 dismissButton: .default(Text(L10n.discountRedeemSuccessButton))
             )
         }
-        .detent(item: $document, style: .large) { document in
+        .detent(item: $document, style: [.large]) { document in
             if let url = URL(string: document.url) {
                 PDFPreview(document: .init(url: url, title: document.displayName))
             }

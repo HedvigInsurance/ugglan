@@ -16,7 +16,7 @@ struct EditCoInsured: ViewModifier {
         content
             .detent(
                 item: $vm.editCoInsuredModelDetent,
-                style: .height,
+                style: [.height],
                 tracking: vm.editCoInsuredModelDetent?.contractsSupportingCoInsured.count ?? 0 > 1
                     ? InsuredPeopleConfigType.list : InsuredPeopleConfigType.oneItem
             ) { coInsuredModel in
@@ -38,7 +38,7 @@ struct EditCoInsured: ViewModifier {
             }
             .detent(
                 item: $vm.editCoInsuredModelMissingAlert,
-                style: .height
+                style: [.height]
             ) { config in
                 getMissingCoInsuredAlertView(
                     missingContractConfig: config
