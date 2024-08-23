@@ -66,7 +66,7 @@ public struct HelpCenterNavigation<Content: View>: View {
         .ignoresSafeArea()
         .detent(
             presented: $helpCenterVm.quickActions.isFirstVetPresented,
-            style: .large
+            style: [.large]
         ) {
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
                 .configureTitle(QuickAction.firstVet(partners: []).displayTitle)
@@ -75,7 +75,7 @@ public struct HelpCenterNavigation<Content: View>: View {
         }
         .detent(
             presented: $helpCenterVm.quickActions.isSickAbroadPresented,
-            style: .large
+            style: [.large]
         ) {
             getSubmitClaimDeflectScreen()
         }

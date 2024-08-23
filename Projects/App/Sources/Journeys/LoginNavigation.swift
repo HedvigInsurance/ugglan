@@ -18,13 +18,13 @@ struct LoginNavigation: View {
         RouterHost(router: router, options: .navigationBarHidden) {
             NotLoggedInView(vm: vm)
         }
-        .detent(presented: $vm.showLanguagePicker, style: .height) {
+        .detent(presented: $vm.showLanguagePicker, style: [.height]) {
             LanguageAndMarketPickerView()
                 .navigationTitle(L10n.loginMarketPickerPreferences)
                 .embededInNavigation()
 
         }
-        .detent(presented: $vm.showLogin, style: .large, tracking: Localization.Locale.currentLocale.market) {
+        .detent(presented: $vm.showLogin, style: [.large], tracking: Localization.Locale.currentLocale.market) {
             Group {
                 switch Localization.Locale.currentLocale.market {
                 case .no, .dk:

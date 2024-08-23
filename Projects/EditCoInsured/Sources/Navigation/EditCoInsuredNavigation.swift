@@ -103,14 +103,14 @@ public struct EditCoInsuredNavigation: View {
         }
         .detent(
             item: $editCoInsuredNavigationVm.coInsuredInputModel,
-            style: .height
+            style: [.height]
         ) { coInsuredInputModel in
             coInsuredInput(coInsuredInputModel: coInsuredInputModel)
                 .embededInNavigation(options: [.navigationType(type: .large)])
         }
         .detent(
             item: $editCoInsuredNavigationVm.selectCoInsured,
-            style: .height
+            style: [.height]
         ) { selectCoInsured in
             openCoInsuredSelectScreen(contractId: selectCoInsured.id)
                 .environmentObject(editCoInsuredNavigationVm)
