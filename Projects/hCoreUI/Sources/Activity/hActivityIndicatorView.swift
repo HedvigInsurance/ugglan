@@ -2,6 +2,83 @@ import Foundation
 import StoreContainer
 import SwiftUI
 
+public struct hLoadingViewWithState<Content: View, LoadingView: View, ErrorView: View, StoreType: StoreLoading & Store>:
+    View
+{
+    var content: () -> Content
+    var onLoading: () -> LoadingView
+    var onError: (_ error: String) -> ErrorView
+
+    var action: StoreType.Loading
+    @State var showOnLoading: Bool = false
+    @State var error: String?
+
+    @hPresentableStore var store: StoreType
+
+    public init(
+        _ type: StoreType.Type,
+        _ action: StoreType.Loading,
+        @ViewBuilder content: @escaping () -> Content,
+        @ViewBuilder onLoading: @escaping () -> LoadingView,
+        @ViewBuilder onError: @escaping (_ error: String) -> ErrorView
+    ) {
+        self.action = action
+        self.content = content
+        self.onLoading = onLoading
+        self.onError = onError
+    }
+    public var body: some View {
+        getView
+            .onReceive(
+                store.loadingSignal
+            ) { value in
+                withAnimation {
+                    if let state = value[action] {
+                        switch state {
+                        case .loading:
+                            showOnLoading = true
+                            self.error = nil
+                        case let .error(error):
+                            showOnLoading = false
+                            self.error = error
+                        }
+                    } else {
+                        showOnLoading = false
+                        self.error = nil
+                    }
+                }
+            }
+            .onAppear {
+                withAnimation {
+                    if let state = store.loadingState[action] {
+                        switch state {
+                        case .loading:
+                            showOnLoading = true
+                            self.error = nil
+                        case let .error(error):
+                            showOnLoading = false
+                            self.error = error
+                        }
+                    } else {
+                        showOnLoading = false
+                        self.error = nil
+                    }
+                }
+            }
+    }
+
+    @ViewBuilder
+    private var getView: some View {
+        if let error {
+            onError(error)
+        } else if showOnLoading {
+            onLoading()
+        } else {
+            content()
+        }
+    }
+}
+
 public struct hLoadingViewWithContent<Content: View, StoreType: StoreLoading & Store>: View {
     var content: () -> Content
     @hPresentableStore var store: StoreType
