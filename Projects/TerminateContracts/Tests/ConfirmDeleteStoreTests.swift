@@ -31,10 +31,7 @@ final class ConfirmDeleteStoreTests: XCTestCase {
 
         let store = TerminationContractStore()
         self.store = store
-        var newState = store.state
-        newState.terminationDeleteStep = terminationDeleteStep
-        store.setState(newState)
-
+        await store.sendAsync(.stepModelAction(action: .setTerminationDeletion(model: terminationDeleteStep)))
         await store.sendAsync(.sendConfirmDelete)
 
         assert(store.state.successStep != nil)
@@ -53,12 +50,8 @@ final class ConfirmDeleteStoreTests: XCTestCase {
 
         let store = TerminationContractStore()
         self.store = store
-        var newState = store.state
-        newState.terminationDeleteStep = terminationDeleteStep
-        store.setState(newState)
-
+        await store.sendAsync(.stepModelAction(action: .setTerminationDeletion(model: terminationDeleteStep)))
         await store.sendAsync(.sendConfirmDelete)
-
         assert(store.state.successStep == nil)
         assert(store.state.failedStep != nil)
     }
@@ -74,10 +67,7 @@ final class ConfirmDeleteStoreTests: XCTestCase {
 
         let store = TerminationContractStore()
         self.store = store
-        var newState = store.state
-        newState.terminationDeleteStep = terminationDeleteStep
-        store.setState(newState)
-
+        await store.sendAsync(.stepModelAction(action: .setTerminationDeletion(model: terminationDeleteStep)))
         await store.sendAsync(.sendConfirmDelete)
 
         await waitUntil(description: "loading state") {

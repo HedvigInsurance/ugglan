@@ -36,9 +36,6 @@ final class StartTerminationStoreTests: XCTestCase {
 
         let store = TerminationContractStore()
         self.store = store
-        var newState = store.state
-        newState.config = config
-
         await store.sendAsync(.startTermination(config: config))
 
         assert(store.state.successStep != nil)
@@ -62,11 +59,8 @@ final class StartTerminationStoreTests: XCTestCase {
 
         let store = TerminationContractStore()
         self.store = store
-        var newState = store.state
-        newState.config = config
 
         await store.sendAsync(.startTermination(config: config))
-
         await waitUntil(description: "loading state") {
             store.loadingSignal.value[.getInitialStep] == nil
         }
@@ -91,13 +85,12 @@ final class StartTerminationStoreTests: XCTestCase {
 
         let store = TerminationContractStore()
         self.store = store
-        var newState = store.state
 
         await store.sendAsync(.startTermination(config: config))
-
         await waitUntil(description: "loading state") {
             store.loadingSignal.value[.getInitialStep] != nil
         }
+
         assert(store.state.successStep == nil)
         assert(store.state.failedStep == nil)
     }

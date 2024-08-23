@@ -31,14 +31,18 @@ final class SendTerminationDateStoreTests: XCTestCase {
 
         let store = TerminationContractStore()
         self.store = store
-        var newState = store.state
-        newState.terminationDateStep = .init(
-            id: "id",
-            maxDate: "2025-08-08",
-            minDate: "2024-08-08",
-            date: "2024-10-25".localDateToDate
+        await store.sendAsync(
+            .stepModelAction(
+                action: .setTerminationDateStep(
+                    model: .init(
+                        id: "id",
+                        maxDate: "2025-08-08",
+                        minDate: "2024-08-08",
+                        date: "2024-10-25".localDateToDate
+                    )
+                )
+            )
         )
-        store.setState(newState)
 
         await store.sendAsync(.setTerminationDate(terminationDate: terminationDate ?? Date()))
         await store.sendAsync(.sendTerminationDate)
@@ -59,14 +63,18 @@ final class SendTerminationDateStoreTests: XCTestCase {
 
         let store = TerminationContractStore()
         self.store = store
-        var newState = store.state
-        newState.terminationDateStep = .init(
-            id: "id",
-            maxDate: "2025-08-08",
-            minDate: "2024-08-08",
-            date: "2024-10-25".localDateToDate
+        await store.sendAsync(
+            .stepModelAction(
+                action: .setTerminationDateStep(
+                    model: .init(
+                        id: "id",
+                        maxDate: "2025-08-08",
+                        minDate: "2024-08-08",
+                        date: "2024-10-25".localDateToDate
+                    )
+                )
+            )
         )
-        store.setState(newState)
 
         await store.sendAsync(.setTerminationDate(terminationDate: terminationDate ?? Date()))
         await store.sendAsync(.sendTerminationDate)
@@ -90,7 +98,18 @@ final class SendTerminationDateStoreTests: XCTestCase {
 
         let store = TerminationContractStore()
         self.store = store
-        var newState = store.state
+        await store.sendAsync(
+            .stepModelAction(
+                action: .setTerminationDateStep(
+                    model: .init(
+                        id: "id",
+                        maxDate: "2025-08-08",
+                        minDate: "2024-08-08",
+                        date: "2024-10-25".localDateToDate
+                    )
+                )
+            )
+        )
 
         await store.sendAsync(.setTerminationDate(terminationDate: terminationDate ?? Date()))
         await store.sendAsync(.sendTerminationDate)

@@ -42,15 +42,13 @@ final class SubmitSurveyStoreTests: XCTestCase {
 
         let store = TerminationContractStore()
         self.store = store
-        var newState = store.state
-        newState.terminationSurveyStep = terminationSurveyStep
-        store.setState(newState)
 
+        await store.sendAsync(.stepModelAction(action: .setTerminationSurveyStep(model: terminationSurveyStep)))
         await store.sendAsync(.submitSurvey(option: "option", feedback: "feedback"))
 
         assert(store.state.successStep != nil)
         assert(store.state.failedStep == nil)
-        //        assert(store.state.terminationSurveyStep == terminationSurveyStep)
+        assert(store.state.terminationSurveyStep == terminationSurveyStep)
     }
 
     func testSubmitSurveyResponseFailure() async {
@@ -62,12 +60,9 @@ final class SubmitSurveyStoreTests: XCTestCase {
 
         let store = TerminationContractStore()
         self.store = store
-        var newState = store.state
-        newState.terminationSurveyStep = terminationSurveyStep
-        store.setState(newState)
 
+        await store.sendAsync(.stepModelAction(action: .setTerminationSurveyStep(model: terminationSurveyStep)))
         await store.sendAsync(.submitSurvey(option: "option", feedback: "feedback"))
-
         await waitUntil(description: "loading state") {
             store.loadingSignal.value[.sendSurvey] == nil
         }
@@ -85,10 +80,8 @@ final class SubmitSurveyStoreTests: XCTestCase {
 
         let store = TerminationContractStore()
         self.store = store
-        var newState = store.state
-        newState.terminationSurveyStep = terminationSurveyStep
-        store.setState(newState)
 
+        await store.sendAsync(.stepModelAction(action: .setTerminationSurveyStep(model: terminationSurveyStep)))
         await store.sendAsync(.submitSurvey(option: "option", feedback: "feedback"))
 
         await waitUntil(description: "loading state") {
