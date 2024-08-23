@@ -190,3 +190,73 @@ struct hTrackLoadingButtonModifier<StoreType: StoreLoading & Store>: ViewModifie
         }
     }
 }
+
+extension View {
+    public func hRetryView<StoreType: StoreLoading & Store>(
+        _ type: StoreType.Type,
+        forAction action: StoreType.Loading,
+        binding: Binding<String?>
+    ) -> some View {
+        modifier(RetryViewWithError(type, action, binding))
+    }
+}
+
+private struct RetryViewWithError<StoreType: StoreLoading & Store>: ViewModifier {
+    @hPresentableStore var store: StoreType
+    let action: StoreType.Loading
+    @Binding private var error: String?
+    @Environment(\.presentableStoreLensAnimation) var animation
+
+    public init(
+        _ type: StoreType.Type,
+        _ action: StoreType.Loading,
+        _ binding: Binding<String?>
+    ) {
+        self.action = action
+        _error = binding
+    }
+    func body(content: Content) -> some View {
+        ZStack {
+            if let error {
+                GenericErrorView(
+                    description: error,
+                    buttons: .init(
+                        actionButton: .init(buttonAction: {
+                            self.error = nil
+                        }),
+                        dismissButton: nil
+                    )
+                )
+            } else {
+                content
+            }
+        }
+        .onReceive(
+            store.loadingSignal
+        ) { value in
+            handle(allActions: value)
+        }
+        .onAppear {
+            handle(allActions: store.loadingState)
+        }
+    }
+
+    func handle(allActions: [StoreType.Loading: LoadingState<String>]) {
+        if let state = allActions[action] {
+            switch state {
+            case .loading:
+                withAnimation {
+                    self.error = nil
+                }
+            case let .error(error):
+                withAnimation {
+                    self.error = error
+                }
+            }
+        } else {
+            withAnimation {
+                self.error = nil
+            }
+        }
+    }
+}

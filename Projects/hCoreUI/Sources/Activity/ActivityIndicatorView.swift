@@ -284,7 +284,7 @@ extension View {
     }
 }
 
-struct RetryViewWithError<StoreType: StoreLoading & Store>: ViewModifier {
+private struct RetryViewWithError<StoreType: StoreLoading & Store>: ViewModifier {
     @PresentableStore var store: StoreType
     let action: StoreType.Loading
     @Binding private var error: String?
