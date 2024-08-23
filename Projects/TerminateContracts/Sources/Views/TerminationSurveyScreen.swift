@@ -1,4 +1,5 @@
 import Combine
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -8,7 +9,7 @@ struct TerminationSurveyScreen: View {
     @Namespace var animationNamespace
     @EnvironmentObject var terminationFlowNavigationViewModel: TerminationFlowNavigationViewModel
 
-    @PresentableStore var store: TerminationContractStore
+    @hPresentableStore var store: TerminationContractStore
     var body: some View {
         hForm {
             hSection {
@@ -76,7 +77,7 @@ struct TerminationSurveyScreen: View {
             }
             .sectionContainerStyle(.transparent)
         }
-        .trackLoading(TerminationContractStore.self, action: .sendSurvey)
+        .hTrackLoading(TerminationContractStore.self, action: .sendSurvey)
     }
 
     @ViewBuilder
@@ -115,7 +116,7 @@ class SurveyScreenViewModel: ObservableObject {
     let subtitleType: SurveyScreenSubtitleType
     var allFeedBackViewModels = [String: TerminationFlowSurveyStepFeedBackViewModel]()
 
-    @PresentableStore var store: TerminationContractStore
+    @hPresentableStore var store: TerminationContractStore
 
     @Published var text: String = "test"
     @Published var continueEnabled = true

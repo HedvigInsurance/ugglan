@@ -1,10 +1,11 @@
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
 
 struct SetTerminationDate: View {
-    @PresentableStore var store: TerminationContractStore
+    @hPresentableStore var store: TerminationContractStore
     @State private var terminationDate = Date()
     @State private var isHidden = false
     @EnvironmentObject var terminationNavigationVm: TerminationFlowNavigationViewModel

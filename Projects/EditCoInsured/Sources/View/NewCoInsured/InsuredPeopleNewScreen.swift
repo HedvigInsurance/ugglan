@@ -1,12 +1,12 @@
 import EditCoInsuredShared
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
 
 struct InsuredPeopleNewScreen: View {
-    @PresentableStore var store: EditCoInsuredStore
+    @hPresentableStore var store: EditCoInsuredStore
     @ObservedObject var vm: InsuredPeopleNewScreenModel
     @ObservedObject var intentVm: IntentViewModel
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
@@ -67,7 +67,7 @@ struct InsuredPeopleNewScreen: View {
                         } content: {
                             hText(L10n.generalSaveChangesButton)
                         }
-                        .trackLoading(EditCoInsuredStore.self, action: .postCoInsured)
+                        .hTrackLoading(EditCoInsuredStore.self, action: .postCoInsured)
                         .disabled(
                             (vm.config.contractCoInsured.count + vm.coInsuredAdded.count)
                                 < nbOfMissingCoInsured
@@ -81,7 +81,7 @@ struct InsuredPeopleNewScreen: View {
                 } content: {
                     hText(L10n.generalCancelButton)
                 }
-                .disableOn(EditCoInsuredStore.self, [.postCoInsured])
+                .hDisableOn(EditCoInsuredStore.self, [.postCoInsured])
             }
         }
     }

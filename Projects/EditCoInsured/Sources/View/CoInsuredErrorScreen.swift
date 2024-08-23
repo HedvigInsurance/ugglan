@@ -1,18 +1,18 @@
 import EditCoInsuredShared
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct CoInsuredInputErrorView: View {
     @ObservedObject var intentVm: IntentViewModel
-    @PresentableStore var store: EditCoInsuredStore
+    @hPresentableStore var store: EditCoInsuredStore
     @ObservedObject var vm: CoInusuredInputViewModel
 
     public init(
         vm: CoInusuredInputViewModel
     ) {
-        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
+        let store: EditCoInsuredStore = hGlobalPresentableStoreContainer.get()
         intentVm = store.intentViewModel
         self.vm = vm
     }

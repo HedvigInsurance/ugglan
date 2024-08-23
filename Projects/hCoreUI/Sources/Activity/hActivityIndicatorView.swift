@@ -124,3 +124,69 @@ public struct hLoadingViewWithContent<Content: View, StoreType: StoreLoading & S
         let error: String?
     }
 }
+
+extension View {
+    public func hTrackLoading<StoreType: StoreLoading & Store>(
+        _ type: StoreType.Type,
+        action: StoreType.Loading
+    ) -> some View {
+        modifier(hTrackLoadingButtonModifier(type, action))
+    }
+}
+
+struct hTrackLoadingButtonModifier<StoreType: StoreLoading & Store>: ViewModifier {
+    @hPresentableStore var store: StoreType
+    let actions: [StoreType.Loading]
+    @State private var isLoading = false
+    @Environment(\.presentableStoreLensAnimation) var animation
+
+    public init(
+        _ type: StoreType.Type,
+        _ action: StoreType.Loading
+    ) {
+        self.actions = [action]
+    }
+    func body(content: Content) -> some View {
+        content
+            .onReceive(
+                store.loadingSignal
+            ) { value in
+                handle(allActions: value)
+            }
+            .onAppear {
+                handle(allActions: store.loadingState)
+            }
+            .hButtonIsLoading(isLoading)
+    }
+
+    func handle(allActions: [StoreType.Loading: LoadingState<String>]) {
+        let actions = allActions.filter({ self.actions.contains($0.key) })
+        if actions.count > 0 {
+            if actions.filter({ $0.value == .loading }).count > 0 {
+                changeState(to: true, presentError: false)
+            } else {
+                var tempError = ""
+                for action in actions {
+                    switch action.value {
+                    case .error(let error):
+                        tempError = error
+                    default:
+                        break
+                    }
+                }
+                changeState(to: false, presentError: true, error: tempError)
+            }
+        } else {
+            changeState(to: false, presentError: false, error: nil)
+        }
+    }
+    private func changeState(to isLoading: Bool, presentError: Bool, error: String? = nil) {
+        if let animation {
+            withAnimation(animation) {
+                self.isLoading = isLoading
+            }
+        } else {
+            self.isLoading = isLoading
+        }
+    }
+}

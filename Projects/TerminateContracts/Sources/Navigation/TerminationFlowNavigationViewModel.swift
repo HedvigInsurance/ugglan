@@ -1,5 +1,5 @@
 import Combine
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -79,7 +79,7 @@ struct TerminationFlowNavigation: View {
                 ) { action in
                     switch action {
                     case .success:
-                        let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                        let store: TerminationContractStore = hGlobalPresentableStoreContainer.get()
                         let terminationDate =
                             store.state.successStep?.terminationDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                         openTerminationSuccessScreen(
@@ -101,27 +101,30 @@ struct TerminationFlowNavigation: View {
         }
         .environmentObject(vm)
         .onAppear { [weak vm] in
-            let store: TerminationContractStore = globalPresentableStoreContainer.get()
-            vm?.cancellable = store.actionSignal.publisher.sink { _ in
-            } receiveValue: { [weak vm] action in
-                switch action {
-                case let .navigationAction(navigationAction):
-                    switch navigationAction {
-                    case .openTerminationSuccessScreen:
-                        vm?.router.push(TerminationFlowFinalRouterActions.success)
-                    case .openTerminationFailScreen:
-                        vm?.router.push(TerminationFlowFinalRouterActions.fail)
-                    case .openTerminationUpdateAppScreen:
-                        vm?.router.push(TerminationFlowFinalRouterActions.updateApp)
-                    case .openTerminationSurveyStep(let options, let type):
-                        vm?.router.push(TerminationFlowRouterActions.surveyStep(options: options, subtitleType: type))
-                    case let .openSetTerminationDateLandingScreen(config):
-                        vm?.router.push(TerminationFlowRouterActions.terminationDate(config: config))
+            let store: TerminationContractStore = hGlobalPresentableStoreContainer.get()
+            vm?.cancellable = store.actionSignal
+                .receive(on: RunLoop.main)
+                .sink { _ in
+                } receiveValue: { [weak vm] action in
+                    switch action {
+                    case let .navigationAction(navigationAction):
+                        switch navigationAction {
+                        case .openTerminationSuccessScreen:
+                            vm?.router.push(TerminationFlowFinalRouterActions.success)
+                        case .openTerminationFailScreen:
+                            vm?.router.push(TerminationFlowFinalRouterActions.fail)
+                        case .openTerminationUpdateAppScreen:
+                            vm?.router.push(TerminationFlowFinalRouterActions.updateApp)
+                        case .openTerminationSurveyStep(let options, let type):
+                            vm?.router
+                                .push(TerminationFlowRouterActions.surveyStep(options: options, subtitleType: type))
+                        case let .openSetTerminationDateLandingScreen(config):
+                            vm?.router.push(TerminationFlowRouterActions.terminationDate(config: config))
+                        }
+                    default:
+                        break
                     }
-                default:
-                    break
                 }
-            }
         }
         .detent(
             presented: $vm.isDatePickerPresented,
@@ -157,7 +160,7 @@ struct TerminationFlowNavigation: View {
         case let .final(action):
             switch action {
             case .success:
-                let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                let store: TerminationContractStore = hGlobalPresentableStoreContainer.get()
                 let terminationDate =
                     store.state.successStep?.terminationDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                 openTerminationSuccessScreen(
@@ -224,7 +227,7 @@ struct TerminationFlowNavigation: View {
                             activeFrom: selectedContract.activeFrom
                         )
                         //                    vm.router.push(config)
-                        let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                        let store: TerminationContractStore = hGlobalPresentableStoreContainer.get()
                         store.send(.startTermination(config: config))
                     }
                 },
@@ -270,7 +273,7 @@ struct TerminationFlowNavigation: View {
     private func openConfirmTerminationScreen() -> some View {
         ConfirmTerminationScreen(
             onSelected: {
-                let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                let store: TerminationContractStore = hGlobalPresentableStoreContainer.get()
                 if store.state.isDeletion {
                     store.send(.sendConfirmDelete)
                 } else {
@@ -286,12 +289,12 @@ struct TerminationFlowNavigation: View {
         SetTerminationDate(
             onSelected: {
                 terminationDate in
-                let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                let store: TerminationContractStore = hGlobalPresentableStoreContainer.get()
                 store.send(.setTerminationDate(terminationDate: terminationDate))
                 vm.isDatePickerPresented = false
             },
             terminationDate: {
-                let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                let store: TerminationContractStore = hGlobalPresentableStoreContainer.get()
                 let preSelectedTerminationDate = store.state.terminationDateStep?.minDate.localDateToDate
                 return preSelectedTerminationDate ?? Date()
             }
@@ -301,7 +304,7 @@ struct TerminationFlowNavigation: View {
     }
 
     private func openProgressScreen() -> some View {
-        ProcessingView<TerminationContractStore>(
+        hProcessingView<TerminationContractStore>(
             showSuccessScreen: false,
             TerminationContractStore.self,
             loading: .sendTerminationDate,
@@ -415,8 +418,8 @@ public class TerminateInsuranceViewModel: ObservableObject {
         if configs.count > 1 {
             self.initialStep = .init(action: .router(action: .selectInsurance(configs: configs)))
         } else if let config = configs.first {
-            let store: TerminationContractStore = globalPresentableStoreContainer.get()
-            firstStepCancellable = store.actionSignal.publisher.sink { _ in
+            let store: TerminationContractStore = hGlobalPresentableStoreContainer.get()
+            firstStepCancellable = store.actionSignal.sink { _ in
             } receiveValue: { [weak self] action in
                 switch action {
                 case let .navigationAction(navigationAction):
