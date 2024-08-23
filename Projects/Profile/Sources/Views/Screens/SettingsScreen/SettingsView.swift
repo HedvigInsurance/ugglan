@@ -1,12 +1,13 @@
 import Apollo
 import Contracts
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
 
 struct SettingsView: View {
-    @PresentableStore var store: ProfileStore
+    @hPresentableStore var store: ProfileStore
     @StateObject var memberSubscriptionPreferenceVm = MemberSubscriptionPreferenceViewModel()
     @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
 

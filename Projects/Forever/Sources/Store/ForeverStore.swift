@@ -1,6 +1,6 @@
 import Apollo
 import Foundation
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 
@@ -14,6 +14,7 @@ public final class ForeverStore: LoadingStateStore<ForeverState, ForeverAction, 
         switch action {
         case .fetch:
             do {
+                try await Task.sleep(nanoseconds: 3_000_000_000)
                 let data = try await self.foreverService.getMemberReferralInformation()
                 send(.setForeverData(data: data))
             } catch {
@@ -36,7 +37,6 @@ public final class ForeverStore: LoadingStateStore<ForeverState, ForeverAction, 
             self.removeLoading(for: .fetchForeverData)
             newState.foreverData = data
         }
-
         return newState
     }
 }

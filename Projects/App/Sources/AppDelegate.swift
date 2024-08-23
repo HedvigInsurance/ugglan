@@ -13,6 +13,7 @@ import MoveFlow
 import Payment
 import Presentation
 import Profile
+import StoreContainer
 import SwiftUI
 import TerminateContracts
 import TravelCertificate
@@ -123,7 +124,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func registerForPushNotifications(completed: @escaping () -> Void) {
         UNUserNotificationCenter.current()
             .getNotificationSettings { settings in
-                let store: ProfileStore = globalPresentableStoreContainer.get()
+                let store: ProfileStore = hGlobalPresentableStoreContainer.get()
                 store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
                 guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
                     return
@@ -140,7 +141,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 completionHandler: { _, _ in
                     UNUserNotificationCenter.current()
                         .getNotificationSettings { settings in
-                            let store: ProfileStore = globalPresentableStoreContainer.get()
+                            let store: ProfileStore = hGlobalPresentableStoreContainer.get()
                             store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
                         }
                     completed()

@@ -1,7 +1,7 @@
 import Apollo
 import Contracts
 import Foundation
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -21,14 +21,13 @@ public struct ProfileState: StateProtocol {
     }
 
     public var canCreateTravelInsurance: Bool {
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        return !contractStore.state.activeContracts.filter({ $0.supportsTravelCertificate }).isEmpty
+        return !getContractStore().state.activeContracts.filter({ $0.supportsTravelCertificate }).isEmpty
     }
 
     public init() {
         UNUserNotificationCenter.current()
             .getNotificationSettings { settings in
-                let store: ProfileStore = globalPresentableStoreContainer.get()
+                let store: ProfileStore = hGlobalPresentableStoreContainer.get()
                 store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
             }
     }

@@ -1,5 +1,5 @@
 import Foundation
-import Presentation
+import StoreContainer
 
 public struct ForeverState: StateProtocol {
     public init() {}

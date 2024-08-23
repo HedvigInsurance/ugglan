@@ -1,11 +1,12 @@
 import Apollo
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
 
 public struct DeleteRequestLoadingView: View {
-    @PresentableStore var store: ProfileStore
+    @hPresentableStore var store: ProfileStore
     var profileService = ProfileService()
 
     private var dismissAction: (ProfileNavigationDismissAction) -> Void

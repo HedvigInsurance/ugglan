@@ -12,6 +12,7 @@ import Payment
 import Presentation
 import Profile
 import SafariServices
+import StoreContainer
 import SwiftUI
 import TerminateContracts
 import TravelCertificate
@@ -211,7 +212,7 @@ struct LoggedInNavigation: View {
                     //show loading screen since we everything needs to be updated
                     mainNavigationVm?.hasLaunchFinished = false
                     profileNavigationVm?.isLanguagePickerPresented = false
-                    let store: ProfileStore = globalPresentableStoreContainer.get()
+                    let store: ProfileStore = hGlobalPresentableStoreContainer.get()
                     store.send(.languageChanged)
                     //show home screen with updated langauge
                     mainNavigationVm?.loggedInVm = .init()
@@ -258,7 +259,7 @@ struct HomeTab: View {
             HomeView(
                 claimsContent: claims,
                 memberId: {
-                    let profileStrore: ProfileStore = globalPresentableStoreContainer.get()
+                    let profileStrore: ProfileStore = hGlobalPresentableStoreContainer.get()
                     return profileStrore.state.memberDetails?.id ?? ""
                 }
             )

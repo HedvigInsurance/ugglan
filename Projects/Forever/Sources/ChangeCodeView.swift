@@ -1,4 +1,4 @@
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -22,7 +22,7 @@ class ChangeCodeViewModel: ObservableObject {
     var router: Router?
 
     init() {
-        let store: ForeverStore = globalPresentableStoreContainer.get()
+        let store: ForeverStore = hGlobalPresentableStoreContainer.get()
         inputVm = TextInputViewModel(
             masking: .init(type: .none),
             input: store.state.foreverData?.discountCode ?? "",
@@ -47,7 +47,7 @@ class ChangeCodeViewModel: ObservableObject {
     private func handleOnSave() async throws {
         inputVm.onSave = { [weak self] text in
             try await self?.foreverService.changeCode(code: text)
-            let store: ForeverStore = globalPresentableStoreContainer.get()
+            let store: ForeverStore = hGlobalPresentableStoreContainer.get()
             store.send(.fetch)
             self?.router?.push(ForeverRouterActions.success)
         }

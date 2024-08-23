@@ -1,11 +1,12 @@
 import Foundation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
 
 struct HeaderView: View {
-    @PresentableStore var store: ForeverStore
+    @hPresentableStore var store: ForeverStore
     let didPressInfo: () -> Void
 
     var body: some View {
@@ -78,7 +79,7 @@ struct HeaderView: View {
     }
 }
 struct HeaderView_Previews: PreviewProvider {
-    @PresentableStore static var store: ForeverStore
+    @hPresentableStore static var store: ForeverStore
     static var previews: some View {
         HeaderView {}
             .onAppear {
@@ -88,7 +89,7 @@ struct HeaderView_Previews: PreviewProvider {
 }
 
 struct HeaderView_Previews2: PreviewProvider {
-    @PresentableStore static var store: ForeverStore
+    @hPresentableStore static var store: ForeverStore
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
         return HeaderView {}

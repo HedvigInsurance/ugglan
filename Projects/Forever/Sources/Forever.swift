@@ -1,12 +1,12 @@
 import Foundation
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
 
 public struct ForeverView: View {
-    @PresentableStore var store: ForeverStore
+    @hPresentableStore var store: ForeverStore
     @State var scrollTo: Int = -1
     @State var spacing: CGFloat = 0
     @State var totalHeight: CGFloat = 0
@@ -24,7 +24,7 @@ public struct ForeverView: View {
     public init() {}
 
     public var body: some View {
-        LoadingViewWithContent(ForeverStore.self, [.fetchForeverData], [.fetch]) {
+        hLoadingViewWithContent(ForeverStore.self, [.fetchForeverData], [.fetch]) {
             ScrollViewReader { value in
                 hForm {
                     VStack(spacing: 0) {
@@ -73,9 +73,6 @@ public struct ForeverView: View {
                     }
                 }
             }
-            .onAppear {
-                store.send(.fetch)
-            }
             .toolbar {
                 ToolbarItem(
                     placement: .topBarTrailing
@@ -114,6 +111,9 @@ public struct ForeverView: View {
                     }
             })
         )
+        .onAppear {
+            store.send(.fetch)
+        }
     }
 
     private func recalculateHeight() {
@@ -122,7 +122,7 @@ public struct ForeverView: View {
 }
 
 struct ForeverView_Previews: PreviewProvider {
-    @PresentableStore static var store: ForeverStore
+    @hPresentableStore static var store: ForeverStore
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
         return ForeverView()
