@@ -78,7 +78,7 @@ final class SubmitSurveyStoreTests: XCTestCase {
 
     func testSubmitSurveyThrowFailure() async {
         let mockService = MockData.createMockTerminateContractsService(
-            confirmDelete: { context in
+            surveySend: { context, option, inputData in
                 throw TerminationError.error
             }
         )
@@ -89,14 +89,13 @@ final class SubmitSurveyStoreTests: XCTestCase {
         newState.terminationSurveyStep = terminationSurveyStep
         store.setState(newState)
 
-        /* TODO: CHECK WHY THIS ONE FAILS */
         await store.sendAsync(.submitSurvey(option: "option", feedback: "feedback"))
 
-        //        await waitUntil(description: "loading state") {
-        //            store.loadingSignal.value[.sendSurvey] == nil
-        //        }
+        await waitUntil(description: "loading state") {
+            store.loadingSignal.value[.sendSurvey] != nil
+        }
 
-        //        assert(store.state.successStep == nil)
-        //        assert(store.state.failedStep == nil)
+        assert(store.state.successStep == nil)
+        assert(store.state.failedStep == nil)
     }
 }
