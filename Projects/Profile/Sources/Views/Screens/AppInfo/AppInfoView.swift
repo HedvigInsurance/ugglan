@@ -1,6 +1,6 @@
 import Apollo
 import Authentication
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -101,7 +101,7 @@ public struct AppInfoView: View {
     }
 
     private var submitBugButton: some View {
-        let store: ProfileStore = globalPresentableStoreContainer.get()
+        let store: ProfileStore = hGlobalPresentableStoreContainer.get()
         let memberId = store.state.memberDetails?.id ?? ""
         let systemVersion = UIDevice.current.systemVersion
         return OpenEmailClientButton(
@@ -145,7 +145,7 @@ struct AppInfoView_Previews: PreviewProvider {
     static var previews: some View {
         AppInfoView()
             .onAppear {
-                let store: ProfileStore = globalPresentableStoreContainer.get()
+                let store: ProfileStore = hGlobalPresentableStoreContainer.get()
                 store.send(
                     .setMember(
                         memberData: .init(

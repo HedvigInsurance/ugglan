@@ -1,11 +1,11 @@
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
 
 struct ProfileRow: View {
-    @PresentableStore var store: ProfileStore
+    @hPresentableStore var store: ProfileStore
     @EnvironmentObject var router: Router
 
     let row: ProfileRowType

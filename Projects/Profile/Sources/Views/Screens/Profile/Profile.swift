@@ -1,13 +1,13 @@
 import Apollo
 import Home
 import Market
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct ProfileView: View {
-    @PresentableStore var store: ProfileStore
+    @hPresentableStore var store: ProfileStore
     @State private var showLogoutAlert = false
 
     private var logoutAlert: SwiftUI.Alert {
