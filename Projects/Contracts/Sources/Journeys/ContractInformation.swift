@@ -2,6 +2,7 @@ import Combine
 import EditCoInsuredShared
 import Foundation
 import Presentation
+import StoreContainer
 import SwiftUI
 import TerminateContracts
 import UnleashProxyClientSwift
@@ -10,7 +11,7 @@ import hCoreUI
 
 struct ContractInformationView: View {
     @PresentableStore var store: ContractStore
-    @PresentableStore var terminationContractStore: TerminationContractStore
+    @hPresentableStore var terminationContractStore: TerminationContractStore
     @StateObject private var vm = ContractsInformationViewModel()
     @EnvironmentObject private var contractsNavigationVm: ContractsNavigationViewModel
 
@@ -326,7 +327,7 @@ struct ContractInformationView: View {
                             hText(L10n.terminationButton, style: .body1)
                                 .foregroundColor(hTextColor.Opaque.secondary)
                         }
-                        .trackLoading(TerminationContractStore.self, action: .getInitialStep)
+                        .hTrackLoading(TerminationContractStore.self, action: .getInitialStep)
                     }
                     .sectionContainerStyle(.transparent)
                 }
