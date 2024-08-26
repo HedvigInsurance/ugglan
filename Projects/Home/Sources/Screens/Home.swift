@@ -6,6 +6,7 @@ import Foundation
 import Payment
 import Presentation
 import SafariServices
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -138,7 +139,7 @@ extension HomeView {
 
     @ViewBuilder
     private var openHelpCenter: some View {
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        let contractStore: ContractStore = hGlobalPresentableStoreContainer.get()
         let showHelpCenter =
             !contractStore.state.activeContracts.allSatisfy({ $0.isNonPayingMember })
             || contractStore.state.activeContracts.count == 0
@@ -180,7 +181,7 @@ class HomeVM: ObservableObject {
         store.send(.fetchImportantMessages)
         store.send(.fetchQuickActions)
         store.send(.fetchChatNotifications)
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        let contractStore: ContractStore = hGlobalPresentableStoreContainer.get()
         contractStore.send(.fetch)
 
         chatNotificationPullTimer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()

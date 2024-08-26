@@ -4,6 +4,7 @@ import Contracts
 import EditCoInsuredShared
 import Payment
 import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -183,7 +184,7 @@ class HomeButtonScrollViewModel: ObservableObject {
 
     private func handleDeleteRequests(memberId: String) {
         let members = ApolloClient.retreiveMembersWithDeleteRequests()
-        let store: ContractStore = globalPresentableStoreContainer.get()
+        let store: ContractStore = hGlobalPresentableStoreContainer.get()
         handleItem(
             .deletedView,
             with: members.contains(memberId)
@@ -193,13 +194,12 @@ class HomeButtonScrollViewModel: ObservableObject {
     }
 
     private func handleMissingCoInsured() {
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        contractStore.stateSignal.plain()
+        let contractStore: ContractStore = hGlobalPresentableStoreContainer.get()
+        contractStore.stateSignal
             .map({
                 $0.activeContracts.hasMissingCoInsured
             })
-            .distinct()
-            .publisher
+            .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] show in
                 self?.handleItem(.missingCoInsured, with: show)

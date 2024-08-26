@@ -1,7 +1,7 @@
 import Contracts
 import EditCoInsuredShared
 import Foundation
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -83,7 +83,7 @@ class WhoIsTravelingViewModel: ObservableObject {
     init(specification: TravelInsuranceContractSpecification) {
         self.specification = specification
 
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        let contractStore: ContractStore = hGlobalPresentableStoreContainer.get()
         contract = contractStore.state.contractForId(specification.contractId)
         let insuranceHolder = CoInsuredModel(
             firstName: contract?.firstName,

@@ -16,7 +16,7 @@ public class DeleteAccountViewModel: ObservableObject {
     }
 
     private var activeContractsSignal: AnyPublisher<Bool, Never> {
-        self.contractsStore.stateSignal.plain().map({ $0.hasActiveContracts }).publisher.eraseToAnyPublisher()
+        self.contractsStore.stateSignal.map({ $0.hasActiveContracts }).eraseToAnyPublisher()
     }
 
     @Published var hasActiveClaims: Bool = false
@@ -32,8 +32,8 @@ public class DeleteAccountViewModel: ObservableObject {
         self.claimsStore = claimsStore
         self.contractsStore = contractsStore
 
-        self.hasActiveClaims = self.claimsStore.stateSignal.map({ $0.hasActiveClaims }).value
-        self.hasActiveContracts = self.contractsStore.stateSignal.map({ $0.hasActiveContracts }).value
+        self.hasActiveClaims = self.claimsStore.state.hasActiveClaims
+        self.hasActiveContracts = self.contractsStore.state.hasActiveContracts
 
         activeClaimsSignal
             .receive(on: RunLoop.main)

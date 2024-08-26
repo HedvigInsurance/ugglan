@@ -1,7 +1,6 @@
 import Combine
 import EditCoInsuredShared
 import Foundation
-import Presentation
 import StoreContainer
 import SwiftUI
 import TerminateContracts
@@ -10,7 +9,7 @@ import hCore
 import hCoreUI
 
 struct ContractInformationView: View {
-    @PresentableStore var store: ContractStore
+    @hPresentableStore var store: ContractStore
     @hPresentableStore var terminationContractStore: TerminationContractStore
     @StateObject private var vm = ContractsInformationViewModel()
     @EnvironmentObject private var contractsNavigationVm: ContractsNavigationViewModel
@@ -352,7 +351,7 @@ private class ContractsInformationViewModel: ObservableObject {
 }
 
 public struct CoInsuredInfoView: View {
-    @PresentableStore var store: ContractStore
+    @hPresentableStore var store: ContractStore
     @EnvironmentObject private var contractsNavigationVm: ContractsNavigationViewModel
 
     let text: String

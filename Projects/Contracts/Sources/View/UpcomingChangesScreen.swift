@@ -1,3 +1,4 @@
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -6,7 +7,7 @@ import hGraphQL
 struct UpcomingChangesScreen: View {
     let updateDate: String
     let upcomingAgreement: Agreement?
-    @PresentableStore var store: ContractStore
+    @hPresentableStore var store: ContractStore
 
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
 

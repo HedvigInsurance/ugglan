@@ -1,6 +1,6 @@
 import Combine
 import Foundation
-import Presentation
+import StoreContainer
 import SwiftUI
 import TerminateContracts
 import hCore
@@ -8,7 +8,7 @@ import hCoreUI
 import hGraphQL
 
 struct ContractDocumentsView: View {
-    @PresentableStore var contractStore: ContractStore
+    @hPresentableStore var contractStore: ContractStore
     @EnvironmentObject private var contractsNavigationViewModel: ContractsNavigationViewModel
 
     let id: String

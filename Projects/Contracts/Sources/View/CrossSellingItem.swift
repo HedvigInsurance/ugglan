@@ -1,12 +1,13 @@
 import Foundation
 import Kingfisher
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
 
 struct CrossSellingItem: View {
-    @PresentableStore var store: ContractStore
+    @hPresentableStore var store: ContractStore
     let crossSell: CrossSell
     @State var fieldIsClicked = false
 

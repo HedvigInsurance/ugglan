@@ -1,12 +1,13 @@
 import Apollo
 import Foundation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
 
 struct ContractTable: View {
-    @PresentableStore var store: ContractStore
+    @hPresentableStore var store: ContractStore
     let showTerminated: Bool
     @State var onlyTerminatedInsurances = false
 
@@ -34,7 +35,7 @@ struct ContractTable: View {
 
     var body: some View {
         VStack {
-            LoadingViewWithContent(ContractStore.self, [.fetchContracts], [.fetchContracts], showLoading: false) {
+            hLoadingViewWithContent(ContractStore.self, [.fetchContracts], [.fetchContracts], showLoading: false) {
                 hSection {
                     PresentableStoreLens(
                         ContractStore.self,

@@ -4,6 +4,7 @@ import EditCoInsuredShared
 import Payment
 import Presentation
 import SafariServices
+import StoreContainer
 import SwiftUI
 import TerminateContracts
 import TravelCertificate
@@ -97,7 +98,7 @@ public struct HelpCenterNavigation<Content: View>: View {
         .handleTerminateInsurance(vm: helpCenterVm.terminateInsuranceVm) { dismissType in
             switch dismissType {
             case .done:
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                let contractStore: ContractStore = hGlobalPresentableStoreContainer.get()
                 contractStore.send(.fetchContracts)
                 let homeStore: HomeStore = globalPresentableStoreContainer.get()
                 homeStore.send(.fetchQuickActions)
@@ -106,7 +107,7 @@ public struct HelpCenterNavigation<Content: View>: View {
                     NotificationCenter.default.post(name: .openChat, object: nil)
                 }
             case let .openFeedback(url):
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                let contractStore: ContractStore = hGlobalPresentableStoreContainer.get()
                 contractStore.send(.fetchContracts)
                 let homeStore: HomeStore = globalPresentableStoreContainer.get()
                 homeStore.send(.fetchQuickActions)
@@ -140,7 +141,7 @@ public struct HelpCenterNavigation<Content: View>: View {
             helpCenterVm.quickActions.isChangeAddressPresented = true
         case .cancellation:
             //            helpCenterVm.quickActions.isCancellationPresented = true
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+            let contractStore: ContractStore = hGlobalPresentableStoreContainer.get()
 
             let contractsConfig: [TerminationConfirmConfig] = contractStore.state.activeContracts
                 .filter({ $0.canTerminate })
