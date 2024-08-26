@@ -117,7 +117,7 @@ extension Message {
             case .otherLink:
                 return L10n.chatSentALink
             case .unknown:
-                return L10n.chatSentAFile
+                return L10n.chatSentAMessage
             }
         }()
         return "\(senderText): \(message)"
