@@ -69,24 +69,30 @@ struct ClaimContactCard: View {
                 .foregroundColor(hTextColor.Opaque.tertiary)
                 .padding(.bottom, .padding8)
                 .padding(.horizontal, .padding8)
-
-            hSection {
-                hButton.MediumButton(type: .secondaryAlt) {
-                    if let url = URL(string: url) {
-                        UIApplication.shared.open(url)
-                    } else if let phoneNumber {
-                        let tel = "tel://"
-                        let formattedString = tel + phoneNumber
-                        if let url = URL(string: formattedString) {
+            VStack(spacing: 8) {
+                if let url = URL(string: url) {
+                    hSection {
+                        hButton.MediumButton(type: .secondaryAlt) {
                             UIApplication.shared.open(url)
+                        } content: {
+                            hText(model.config?.buttonText ?? "")
+                                .multilineTextAlignment(.center)
+                                .foregroundColor(hTextColor.Opaque.primary)
                         }
                     }
-                } content: {
-                    hText(model.config?.buttonText ?? "")
-                        .multilineTextAlignment(.center)
-                        .foregroundColor(hTextColor.Opaque.primary)
-                        .colorScheme(.light)
                 }
+                if let phoneNumber, let url = URL(string: "tel://" + phoneNumber) {
+                    hSection {
+                        hButton.MediumButton(type: .secondaryAlt) {
+                            UIApplication.shared.open(url)
+                        } content: {
+                            hText(model.config?.buttonText ?? "")
+                                .multilineTextAlignment(.center)
+                                .foregroundColor(hTextColor.Opaque.primary)
+                        }
+                    }
+                }
+
             }
             .sectionContainerStyle(.transparent)
         }
@@ -96,22 +102,25 @@ struct ClaimContactCard: View {
 
 struct ClaimEmergencyContactCard: View {
     @PresentableStore var store: SubmitClaimStore
-    var cardTitle: String?
-    var footnote: String?
-    var imageUrl: String?
-    var label: String?
-    var phoneNumber: String?
+    let cardTitle: String?
+    let footnote: String?
+    let imageUrl: String?
+    let label: String?
+    let phoneNumber: String?
+    let url: URL?
 
     init(
         imageUrl: String? = nil,
         label: String?,
         phoneNumber: String? = nil,
+        url: URL?,
         cardTitle: String? = nil,
         footnote: String? = nil
     ) {
         self.imageUrl = imageUrl
         self.label = label
         self.phoneNumber = phoneNumber
+        self.url = url
         self.cardTitle = cardTitle
         self.footnote = footnote
     }
@@ -149,23 +158,8 @@ struct ClaimEmergencyContactCard: View {
                         .multilineTextAlignment(.center)
                 }
                 .padding(.bottom, .padding8)
-                hSection {
-                    hButton.MediumButton(type: .secondaryAlt) {
-                        if let phoneNumber {
-                            let tel = "tel://"
-                            let formattedString = tel + phoneNumber
-                            if let url = URL(string: formattedString) {
-                                UIApplication.shared.open(url)
-                            }
-                        }
-                    } content: {
-                        hText(L10n.submitClaimGlobalAssistanceCallLabel(phoneNumber ?? ""))
-                            .foregroundColor(hTextColor.Opaque.primary)
-                    }
-                }
-                .sectionContainerStyle(.transparent)
-                .hUseLightMode
-
+                urlButton
+                phoneButton
                 if let footnote = footnote {
                     hText(footnote, style: .finePrint)
                         .foregroundColor(hTextColor.Opaque.tertiary)
@@ -177,6 +171,43 @@ struct ClaimEmergencyContactCard: View {
         }
         .sectionContainerStyle(.black)
 
+    }
+
+    @ViewBuilder
+    private var urlButton: some View {
+        if let url = url {
+            hSection {
+                hButton.MediumButton(type: .secondaryAlt) {
+                    UIApplication.shared.open(url)
+                } content: {
+                    hText(L10n.submitClaimGlobalAssistanceUrlLabel)
+                        .foregroundColor(hTextColor.Opaque.primary)
+                }
+                .sectionContainerStyle(.transparent)
+                .hUseLightMode
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var phoneButton: some View {
+        if let phoneNumber {
+            hSection {
+                hButton.MediumButton(type: .ghost) {
+                    let tel = "tel://"
+                    let formattedString = tel + phoneNumber
+                    if let url = URL(string: formattedString) {
+                        UIApplication.shared.open(url)
+                    }
+                } content: {
+                    hText(L10n.submitClaimGlobalAssistanceCallLabel(phoneNumber))
+                        .foregroundColor(hTextColor.Opaque.primary)
+                }
+            }
+            .sectionContainerStyle(.transparent)
+            .colorScheme(.dark)
+
+        }
     }
 }
 

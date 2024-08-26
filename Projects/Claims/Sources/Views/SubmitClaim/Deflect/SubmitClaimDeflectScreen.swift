@@ -30,6 +30,7 @@ public struct SubmitClaimDeflectScreen: View {
                             imageUrl: partner.imageUrl,
                             label: model?.config?.cardText,
                             phoneNumber: partner.phoneNumber,
+                            url: URL(string: partner.url),
                             cardTitle: model?.config?.cardTitle,
                             footnote: L10n.submitClaimGlobalAssistanceFootnote
                         )
