@@ -1,11 +1,11 @@
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct PaymentDetailsView: View {
     private let data: PaymentData
-    @PresentableStore var store: PaymentStore
+    @hPresentableStore var store: PaymentStore
     @State var expandedContracts: [String] = []
     @EnvironmentObject var router: Router
 

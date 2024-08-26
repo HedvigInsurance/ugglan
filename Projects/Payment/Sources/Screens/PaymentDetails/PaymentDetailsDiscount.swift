@@ -1,3 +1,4 @@
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -93,7 +94,7 @@ struct PaymentDetailsDiscountView: View {
 class PaymentDetailsDiscountViewModel: ObservableObject {
     let options: PaymentDetailsDiscountOptions
     let discount: Discount
-    @PresentableStore private var store: PaymentStore
+    @hPresentableStore private var store: PaymentStore
 
     init(options: PaymentDetailsDiscountOptions, discount: Discount) {
         self.options = options

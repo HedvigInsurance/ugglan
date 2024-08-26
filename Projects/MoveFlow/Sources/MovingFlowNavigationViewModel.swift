@@ -1,5 +1,5 @@
 import Combine
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -79,8 +79,8 @@ public struct MovingFlowNavigation: View {
         }
         .environmentObject(movingFlowVm)
         .onAppear {
-            let store: MoveFlowStore = globalPresentableStoreContainer.get()
-            cancellable = store.actionSignal.publisher.sink { _ in
+            let store: MoveFlowStore = hGlobalPresentableStoreContainer.get()
+            cancellable = store.actionSignal.sink { _ in
             } receiveValue: { action in
                 switch action {
                 case .navigation(.openConfirmScreen):
@@ -113,12 +113,12 @@ public struct MovingFlowNavigation: View {
     }
 
     func openApartmentFillScreen() -> some View {
-        let store: MoveFlowStore = globalPresentableStoreContainer.get()
+        let store: MoveFlowStore = hGlobalPresentableStoreContainer.get()
         return MovingFlowAddressView(vm: store.addressInputModel).withDismissButton()
     }
 
     func openHouseFillScreen() -> some View {
-        let store: MoveFlowStore = globalPresentableStoreContainer.get()
+        let store: MoveFlowStore = hGlobalPresentableStoreContainer.get()
         return MovingFlowHouseView(vm: store.houseInformationInputModel).withDismissButton()
     }
 

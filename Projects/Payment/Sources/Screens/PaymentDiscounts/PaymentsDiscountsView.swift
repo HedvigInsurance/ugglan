@@ -1,12 +1,12 @@
 import Forever
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct PaymentsDiscountsView: View {
     let data: PaymentDiscountsData
-    @PresentableStore var store: PaymentStore
+    @hPresentableStore var store: PaymentStore
     @EnvironmentObject var paymentsNavigationVm: PaymentsNavigationViewModel
     @EnvironmentObject var router: Router
 
@@ -180,9 +180,9 @@ struct PaymentsDiscountViewNoDiscounts_Previews: PreviewProvider {
 }
 
 struct PaymentsDiscountsRootView: View {
-    @PresentableStore var store: PaymentStore
+    @hPresentableStore var store: PaymentStore
     var body: some View {
-        LoadingViewWithContent(
+        hLoadingViewWithContent(
             PaymentStore.self,
             [.getDiscountsData],
             [.fetchDiscountsData]

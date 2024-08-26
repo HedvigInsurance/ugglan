@@ -1,4 +1,4 @@
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -32,7 +32,7 @@ class AddCampaingCodeViewModel: ObservableObject {
     var router: Router?
 
     var campaignsService = hCampaignService()
-    @PresentableStore var store: PaymentStore
+    @hPresentableStore var store: PaymentStore
     init() {
         inputVm = TextInputViewModel(
             masking: .init(type: .none),

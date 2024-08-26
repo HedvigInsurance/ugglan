@@ -1,6 +1,6 @@
 import Apollo
 import Foundation
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -10,7 +10,7 @@ public struct PaymentHistoryView: View {
     @EnvironmentObject var router: Router
 
     public var body: some View {
-        LoadingViewWithContent(
+        hLoadingViewWithContent(
             PaymentStore.self,
             [.getHistory],
             [.getHistory]
@@ -94,7 +94,7 @@ public struct PaymentHistoryView: View {
             .presentableStoreLensAnimation(.default)
         }
         .task {
-            let store: PaymentStore = globalPresentableStoreContainer.get()
+            let store: PaymentStore = hGlobalPresentableStoreContainer.get()
             store.send(.getHistory)
         }
     }

@@ -1,22 +1,22 @@
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
 
 public struct PaymentsView: View {
-    @PresentableStore var store: PaymentStore
+    @hPresentableStore var store: PaymentStore
     @EnvironmentObject var router: Router
     @EnvironmentObject var paymentNavigationVm: PaymentsNavigationViewModel
 
     public init() {
-        let store: PaymentStore = globalPresentableStoreContainer.get()
+        let store: PaymentStore = hGlobalPresentableStoreContainer.get()
         store.send(.load)
         store.send(.fetchPaymentStatus)
     }
 
     public var body: some View {
-        LoadingViewWithContent(
+        hLoadingViewWithContent(
             PaymentStore.self,
             [.getPaymentData],
             [.load, .fetchPaymentStatus]

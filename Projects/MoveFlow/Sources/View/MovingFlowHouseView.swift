@@ -1,4 +1,4 @@
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -19,7 +19,7 @@ struct MovingFlowHouseView: View {
                         isSubleted
                         extraBuildingTypes
                     }
-                    .disableOn(MoveFlowStore.self, [.requestMoveIntent])
+                    .hDisableOn(MoveFlowStore.self, [.requestMoveIntent])
                     hSection {
                         InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
                     }
@@ -29,7 +29,7 @@ struct MovingFlowHouseView: View {
                         } content: {
                             hText(L10n.saveAndContinueButtonLabel, style: .body1)
                         }
-                        .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
+                        .hTrackLoading(MoveFlowStore.self, action: .requestMoveIntent)
                     }
 
                 }
@@ -40,7 +40,7 @@ struct MovingFlowHouseView: View {
         }
         .hFormTitle(title: .init(.standard, .displayXSLong, L10n.changeAddressInformationAboutYourHouse))
         .sectionContainerStyle(.transparent)
-        .retryView(MoveFlowStore.self, forAction: .requestMoveIntent, binding: $vm.error)
+        .hRetryView(MoveFlowStore.self, forAction: .requestMoveIntent, binding: $vm.error)
         .presentableStoreLensAnimation(.default)
         .onDisappear {
             vm.clearErrors()
@@ -212,7 +212,7 @@ public class HouseInformationInputModel: ObservableObject {
     @Published var bathroomsError: String?
     @Published var extraBuildings: [ExtraBuilding] = []
 
-    @PresentableStore var store: MoveFlowStore
+    @hPresentableStore var store: MoveFlowStore
     @Published var error: String?
     init() {}
 

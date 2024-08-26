@@ -1,10 +1,10 @@
-import Presentation
+import StoreContainer
 import hCore
 import hGraphQL
 
 public class MoveFlowClientOctopus: MoveFlowClient {
     @Inject var octopus: hOctopus
-    @PresentableStore var store: MoveFlowStore
+    @hPresentableStore var store: MoveFlowStore
 
     public init() {}
 

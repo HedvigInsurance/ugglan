@@ -1,4 +1,4 @@
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -10,7 +10,7 @@ struct MovingFlowProcessingView: View {
     var onErrorButtonAction: () -> Void
 
     var body: some View {
-        ProcessingView<MoveFlowStore>(
+        hProcessingView<MoveFlowStore>(
             MoveFlowStore.self,
             loading: .confirmMoveIntent,
             loadingViewText: L10n.changeAddressMakingChanges,
@@ -31,7 +31,7 @@ struct MovingFlowProcessingView: View {
 }
 
 class ProcessingViewModel: ObservableObject {
-    @PresentableStore var store: MoveFlowStore
+    @hPresentableStore var store: MoveFlowStore
 
 }
 

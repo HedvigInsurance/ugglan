@@ -1,4 +1,4 @@
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -10,7 +10,7 @@ public struct MovingFlowHousingTypeView: View {
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
 
     public var body: some View {
-        LoadingViewWithState(
+        hLoadingViewWithState(
             MoveFlowStore.self,
             .fetchMoveIntent
         ) {
@@ -90,7 +90,7 @@ struct MovingFlowTypeOfHome_Previews: PreviewProvider {
 }
 
 class MovingFlowHousingTypeViewModel: ObservableObject {
-    @PresentableStore var store: MoveFlowStore
+    @hPresentableStore var store: MoveFlowStore
     @Published var selectedHousingType: String? = HousingType.apartment.rawValue
 
     init() {

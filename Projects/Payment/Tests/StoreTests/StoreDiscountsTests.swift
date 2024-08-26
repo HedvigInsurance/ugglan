@@ -1,4 +1,4 @@
-import Presentation
+import StoreContainer
 import XCTest
 
 @testable import Payment
@@ -8,7 +8,7 @@ final class StoreDiscountsTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        globalPresentableStoreContainer.deletePersistanceContainer()
+        hGlobalPresentableStoreContainer.deletePersistanceContainer()
     }
 
     override func tearDown() async throws {
@@ -47,7 +47,7 @@ final class StoreDiscountsTests: XCTestCase {
         self.store = store
         await store.sendAsync(.fetchDiscountsData)
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.getDiscountsData] == nil
+            store.loadingState[.getDiscountsData] == nil
         }
         assert(store.state.paymentDiscountsData == discountsData)
         assert(mockService.events.count == 1)
@@ -63,7 +63,7 @@ final class StoreDiscountsTests: XCTestCase {
         await store.sendAsync(.fetchDiscountsData)
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.getDiscountsData] != nil
+            store.loadingState[.getDiscountsData] != nil
         }
         assert(store.state.paymentDiscountsData == nil)
         assert(mockService.events.count == 1)
