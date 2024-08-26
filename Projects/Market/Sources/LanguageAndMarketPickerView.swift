@@ -1,5 +1,5 @@
 import Combine
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -155,7 +155,7 @@ class LanguageAndMarketPickerViewModel: ObservableObject {
     }
 
     init() {
-        let store: MarketStore = globalPresentableStoreContainer.get()
+        let store: MarketStore = hGlobalPresentableStoreContainer.get()
         selectedMarket = store.state.market
         selectedMarketCode = store.state.market.rawValue
         $selectedLocaleCode.sink { [weak self] selectedLocaleCode in
@@ -179,7 +179,7 @@ class LanguageAndMarketPickerViewModel: ObservableObject {
     }
 
     func save() async {
-        let store: MarketStore = globalPresentableStoreContainer.get()
+        let store: MarketStore = hGlobalPresentableStoreContainer.get()
         await store.sendAsync(.selectMarket(market: selectedMarket))
         await store.sendAsync(.selectLanguage(language: self.selectedLocale.rawValue))
     }

@@ -1,4 +1,4 @@
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -7,7 +7,7 @@ public struct PickLanguage: View {
     let currentMarket: Market
     let onSave: ((String) -> Void)?
     let onCancel: (() -> Void)?
-    @PresentableStore var store: MarketStore
+    @hPresentableStore var store: MarketStore
 
     @State var currentLocale: Localization.Locale = .currentLocale
     @State var code: String? = Localization.Locale.currentLocale.lprojCode
@@ -24,7 +24,7 @@ public struct PickLanguage: View {
         onSave: @escaping (String) -> Void,
         onCancel: @escaping () -> Void
     ) {
-        let store: MarketStore = globalPresentableStoreContainer.get()
+        let store: MarketStore = hGlobalPresentableStoreContainer.get()
         currentMarket = store.state.market
         self.onSave = onSave
         self.onCancel = onCancel

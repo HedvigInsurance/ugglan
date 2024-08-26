@@ -1,13 +1,14 @@
 import Foundation
 import Market
 import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct ImpersonationSettings: View {
     @PresentableStore var store: UgglanStore
-    @PresentableStore var marketStore: MarketStore
+    @hPresentableStore var marketStore: MarketStore
     @AppStorage(ApplicationState.key) public var state: ApplicationState.Screen = .notLoggedIn
 
     var body: some View {
