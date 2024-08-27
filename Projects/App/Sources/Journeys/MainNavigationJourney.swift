@@ -104,7 +104,10 @@ class MainNavigationViewModel: ObservableObject {
                     await contractStore.sendAsync(.fetchContracts)
                     await checkForFeatureFlags()
                     let profileStore: ProfileStore = hGlobalPresentableStoreContainer.get()
+
+                    await profileStore.sendAsync(.fetchMemberDetails)
                     await profileStore.sendAsync(.updateLanguage)
+                    await checkForFeatureFlags()
                     Task {
                         try? await AnalyticsService().fetchAndSetUserId()
                     }

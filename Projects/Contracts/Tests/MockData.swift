@@ -34,6 +34,11 @@ struct MockData {
     }
 }
 
+enum MockContractError: Error {
+    case fetchContracts
+    case fetchCrossSells
+}
+
 typealias FetchContracts = () async throws -> ContractsStack
 typealias FetchCrossSell = () async throws -> [CrossSell]
 

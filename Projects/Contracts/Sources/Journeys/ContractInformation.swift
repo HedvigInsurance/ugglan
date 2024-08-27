@@ -23,67 +23,69 @@ struct ContractInformationView: View {
             }
         ) { contract in
             if let contract {
-                upatedContractView(contract)
-                    .transition(.opacity.combined(with: .scale))
                 VStack(spacing: 0) {
-                    if let displayItems = contract.currentAgreement?.displayItems {
-                        hSection(displayItems, id: \.displayValue) { item in
-                            hRow {
-                                hText(item.displayTitle)
+                    upatedContractView(contract)
+                        .transition(.opacity.combined(with: .scale))
+                    VStack(spacing: 0) {
+                        if let displayItems = contract.currentAgreement?.displayItems {
+                            hSection(displayItems, id: \.displayValue) { item in
+                                hRow {
+                                    hText(item.displayTitle)
+                                        .fixedSize()
+                                }
+                                .noSpacing()
+                                .withCustomAccessory({
+                                    Spacer()
+                                    Group {
+                                        if let date = item.displayValue.localDateToDate?.displayDateDDMMMYYYYFormat {
+                                            hText(date)
+                                        } else {
+                                            hText(item.displayValue)
+                                        }
+                                    }
                                     .fixedSize()
+                                    .foregroundColor(hTextColor.Opaque.secondary)
+                                })
                             }
-                            .noSpacing()
-                            .withCustomAccessory({
-                                Spacer()
-                                Group {
-                                    if let date = item.displayValue.localDateToDate?.displayDateDDMMMYYYYFormat {
-                                        hText(date)
-                                    } else {
-                                        hText(item.displayValue)
-                                    }
-                                }
-                                .fixedSize()
-                                .foregroundColor(hTextColor.Opaque.secondary)
-                            })
-                        }
-                        .withoutHorizontalPadding
-                        if contract.supportsCoInsured {
-                            hRowDivider()
-                            addCoInsuredView(contract: contract)
-                        }
+                            .withoutHorizontalPadding
+                            if contract.supportsCoInsured {
+                                hRowDivider()
+                                addCoInsuredView(contract: contract)
+                            }
 
-                        VStack(spacing: 8) {
-                            if contract.showEditInfo {
-                                hSection {
-                                    hButton.LargeButton(type: .secondary) {
-                                        if onlyCoInsured(contract)
-                                            && Dependencies.featureFlags().isEditCoInsuredEnabled
-                                        {
-                                            let contract: InsuredPeopleConfig = .init(
-                                                contract: contract,
-                                                fromInfoCard: false
-                                            )
+                            VStack(spacing: 8) {
+                                if contract.showEditInfo {
+                                    hSection {
+                                        hButton.LargeButton(type: .secondary) {
+                                            if onlyCoInsured(contract)
+                                                && Dependencies.featureFlags().isEditCoInsuredEnabled
+                                            {
+                                                let contract: InsuredPeopleConfig = .init(
+                                                    contract: contract,
+                                                    fromInfoCard: false
+                                                )
 
-                                            contractsNavigationVm.editCoInsuredVm.start(fromContract: contract)
-                                        } else {
-                                            contractsNavigationVm.changeYourInformationContract = contract
-                                        }
-                                    } content: {
-                                        if onlyCoInsured(contract)
-                                            && Dependencies.featureFlags().isEditCoInsuredEnabled
-                                        {
-                                            hText(L10n.contractEditCoinsured)
-                                        } else {
-                                            hText(L10n.contractEditInfoLabel)
+                                                contractsNavigationVm.editCoInsuredVm.start(fromContract: contract)
+                                            } else {
+                                                contractsNavigationVm.changeYourInformationContract = contract
+                                            }
+                                        } content: {
+                                            if onlyCoInsured(contract)
+                                                && Dependencies.featureFlags().isEditCoInsuredEnabled
+                                            {
+                                                hText(L10n.contractEditCoinsured)
+                                            } else {
+                                                hText(L10n.contractEditInfoLabel)
+                                            }
                                         }
                                     }
                                 }
+                                if contract.canTerminate {
+                                    displayTerminationButton
+                                }
                             }
-                            if contract.canTerminate {
-                                displayTerminationButton
-                            }
+                            .padding(.bottom, .padding16)
                         }
-                        .padding(.bottom, .padding16)
                     }
                 }
             }

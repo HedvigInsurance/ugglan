@@ -67,7 +67,7 @@ final class StoreLoadTests: XCTestCase {
 }
 
 extension XCTestCase {
-    func waitUntil(description: String, closure: @escaping () -> Bool) async {
+    public func waitUntil(description: String, closure: @escaping () -> Bool) async {
         let exc = expectation(description: description)
         if closure() {
             exc.fulfill()
