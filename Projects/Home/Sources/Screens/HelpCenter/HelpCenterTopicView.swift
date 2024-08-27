@@ -1,11 +1,11 @@
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct HelpCenterTopicView: View {
     private var commonTopic: CommonTopic
-    @PresentableStore var store: HomeStore
+    @hPresentableStore var store: HomeStore
 
     public init(
         commonTopic: CommonTopic

@@ -1,4 +1,4 @@
-import Presentation
+import StoreContainer
 import SwiftUI
 import TravelCertificate
 import hCore
@@ -7,7 +7,7 @@ import hCoreUI
 struct HelpCenterQuestionView: View {
     private var question: Question
     @State var height: CGFloat = 0
-    @PresentableStore var store: HomeStore
+    @hPresentableStore var store: HomeStore
 
     public init(
         question: Question

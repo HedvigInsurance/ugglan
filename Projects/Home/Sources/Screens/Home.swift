@@ -4,7 +4,6 @@ import Combine
 import Contracts
 import Foundation
 import Payment
-import Presentation
 import SafariServices
 import StoreContainer
 import SwiftUI
@@ -13,7 +12,7 @@ import hCoreUI
 import hGraphQL
 
 public struct HomeView<Claims: View>: View {
-    @PresentableStore var store: HomeStore
+    @hPresentableStore var store: HomeStore
     @StateObject var vm = HomeVM()
     @Inject var featureFlags: FeatureFlags
 
@@ -160,12 +159,11 @@ class HomeVM: ObservableObject {
     @Published var toolbarOptionTypes: [ToolbarOptionType] = []
     private var chatNotificationPullTimer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
     init() {
-        let store: HomeStore = globalPresentableStoreContainer.get()
+        let store: HomeStore = hGlobalPresentableStoreContainer.get()
         memberContractState = store.state.memberContractState
         store.stateSignal
             .map({ $0.memberContractState })
-            .plain()
-            .publisher.receive(on: RunLoop.main)
+            .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] value in
                 self?.memberContractState = value
             })
@@ -176,7 +174,7 @@ class HomeVM: ObservableObject {
     }
 
     func fetch() {
-        let store: HomeStore = globalPresentableStoreContainer.get()
+        let store: HomeStore = hGlobalPresentableStoreContainer.get()
         store.send(.fetchMemberState)
         store.send(.fetchImportantMessages)
         store.send(.fetchQuickActions)
@@ -191,7 +189,7 @@ class HomeVM: ObservableObject {
                 let compareToDescirption = String(describing: HomeView<EmptyView>.self).components(separatedBy: "<")
                     .first
                 if currentVCDescription == compareToDescirption {
-                    let store: HomeStore = globalPresentableStoreContainer.get()
+                    let store: HomeStore = hGlobalPresentableStoreContainer.get()
                     store.send(.fetchChatNotifications)
                 }
             }
@@ -210,11 +208,10 @@ class HomeVM: ObservableObject {
     }
 
     private func observeToolbarOptionTypes() {
-        let store: HomeStore = globalPresentableStoreContainer.get()
+        let store: HomeStore = hGlobalPresentableStoreContainer.get()
         store.stateSignal
             .map({ $0.toolbarOptionTypes })
-            .plain()
-            .publisher.receive(on: RunLoop.main)
+            .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] value in
                 self?.toolbarOptionTypes = value
             })
@@ -237,7 +234,7 @@ struct Active_Preview: PreviewProvider {
             }
         )
         .onAppear {
-            let store: HomeStore = globalPresentableStoreContainer.get()
+            let store: HomeStore = hGlobalPresentableStoreContainer.get()
             store.send(
                 .setMemberContractState(
                     state: .active,
@@ -261,7 +258,7 @@ struct ActiveInFuture_Previews: PreviewProvider {
         )
         .onAppear {
             ApolloClient.removeDeleteAccountStatus(for: "ID")
-            let store: HomeStore = globalPresentableStoreContainer.get()
+            let store: HomeStore = hGlobalPresentableStoreContainer.get()
             store.send(
                 .setMemberContractState(
                     state: .future,
@@ -284,7 +281,7 @@ struct TerminatedToday_Previews: PreviewProvider {
             }
         )
         .onAppear {
-            let store: HomeStore = globalPresentableStoreContainer.get()
+            let store: HomeStore = hGlobalPresentableStoreContainer.get()
             store.send(
                 .setMemberContractState(
                     state: .terminated,
@@ -307,7 +304,7 @@ struct Terminated_Previews: PreviewProvider {
             }
         )
         .onAppear {
-            let store: HomeStore = globalPresentableStoreContainer.get()
+            let store: HomeStore = hGlobalPresentableStoreContainer.get()
             store.send(
                 .setMemberContractState(
                     state: .terminated,
@@ -331,7 +328,7 @@ struct Deleted_Previews: PreviewProvider {
         )
         .onAppear {
             ApolloClient.saveDeleteAccountStatus(for: "ID")
-            let store: HomeStore = globalPresentableStoreContainer.get()
+            let store: HomeStore = hGlobalPresentableStoreContainer.get()
             store.send(
                 .setMemberContractState(
                     state: .active,

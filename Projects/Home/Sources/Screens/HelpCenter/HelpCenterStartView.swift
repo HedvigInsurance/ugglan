@@ -1,6 +1,6 @@
 import Combine
 import Contracts
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -8,7 +8,7 @@ import hGraphQL
 
 public struct HelpCenterStartView: View {
     @ObservedObject var vm: HelpCenterStartViewModel
-    @PresentableStore var store: HomeStore
+    @hPresentableStore var store: HomeStore
     let onQuickAction: (QuickAction) -> Void
     @EnvironmentObject var router: Router
     @State var vc: UIViewController?
@@ -165,7 +165,7 @@ public struct HelpCenterStartView: View {
 
 class HelpCenterStartViewModel: NSObject, ObservableObject {
     var helpCenterModel: HelpCenterModel
-    @PresentableStore var store: HomeStore
+    @hPresentableStore var store: HomeStore
     var didSetInitialSearchAppearance = false
     @Published var quickActions: [QuickAction] = []
 
@@ -193,10 +193,10 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
             + InsuranceQuestions.all().asQuestions()
             + OtherQuestions.all().asQuestions()
         self.helpCenterModel = helpCenterModel
-        let store: HomeStore = globalPresentableStoreContainer.get()
+        let store: HomeStore = hGlobalPresentableStoreContainer.get()
         super.init()
 
-        quickActionCancellable = store.stateSignal.plain().publisher
+        quickActionCancellable = store.stateSignal
             .map({ $0.quickActions })
             .receive(on: RunLoop.main)
             .removeDuplicates()
