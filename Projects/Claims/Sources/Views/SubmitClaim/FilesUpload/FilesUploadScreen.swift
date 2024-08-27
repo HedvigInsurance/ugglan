@@ -1,4 +1,5 @@
 import Combine
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -169,7 +170,7 @@ public class FilesUploadViewModel: ObservableObject {
     private let model: FlowClaimFileUploadStepModel
     var claimFileUploadService = hClaimFileUploadService()
     @ObservedObject var fileGridViewModel: FileGridViewModel
-    @PresentableStore var store: SubmitClaimStore
+    @hPresentableStore var store: SubmitClaimStore
     var delayTimer: AnyCancellable?
     private var cancellables = Set<AnyCancellable>()
     init(model: FlowClaimFileUploadStepModel) {
@@ -205,8 +206,6 @@ public class FilesUploadViewModel: ObservableObject {
         }
 
         store.loadingSignal
-            .plain()
-            .publisher
             .receive(on: RunLoop.main)
             .sink { _ in
 

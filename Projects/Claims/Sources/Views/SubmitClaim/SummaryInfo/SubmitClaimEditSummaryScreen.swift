@@ -1,10 +1,11 @@
 import Combine
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct SubmitClaimEditSummaryScreen: View {
-    @PresentableStore var store: SubmitClaimStore
+    @hPresentableStore var store: SubmitClaimStore
     @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
     @State var purchasePrice: String = ""
 

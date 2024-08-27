@@ -1,9 +1,10 @@
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct SubmitClaimCheckoutTransferringScreen: View {
-    @PresentableStore var store: SubmitClaimStore
+    @hPresentableStore var store: SubmitClaimStore
     @State var loadingAnimation: Bool = false
     @State var successAnimation: Bool = false
     @State var errorAnimation: Bool = false
@@ -26,7 +27,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                 }
                 .opacity(loadingAnimation ? 0 : 1)
                 .animation(.spring(), value: loadingAnimation)
-                LoadingViewWithState(SubmitClaimStore.self, .postSingleItemCheckout) {
+                hLoadingViewWithState(SubmitClaimStore.self, .postSingleItemCheckout) {
                     successView()
                 } onLoading: {
                     loadingView()

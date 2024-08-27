@@ -180,7 +180,7 @@ struct LoggedInNavigation: View {
                 )
                 .handleEditCoInsured(with: vm.travelCertificateNavigationVm.editCoInsuredVm)
             case let .deleteAccount(memberDetails):
-                let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+                let claimsStore: ClaimsStore = hGlobalPresentableStoreContainer.get()
                 let contractsStore: ContractStore = hGlobalPresentableStoreContainer.get()
                 let model = DeleteAccountViewModel(
                     memberDetails: memberDetails,

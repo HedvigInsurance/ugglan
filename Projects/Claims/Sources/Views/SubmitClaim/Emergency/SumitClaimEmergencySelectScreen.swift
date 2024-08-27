@@ -1,10 +1,11 @@
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct SumitClaimEmergencySelectScreen: View {
     @State var selectedValue: Bool = true
-    @PresentableStore var store: SubmitClaimStore
+    @hPresentableStore var store: SubmitClaimStore
     @State var isLoading: Bool = false
     let title: () -> String
 
@@ -34,8 +35,6 @@ struct SumitClaimEmergencySelectScreen: View {
             .hDisableScroll
             .onReceive(
                 store.loadingSignal
-                    .plain()
-                    .publisher
             ) { value in
                 withAnimation {
                     isLoading = value[.postConfirmEmergency] == .loading

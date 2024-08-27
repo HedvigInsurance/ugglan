@@ -1,5 +1,5 @@
 import Foundation
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -8,7 +8,7 @@ extension View {
     public var addClaimsProgressBar: some View {
         self.introspectViewController { vc in
             let progressViewTag = "navigationProgressBar".hashValue
-            let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+            let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
             if let navigationBar = vc.navigationController?.navigationBar,
                 navigationBar.subviews.first(where: { $0.tag == progressViewTag }) == nil
             {
@@ -25,7 +25,9 @@ extension View {
                 }
                 progresView.progress = store.state.progress ?? 0
                 progresView.alpha = store.state.progress == nil ? 0 : 1
-                store.progressCancellable = store.stateSignal.plain().publisher.map({ $0.progress })
+                store.progressCancellable = store.stateSignal
+                    .map({ $0.progress })
+                    .receive(on: RunLoop.main)
                     .sink { [weak progresView] progress in
                         if let progress {
                             UIView.animate(withDuration: 0.4) {

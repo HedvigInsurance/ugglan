@@ -41,7 +41,7 @@ struct MovingFlowHouseView: View {
         .hFormTitle(title: .init(.standard, .displayXSLong, L10n.changeAddressInformationAboutYourHouse))
         .sectionContainerStyle(.transparent)
         .hRetryView(MoveFlowStore.self, forAction: .requestMoveIntent, binding: $vm.error)
-        .presentableStoreLensAnimation(.default)
+        .hPresentableStoreLensAnimation(.default)
         .onDisappear {
             vm.clearErrors()
         }

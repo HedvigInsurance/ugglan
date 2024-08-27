@@ -1,11 +1,11 @@
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
 
 public struct SubmitClaimCheckoutScreen: View {
-    @PresentableStore var store: SubmitClaimStore
+    @hPresentableStore var store: SubmitClaimStore
 
     public init() {}
 
@@ -43,7 +43,7 @@ public struct SubmitClaimCheckoutScreen: View {
                 .sectionContainerStyle(.transparent)
             }
         }
-        .presentableStoreLensAnimation(.spring())
+        .hPresentableStoreLensAnimation(.spring())
         .claimErrorTrackerFor([.postSingleItemCheckout])
     }
 
@@ -216,7 +216,7 @@ struct SubmitClaimCheckoutRepairScreen_Previews: PreviewProvider {
         Localization.Locale.currentLocale = .en_SE
         return SubmitClaimCheckoutScreen()
             .onAppear {
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
                 store.send(
                     .stepModelAction(
                         action: .setSingleItemCheckoutStep(
@@ -280,7 +280,7 @@ struct SubmitClaimCheckoutNoRepairScreen_Previews: PreviewProvider {
         Localization.Locale.currentLocale = .en_SE
         return SubmitClaimCheckoutScreen()
             .onAppear {
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
                 store.send(
                     .stepModelAction(
                         action: .setSingleItemCheckoutStep(

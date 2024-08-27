@@ -1,9 +1,10 @@
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct SubmitClaimOccurrencePlusLocationScreen: View {
-    @PresentableStore var store: SubmitClaimStore
+    @hPresentableStore var store: SubmitClaimStore
     @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
     private let options: SubmitClaimsNavigationAction.SubmitClaimOption
 
@@ -21,7 +22,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
                 VStack(spacing: 0) {
                     hSection {
                         displayFieldsAndNotice
-                            .disableOn(SubmitClaimStore.self, [.postDateOfOccurrenceAndLocation])
+                            .hDisableOn(SubmitClaimStore.self, [.postDateOfOccurrenceAndLocation])
                         continueButton
                     }
                     .sectionContainerStyle(.transparent)
@@ -82,8 +83,8 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
         } content: {
             hText(L10n.generalContinueButton, style: .body1)
         }
-        .trackLoading(SubmitClaimStore.self, action: .postDateOfOccurrenceAndLocation)
-        .presentableStoreLensAnimation(.default)
+        .hTrackLoading(SubmitClaimStore.self, action: .postDateOfOccurrenceAndLocation)
+        .hPresentableStoreLensAnimation(.default)
     }
 }
 

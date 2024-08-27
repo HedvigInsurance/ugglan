@@ -1,12 +1,13 @@
 import Combine
 import Foundation
 import Kingfisher
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct ClaimContactCard: View {
-    @PresentableStore var store: SubmitClaimStore
+    @hPresentableStore var store: SubmitClaimStore
     var model: FlowClaimDeflectStepModel
     var title: String?
     var imageUrl: String?
@@ -95,7 +96,7 @@ struct ClaimContactCard: View {
 }
 
 struct ClaimEmergencyContactCard: View {
-    @PresentableStore var store: SubmitClaimStore
+    @hPresentableStore var store: SubmitClaimStore
     var cardTitle: String?
     var footnote: String?
     var imageUrl: String?

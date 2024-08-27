@@ -12,7 +12,7 @@ public class DeleteAccountViewModel: ObservableObject {
     let contractsStore: ContractStore
 
     private var activeClaimsSignal: AnyPublisher<Bool, Never> {
-        self.claimsStore.stateSignal.plain().map({ $0.hasActiveClaims }).publisher.eraseToAnyPublisher()
+        self.claimsStore.stateSignal.map({ $0.hasActiveClaims }).eraseToAnyPublisher()
     }
 
     private var activeContractsSignal: AnyPublisher<Bool, Never> {

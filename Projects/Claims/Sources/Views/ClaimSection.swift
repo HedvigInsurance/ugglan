@@ -1,5 +1,6 @@
 import Combine
 import Home
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -8,8 +9,7 @@ import hGraphQL
 struct ClaimSection: View {
     var claims: [ClaimModel]
 
-    @PresentableStore
-    var store: ClaimsStore
+    @hPresentableStore var store: ClaimsStore
     @EnvironmentObject var homeRouter: Router
 
     var tapAction: (ClaimModel) -> Void {

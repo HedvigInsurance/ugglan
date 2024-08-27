@@ -1,10 +1,11 @@
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct SubmitClaimCarScreen: View {
     let model: FlowClaimDeflectStepModel?
-    @PresentableStore var store: SubmitClaimStore
+    @hPresentableStore var store: SubmitClaimStore
 
     init(
         model: FlowClaimDeflectStepModel?

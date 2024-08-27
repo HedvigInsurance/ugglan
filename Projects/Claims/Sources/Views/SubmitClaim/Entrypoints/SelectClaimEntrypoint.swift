@@ -1,11 +1,12 @@
 import AVFoundation
+import StoreContainer
 import SwiftUI
 import TagKit
 import hCore
 import hCoreUI
 
 public struct SelectClaimEntrypointGroup: View {
-    @PresentableStore var store: SubmitClaimStore
+    @hPresentableStore var store: SubmitClaimStore
     @State var selectedClaimGroup: String? = nil
     @State var claimEntrypoints: [ClaimEntryPointResponseModel] = []
     var selectedEntrypoints: ([ClaimEntryPointResponseModel]) -> Void
@@ -59,7 +60,7 @@ public struct SelectClaimEntrypointGroup: View {
 }
 
 struct SelectClaimEntrypointType: View {
-    @PresentableStore var store: SubmitClaimStore
+    @hPresentableStore var store: SubmitClaimStore
     var selectedEntrypointOptions: ([ClaimEntryPointOptionResponseModel], String?) -> Void
     @State var entrypointList: [ClaimEntryPointResponseModel] = []
     @State var claimOptions: [ClaimEntryPointOptionResponseModel] = []
@@ -140,7 +141,7 @@ struct SelectClaimEntrypointType: View {
 }
 
 struct SelectClaimEntrypointOption: View {
-    @PresentableStore var store: SubmitClaimStore
+    @hPresentableStore var store: SubmitClaimStore
     @State var selectedClaimOption: String? = nil
     var onButtonClick: (String, String) -> Void
 
@@ -255,7 +256,7 @@ struct ShowTagList: View {
                         )
                     }
                 }
-                .disableOn(SubmitClaimStore.self, [.startClaim])
+                .hDisableOn(SubmitClaimStore.self, [.startClaim])
                 hButton.LargeButton(type: .primary) {
                     if selection != nil && selection != "" {
                         notValid = false
@@ -269,8 +270,8 @@ struct ShowTagList: View {
                 } content: {
                     hText(L10n.generalContinueButton, style: .body1)
                 }
-                .trackLoading(SubmitClaimStore.self, action: .startClaim)
-                .presentableStoreLensAnimation(.default)
+                .hTrackLoading(SubmitClaimStore.self, action: .startClaim)
+                .hPresentableStoreLensAnimation(.default)
             }
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {

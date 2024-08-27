@@ -2,13 +2,14 @@ import Foundation
 import Home
 import Kingfisher
 import SafariServices
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct FilesGridView: View {
     @ObservedObject var vm: FileGridViewModel
-    @PresentableStore private var store: ClaimsStore
+    @hPresentableStore private var store: ClaimsStore
     @State private var fileModel: HomeNavigationViewModel.FileUrlModel?
 
     private let adaptiveColumn = [
