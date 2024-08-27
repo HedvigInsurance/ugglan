@@ -18,29 +18,9 @@ final class ContractStoreTests: XCTestCase {
     }
 
     func testFetchCrossSalesSuccess() async {
-        let crossSellData: [CrossSell] = [
-            .init(
-                title: "car",
-                description: "description",
-                imageURL: URL(string: "https://hedvig.com")!,
-                blurHash: "",
-                typeOfContract: "",
-                type: .car
-            ),
-            .init(
-                title: "home",
-                description: "description",
-                imageURL: URL(string: "https://hedvig.com")!,
-                blurHash: "",
-                typeOfContract: "",
-                type: .home
-            ),
-        ]
-
         let mockService = MockData.createMockContractsService(
-            fetchCrossSell: { crossSellData }
+            fetchCrossSell: { CrossSell.getDefault }
         )
-
         let store = ContractStore()
         self.store = store
         await store.sendAsync(.fetchCrossSale)
@@ -48,7 +28,7 @@ final class ContractStoreTests: XCTestCase {
             store.loadingSignal.value[.fetchCrossSell] == nil
         }
 
-        assert(store.state.crossSells == crossSellData)
+        assert(store.state.crossSells == CrossSell.getDefault)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getCrossSell)
     }
@@ -71,46 +51,9 @@ final class ContractStoreTests: XCTestCase {
     }
 
     func testFetchContractsSuccess() async {
-        let contractsStack: ContractsStack = .init(
-            activeContracts: [
-                .init(
-                    id: "id",
-                    currentAgreement: .init(
-                        premium: .init(amount: "234", currency: "SEK"),
-                        displayItems: [],
-                        productVariant: .init(
-                            termsVersion: "",
-                            typeOfContract: "",
-                            partner: nil,
-                            perils: [],
-                            insurableLimits: [],
-                            documents: [],
-                            displayName: "display name"
-                        )
-                    ),
-                    exposureDisplayName: "exposure display name",
-                    masterInceptionDate: "2024-04-05",
-                    terminationDate: nil,
-                    supportsAddressChange: true,
-                    supportsCoInsured: true,
-                    supportsTravelCertificate: true,
-                    upcomingChangedAgreement: nil,
-                    upcomingRenewal: nil,
-                    firstName: "first",
-                    lastName: "last",
-                    ssn: nil,
-                    typeOfContract: .seHouse,
-                    coInsured: []
-                )
-            ],
-            pendingContracts: [],
-            terminatedContracts: []
-        )
-
         let mockService = MockData.createMockContractsService(
-            fetchContracts: { contractsStack }
+            fetchContracts: { ContractsStack.getDefault }
         )
-
         let store = ContractStore()
         self.store = store
         await store.sendAsync(.fetchContracts)
@@ -118,9 +61,9 @@ final class ContractStoreTests: XCTestCase {
             store.loadingSignal.value[.fetchContracts] == nil
         }
 
-        assert(store.state.activeContracts == contractsStack.activeContracts)
-        assert(store.state.pendingContracts == contractsStack.pendingContracts)
-        assert(store.state.terminatedContracts == contractsStack.terminatedContracts)
+        assert(store.state.activeContracts == ContractsStack.getDefault.activeContracts)
+        assert(store.state.pendingContracts == ContractsStack.getDefault.pendingContracts)
+        assert(store.state.terminatedContracts == ContractsStack.getDefault.terminatedContracts)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getContracts)
     }
@@ -143,6 +86,28 @@ final class ContractStoreTests: XCTestCase {
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getContracts)
     }
+
+    func testFetchSuccess() async {
+        let mockService = MockData.createMockContractsService(
+            fetchContracts: { ContractsStack.getDefault },
+            fetchCrossSell: { CrossSell.getDefault }
+        )
+        let store = ContractStore()
+        self.store = store
+        await store.sendAsync(.fetch)
+        await waitUntil(description: "loading state") {
+            store.loadingSignal.value[.fetchContracts] == nil
+        }
+
+        assert(store.state.activeContracts == ContractsStack.getDefault.activeContracts)
+        assert(store.state.pendingContracts == ContractsStack.getDefault.pendingContracts)
+        assert(store.state.terminatedContracts == ContractsStack.getDefault.terminatedContracts)
+        assert(store.state.crossSells == CrossSell.getDefault)
+        assert(mockService.events.count == 2)
+        assert(mockService.events.contains(.getContracts))
+        assert(mockService.events.contains(.getCrossSell))
+    }
+
 }
 
 extension XCTestCase {
@@ -161,4 +126,63 @@ extension XCTestCase {
         }
         await fulfillment(of: [exc], timeout: 2)
     }
+}
+
+extension ContractsStack {
+    fileprivate static var getDefault: ContractsStack = .init(
+        activeContracts: [
+            .init(
+                id: "id",
+                currentAgreement: .init(
+                    premium: .init(amount: "234", currency: "SEK"),
+                    displayItems: [],
+                    productVariant: .init(
+                        termsVersion: "",
+                        typeOfContract: "",
+                        partner: nil,
+                        perils: [],
+                        insurableLimits: [],
+                        documents: [],
+                        displayName: "display name"
+                    )
+                ),
+                exposureDisplayName: "exposure display name",
+                masterInceptionDate: "2024-04-05",
+                terminationDate: nil,
+                supportsAddressChange: true,
+                supportsCoInsured: true,
+                supportsTravelCertificate: true,
+                upcomingChangedAgreement: nil,
+                upcomingRenewal: nil,
+                firstName: "first",
+                lastName: "last",
+                ssn: nil,
+                typeOfContract: .seHouse,
+                coInsured: []
+            )
+        ],
+        pendingContracts: [],
+        terminatedContracts: []
+    )
+}
+
+extension CrossSell {
+    fileprivate static var getDefault: [CrossSell] = [
+        .init(
+            title: "car",
+            description: "description",
+            imageURL: URL(string: "https://hedvig.com")!,
+            blurHash: "",
+            typeOfContract: "",
+            type: .car
+        ),
+        .init(
+            title: "home",
+            description: "description",
+            imageURL: URL(string: "https://hedvig.com")!,
+            blurHash: "",
+            typeOfContract: "",
+            type: .home
+        ),
+    ]
 }
