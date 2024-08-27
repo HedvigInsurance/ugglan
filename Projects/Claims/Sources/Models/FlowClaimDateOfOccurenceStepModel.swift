@@ -7,14 +7,12 @@ public struct FlowClaimDateOfOccurenceStepModel: FlowClaimStepModel {
     let maxDate: String?
 
     init(
-        with data: OctopusGraphQL.FlowClaimDateOfOccurrenceStepFragment
+        id: String,
+        dateOfOccurence: String? = nil,
+        maxDate: String?
     ) {
-        self.id = data.id
-        self.dateOfOccurence = data.dateOfOccurrence
-        self.maxDate = data.maxDate
-    }
-
-    func getMaxDate() -> Date {
-        return maxDate?.localDateToDate ?? Date()
+        self.id = id
+        self.dateOfOccurence = dateOfOccurence
+        self.maxDate = maxDate
     }
 }

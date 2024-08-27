@@ -3,9 +3,10 @@ import hGraphQL
 
 public struct FlowClaimFailedStepModel: FlowClaimStepModel {
     let id: String
+
     init(
-        with data: OctopusGraphQL.FlowClaimFailedStepFragment
+        id: String
     ) {
-        self.id = data.id
+        self.id = id
     }
 }

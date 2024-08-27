@@ -9,13 +9,18 @@ public struct FlowClaimSummaryStepModel: FlowClaimStepModel {
     let shouldShowDateOfOccurence: Bool
     let shouldShowLocation: Bool
     let shouldShowSingleItem: Bool
+
     init(
-        with data: OctopusGraphQL.FlowClaimSummaryStepFragment
+        id: String,
+        title: String,
+        shouldShowDateOfOccurence: Bool,
+        shouldShowLocation: Bool,
+        shouldShowSingleItem: Bool
     ) {
-        self.id = data.id
-        self.title = data.title
-        self.shouldShowDateOfOccurence = true
-        self.shouldShowLocation = true
-        self.shouldShowSingleItem = data.singleItemStep != nil
+        self.id = id
+        self.title = title
+        self.shouldShowDateOfOccurence = shouldShowDateOfOccurence
+        self.shouldShowLocation = shouldShowLocation
+        self.shouldShowSingleItem = shouldShowSingleItem
     }
 }

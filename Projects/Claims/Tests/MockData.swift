@@ -3,6 +3,7 @@ import hCore
 @testable import Claims
 
 struct MockData {
+    @discardableResult
     static func createMockFetchClaimService(
         fetch: @escaping FetchClaims = {
             .init(
@@ -52,6 +53,7 @@ struct MockData {
         return service
     }
 
+    @discardableResult
     static func createMockFileUploaderService(
         uploadFile: @escaping Upload = { flowId, file in
             .init(audioUrl: "https://audioUrl")
@@ -62,6 +64,7 @@ struct MockData {
         return service
     }
 
+    @discardableResult
     static func createMockSubmitClaimService(
         start: @escaping ClaimStart = { entrypointId, entrypointOptionId in
             .init(
@@ -160,6 +163,10 @@ struct MockData {
         Dependencies.shared.add(module: Module { () -> SubmitClaimClient in service })
         return service
     }
+}
+
+enum ClaimsError: Error {
+    case error
 }
 
 typealias FetchClaims = () async throws -> [ClaimModel]
