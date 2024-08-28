@@ -2,7 +2,6 @@ import Chat
 import Contracts
 import EditCoInsuredShared
 import Payment
-import Presentation
 import SafariServices
 import StoreContainer
 import SwiftUI
@@ -35,7 +34,7 @@ public class HelpCenterNavigationViewModel: ObservableObject {
 public struct HelpCenterNavigation<Content: View>: View {
     @ObservedObject var helpCenterVm: HelpCenterNavigationViewModel
     @EnvironmentObject private var homeVm: HomeNavigationViewModel
-    @PresentableStore private var store: HomeStore
+    @hPresentableStore private var store: HomeStore
     @ViewBuilder var redirect: (_ type: HelpCenterRedirectType) -> Content
     @StateObject var router = Router()
 
@@ -100,7 +99,7 @@ public struct HelpCenterNavigation<Content: View>: View {
             case .done:
                 let contractStore: ContractStore = hGlobalPresentableStoreContainer.get()
                 contractStore.send(.fetchContracts)
-                let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                let homeStore: HomeStore = hGlobalPresentableStoreContainer.get()
                 homeStore.send(.fetchQuickActions)
             case .chat:
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
@@ -109,7 +108,7 @@ public struct HelpCenterNavigation<Content: View>: View {
             case let .openFeedback(url):
                 let contractStore: ContractStore = hGlobalPresentableStoreContainer.get()
                 contractStore.send(.fetchContracts)
-                let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                let homeStore: HomeStore = hGlobalPresentableStoreContainer.get()
                 homeStore.send(.fetchQuickActions)
                 var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
                 if urlComponent?.scheme == nil {

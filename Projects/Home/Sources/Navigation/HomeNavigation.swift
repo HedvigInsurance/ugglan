@@ -4,7 +4,6 @@ import Contracts
 import EditCoInsuredShared
 import Foundation
 import Payment
-import Presentation
 import StoreContainer
 import SwiftUI
 import hCore
@@ -64,7 +63,7 @@ public class HomeNavigationViewModel: ObservableObject {
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { value in
-                let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                let homeStore: HomeStore = hGlobalPresentableStoreContainer.get()
                 homeStore.send(.setChatNotificationTimeStamp(sentAt: value))
             }
             .store(in: &cancellables)

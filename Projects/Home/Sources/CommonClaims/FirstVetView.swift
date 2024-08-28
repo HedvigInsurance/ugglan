@@ -1,10 +1,11 @@
 import Kingfisher
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct FirstVetView: View {
-    @PresentableStore var store: HomeStore
+    @hPresentableStore var store: HomeStore
     private let partners: [FirstVetPartner]
 
     public init(

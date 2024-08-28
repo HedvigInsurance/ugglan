@@ -1,7 +1,6 @@
 import Apollo
 import Contracts
 import Foundation
-import Presentation
 import StoreContainer
 import SwiftUI
 import hCore
@@ -9,7 +8,7 @@ import hCoreUI
 import hGraphQL
 
 public struct RenewalCardView: View {
-    @PresentableStore var store: HomeStore
+    @hPresentableStore var store: HomeStore
     @State private var showMultipleAlert = false
     @State private var showFailedToOpenUrlAlert = false
     @State private var document: InsuranceTerm?
@@ -152,7 +151,7 @@ public struct RenewalCardView: View {
 }
 
 struct RenewalCardView_Previews: PreviewProvider {
-    @PresentableStore static var store: HomeStore
+    @hPresentableStore static var store: HomeStore
 
     static var previews: some View {
         Localization.Locale.currentLocale = .en_SE
