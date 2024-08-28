@@ -1,5 +1,4 @@
 import Foundation
-import hGraphQL
 
 public protocol FlowStepModel: Codable, Equatable, Hashable {}
 
@@ -10,11 +9,14 @@ public struct TerminationFlowDateNextStepModel: FlowStepModel {
     var date: Date?
 
     init(
-        with data: OctopusGraphQL.FlowTerminationDateStepFragment
+        id: String,
+        maxDate: String,
+        minDate: String,
+        date: Date? = nil
     ) {
-        self.id = data.id
-        self.minDate = data.minDate
-        self.maxDate = data.maxDate
-        self.date = nil
+        self.id = id
+        self.maxDate = maxDate
+        self.minDate = minDate
+        self.date = date
     }
 }

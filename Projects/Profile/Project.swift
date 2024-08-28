@@ -3,8 +3,8 @@ import ProjectDescriptionHelpers
 
 let project = Project.framework(
     name: "Profile",
-    targets: Set([.framework]),
-    projects: ["hCore", "hCoreUI", "Home", "Claims", "Contracts", "TravelCertificate"],
+    targets: Set([.framework, .tests, .example]),
+    projects: ["hCore", "hCoreUI", "Home", "Claims", "Contracts", "TravelCertificate", "Market", "Authentication"],
     sdks: [],
     includesGraphQL: false
 )
