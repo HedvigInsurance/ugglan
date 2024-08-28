@@ -1,12 +1,13 @@
 import Apollo
 import Foundation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
 
 struct ActiveSectionView<Claims: View>: View {
-    @PresentableStore var store: HomeStore
+    @hPresentableStore var store: HomeStore
 
     var claimsContent: Claims
 

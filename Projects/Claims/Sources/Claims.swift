@@ -1,6 +1,6 @@
 import Combine
 import Foundation
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -51,7 +51,7 @@ extension Claims: View {
 }
 
 class ClaimsViewModel: ObservableObject {
-    @PresentableStore private var store: ClaimsStore
+    @hPresentableStore private var store: ClaimsStore
     private var pollTimerCancellable: AnyCancellable?
     private let refreshOn = 60
 

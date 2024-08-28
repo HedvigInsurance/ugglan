@@ -1,4 +1,4 @@
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -8,12 +8,12 @@ struct BrandPickerView: View {
     var body: some View {
         ListScreen<ClaimFlowItemBrandOptionModel>(
             items: {
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
                 return store.state.singleItemStep?.availableItemBrandOptions
                     .compactMap({ (object: $0, displayName: $0.displayName) }) ?? []
             }(),
             onSelected: { [weak router] item in
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
                 store.send(.setItemBrand(brand: item))
                 router?.push(item)
 

@@ -1,6 +1,6 @@
 import Apollo
 import Foundation
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -46,7 +46,7 @@ struct ActiveInFutureView_Previews: PreviewProvider {
         return VStack {
             FutureSectionInfoView()
                 .onAppear {
-                    let store: HomeStore = globalPresentableStoreContainer.get()
+                    let store: HomeStore = hGlobalPresentableStoreContainer.get()
                     let contract = OctopusGraphQL.HomeQuery.Data.CurrentMember.ActiveContract(
                         _dataDict: .init(
                             data: [:],
@@ -72,7 +72,7 @@ struct PendingSwitchableView_Previews: PreviewProvider {
         return VStack {
             FutureSectionInfoView()
                 .onAppear {
-                    let store: HomeStore = globalPresentableStoreContainer.get()
+                    let store: HomeStore = hGlobalPresentableStoreContainer.get()
                     store.send(
                         .setMemberContractState(
                             state: .future,
@@ -92,7 +92,7 @@ struct PendingNonSwitchableView_Previews: PreviewProvider {
         return VStack {
             FutureSectionInfoView()
                 .onAppear {
-                    let store: HomeStore = globalPresentableStoreContainer.get()
+                    let store: HomeStore = hGlobalPresentableStoreContainer.get()
                     store.send(
                         .setMemberContractState(
                             state: .future,

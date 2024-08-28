@@ -1,11 +1,11 @@
 import Kingfisher
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct SubmitClaimSummaryScreen: View {
-    @PresentableStore var store: SubmitClaimStore
+    @hPresentableStore var store: SubmitClaimStore
     @StateObject fileprivate var vm: SubmitClaimSummaryScreenViewModel
 
     public init() {
@@ -25,7 +25,7 @@ public struct SubmitClaimSummaryScreen: View {
                         dateOfPurchase
                         purchasePrice
                     }
-                    .disableOn(SubmitClaimStore.self, [.postSummary])
+                    .hDisableOn(SubmitClaimStore.self, [.postSummary])
                 }
                 .withHeader {
                     HStack {
@@ -53,8 +53,8 @@ public struct SubmitClaimSummaryScreen: View {
                     } content: {
                         hText(L10n.embarkSubmitClaim)
                     }
-                    .trackLoading(SubmitClaimStore.self, action: .postSummary)
-                    .presentableStoreLensAnimation(.default)
+                    .hTrackLoading(SubmitClaimStore.self, action: .postSummary)
+                    .hPresentableStoreLensAnimation(.default)
 
                 }
             }
@@ -232,7 +232,7 @@ class SubmitClaimSummaryScreenViewModel: ObservableObject {
     let model: FilesUploadViewModel?
 
     init() {
-        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+        let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
         if let fileUploadStep = store.state.fileUploadStep {
             self.model = FilesUploadViewModel(model: fileUploadStep)
         } else {

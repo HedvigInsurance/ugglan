@@ -1,10 +1,11 @@
 import Foundation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct SupportView: View {
-    @PresentableStore var store: SubmitClaimStore
+    @hPresentableStore var store: SubmitClaimStore
     let openChat: () -> Void
 
     var body: some View {

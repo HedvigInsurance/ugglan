@@ -9,7 +9,6 @@ import Home
 import Market
 import MoveFlow
 import Payment
-import Presentation
 import Profile
 import SafariServices
 import StoreContainer
@@ -65,7 +64,7 @@ struct LoggedInNavigation: View {
             case .done:
                 let contractStore: ContractStore = hGlobalPresentableStoreContainer.get()
                 contractStore.send(.fetchContracts)
-                let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                let homeStore: HomeStore = hGlobalPresentableStoreContainer.get()
                 homeStore.send(.fetchQuickActions)
             case .chat:
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
@@ -113,7 +112,7 @@ struct LoggedInNavigation: View {
                 case .done:
                     let contractStore: ContractStore = hGlobalPresentableStoreContainer.get()
                     contractStore.send(.fetchContracts)
-                    let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                    let homeStore: HomeStore = hGlobalPresentableStoreContainer.get()
                     homeStore.send(.fetchQuickActions)
                 case .chat:
                     NotificationCenter.default.post(name: .openChat, object: nil)
@@ -180,7 +179,7 @@ struct LoggedInNavigation: View {
                 )
                 .handleEditCoInsured(with: vm.travelCertificateNavigationVm.editCoInsuredVm)
             case let .deleteAccount(memberDetails):
-                let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+                let claimsStore: ClaimsStore = hGlobalPresentableStoreContainer.get()
                 let contractsStore: ContractStore = hGlobalPresentableStoreContainer.get()
                 let model = DeleteAccountViewModel(
                     memberDetails: memberDetails,
@@ -309,7 +308,7 @@ struct HomeTab: View {
                     .handleEditCoInsured(with: loggedInVm.travelCertificateNavigationVm.editCoInsuredVm)
                 case .deflect:
                     let model: FlowClaimDeflectStepModel? = {
-                        let store: HomeStore = globalPresentableStoreContainer.get()
+                        let store: HomeStore = hGlobalPresentableStoreContainer.get()
                         let quickActions = store.state.quickActions
                         if let sickAbroadPartners = quickActions.first(where: { $0.sickAboardPartners != nil })?
                             .sickAboardPartners
@@ -351,7 +350,7 @@ struct HomeTab: View {
             presented: $homeNavigationVm.navBarItems.isFirstVetPresented,
             style: [.height]
         ) {
-            let store: HomeStore = globalPresentableStoreContainer.get()
+            let store: HomeStore = hGlobalPresentableStoreContainer.get()
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
                 .configureTitle(QuickAction.firstVet(partners: []).displayTitle)
                 .withDismissButton()
@@ -442,7 +441,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                 let contractStore: ContractStore = hGlobalPresentableStoreContainer.get()
                 contractStore.send(.fetchContracts)
 
-                let homeStore: HomeStore = globalPresentableStoreContainer.get()
+                let homeStore: HomeStore = hGlobalPresentableStoreContainer.get()
                 homeStore.send(.fetchQuickActions)
             }
             .store(in: &cancellables)
@@ -560,7 +559,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     public func openUrl(url: URL) {
         let contractStore: ContractStore = hGlobalPresentableStoreContainer.get()
         contractStore.send(.fetchContracts)
-        let homeStore: HomeStore = globalPresentableStoreContainer.get()
+        let homeStore: HomeStore = hGlobalPresentableStoreContainer.get()
         homeStore.send(.fetchQuickActions)
         var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
         if urlComponent?.scheme == nil {

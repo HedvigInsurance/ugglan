@@ -1,4 +1,5 @@
 import Combine
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -24,7 +25,7 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
                             placeholder: L10n.phoneNumberRowTitle,
                             error: $vm.phoneNumberError
                         )
-                        .disableOn(SubmitClaimStore.self, [.postPhoneNumber])
+                        .hDisableOn(SubmitClaimStore.self, [.postPhoneNumber])
                         hButton.LargeButton(type: .primary) {
                             if vm.keyboardEnabled {
                                 withAnimation {
@@ -37,8 +38,8 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
                         } content: {
                             hText(vm.keyboardEnabled ? L10n.generalSaveButton : L10n.generalContinueButton)
                         }
-                        .trackLoading(SubmitClaimStore.self, action: .postPhoneNumber)
-                        .presentableStoreLensAnimation(.default)
+                        .hTrackLoading(SubmitClaimStore.self, action: .postPhoneNumber)
+                        .hPresentableStoreLensAnimation(.default)
                         .disabled(!(vm.enableContinueButton || vm.keyboardEnabled))
 
                     }
@@ -59,7 +60,7 @@ class SubmitClaimContractViewModel: ObservableObject {
     @Published var keyboardEnabled: Bool = false
     @Published var type: ClaimsFlowContactType?
     @Published var phoneNumberError: String?
-    @PresentableStore var store: SubmitClaimStore
+    @hPresentableStore var store: SubmitClaimStore
     var phoneNumberCancellable: AnyCancellable?
 
     init(phoneNumber: String) {

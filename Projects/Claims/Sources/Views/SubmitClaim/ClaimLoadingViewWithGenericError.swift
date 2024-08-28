@@ -1,12 +1,12 @@
 import Foundation
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 private struct ClaimLoadingViewWithGenericError<StoreType: StoreLoading & Store>: ViewModifier {
     let loading: [StoreType.Loading]
-    @PresentableStore var store: SubmitClaimStore
+    @hPresentableStore var store: SubmitClaimStore
     func body(content: Content) -> some View {
         LoadingViewWithGenericError(
             StoreType.self,

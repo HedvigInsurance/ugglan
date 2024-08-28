@@ -1,4 +1,5 @@
 import Photos
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -26,7 +27,7 @@ public struct ClaimFilesView: View {
                         successView
                     }
                 }
-                .presentableStoreLensAnimation(.default)
+                .hPresentableStoreLensAnimation(.default)
             } else if let error = vm.error {
                 GenericErrorView(
                     description: error,
@@ -177,7 +178,7 @@ class ClaimFilesViewModel: ObservableObject {
     var claimFileUploadService = hClaimFileUploadService()
     var fetchClaimService = hFetchClaimService()
 
-    @PresentableStore var store: ClaimsStore
+    @hPresentableStore var store: ClaimsStore
     init(
         endPoint: String,
         files: [File],

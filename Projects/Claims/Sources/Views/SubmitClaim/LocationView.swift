@@ -1,4 +1,4 @@
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -10,12 +10,12 @@ struct LocationView: View {
         ItemPickerScreen<ClaimFlowLocationOptionModel>(
             config: .init(
                 items: {
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
                     return store.state.locationStep?.options
                         .compactMap({ (object: $0, displayName: .init(title: $0.displayName)) }) ?? []
                 }(),
                 preSelectedItems: {
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                    let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
                     if let value = store.state.locationStep?.getSelectedOption() {
                         return [value]
                     }
@@ -24,7 +24,7 @@ struct LocationView: View {
                 onSelected: { selectedLocation in
                     if let object = selectedLocation.first?.0 {
                         claimsNavigationVm.isLocationPickerPresented = false
-                        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                        let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
                         store.send(.setNewLocation(location: object))
                     }
                 },

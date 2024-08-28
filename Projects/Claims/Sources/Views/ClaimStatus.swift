@@ -1,4 +1,5 @@
 import Home
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -21,8 +22,7 @@ struct ClaimStatus: View {
 
     @EnvironmentObject var homeRouter: Router
 
-    @PresentableStore
-    var store: ClaimsStore
+    @hPresentableStore var store: ClaimsStore
 
     var tapAction: (ClaimModel) -> Void {
         return { claim in

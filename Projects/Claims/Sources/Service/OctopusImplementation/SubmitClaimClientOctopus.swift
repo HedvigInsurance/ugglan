@@ -1,12 +1,12 @@
 import Combine
 import Foundation
-import Presentation
+import StoreContainer
 import hCore
 import hGraphQL
 
 public class SubmitClaimClientOctopus: SubmitClaimClient {
     public init() {}
-    @PresentableStore var store: SubmitClaimStore
+    @hPresentableStore var store: SubmitClaimStore
 
     public func startClaim(entrypointId: String?, entrypointOptionId: String?) async throws -> SubmitClaimStepResponse {
         let startInput = OctopusGraphQL.FlowClaimStartInput(

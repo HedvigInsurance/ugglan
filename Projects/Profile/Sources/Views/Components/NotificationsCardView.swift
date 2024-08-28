@@ -30,7 +30,7 @@ struct NotificationsCardView: View {
                     ])
             }
         }
-        .presentableStoreLensAnimation(.default)
+        .hPresentableStoreLensAnimation(.default)
 
     }
 }

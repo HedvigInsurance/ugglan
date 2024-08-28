@@ -20,7 +20,7 @@ public struct ClaimsJourneyMain: View {
         RouterHost(router: claimsRouter) {
             honestyPledge(from: from)
                 .onDisappear {
-                    let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+                    let claimsStore: ClaimsStore = hGlobalPresentableStoreContainer.get()
                     claimsStore.send(.fetchClaims)
                 }
                 .hidden($shouldHideHonestyPledge)

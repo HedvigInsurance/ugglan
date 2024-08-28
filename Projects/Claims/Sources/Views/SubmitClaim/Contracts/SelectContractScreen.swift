@@ -1,10 +1,10 @@
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct SelectContractScreen: View {
-    @PresentableStore var store: SubmitClaimStore
+    @hPresentableStore var store: SubmitClaimStore
     @State var isLoading: Bool = false
     var body: some View {
         PresentableStoreLens(
@@ -28,7 +28,7 @@ struct SelectContractScreen: View {
                         return []
                     },
                     onSelected: { selectedContract in
-                        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                        let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
                         if let object = selectedContract.first?.0 {
                             store.send(.contractSelectRequest(contractId: object.id))
                         }
@@ -43,8 +43,6 @@ struct SelectContractScreen: View {
             .hDisableScroll
             .onReceive(
                 store.loadingSignal
-                    .plain()
-                    .publisher
             ) { value in
                 withAnimation {
                     isLoading = value[.postContractSelect] == .loading

@@ -3,7 +3,6 @@ import Combine
 import Contracts
 import EditCoInsuredShared
 import Payment
-import Presentation
 import StoreContainer
 import SwiftUI
 import hCore
@@ -35,7 +34,7 @@ struct HomeBottomScrollView: View {
                         type: .attention
                     )
                 case let .importantMessage(id):
-                    let store: HomeStore = globalPresentableStoreContainer.get()
+                    let store: HomeStore = hGlobalPresentableStoreContainer.get()
                     if let importantMessage = store.state.getImportantMessage(with: id) {
                         ImportantMessageView(importantMessage: importantMessage)
                     }
@@ -84,11 +83,10 @@ class HomeButtonScrollViewModel: ObservableObject {
 
     private func handlePayments() {
         let paymentStore: PaymentStore = hGlobalPresentableStoreContainer.get()
-        let homeStore: HomeStore = globalPresentableStoreContainer.get()
+        let homeStore: HomeStore = hGlobalPresentableStoreContainer.get()
         homeStore.stateSignal
             .map({ $0.memberContractState })
-            .plain()
-            .publisher.receive(on: RunLoop.main)
+            .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] memberContractState in
                 switch memberContractState {
                 case .terminated:
@@ -107,10 +105,9 @@ class HomeButtonScrollViewModel: ObservableObject {
         let needsPaymentSetupPublisher = paymentStore.stateSignal
             .map({ $0.paymentStatusData?.status })
             .removeDuplicates()
-        let memberStatePublisher = homeStore.stateSignal.plain()
+        let memberStatePublisher = homeStore.stateSignal
             .map({ $0.memberContractState })
-            .distinct()
-            .publisher
+            .removeDuplicates()
 
         Publishers.CombineLatest(needsPaymentSetupPublisher, memberStatePublisher)
             .receive(on: RunLoop.main)
@@ -134,11 +131,10 @@ class HomeButtonScrollViewModel: ObservableObject {
     }
 
     private func handleImportantMessages() {
-        let homeStore: HomeStore = globalPresentableStoreContainer.get()
-        homeStore.stateSignal.plain()
+        let homeStore: HomeStore = hGlobalPresentableStoreContainer.get()
+        homeStore.stateSignal
             .map({ $0.getImportantMessageToShow() })
-            .distinct()
-            .publisher
+            .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] importantMessages in guard let self = self else { return }
                 var oldItems = self.items
@@ -168,11 +164,10 @@ class HomeButtonScrollViewModel: ObservableObject {
     }
 
     private func handleRenewalCardView() {
-        let homeStore: HomeStore = globalPresentableStoreContainer.get()
-        homeStore.stateSignal.plain()
+        let homeStore: HomeStore = hGlobalPresentableStoreContainer.get()
+        homeStore.stateSignal
             .map({ $0.upcomingRenewalContracts.count > 0 })
-            .distinct()
-            .publisher
+            .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] show in
                 self?.handleItem(.renewal, with: show)
@@ -210,11 +205,10 @@ class HomeButtonScrollViewModel: ObservableObject {
     }
 
     func handleTerminatedMessage() {
-        let store: HomeStore = globalPresentableStoreContainer.get()
+        let store: HomeStore = hGlobalPresentableStoreContainer.get()
         store.stateSignal
             .map({ $0.memberContractState })
-            .plain()
-            .publisher.receive(on: RunLoop.main)
+            .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] memberContractState in
                 switch memberContractState {
                 case .terminated:

@@ -1,11 +1,11 @@
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct ModelPickerView: View {
     @EnvironmentObject var router: Router
-    @PresentableStore var store: SubmitClaimStore
+    @hPresentableStore var store: SubmitClaimStore
     let brand: ClaimFlowItemBrandOptionModel
 
     var body: some View {

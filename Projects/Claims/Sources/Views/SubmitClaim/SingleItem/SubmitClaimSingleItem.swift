@@ -1,11 +1,12 @@
 import Combine
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
 
 public struct SubmitClaimSingleItem: View {
-    @PresentableStore var store: SubmitClaimStore
+    @hPresentableStore var store: SubmitClaimStore
     @State var type: ClaimsFlowSingleItemFieldType?
     @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
 
@@ -25,14 +26,14 @@ public struct SubmitClaimSingleItem: View {
                 ) { singleItemStep in
                     hSection {
                         getFields(singleItemStep: singleItemStep)
-                            .disableOn(SubmitClaimStore.self, [.postSingleItem])
+                            .hDisableOn(SubmitClaimStore.self, [.postSingleItem])
                         hButton.LargeButton(type: .primary) {
                             store.send(.singleItemRequest(purchasePrice: singleItemStep?.purchasePrice))
                         } content: {
                             hText(L10n.generalContinueButton)
                         }
-                        .trackLoading(SubmitClaimStore.self, action: .postSingleItem)
-                        .presentableStoreLensAnimation(.default)
+                        .hTrackLoading(SubmitClaimStore.self, action: .postSingleItem)
+                        .hPresentableStoreLensAnimation(.default)
                     }
                     .sectionContainerStyle(.transparent)
                 }

@@ -1,11 +1,12 @@
 import Foundation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct ImportantMessageView: View {
     let importantMessage: ImportantMessage
-    @PresentableStore var store: HomeStore
+    @hPresentableStore var store: HomeStore
     @State var showSafariView = false
     @State var urlLink: URL?
     var body: some View {
