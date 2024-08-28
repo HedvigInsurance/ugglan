@@ -81,7 +81,7 @@ final class PhoneNumberStoreTests: XCTestCase {
 
         await store.sendAsync(.phoneNumberRequest(phoneNumber: "phone number"))
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.postPhoneNumber] != nil
+            if case .error = store.loadingSignal.value[.postPhoneNumber] { return true } else { return false }
         }
 
         assert(store.state.successStep == nil)

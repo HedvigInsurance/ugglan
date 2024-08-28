@@ -58,7 +58,11 @@ final class FetchEntrypointGroupsStoreTests: XCTestCase {
         await store.sendAsync(.fetchEntrypointGroups)
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.fetchClaimEntrypointGroups] != nil
+            if case .error = store.loadingSignal.value[.fetchClaimEntrypointGroups] {
+                return true
+            } else {
+                return false
+            }
         }
     }
 }

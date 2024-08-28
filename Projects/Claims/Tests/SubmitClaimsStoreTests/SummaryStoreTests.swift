@@ -105,7 +105,7 @@ final class SummaryStoreTests: XCTestCase {
         await store.sendAsync(.summaryRequest)
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.postSummary] != nil
+            if case .error = store.loadingSignal.value[.postSummary] { return true } else { return false }
         }
 
         assert(store.state.successStep == nil)

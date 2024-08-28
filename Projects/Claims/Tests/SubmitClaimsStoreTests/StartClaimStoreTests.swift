@@ -76,7 +76,7 @@ final class StartClaimStoreTests: XCTestCase {
         )
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.startClaim] != nil
+            if case .error = store.loadingSignal.value[.startClaim] { return true } else { return false }
         }
 
         assert(store.state.successStep == nil)

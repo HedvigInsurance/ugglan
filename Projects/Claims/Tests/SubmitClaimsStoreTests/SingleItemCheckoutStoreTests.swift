@@ -93,7 +93,7 @@ final class SingleItemCheckoutStoreTests: XCTestCase {
         await store.sendAsync(.singleItemCheckoutRequest)
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.postSingleItemCheckout] != nil
+            if case .error = store.loadingSignal.value[.postSingleItemCheckout] { return true } else { return false }
         }
 
         assert(store.state.successStep == nil)

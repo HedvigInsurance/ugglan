@@ -91,7 +91,7 @@ final class SingleItemStoreTests: XCTestCase {
         await store.sendAsync(.singleItemRequest(purchasePrice: 6000))
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.postSingleItem] != nil
+            if case .error = store.loadingSignal.value[.postSingleItem] { return true } else { return false }
         }
 
         assert(store.state.successStep == nil)

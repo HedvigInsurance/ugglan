@@ -36,6 +36,7 @@ struct MockData {
         return service
     }
 
+    @discardableResult
     static func createMockFetchEntrypointsService(
         fetchEntrypoints: @escaping FetchEntrypoints = {
             .init(

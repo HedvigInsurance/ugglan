@@ -87,7 +87,7 @@ final class SubmitFileUploadStoreTests: XCTestCase {
         await store.sendAsync(.submitFileUpload(ids: ["id1, id2, id3"]))
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.postUploadFiles] != nil
+            if case .error = store.loadingSignal.value[.postUploadFiles] { return true } else { return false }
         }
 
         assert(store.state.successStep == nil)
