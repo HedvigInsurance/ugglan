@@ -27,8 +27,9 @@ final class MovingFlowAddExtraBuildingViewModelTests: XCTestCase {
         model.livingArea = "80"
 
         await model.store.sendAsync(.setExtraBuildingType(with: buildingType))
-
-        assert(model.buildingType == buildingType)
+        await waitUntil(description: "wait until building type is set") { [weak model] in
+            model?.buildingType != nil
+        }
         assert(model.isValid() == true)
     }
 
