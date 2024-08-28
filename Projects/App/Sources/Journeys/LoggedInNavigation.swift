@@ -484,6 +484,9 @@ class LoggedInNavigationViewModel: ObservableObject {
             case .CROSS_SELL:
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 self.selectedTab = 1
+            case .OPEN_CONTACT:
+                self.selectedTab = 4
+                self.profileNavigationVm.pushToProfile()
             }
         }
     }
