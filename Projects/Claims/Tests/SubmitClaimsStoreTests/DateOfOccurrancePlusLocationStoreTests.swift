@@ -91,7 +91,11 @@ final class DateOfOccurrancePlusLocationStoreTests: XCTestCase {
         await store.sendAsync(.dateOfOccurrenceAndLocationRequest)
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.postDateOfOccurrenceAndLocation] != nil
+            if case .error = store.loadingSignal.value[.postDateOfOccurrenceAndLocation] {
+                return true
+            } else {
+                return false
+            }
         }
 
         assert(store.state.successStep == nil)

@@ -90,7 +90,7 @@ final class EmergencyConfirmRequestStoreTests: XCTestCase {
         await store.sendAsync(.emergencyConfirmRequest(isEmergency: false))
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.postConfirmEmergency] != nil
+            if case .error = store.loadingSignal.value[.postConfirmEmergency] { return true } else { return false }
         }
 
         assert(store.state.successStep == nil)

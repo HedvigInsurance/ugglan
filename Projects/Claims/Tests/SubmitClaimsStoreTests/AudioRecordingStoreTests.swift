@@ -91,6 +91,10 @@ final class AudioRecordingStoreTests: XCTestCase {
             throw ClaimsError.error
         })
 
+        MockData.createMockFileUploaderService(uploadFile: { _, _ in
+            .init(audioUrl: "https://audioUrl")
+        })
+
         let store = SubmitClaimStore()
         self.store = store
         await store.sendAsync(
@@ -102,9 +106,8 @@ final class AudioRecordingStoreTests: XCTestCase {
         }
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.postAudioRecording] != nil
+            if case .error = store.loadingSignal.value[.postAudioRecording] { return true } else { return false }
         }
-
         assert(store.state.successStep == nil)
         assert(store.state.failedStep == nil)
     }

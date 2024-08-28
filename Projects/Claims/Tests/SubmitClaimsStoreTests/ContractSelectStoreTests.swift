@@ -85,7 +85,7 @@ final class ContractSelectStoreTests: XCTestCase {
         await store.sendAsync(.contractSelectRequest(contractId: "contract id"))
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.postContractSelect] != nil
+            if case .error = store.loadingSignal.value[.postContractSelect] { return true } else { return false }
         }
 
         assert(store.state.successStep == nil)
