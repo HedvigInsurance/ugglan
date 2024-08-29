@@ -193,7 +193,7 @@ struct ClaimEmergencyContactCard: View {
     private var phoneButton: some View {
         if let phoneNumber {
             hSection {
-                hButton.MediumButton(type: .ghost) {
+                hButton.MediumButton(type: url == nil ? .secondaryAlt : .ghost) {
                     let tel = "tel://"
                     let formattedString = tel + phoneNumber
                     if let url = URL(string: formattedString) {
@@ -205,7 +205,7 @@ struct ClaimEmergencyContactCard: View {
                 }
             }
             .sectionContainerStyle(.transparent)
-            .colorScheme(.dark)
+            .colorScheme(url == nil ? .light : .dark)
 
         }
     }
