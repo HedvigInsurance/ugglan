@@ -6,21 +6,15 @@ public struct FlowClaimContractSelectStepModel: FlowClaimStepModel {
     var selectedContractId: String?
 
     init(
-        with data: OctopusGraphQL.FlowClaimContractSelectStepFragment
+        availableContractOptions: [FlowClaimContractSelectOptionModel],
+        selectedContractId: String? = nil
     ) {
-        self.selectedContractId = data.options.first?.id
-        self.availableContractOptions = data.options.map({ .init(with: $0) })
+        self.availableContractOptions = availableContractOptions
+        self.selectedContractId = selectedContractId
     }
 }
 
 public struct FlowClaimContractSelectOptionModel: Codable, Equatable, Hashable {
     let displayName: String
     let id: String
-
-    init(
-        with data: OctopusGraphQL.FlowClaimContractSelectStepFragment.Option
-    ) {
-        self.displayName = data.displayName
-        self.id = data.id
-    }
 }

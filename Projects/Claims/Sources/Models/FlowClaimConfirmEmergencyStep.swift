@@ -8,14 +8,15 @@ public struct FlowClaimConfirmEmergencyStepModel: FlowClaimStepModel {
     let options: [FlowClaimConfirmEmergencyOption]
 
     init(
-        with data: OctopusGraphQL.FlowClaimConfirmEmergencyStepFragment
+        id: String,
+        text: String,
+        confirmEmergency: Bool?,
+        options: [FlowClaimConfirmEmergencyOption]
     ) {
-        self.id = data.id
-        self.text = data.text
-        self.confirmEmergency = data.confirmEmergency
-        self.options = data.options.map({ data in
-            FlowClaimConfirmEmergencyOption(displayName: data.displayName, value: data.displayValue)
-        })
+        self.id = id
+        self.text = text
+        self.confirmEmergency = confirmEmergency
+        self.options = options
     }
 }
 
