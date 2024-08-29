@@ -1,4 +1,4 @@
-import Presentation
+import StoreContainer
 import XCTest
 import hCore
 
@@ -9,7 +9,8 @@ final class AddressInputModelTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        globalPresentableStoreContainer.deletePersistanceContainer()
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+        hGlobalPresentableStoreContainer.deletePersistanceContainer()
     }
 
     override func tearDown() async throws {

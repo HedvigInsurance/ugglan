@@ -1,4 +1,5 @@
 import Foundation
+import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
@@ -64,7 +65,7 @@ public struct ListScreen: View {
                 .padding(.vertical, .padding16)
             }
         }
-        .loading($vm.isLoading, $vm.error)
+        .hLoading($vm.isLoading, $vm.error)
         .toolbar {
             ToolbarItem(
                 placement: infoButtonPlacement

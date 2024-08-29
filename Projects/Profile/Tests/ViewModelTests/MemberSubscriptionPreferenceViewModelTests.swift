@@ -1,5 +1,6 @@
 import XCTest
 import hCore
+import StoreContainer
 
 @testable import Profile
 
@@ -8,6 +9,7 @@ final class MemberSubscriptionPreferenceViewModelTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
+        hGlobalPresentableStoreContainer.deletePersistanceContainer()
         sut = nil
     }
 
@@ -26,9 +28,10 @@ final class MemberSubscriptionPreferenceViewModelTests: XCTestCase {
 
         let model = MemberSubscriptionPreferenceViewModel()
         await model.toogleSubscription()
-
-        assert(model.isLoading == false)
-        assert(model.isUnsubscribed == false)
+        await waitUntil(description: "check isUnsubscribed") {
+            model.isLoading == false &&
+            model.isUnsubscribed == false
+        }
     }
 
     func testToggleSubscriptionFailure() async {

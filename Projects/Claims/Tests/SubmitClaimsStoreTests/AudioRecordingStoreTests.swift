@@ -1,4 +1,4 @@
-import Presentation
+import StoreContainer
 import XCTest
 
 @testable import Claims
@@ -16,7 +16,7 @@ final class AudioRecordingStoreTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        globalPresentableStoreContainer.deletePersistanceContainer()
+        hGlobalPresentableStoreContainer.deletePersistanceContainer()
     }
 
     override func tearDown() async throws {
@@ -79,7 +79,7 @@ final class AudioRecordingStoreTests: XCTestCase {
         }
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.postAudioRecording] == nil
+            store.loadingState[.postAudioRecording] == nil
         }
 
         assert(store.state.successStep == nil)
@@ -106,7 +106,7 @@ final class AudioRecordingStoreTests: XCTestCase {
         }
 
         await waitUntil(description: "loading state") {
-            if case .error = store.loadingSignal.value[.postAudioRecording] { return true } else { return false }
+            if case .error = store.loadingState[.postAudioRecording] { return true } else { return false }
         }
         assert(store.state.successStep == nil)
         assert(store.state.failedStep == nil)

@@ -1,4 +1,4 @@
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 
@@ -77,7 +77,7 @@ public struct ProcessingView<S: Store & StoreLoading>: View {
                 }
             }
         }
-        .presentableStoreLensAnimation(.default)
+        .hPresentableStoreLensAnimation(.default)
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.25) {
                 withAnimation(.easeInOut(duration: 1.25)) {
@@ -195,7 +195,7 @@ public struct ProcesssingView: View {
                 }
             }
         }
-        .presentableStoreLensAnimation(.default)
+        .hPresentableStoreLensAnimation(.default)
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
                 withAnimation(.easeInOut(duration: 1.25)) {

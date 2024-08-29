@@ -1,3 +1,4 @@
+import StoreContainer
 import XCTest
 import hCore
 
@@ -21,6 +22,7 @@ final class DeleteAccountViewModelTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
+        hGlobalPresentableStoreContainer.deletePersistanceContainer()
         sut = nil
     }
 
