@@ -4,7 +4,6 @@ import Authentication
 import Combine
 import Foundation
 import Market
-import Presentation
 import StoreContainer
 import SwiftUI
 import hCore
@@ -32,7 +31,7 @@ struct LoginNavigation: View {
                     OTPEntryView()
                 case .se:
                     BankIDLoginQRView {
-                        let store: UgglanStore = globalPresentableStoreContainer.get()
+                        let store: UgglanStore = hGlobalPresentableStoreContainer.get()
                         await store.sendAsync(.setIsDemoMode(to: true))
                         ApolloClient.initAndRegisterClient()
                     }

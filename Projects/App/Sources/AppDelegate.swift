@@ -11,7 +11,6 @@ import Form
 import Foundation
 import MoveFlow
 import Payment
-import Presentation
 import Profile
 import StoreContainer
 import SwiftUI
@@ -21,12 +20,6 @@ import UserNotifications
 import hCore
 import hCoreUI
 import hGraphQL
-
-#if PRESENTATION_DEBUGGER
-    #if compiler(>=5.5)
-        import PresentationDebugSupport
-    #endif
-#endif
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var cancellables = Set<AnyCancellable>()
@@ -41,10 +34,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ApolloClient.cache = InMemoryNormalizedCache()
 
         // remove all persisted state
-        globalPresentableStoreContainer.deletePersistanceContainer()
+        hGlobalPresentableStoreContainer.deletePersistanceContainer()
 
         // create new store container to remove all old store instances
-        globalPresentableStoreContainer = PresentableStoreContainer()
+        hGlobalPresentableStoreContainer = hPresentableStoreContainer()
 
         ApolloClient.initAndRegisterClient()
     }
@@ -52,7 +45,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func logout() {
         cancellables.removeAll()
         UIApplication.shared.unregisterForRemoteNotifications()
-        let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
+        let ugglanStore: UgglanStore = hGlobalPresentableStoreContainer.get()
         ugglanStore.send(.setIsDemoMode(to: false))
         Task { @MainActor in
             let authenticationService = AuthenticationService()
@@ -153,7 +146,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func handleURL(url: URL) {
         let impersonate = Impersonate()
         if impersonate.canImpersonate(with: url) {
-            let store: UgglanStore = globalPresentableStoreContainer.get()
+            let store: UgglanStore = hGlobalPresentableStoreContainer.get()
             store.send(.setIsDemoMode(to: false))
             Task {
                 setupSession()
@@ -181,17 +174,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         )
     }
 
-    func setupDebugger() {
-        #if PRESENTATION_DEBUGGER
-            #if compiler(>=5.5)
-                globalPresentableStoreContainer.debugger = PresentableStoreDebugger()
-                globalPresentableStoreContainer.debugger?.startServer()
-            #endif
-        #endif
-    }
-
     func setupPresentableStoreLogger() {
-        globalPresentableStoreContainer.logger = { message in
+        hGlobalPresentableStoreContainer.logger = { message in
             log.info(message)
         }
     }
@@ -217,7 +201,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ApolloClient.bundle = Bundle.main
         ApolloClient.acceptLanguageHeader = Localization.Locale.currentLocale.acceptLanguageHeader
         AskForRating().registerSession()
-        setupDebugger()
     }
 
     func application(
