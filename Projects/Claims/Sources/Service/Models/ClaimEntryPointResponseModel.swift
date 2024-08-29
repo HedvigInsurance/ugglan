@@ -7,14 +7,6 @@ public struct ClaimEntryPointGroupResponseModel: Codable, Equatable, Hashable {
     var entrypoints: [ClaimEntryPointResponseModel]
 
     init(
-        with data: OctopusGraphQL.EntrypointGroupFragment
-    ) {
-        self.id = data.id
-        self.displayName = data.displayName
-        self.entrypoints = data.entrypoints.map({ ClaimEntryPointResponseModel(with: $0.fragments.entrypointFragment) })
-    }
-
-    init(
         id: String,
         displayName: String,
         entrypoints: [ClaimEntryPointResponseModel]
@@ -32,16 +24,6 @@ public struct ClaimEntryPointResponseModel: Codable, Equatable, Hashable {
     var options: [ClaimEntryPointOptionResponseModel]
 
     init(
-        with data: OctopusGraphQL.EntrypointFragment
-
-    ) {
-        self.id = data.id
-        self.displayName = data.displayName
-        options =
-            data.options?.map({ ClaimEntryPointOptionResponseModel(with: $0.fragments.entrypointOptionFragment) }) ?? []
-    }
-
-    init(
         id: String,
         displayName: String,
         options: [ClaimEntryPointOptionResponseModel]
@@ -55,13 +37,6 @@ public struct ClaimEntryPointResponseModel: Codable, Equatable, Hashable {
 public struct ClaimEntryPointOptionResponseModel: Codable, Equatable, Hashable {
     let id: String
     let displayName: String
-
-    init(
-        with data: OctopusGraphQL.EntrypointOptionFragment
-    ) {
-        self.id = data.id
-        self.displayName = data.displayName
-    }
 
     init(
         id: String,

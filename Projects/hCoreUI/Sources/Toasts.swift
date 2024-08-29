@@ -137,10 +137,11 @@ public class Toasts {
                 self?.list.removeFirst()
                 self?.showNext()
             }
-            let viewToShowFrom = UIApplication.shared.getRootViewController()!.view!
-            viewToShowFrom.addSubview(viewToShow)
-            viewToShow.snp.makeConstraints { make in
-                make.leading.top.trailing.equalToSuperview()
+            if let viewToShowFrom = UIApplication.shared.getRootViewController()?.view {
+                viewToShowFrom.addSubview(viewToShow)
+                viewToShow.snp.makeConstraints { make in
+                    make.leading.top.trailing.equalToSuperview()
+                }
             }
         }
     }

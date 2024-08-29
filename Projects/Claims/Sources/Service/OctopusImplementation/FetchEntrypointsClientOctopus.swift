@@ -18,3 +18,34 @@ public class FetchEntrypointsClientOctopus: hFetchEntrypointsClient {
         return entrypointModel
     }
 }
+
+extension ClaimEntryPointGroupResponseModel {
+    init(
+        with data: OctopusGraphQL.EntrypointGroupFragment
+    ) {
+        self.id = data.id
+        self.displayName = data.displayName
+        self.entrypoints = data.entrypoints.map({ ClaimEntryPointResponseModel(with: $0.fragments.entrypointFragment) })
+    }
+}
+
+extension ClaimEntryPointResponseModel {
+    init(
+        with data: OctopusGraphQL.EntrypointFragment
+
+    ) {
+        self.id = data.id
+        self.displayName = data.displayName
+        options =
+            data.options?.map({ ClaimEntryPointOptionResponseModel(with: $0.fragments.entrypointOptionFragment) }) ?? []
+    }
+}
+
+extension ClaimEntryPointOptionResponseModel {
+    init(
+        with data: OctopusGraphQL.EntrypointOptionFragment
+    ) {
+        self.id = data.id
+        self.displayName = data.displayName
+    }
+}

@@ -259,7 +259,7 @@ extension Project {
                     ],
                     launchArguments: []
                 ),
-                options: .options(coverage: true)
+                options: .options(coverage: true, codeCoverageTargets: ["\(name)"])
             )
         }
         let shouldDisableGeneratingAccessors = !targets.contains(.generateAssets)
