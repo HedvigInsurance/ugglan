@@ -64,8 +64,8 @@ public struct DatePickerView: View {
             ToolbarItem(placement: .principal) {
                 VStack {
                     hText(vm.config.title)
-                    if let subtitle = vm.dateSelected.displayDateDDMMMYYYYFormat, !(vm.config.showAsList ?? false) {
-                        hText(subtitle).foregroundColor(hTextColor.Opaque.secondary)
+                    if !(vm.config.showAsList ?? false) {
+                        hText(vm.dateSelected.displayDateDDMMMYYYYFormat).foregroundColor(hTextColor.Opaque.secondary)
                     }
                 }
             }

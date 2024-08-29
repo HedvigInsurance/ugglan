@@ -209,6 +209,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             .sink { locale in
                 ApplicationState.setPreferredLocale(locale)
                 ApolloClient.acceptLanguageHeader = locale.acceptLanguageHeader
+                let dateService = DateService()
+                Dependencies.shared.add(module: Module { () -> DateService in dateService })
             }
 
         ApolloClient.bundle = Bundle.main

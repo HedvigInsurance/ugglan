@@ -8,6 +8,7 @@ final class HomeTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         sut = nil
     }
 

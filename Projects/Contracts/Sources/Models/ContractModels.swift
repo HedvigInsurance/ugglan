@@ -129,6 +129,10 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable {
         return terminationDate == nil
     }
 
+    public var isTerminated: Bool {
+        return terminationDate != nil
+    }
+
     public var terminatedToday: Bool {
         if terminationDate == Date().localDateString {
             return true
@@ -427,6 +431,99 @@ extension PillowType {
         case travel
         case villa
         case unknown
+    }
+}
+
+extension Contract.TypeOfContract {
+    var isHomeInsurance: Bool {
+        switch self {
+        case .seHouse:
+            return true
+        case .seApartmentBrf:
+            return true
+        case .seApartmentRent:
+            return true
+        case .seApartmentStudentBrf:
+            return true
+        case .seApartmentStudentRent:
+            return true
+        case .seAccident:
+            return false
+        case .seAccidentStudent:
+            return false
+        case .seCarTraffic:
+            return false
+        case .seCarHalf:
+            return false
+        case .seCarFull:
+            return false
+        case .seCarTrialFull:
+            return false
+        case .seCarTrialHalf:
+            return false
+        case .seGroupApartmentBrf:
+            return true
+        case .seGroupApartmentRent:
+            return true
+        case .seQasaShortTermRental:
+            return true
+        case .seQasaLongTermRental:
+            return true
+        case .seDogBasic:
+            return false
+        case .seDogStandard:
+            return false
+        case .seDogPremium:
+            return false
+        case .seCatBasic:
+            return false
+        case .seCatStandard:
+            return false
+        case .seCatPremium:
+            return false
+        case .noHouse:
+            return false
+        case .noHomeContentOwn:
+            return false
+        case .noHomeContentRent:
+            return false
+        case .noHomeContentYouthOwn:
+            return false
+        case .noHomeContentYouthRent:
+            return false
+        case .noHomeContentStudentOwn:
+            return false
+        case .noHomeContentStudentRent:
+            return false
+        case .noTravel:
+            return false
+        case .noTravelYouth:
+            return false
+        case .noTravelStudent:
+            return false
+        case .noAccident:
+            return false
+        case .dkHomeContentOwn:
+            return false
+        case .dkHomeContentRent:
+            return false
+        case .dkHomeContentStudentOwn:
+            return false
+        case .dkHomeContentStudentRent:
+            return false
+        case .dkHouse:
+            return false
+        case .dkAccident:
+            return false
+        case .dkAccidentStudent:
+            return false
+        case .dkTravel:
+            return false
+        case .dkTravelStudent:
+            return false
+        case .unknown:
+            return false
+        }
     }
 }
 
