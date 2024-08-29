@@ -7,11 +7,13 @@ public struct FlowClaimLocationStepModel: FlowClaimStepModel {
     let options: [ClaimFlowLocationOptionModel]
 
     init(
-        with data: OctopusGraphQL.FlowClaimLocationStepFragment
+        id: String,
+        location: String? = nil,
+        options: [ClaimFlowLocationOptionModel]
     ) {
-        self.id = data.id
-        self.location = data.location
-        self.options = data.options.map({ .init(with: $0) })
+        self.id = id
+        self.location = location
+        self.options = options
     }
 
     func getSelectedOption() -> ClaimFlowLocationOptionModel? {
