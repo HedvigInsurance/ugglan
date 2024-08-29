@@ -1,6 +1,6 @@
+import StoreContainer
 import XCTest
 import hCore
-import StoreContainer
 
 @testable import Profile
 
@@ -29,8 +29,7 @@ final class MemberSubscriptionPreferenceViewModelTests: XCTestCase {
         let model = MemberSubscriptionPreferenceViewModel()
         await model.toogleSubscription()
         await waitUntil(description: "check isUnsubscribed") {
-            model.isLoading == false &&
-            model.isUnsubscribed == false
+            model.isLoading == false && model.isUnsubscribed == false
         }
     }
 
