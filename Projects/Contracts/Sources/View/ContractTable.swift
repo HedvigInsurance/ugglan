@@ -33,7 +33,7 @@ struct ContractTable: View {
     }
 
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             LoadingViewWithContent(ContractStore.self, [.fetchContracts], [.fetchContracts], showLoading: false) {
                 hSection {
                     PresentableStoreLens(
@@ -70,6 +70,7 @@ struct ContractTable: View {
                 VStack(spacing: 24) {
                     movingToANewHomeView
                     CrossSellingStack(withHeader: true)
+
                     PresentableStoreLens(
                         ContractStore.self,
                         getter: { state in
@@ -101,7 +102,7 @@ struct ContractTable: View {
                         }
                     }
                     .presentableStoreLensAnimation(.spring())
-                    //                    .sectionContainerStyle(.transparent)
+                    .sectionContainerStyle(.transparent)
                 }
                 .padding(.vertical, .padding24)
             }
@@ -116,7 +117,7 @@ struct ContractTable: View {
                 state.activeContracts
             }
         ) { activeContracts in
-            if !activeContracts.filter({ $0.typeOfContract.isHomeInsurance }).isEmpty {
+            if !activeContracts.filter({ $0.typeOfContract.isHomeInsurance && !$0.isTerminated }).isEmpty {
                 hSection {
                     InfoCard(text: L10n.insurancesTabMovingFlowInfoTitle, type: .campaign)
                         .buttons([

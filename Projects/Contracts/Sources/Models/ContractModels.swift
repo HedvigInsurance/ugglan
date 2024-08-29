@@ -129,6 +129,10 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable {
         return terminationDate == nil
     }
 
+    public var isTerminated: Bool {
+        return terminationDate != nil
+    }
+
     public var terminatedToday: Bool {
         if terminationDate == Date().localDateString {
             return true
