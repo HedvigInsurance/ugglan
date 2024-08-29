@@ -22,7 +22,6 @@ struct LoginNavigation: View {
             LanguageAndMarketPickerView()
                 .navigationTitle(L10n.loginMarketPickerPreferences)
                 .embededInNavigation()
-
         }
         .detent(presented: $vm.showLogin, style: [.large], tracking: Localization.Locale.currentLocale.market) {
             Group {
