@@ -13,7 +13,7 @@ public class ProfileNavigationViewModel: ObservableObject {
     public let profileRouter = Router()
 
     public func pushToProfile() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
             self?.profileRouter.push(ProfileRouterType.myInfo)
         }
     }
