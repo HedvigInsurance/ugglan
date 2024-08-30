@@ -484,6 +484,10 @@ class LoggedInNavigationViewModel: ObservableObject {
             case .CROSS_SELL:
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 self.selectedTab = 1
+            case .OPEN_CONTACT_INFO:
+                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+                self.selectedTab = 4
+                self.profileNavigationVm.pushToProfile()
             }
         }
     }
@@ -544,6 +548,10 @@ class LoggedInNavigationViewModel: ObservableObject {
                 self.terminateInsuranceVm.start(with: contractsConfig)
             case .openChat:
                 NotificationCenter.default.post(name: .openChat, object: nil)
+            case .contactInfo:
+                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+                self.selectedTab = 4
+                self.profileNavigationVm.pushToProfile()
             case nil:
                 openUrl(url: url)
             }
