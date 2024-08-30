@@ -198,6 +198,25 @@ class ScrollableSegmentedViewModel: NSObject, ObservableObject {
         scrollTo(offset: offsetToScrollTo)
     }
 
+    func scrollToTab(withVelocity: CGFloat) {
+        let moveFor = abs(Int(withVelocity / 2)) + 1
+        if withVelocity < 0 {
+            if let current = pageModels.firstIndex(where: { $0.id == currentId }), current > 0 {
+                let scrollTo = max(0, current - moveFor)
+                if scrollTo >= 0 {
+                    setSelectedTab(with: pageModels[scrollTo].id)
+                }
+            }
+        } else {
+            if let current = pageModels.firstIndex(where: { $0.id == currentId }), current < pageModels.count - 1 {
+                let scrollTo = min(pageModels.count - 1, current + moveFor)
+                if scrollTo < pageModels.count {
+                    setSelectedTab(with: pageModels[scrollTo].id)
+                }
+            }
+        }
+    }
+
     func setSelectedTab(with id: String) {
         if let index = pageModels.firstIndex(where: { $0.id == id }) {
             currentId = id
@@ -222,13 +241,24 @@ class ScrollableSegmentedViewModel: NSObject, ObservableObject {
 }
 
 extension ScrollableSegmentedViewModel: UIScrollViewDelegate {
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        scrollToNearestWith(offset: scrollView.contentOffset.x)
-    }
-
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
             scrollToNearestWith(offset: scrollView.contentOffset.x)
+        }
+    }
+
+    func scrollViewWillEndDragging(
+        _ scrollView: UIScrollView,
+        withVelocity velocity: CGPoint,
+        targetContentOffset: UnsafeMutablePointer<CGPoint>
+    ) {
+        if velocity.x != 0 {
+            if #available(iOS 17.4, *) {
+                UIView.animate(withDuration: 0.1) { [weak scrollView] in
+                    scrollView?.stopScrollingAndZooming()
+                }
+            }
+            self.scrollToTab(withVelocity: velocity.x)
         }
     }
 
