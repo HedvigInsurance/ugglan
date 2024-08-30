@@ -191,30 +191,17 @@ class ScrollableSegmentedViewModel: NSObject, ObservableObject {
 
     func scrollToNearestWith(offset: CGFloat) {
         let allOffsets = getPagesOffset()
-        let offsetToScrollTo = allOffsets.min(by: { abs($0 - offset) < abs($1 - offset) }) ?? 0
-        if let index = allOffsets.firstIndex(of: offsetToScrollTo) {
+        let nearestTabOffset = getNearestTabOffset(for: offset)
+        if let index = allOffsets.firstIndex(of: nearestTabOffset) {
             setSelectedTab(with: pageModels[index].id)
         }
-        scrollTo(offset: offsetToScrollTo)
+        scrollTo(offset: nearestTabOffset)
     }
 
-    func scrollToTab(withVelocity: CGFloat) {
-        let moveFor = abs(Int(withVelocity / 2)) + 1
-        if withVelocity < 0 {
-            if let current = pageModels.firstIndex(where: { $0.id == currentId }), current > 0 {
-                let scrollTo = max(0, current - moveFor)
-                if scrollTo >= 0 {
-                    setSelectedTab(with: pageModels[scrollTo].id)
-                }
-            }
-        } else {
-            if let current = pageModels.firstIndex(where: { $0.id == currentId }), current < pageModels.count - 1 {
-                let scrollTo = min(pageModels.count - 1, current + moveFor)
-                if scrollTo < pageModels.count {
-                    setSelectedTab(with: pageModels[scrollTo].id)
-                }
-            }
-        }
+    func getNearestTabOffset(for offset: CGFloat) -> CGFloat {
+        let allOffsets = getPagesOffset()
+        let offsetToScrollTo = allOffsets.min(by: { abs($0 - offset) < abs($1 - offset) }) ?? 0
+        return offsetToScrollTo
     }
 
     func setSelectedTab(with id: String) {
@@ -254,11 +241,20 @@ extension ScrollableSegmentedViewModel: UIScrollViewDelegate {
     ) {
         if velocity.x != 0 {
             if #available(iOS 17.4, *) {
-                UIView.animate(withDuration: 0.1) { [weak scrollView] in
-                    scrollView?.stopScrollingAndZooming()
-                }
+                scrollView.stopScrollingAndZooming()
             }
-            self.scrollToTab(withVelocity: velocity.x)
+            let scrollTo = getNearestTabOffset(for: targetContentOffset.pointee.x)
+            DispatchQueue.main.async { [weak scrollView] in
+                UIView.animate(
+                    withDuration: 0.3,
+                    delay: 0,
+                    options: UIView.AnimationOptions.curveEaseOut,
+                    animations: {
+                        scrollView?.contentOffset.x = scrollTo
+                    },
+                    completion: nil
+                )
+            }
         }
     }
 
