@@ -319,7 +319,7 @@ struct HomeTab: View {
                                     .init(
                                         id: "",
                                         imageUrl: $0.imageUrl,
-                                        url: "",
+                                        url: $0.url,
                                         phoneNumber: $0.phoneNumber
                                     )
                                 }),

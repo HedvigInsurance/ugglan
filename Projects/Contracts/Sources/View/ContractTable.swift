@@ -33,7 +33,7 @@ struct ContractTable: View {
     }
 
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             LoadingViewWithContent(ContractStore.self, [.fetchContracts], [.fetchContracts], showLoading: false) {
                 hSection {
                     PresentableStoreLens(
@@ -67,9 +67,10 @@ struct ContractTable: View {
                 .sectionContainerStyle(.transparent)
             }
             if !showTerminated {
-                VStack(spacing: 16) {
+                VStack(spacing: 24) {
+                    movingToANewHomeView
                     CrossSellingStack(withHeader: true)
-                        .padding(.top, .padding24)
+
                     PresentableStoreLens(
                         ContractStore.self,
                         getter: { state in
@@ -102,7 +103,37 @@ struct ContractTable: View {
                     }
                     .presentableStoreLensAnimation(.spring())
                     .sectionContainerStyle(.transparent)
-                    .padding(.bottom, .padding24)
+                }
+                .padding(.vertical, .padding24)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var movingToANewHomeView: some View {
+        PresentableStoreLens(
+            ContractStore.self,
+            getter: { state in
+                state.activeContracts
+            }
+        ) { activeContracts in
+            if !activeContracts.filter({ $0.typeOfContract.isHomeInsurance && !$0.isTerminated }).isEmpty {
+                hSection {
+                    InfoCard(text: L10n.insurancesTabMovingFlowInfoTitle, type: .campaign)
+                        .buttons([
+                            .init(
+                                buttonTitle: L10n.insurancesTabMovingFlowInfoButtonTitle,
+                                buttonAction: {
+                                    contractsNavigationVm.isChangeAddressPresented = true
+                                }
+                            )
+                        ])
+                }
+                .withHeader {
+                    hText(L10n.insurancesTabMovingFlowSectionTitle)
+                        .foregroundColor(hTextColor.Opaque.primary)
+                        .padding(.leading, 2)
+                    //                        .padding(.top, .padding8)
                 }
             }
         }

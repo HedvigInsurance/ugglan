@@ -56,7 +56,7 @@ public struct SickAbroadPartner: Codable, Equatable, Hashable, Identifiable {
     public let id: String
     public let imageUrl: String?
     public let phoneNumber: String?
-    let url: String?
+    public let url: String?
 }
 
 public struct FirstVetPartner: Codable, Equatable, Hashable, Identifiable {

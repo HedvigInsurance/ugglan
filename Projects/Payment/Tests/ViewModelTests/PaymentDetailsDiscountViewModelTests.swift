@@ -6,6 +6,7 @@ import hCore
 final class PaymentDetailsDiscountViewModelTests: XCTestCase {
     override func setUp() {
         super.setUp()
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     }
 
     override func tearDown() async throws {

@@ -22,6 +22,8 @@ extension ApolloClient {
         let authorizationService = AuthenticationClientAuthLib()
         Dependencies.shared.add(module: Module { () -> AuthenticationClient in authorizationService })
         let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
+        let dateService = DateService()
+        Dependencies.shared.add(module: Module { () -> DateService in dateService })
         if ugglanStore.state.isDemoMode {
             let featureFlags = FeatureFlagsDemo()
             let hPaymentService = hPaymentClientDemo()

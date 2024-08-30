@@ -1,5 +1,6 @@
 import Presentation
 import XCTest
+import hCore
 
 @testable import TerminateContracts
 
@@ -8,6 +9,7 @@ final class SendTerminationDateStoreTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         globalPresentableStoreContainer.deletePersistanceContainer()
     }
 
