@@ -191,11 +191,17 @@ class ScrollableSegmentedViewModel: NSObject, ObservableObject {
 
     func scrollToNearestWith(offset: CGFloat) {
         let allOffsets = getPagesOffset()
-        let offsetToScrollTo = allOffsets.min(by: { abs($0 - offset) < abs($1 - offset) }) ?? 0
-        if let index = allOffsets.firstIndex(of: offsetToScrollTo) {
+        let nearestTabOffset = getNearestTabOffset(for: offset)
+        if let index = allOffsets.firstIndex(of: nearestTabOffset) {
             setSelectedTab(with: pageModels[index].id)
         }
-        scrollTo(offset: offsetToScrollTo)
+        scrollTo(offset: nearestTabOffset)
+    }
+
+    func getNearestTabOffset(for offset: CGFloat) -> CGFloat {
+        let allOffsets = getPagesOffset()
+        let offsetToScrollTo = allOffsets.min(by: { abs($0 - offset) < abs($1 - offset) }) ?? 0
+        return offsetToScrollTo
     }
 
     func setSelectedTab(with id: String) {
@@ -222,13 +228,33 @@ class ScrollableSegmentedViewModel: NSObject, ObservableObject {
 }
 
 extension ScrollableSegmentedViewModel: UIScrollViewDelegate {
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        scrollToNearestWith(offset: scrollView.contentOffset.x)
-    }
-
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
             scrollToNearestWith(offset: scrollView.contentOffset.x)
+        }
+    }
+
+    func scrollViewWillEndDragging(
+        _ scrollView: UIScrollView,
+        withVelocity velocity: CGPoint,
+        targetContentOffset: UnsafeMutablePointer<CGPoint>
+    ) {
+        if velocity.x != 0 {
+            if #available(iOS 17.4, *) {
+                scrollView.stopScrollingAndZooming()
+            }
+            let scrollTo = getNearestTabOffset(for: targetContentOffset.pointee.x)
+            DispatchQueue.main.async { [weak scrollView] in
+                UIView.animate(
+                    withDuration: 0.3,
+                    delay: 0,
+                    options: UIView.AnimationOptions.curveEaseOut,
+                    animations: {
+                        scrollView?.contentOffset.x = scrollTo
+                    },
+                    completion: nil
+                )
+            }
         }
     }
 
