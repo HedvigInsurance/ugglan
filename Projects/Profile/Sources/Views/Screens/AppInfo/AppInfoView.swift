@@ -51,7 +51,7 @@ public struct AppInfoView: View {
                 }
             }
             .onTap {
-                UIPasteboard.general.value = memberId
+                UIPasteboard.general.string = memberId
                 showToaster()
             }
         }
@@ -72,7 +72,7 @@ public struct AppInfoView: View {
             }
         }
         .onTap {
-            UIPasteboard.general.value = appVersion
+            UIPasteboard.general.string = appVersion
             showToaster()
         }
     }
@@ -95,7 +95,7 @@ public struct AppInfoView: View {
             }
         }
         .onTap {
-            UIPasteboard.general.value = deviceId
+            UIPasteboard.general.string = deviceId
             showToaster()
         }
     }

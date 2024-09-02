@@ -5,9 +5,6 @@ public enum ExternalDependencies: CaseIterable {
     case kingfisher
     case apollo
     case apolloIosCodegen
-    case flow
-    case form
-    case presentation
     case dynamiccolor
     case disk
     case snapkit
@@ -41,22 +38,6 @@ public enum ExternalDependencies: CaseIterable {
         switch self {
         case .hero: return [.package(url: "https://github.com/HeroTransitions/Hero", .upToNextMajor(from: "1.6.3"))]
         case .apollo: return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("1.13.0"))]
-        case .flow:
-            return [.package(url: "https://github.com/HedvigInsurance/Flow", .upToNextMajor(from: "1.8.10"))]
-        case .form:
-            return [
-                .package(
-                    url: "https://github.com/HedvigInsurance/Form",
-                    .exact("3.1.2")
-                )
-            ]
-        case .presentation:
-            return [
-                .package(
-                    url: "https://github.com/HedvigInsurance/Presentation",
-                    .upToNextMajor(from: "3.0.5")
-                )
-            ]
         case .dynamiccolor:
             return [
                 .package(url: "https://github.com/yannickl/DynamicColor", .upToNextMajor(from: "5.0.1"))
@@ -124,10 +105,6 @@ public enum ExternalDependencies: CaseIterable {
         case .hero: return [.package(product: "Hero")]
         case .kingfisher: return [.package(product: "Kingfisher")]
         case .apollo: return [.package(product: "ApolloWebSocket"), .package(product: "Apollo")]
-        case .flow: return [.package(product: "Flow")]
-        case .form: return [.package(product: "Form")]
-        case .presentation:
-            return [.package(product: "Presentation"), .package(product: "PresentationDebugSupport")]
         case .dynamiccolor: return [.package(product: "DynamicColor")]
         case .disk: return [.package(product: "Disk")]
         case .snapkit: return [.package(product: "SnapKit")]
