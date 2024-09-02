@@ -27,7 +27,7 @@ public struct OTPCodeEntryView: View {
                         )
                         .background(
                             PasteView {
-                                guard let pasteBoardValue = UIPasteboard.general.value else {
+                                guard let pasteBoardValue = UIPasteboard.general.string else {
                                     return
                                 }
 

@@ -205,8 +205,9 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
         router.onPopToRoot = { [weak navigation] in
             navigation?.popToRootViewController(animated: true)
         }
-        router.onPopVC = { [weak navigation] vc in
-            navigation?.popViewController(vc, options: [])
+        router.onPopVC = { _ in
+            //            [weak navigation] vc in
+            //            navigation?.popViewController(vc, options: [])
         }
         router.onPopAtIndex = { [weak navigation] index in
             if let viewControllers = navigation?.viewControllers {
