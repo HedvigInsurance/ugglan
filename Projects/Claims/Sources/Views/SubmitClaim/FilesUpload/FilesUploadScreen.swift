@@ -170,7 +170,7 @@ public class FilesUploadViewModel: ObservableObject {
     private let model: FlowClaimFileUploadStepModel
     var claimFileUploadService = hClaimFileUploadService()
     @ObservedObject var fileGridViewModel: FileGridViewModel
-    @hPresentableStore var store: SubmitClaimStore
+    @PresentableStore var store: SubmitClaimStore
     var delayTimer: AnyCancellable?
     private var cancellables = Set<AnyCancellable>()
     init(model: FlowClaimFileUploadStepModel) {

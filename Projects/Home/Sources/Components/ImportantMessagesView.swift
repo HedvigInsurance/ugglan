@@ -6,7 +6,7 @@ import hCoreUI
 
 struct ImportantMessageView: View {
     let importantMessage: ImportantMessage
-    @hPresentableStore var store: HomeStore
+    @PresentableStore var store: HomeStore
     @State var showSafariView = false
     @State var urlLink: URL?
     var body: some View {

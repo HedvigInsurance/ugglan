@@ -90,7 +90,7 @@ struct MovingFlowTypeOfHome_Previews: PreviewProvider {
 }
 
 class MovingFlowHousingTypeViewModel: ObservableObject {
-    @hPresentableStore var store: MoveFlowStore
+    @PresentableStore var store: MoveFlowStore
     @Published var selectedHousingType: String? = HousingType.apartment.rawValue
 
     init() {

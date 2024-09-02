@@ -83,7 +83,7 @@ class WhoIsTravelingViewModel: ObservableObject {
     init(specification: TravelInsuranceContractSpecification) {
         self.specification = specification
 
-        let contractStore: ContractStore = hGlobalPresentableStoreContainer.get()
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
         contract = contractStore.state.contractForId(specification.contractId)
         let insuranceHolder = CoInsuredModel(
             firstName: contract?.firstName,

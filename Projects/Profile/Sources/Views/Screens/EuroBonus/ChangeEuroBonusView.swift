@@ -32,7 +32,7 @@ private class ChangeEurobonusViewModel: ObservableObject {
     var router: Router?
 
     init() {
-        let store: ProfileStore = hGlobalPresentableStoreContainer.get()
+        let store: ProfileStore = globalPresentableStoreContainer.get()
         inputVm = TextInputViewModel(
             masking: .init(type: .euroBonus),
             input: store.state.partnerData?.sas?.eurobonusNumber ?? "",
@@ -52,7 +52,7 @@ private class ChangeEurobonusViewModel: ObservableObject {
             throw ChangeEuroBonusError.error(message: L10n.SasIntegration.incorrectNumber)
         }
         let data = try await self.profileService.update(eurobonus: text)
-        let store: ProfileStore = hGlobalPresentableStoreContainer.get()
+        let store: ProfileStore = globalPresentableStoreContainer.get()
         store.send(.setEurobonusNumber(partnerData: data))
         self.router?.push(EuroBonusRouterType.successChangeEuroBonus)
     }

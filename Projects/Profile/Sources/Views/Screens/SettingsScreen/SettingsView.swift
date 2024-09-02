@@ -7,7 +7,7 @@ import hCoreUI
 import hGraphQL
 
 struct SettingsView: View {
-    @hPresentableStore var store: ProfileStore
+    @PresentableStore var store: ProfileStore
     @StateObject var memberSubscriptionPreferenceVm = MemberSubscriptionPreferenceViewModel()
     @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
 

@@ -6,13 +6,13 @@ import hCoreUI
 
 public struct CoInsuredInputErrorView: View {
     @ObservedObject var intentVm: IntentViewModel
-    @hPresentableStore var store: EditCoInsuredStore
+    @PresentableStore var store: EditCoInsuredStore
     @ObservedObject var vm: CoInusuredInputViewModel
 
     public init(
         vm: CoInusuredInputViewModel
     ) {
-        let store: EditCoInsuredStore = hGlobalPresentableStoreContainer.get()
+        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         intentVm = store.intentViewModel
         self.vm = vm
     }

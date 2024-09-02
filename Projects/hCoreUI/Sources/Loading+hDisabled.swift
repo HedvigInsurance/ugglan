@@ -2,7 +2,7 @@ import StoreContainer
 import SwiftUI
 
 private struct DisableInputModifier<StoreType: StoreLoading & Store>: ViewModifier {
-    @hPresentableStore var store: StoreType
+    @PresentableStore var store: StoreType
     private let actions: [StoreType.Loading]
     @State var disabled = false
 

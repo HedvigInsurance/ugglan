@@ -178,7 +178,7 @@ class ClaimFilesViewModel: ObservableObject {
     var claimFileUploadService = hClaimFileUploadService()
     var fetchClaimService = hFetchClaimService()
 
-    @hPresentableStore var store: ClaimsStore
+    @PresentableStore var store: ClaimsStore
     init(
         endPoint: String,
         files: [File],

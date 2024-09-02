@@ -5,7 +5,7 @@ import hCoreUI
 import hGraphQL
 
 struct DisplayQuestionView: View {
-    @hPresentableStore var store: TerminationContractStore
+    @PresentableStore var store: TerminationContractStore
     let terminationQuestions: [TerminationQuestion] = [
         TerminationQuestion(
             question: L10n.terminationQ01,

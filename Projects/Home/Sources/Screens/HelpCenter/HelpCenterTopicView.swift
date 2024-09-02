@@ -5,7 +5,7 @@ import hCoreUI
 
 struct HelpCenterTopicView: View {
     private var commonTopic: CommonTopic
-    @hPresentableStore var store: HomeStore
+    @PresentableStore var store: HomeStore
 
     public init(
         commonTopic: CommonTopic

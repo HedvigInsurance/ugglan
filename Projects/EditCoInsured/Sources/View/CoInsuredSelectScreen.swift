@@ -16,7 +16,7 @@ struct CoInsuredSelectScreen: View {
         contractId: String
     ) {
         self.contractId = contractId
-        let store: EditCoInsuredStore = hGlobalPresentableStoreContainer.get()
+        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         vm = store.coInsuredViewModel
         intentVm = store.intentViewModel
         alreadyAddedCoinsuredMembers = store.coInsuredViewModel.config.preSelectedCoInsuredList.filter({
@@ -53,7 +53,7 @@ struct CoInsuredSelectScreen: View {
                 preSelectedItems: { [] },
                 onSelected: { selectedCoinsured in
                     if let selectedCoinsured = selectedCoinsured.first {
-                        let store: EditCoInsuredStore = hGlobalPresentableStoreContainer.get()
+                        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
 
                         if let object = selectedCoinsured.0 {
                             store.coInsuredViewModel.addCoInsured(

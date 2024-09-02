@@ -5,7 +5,7 @@ import hCoreUI
 
 struct PaymentDetailsView: View {
     private let data: PaymentData
-    @hPresentableStore var store: PaymentStore
+    @PresentableStore var store: PaymentStore
     @State var expandedContracts: [String] = []
     @EnvironmentObject var router: Router
 

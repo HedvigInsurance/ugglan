@@ -4,7 +4,7 @@ import hGraphQL
 
 public class MoveFlowClientOctopus: MoveFlowClient {
     @Inject var octopus: hOctopus
-    @hPresentableStore var store: MoveFlowStore
+    @PresentableStore var store: MoveFlowStore
 
     public init() {}
 

@@ -69,7 +69,7 @@ public struct EditCoInsuredNavigation: View {
         self.config = config
         self.openSpecificScreen = openSpecificScreen ?? .none
 
-        let store: EditCoInsuredStore = hGlobalPresentableStoreContainer.get()
+        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         store.coInsuredViewModel.initializeCoInsured(with: config)
     }
 
@@ -122,7 +122,7 @@ public struct EditCoInsuredNavigation: View {
             openProgress(showSuccess: false)
         }
         .modally(item: $editCoInsuredNavigationVm.isEditCoinsuredSelectPresented) { editConfig in
-            let store: EditCoInsuredStore = hGlobalPresentableStoreContainer.get()
+            let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
             let _ = store.coInsuredViewModel.initializeCoInsured(with: editConfig)
             openNewInsuredPeopleScreen()
                 .environmentObject(router)
@@ -132,7 +132,7 @@ public struct EditCoInsuredNavigation: View {
 
     func openNewInsuredPeopleScreen() -> some View {
         openSpecificScreen = .none
-        let store: EditCoInsuredStore = hGlobalPresentableStoreContainer.get()
+        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         return InsuredPeopleNewScreen(
             vm: store.coInsuredViewModel,
             intentVm: store.intentViewModel
@@ -142,7 +142,7 @@ public struct EditCoInsuredNavigation: View {
     }
 
     func openInsuredPeopleScreen() -> some View {
-        let store: EditCoInsuredStore = hGlobalPresentableStoreContainer.get()
+        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         return InsuredPeopleScreen(
             vm: store.coInsuredViewModel,
             intentVm: store.intentViewModel
@@ -191,7 +191,7 @@ public struct EditCoInsuredNavigation: View {
     }
 
     func openRemoveCoInsuredScreen() -> some View {
-        let store: EditCoInsuredStore = hGlobalPresentableStoreContainer.get()
+        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         return RemoveCoInsuredScreen(
             vm: store.coInsuredViewModel
         )
@@ -256,7 +256,7 @@ public struct EditCoInsuredSelectInsuranceNavigation: View {
                             editCoInsuredViewModel?.editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
                                 return [object]
                             })
-                            let store: EditCoInsuredStore = hGlobalPresentableStoreContainer.get()
+                            let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
                             store.coInsuredViewModel.initializeCoInsured(with: object)
                         }
                     }

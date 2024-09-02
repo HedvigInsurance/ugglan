@@ -5,7 +5,7 @@ import hCore
 import hCoreUI
 
 public struct ConnectPaymentCardView: View {
-    @hPresentableStore var store: PaymentStore
+    @PresentableStore var store: PaymentStore
     @EnvironmentObject var connectPaymentVm: ConnectPaymentViewModel
     @EnvironmentObject var router: Router
     public init() {}

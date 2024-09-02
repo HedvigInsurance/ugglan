@@ -5,7 +5,7 @@ import hCoreUI
 
 struct SubmitClaimCarScreen: View {
     let model: FlowClaimDeflectStepModel?
-    @hPresentableStore var store: SubmitClaimStore
+    @PresentableStore var store: SubmitClaimStore
 
     init(
         model: FlowClaimDeflectStepModel?

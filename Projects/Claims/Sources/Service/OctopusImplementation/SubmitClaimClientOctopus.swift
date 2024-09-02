@@ -6,7 +6,7 @@ import hGraphQL
 
 public class SubmitClaimClientOctopus: SubmitClaimClient {
     public init() {}
-    @hPresentableStore var store: SubmitClaimStore
+    @PresentableStore var store: SubmitClaimStore
 
     public func startClaim(entrypointId: String?, entrypointOptionId: String?) async throws -> SubmitClaimStepResponse {
         let startInput = OctopusGraphQL.FlowClaimStartInput(

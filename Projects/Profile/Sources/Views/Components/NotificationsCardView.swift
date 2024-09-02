@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 struct NotificationsCardView: View {
-    @hPresentableStore var store: ProfileStore
+    @PresentableStore var store: ProfileStore
     var body: some View {
         PresentableStoreLens(
             ProfileStore.self,

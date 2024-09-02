@@ -14,7 +14,7 @@ final class DateOfOccurrancePlusLocationStoreTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        hGlobalPresentableStoreContainer.deletePersistanceContainer()
+        globalPresentableStoreContainer.deletePersistanceContainer()
     }
 
     override func tearDown() async throws {

@@ -7,7 +7,7 @@ import hCoreUI
 import hGraphQL
 
 struct ContractTable: View {
-    @hPresentableStore var store: ContractStore
+    @PresentableStore var store: ContractStore
     let showTerminated: Bool
     @State var onlyTerminatedInsurances = false
 

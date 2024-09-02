@@ -7,7 +7,7 @@ public struct PickLanguage: View {
     let currentMarket: Market
     let onSave: ((String) -> Void)?
     let onCancel: (() -> Void)?
-    @hPresentableStore var store: MarketStore
+    @PresentableStore var store: MarketStore
 
     @State var currentLocale: Localization.Locale = .currentLocale.value
     @State var code: String? = Localization.Locale.currentLocale.value.lprojCode
@@ -24,7 +24,7 @@ public struct PickLanguage: View {
         onSave: @escaping (String) -> Void,
         onCancel: @escaping () -> Void
     ) {
-        let store: MarketStore = hGlobalPresentableStoreContainer.get()
+        let store: MarketStore = globalPresentableStoreContainer.get()
         currentMarket = store.state.market
         self.onSave = onSave
         self.onCancel = onCancel

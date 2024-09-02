@@ -6,7 +6,7 @@ import hCore
 import hCoreUI
 
 public struct SelectClaimEntrypointGroup: View {
-    @hPresentableStore var store: SubmitClaimStore
+    @PresentableStore var store: SubmitClaimStore
     @State var selectedClaimGroup: String? = nil
     @State var claimEntrypoints: [ClaimEntryPointResponseModel] = []
     var selectedEntrypoints: ([ClaimEntryPointResponseModel]) -> Void
@@ -60,7 +60,7 @@ public struct SelectClaimEntrypointGroup: View {
 }
 
 struct SelectClaimEntrypointType: View {
-    @hPresentableStore var store: SubmitClaimStore
+    @PresentableStore var store: SubmitClaimStore
     var selectedEntrypointOptions: ([ClaimEntryPointOptionResponseModel], String?) -> Void
     @State var entrypointList: [ClaimEntryPointResponseModel] = []
     @State var claimOptions: [ClaimEntryPointOptionResponseModel] = []
@@ -141,7 +141,7 @@ struct SelectClaimEntrypointType: View {
 }
 
 struct SelectClaimEntrypointOption: View {
-    @hPresentableStore var store: SubmitClaimStore
+    @PresentableStore var store: SubmitClaimStore
     @State var selectedClaimOption: String? = nil
     var onButtonClick: (String, String) -> Void
 

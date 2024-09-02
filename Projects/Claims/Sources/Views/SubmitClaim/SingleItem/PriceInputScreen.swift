@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 struct PriceInputScreen: View {
-    @hPresentableStore var store: SubmitClaimStore
+    @PresentableStore var store: SubmitClaimStore
     @State var purchasePrice: String = ""
     @State var type: ClaimsFlowSingleItemFieldType? = .purchasePrice
     @EnvironmentObject var router: Router
@@ -16,7 +16,7 @@ struct PriceInputScreen: View {
         onSave: @escaping (String) -> Void
     ) {
         self.onSave = onSave
-        let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
+        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
         currency = store.state.singleItemStep?.prefferedCurrency ?? ""
         if let purchasePrice = store.state.singleItemStep?.purchasePrice {
             self.purchasePrice = String(purchasePrice)

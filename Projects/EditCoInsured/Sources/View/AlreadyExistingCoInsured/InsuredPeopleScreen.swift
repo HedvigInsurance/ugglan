@@ -6,7 +6,7 @@ import hCoreUI
 import hGraphQL
 
 struct InsuredPeopleScreen: View {
-    @hPresentableStore var store: EditCoInsuredStore
+    @PresentableStore var store: EditCoInsuredStore
     @ObservedObject var vm: InsuredPeopleNewScreenModel
     @ObservedObject var intentVm: IntentViewModel
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
@@ -154,12 +154,12 @@ struct CancelButton: View {
 }
 
 struct ConfirmChangesView: View {
-    @hPresentableStore var store: EditCoInsuredStore
+    @PresentableStore var store: EditCoInsuredStore
     @ObservedObject var intentVm: IntentViewModel
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
 
     public init() {
-        let store: EditCoInsuredStore = hGlobalPresentableStoreContainer.get()
+        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         intentVm = store.intentViewModel
     }
 
@@ -235,7 +235,7 @@ class InsuredPeopleNewScreenModel: ObservableObject {
     @Published var noSSN = false
     var config: InsuredPeopleConfig = InsuredPeopleConfig()
 
-    @hPresentableStore var store: EditCoInsuredStore
+    @PresentableStore var store: EditCoInsuredStore
     func completeList(
         coInsuredAdded: [CoInsuredModel]? = nil,
         coInsuredDeleted: [CoInsuredModel]? = nil

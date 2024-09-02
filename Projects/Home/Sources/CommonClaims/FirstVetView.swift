@@ -5,7 +5,7 @@ import hCore
 import hCoreUI
 
 public struct FirstVetView: View {
-    @hPresentableStore var store: HomeStore
+    @PresentableStore var store: HomeStore
     private let partners: [FirstVetPartner]
 
     public init(

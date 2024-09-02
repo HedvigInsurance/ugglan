@@ -7,7 +7,7 @@ import hCoreUI
 import hGraphQL
 
 struct ActiveSectionView<Claims: View>: View {
-    @hPresentableStore var store: HomeStore
+    @PresentableStore var store: HomeStore
 
     var claimsContent: Claims
 

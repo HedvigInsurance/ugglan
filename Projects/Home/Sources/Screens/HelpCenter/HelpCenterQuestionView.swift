@@ -7,7 +7,7 @@ import hCoreUI
 struct HelpCenterQuestionView: View {
     private var question: Question
     @State var height: CGFloat = 0
-    @hPresentableStore var store: HomeStore
+    @PresentableStore var store: HomeStore
 
     public init(
         question: Question

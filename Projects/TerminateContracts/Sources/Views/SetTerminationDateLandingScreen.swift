@@ -5,7 +5,7 @@ import hCore
 import hCoreUI
 
 struct SetTerminationDateLandingScreen: View {
-    @hPresentableStore var store: TerminationContractStore
+    @PresentableStore var store: TerminationContractStore
     @StateObject var vm = SetTerminationDateLandingScreenViewModel()
     let onSelected: () -> Void
     @EnvironmentObject var terminationNavigationVm: TerminationFlowNavigationViewModel
@@ -210,7 +210,7 @@ class SetTerminationDateLandingScreenViewModel: ObservableObject {
     @Published var terminationDate: Date?
     private var cancellables = Set<AnyCancellable>()
     init() {
-        let terminationStore: TerminationContractStore = hGlobalPresentableStoreContainer.get()
+        let terminationStore: TerminationContractStore = globalPresentableStoreContainer.get()
         terminationStore.stateSignal
             .map({ $0.terminationDateStep?.date })
             .removeDuplicates()

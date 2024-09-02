@@ -11,7 +11,7 @@ extension AppDelegate {
     }
 
     private var getContext: [String: String] {
-        let profileStore: ProfileStore = hGlobalPresentableStoreContainer.get()
+        let profileStore: ProfileStore = globalPresentableStoreContainer.get()
         let memberId = profileStore.state.memberDetails?.id
 
         let optionalDictionary: [String: String?] = [
@@ -35,7 +35,7 @@ extension AppDelegate {
             }
             .store(in: &cancellables)
 
-        let profileStore: ProfileStore = hGlobalPresentableStoreContainer.get()
+        let profileStore: ProfileStore = globalPresentableStoreContainer.get()
 
         profileStore.stateSignal
             .map({ $0.memberDetails?.id })

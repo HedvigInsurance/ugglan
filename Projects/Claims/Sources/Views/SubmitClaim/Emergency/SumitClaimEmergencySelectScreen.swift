@@ -5,7 +5,7 @@ import hCoreUI
 
 struct SumitClaimEmergencySelectScreen: View {
     @State var selectedValue: Bool = true
-    @hPresentableStore var store: SubmitClaimStore
+    @PresentableStore var store: SubmitClaimStore
     @State var isLoading: Bool = false
     let title: () -> String
 

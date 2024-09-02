@@ -22,7 +22,7 @@ class ChangeCodeViewModel: ObservableObject {
     var router: Router?
 
     init() {
-        let store: ForeverStore = hGlobalPresentableStoreContainer.get()
+        let store: ForeverStore = globalPresentableStoreContainer.get()
         inputVm = TextInputViewModel(
             masking: .init(type: .none),
             input: store.state.foreverData?.discountCode ?? "",
@@ -47,7 +47,7 @@ class ChangeCodeViewModel: ObservableObject {
     private func handleOnSave() async throws {
         inputVm.onSave = { [weak self] text in
             try await self?.foreverService.changeCode(code: text)
-            let store: ForeverStore = hGlobalPresentableStoreContainer.get()
+            let store: ForeverStore = globalPresentableStoreContainer.get()
             store.send(.fetch)
             self?.router?.push(ForeverRouterActions.success)
         }

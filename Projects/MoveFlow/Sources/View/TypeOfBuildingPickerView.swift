@@ -18,7 +18,7 @@ struct TypeOfBuildingPickerView: View {
         ItemPickerScreen<ExtraBuildingType>(
             config: .init(
                 items: {
-                    let store: MoveFlowStore = hGlobalPresentableStoreContainer.get()
+                    let store: MoveFlowStore = globalPresentableStoreContainer.get()
                     return store.state.movingFlowModel?.extraBuildingTypes
                         .compactMap({ (object: $0, displayName: .init(title: $0.translatedValue)) }) ?? []
                 }(),
@@ -29,7 +29,7 @@ struct TypeOfBuildingPickerView: View {
                     return []
                 },
                 onSelected: { selected in
-                    let store: MoveFlowStore = hGlobalPresentableStoreContainer.get()
+                    let store: MoveFlowStore = globalPresentableStoreContainer.get()
                     if let selected = selected.first {
                         isBuildingTypePickerPresented = nil
                         if let object = selected.0 {

@@ -30,7 +30,7 @@ struct LoginNavigation: View {
                     OTPEntryView()
                 case .se:
                     BankIDLoginQRView {
-                        let store: UgglanStore = hGlobalPresentableStoreContainer.get()
+                        let store: UgglanStore = globalPresentableStoreContainer.get()
                         await store.sendAsync(.setIsDemoMode(to: true))
                         ApolloClient.initAndRegisterClient()
                     }
@@ -133,7 +133,7 @@ struct NotLoggedInView_Previews: PreviewProvider {
 }
 
 public class NotLoggedViewModel: ObservableObject {
-    @hPresentableStore var store: MarketStore
+    @PresentableStore var store: MarketStore
     @Published var blurHash: String = ""
     @Published var imageURL: String = ""
     @Published var bootStrapped: Bool = false

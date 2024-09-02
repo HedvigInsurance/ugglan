@@ -6,7 +6,7 @@ import hCoreUI
 import hGraphQL
 
 public struct ForeverView: View {
-    @hPresentableStore var store: ForeverStore
+    @PresentableStore var store: ForeverStore
     @State var scrollTo: Int = -1
     @State var spacing: CGFloat = 0
     @State var totalHeight: CGFloat = 0
@@ -122,7 +122,7 @@ public struct ForeverView: View {
 }
 
 struct ForeverView_Previews: PreviewProvider {
-    @hPresentableStore static var store: ForeverStore
+    @PresentableStore static var store: ForeverStore
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
         return ForeverView()

@@ -33,10 +33,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         ApolloClient.cache = InMemoryNormalizedCache()
 
         // remove all persisted state
-        hGlobalPresentableStoreContainer.deletePersistanceContainer()
+        globalPresentableStoreContainer.deletePersistanceContainer()
 
         // create new store container to remove all old store instances
-        hGlobalPresentableStoreContainer = hPresentableStoreContainer()
+        globalPresentableStoreContainer = hPresentableStoreContainer()
 
         ApolloClient.initAndRegisterClient()
     }
@@ -44,7 +44,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func logout() {
         cancellables.removeAll()
         UIApplication.shared.unregisterForRemoteNotifications()
-        let ugglanStore: UgglanStore = hGlobalPresentableStoreContainer.get()
+        let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
         ugglanStore.send(.setIsDemoMode(to: false))
         Task { @MainActor in
             let authenticationService = AuthenticationService()
@@ -116,7 +116,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func registerForPushNotifications(completed: @escaping () -> Void) {
         UNUserNotificationCenter.current()
             .getNotificationSettings { settings in
-                let store: ProfileStore = hGlobalPresentableStoreContainer.get()
+                let store: ProfileStore = globalPresentableStoreContainer.get()
                 store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
                 guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
                     return
@@ -133,7 +133,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 completionHandler: { _, _ in
                     UNUserNotificationCenter.current()
                         .getNotificationSettings { settings in
-                            let store: ProfileStore = hGlobalPresentableStoreContainer.get()
+                            let store: ProfileStore = globalPresentableStoreContainer.get()
                             store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
                         }
                     completed()
@@ -145,7 +145,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func handleURL(url: URL) {
         let impersonate = Impersonate()
         if impersonate.canImpersonate(with: url) {
-            let store: UgglanStore = hGlobalPresentableStoreContainer.get()
+            let store: UgglanStore = globalPresentableStoreContainer.get()
             store.send(.setIsDemoMode(to: false))
             Task {
                 setupSession()
@@ -174,7 +174,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func setupPresentableStoreLogger() {
-        hGlobalPresentableStoreContainer.logger = { message in
+        globalPresentableStoreContainer.logger = { message in
             log.info(message)
         }
     }

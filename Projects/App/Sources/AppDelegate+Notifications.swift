@@ -37,14 +37,14 @@ extension AppDelegate {
             using: { _ in
                 UNUserNotificationCenter.current()
                     .getNotificationSettings { settings in
-                        let store: ProfileStore = hGlobalPresentableStoreContainer.get()
+                        let store: ProfileStore = globalPresentableStoreContainer.get()
                         store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
                     }
             }
         )
         UNUserNotificationCenter.current()
             .getNotificationSettings { settings in
-                let store: ProfileStore = hGlobalPresentableStoreContainer.get()
+                let store: ProfileStore = globalPresentableStoreContainer.get()
                 store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
             }
     }

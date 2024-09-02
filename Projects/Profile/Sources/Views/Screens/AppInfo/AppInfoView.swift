@@ -101,7 +101,7 @@ public struct AppInfoView: View {
     }
 
     private var submitBugButton: some View {
-        let store: ProfileStore = hGlobalPresentableStoreContainer.get()
+        let store: ProfileStore = globalPresentableStoreContainer.get()
         let memberId = store.state.memberDetails?.id ?? ""
         let systemVersion = UIDevice.current.systemVersion
         return OpenEmailClientButton(
@@ -145,7 +145,7 @@ struct AppInfoView_Previews: PreviewProvider {
     static var previews: some View {
         AppInfoView()
             .onAppear {
-                let store: ProfileStore = hGlobalPresentableStoreContainer.get()
+                let store: ProfileStore = globalPresentableStoreContainer.get()
                 store.send(
                     .setMember(
                         memberData: .init(

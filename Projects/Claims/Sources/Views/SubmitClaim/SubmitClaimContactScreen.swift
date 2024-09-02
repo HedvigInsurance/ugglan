@@ -60,7 +60,7 @@ class SubmitClaimContractViewModel: ObservableObject {
     @Published var keyboardEnabled: Bool = false
     @Published var type: ClaimsFlowContactType?
     @Published var phoneNumberError: String?
-    @hPresentableStore var store: SubmitClaimStore
+    @PresentableStore var store: SubmitClaimStore
     var phoneNumberCancellable: AnyCancellable?
 
     init(phoneNumber: String) {

@@ -61,7 +61,7 @@ struct DiscountCodeSectionView: View {
 }
 
 struct DiscountCodeSectionView_Previews: PreviewProvider {
-    @hPresentableStore static var store: ForeverStore
+    @PresentableStore static var store: ForeverStore
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
         return DiscountCodeSectionView()

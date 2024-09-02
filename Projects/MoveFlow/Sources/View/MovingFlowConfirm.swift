@@ -7,7 +7,7 @@ import hGraphQL
 
 struct MovingFlowConfirm: View {
     private let whatIsCoveredId = "whatIsCoveredId"
-    @hPresentableStore var store: MoveFlowStore
+    @PresentableStore var store: MoveFlowStore
     @State var isMultipleOffer = true
     @State var selectedInsurances: [String] = [""]
     @State var selectedFaq: [String] = [""]
@@ -346,7 +346,7 @@ struct MovingFlowConfirm_Previews: PreviewProvider {
         Localization.Locale.currentLocale.send(.nb_NO)
         return MovingFlowConfirm()
             .onAppear {
-                let store: MoveFlowStore = hGlobalPresentableStoreContainer.get()
+                let store: MoveFlowStore = globalPresentableStoreContainer.get()
                 let fragment = OctopusGraphQL.MoveIntentFragment.init(
                     _dataDict: .init(
                         data: [:],

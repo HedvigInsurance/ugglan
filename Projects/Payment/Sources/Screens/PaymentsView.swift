@@ -5,12 +5,12 @@ import hCoreUI
 import hGraphQL
 
 public struct PaymentsView: View {
-    @hPresentableStore var store: PaymentStore
+    @PresentableStore var store: PaymentStore
     @EnvironmentObject var router: Router
     @EnvironmentObject var paymentNavigationVm: PaymentsNavigationViewModel
 
     public init() {
-        let store: PaymentStore = hGlobalPresentableStoreContainer.get()
+        let store: PaymentStore = globalPresentableStoreContainer.get()
         store.send(.load)
         store.send(.fetchPaymentStatus)
     }

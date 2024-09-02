@@ -37,7 +37,7 @@ public struct PaymentsNavigation<Content: View>: View {
                     case .discounts:
                         PaymentsDiscountsRootView()
                             .onAppear {
-                                let store: PaymentStore = hGlobalPresentableStoreContainer.get()
+                                let store: PaymentStore = globalPresentableStoreContainer.get()
                                 store.send(.fetchDiscountsData)
                             }
                             .routerDestination(for: PaymentsRedirectType.self) { redirectType in

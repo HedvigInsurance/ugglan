@@ -8,7 +8,7 @@ import hCoreUI
 import hGraphQL
 
 struct Contracts: View {
-    @hPresentableStore var store: ContractStore
+    @PresentableStore var store: ContractStore
     let pollTimer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
     let showTerminated: Bool
 

@@ -7,7 +7,7 @@ import hCore
 import hCoreUI
 
 public struct ProfileView: View {
-    @hPresentableStore var store: ProfileStore
+    @PresentableStore var store: ProfileStore
     @State private var showLogoutAlert = false
 
     private var logoutAlert: SwiftUI.Alert {

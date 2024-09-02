@@ -8,7 +8,7 @@ import hGraphQL
 
 public struct HelpCenterStartView: View {
     @ObservedObject var vm: HelpCenterStartViewModel
-    @hPresentableStore var store: HomeStore
+    @PresentableStore var store: HomeStore
     let onQuickAction: (QuickAction) -> Void
     @EnvironmentObject var router: Router
     @State var vc: UIViewController?
@@ -165,7 +165,7 @@ public struct HelpCenterStartView: View {
 
 class HelpCenterStartViewModel: NSObject, ObservableObject {
     var helpCenterModel: HelpCenterModel
-    @hPresentableStore var store: HomeStore
+    @PresentableStore var store: HomeStore
     var didSetInitialSearchAppearance = false
     @Published var quickActions: [QuickAction] = []
 
@@ -193,7 +193,7 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
             + InsuranceQuestions.all().asQuestions()
             + OtherQuestions.all().asQuestions()
         self.helpCenterModel = helpCenterModel
-        let store: HomeStore = hGlobalPresentableStoreContainer.get()
+        let store: HomeStore = globalPresentableStoreContainer.get()
         super.init()
 
         quickActionCancellable = store.stateSignal

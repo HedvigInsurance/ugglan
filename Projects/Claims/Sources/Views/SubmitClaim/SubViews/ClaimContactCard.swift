@@ -7,7 +7,7 @@ import hCore
 import hCoreUI
 
 struct ClaimContactCard: View {
-    @hPresentableStore var store: SubmitClaimStore
+    @PresentableStore var store: SubmitClaimStore
     var model: FlowClaimDeflectStepModel
     var title: String?
     var imageUrl: String?
@@ -102,7 +102,7 @@ struct ClaimContactCard: View {
 }
 
 struct ClaimEmergencyContactCard: View {
-    @hPresentableStore var store: SubmitClaimStore
+    @PresentableStore var store: SubmitClaimStore
     let cardTitle: String?
     let footnote: String?
     let imageUrl: String?

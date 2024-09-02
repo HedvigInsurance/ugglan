@@ -5,7 +5,7 @@ import hCoreUI
 
 struct ModelPickerView: View {
     @EnvironmentObject var router: Router
-    @hPresentableStore var store: SubmitClaimStore
+    @PresentableStore var store: SubmitClaimStore
     let brand: ClaimFlowItemBrandOptionModel
 
     var body: some View {

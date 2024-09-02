@@ -12,7 +12,7 @@ extension PaymentHistoryListData {
         var nextPayment: PaymentData?
         for item in data.pastCharges.enumerated() {
             if item.offset == 0 {
-                let store: PaymentStore = hGlobalPresentableStoreContainer.get()
+                let store: PaymentStore = globalPresentableStoreContainer.get()
                 nextPayment = store.state.paymentData
             }
             let paymentData = PaymentData(

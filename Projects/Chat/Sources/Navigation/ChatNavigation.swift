@@ -10,7 +10,7 @@ public class ChatNavigationViewModel: ObservableObject {
     @Published var dateOfLastMessage: Date?
     private var dateOfLastMessageCancellable: AnyCancellable?
     init() {
-        let store: ChatStore = hGlobalPresentableStoreContainer.get()
+        let store: ChatStore = globalPresentableStoreContainer.get()
         dateOfLastMessageCancellable = store.actionSignal
             .receive(on: RunLoop.main)
             .sink { _ in

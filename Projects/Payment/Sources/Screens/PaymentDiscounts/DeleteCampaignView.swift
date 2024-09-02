@@ -77,7 +77,7 @@ struct DeleteCampaignView: View {
 class DeleteCampaignViewModel: ObservableObject {
     let discount: Discount
     private var campaignService = hCampaignService()
-    @hPresentableStore private var store: PaymentStore
+    @PresentableStore private var store: PaymentStore
     @Published var codeRemoved = false
     @Published var isLoading = false
     @Published var error: String? = nil

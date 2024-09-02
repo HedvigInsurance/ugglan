@@ -10,7 +10,7 @@ final class MyInfoViewModelTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        hGlobalPresentableStoreContainer.deletePersistanceContainer()
+        globalPresentableStoreContainer.deletePersistanceContainer()
         sut = nil
     }
 
@@ -34,7 +34,7 @@ final class MyInfoViewModelTests: XCTestCase {
 
         self.sut = mockService
 
-        let store: ProfileStore = hGlobalPresentableStoreContainer.get()
+        let store: ProfileStore = globalPresentableStoreContainer.get()
         self.store = store
 
         await store.sendAsync(
@@ -67,7 +67,7 @@ final class MyInfoViewModelTests: XCTestCase {
 
         self.sut = mockService
 
-        let store: ProfileStore = hGlobalPresentableStoreContainer.get()
+        let store: ProfileStore = globalPresentableStoreContainer.get()
         self.store = store
         await store.sendAsync(
             .setMemberDetails(
@@ -132,7 +132,7 @@ final class MyInfoViewModelTests: XCTestCase {
 
         self.sut = mockService
 
-        let store: ProfileStore = hGlobalPresentableStoreContainer.get()
+        let store: ProfileStore = globalPresentableStoreContainer.get()
         self.store = store
         await store.sendAsync(
             .setMemberDetails(

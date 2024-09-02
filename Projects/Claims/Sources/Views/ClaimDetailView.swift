@@ -106,7 +106,7 @@ public struct ClaimDetailView: View {
         }
         .modally(item: $vm.showFilesView) { [weak vm] item in
             ClaimFilesView(endPoint: item.endPoint, files: item.files) { _ in
-                let claimStore: ClaimsStore = hGlobalPresentableStoreContainer.get()
+                let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
                 claimStore.send(.fetchClaims)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     let nav = UIApplication.shared.getTopViewControllerNavigation()
@@ -367,7 +367,7 @@ struct ClaimDetailView_Previews: PreviewProvider {
 }
 
 public class ClaimDetailViewModel: ObservableObject {
-    @hPresentableStore var store: ClaimsStore
+    @PresentableStore var store: ClaimsStore
     @Published var claim: ClaimModel
     var claimService = hFetchClaimService()
     @Published var fetchFilesError: String?
@@ -382,7 +382,7 @@ public class ClaimDetailViewModel: ObservableObject {
         claim: ClaimModel
     ) {
         self.claim = claim
-        let store: ClaimsStore = hGlobalPresentableStoreContainer.get()
+        let store: ClaimsStore = globalPresentableStoreContainer.get()
         let files = store.state.files[claim.id] ?? []
         self.fileGridViewModel = .init(files: files, options: [])
         Task {
@@ -416,13 +416,13 @@ public class ClaimDetailViewModel: ObservableObject {
 
     private func handleClaimChat() {
         if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
-            let chatStore: ChatStore = hGlobalPresentableStoreContainer.get()
+            let chatStore: ChatStore = globalPresentableStoreContainer.get()
             chatStore.stateSignal
                 .map({ $0.conversationsTimeStamp })
                 .removeDuplicates()
                 .receive(on: RunLoop.main)
                 .sink { [weak self] conversationsTimeStamp in
-                    let claimStore: ClaimsStore = hGlobalPresentableStoreContainer.get()
+                    let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
                     let conversation = claimStore.state.claim(for: self?.claim.id ?? "")?.conversation
                     let conversationId = conversation?.id
                     let timeStamp = conversationsTimeStamp[conversationId ?? ""]
@@ -437,7 +437,7 @@ public class ClaimDetailViewModel: ObservableObject {
                 }
                 .store(in: &self.cancellables)
 
-            let claimStore: ClaimsStore = hGlobalPresentableStoreContainer.get()
+            let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
             let claimId = self.claim.id
             claimStore.stateSignal
                 .map({ $0.claim(for: claimId) })
@@ -445,9 +445,9 @@ public class ClaimDetailViewModel: ObservableObject {
                 .removeDuplicates()
                 .receive(on: RunLoop.main)
                 .sink { [weak self] value in
-                    let claimStore: ClaimsStore = hGlobalPresentableStoreContainer.get()
+                    let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
                     let conversationId = claimStore.state.claim(for: self?.claim.id ?? "")?.conversation?.id
-                    let chatStore: ChatStore = hGlobalPresentableStoreContainer.get()
+                    let chatStore: ChatStore = globalPresentableStoreContainer.get()
                     let timeStamp = chatStore.state.conversationsTimeStamp[conversationId ?? ""]
                     let showChatNotification = timeStamp ?? Date() < value
                     self?.toolbarOptionType =
@@ -467,7 +467,7 @@ public class ClaimDetailViewModel: ObservableObject {
 
             Timer.publish(every: 5, on: .main, in: .common).autoconnect()
                 .sink { _ in
-                    let store: ClaimsStore = hGlobalPresentableStoreContainer.get()
+                    let store: ClaimsStore = globalPresentableStoreContainer.get()
                     store.send(.fetchClaims)
                 }
                 .store(in: &cancellables)

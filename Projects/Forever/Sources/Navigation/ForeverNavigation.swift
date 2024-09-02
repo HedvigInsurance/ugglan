@@ -9,7 +9,7 @@ public class ForeverNavigationViewModel: ObservableObject {
     var modalPresentationSourceWrapperViewModel = ModalPresentationSourceWrapperViewModel()
 
     func shareCode(code: String) {
-        let store: ForeverStore = hGlobalPresentableStoreContainer.get()
+        let store: ForeverStore = globalPresentableStoreContainer.get()
         let discount = store.state.foreverData?.monthlyDiscountPerReferral.formattedAmount
         let url =
             "\(hGraphQL.Environment.current.webBaseURL)/\(hCore.Localization.Locale.currentLocale.value.webPath)/forever/\(code)"

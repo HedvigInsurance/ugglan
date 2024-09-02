@@ -7,7 +7,7 @@ import hCoreUI
 import hGraphQL
 
 struct CrossSellingItem: View {
-    @hPresentableStore var store: ContractStore
+    @PresentableStore var store: ContractStore
     let crossSell: CrossSell
     @State var fieldIsClicked = false
 

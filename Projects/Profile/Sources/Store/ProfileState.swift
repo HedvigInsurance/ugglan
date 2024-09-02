@@ -21,14 +21,14 @@ public struct ProfileState: StateProtocol {
     }
 
     public var canCreateTravelInsurance: Bool {
-        let store: ContractStore = hGlobalPresentableStoreContainer.get()
+        let store: ContractStore = globalPresentableStoreContainer.get()
         return store.state.activeContracts.filter({ $0.supportsTravelCertificate }).isEmpty
     }
 
     public init() {
         UNUserNotificationCenter.current()
             .getNotificationSettings { settings in
-                let store: ProfileStore = hGlobalPresentableStoreContainer.get()
+                let store: ProfileStore = globalPresentableStoreContainer.get()
                 store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
             }
     }

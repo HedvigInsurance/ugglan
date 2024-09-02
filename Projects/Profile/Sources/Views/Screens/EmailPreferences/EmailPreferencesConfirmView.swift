@@ -7,7 +7,7 @@ struct EmailPreferencesConfirmView: View {
     @ObservedObject var vm: MemberSubscriptionPreferenceViewModel
     @EnvironmentObject var profileNavigationVm: ProfileNavigationViewModel
 
-    @hPresentableStore var store: ProfileStore
+    @PresentableStore var store: ProfileStore
     var body: some View {
         GenericErrorView(
             title: vm.isUnsubscribed ? L10n.SettingsScreen.subscribeTitle : L10n.General.areYouSure,

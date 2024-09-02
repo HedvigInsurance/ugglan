@@ -8,7 +8,7 @@ import hCoreUI
 import hGraphQL
 
 public struct RenewalCardView: View {
-    @hPresentableStore var store: HomeStore
+    @PresentableStore var store: HomeStore
     @State private var showMultipleAlert = false
     @State private var showFailedToOpenUrlAlert = false
     @State private var document: InsuranceTerm?
@@ -151,7 +151,7 @@ public struct RenewalCardView: View {
 }
 
 struct RenewalCardView_Previews: PreviewProvider {
-    @hPresentableStore static var store: HomeStore
+    @PresentableStore static var store: HomeStore
 
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)

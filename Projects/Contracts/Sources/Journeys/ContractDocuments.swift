@@ -8,7 +8,7 @@ import hCoreUI
 import hGraphQL
 
 struct ContractDocumentsView: View {
-    @hPresentableStore var contractStore: ContractStore
+    @PresentableStore var contractStore: ContractStore
     @EnvironmentObject private var contractsNavigationViewModel: ContractsNavigationViewModel
 
     let id: String

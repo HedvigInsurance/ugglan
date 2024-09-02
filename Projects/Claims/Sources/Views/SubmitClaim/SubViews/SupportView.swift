@@ -5,7 +5,7 @@ import hCore
 import hCoreUI
 
 struct SupportView: View {
-    @hPresentableStore var store: SubmitClaimStore
+    @PresentableStore var store: SubmitClaimStore
     let openChat: () -> Void
 
     var body: some View {

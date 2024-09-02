@@ -31,7 +31,7 @@ struct MovingFlowProcessingView: View {
 }
 
 class ProcessingViewModel: ObservableObject {
-    @hPresentableStore var store: MoveFlowStore
+    @PresentableStore var store: MoveFlowStore
 
 }
 

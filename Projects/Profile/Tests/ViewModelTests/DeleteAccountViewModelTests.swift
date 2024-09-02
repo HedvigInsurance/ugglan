@@ -22,7 +22,7 @@ final class DeleteAccountViewModelTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        hGlobalPresentableStoreContainer.deletePersistanceContainer()
+        globalPresentableStoreContainer.deletePersistanceContainer()
         sut = nil
     }
 

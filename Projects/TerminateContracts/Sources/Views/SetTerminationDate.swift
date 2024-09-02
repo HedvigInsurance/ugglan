@@ -5,7 +5,7 @@ import hCoreUI
 import hGraphQL
 
 struct SetTerminationDate: View {
-    @hPresentableStore var store: TerminationContractStore
+    @PresentableStore var store: TerminationContractStore
     @State private var terminationDate = Date()
     @State private var isHidden = false
     @EnvironmentObject var terminationNavigationVm: TerminationFlowNavigationViewModel

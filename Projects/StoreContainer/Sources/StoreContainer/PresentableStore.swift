@@ -2,8 +2,8 @@ import Combine
 import Foundation
 
 @propertyWrapper
-public struct hPresentableStore<S: Store> {
-    public var wrappedValue: S { hGlobalPresentableStoreContainer.get() }
+public struct PresentableStore<S: Store> {
+    public var wrappedValue: S { globalPresentableStoreContainer.get() }
 
     public init() {}
 }
@@ -239,7 +239,7 @@ public class hPresentableStoreContainer: NSObject {
 }
 
 /// Set this to automatically populate all presentables with your global PresentableStoreContainer
-public var hGlobalPresentableStoreContainer = hPresentableStoreContainer()
+public var globalPresentableStoreContainer = hPresentableStoreContainer()
 
 public protocol LoadingProtocol: Codable & Equatable & Hashable {}
 

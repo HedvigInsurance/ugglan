@@ -11,7 +11,7 @@ import hGraphQL
 
 private class DirectDebitWebview: UIView {
     var paymentService = hPaymentService()
-    @hPresentableStore var paymentStore: PaymentStore
+    @PresentableStore var paymentStore: PaymentStore
     private let resultSubject = PassthroughSubject<URL?, Never>()
     var cancellables = Set<AnyCancellable>()
     let setupType: SetupType
@@ -260,7 +260,7 @@ public struct DirectDebitSetup: View {
             if let setupType {
                 return setupType
             }
-            let store: PaymentStore = hGlobalPresentableStoreContainer.get()
+            let store: PaymentStore = globalPresentableStoreContainer.get()
             let hasAlreadyConnected = [PayinMethodStatus.active, PayinMethodStatus.pending]
                 .contains(store.state.paymentStatusData?.status ?? .active)
             return hasAlreadyConnected ? .replacement : .initial

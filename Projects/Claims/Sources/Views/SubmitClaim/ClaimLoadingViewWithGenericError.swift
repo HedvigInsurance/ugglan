@@ -6,7 +6,7 @@ import hCoreUI
 
 private struct ClaimLoadingViewWithGenericError<StoreType: StoreLoading & Store>: ViewModifier {
     let loading: [StoreType.Loading]
-    @hPresentableStore var store: SubmitClaimStore
+    @PresentableStore var store: SubmitClaimStore
     func body(content: Content) -> some View {
         LoadingViewWithGenericError(
             StoreType.self,

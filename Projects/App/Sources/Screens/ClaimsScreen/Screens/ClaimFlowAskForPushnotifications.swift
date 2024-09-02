@@ -16,7 +16,7 @@ struct AskForPushNotifications: View {
         onActionExecuted: @escaping () -> Void,
         wrapWithForm: Bool = false
     ) {
-        let store: ProfileStore = hGlobalPresentableStoreContainer.get()
+        let store: ProfileStore = globalPresentableStoreContainer.get()
         self.pushNotificationStatus = store.state.pushNotificationCurrentStatus()
         self.text = text
         self.onActionExecuted = onActionExecuted
@@ -66,7 +66,7 @@ struct AskForPushNotifications: View {
                 Spacer()
                 hButton.LargeButton(type: .ghost) {
                     onActionExecuted()
-                    let store: ProfileStore = hGlobalPresentableStoreContainer.get()
+                    let store: ProfileStore = globalPresentableStoreContainer.get()
                     store.send(.setPushNotificationStatus(status: nil))
                 } content: {
                     hText(L10n.claimsActivateNotificationsDismiss, style: .label)

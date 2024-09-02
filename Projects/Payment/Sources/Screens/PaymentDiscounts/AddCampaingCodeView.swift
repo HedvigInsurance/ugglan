@@ -32,7 +32,7 @@ class AddCampaingCodeViewModel: ObservableObject {
     var router: Router?
 
     var campaignsService = hCampaignService()
-    @hPresentableStore var store: PaymentStore
+    @PresentableStore var store: PaymentStore
     init() {
         inputVm = TextInputViewModel(
             masking: .init(type: .none),

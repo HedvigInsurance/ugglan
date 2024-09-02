@@ -148,7 +148,7 @@ public struct ClaimsNavigation: View {
         }
         .environmentObject(claimsNavigationVm)
         .onAppear {
-            let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
+            let store: SubmitClaimStore = globalPresentableStoreContainer.get()
             cancellable = store.actionSignal
                 .receive(on: RunLoop.main)
                 .sink { _ in
@@ -250,11 +250,11 @@ public struct ClaimsNavigation: View {
     private func showClaimEntrypointGroup(origin: ClaimsOrigin) -> some View {
         SelectClaimEntrypointGroup(
             selectedEntrypoints: { entrypoints in
-                let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
+                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                 store.send(.setSelectedEntrypoints(entrypoints: entrypoints))
             })
             .onAppear {
-                let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
+                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                 store.send(.fetchEntrypointGroups)
             }
             .resetProgressToPreviousValueOnDismiss
@@ -264,7 +264,7 @@ public struct ClaimsNavigation: View {
 
     private func showClaimEntrypointType() -> some View {
         SelectClaimEntrypointType(selectedEntrypointOptions: { options, selectedEntrypointId in
-            let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
+            let store: SubmitClaimStore = globalPresentableStoreContainer.get()
             store.send(.setSelectedEntrypointOptions(entrypoints: options, entrypointId: selectedEntrypointId))
         })
         .resetProgressToPreviousValueOnDismiss
@@ -274,7 +274,7 @@ public struct ClaimsNavigation: View {
     private func showClaimEntrypointOption() -> some View {
         SelectClaimEntrypointOption(
             onButtonClick: { entrypointId, entrypointOptionId in
-                let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
+                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                 store.send(
                     .startClaimRequest(
                         entrypointId: entrypointId,
@@ -307,7 +307,7 @@ public struct ClaimsNavigation: View {
     }
 
     private func openAudioRecordingSceen() -> some View {
-        let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
+        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
         let url = store.state.audioRecordingStep?.getUrl()
         return SubmitClaimAudioRecordingScreen(url: url)
             .resetProgressToPreviousValueOnDismiss
@@ -333,7 +333,7 @@ public struct ClaimsNavigation: View {
 
     @ViewBuilder
     private func openDeflectStepScreen() -> some View {
-        let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
+        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
         let model = store.state.deflectStepModel
 
         Group {
@@ -363,7 +363,7 @@ public struct ClaimsNavigation: View {
 
     private func openEmergencySelectScreen() -> some View {
         SumitClaimEmergencySelectScreen(title: {
-            let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
+            let store: SubmitClaimStore = globalPresentableStoreContainer.get()
             return store.state.emergencyConfirm?.text ?? ""
         })
         .resetProgressToPreviousValueOnDismiss
@@ -371,7 +371,7 @@ public struct ClaimsNavigation: View {
     }
 
     private func openFileUploadScreen() -> some View {
-        let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
+        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
         return SubmitClaimFilesUploadScreen(model: store.state.fileUploadStep!)
             .resetProgressToPreviousValueOnDismiss
             .addDismissClaimsFlow()
@@ -389,14 +389,14 @@ public struct ClaimsNavigation: View {
             buttons: .init(
                 actionButton: .init(
                     buttonAction: {
-                        let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
+                        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                         store.send(.popClaimFlow)
                     }
                 ),
                 dismissButton: .init(
                     buttonTitle: L10n.openChat,
                     buttonAction: {
-                        let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
+                        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                         store.send(.dismissNewClaimFlow)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                             store.send(.submitClaimOpenFreeTextChat)
@@ -427,7 +427,7 @@ public struct ClaimsNavigation: View {
 
     private func openPriceInputScreen() -> some View {
         PriceInputScreen(onSave: { purchasePrice in
-            let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
+            let store: SubmitClaimStore = globalPresentableStoreContainer.get()
             store.send(.setPurchasePrice(priceOfPurchase: Double(purchasePrice)))
             claimsNavigationVm.isPriceInputPresented = false
         })
@@ -438,12 +438,12 @@ public struct ClaimsNavigation: View {
         ItemPickerScreen<ClaimFlowItemProblemOptionModel>(
             config: .init(
                 items: {
-                    let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     return store.state.singleItemStep?.availableItemProblems
                         .compactMap({ (object: $0, displayName: .init(title: $0.displayName)) }) ?? []
                 }(),
                 preSelectedItems: {
-                    let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     if let singleItemStep = store.state.singleItemStep {
                         let preselected = singleItemStep.availableItemProblems
                             .filter { model in
@@ -465,7 +465,7 @@ public struct ClaimsNavigation: View {
                         }
                     }
                     claimsNavigationVm.isDamagePickerPresented = false
-                    let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
+                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                     store.send(
                         .setSingleItemDamage(
                             damages: damages
@@ -524,10 +524,10 @@ extension View {
     }
 
     var resetProgressToPreviousValueOnDismiss: some View {
-        let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
+        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
         let previousProgress = store.state.previousProgress
         return self.onDeinit {
-            let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
+            let store: SubmitClaimStore = globalPresentableStoreContainer.get()
             store.send(.setProgress(progress: previousProgress))
         }
     }

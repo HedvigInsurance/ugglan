@@ -8,7 +8,7 @@ import hCoreUI
 import hGraphQL
 
 public struct SubmitClaimAudioRecordingScreen: View {
-    @hPresentableStore var store: SubmitClaimStore
+    @PresentableStore var store: SubmitClaimStore
     @ObservedObject var audioPlayer: AudioPlayer
     @ObservedObject var audioRecorder: AudioRecorder
     @State var minutes: Int = 0
@@ -25,7 +25,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
         url: URL?
     ) {
         audioPlayer = AudioPlayer(url: url)
-        let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
+        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
         let path = store.state.claimAudioRecordingPath
         audioRecorder = AudioRecorder(filePath: path)
         self._isAudioInput = State(initialValue: store.state.audioRecordingStep?.isAudioInput() ?? false)
@@ -268,7 +268,7 @@ struct SubmitClaimAudioRecordingScreen_Previews: PreviewProvider {
     static var previews: some View {
         SubmitClaimAudioRecordingScreen(url: URL(string: "https://filesamples.com/samples/audio/m4a/sample4.m4a"))
             .onAppear {
-                let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
+                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                 let model = FlowClaimAudioRecordingStepModel(
                     id: "ID",
                     questions: ["question", "qustion 12"],

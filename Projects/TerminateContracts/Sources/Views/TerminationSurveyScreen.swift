@@ -9,7 +9,7 @@ struct TerminationSurveyScreen: View {
     @Namespace var animationNamespace
     @EnvironmentObject var terminationFlowNavigationViewModel: TerminationFlowNavigationViewModel
 
-    @hPresentableStore var store: TerminationContractStore
+    @PresentableStore var store: TerminationContractStore
     var body: some View {
         hForm {
             hSection {
@@ -116,7 +116,7 @@ class SurveyScreenViewModel: ObservableObject {
     let subtitleType: SurveyScreenSubtitleType
     var allFeedBackViewModels = [String: TerminationFlowSurveyStepFeedBackViewModel]()
 
-    @hPresentableStore var store: TerminationContractStore
+    @PresentableStore var store: TerminationContractStore
 
     @Published var text: String = "test"
     @Published var continueEnabled = true

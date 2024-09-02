@@ -9,7 +9,7 @@ import hGraphQL
 struct ClaimSection: View {
     var claims: [ClaimModel]
 
-    @hPresentableStore var store: ClaimsStore
+    @PresentableStore var store: ClaimsStore
     @EnvironmentObject var homeRouter: Router
 
     var tapAction: (ClaimModel) -> Void {

@@ -121,7 +121,7 @@ public struct MyInfoView: View {
 
 public class MyInfoViewModel: ObservableObject {
     var profileService = ProfileService()
-    @hPresentableStore var store: ProfileStore
+    @PresentableStore var store: ProfileStore
     @Published var type: MyInfoViewEditType?
     @Published var phone: String = ""
     @Published var phoneError: String?
@@ -137,7 +137,7 @@ public class MyInfoViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
 
     init() {
-        let store: ProfileStore = hGlobalPresentableStoreContainer.get()
+        let store: ProfileStore = globalPresentableStoreContainer.get()
         originalPhone = store.state.memberDetails?.phone ?? ""
         originalEmail = store.state.memberDetails?.email ?? ""
         phone = store.state.memberDetails?.phone ?? ""
@@ -251,7 +251,7 @@ public class MyInfoViewModel: ObservableObject {
 
 struct MyInfoView_Previews: PreviewProvider {
     static var previews: some View {
-        let store: ProfileStore = hGlobalPresentableStoreContainer.get()
+        let store: ProfileStore = globalPresentableStoreContainer.get()
         store.send(
             .setMember(
                 memberData: .init(

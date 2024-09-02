@@ -8,7 +8,7 @@ extension View {
     public var addClaimsProgressBar: some View {
         self.introspectViewController { vc in
             let progressViewTag = "navigationProgressBar".hashValue
-            let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
+            let store: SubmitClaimStore = globalPresentableStoreContainer.get()
             if let navigationBar = vc.navigationController?.navigationBar,
                 navigationBar.subviews.first(where: { $0.tag == progressViewTag }) == nil
             {

@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 struct SubmitClaimCheckoutTransferringScreen: View {
-    @hPresentableStore var store: SubmitClaimStore
+    @PresentableStore var store: SubmitClaimStore
     @State var loadingAnimation: Bool = false
     @State var successAnimation: Bool = false
     @State var errorAnimation: Bool = false

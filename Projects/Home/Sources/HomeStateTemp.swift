@@ -4,6 +4,6 @@ import StoreContainer
 
 extension HomeStore {
     func getChatStore() -> ChatStore {
-        hGlobalPresentableStoreContainer.get()
+        globalPresentableStoreContainer.get()
     }
 }

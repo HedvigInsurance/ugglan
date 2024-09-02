@@ -8,7 +8,7 @@ struct CoInsuredProcessingScreen: View {
     @StateObject var vm = ProcessingViewModel()
     @ObservedObject var intentVm: IntentViewModel
     var showSuccessScreen: Bool
-    @hPresentableStore var store: EditCoInsuredStore
+    @PresentableStore var store: EditCoInsuredStore
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @EnvironmentObject private var editCoInsuredViewModel: EditCoInsuredViewModel
     @StateObject var router = Router()
@@ -16,7 +16,7 @@ struct CoInsuredProcessingScreen: View {
         showSuccessScreen: Bool
     ) {
         self.showSuccessScreen = showSuccessScreen
-        let store: EditCoInsuredStore = hGlobalPresentableStoreContainer.get()
+        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         intentVm = store.intentViewModel
     }
 
@@ -69,14 +69,14 @@ struct CoInsuredProcessingScreen: View {
 
 class ProcessingViewModel: ObservableObject {
     @Published var progress: Float = 0
-    @hPresentableStore var store: EditCoInsuredStore
+    @PresentableStore var store: EditCoInsuredStore
 }
 
 struct SuccessScreen_Previews: PreviewProvider {
     static var previews: some View {
         CoInsuredProcessingScreen(showSuccessScreen: true)
             .onAppear {
-                let store: EditCoInsuredStore = hGlobalPresentableStoreContainer.get()
+                let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
                 store.setLoading(for: .postCoInsured)
                 store.setError("error", for: .postCoInsured)
             }

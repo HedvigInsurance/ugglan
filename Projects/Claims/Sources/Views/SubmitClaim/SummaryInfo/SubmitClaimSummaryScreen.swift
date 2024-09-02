@@ -5,7 +5,7 @@ import hCore
 import hCoreUI
 
 public struct SubmitClaimSummaryScreen: View {
-    @hPresentableStore var store: SubmitClaimStore
+    @PresentableStore var store: SubmitClaimStore
     @StateObject fileprivate var vm: SubmitClaimSummaryScreenViewModel
 
     public init() {
@@ -232,7 +232,7 @@ class SubmitClaimSummaryScreenViewModel: ObservableObject {
     let model: FilesUploadViewModel?
 
     init() {
-        let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
+        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
         if let fileUploadStep = store.state.fileUploadStep {
             self.model = FilesUploadViewModel(model: fileUploadStep)
         } else {

@@ -640,7 +640,7 @@ extension InsuredPeopleConfig {
         contract: Contract,
         fromInfoCard: Bool
     ) {
-        let store: ContractStore = hGlobalPresentableStoreContainer.get()
+        let store: ContractStore = globalPresentableStoreContainer.get()
         self.init(
             id: contract.id,
             contractCoInsured: contract.coInsured,

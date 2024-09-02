@@ -212,7 +212,7 @@ public class HouseInformationInputModel: ObservableObject {
     @Published var bathroomsError: String?
     @Published var extraBuildings: [ExtraBuilding] = []
 
-    @hPresentableStore var store: MoveFlowStore
+    @PresentableStore var store: MoveFlowStore
     @Published var error: String?
     init() {}
 

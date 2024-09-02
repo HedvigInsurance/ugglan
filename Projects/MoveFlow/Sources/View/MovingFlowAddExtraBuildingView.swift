@@ -113,7 +113,7 @@ enum AddExtraBuildingType: hTextFieldFocusStateCompliant {
 }
 
 class MovingFlowAddExtraBuildingViewModel: ObservableObject {
-    @hPresentableStore var store: MoveFlowStore
+    @PresentableStore var store: MoveFlowStore
     @Published var type: AddExtraBuildingType?
 
     @Published var buildingType: ExtraBuildingType?

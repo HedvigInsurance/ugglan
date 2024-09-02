@@ -9,8 +9,8 @@ import hCore
 import hCoreUI
 
 struct ContractInformationView: View {
-    @hPresentableStore var store: ContractStore
-    @hPresentableStore var terminationContractStore: TerminationContractStore
+    @PresentableStore var store: ContractStore
+    @PresentableStore var terminationContractStore: TerminationContractStore
     @StateObject private var vm = ContractsInformationViewModel()
     @EnvironmentObject private var contractsNavigationVm: ContractsNavigationViewModel
 
@@ -353,7 +353,7 @@ private class ContractsInformationViewModel: ObservableObject {
 }
 
 public struct CoInsuredInfoView: View {
-    @hPresentableStore var store: ContractStore
+    @PresentableStore var store: ContractStore
     @EnvironmentObject private var contractsNavigationVm: ContractsNavigationViewModel
 
     let text: String

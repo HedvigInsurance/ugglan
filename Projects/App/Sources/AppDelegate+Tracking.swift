@@ -31,7 +31,7 @@ extension AppDelegate {
             with: configuration,
             trackingConsent: .granted
         )
-        let store: ProfileStore = hGlobalPresentableStoreContainer.get()
+        let store: ProfileStore = globalPresentableStoreContainer.get()
         if let userId = store.state.memberDetails?.id {
             let analyticsService: AnalyticsClient = Dependencies.shared.resolve()
             analyticsService.setWith(userId: userId)

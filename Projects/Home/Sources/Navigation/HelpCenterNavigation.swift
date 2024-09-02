@@ -34,7 +34,7 @@ public class HelpCenterNavigationViewModel: ObservableObject {
 public struct HelpCenterNavigation<Content: View>: View {
     @ObservedObject var helpCenterVm: HelpCenterNavigationViewModel
     @EnvironmentObject private var homeVm: HomeNavigationViewModel
-    @hPresentableStore private var store: HomeStore
+    @PresentableStore private var store: HomeStore
     @ViewBuilder var redirect: (_ type: HelpCenterRedirectType) -> Content
     @StateObject var router = Router()
 
@@ -97,18 +97,18 @@ public struct HelpCenterNavigation<Content: View>: View {
         .handleTerminateInsurance(vm: helpCenterVm.terminateInsuranceVm) { dismissType in
             switch dismissType {
             case .done:
-                let contractStore: ContractStore = hGlobalPresentableStoreContainer.get()
+                let contractStore: ContractStore = globalPresentableStoreContainer.get()
                 contractStore.send(.fetchContracts)
-                let homeStore: HomeStore = hGlobalPresentableStoreContainer.get()
+                let homeStore: HomeStore = globalPresentableStoreContainer.get()
                 homeStore.send(.fetchQuickActions)
             case .chat:
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                     NotificationCenter.default.post(name: .openChat, object: nil)
                 }
             case let .openFeedback(url):
-                let contractStore: ContractStore = hGlobalPresentableStoreContainer.get()
+                let contractStore: ContractStore = globalPresentableStoreContainer.get()
                 contractStore.send(.fetchContracts)
-                let homeStore: HomeStore = hGlobalPresentableStoreContainer.get()
+                let homeStore: HomeStore = globalPresentableStoreContainer.get()
                 homeStore.send(.fetchQuickActions)
                 var urlComponent = URLComponents(url: url, resolvingAgainstBaseURL: false)
                 if urlComponent?.scheme == nil {
@@ -140,7 +140,7 @@ public struct HelpCenterNavigation<Content: View>: View {
             helpCenterVm.quickActions.isChangeAddressPresented = true
         case .cancellation:
             //            helpCenterVm.quickActions.isCancellationPresented = true
-            let contractStore: ContractStore = hGlobalPresentableStoreContainer.get()
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
 
             let contractsConfig: [TerminationConfirmConfig] = contractStore.state.activeContracts
                 .filter({ $0.canTerminate })

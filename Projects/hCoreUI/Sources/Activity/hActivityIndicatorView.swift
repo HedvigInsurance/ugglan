@@ -14,7 +14,7 @@ public struct hLoadingViewWithState<Content: View, LoadingView: View, ErrorView:
     @State var showOnLoading: Bool = false
     @State var error: String?
 
-    @hPresentableStore var store: StoreType
+    @PresentableStore var store: StoreType
 
     public init(
         _ type: StoreType.Type,
@@ -82,7 +82,7 @@ public struct hLoadingViewWithState<Content: View, LoadingView: View, ErrorView:
 
 public struct hLoadingViewWithContent<Content: View, StoreType: StoreLoading & Store>: View {
     var content: () -> Content
-    @hPresentableStore var store: StoreType
+    @PresentableStore var store: StoreType
     private let actions: [StoreType.Loading]
     @Environment(\.hPresentableStoreLensAnimation) var animation
     @State var presentError = false
@@ -130,7 +130,7 @@ public struct hLoadingViewWithContent<Content: View, StoreType: StoreLoading & S
             handle(allActions: value)
         }
         .onAppear {
-            let store: StoreType = hGlobalPresentableStoreContainer.get()
+            let store: StoreType = globalPresentableStoreContainer.get()
             if let state = handle(allActions: store.loadingState) {
                 isLoading = state.isLoading
                 error = state.error ?? ""
@@ -213,7 +213,7 @@ extension View {
 }
 
 struct hTrackLoadingButtonModifier<StoreType: StoreLoading & Store>: ViewModifier {
-    @hPresentableStore var store: StoreType
+    @PresentableStore var store: StoreType
     let actions: [StoreType.Loading]
     @State private var isLoading = false
     @Environment(\.hPresentableStoreLensAnimation) var animation
@@ -280,7 +280,7 @@ extension View {
 }
 
 private struct RetryViewWithError<StoreType: StoreLoading & Store>: ViewModifier {
-    @hPresentableStore var store: StoreType
+    @PresentableStore var store: StoreType
     let action: StoreType.Loading
     @Binding private var error: String?
     @Environment(\.hPresentableStoreLensAnimation) var animation
@@ -341,7 +341,7 @@ private struct RetryViewWithError<StoreType: StoreLoading & Store>: ViewModifier
 
 public struct LoadingViewWithGenericError<Content: View, StoreType: StoreLoading & Store>: View {
     var content: () -> Content
-    @hPresentableStore var store: StoreType
+    @PresentableStore var store: StoreType
     private let actions: [StoreType.Loading]
     @Environment(\.hPresentableStoreLensAnimation) var animation
     @State var presentError = false
@@ -396,7 +396,7 @@ public struct LoadingViewWithGenericError<Content: View, StoreType: StoreLoading
             handle(allActions: value)
         }
         .onAppear {
-            let store: StoreType = hGlobalPresentableStoreContainer.get()
+            let store: StoreType = globalPresentableStoreContainer.get()
             if let state = handle(allActions: store.loadingState) {
                 isLoading = state.isLoading
                 error = state.error ?? ""

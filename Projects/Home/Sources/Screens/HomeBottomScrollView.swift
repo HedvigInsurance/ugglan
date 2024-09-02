@@ -34,7 +34,7 @@ struct HomeBottomScrollView: View {
                         type: .attention
                     )
                 case let .importantMessage(id):
-                    let store: HomeStore = hGlobalPresentableStoreContainer.get()
+                    let store: HomeStore = globalPresentableStoreContainer.get()
                     if let importantMessage = store.state.getImportantMessage(with: id) {
                         ImportantMessageView(importantMessage: importantMessage)
                     }
@@ -82,8 +82,8 @@ class HomeButtonScrollViewModel: ObservableObject {
     }
 
     private func handlePayments() {
-        let paymentStore: PaymentStore = hGlobalPresentableStoreContainer.get()
-        let homeStore: HomeStore = hGlobalPresentableStoreContainer.get()
+        let paymentStore: PaymentStore = globalPresentableStoreContainer.get()
+        let homeStore: HomeStore = globalPresentableStoreContainer.get()
         homeStore.stateSignal
             .map({ $0.memberContractState })
             .receive(on: RunLoop.main)
@@ -131,7 +131,7 @@ class HomeButtonScrollViewModel: ObservableObject {
     }
 
     private func handleImportantMessages() {
-        let homeStore: HomeStore = hGlobalPresentableStoreContainer.get()
+        let homeStore: HomeStore = globalPresentableStoreContainer.get()
         homeStore.stateSignal
             .map({ $0.getImportantMessageToShow() })
             .removeDuplicates()
@@ -164,7 +164,7 @@ class HomeButtonScrollViewModel: ObservableObject {
     }
 
     private func handleRenewalCardView() {
-        let homeStore: HomeStore = hGlobalPresentableStoreContainer.get()
+        let homeStore: HomeStore = globalPresentableStoreContainer.get()
         homeStore.stateSignal
             .map({ $0.upcomingRenewalContracts.count > 0 })
             .removeDuplicates()
@@ -178,7 +178,7 @@ class HomeButtonScrollViewModel: ObservableObject {
 
     private func handleDeleteRequests(memberId: String) {
         let members = ApolloClient.retreiveMembersWithDeleteRequests()
-        let store: ContractStore = hGlobalPresentableStoreContainer.get()
+        let store: ContractStore = globalPresentableStoreContainer.get()
         handleItem(
             .deletedView,
             with: members.contains(memberId)
@@ -188,7 +188,7 @@ class HomeButtonScrollViewModel: ObservableObject {
     }
 
     private func handleMissingCoInsured() {
-        let contractStore: ContractStore = hGlobalPresentableStoreContainer.get()
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
         contractStore.stateSignal
             .map({
                 $0.activeContracts.hasMissingCoInsured
@@ -205,7 +205,7 @@ class HomeButtonScrollViewModel: ObservableObject {
     }
 
     func handleTerminatedMessage() {
-        let store: HomeStore = hGlobalPresentableStoreContainer.get()
+        let store: HomeStore = globalPresentableStoreContainer.get()
         store.stateSignal
             .map({ $0.memberContractState })
             .receive(on: RunLoop.main)

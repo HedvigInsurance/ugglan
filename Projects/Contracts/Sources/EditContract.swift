@@ -6,14 +6,14 @@ import hCoreUI
 import hGraphQL
 
 struct EditContract: View {
-    @hPresentableStore var store: ContractStore
+    @PresentableStore var store: ContractStore
     @State var selectedType: EditType?
     @State var editTypes: [EditType] = []
     private let contract: Contract?
     @EnvironmentObject private var contractsNavigationVm: ContractsNavigationViewModel
 
     public init(id: String) {
-        let store: ContractStore = hGlobalPresentableStoreContainer.get()
+        let store: ContractStore = globalPresentableStoreContainer.get()
         contract = store.state.contractForId(id)
         if let contract {
             _editTypes = State(initialValue: EditType.getTypes(for: contract))

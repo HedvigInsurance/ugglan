@@ -6,7 +6,7 @@ import hCoreUI
 import hGraphQL
 
 struct InsuredPeopleNewScreen: View {
-    @hPresentableStore var store: EditCoInsuredStore
+    @PresentableStore var store: EditCoInsuredStore
     @ObservedObject var vm: InsuredPeopleNewScreenModel
     @ObservedObject var intentVm: IntentViewModel
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel

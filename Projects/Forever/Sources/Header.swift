@@ -6,7 +6,7 @@ import hCoreUI
 import hGraphQL
 
 struct HeaderView: View {
-    @hPresentableStore var store: ForeverStore
+    @PresentableStore var store: ForeverStore
     let didPressInfo: () -> Void
 
     var body: some View {
@@ -79,7 +79,7 @@ struct HeaderView: View {
     }
 }
 struct HeaderView_Previews: PreviewProvider {
-    @hPresentableStore static var store: ForeverStore
+    @PresentableStore static var store: ForeverStore
     static var previews: some View {
         HeaderView {}
             .onAppear {
@@ -89,7 +89,7 @@ struct HeaderView_Previews: PreviewProvider {
 }
 
 struct HeaderView_Previews2: PreviewProvider {
-    @hPresentableStore static var store: ForeverStore
+    @PresentableStore static var store: ForeverStore
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
         return HeaderView {}

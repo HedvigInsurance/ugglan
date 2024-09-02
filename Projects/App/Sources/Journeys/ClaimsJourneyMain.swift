@@ -19,7 +19,7 @@ public struct ClaimsJourneyMain: View {
         RouterHost(router: claimsRouter) {
             honestyPledge(from: from)
                 .onDisappear {
-                    let claimsStore: ClaimsStore = hGlobalPresentableStoreContainer.get()
+                    let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
                     claimsStore.send(.fetchClaims)
                 }
                 .hidden($shouldHideHonestyPledge)
@@ -55,7 +55,7 @@ public struct ClaimsJourneyMain: View {
 
     func honestyPledge(from origin: ClaimsOrigin) -> some View {
         HonestyPledge(onConfirmAction: { [weak claimsNavigationVm, weak claimsRouter] in
-            let profileStore: ProfileStore = hGlobalPresentableStoreContainer.get()
+            let profileStore: ProfileStore = globalPresentableStoreContainer.get()
             if profileStore.state.pushNotificationCurrentStatus() != .authorized {
                 claimsRouter?.push(ClaimsRouterActionsWithoutBackButton.askForPushNotifications)
             } else {

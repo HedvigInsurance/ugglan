@@ -51,7 +51,7 @@ extension Claims: View {
 }
 
 class ClaimsViewModel: ObservableObject {
-    @hPresentableStore private var store: ClaimsStore
+    @PresentableStore private var store: ClaimsStore
     private var pollTimerCancellable: AnyCancellable?
     private let refreshOn = 60
 

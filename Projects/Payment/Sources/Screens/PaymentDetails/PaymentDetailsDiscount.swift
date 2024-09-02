@@ -94,7 +94,7 @@ struct PaymentDetailsDiscountView: View {
 class PaymentDetailsDiscountViewModel: ObservableObject {
     let options: PaymentDetailsDiscountOptions
     let discount: Discount
-    @hPresentableStore private var store: PaymentStore
+    @PresentableStore private var store: PaymentStore
 
     init(options: PaymentDetailsDiscountOptions, discount: Discount) {
         self.options = options

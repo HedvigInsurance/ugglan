@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 struct SubmitClaimOccurrencePlusLocationScreen: View {
-    @hPresentableStore var store: SubmitClaimStore
+    @PresentableStore var store: SubmitClaimStore
     @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
     private let options: SubmitClaimsNavigationAction.SubmitClaimOption
 

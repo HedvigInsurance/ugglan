@@ -204,7 +204,7 @@ public class AddressInputModel: ObservableObject {
     @Published var accessDateError: String?
     @Published var type: MovingFlowNewAddressViewFieldType?
     @Published var error: String?
-    @hPresentableStore var store: MoveFlowStore
+    @PresentableStore var store: MoveFlowStore
 
     init() {}
 

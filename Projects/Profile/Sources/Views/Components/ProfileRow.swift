@@ -5,7 +5,7 @@ import hCoreUI
 import hGraphQL
 
 struct ProfileRow: View {
-    @hPresentableStore var store: ProfileStore
+    @PresentableStore var store: ProfileStore
     @EnvironmentObject var router: Router
 
     let row: ProfileRowType

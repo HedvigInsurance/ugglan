@@ -121,7 +121,7 @@ class InboxViewModel: ObservableObject {
     @Published private var conversationsTimeStamp = [String: Date]()
     private var conversationTimeStampCancellable: AnyCancellable?
     private var pollTimerCancellable: AnyCancellable?
-    @hPresentableStore var store: ChatStore
+    @PresentableStore var store: ChatStore
 
     func hasNotification(conversation: Conversation) -> Bool {
         return store.hasNotification(
@@ -144,7 +144,7 @@ class InboxViewModel: ObservableObject {
     }
 
     init() {
-        let store: ChatStore = hGlobalPresentableStoreContainer.get()
+        let store: ChatStore = globalPresentableStoreContainer.get()
         conversationTimeStampCancellable = store.stateSignal
             .map({ $0.conversationsTimeStamp })
             .receive(on: RunLoop.main)
@@ -172,7 +172,7 @@ class InboxViewModel: ObservableObject {
     func fetchMessages() async {
         do {
             let conversations = try await service.getConversations()
-            let store: ChatStore = hGlobalPresentableStoreContainer.get()
+            let store: ChatStore = globalPresentableStoreContainer.get()
             let conversationsTimeStamp = store.state.conversationsTimeStamp
             for conversation in conversations {
                 if conversationsTimeStamp[conversation.id] == nil,

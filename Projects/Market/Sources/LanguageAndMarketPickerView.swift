@@ -155,7 +155,7 @@ class LanguageAndMarketPickerViewModel: ObservableObject {
     }
 
     init() {
-        let store: MarketStore = hGlobalPresentableStoreContainer.get()
+        let store: MarketStore = globalPresentableStoreContainer.get()
         selectedMarket = store.state.market
         selectedMarketCode = store.state.market.rawValue
         $selectedLocaleCode.sink { [weak self] selectedLocaleCode in
@@ -181,7 +181,7 @@ class LanguageAndMarketPickerViewModel: ObservableObject {
     }
 
     func save() async {
-        let store: MarketStore = hGlobalPresentableStoreContainer.get()
+        let store: MarketStore = globalPresentableStoreContainer.get()
         await store.sendAsync(.selectMarket(market: selectedMarket))
         await store.sendAsync(.selectLanguage(language: self.selectedLocale.rawValue))
     }

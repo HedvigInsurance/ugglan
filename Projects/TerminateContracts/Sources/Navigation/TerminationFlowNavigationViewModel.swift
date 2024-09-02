@@ -79,7 +79,7 @@ struct TerminationFlowNavigation: View {
                 ) { action in
                     switch action {
                     case .success:
-                        let store: TerminationContractStore = hGlobalPresentableStoreContainer.get()
+                        let store: TerminationContractStore = globalPresentableStoreContainer.get()
                         let terminationDate =
                             store.state.successStep?.terminationDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                         openTerminationSuccessScreen(
@@ -101,7 +101,7 @@ struct TerminationFlowNavigation: View {
         }
         .environmentObject(vm)
         .onAppear { [weak vm] in
-            let store: TerminationContractStore = hGlobalPresentableStoreContainer.get()
+            let store: TerminationContractStore = globalPresentableStoreContainer.get()
             vm?.cancellable = store.actionSignal
                 .receive(on: RunLoop.main)
                 .sink { _ in
@@ -160,7 +160,7 @@ struct TerminationFlowNavigation: View {
         case let .final(action):
             switch action {
             case .success:
-                let store: TerminationContractStore = hGlobalPresentableStoreContainer.get()
+                let store: TerminationContractStore = globalPresentableStoreContainer.get()
                 let terminationDate =
                     store.state.successStep?.terminationDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                 openTerminationSuccessScreen(
@@ -227,7 +227,7 @@ struct TerminationFlowNavigation: View {
                             activeFrom: selectedContract.activeFrom
                         )
                         //                    vm.router.push(config)
-                        let store: TerminationContractStore = hGlobalPresentableStoreContainer.get()
+                        let store: TerminationContractStore = globalPresentableStoreContainer.get()
                         store.send(.startTermination(config: config))
                     }
                 },
@@ -273,7 +273,7 @@ struct TerminationFlowNavigation: View {
     private func openConfirmTerminationScreen() -> some View {
         ConfirmTerminationScreen(
             onSelected: {
-                let store: TerminationContractStore = hGlobalPresentableStoreContainer.get()
+                let store: TerminationContractStore = globalPresentableStoreContainer.get()
                 if store.state.isDeletion {
                     store.send(.sendConfirmDelete)
                 } else {
@@ -289,12 +289,12 @@ struct TerminationFlowNavigation: View {
         SetTerminationDate(
             onSelected: {
                 terminationDate in
-                let store: TerminationContractStore = hGlobalPresentableStoreContainer.get()
+                let store: TerminationContractStore = globalPresentableStoreContainer.get()
                 store.send(.setTerminationDate(terminationDate: terminationDate))
                 vm.isDatePickerPresented = false
             },
             terminationDate: {
-                let store: TerminationContractStore = hGlobalPresentableStoreContainer.get()
+                let store: TerminationContractStore = globalPresentableStoreContainer.get()
                 let preSelectedTerminationDate = store.state.terminationDateStep?.minDate.localDateToDate
                 return preSelectedTerminationDate ?? Date()
             }
@@ -418,7 +418,7 @@ public class TerminateInsuranceViewModel: ObservableObject {
         if configs.count > 1 {
             self.initialStep = .init(action: .router(action: .selectInsurance(configs: configs)))
         } else if let config = configs.first {
-            let store: TerminationContractStore = hGlobalPresentableStoreContainer.get()
+            let store: TerminationContractStore = globalPresentableStoreContainer.get()
             firstStepCancellable = store.actionSignal.sink { _ in
             } receiveValue: { [weak self] action in
                 switch action {

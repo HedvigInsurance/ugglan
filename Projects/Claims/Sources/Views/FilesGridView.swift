@@ -9,7 +9,7 @@ import hCoreUI
 
 struct FilesGridView: View {
     @ObservedObject var vm: FileGridViewModel
-    @hPresentableStore private var store: ClaimsStore
+    @PresentableStore private var store: ClaimsStore
     @State private var fileModel: HomeNavigationViewModel.FileUrlModel?
 
     private let adaptiveColumn = [

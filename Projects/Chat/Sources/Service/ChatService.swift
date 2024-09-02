@@ -14,7 +14,7 @@ public protocol ChatServiceProtocol {
 public class ConversationService: ChatServiceProtocol {
     public var type: ChatServiceType = .conversation
     @Inject var client: ConversationClient
-    @hPresentableStore var store: ChatStore
+    @PresentableStore var store: ChatStore
 
     private let conversationId: String
     private var olderToken: String?
@@ -136,7 +136,7 @@ public class MessagesService: ChatServiceProtocol {
     public var type: ChatServiceType = .oldChat
     @Inject var client: FetchMessagesClient
     @Inject var service: SendMessageClient
-    @hPresentableStore var store: ChatStore
+    @PresentableStore var store: ChatStore
 
     private var previousTimeStamp: String?
     let topic: ChatTopicType?

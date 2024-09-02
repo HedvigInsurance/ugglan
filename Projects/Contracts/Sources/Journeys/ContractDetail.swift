@@ -31,7 +31,7 @@ enum ContractDetailsViews: String, CaseIterable, Identifiable {
 }
 
 public struct ContractDetail: View {
-    @hPresentableStore var store: ContractStore
+    @PresentableStore var store: ContractStore
     @StateObject private var vm: ContractDetailsViewModel
     var id: String
 
@@ -135,7 +135,7 @@ public struct ContractDetail: View {
 
 class ContractDetailsViewModel: ObservableObject {
     private let id: String
-    @hPresentableStore var store: ContractStore
+    @PresentableStore var store: ContractStore
     weak var vc: UIViewController?
     var observeContractStateCancellable: AnyCancellable?
     init(id: String) {

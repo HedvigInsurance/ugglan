@@ -6,7 +6,7 @@ import hCoreUI
 import hGraphQL
 
 public struct DeleteRequestLoadingView: View {
-    @hPresentableStore var store: ProfileStore
+    @PresentableStore var store: ProfileStore
     var profileService = ProfileService()
 
     private var dismissAction: (ProfileNavigationDismissAction) -> Void

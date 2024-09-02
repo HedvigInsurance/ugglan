@@ -6,7 +6,7 @@ import hCoreUI
 
 struct PaymentsDiscountsView: View {
     let data: PaymentDiscountsData
-    @hPresentableStore var store: PaymentStore
+    @PresentableStore var store: PaymentStore
     @EnvironmentObject var paymentsNavigationVm: PaymentsNavigationViewModel
     @EnvironmentObject var router: Router
 
@@ -180,7 +180,7 @@ struct PaymentsDiscountViewNoDiscounts_Previews: PreviewProvider {
 }
 
 struct PaymentsDiscountsRootView: View {
-    @hPresentableStore var store: PaymentStore
+    @PresentableStore var store: PaymentStore
     var body: some View {
         hLoadingViewWithContent(
             PaymentStore.self,

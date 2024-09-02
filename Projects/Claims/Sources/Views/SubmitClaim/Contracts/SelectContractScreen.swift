@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 struct SelectContractScreen: View {
-    @hPresentableStore var store: SubmitClaimStore
+    @PresentableStore var store: SubmitClaimStore
     @State var isLoading: Bool = false
     var body: some View {
         PresentableStoreLens(
@@ -28,7 +28,7 @@ struct SelectContractScreen: View {
                         return []
                     },
                     onSelected: { selectedContract in
-                        let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
+                        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                         if let object = selectedContract.first?.0 {
                             store.send(.contractSelectRequest(contractId: object.id))
                         }

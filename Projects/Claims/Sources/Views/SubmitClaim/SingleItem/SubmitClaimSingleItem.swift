@@ -6,7 +6,7 @@ import hCoreUI
 import hGraphQL
 
 public struct SubmitClaimSingleItem: View {
-    @hPresentableStore var store: SubmitClaimStore
+    @PresentableStore var store: SubmitClaimStore
     @State var type: ClaimsFlowSingleItemFieldType?
     @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
 

@@ -79,7 +79,7 @@ public struct MovingFlowNavigation: View {
         }
         .environmentObject(movingFlowVm)
         .onAppear {
-            let store: MoveFlowStore = hGlobalPresentableStoreContainer.get()
+            let store: MoveFlowStore = globalPresentableStoreContainer.get()
             cancellable = store.actionSignal.sink { _ in
             } receiveValue: { action in
                 switch action {
@@ -113,12 +113,12 @@ public struct MovingFlowNavigation: View {
     }
 
     func openApartmentFillScreen() -> some View {
-        let store: MoveFlowStore = hGlobalPresentableStoreContainer.get()
+        let store: MoveFlowStore = globalPresentableStoreContainer.get()
         return MovingFlowAddressView(vm: store.addressInputModel).withDismissButton()
     }
 
     func openHouseFillScreen() -> some View {
-        let store: MoveFlowStore = hGlobalPresentableStoreContainer.get()
+        let store: MoveFlowStore = globalPresentableStoreContainer.get()
         return MovingFlowHouseView(vm: store.houseInformationInputModel).withDismissButton()
     }
 

@@ -7,7 +7,7 @@ import hGraphQL
 struct UpcomingChangesScreen: View {
     let updateDate: String
     let upcomingAgreement: Agreement?
-    @hPresentableStore var store: ContractStore
+    @PresentableStore var store: ContractStore
 
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
 

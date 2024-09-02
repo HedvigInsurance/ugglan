@@ -5,7 +5,7 @@ import hCoreUI
 import hGraphQL
 
 public struct SubmitClaimCheckoutScreen: View {
-    @hPresentableStore var store: SubmitClaimStore
+    @PresentableStore var store: SubmitClaimStore
 
     public init() {}
 
@@ -216,7 +216,7 @@ struct SubmitClaimCheckoutRepairScreen_Previews: PreviewProvider {
         Localization.Locale.currentLocale.send(.en_SE)
         return SubmitClaimCheckoutScreen()
             .onAppear {
-                let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
+                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                 store.send(
                     .stepModelAction(
                         action: .setSingleItemCheckoutStep(
@@ -280,7 +280,7 @@ struct SubmitClaimCheckoutNoRepairScreen_Previews: PreviewProvider {
         Localization.Locale.currentLocale.send(.en_SE)
         return SubmitClaimCheckoutScreen()
             .onAppear {
-                let store: SubmitClaimStore = hGlobalPresentableStoreContainer.get()
+                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
                 store.send(
                     .stepModelAction(
                         action: .setSingleItemCheckoutStep(

@@ -57,13 +57,13 @@ public class HomeNavigationViewModel: ObservableObject {
             }
         }
 
-        let store: ChatStore = hGlobalPresentableStoreContainer.get()
+        let store: ChatStore = globalPresentableStoreContainer.get()
         store.stateSignal
             .map({ $0.messagesTimeStamp })
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { value in
-                let homeStore: HomeStore = hGlobalPresentableStoreContainer.get()
+                let homeStore: HomeStore = globalPresentableStoreContainer.get()
                 homeStore.send(.setChatNotificationTimeStamp(sentAt: value))
             }
             .store(in: &cancellables)

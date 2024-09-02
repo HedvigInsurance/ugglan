@@ -168,7 +168,7 @@ public class ChatScreenViewModel: ObservableObject {
     }
 
     private func handleAddingLocal(for message: Message) {
-        let store: ChatStore = hGlobalPresentableStoreContainer.get()
+        let store: ChatStore = globalPresentableStoreContainer.get()
         if !store.state.askedForPushNotificationsPermission {
             store.send(.checkPushNotificationStatus)
             Task {

@@ -22,7 +22,7 @@ struct ClaimStatus: View {
 
     @EnvironmentObject var homeRouter: Router
 
-    @hPresentableStore var store: ClaimsStore
+    @PresentableStore var store: ClaimsStore
 
     var tapAction: (ClaimModel) -> Void {
         return { claim in
