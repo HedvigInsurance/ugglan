@@ -61,42 +61,42 @@ public class DateService {
     public init() {}
     let localDateStringFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: Localization.Locale.currentLocale.code)
+        formatter.locale = Locale(identifier: Localization.Locale.currentLocale.value.code)
         formatter.dateFormat = "yyyy-MM-dd"
         return formatter
     }()
 
     let localbirthDateStringFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: Localization.Locale.currentLocale.code)
+        formatter.locale = Locale(identifier: Localization.Locale.currentLocale.value.code)
         formatter.dateFormat = "yyMMdd"
         return formatter
     }()
 
     let displayddMMM: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: Localization.Locale.currentLocale.code)
+        formatter.locale = Locale(identifier: Localization.Locale.currentLocale.value.code)
         formatter.dateFormat = "dd MMM"
         return formatter
     }()
 
     let displayMMMMddYYYY: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: Localization.Locale.currentLocale.code)
+        formatter.locale = Locale(identifier: Localization.Locale.currentLocale.value.code)
         formatter.dateFormat = "MMMM dd YYYY"
         return formatter
     }()
 
     let YYYYFormat: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: Localization.Locale.currentLocale.code)
+        formatter.locale = Locale(identifier: Localization.Locale.currentLocale.value.code)
         formatter.dateFormat = "yyyy"
         return formatter
     }()
 
     let displayddMMMyyyy: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: Localization.Locale.currentLocale.code)
+        formatter.locale = Locale(identifier: Localization.Locale.currentLocale.value.code)
         formatter.dateFormat = "dd MMM yyyy"
         return formatter
     }()

@@ -1,6 +1,6 @@
 import Foundation
 import Hero
-import Presentation
+import StoreContainer
 import SwiftUI
 import hCore
 
@@ -473,7 +473,7 @@ private class TextView: UITextView, UITextViewDelegate {
         self._inEdit = inEdit
 
         super.init(frame: .zero, textContainer: nil)
-        self.textContainerInset = .init(horizontalInset: 0, verticalInset: 0)
+        self.textContainerInset = .init(top: 0, left: 0, bottom: 0, right: 0)
         self.delegate = self
         self.font = Fonts.fontFor(style: .body1)
         self.backgroundColor = .clear
@@ -487,7 +487,7 @@ private class TextView: UITextView, UITextViewDelegate {
         placeholderView.textColor = getPlaceholderColor()
         placeholderView.isUserInteractionEnabled = false
         placeholderView.backgroundColor = .clear
-        placeholderView.textContainerInset = .init(horizontalInset: 0, verticalInset: 0)
+        placeholderView.textContainerInset = .init(top: 0, left: 0, bottom: 0, right: 0)
         placeholderView.text = placeholder
         placeholderView.font = Fonts.fontFor(style: .body1)
         placeholderView.isHidden = inputText.wrappedValue != ""

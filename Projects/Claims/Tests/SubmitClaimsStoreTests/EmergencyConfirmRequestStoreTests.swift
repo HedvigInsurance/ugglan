@@ -1,4 +1,4 @@
-import Presentation
+import StoreContainer
 import XCTest
 
 @testable import Claims
@@ -18,7 +18,7 @@ final class EmergencyConfirmRequestStoreTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        globalPresentableStoreContainer.deletePersistanceContainer()
+        hGlobalPresentableStoreContainer.deletePersistanceContainer()
     }
 
     override func tearDown() async throws {
@@ -69,7 +69,7 @@ final class EmergencyConfirmRequestStoreTests: XCTestCase {
         await store.sendAsync(.emergencyConfirmRequest(isEmergency: false))
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.postConfirmEmergency] == nil
+            store.loadingState[.postConfirmEmergency] == nil
         }
 
         assert(store.state.successStep == nil)
@@ -90,7 +90,7 @@ final class EmergencyConfirmRequestStoreTests: XCTestCase {
         await store.sendAsync(.emergencyConfirmRequest(isEmergency: false))
 
         await waitUntil(description: "loading state") {
-            if case .error = store.loadingSignal.value[.postConfirmEmergency] { return true } else { return false }
+            if case .error = store.loadingState[.postConfirmEmergency] { return true } else { return false }
         }
 
         assert(store.state.successStep == nil)

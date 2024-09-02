@@ -195,7 +195,7 @@ class HomeVM: ObservableObject {
             }
     }
     private func addObserverForApplicationDidBecomeActive() {
-        if ApplicationContext.shared.$isLoggedIn.value {
+        if ApplicationContext.shared.isLoggedIn {
             NotificationCenter.default.addObserver(
                 forName: UIApplication.didBecomeActiveNotification,
                 object: nil,
@@ -225,7 +225,7 @@ class HomeVM: ObservableObject {
 
 struct Active_Preview: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.send(.en_SE)
 
         return HomeView(
             claimsContent: Text(""),
@@ -249,7 +249,7 @@ struct Active_Preview: PreviewProvider {
 
 struct ActiveInFuture_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.send(.en_SE)
         return HomeView(
             claimsContent: Text(""),
             memberId: {
@@ -273,7 +273,7 @@ struct ActiveInFuture_Previews: PreviewProvider {
 
 struct TerminatedToday_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.send(.en_SE)
         return HomeView(
             claimsContent: Text(""),
             memberId: {
@@ -296,7 +296,7 @@ struct TerminatedToday_Previews: PreviewProvider {
 
 struct Terminated_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.send(.en_SE)
         return HomeView(
             claimsContent: Text(""),
             memberId: {
@@ -319,7 +319,7 @@ struct Terminated_Previews: PreviewProvider {
 
 struct Deleted_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.send(.en_SE)
         return HomeView(
             claimsContent: Text(""),
             memberId: {

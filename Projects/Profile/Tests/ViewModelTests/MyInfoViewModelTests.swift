@@ -1,4 +1,4 @@
-import Presentation
+import StoreContainer
 import XCTest
 import hCore
 
@@ -10,8 +10,8 @@ final class MyInfoViewModelTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
+        hGlobalPresentableStoreContainer.deletePersistanceContainer()
         sut = nil
-        globalPresentableStoreContainer.deletePersistanceContainer()
     }
 
     override func tearDown() async throws {
@@ -34,7 +34,7 @@ final class MyInfoViewModelTests: XCTestCase {
 
         self.sut = mockService
 
-        let store = ProfileStore()
+        let store: ProfileStore = hGlobalPresentableStoreContainer.get()
         self.store = store
 
         await store.sendAsync(
@@ -49,12 +49,13 @@ final class MyInfoViewModelTests: XCTestCase {
                 )
             )
         )
-        await store.sendAsync(.setMemberPhone(phone: mockPhoneNumber))
 
         let model = MyInfoViewModel()
+        model.phone = "213123"
         await model.save()
-
-        assert(model.phone == mockPhoneNumber)
+        await waitUntil(description: "Check phone number") {
+            store.state.memberDetails?.phone == "213123"
+        }
     }
 
     func testPhoneUpdateFailure() async {
@@ -66,13 +67,23 @@ final class MyInfoViewModelTests: XCTestCase {
 
         self.sut = mockService
 
-        let store = ProfileStore()
+        let store: ProfileStore = hGlobalPresentableStoreContainer.get()
         self.store = store
-        await store.sendAsync(.setMemberPhone(phone: "111111"))
-
+        await store.sendAsync(
+            .setMemberDetails(
+                details: .init(
+                    id: "memberId",
+                    firstName: "first name",
+                    lastName: "last name",
+                    phone: "12312321",
+                    email: "",
+                    hasTravelCertificate: true
+                )
+            )
+        )
         let model = MyInfoViewModel()
+        model.phone = ""
         await model.save()
-
         assert(model.phoneError == MyInfoSaveError.phoneNumberEmpty.localizedDescription)
     }
 
@@ -106,22 +117,22 @@ final class MyInfoViewModelTests: XCTestCase {
 
         let model = MyInfoViewModel()
         await model.save()
-
-        assert(model.email == mockEmail)
+        await waitUntil(description: "check email") {
+            model.email == mockEmail
+        }
     }
 
     func testEmailUpdateFailure() async {
         let mockEmail = "email@email.com"
-
         let mockService = MockData.createMockProfileService(
             emailUpdate: { email in
-                throw MyInfoSaveError.phoneNumberEmpty
+                throw MyInfoSaveError.emailEmpty
             }
         )
 
         self.sut = mockService
 
-        let store = ProfileStore()
+        let store: ProfileStore = hGlobalPresentableStoreContainer.get()
         self.store = store
         await store.sendAsync(
             .setMemberDetails(
@@ -135,11 +146,13 @@ final class MyInfoViewModelTests: XCTestCase {
                 )
             )
         )
-        await store.sendAsync(.setMemberEmail(email: mockEmail))
-
+        await waitUntil(description: "check email") {
+            store.state.memberDetails?.email == mockEmail
+        }
         let model = MyInfoViewModel()
+        model.email = "newemail@email.com"
         await model.save()
+        assert(model.emailError! == MyInfoSaveError.emailMalformed.localizedDescription)
 
-        assert(model.emailError == MyInfoSaveError.phoneNumberEmpty.localizedDescription)
     }
 }

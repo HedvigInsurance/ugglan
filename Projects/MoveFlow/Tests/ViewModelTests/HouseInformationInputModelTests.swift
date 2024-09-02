@@ -1,4 +1,4 @@
-import Presentation
+import StoreContainer
 import XCTest
 import hCore
 
@@ -10,7 +10,7 @@ final class HouseInformationInputModelTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        globalPresentableStoreContainer.deletePersistanceContainer()
+        hGlobalPresentableStoreContainer.deletePersistanceContainer()
         sut = nil
     }
 

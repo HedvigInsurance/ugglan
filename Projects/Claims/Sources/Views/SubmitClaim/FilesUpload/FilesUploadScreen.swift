@@ -356,6 +356,6 @@ public class FilesUploadViewModel: ObservableObject {
 }
 
 #Preview{
-    Localization.Locale.currentLocale = .en_SE
+    Localization.Locale.currentLocale.send(.en_SE)
     return SubmitClaimFilesUploadScreen(model: .init(id: "id", title: "title", targetUploadUrl: "url", uploads: []))
 }

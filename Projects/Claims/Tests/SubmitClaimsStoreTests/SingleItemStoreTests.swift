@@ -1,4 +1,4 @@
-import Presentation
+import StoreContainer
 import XCTest
 
 @testable import Claims
@@ -19,7 +19,7 @@ final class SingleItemStoreTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        globalPresentableStoreContainer.deletePersistanceContainer()
+        hGlobalPresentableStoreContainer.deletePersistanceContainer()
     }
 
     override func tearDown() async throws {
@@ -70,7 +70,7 @@ final class SingleItemStoreTests: XCTestCase {
         await store.sendAsync(.singleItemRequest(purchasePrice: 6000))
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.postSingleItem] == nil
+            store.loadingState[.postSingleItem] == nil
         }
 
         assert(store.state.successStep == nil)
@@ -91,7 +91,7 @@ final class SingleItemStoreTests: XCTestCase {
         await store.sendAsync(.singleItemRequest(purchasePrice: 6000))
 
         await waitUntil(description: "loading state") {
-            if case .error = store.loadingSignal.value[.postSingleItem] { return true } else { return false }
+            if case .error = store.loadingState[.postSingleItem] { return true } else { return false }
         }
 
         assert(store.state.successStep == nil)

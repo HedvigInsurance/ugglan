@@ -40,7 +40,7 @@ extension MonetaryAmount {
         case "DKK":
             return Locale(identifier: "da_DK")
         default:
-            return Localization.Locale.currentLocale.foundation
+            return Localization.Locale.currentLocale.value.foundation
         }
     }
 

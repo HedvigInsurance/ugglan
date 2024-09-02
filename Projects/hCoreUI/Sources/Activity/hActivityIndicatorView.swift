@@ -467,3 +467,40 @@ public struct LoadingViewWithGenericError<Content: View, StoreType: StoreLoading
         let error: String?
     }
 }
+
+public struct LoadingViewWithContentt: ViewModifier {
+    @Binding var isLoading: Bool
+    @Binding var error: String?
+    public func body(content: Content) -> some View {
+        ZStack {
+            BackgroundView().edgesIgnoringSafeArea(.all)
+            if isLoading {
+                loadingIndicatorView.transition(.opacity.animation(.easeInOut(duration: 0.2)))
+            } else if let error = error {
+                GenericErrorView(
+                    description: error,
+                    buttons: .init()
+                )
+                .transition(.opacity.animation(.easeInOut(duration: 0.2)))
+            } else {
+                content.transition(.opacity.animation(.easeInOut(duration: 0.2)))
+            }
+        }
+    }
+
+    private var loadingIndicatorView: some View {
+        HStack {
+            DotsActivityIndicator(.standard)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(hBackgroundColor.primary.opacity(0.01))
+        .edgesIgnoringSafeArea(.top)
+        .useDarkColor
+    }
+}
+
+extension View {
+    public func hLoading(_ isLoading: Binding<Bool>, _ error: Binding<String?>) -> some View {
+        modifier(LoadingViewWithContentt(isLoading: isLoading, error: error))
+    }
+}

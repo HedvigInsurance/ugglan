@@ -199,7 +199,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         }
 
         if state.hasSentOrRecievedAtLeastOneMessage
-            || Localization.Locale.currentLocale.market != .se
+            || Localization.Locale.currentLocale.value.market != .se
         {
             if state.showChatNotification {
                 if Dependencies.featureFlags().isConversationBasedMessagesEnabled {

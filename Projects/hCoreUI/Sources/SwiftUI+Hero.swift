@@ -1,5 +1,5 @@
 import Hero
-import Presentation
+import StoreContainer
 import SwiftUI
 
 public struct HeroAnimationWrapper<Content: View>: UIViewRepresentable {

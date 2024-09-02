@@ -1,13 +1,12 @@
 import Foundation
 import Market
-import Presentation
 import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct ImpersonationSettings: View {
-    @PresentableStore var store: UgglanStore
+    @hPresentableStore var store: UgglanStore
     @hPresentableStore var marketStore: MarketStore
     @AppStorage(ApplicationState.key) public var state: ApplicationState.Screen = .notLoggedIn
 
@@ -23,7 +22,7 @@ struct ImpersonationSettings: View {
                             if let realMarket = Market(rawValue: locale.market.rawValue) {
                                 marketStore.send(.selectMarket(market: realMarket))
                             }
-                            Localization.Locale.currentLocale = locale
+                            Localization.Locale.currentLocale.send(locale)
                             await marketStore.sendAsync(.selectLanguage(language: locale.rawValue))
                             ApplicationState.preserveState(.loggedIn)
                             ApplicationState.state = .loggedIn

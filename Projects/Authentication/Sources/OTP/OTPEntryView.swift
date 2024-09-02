@@ -52,7 +52,7 @@ class OTPEntryViewModel: ObservableObject {
     @hTextFieldFocusState var focusInputField = false
     weak var router: Router?
     var masking: Masking {
-        switch Localization.Locale.currentLocale.market {
+        switch Localization.Locale.currentLocale.value.market {
         case .dk:
             return Masking(type: .danishPersonalNumber)
         case .no:
@@ -63,7 +63,7 @@ class OTPEntryViewModel: ObservableObject {
     }
 
     var title: String {
-        switch Localization.Locale.currentLocale.market {
+        switch Localization.Locale.currentLocale.value.market {
         case .dk, .no:
             return L10n.zignsecLoginScreenTitle
         case .se:

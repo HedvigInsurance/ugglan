@@ -193,7 +193,7 @@ class SurveyScreenViewModel: ObservableObject {
 }
 
 #Preview{
-    Localization.Locale.currentLocale = .en_SE
+    Localization.Locale.currentLocale.send(.en_SE)
     let options = [
         TerminationFlowSurveyStepModelOption(
             id: "optionId",

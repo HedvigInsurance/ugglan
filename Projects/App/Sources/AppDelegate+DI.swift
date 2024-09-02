@@ -10,8 +10,8 @@ import Foundation
 import Home
 import MoveFlow
 import Payment
-import Presentation
 import Profile
+import StoreContainer
 import TerminateContracts
 import TravelCertificate
 import hCore
@@ -21,7 +21,7 @@ extension ApolloClient {
     public static func initAndRegisterClient() {
         let authorizationService = AuthenticationClientAuthLib()
         Dependencies.shared.add(module: Module { () -> AuthenticationClient in authorizationService })
-        let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
+        let ugglanStore: UgglanStore = hGlobalPresentableStoreContainer.get()
         let dateService = DateService()
         Dependencies.shared.add(module: Module { () -> DateService in dateService })
         if ugglanStore.state.isDemoMode {

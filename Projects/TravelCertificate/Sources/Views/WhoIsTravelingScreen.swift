@@ -122,7 +122,7 @@ class WhoIsTravelingViewModel: ObservableObject {
 
 struct WhoIsTravelingView_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.send(.en_SE)
         return WhoIsTravelingScreen(
             vm:
                 .init(

@@ -193,7 +193,7 @@ public struct PaymentsView: View {
 
 struct PaymentsView_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.send(.en_SE)
         Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
         return PaymentsView()
     }

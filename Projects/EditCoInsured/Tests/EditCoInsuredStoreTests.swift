@@ -1,4 +1,4 @@
-import Presentation
+import StoreContainer
 import XCTest
 
 @testable import EditCoInsured
@@ -8,7 +8,7 @@ final class EditCoInsuredStoreTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        globalPresentableStoreContainer.deletePersistanceContainer()
+        hGlobalPresentableStoreContainer.deletePersistanceContainer()
     }
 
     override func tearDown() async throws {
@@ -27,7 +27,7 @@ final class EditCoInsuredStoreTests: XCTestCase {
         await store.sendAsync(.performCoInsuredChanges(commitId: "commitId"))
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.postCoInsured] == nil
+            store.loadingState[.postCoInsured] == nil
         }
 
         assert(mockService.events.count == 1)
@@ -46,7 +46,7 @@ final class EditCoInsuredStoreTests: XCTestCase {
         await store.sendAsync(.performCoInsuredChanges(commitId: "commitId"))
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.postCoInsured] != nil
+            store.loadingState[.postCoInsured] != nil
         }
 
         assert(mockService.events.count == 1)

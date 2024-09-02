@@ -141,7 +141,7 @@ class ChatInputViewModel: NSObject, ObservableObject {
         let picker = UIImagePickerController()
         picker.sourceType = .camera
         picker.delegate = self
-        picker.preferredPresentationStyle = .modal
+        picker.modalPresentationStyle = .overFullScreen
         UIApplication.shared.getTopViewController()?.present(picker, animated: true)
     }
 
@@ -151,7 +151,7 @@ class ChatInputViewModel: NSObject, ObservableObject {
         config.selectionLimit = 5
         let picker = PHPickerViewController(configuration: config)
         picker.delegate = self
-        picker.preferredPresentationStyle = .modal
+        picker.modalPresentationStyle = .overFullScreen
         UIApplication.shared.getTopViewController()?.present(picker, animated: true)
     }
 
@@ -159,7 +159,7 @@ class ChatInputViewModel: NSObject, ObservableObject {
         let picker = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.item])
         picker.allowsMultipleSelection = true
         picker.delegate = self
-        picker.preferredPresentationStyle = .modal
+        picker.modalPresentationStyle = .overFullScreen
         UIApplication.shared.getTopViewController()?.present(picker, animated: true)
     }
 }
@@ -201,7 +201,7 @@ private class CustomTextView: UITextView, UITextViewDelegate {
         self._height = height
         self._keyboardIsShown = keyboardIsShown
         super.init(frame: .zero, textContainer: nil)
-        self.textContainerInset = .init(horizontalInset: 4, verticalInset: 4)
+        self.textContainerInset = .init(top: 4, left: 4, bottom: 4, right: 4)
         self.delegate = self
         self.font = Fonts.fontFor(style: .body1)
         self.text = inputText.wrappedValue
