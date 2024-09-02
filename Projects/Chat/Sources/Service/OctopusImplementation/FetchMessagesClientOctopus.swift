@@ -35,12 +35,13 @@ extension OctopusGraphQL.MessageFragment {
 
     private var messageType: MessageType {
         if let text = self.asChatMessageText?.text {
-            if let url = URL(string: text), text.isUrl {
-                if text.isGIFURL {
+            let urlText = text.trimmingCharacters(in: .whitespacesAndNewlines)
+            if let url = URL(string: urlText), urlText.isUrl {
+                if urlText.isGIFURL {
                     return .file(file: .init(id: self.id, size: 0, mimeType: .GIF, name: "", source: .url(url: url)))
-                } else if text.isCrossSell {
+                } else if urlText.isCrossSell {
                     return .crossSell(url: url)
-                } else if text.isDeepLink {
+                } else if urlText.isDeepLink {
                     return .deepLink(url: url)
                 } else {
                     return .otherLink(url: url)
