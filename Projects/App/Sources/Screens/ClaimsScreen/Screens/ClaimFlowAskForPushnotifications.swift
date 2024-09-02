@@ -1,6 +1,6 @@
 import Claims
+import PresentableStore
 import Profile
-import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI

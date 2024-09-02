@@ -1,6 +1,6 @@
 import Foundation
 import Market
-import StoreContainer
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI

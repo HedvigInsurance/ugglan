@@ -1,8 +1,8 @@
 import Apollo
 import Combine
 import Foundation
+import PresentableStore
 import SafariServices
-import StoreContainer
 import SwiftUI
 import WebKit
 import hCore

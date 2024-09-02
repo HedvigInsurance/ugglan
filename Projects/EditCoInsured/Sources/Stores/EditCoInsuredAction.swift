@@ -1,5 +1,5 @@
 import EditCoInsuredShared
-import StoreContainer
+import PresentableStore
 import hCoreUI
 
 public enum EditCoInsuredAction: ActionProtocol, Hashable {

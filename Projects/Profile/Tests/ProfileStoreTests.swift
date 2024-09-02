@@ -1,4 +1,4 @@
-import StoreContainer
+import PresentableStore
 import XCTest
 
 @testable import Profile

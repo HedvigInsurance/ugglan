@@ -1,6 +1,6 @@
 import Apollo
 import EditCoInsuredShared
-import StoreContainer
+import PresentableStore
 import SwiftUI
 
 public struct ContractState: StateProtocol {

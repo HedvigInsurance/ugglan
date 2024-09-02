@@ -1,6 +1,6 @@
 import Chat
 import Foundation
-import StoreContainer
+import PresentableStore
 
 extension HomeStore {
     func getChatStore() -> ChatStore {

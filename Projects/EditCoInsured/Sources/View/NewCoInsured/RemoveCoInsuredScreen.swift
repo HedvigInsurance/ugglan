@@ -1,6 +1,6 @@
 import EditCoInsuredShared
 import Foundation
-import StoreContainer
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI

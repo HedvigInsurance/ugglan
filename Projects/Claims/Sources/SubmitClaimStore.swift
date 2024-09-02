@@ -1,6 +1,6 @@
 import Apollo
 import Combine
-import StoreContainer
+import PresentableStore
 import SwiftUI
 import hCore
 

@@ -2,8 +2,8 @@ import Chat
 import Contracts
 import EditCoInsuredShared
 import Payment
+import PresentableStore
 import SafariServices
-import StoreContainer
 import SwiftUI
 import TerminateContracts
 import TravelCertificate

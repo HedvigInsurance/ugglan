@@ -1,5 +1,5 @@
 import Foundation
-import StoreContainer
+import PresentableStore
 import SwiftUI
 
 extension View {

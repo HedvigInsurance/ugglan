@@ -1,7 +1,7 @@
 import Combine
 import Foundation
 import Kingfisher
-import StoreContainer
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI

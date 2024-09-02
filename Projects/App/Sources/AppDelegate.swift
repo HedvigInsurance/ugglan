@@ -10,8 +10,8 @@ import Forever
 import Foundation
 import MoveFlow
 import Payment
+import PresentableStore
 import Profile
-import StoreContainer
 import SwiftUI
 import TerminateContracts
 import TravelCertificate

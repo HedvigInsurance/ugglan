@@ -1,4 +1,4 @@
-import StoreContainer
+import PresentableStore
 import SwiftUI
 
 public indirect enum ForeverAction: ActionProtocol {

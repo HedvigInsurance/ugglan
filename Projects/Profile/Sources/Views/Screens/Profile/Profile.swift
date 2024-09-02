@@ -1,7 +1,7 @@
 import Apollo
 import Home
 import Market
-import StoreContainer
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI

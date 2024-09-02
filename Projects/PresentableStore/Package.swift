@@ -1,26 +1,24 @@
-// swift-tools-version: 5.10
-
 import PackageDescription
 
 let package = Package(
-    name: "StoreContainer",
+    name: "PresentableStore",
     platforms: [.iOS(.v15)],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
-            name: "StoreContainer",
-            targets: ["StoreContainer"]
+            name: "PresentableStore",
+            targets: ["PresentableStore"]
         )
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "StoreContainer"
+            name: "PresentableStore"
         ),
         .testTarget(
-            name: "StoreContainerTests",
-            dependencies: ["StoreContainer"]
+            name: "PresentableStoreTests",
+            dependencies: ["PresentableStore"]
         ),
     ]
 )

@@ -6,8 +6,8 @@ import CoreDependencies
 import Foundation
 import Home
 import Payment
+import PresentableStore
 import Profile
-import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI

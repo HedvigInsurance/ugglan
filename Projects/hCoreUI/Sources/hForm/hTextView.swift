@@ -1,6 +1,6 @@
 import Foundation
 import Hero
-import StoreContainer
+import PresentableStore
 import SwiftUI
 import hCore
 

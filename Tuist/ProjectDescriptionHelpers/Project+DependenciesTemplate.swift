@@ -19,7 +19,7 @@ public enum ExternalDependencies: CaseIterable {
     case unleashProxyClientSwift
     case argumentParser
     case hero
-    case storeContainer
+    case presentableStore
 
     public var isTestDependency: Bool { self == .snapshottesting }
 
@@ -93,9 +93,9 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(url: "https://github.com/apple/swift-argument-parser", .upToNextMajor(from: "1.3.0"))
             ]
-        case .storeContainer:
+        case .presentableStore:
             return [
-                .package(path: .relativeToRoot("Projects/StoreContainer"))
+                .package(path: .relativeToRoot("Projects/PresentableStore"))
             ]
         }
     }
@@ -160,8 +160,8 @@ public enum ExternalDependencies: CaseIterable {
             return [.package(product: "ApolloIosCodegen")]
         case .argumentParser:
             return [.package(product: "ArgumentParser")]
-        case .storeContainer:
-            return [.package(product: "StoreContainer")]
+        case .presentableStore:
+            return [.package(product: "PresentableStore")]
         }
     }
 }

@@ -1,6 +1,6 @@
 import Apollo
 import Foundation
-import StoreContainer
+import PresentableStore
 import hCore
 
 public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, ProfileLoadingAction> {

@@ -1,6 +1,6 @@
 import XCTest
 
-@testable import StoreContainer
+@testable import PresentableStore
 
 final class StoreContainerTests: XCTestCase {
     func testExample() throws {

@@ -1,5 +1,5 @@
 import Foundation
-import StoreContainer
+import PresentableStore
 
 public enum TerminationStepModelAction: ActionProtocol, Hashable {
     case setTerminationDateStep(model: TerminationFlowDateNextStepModel)

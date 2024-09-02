@@ -4,7 +4,7 @@ import Home
 import Kingfisher
 import Payment
 import Photos
-import StoreContainer
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI

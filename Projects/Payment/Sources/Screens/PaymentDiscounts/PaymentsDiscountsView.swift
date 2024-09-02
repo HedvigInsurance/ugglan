@@ -1,5 +1,5 @@
 import Forever
-import StoreContainer
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI

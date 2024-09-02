@@ -9,9 +9,9 @@ import Home
 import Market
 import MoveFlow
 import Payment
+import PresentableStore
 import Profile
 import SafariServices
-import StoreContainer
 import SwiftUI
 import TerminateContracts
 import TravelCertificate

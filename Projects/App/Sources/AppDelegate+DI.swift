@@ -10,8 +10,8 @@ import Foundation
 import Home
 import MoveFlow
 import Payment
+import PresentableStore
 import Profile
-import StoreContainer
 import TerminateContracts
 import TravelCertificate
 import hCore

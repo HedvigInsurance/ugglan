@@ -1,5 +1,5 @@
+import PresentableStore
 import SafariServices
-import StoreContainer
 import SwiftUI
 import WebKit
 

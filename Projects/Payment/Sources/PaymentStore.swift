@@ -1,7 +1,7 @@
 import Apollo
 import Contracts
 import Foundation
-import StoreContainer
+import PresentableStore
 import hCore
 import hGraphQL
 

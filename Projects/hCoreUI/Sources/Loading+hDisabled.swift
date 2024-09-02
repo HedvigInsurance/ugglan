@@ -1,4 +1,4 @@
-import StoreContainer
+import PresentableStore
 import SwiftUI
 
 private struct DisableInputModifier<StoreType: StoreLoading & Store>: ViewModifier {

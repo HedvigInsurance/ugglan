@@ -3,7 +3,7 @@ import Combine
 import Contracts
 import EditCoInsuredShared
 import Payment
-import StoreContainer
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI

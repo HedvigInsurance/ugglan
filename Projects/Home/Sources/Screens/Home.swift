@@ -4,8 +4,8 @@ import Combine
 import Contracts
 import Foundation
 import Payment
+import PresentableStore
 import SafariServices
-import StoreContainer
 import SwiftUI
 import hCore
 import hCoreUI
