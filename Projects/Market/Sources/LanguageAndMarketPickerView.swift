@@ -127,8 +127,8 @@ struct LanguageAndMarketPickerView_Previews: PreviewProvider {
 }
 
 class LanguageAndMarketPickerViewModel: ObservableObject {
-    @Published var selectedLocale = Localization.Locale.currentLocale
-    @Published var selectedLocaleCode: String? = Localization.Locale.currentLocale.rawValue
+    @Published var selectedLocale = Localization.Locale.currentLocale.value
+    @Published var selectedLocaleCode: String? = Localization.Locale.currentLocale.value.rawValue
 
     @Published var selectedMarket: Market
     @Published var selectedMarketCode: String?
@@ -167,7 +167,9 @@ class LanguageAndMarketPickerViewModel: ObservableObject {
         $selectedMarketCode.sink { [weak self] selectedMarketCode in
             if let selectedMarketCode, let market = Market(rawValue: selectedMarketCode) {
                 self?.selectedMarket = market
-                if let currentSelectedLocale = market.languages.first(where: { $0 == Localization.Locale.currentLocale }
+                if let currentSelectedLocale = market.languages.first(where: {
+                    $0 == Localization.Locale.currentLocale.value
+                }
                 ) {
                     self?.selectedLocaleCode = currentSelectedLocale.rawValue
                 } else {

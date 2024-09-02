@@ -91,7 +91,7 @@ struct HeaderView_Previews: PreviewProvider {
 struct HeaderView_Previews2: PreviewProvider {
     @hPresentableStore static var store: ForeverStore
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.send(.en_SE)
         return HeaderView {}
             .onAppear {
 

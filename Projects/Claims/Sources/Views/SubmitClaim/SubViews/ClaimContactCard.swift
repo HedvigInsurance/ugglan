@@ -183,7 +183,7 @@ struct ClaimEmergencyContactCard: View {
 
 struct ClaimContactCard_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.send(.en_SE)
         return VStack {
             ClaimContactCard(
                 imageUrl: "",

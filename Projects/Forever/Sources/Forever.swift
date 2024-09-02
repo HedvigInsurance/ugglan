@@ -124,7 +124,7 @@ public struct ForeverView: View {
 struct ForeverView_Previews: PreviewProvider {
     @hPresentableStore static var store: ForeverStore
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.send(.en_SE)
         return ForeverView()
             .onAppear {
                 Dependencies.shared.add(module: Module { () -> ForeverClient in ForeverClientDemo() })
