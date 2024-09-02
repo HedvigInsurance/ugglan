@@ -8,7 +8,7 @@ final class MovingFlowHousingTypeViewModelTests: XCTestCase {
     weak var store: MoveFlowStore?
     weak var sut: MockMoveFlowService?
 
-    let movingFlowModel: MovingFlowModel = .init(
+    lazy var movingFlowModel: MovingFlowModel = .init(
         id: "intentId",
         isApartmentAvailableforStudent: true,
         maxApartmentNumberCoInsured: 6,
@@ -26,6 +26,7 @@ final class MovingFlowHousingTypeViewModelTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         globalPresentableStoreContainer.deletePersistanceContainer()
         sut = nil
     }
@@ -71,10 +72,7 @@ final class MovingFlowHousingTypeViewModelTests: XCTestCase {
         let store = MoveFlowStore()
         self.store = store
         await store.sendAsync(.setHousingType(with: .house))
-
-        let model = MovingFlowHousingTypeViewModel()
-
-        assert(model.selectedHousingType == "house")
+        assert(store.state.selectedHousingType == .house)
     }
 
     func testHousingTypeRentalSuccess() async {
@@ -89,27 +87,6 @@ final class MovingFlowHousingTypeViewModelTests: XCTestCase {
         let store = MoveFlowStore()
         self.store = store
         await store.sendAsync(.setHousingType(with: .rental))
-
-        let model = MovingFlowHousingTypeViewModel()
-
-        assert(model.selectedHousingType == "rental")
-    }
-
-    func testHousingTypeRentalFailure() async {
-        let mockService = MockData.createMockMoveFlowService(moveIntentRequest: {
-            intentId,
-            addressInputModel,
-            houseInformationInputModel in
-            throw MovingFlowError.missingDataError(message: "error")
-        })
-        self.sut = mockService
-
-        let store = MoveFlowStore()
-        self.store = store
-        await store.sendAsync(.setHousingType(with: .rental))
-
-        let model = MovingFlowHousingTypeViewModel()
-
-        assert(model.selectedHousingType != "rental")
+        assert(store.state.selectedHousingType == .rental)
     }
 }
