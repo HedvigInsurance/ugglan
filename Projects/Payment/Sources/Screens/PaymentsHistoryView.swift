@@ -111,7 +111,7 @@ public struct PaymentHistoryView: View {
 
 struct PaymentHistoryView_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .sv_SE
+        Localization.Locale.currentLocale.send(.sv_SE)
         Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
         return PaymentHistoryView()
     }

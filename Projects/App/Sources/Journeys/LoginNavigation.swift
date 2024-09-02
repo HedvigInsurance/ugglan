@@ -23,9 +23,9 @@ struct LoginNavigation: View {
                 .navigationTitle(L10n.loginMarketPickerPreferences)
                 .embededInNavigation()
         }
-        .detent(presented: $vm.showLogin, style: [.large], tracking: Localization.Locale.currentLocale.market) {
+        .detent(presented: $vm.showLogin, style: [.large], tracking: Localization.Locale.currentLocale.value.market) {
             Group {
-                switch Localization.Locale.currentLocale.market {
+                switch Localization.Locale.currentLocale.value.market {
                 case .no, .dk:
                     OTPEntryView()
                 case .se:
@@ -137,7 +137,7 @@ public class NotLoggedViewModel: ObservableObject {
     @Published var blurHash: String = ""
     @Published var imageURL: String = ""
     @Published var bootStrapped: Bool = false
-    @Published var locale: Localization.Locale = .currentLocale
+    @Published var locale: Localization.Locale = .currentLocale.value
     @Published var title: String = L10n.MarketLanguageScreen.title
     @Published var buttonText: String = L10n.MarketLanguageScreen.continueButtonText
     @Published var viewState: ViewState = .loading
@@ -148,13 +148,12 @@ public class NotLoggedViewModel: ObservableObject {
     var cancellables = Set<AnyCancellable>()
 
     init() {
-        Localization.Locale.$currentLocale
-            .distinct()
-            .plain()
-            .delay(by: 0.1)
-            .publisher
+        Localization.Locale.currentLocale
+            .removeDuplicates()
+            .delay(for: 0.1, scheduler: RunLoop.main)
             .receive(on: RunLoop.main)
             .sink { [weak self] value in
+                self?.locale = value
                 self?.title = L10n.MarketLanguageScreen.title
                 self?.buttonText = L10n.MarketLanguageScreen.continueButtonText
             }
@@ -189,13 +188,13 @@ public class NotLoggedViewModel: ObservableObject {
 
     func onOnBoardPressed() {
         var webUrl = Environment.current.webBaseURL
-        webUrl.appendPathComponent(Localization.Locale.currentLocale.webPath)
-        webUrl.appendPathComponent(Localization.Locale.currentLocale.priceQoutePath)
+        webUrl.appendPathComponent(Localization.Locale.currentLocale.value.webPath)
+        webUrl.appendPathComponent(Localization.Locale.currentLocale.value.priceQoutePath)
         webUrl =
             webUrl
             .appending("utm_source", value: "ios")
             .appending("utm_medium", value: "hedvig-app")
-            .appending("utm_campaign", value: Localization.Locale.currentLocale.market.rawValue.lowercased())
+            .appending("utm_campaign", value: Localization.Locale.currentLocale.value.market.rawValue.lowercased())
         UIApplication.shared.open(webUrl)
 
     }

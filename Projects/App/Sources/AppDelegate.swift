@@ -7,7 +7,6 @@ import Contracts
 import CoreDependencies
 import DatadogLogs
 import Forever
-import Form
 import Foundation
 import MoveFlow
 import Payment
@@ -187,9 +186,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         setupAnalyticsAndTracking()
 
-        localizationObserverTask = Localization.Locale.$currentLocale
-            .plain()
-            .publisher
+        localizationObserverTask = Localization.Locale.currentLocale
             .receive(on: RunLoop.main)
             .sink { locale in
                 ApplicationState.setPreferredLocale(locale)
@@ -199,7 +196,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
 
         ApolloClient.bundle = Bundle.main
-        ApolloClient.acceptLanguageHeader = Localization.Locale.currentLocale.acceptLanguageHeader
+        ApolloClient.acceptLanguageHeader = Localization.Locale.currentLocale.value.acceptLanguageHeader
         AskForRating().registerSession()
     }
 
@@ -207,7 +204,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        Localization.Locale.currentLocale = ApplicationState.preferredLocale
+        Localization.Locale.currentLocale.send(ApplicationState.preferredLocale)
         setupSession()
         TokenRefresher.shared.onRefresh = { token in
             let authService = AuthenticationService()

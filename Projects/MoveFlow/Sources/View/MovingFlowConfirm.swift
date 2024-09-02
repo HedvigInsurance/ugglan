@@ -343,7 +343,7 @@ public struct FieldInfo: Hashable, Equatable, Codable {
 
 struct MovingFlowConfirm_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .nb_NO
+        Localization.Locale.currentLocale.send(.nb_NO)
         return MovingFlowConfirm()
             .onAppear {
                 let store: MoveFlowStore = hGlobalPresentableStoreContainer.get()

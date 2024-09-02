@@ -58,7 +58,7 @@ private class AttributedUITextView: UITextView, UITextViewDelegate {
         self.fixedWidth = fixedWidth
         super.init(frame: .zero, textContainer: nil)
         self.attributedText = attributedString
-        self.textContainerInset = .init(horizontalInset: 0, verticalInset: 0)
+        self.textContainerInset = .init(top: 0, left: 0, bottom: 0, right: 0)
         self.backgroundColor = .clear
         self.isUserInteractionEnabled = false
         updateHeight()

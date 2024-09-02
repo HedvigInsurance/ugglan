@@ -79,7 +79,7 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
 
     public func start(with otpState: OTPState) async throws -> (verifyUrl: URL, resendUrl: URL, maskedEmail: String?) {
         let personalNumber: String? = {
-            switch Localization.Locale.currentLocale.market {
+            switch Localization.Locale.currentLocale.value.market {
             case .no, .dk:
                 return otpState.input.replacingOccurrences(of: "-", with: "")
             case .se:
@@ -88,7 +88,7 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
         }()
 
         let email: String? = {
-            switch Localization.Locale.currentLocale.market {
+            switch Localization.Locale.currentLocale.value.market {
             case .no, .dk:
                 return nil
             case .se:
@@ -98,7 +98,7 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
         do {
             let data = try await self.networkAuthRepository.startLoginAttempt(
                 loginMethod: .otp,
-                market: Localization.Locale.currentLocale.market.asOtpMarket,
+                market: Localization.Locale.currentLocale.value.market.asOtpMarket,
                 personalNumber: personalNumber,
                 email: email
             )
@@ -128,7 +128,7 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
         do {
             let data = try await self.networkAuthRepository.startLoginAttempt(
                 loginMethod: .seBankid,
-                market: Localization.Locale.currentLocale.market.asOtpMarket,
+                market: Localization.Locale.currentLocale.value.market.asOtpMarket,
                 personalNumber: nil,
                 email: nil
             )

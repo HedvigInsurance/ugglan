@@ -1,7 +1,21 @@
+import Combine
 import Foundation
-import UnleashProxyClientSwift
 
-public struct ApplicationContext {
+public class ApplicationContext {
     public static var shared = ApplicationContext()
-    @ReadWriteState public var isLoggedIn = false
+
+    private init() {}
+    private let isLoggedInSubject = CurrentValueSubject<Bool, Never>(false)
+
+    public var isLoggedInPublisher: AnyPublisher<Bool, Never> {
+        return isLoggedInSubject.eraseToAnyPublisher()
+    }
+
+    public var isLoggedIn: Bool {
+        return isLoggedInSubject.value
+    }
+
+    public func setValue(to isLoggedIn: Bool) {
+        isLoggedInSubject.send(isLoggedIn)
+    }
 }

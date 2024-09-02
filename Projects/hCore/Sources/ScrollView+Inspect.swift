@@ -187,3 +187,14 @@ public struct ContentOffsetModifier<Modifier: ViewModifier>: ViewModifier {
         }
     }
 }
+
+extension UIView {
+    /// Returns the first found view controller if any, walking up the responder chain.
+    public var viewController: UIViewController? {
+        if let vc = next as? UIViewController {
+            return vc
+        } else {
+            return superview?.viewController
+        }
+    }
+}

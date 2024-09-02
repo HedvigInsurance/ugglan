@@ -63,7 +63,7 @@ struct DiscountCodeSectionView: View {
 struct DiscountCodeSectionView_Previews: PreviewProvider {
     @hPresentableStore static var store: ForeverStore
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.send(.en_SE)
         return DiscountCodeSectionView()
             .onAppear {
                 Dependencies.shared.add(module: Module { () -> ForeverClient in ForeverClientDemo() })

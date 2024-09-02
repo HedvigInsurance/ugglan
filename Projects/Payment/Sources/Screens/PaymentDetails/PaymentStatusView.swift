@@ -79,7 +79,7 @@ struct PaymentStatusView: View {
 
 struct PaymentStatusView_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .sv_SE
+        Localization.Locale.currentLocale.send(.sv_SE)
         return VStack {
             PaymentStatusView(status: .pending) { _ in }
             PaymentStatusView(status: .success) { _ in }

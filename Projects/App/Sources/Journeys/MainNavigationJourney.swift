@@ -95,7 +95,7 @@ class MainNavigationViewModel: ObservableObject {
                 switch state {
                 case .loggedIn:
                     UIApplication.shared.registerForRemoteNotifications()
-                    ApplicationContext.shared.isLoggedIn = true
+                    ApplicationContext.shared.setValue(to: true)
                     withAnimation {
                         hasLaunchFinished = false
                     }
@@ -114,7 +114,7 @@ class MainNavigationViewModel: ObservableObject {
                         hasLaunchFinished = true
                     }
                 case .notLoggedIn:
-                    ApplicationContext.shared.isLoggedIn = false
+                    ApplicationContext.shared.setValue(to: false)
                     notLoggedInVm = .init()
                     loggedInVm = .init()
                     appDelegate.logout()
@@ -142,7 +142,7 @@ class MainNavigationViewModel: ObservableObject {
             }
         }
         if state == .loggedIn {
-            ApplicationContext.shared.isLoggedIn = true
+            ApplicationContext.shared.setValue(to: true)
             UIApplication.shared.registerForRemoteNotifications()
             showLaunchScreen = false
         }

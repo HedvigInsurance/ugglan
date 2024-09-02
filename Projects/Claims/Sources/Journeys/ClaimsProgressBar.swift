@@ -12,7 +12,9 @@ extension View {
             if let navigationBar = vc.navigationController?.navigationBar,
                 navigationBar.subviews.first(where: { $0.tag == progressViewTag }) == nil
             {
-                let progresView = UIProgressView(color: UIColor.brand(.primaryBackground(false)))
+
+                let progresView = UIProgressView()
+                progresView.backgroundColor = UIColor.brand(.primaryBackground(false))
                 progresView.layer.cornerRadius = 2
                 progresView.tag = progressViewTag
                 progresView.tintColor = .brand(.primaryText(false))
