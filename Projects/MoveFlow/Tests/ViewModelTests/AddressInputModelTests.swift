@@ -10,7 +10,7 @@ final class AddressInputModelTests: XCTestCase {
     override func setUp() {
         super.setUp()
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-        hGlobalPresentableStoreContainer.deletePersistanceContainer()
+        globalPresentableStoreContainer.deletePersistanceContainer()
     }
 
     override func tearDown() async throws {
