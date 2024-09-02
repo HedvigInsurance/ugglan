@@ -347,3 +347,9 @@ extension Masking: ViewModifier {
             }
     }
 }
+
+extension Character {
+    public var isDigit: Bool {
+        return "0123456789".contains(String(self))
+    }
+}
