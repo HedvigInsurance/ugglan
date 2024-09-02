@@ -9,6 +9,7 @@ final class AddressInputModelTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         globalPresentableStoreContainer.deletePersistanceContainer()
     }
 
