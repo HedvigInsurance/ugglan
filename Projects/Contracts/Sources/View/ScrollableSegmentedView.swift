@@ -252,7 +252,13 @@ extension ScrollableSegmentedViewModel: UIScrollViewDelegate {
                     animations: {
                         scrollView?.contentOffset.x = scrollTo
                     },
-                    completion: nil
+                    completion: { [weak self] _ in
+                        if let index = self?.getPagesOffset().firstIndex(where: { $0 == scrollTo }),
+                            let idToScrollTo = self?.pageModels[index].id
+                        {
+                            self?.setSelectedTab(with: idToScrollTo)
+                        }
+                    }
                 )
             }
         }
