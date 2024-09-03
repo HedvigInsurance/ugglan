@@ -90,16 +90,12 @@ public struct ChatNavigation<Content: View>: View {
                 switch chatType {
                 case let .conversationId(id):
                     ChatScreen(vm: .init(chatService: ConversationService(conversationId: id)))
-                case let .topic(topic):
-                    ChatScreen(vm: .init(chatService: MessagesService(topic: topic)))
                 case .newConversation:
                     ChatScreen(vm: .init(chatService: NewConversationService()))
-                case .none:
-                    ChatScreen(vm: .init(chatService: MessagesService(topic: nil)))
                 }
             }
             .withDismissButton(
-                reducedTopSpacing: Dependencies.featureFlags().isConversationBasedMessagesEnabled ? 8 : 0
+                reducedTopSpacing: Int(CGFloat.padding8)
             )
         }
         .environmentObject(chatNavigationViewModel)
@@ -123,7 +119,7 @@ public struct ChatNavigation<Content: View>: View {
 }
 
 #Preview{
-    ChatNavigation(chatType: .none) { type, onDone in
+    ChatNavigation(chatType: .newConversation) { type, onDone in
         EmptyView()
     }
 }

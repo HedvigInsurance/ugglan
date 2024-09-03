@@ -281,17 +281,13 @@ extension ChatScreenViewModel: TitleView {
 
     @ViewBuilder
     private var titleView: some View {
-        if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
-            VStack(alignment: .leading, spacing: 0) {
-                hText(self.title).foregroundColor(hTextColor.Opaque.primary)
-                if let subTitle = subTitle {
-                    hText(subTitle)
-                        .foregroundColor(hTextColor.Opaque.secondary)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        } else {
+        VStack(alignment: .leading, spacing: 0) {
             hText(self.title).foregroundColor(hTextColor.Opaque.primary)
+            if let subTitle = subTitle {
+                hText(subTitle)
+                    .foregroundColor(hTextColor.Opaque.secondary)
+            }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
