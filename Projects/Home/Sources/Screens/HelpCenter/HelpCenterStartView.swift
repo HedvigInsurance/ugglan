@@ -239,10 +239,6 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
         }
         return results
     }
-
-    deinit {
-        let ss = ""
-    }
 }
 
 extension HelpCenterStartViewModel: UISearchResultsUpdating {
