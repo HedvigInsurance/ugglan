@@ -36,7 +36,6 @@ final class MovingFlowHousingTypeViewModelTests: XCTestCase {
         await waitUntil(description: "Store deinited successfully") {
             self.store == nil
         }
-        try await Task.sleep(nanoseconds: 100)
         XCTAssertNil(sut)
     }
 
@@ -53,10 +52,7 @@ final class MovingFlowHousingTypeViewModelTests: XCTestCase {
         let store = MoveFlowStore()
         self.store = store
         await store.sendAsync(.setHousingType(with: .apartment))
-
-        let model = MovingFlowHousingTypeViewModel()
-
-        assert(model.selectedHousingType == "apartment")
+        assert(store.state.selectedHousingType == .apartment)
     }
 
     func testHousingTypeHouseSuccess() async {
