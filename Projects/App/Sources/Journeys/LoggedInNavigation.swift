@@ -405,22 +405,35 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isMoveContractPresented = false
     @Published var isEuroBonusPresented = false
     @Published var isUrlPresented: URL?
+    private var openDeepLinkObserver: NSObjectProtocol?
+    private var registerForPushNotificationsObserver: NSObjectProtocol?
+    private var handlePushNotificationObserver: NSObjectProtocol?
+    private var chatClosedObserver: NSObjectProtocol?
 
     private var cancellables = Set<AnyCancellable>()
     weak var tabBar: UITabBarController?
     init() {
-        NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) {
+        openDeepLinkObserver = NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) {
             [weak self] notification in
             let deepLinkUrl = notification.object as? URL
             self?.handleDeepLinks(deepLinkUrl: deepLinkUrl)
         }
 
-        NotificationCenter.default.addObserver(forName: .registerForPushNotifications, object: nil, queue: nil) {
-            notification in
+        registerForPushNotificationsObserver = NotificationCenter.default.addObserver(
+            forName: .registerForPushNotifications,
+            object: nil,
+            queue: nil
+        ) {
+            [weak self]
+            notification in guard let self = self else { return }
             UIApplication.shared.appDelegate.registerForPushNotifications {}
         }
 
-        NotificationCenter.default.addObserver(forName: .handlePushNotification, object: nil, queue: nil) {
+        handlePushNotificationObserver = NotificationCenter.default.addObserver(
+            forName: .handlePushNotification,
+            object: nil,
+            queue: nil
+        ) {
             [weak self]
             notification in
             if self?.hasLaunchFinished.value == true {
@@ -432,7 +445,11 @@ class LoggedInNavigationViewModel: ObservableObject {
                         self?.hasLaunchFinishedCancellable = nil
                     }
             }
-
+        }
+        chatClosedObserver = NotificationCenter.default.addObserver(forName: .chatClosed, object: nil, queue: nil) {
+            notification in
+            let store: HomeStore = globalPresentableStoreContainer.get()
+            store.send(.fetchChatNotifications)
         }
 
         EditCoInsuredViewModel.updatedCoInsuredForContractId
@@ -590,6 +607,18 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     deinit {
+        if let openDeepLinkObserver = openDeepLinkObserver {
+            NotificationCenter.default.removeObserver(openDeepLinkObserver)
+        }
+        if let registerForPushNotificationsObserver = registerForPushNotificationsObserver {
+            NotificationCenter.default.removeObserver(registerForPushNotificationsObserver)
+        }
+        if let handlePushNotificationObserver = handlePushNotificationObserver {
+            NotificationCenter.default.removeObserver(handlePushNotificationObserver)
+        }
+        if let chatClosedObserver = chatClosedObserver {
+            NotificationCenter.default.removeObserver(chatClosedObserver)
+        }
         NotificationCenter.default.removeObserver(self)
     }
 }

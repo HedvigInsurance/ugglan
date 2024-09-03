@@ -107,7 +107,8 @@ struct QuestionsItems: View {
 
 struct SupportView: View {
     let topic: ChatTopicType?
-
+    @PresentableStore var store: HomeStore
+    @ObservedObject var router: Router
     var body: some View {
         HStack {
             VStack(spacing: 0) {
@@ -116,17 +117,31 @@ struct SupportView: View {
                 hText(L10n.hcChatAnswer)
                     .foregroundColor(hTextColor.Translucent.secondary)
                     .multilineTextAlignment(.center)
-
-                hButton.MediumButton(type: .primary) {
-                    NotificationCenter.default.post(
-                        name: .openChat,
-                        object: ChatTopicWrapper(topic: topic, onTop: true)
-                    )
-                } content: {
-                    hText(L10n.hcChatButton)
+                PresentableStoreLens(HomeStore.self) { state in
+                    state.hasSentOrRecievedAtLeastOneMessage
+                } _: { hasSentOrRecievedAtLeastOneMessage in
+                    VStack(spacing: .padding8) {
+                        if hasSentOrRecievedAtLeastOneMessage {
+                            hButton.MediumButton(type: .primary) {
+                                router.push(HelpCenterNavigationRouterType.inbox)
+                            } content: {
+                                hText(L10n.hcChatGoToInbox)
+                            }
+                            .fixedSize()
+                        }
+                        hButton.MediumButton(type: hasSentOrRecievedAtLeastOneMessage ? .ghost : .primary) {
+                            NotificationCenter.default.post(
+                                name: .openChat,
+                                object: ChatTopicWrapper(topic: topic, onTop: true)
+                            )
+                        } content: {
+                            hText(L10n.hcChatButton)
+                        }
+                        .fixedSize()
+                    }
+                    .presentableStoreLensAnimation(.default)
+                    .padding(.top, .padding24)
                 }
-                .padding(.top, .padding24)
-                .fixedSize()
             }
             .padding(.vertical, .padding32)
             .padding(.bottom, .padding24)
