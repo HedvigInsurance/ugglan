@@ -37,7 +37,6 @@ private struct DismissButton: ViewModifier {
                         .onTapGesture {
                             isPresented = true
                         }
-                        .offset(x: 8)
                 }
             }
             .introspectViewController(customize: { vc in
@@ -81,7 +80,7 @@ private struct CloseButtonModifier: ViewModifier {
                         .onTapGesture {
                             vm.vc?.dismiss(animated: true)
                         }
-                        .offset(x: 8, y: CGFloat(-reducedTopSpacing))
+                        .offset(y: CGFloat(-reducedTopSpacing))
                 }
             }
             .introspectViewController(customize: { vc in
