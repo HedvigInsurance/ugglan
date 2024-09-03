@@ -64,13 +64,6 @@ public class ConversationClientOctopus: ConversationClient {
         let mutation = hGraphQL.OctopusGraphQL.ConversationSendMessageMutation(input: input)
         let data = try await octopus.client.perform(mutation: mutation)
         if let message = data.conversationSendMessage.message?.fragments.messageFragment {
-            let store: ChatStore = globalPresentableStoreContainer.get()
-            store.send(
-                .setLastMessageTimestampForConversation(
-                    id: conversationId,
-                    date: message.sentAt.localDateToIso8601Date ?? Date()
-                )
-            )
             return message.asMessage()
         } else if let errorMessage = data.conversationSendMessage.userError?.message {
             throw ConversationsError.errorMesage(message: errorMessage)
@@ -127,7 +120,8 @@ extension OctopusGraphQL.ConversationFragment {
             statusMessage: self.statusMessage,
             isConversationOpen: self.isOpen,
             hasClaim: self.claim != nil,
-            claimType: self.claim?.claimType
+            claimType: self.claim?.claimType,
+            hasNewMessage: true
         )
     }
 }

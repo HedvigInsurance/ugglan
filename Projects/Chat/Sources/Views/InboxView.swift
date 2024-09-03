@@ -63,7 +63,7 @@ public struct InboxView: View {
 
     @ViewBuilder
     private func getRightView(for conversation: Conversation) -> some View {
-        if vm.hasNotification(conversation: conversation) {
+        if conversation.hasNewMessage {
             hText(L10n.chatNewMessage, style: .label)
                 .foregroundColor(hTextColor.Opaque.black)
                 .padding(.horizontal, .padding6)
@@ -98,7 +98,7 @@ public struct InboxView: View {
 
     @hColorBuilder
     private func getBackgroundColor(for conversation: Conversation) -> some hColor {
-        if vm.hasNotification(conversation: conversation) {
+        if conversation.hasNewMessage {
             hSurfaceColor.Translucent.primary
         } else {
             hColorBase(.clear)
@@ -107,7 +107,7 @@ public struct InboxView: View {
 
     @hColorBuilder
     private func getNewestMessageColor(for conversation: Conversation) -> some hColor {
-        if vm.hasNotification(conversation: conversation) {
+        if conversation.hasNewMessage {
             hTextColor.Translucent.primary
         } else {
             hTextColor.Opaque.secondary
@@ -118,17 +118,8 @@ public struct InboxView: View {
 class InboxViewModel: ObservableObject {
     @Inject var service: ConversationsClient
     @Published var conversations: [Conversation] = []
-    @Published private var conversationsTimeStamp = [String: Date]()
-    private var conversationTimeStampCancellable: AnyCancellable?
     private var pollTimerCancellable: AnyCancellable?
     @PresentableStore var store: ChatStore
-
-    func hasNotification(conversation: Conversation) -> Bool {
-        return store.hasNotification(
-            conversationId: conversation.id,
-            timeStamp: conversation.newestMessage?.sentAt ?? conversation.createdAt?.localDateToIso8601Date
-        )
-    }
 
     func shouldHideDivider(for conversation: Conversation) -> Bool {
         guard let indexOfCurrent = conversations.firstIndex(where: { $0.id == conversation.id }) else {
@@ -140,18 +131,10 @@ class InboxViewModel: ObservableObject {
         }
         let currentConversation = conversations[indexOfCurrent]
         let nextConversation = conversations[indexOfNext]
-        return hasNotification(conversation: currentConversation) != hasNotification(conversation: nextConversation)
+        return currentConversation.hasNewMessage != nextConversation.hasNewMessage
     }
 
     init() {
-        let store: ChatStore = globalPresentableStoreContainer.get()
-        conversationTimeStampCancellable = store.stateSignal.plain().publisher
-            .map({ $0.conversationsTimeStamp })
-            .receive(on: RunLoop.main)
-            .sink { [weak self] value in
-                self?.conversationsTimeStamp = value
-            }
-        self.conversationsTimeStamp = store.state.conversationsTimeStamp
         Task {
             await fetchMessages()
         }
@@ -173,16 +156,6 @@ class InboxViewModel: ObservableObject {
         do {
             let conversations = try await service.getConversations()
             let store: ChatStore = globalPresentableStoreContainer.get()
-            let conversationsTimeStamp = store.state.conversationsTimeStamp
-            for conversation in conversations {
-                if conversationsTimeStamp[conversation.id] == nil,
-                    let newestMessageSentAt = conversation.newestMessage?.sentAt
-                {
-                    await store.sendAsync(
-                        .setLastMessageTimestampForConversation(id: conversation.id, date: newestMessageSentAt)
-                    )
-                }
-            }
             withAnimation {
                 self.conversations = conversations
             }

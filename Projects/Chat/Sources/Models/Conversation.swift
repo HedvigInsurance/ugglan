@@ -12,7 +12,8 @@ public struct Conversation: Identifiable, Hashable, Codable {
         statusMessage: String?,
         isConversationOpen: Bool?,
         hasClaim: Bool,
-        claimType: String?
+        claimType: String?,
+        hasNewMessage: Bool
     ) {
         self.id = id
         self.type = type
@@ -22,6 +23,7 @@ public struct Conversation: Identifiable, Hashable, Codable {
         self.isConversationOpen = isConversationOpen
         self.hasClaim = hasClaim
         self.claimType = claimType
+        self.hasNewMessage = hasNewMessage
     }
 
     public let id: String
@@ -32,6 +34,7 @@ public struct Conversation: Identifiable, Hashable, Codable {
     let isConversationOpen: Bool?
     let hasClaim: Bool
     let claimType: String?
+    public let hasNewMessage: Bool
 
     public init(
         fragment: OctopusGraphQL.ConversationFragment,
@@ -49,6 +52,7 @@ public struct Conversation: Identifiable, Hashable, Codable {
         self.isConversationOpen = fragment.isOpen
         self.hasClaim = fragment.claim != nil
         self.claimType = fragment.claim?.claimType
+        self.hasNewMessage = Bool.random()
     }
 
     var getConversationTitle: String {

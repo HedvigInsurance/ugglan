@@ -34,9 +34,6 @@ public class ConversationService: ChatServiceProtocol {
             olderToken = data.olderToken
         }
         newerToken = data.newerToken
-        if let sendAt = data.messages.first?.sentAt {
-            store.send(.setLastMessageTimestampForConversation(id: conversationId, date: sendAt))
-        }
         return .init(
             hasPreviousMessage: olderToken != nil,
             messages: data.messages,

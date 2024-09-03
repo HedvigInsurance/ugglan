@@ -119,11 +119,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             do {
                 let chatMessagesDates = try await self.homeService.getLastMessagesDates()
                 if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
-                    let store: ChatStore = globalPresentableStoreContainer.get()
-                    let unreadConversations = chatMessagesDates.filter { chatMessagesDate in
-                        store.hasNotification(conversationId: chatMessagesDate.key, timeStamp: chatMessagesDate.value)
-                    }
-                    send(.setChatNotification(hasNew: !unreadConversations.isEmpty))
+                    send(.setChatNotification(hasNew: !chatMessagesDates.isEmpty))
                     send(.setHasSentOrRecievedAtLeastOneMessage(hasSent: chatMessagesDates.count > 0))
                     send(.setChatNotificationConversationTimeStamp(date: chatMessagesDates.values.max() ?? Date()))
                 } else {
