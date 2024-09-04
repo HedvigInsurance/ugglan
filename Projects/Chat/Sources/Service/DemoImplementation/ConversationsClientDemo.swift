@@ -25,7 +25,7 @@ public class ConversationsDemoClient: ConversationsClient {
                 isConversationOpen: false,
                 hasClaim: false,
                 claimType: nil,
-                hasNewMessage: true
+                unreadMessageCount: 0
             ),
 
             Conversation(
@@ -42,7 +42,7 @@ public class ConversationsDemoClient: ConversationsClient {
                 isConversationOpen: true,
                 hasClaim: false,
                 claimType: nil,
-                hasNewMessage: false
+                unreadMessageCount: 0
             ),
 
             Conversation(
@@ -62,7 +62,7 @@ public class ConversationsDemoClient: ConversationsClient {
                 isConversationOpen: true,
                 hasClaim: true,
                 claimType: nil,
-                hasNewMessage: false
+                unreadMessageCount: 0
             ),
 
             Conversation(
@@ -82,7 +82,7 @@ public class ConversationsDemoClient: ConversationsClient {
                 isConversationOpen: true,
                 hasClaim: true,
                 claimType: "claim type",
-                hasNewMessage: false
+                unreadMessageCount: 0
             ),
         ]
 
@@ -102,7 +102,7 @@ public class ConversationsDemoClient: ConversationsClient {
             isConversationOpen: true,
             hasClaim: false,
             claimType: nil,
-            hasNewMessage: false
+            unreadMessageCount: 0
         )
     }
 }

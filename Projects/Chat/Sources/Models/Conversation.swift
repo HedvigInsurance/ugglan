@@ -13,7 +13,7 @@ public struct Conversation: Identifiable, Hashable, Codable {
         isConversationOpen: Bool?,
         hasClaim: Bool,
         claimType: String?,
-        hasNewMessage: Bool
+        unreadMessageCount: Int
     ) {
         self.id = id
         self.type = type
@@ -23,7 +23,11 @@ public struct Conversation: Identifiable, Hashable, Codable {
         self.isConversationOpen = isConversationOpen
         self.hasClaim = hasClaim
         self.claimType = claimType
-        self.hasNewMessage = hasNewMessage
+        self.unreadMessageCount = unreadMessageCount
+    }
+
+    public var hasNewMessage: Bool {
+        return unreadMessageCount > 0
     }
 
     public let id: String
@@ -34,7 +38,7 @@ public struct Conversation: Identifiable, Hashable, Codable {
     let isConversationOpen: Bool?
     let hasClaim: Bool
     let claimType: String?
-    public let hasNewMessage: Bool
+    let unreadMessageCount: Int
 
     public init(
         fragment: OctopusGraphQL.ConversationFragment,
@@ -52,7 +56,7 @@ public struct Conversation: Identifiable, Hashable, Codable {
         self.isConversationOpen = fragment.isOpen
         self.hasClaim = fragment.claim != nil
         self.claimType = fragment.claim?.claimType
-        self.hasNewMessage = Bool.random()
+        self.unreadMessageCount = 0
     }
 
     var getConversationTitle: String {

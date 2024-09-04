@@ -140,7 +140,7 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
                 isConversationOpen: true,
                 hasClaim: true,
                 claimType: "claim type",
-                hasNewMessage: true
+                unreadMessageCount: 0
             )
         )
         return VStack(spacing: 20) {
@@ -174,7 +174,7 @@ struct ClaimReopened_Previews: PreviewProvider {
                 isConversationOpen: true,
                 hasClaim: true,
                 claimType: "claim type",
-                hasNewMessage: true
+                unreadMessageCount: 0
             )
         )
         return VStack(spacing: 20) {
@@ -208,7 +208,7 @@ struct ClaimPaid_Previews: PreviewProvider {
                 isConversationOpen: true,
                 hasClaim: true,
                 claimType: "claim type",
-                hasNewMessage: true
+                unreadMessageCount: 0
             )
         )
         return VStack(spacing: 20) {
@@ -241,7 +241,7 @@ struct ClaimNotCompensated_Previews: PreviewProvider {
                 isConversationOpen: true,
                 hasClaim: true,
                 claimType: "claim type",
-                hasNewMessage: true
+                unreadMessageCount: 0
             )
         )
         return VStack(spacing: 20) {
@@ -275,7 +275,7 @@ struct ClaimNotCovered_Previews: PreviewProvider {
                 isConversationOpen: true,
                 hasClaim: true,
                 claimType: "claim type",
-                hasNewMessage: true
+                unreadMessageCount: 0
             )
         )
         return VStack(spacing: 20) {
@@ -309,7 +309,7 @@ struct ClaimClosed_Previews: PreviewProvider {
                 isConversationOpen: true,
                 hasClaim: true,
                 claimType: "claim type",
-                hasNewMessage: true
+                unreadMessageCount: 0
             )
         )
         return VStack(spacing: 20) {

@@ -121,7 +121,7 @@ extension OctopusGraphQL.ConversationFragment {
             isConversationOpen: self.isOpen,
             hasClaim: self.claim != nil,
             claimType: self.claim?.claimType,
-            hasNewMessage: true
+            unreadMessageCount: 0
         )
     }
 }

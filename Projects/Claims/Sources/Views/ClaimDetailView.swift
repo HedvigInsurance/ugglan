@@ -360,7 +360,7 @@ struct ClaimDetailView_Previews: PreviewProvider {
                 isConversationOpen: true,
                 hasClaim: true,
                 claimType: "claim type",
-                hasNewMessage: true
+                unreadMessageCount: 0
             )
         )
         return ClaimDetailView(claim: claim).environmentObject(HomeNavigationViewModel())
