@@ -139,9 +139,9 @@ struct SupportView: View {
                         }
                         .fixedSize()
                     }
-                    .presentableStoreLensAnimation(.default)
                     .padding(.top, .padding24)
                 }
+                .presentableStoreLensAnimation(.default)
             }
             .padding(.vertical, .padding32)
             .padding(.bottom, .padding24)
