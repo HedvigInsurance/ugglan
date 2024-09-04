@@ -52,6 +52,7 @@ public struct ClaimDetailView: View {
         }
         .setHomeNavigationBars(
             with: $vm.toolbarOptionType,
+            and: .init(describing: ClaimDetailView.self),
             action: { type in
                 switch type {
                 case .newOffer:
