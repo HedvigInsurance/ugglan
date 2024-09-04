@@ -56,7 +56,7 @@ public struct Conversation: Identifiable, Hashable, Codable {
         self.isConversationOpen = fragment.isOpen
         self.hasClaim = fragment.claim != nil
         self.claimType = fragment.claim?.claimType
-        self.unreadMessageCount = 0
+        self.unreadMessageCount = 1
     }
 
     var getConversationTitle: String {

@@ -20,8 +20,6 @@ public struct ChatTopicWrapper: Equatable, Identifiable {
 }
 
 public enum ChatType: Equatable {
-    case none
-    case topic(topic: ChatTopicType)
     case conversationId(id: String)
     case newConversation
 }

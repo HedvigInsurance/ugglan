@@ -44,13 +44,6 @@ public struct ClaimDetailView: View {
                     )
                 }
                 .sectionContainerStyle(.transparent)
-
-                if !Dependencies.featureFlags().isConversationBasedMessagesEnabled {
-                    hSection {
-                        chatSection
-                    }
-                }
-
                 memberFreeTextSection
                 claimDetailsSection
                     .padding(.vertical, .padding16)
@@ -416,35 +409,36 @@ public class ClaimDetailViewModel: ObservableObject {
     }
 
     private func handleClaimChat() {
-        if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
-            let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
-            let claimId = self.claim.id
-            claimStore.stateSignal.plain().publisher
-                .map({ $0.claim(for: claimId) })
-                .compactMap({ $0?.conversation?.newestMessage?.sentAt })
-                .removeDuplicates()
-                .receive(on: RunLoop.main)
-                .sink { [weak self] value in
-                    let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
-                    let hasNewMessage =
-                        claimStore.state.claim(for: self?.claim.id ?? "")?.conversation?.hasNewMessage ?? false
-                    self?.toolbarOptionType =
-                        hasNewMessage ? [.chatNotification(lastMessageTimeStamp: Date())] : [.chat]
-                }
-                .store(in: &cancellables)
-            if let hasNewMessage = claim.conversation?.hasNewMessage {
-                self.toolbarOptionType = hasNewMessage ? [.chatNotification(lastMessageTimeStamp: Date())] : [.chat]
+        let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
+        let claimId = self.claim.id
+        claimStore.stateSignal.plain().publisher
+            .map({ $0.claim(for: claimId) })
+            .compactMap({ $0?.conversation?.newestMessage?.sentAt })
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] value in
+                let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
+                let claim = claimStore.state.claim(for: self?.claim.id ?? "")
+                let conversatin = claim?.conversation
+                let hasNewMessage = conversatin?.hasNewMessage ?? false
+                let timeStamp = conversatin?.newestMessage?.sentAt
+                self?.toolbarOptionType =
+                    hasNewMessage ? [.chatNotification(lastMessageTimeStamp: timeStamp ?? Date())] : [.chat]
             }
-
-            Timer.publish(every: 5, on: .main, in: .common).autoconnect()
-                .sink { _ in
-                    let store: ClaimsStore = globalPresentableStoreContainer.get()
-                    store.send(.fetchClaims)
-                }
-                .store(in: &cancellables)
-        } else {
-            self.toolbarOptionType = []
+            .store(in: &cancellables)
+        if let hasNewMessage = claim.conversation?.hasNewMessage {
+            self.toolbarOptionType =
+                hasNewMessage
+                ? [.chatNotification(lastMessageTimeStamp: claim.conversation?.newestMessage?.sentAt ?? Date())]
+                : [.chat]
         }
+
+        Timer.publish(every: 5, on: .main, in: .common).autoconnect()
+            .sink { _ in
+                let store: ClaimsStore = globalPresentableStoreContainer.get()
+                store.send(.fetchClaims)
+            }
+            .store(in: &cancellables)
     }
 
     @MainActor
