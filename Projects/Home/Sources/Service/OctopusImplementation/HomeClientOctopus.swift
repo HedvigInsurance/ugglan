@@ -97,9 +97,18 @@ public class HomeClientOctopus: HomeClient {
             query: OctopusGraphQL.ConversationsTimeStampQuery(),
             cachePolicy: .fetchIgnoringCacheCompletely
         )
+
         var conversationsTimestamps = data.currentMember.conversations.map {
             $0.newestMessage?.sentAt.localDateToIso8601Date
         }
+        let hasNewMessages =
+            (data.currentMember.conversations.first(where: { $0.unreadMessageCount > 0 })?.unreadMessageCount ?? data
+                .currentMember.legacyConversation?
+                .unreadMessageCount ?? 0) > 0
+        let hasSentOrRecievedAtLeastOneMessage =
+            (data.currentMember.conversations.first(where: { $0.newestMessage != nil })?.id
+                ?? data.currentMember.legacyConversation?.newestMessage?.sentAt.debugDescription) != nil
+
         if let legacyConversation = data.currentMember.legacyConversation {
             if let date = legacyConversation.newestMessage?.sentAt.localDateToIso8601Date {
                 conversationsTimestamps.append(date)
@@ -107,8 +116,11 @@ public class HomeClientOctopus: HomeClient {
         }
         let maxDate = conversationsTimestamps.compactMap({ $0 }).max()
 
-        //        return conversationIdsWithTimestamp.compactMapValues({ $0 })
-        return .init(hasNewMessages: true, hasSentOrRecievedAtLeastOneMessage: true, lastMessageTimeStamp: maxDate)
+        return .init(
+            hasNewMessages: hasNewMessages,
+            hasSentOrRecievedAtLeastOneMessage: hasSentOrRecievedAtLeastOneMessage,
+            lastMessageTimeStamp: maxDate
+        )
     }
 }
 

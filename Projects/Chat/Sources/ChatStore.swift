@@ -5,11 +5,9 @@ import hCore
 public struct ChatState: StateProtocol {
     public init() {}
     @Transient(defaultValue: false) var askedForPushNotificationsPermission: Bool
-    public var messagesTimeStamp = Date()
 }
 
 public enum ChatAction: ActionProtocol {
-    case setLastMessageDate(date: Date)
     case checkPushNotificationStatus
 }
 
@@ -25,8 +23,6 @@ final public class ChatStore: StateStore<ChatState, ChatAction> {
         switch action {
         case .checkPushNotificationStatus:
             newState.askedForPushNotificationsPermission = true
-        case let .setLastMessageDate(date):
-            newState.messagesTimeStamp = date
         }
         return newState
     }

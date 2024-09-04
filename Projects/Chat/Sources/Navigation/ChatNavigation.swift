@@ -7,22 +7,7 @@ import hCoreUI
 public class ChatNavigationViewModel: ObservableObject {
     @Published var isFilePresented: FileUrlModel?
     @Published var isAskForPushNotificationsPresented = false
-    @Published var dateOfLastMessage: Date?
-    private var dateOfLastMessageCancellable: AnyCancellable?
-    init() {
-        let store: ChatStore = globalPresentableStoreContainer.get()
-        dateOfLastMessageCancellable = store.actionSignal.publisher
-            .receive(on: RunLoop.main)
-            .sink { _ in
-            } receiveValue: { [weak self] action in
-                switch action {
-                case let .setLastMessageDate(date):
-                    self?.dateOfLastMessage = date
-                default:
-                    break
-                }
-            }
-    }
+    init() {}
 
     struct FileUrlModel: Identifiable, Equatable {
         public var id: String?

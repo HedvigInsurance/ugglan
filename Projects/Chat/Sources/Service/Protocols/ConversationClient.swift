@@ -14,7 +14,7 @@ public protocol ConversationClient {
         newerToken: String?
     ) async throws -> ConversationMessagesData
     func send(message: Message, for conversationId: String) async throws -> Message
-    func markAsRead(until messageId: String)
+    func markAsRead(for conversatinId: String, until messageId: String) async throws
 }
 
 public struct ConversationMessagesData {

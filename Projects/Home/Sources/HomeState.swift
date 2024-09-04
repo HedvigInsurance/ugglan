@@ -118,7 +118,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         case .fetchChatNotifications:
             do {
                 let chatMessagesState = try await self.homeService.getMessagesState()
-                send(.setChatNotification(hasNew: false))  //chatMessagesState.hasNewMessages))
+                send(.setChatNotification(hasNew: chatMessagesState.hasNewMessages))
                 send(
                     .setHasSentOrRecievedAtLeastOneMessage(
                         hasSent: chatMessagesState.hasSentOrRecievedAtLeastOneMessage

@@ -95,9 +95,9 @@ public class ConversationClientOctopus: ConversationClient {
         let banner = conversation.statusMessage
         let isConversationOpen = conversation.isOpen
         let hasClaim = conversation.claim != nil
-        let hasNewMessages = Bool.random()
+        let hasNewMessages = conversation.unreadMessageCount > 0
         if olderToken == nil, let latestMessage = messages.first, hasNewMessages {
-            markAsRead(until: latestMessage.id)
+            try await markAsRead(for: conversationId, until: latestMessage.id)
         }
 
         return .init(
@@ -113,8 +113,10 @@ public class ConversationClientOctopus: ConversationClient {
         )
     }
 
-    public func markAsRead(until messageId: String) {
-        print("MARK AS READ")
+    public func markAsRead(for conversatinId: String, until messageId: String) async throws {
+        let input = OctopusGraphQL.ConversationMarkAsReadInput(id: conversatinId, untilMessageId: messageId)
+        let mutation = OctopusGraphQL.ConversationMarkAsReadMutation(input: input)
+        _ = try await octopus.client.perform(mutation: mutation)
     }
 }
 
@@ -129,7 +131,7 @@ extension OctopusGraphQL.ConversationFragment {
             isConversationOpen: self.isOpen,
             hasClaim: self.claim != nil,
             claimType: self.claim?.claimType,
-            unreadMessageCount: 0
+            unreadMessageCount: self.unreadMessageCount
         )
     }
 }

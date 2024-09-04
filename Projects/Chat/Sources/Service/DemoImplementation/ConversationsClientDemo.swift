@@ -137,7 +137,7 @@ public class ConversationDemoClient: ConversationClient {
         return Message(type: .text(text: "send message"))
     }
 
-    public func markAsRead(until messageId: String) {
+    public func markAsRead(for conversatinId: String, until messageId: String) async throws {
 
     }
 }
