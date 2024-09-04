@@ -120,6 +120,7 @@ class InboxViewModel: ObservableObject {
     @Published var conversations: [Conversation] = []
     private var pollTimerCancellable: AnyCancellable?
     @PresentableStore var store: ChatStore
+    private var chatClosedObserver: NSObjectProtocol?
 
     func shouldHideDivider(for conversation: Conversation) -> Bool {
         guard let indexOfCurrent = conversations.firstIndex(where: { $0.id == conversation.id }) else {
@@ -135,6 +136,15 @@ class InboxViewModel: ObservableObject {
     }
 
     init() {
+        configureFetching()
+        chatClosedObserver = NotificationCenter.default.addObserver(forName: .chatClosed, object: nil, queue: nil) {
+            [weak self] notification in  //
+            self?.configureFetching()
+        }
+    }
+
+    private func configureFetching() {
+        pollTimerCancellable = nil
         Task {
             await fetchMessages()
         }
@@ -161,6 +171,12 @@ class InboxViewModel: ObservableObject {
             }
         } catch _ {
             //TODO: EXCEPTION
+        }
+    }
+
+    deinit {
+        if let chatClosedObserver {
+            NotificationCenter.default.removeObserver(chatClosedObserver)
         }
     }
 }
