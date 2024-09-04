@@ -254,6 +254,7 @@ struct ToolbarButtonsViewModifier: ViewModifier {
             let viewToInject = ToolbarButtonsView(types: $types, action: action)
             let hostingVc = UIHostingController(rootView: viewToInject)
             let viewToPlace = hostingVc.view!
+            viewToPlace.backgroundColor = .clear
             vc.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: viewToPlace)
         }
     }
