@@ -97,7 +97,7 @@ public class ConversationClientOctopus: ConversationClient {
         let hasClaim = conversation.claim != nil
         let hasNewMessages = conversation.unreadMessageCount > 0
         if olderToken == nil, let latestMessage = messages.first, hasNewMessages {
-            try await markAsRead(for: conversationId, until: latestMessage.id)
+            try? await markAsRead(for: conversationId, until: latestMessage.id)
         }
 
         return .init(
