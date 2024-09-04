@@ -91,7 +91,7 @@ public class ConversationClientOctopus: ConversationClient {
         }
         let messages = conversation.messagePage.messages.compactMap({ $0.fragments.messageFragment.asMessage() })
         let newerToken = conversation.messagePage.newerToken
-        let olderToken = conversation.messagePage.olderToken
+        let newOlderToken = conversation.messagePage.olderToken
         let banner = conversation.statusMessage
         let isConversationOpen = conversation.isOpen
         let hasClaim = conversation.claim != nil
@@ -103,7 +103,7 @@ public class ConversationClientOctopus: ConversationClient {
         return .init(
             messages: messages,
             banner: banner,
-            olderToken: olderToken,
+            olderToken: newOlderToken,
             newerToken: newerToken,
             isConversationOpen: isConversationOpen,
             createdAt: conversation.createdAt,
