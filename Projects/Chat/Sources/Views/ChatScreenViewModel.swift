@@ -27,7 +27,7 @@ public class ChatScreenViewModel: ObservableObject {
     private var hasNext: Bool?
     private var isFetching = false
     private var haveSentAMessage = false
-
+    private var openDeepLinkObserver: NSObjectProtocol?
     public init(
         chatService: ChatServiceProtocol
     ) {
@@ -56,7 +56,7 @@ public class ChatScreenViewModel: ObservableObject {
             AskForRating().askAccordingToTheNumberOfSessions()
         }
         log.addUserAction(type: .click, name: "Chat open", error: nil, attributes: nil)
-        NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) {
+        openDeepLinkObserver = NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) {
             [weak self] notification in guard let self = self else { return }
             if let deepLinkUrl = notification.object as? URL {
                 if let deepLink = DeepLink.getType(from: deepLinkUrl), deepLink == .helpCenter {
@@ -74,7 +74,10 @@ public class ChatScreenViewModel: ObservableObject {
     deinit {
         let fileUploadManager = FileUploadManager()
         fileUploadManager.resetuploadFilesPath()
-        NotificationCenter.default.removeObserver(self)
+        if let openDeepLinkObserver {
+            NotificationCenter.default.removeObserver(openDeepLinkObserver)
+        }
+        NotificationCenter.default.post(name: .chatClosed, object: nil)
     }
 
     @MainActor
