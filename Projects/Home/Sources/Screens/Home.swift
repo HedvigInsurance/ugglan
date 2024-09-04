@@ -38,6 +38,7 @@ extension HomeView {
         }
         .setHomeNavigationBars(
             with: $vm.toolbarOptionTypes,
+            and: "HomeView",
             action: { type in
                 switch type {
                 case .newOffer:
