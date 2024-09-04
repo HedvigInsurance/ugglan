@@ -136,4 +136,8 @@ public class ConversationDemoClient: ConversationClient {
     public func send(message: Message, for conversationId: String) async throws -> Message {
         return Message(type: .text(text: "send message"))
     }
+
+    public func markAsRead(until messageId: String) {
+
+    }
 }

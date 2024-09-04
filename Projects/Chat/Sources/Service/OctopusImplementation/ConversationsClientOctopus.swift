@@ -95,6 +95,10 @@ public class ConversationClientOctopus: ConversationClient {
         let banner = conversation.statusMessage
         let isConversationOpen = conversation.isOpen
         let hasClaim = conversation.claim != nil
+        let hasNewMessages = Bool.random()
+        if olderToken == nil, let latestMessage = messages.first, hasNewMessages {
+            markAsRead(until: latestMessage.id)
+        }
 
         return .init(
             messages: messages,
@@ -107,6 +111,10 @@ public class ConversationClientOctopus: ConversationClient {
             hasClaim: hasClaim,
             claimType: conversation.claim?.claimType
         )
+    }
+
+    public func markAsRead(until messageId: String) {
+        print("MARK AS READ")
     }
 }
 
