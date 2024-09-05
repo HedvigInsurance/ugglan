@@ -96,7 +96,7 @@ final class ContractStoreTests: XCTestCase {
         self.store = store
         await store.sendAsync(.fetch)
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.fetchContracts] == nil
+            store.loadingSignal.value[.fetchContracts] == nil && store.loadingSignal.value[.fetchCrossSell] == nil
         }
 
         assert(store.state.activeContracts == ContractsStack.getDefault.activeContracts)
