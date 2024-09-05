@@ -414,15 +414,13 @@ public class ClaimDetailViewModel: ObservableObject {
         let claimId = self.claim.id
         claimStore.stateSignal.plain().publisher
             .map({ $0.claim(for: claimId) })
-            .compactMap({ $0?.conversation?.newestMessage?.sentAt })
+            .compactMap({ $0?.conversation?.hasNewMessage })
             .removeDuplicates()
             .receive(on: RunLoop.main)
-            .sink { [weak self] value in
+            .sink { [weak self] hasNewMessage in
                 let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
                 let claim = claimStore.state.claim(for: self?.claim.id ?? "")
-                let conversatin = claim?.conversation
-                let hasNewMessage = conversatin?.hasNewMessage ?? false
-                let timeStamp = conversatin?.newestMessage?.sentAt
+                let timeStamp = claim?.conversation?.newestMessage?.sentAt
                 self?.toolbarOptionType =
                     hasNewMessage ? [.chatNotification(lastMessageTimeStamp: timeStamp ?? Date())] : [.chat]
             }
