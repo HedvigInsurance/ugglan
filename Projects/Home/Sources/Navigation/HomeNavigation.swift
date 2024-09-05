@@ -49,18 +49,6 @@ public class HomeNavigationViewModel: ObservableObject {
             }
         }
 
-        let store: ChatStore = globalPresentableStoreContainer.get()
-        store.stateSignal.plain()
-            .publisher
-            .map({ $0.messagesTimeStamp })
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .sink { value in
-                let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                homeStore.send(.setChatNotificationTimeStamp(sentAt: value))
-            }
-            .store(in: &cancellables)
-
     }
 
     public var router = Router()

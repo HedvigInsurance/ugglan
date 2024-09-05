@@ -64,13 +64,6 @@ public class ConversationClientOctopus: ConversationClient {
         let mutation = hGraphQL.OctopusGraphQL.ConversationSendMessageMutation(input: input)
         let data = try await octopus.client.perform(mutation: mutation)
         if let message = data.conversationSendMessage.message?.fragments.messageFragment {
-            let store: ChatStore = globalPresentableStoreContainer.get()
-            store.send(
-                .setLastMessageTimestampForConversation(
-                    id: conversationId,
-                    date: message.sentAt.localDateToIso8601Date ?? Date()
-                )
-            )
             return message.asMessage()
         } else if let errorMessage = data.conversationSendMessage.userError?.message {
             throw ConversationsError.errorMesage(message: errorMessage)
@@ -98,15 +91,19 @@ public class ConversationClientOctopus: ConversationClient {
         }
         let messages = conversation.messagePage.messages.compactMap({ $0.fragments.messageFragment.asMessage() })
         let newerToken = conversation.messagePage.newerToken
-        let olderToken = conversation.messagePage.olderToken
+        let newOlderToken = conversation.messagePage.olderToken
         let banner = conversation.statusMessage
         let isConversationOpen = conversation.isOpen
         let hasClaim = conversation.claim != nil
+        let hasNewMessages = conversation.unreadMessageCount > 0
+        if olderToken == nil, let latestMessage = messages.first, hasNewMessages {
+            try? await markAsRead(for: conversationId, until: latestMessage.id)
+        }
 
         return .init(
             messages: messages,
             banner: banner,
-            olderToken: olderToken,
+            olderToken: newOlderToken,
             newerToken: newerToken,
             isConversationOpen: isConversationOpen,
             createdAt: conversation.createdAt,
@@ -114,6 +111,12 @@ public class ConversationClientOctopus: ConversationClient {
             hasClaim: hasClaim,
             claimType: conversation.claim?.claimType
         )
+    }
+
+    public func markAsRead(for conversatinId: String, until messageId: String) async throws {
+        let input = OctopusGraphQL.ConversationMarkAsReadInput(id: conversatinId, untilMessageId: messageId)
+        let mutation = OctopusGraphQL.ConversationMarkAsReadMutation(input: input)
+        _ = try await octopus.client.perform(mutation: mutation)
     }
 }
 
@@ -127,7 +130,8 @@ extension OctopusGraphQL.ConversationFragment {
             statusMessage: self.statusMessage,
             isConversationOpen: self.isOpen,
             hasClaim: self.claim != nil,
-            claimType: self.claim?.claimType
+            claimType: self.claim?.claimType,
+            unreadMessageCount: self.unreadMessageCount
         )
     }
 }

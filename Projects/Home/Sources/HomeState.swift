@@ -117,14 +117,17 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             }
         case .fetchChatNotifications:
             do {
-                let chatMessagesDates = try await self.homeService.getLastMessagesDates()
-                let store: ChatStore = globalPresentableStoreContainer.get()
-                let unreadConversations = chatMessagesDates.filter { chatMessagesDate in
-                    store.hasNotification(conversationId: chatMessagesDate.key, timeStamp: chatMessagesDate.value)
+                let chatMessagesState = try await self.homeService.getMessagesState()
+                send(.setChatNotification(hasNew: chatMessagesState.hasNewMessages))
+                send(
+                    .setHasSentOrRecievedAtLeastOneMessage(
+                        hasSent: chatMessagesState.hasSentOrRecievedAtLeastOneMessage
+                    )
+                )
+                if chatMessagesState.hasNewMessages, let latestMessageTimestamp = chatMessagesState.lastMessageTimeStamp
+                {
+                    send(.setChatNotificationConversationTimeStamp(date: latestMessageTimestamp))
                 }
-                send(.setChatNotification(hasNew: !unreadConversations.isEmpty))
-                send(.setHasSentOrRecievedAtLeastOneMessage(hasSent: chatMessagesDates.count > 0))
-                send(.setChatNotificationConversationTimeStamp(date: chatMessagesDates.values.max() ?? Date()))
             } catch {}
         default:
             break

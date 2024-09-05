@@ -20,8 +20,8 @@ public class HomeClientDemo: HomeClient {
         return [.editCoInsured, .changeAddress]
     }
 
-    public func getLastMessagesDates() async throws -> [String: Date] {
-        return [:]
+    public func getMessagesState() async throws -> MessageState {
+        return .init(hasNewMessages: false, hasSentOrRecievedAtLeastOneMessage: false, lastMessageTimeStamp: nil)
     }
 
     public func getNumberOfClaims() async throws -> Int {

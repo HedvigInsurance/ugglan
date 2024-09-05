@@ -24,7 +24,8 @@ public class ConversationsDemoClient: ConversationsClient {
                 statusMessage: "status message",
                 isConversationOpen: false,
                 hasClaim: false,
-                claimType: nil
+                claimType: nil,
+                unreadMessageCount: 0
             ),
 
             Conversation(
@@ -40,7 +41,8 @@ public class ConversationsDemoClient: ConversationsClient {
                 statusMessage: "status message",
                 isConversationOpen: true,
                 hasClaim: false,
-                claimType: nil
+                claimType: nil,
+                unreadMessageCount: 0
             ),
 
             Conversation(
@@ -59,7 +61,8 @@ public class ConversationsDemoClient: ConversationsClient {
                 statusMessage: "status message",
                 isConversationOpen: true,
                 hasClaim: true,
-                claimType: nil
+                claimType: nil,
+                unreadMessageCount: 0
             ),
 
             Conversation(
@@ -78,7 +81,8 @@ public class ConversationsDemoClient: ConversationsClient {
                 statusMessage: "status message",
                 isConversationOpen: true,
                 hasClaim: true,
-                claimType: "claim type"
+                claimType: "claim type",
+                unreadMessageCount: 0
             ),
         ]
 
@@ -97,7 +101,8 @@ public class ConversationsDemoClient: ConversationsClient {
             statusMessage: "status message",
             isConversationOpen: true,
             hasClaim: false,
-            claimType: nil
+            claimType: nil,
+            unreadMessageCount: 0
         )
     }
 }
@@ -130,5 +135,9 @@ public class ConversationDemoClient: ConversationClient {
 
     public func send(message: Message, for conversationId: String) async throws -> Message {
         return Message(type: .text(text: "send message"))
+    }
+
+    public func markAsRead(for conversatinId: String, until messageId: String) async throws {
+
     }
 }

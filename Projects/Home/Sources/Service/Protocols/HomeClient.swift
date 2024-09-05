@@ -4,11 +4,17 @@ public protocol HomeClient {
     func getImportantMessages() async throws -> [ImportantMessage]
     func getMemberState() async throws -> MemberState
     func getQuickActions() async throws -> [QuickAction]
-    func getLastMessagesDates() async throws -> [String: Date]
+    func getMessagesState() async throws -> MessageState
 }
 
 public struct MemberState {
     let contracts: [HomeContract]
     let contractState: MemberContractState
     let futureState: FutureStatus
+}
+
+public struct MessageState {
+    let hasNewMessages: Bool
+    let hasSentOrRecievedAtLeastOneMessage: Bool
+    let lastMessageTimeStamp: Date?
 }
