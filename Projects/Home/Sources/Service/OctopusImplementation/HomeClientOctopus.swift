@@ -105,9 +105,9 @@ public class HomeClientOctopus: HomeClient {
             (data.currentMember.conversations.first(where: { $0.unreadMessageCount > 0 })?.unreadMessageCount ?? data
                 .currentMember.legacyConversation?
                 .unreadMessageCount ?? 0) > 0
-        let hasSentOrRecievedAtLeastOneMessage =
-            (data.currentMember.conversations.first(where: { $0.newestMessage != nil })?.id
-                ?? data.currentMember.legacyConversation?.newestMessage?.sentAt.debugDescription) != nil
+        let hasSentOrRecievedAtLeastOneMessage: Bool = {
+            !data.currentMember.conversations.isEmpty || data.currentMember.legacyConversation?.newestMessage != nil
+        }()
 
         if let legacyConversation = data.currentMember.legacyConversation {
             if let date = legacyConversation.newestMessage?.sentAt.localDateToIso8601Date {
