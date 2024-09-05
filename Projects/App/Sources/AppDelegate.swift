@@ -196,6 +196,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func setupSession() {
+        ApolloClient.initNetwworkClients()
         ApolloClient.initAndRegisterClient()
         urlSessionClientProvider = {
             return InterceptingURLSessionClient()
