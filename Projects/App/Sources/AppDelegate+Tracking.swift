@@ -1,3 +1,4 @@
+import Apollo
 import DatadogCore
 import DatadogCrashReporting
 import DatadogLogs
@@ -36,8 +37,8 @@ extension AppDelegate {
             let analyticsService: AnalyticsClient = Dependencies.shared.resolve()
             analyticsService.setWith(userId: userId)
         }
-        Logs.enable()
 
+        Logs.enable()
         RUM.enable(
             with: RUM.Configuration(
                 applicationID: "416e8fc0-c96a-4485-8c74-84412960a479",
@@ -53,6 +54,12 @@ extension AppDelegate {
                         sampleRate: 100
                     )
                 )
+            )
+        )
+
+        URLSessionInstrumentation.enable(
+            with: .init(
+                delegateClass: URLSessionClient.self
             )
         )
 
