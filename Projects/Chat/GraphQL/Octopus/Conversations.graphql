@@ -16,7 +16,6 @@ query ConversationMessages($conversationId: UUID!, $olderToken: String, $newerTo
     messagePage(olderToken: $olderToken, newerToken: $newerToken) {
         ... MessagePageFragment
     }
-    unreadMessageCount
     statusMessage
     createdAt
     isLegacy

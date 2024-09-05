@@ -1,5 +1,0 @@
-mutation conversationMarkAsRead($input: ConversationMarkAsReadInput!) {
-  conversationMarkAsRead(input: $input) {
-    id
-  }
-}
