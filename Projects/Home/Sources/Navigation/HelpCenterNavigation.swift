@@ -68,7 +68,7 @@ public struct HelpCenterNavigation<Content: View>: View {
             .routerDestination(for: CommonTopic.self) { topic in
                 HelpCenterTopicView(commonTopic: topic, router: router)
             }
-            .routerDestination(for: HelpCenterNavigationRouterType.self) { _ in
+            .routerDestination(for: HelpCenterNavigationRouterType.self, options: [.hidesBottomBarWhenPushed]) { _ in
                 InboxView()
                     .configureTitle(L10n.chatConversationInbox)
             }

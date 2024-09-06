@@ -11,26 +11,37 @@ public struct InboxView: View {
     public init() {}
 
     public var body: some View {
+        ScrollableSegmentedView(vm: vm.scrollVM) { id in
+            if id == ConversationOpenStatus.open.rawValue {
+                displayMessages(for: vm.openedConversations)
+            } else {
+                displayMessages(for: vm.closedConversations)
+            }
+        }
+        .padding(.top, .padding16)
+        .background(
+            hBackgroundColor.primary
+        )
+        .ignoresSafeArea(.all, edges: .bottom)
+    }
+
+    @ViewBuilder
+    private func displayMessages(for conversations: [Conversation]) -> some View {
         hForm {
-            displayMessages
-                .padding(.top, 8)
+            hSection(conversations) { conversation in
+                rowView(for: conversation)
+                    .onTapGesture {
+                        NotificationCenter.default.post(name: .openChat, object: conversation)
+                    }
+                    .background(getBackgroundColor(for: conversation))
+            }
+            .withoutHorizontalPadding
+            .sectionContainerStyle(.transparent)
         }
         .onPullToRefresh {
             await vm.fetchMessages()
         }
-    }
-
-    @ViewBuilder
-    var displayMessages: some View {
-        hSection(vm.conversations) { conversation in
-            rowView(for: conversation)
-                .onTapGesture {
-                    NotificationCenter.default.post(name: .openChat, object: conversation)
-                }
-                .background(getBackgroundColor(for: conversation))
-        }
-        .withoutHorizontalPadding
-        .sectionContainerStyle(.transparent)
+        .background(Color.clear)
     }
 
     func rowView(for conversation: Conversation) -> some View {
@@ -117,22 +128,25 @@ public struct InboxView: View {
 
 class InboxViewModel: ObservableObject {
     @Inject var service: ConversationsClient
-    @Published var conversations: [Conversation] = []
+    @Published var openedConversations: [Conversation] = []
+    @Published var closedConversations: [Conversation] = []
+
     private var pollTimerCancellable: AnyCancellable?
     @PresentableStore var store: ChatStore
     private var chatClosedObserver: NSObjectProtocol?
-
+    @Published var scrollVM = ScrollableSegmentedViewModel(pageModels: [], fixedHeight: false)
     func shouldHideDivider(for conversation: Conversation) -> Bool {
-        guard let indexOfCurrent = conversations.firstIndex(where: { $0.id == conversation.id }) else {
-            return true
-        }
-        let indexOfNext = indexOfCurrent + 1
-        guard indexOfNext < conversations.count else {
-            return true
-        }
-        let currentConversation = conversations[indexOfCurrent]
-        let nextConversation = conversations[indexOfNext]
-        return currentConversation.hasNewMessage != nextConversation.hasNewMessage
+        //        guard let indexOfCurrent = conversations.firstIndex(where: { $0.id == conversation.id }) else {
+        //            return true
+        //        }
+        //        let indexOfNext = indexOfCurrent + 1
+        //        guard indexOfNext < conversations.count else {
+        //            return true
+        //        }
+        //        let currentConversation = conversations[indexOfCurrent]
+        //        let nextConversation = conversations[indexOfNext]
+        //        return currentConversation.hasNewMessage != nextConversation.hasNewMessage
+        return true
     }
 
     init() {
@@ -165,9 +179,25 @@ class InboxViewModel: ObservableObject {
     func fetchMessages() async {
         do {
             let conversations = try await service.getConversations()
-            let store: ChatStore = globalPresentableStoreContainer.get()
             withAnimation {
-                self.conversations = conversations
+                let openedConversations = conversations.filter({ ($0.isConversationOpen ?? true) == true })
+                let closedConversations = conversations.filter({ $0.isConversationOpen == false })
+                var pageModels = [PageModel]()
+                if !openedConversations.isEmpty {
+                    pageModels.append(
+                        .init(id: ConversationOpenStatus.open.rawValue, title: ConversationOpenStatus.open.title)
+                    )
+                }
+                if !closedConversations.isEmpty {
+                    pageModels.append(
+                        .init(id: ConversationOpenStatus.closed.rawValue, title: ConversationOpenStatus.closed.title)
+                    )
+                }
+                withAnimation {
+                    self.openedConversations = openedConversations
+                    self.closedConversations = closedConversations
+                    scrollVM.update(pageModels: pageModels)
+                }
             }
         } catch _ {
             //TODO: EXCEPTION

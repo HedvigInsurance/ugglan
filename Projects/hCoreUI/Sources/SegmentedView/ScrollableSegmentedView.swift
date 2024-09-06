@@ -2,22 +2,24 @@ import Combine
 import Presentation
 import SwiftUI
 import hCore
-import hCoreUI
 
-struct ScrollableSegmentedView<Content: View>: View {
+public struct ScrollableSegmentedView<Content: View>: View {
     @ObservedObject var vm: ScrollableSegmentedViewModel
     @ViewBuilder var contentFor: (_ id: String) -> Content
-    init(
+    public init(
         vm: ScrollableSegmentedViewModel,
         contentFor: @escaping (_ id: String) -> Content
     ) {
         self.vm = vm
         self.contentFor = contentFor
     }
-    var body: some View {
+    public var body: some View {
         VStack(spacing: .padding16) {
-            headerControl
+            if vm.pageModels.count > 1 {
+                headerControl
+            }
             scrollableContent
+            Spacer()
         }
         .background {
             GeometryReader { geo in
@@ -89,6 +91,7 @@ struct ScrollableSegmentedView<Content: View>: View {
                         VStack {
                             contentFor(model.id)
                                 .frame(width: vm.viewWidth)
+                                .frame(height: vm.fixedHeight ? nil : vm.horizontalScrollHeight)
                                 .background {
                                     GeometryReader { geo in
                                         Color.clear
@@ -110,12 +113,25 @@ struct ScrollableSegmentedView<Content: View>: View {
         .findScrollView { scrollView in
             vm.horizontalScrollView = scrollView
         }
-        .frame(height: vm.currentHeight)
+        .frame(height: vm.fixedHeight ? vm.currentHeight : nil)
+        .background(
+            GeometryReader { geo in
+                Color.clear
+                    .onAppear {
+                        vm.horizontalScrollHeight = geo.size.height
+                    }
+                    .onChange(of: geo.size.height) { height in
+                        vm.horizontalScrollHeight = height
+                    }
+            }
+        )
+
     }
 }
 
-class ScrollableSegmentedViewModel: NSObject, ObservableObject {
-    let pageModels: [PageModel]
+public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
+    var pageModels: [PageModel]
+    let fixedHeight: Bool
     var heights: [String: CGFloat] = [:]
     var titlesPositions: [String: CGRect] = [:]
     let pageSpacing: CGFloat = 0
@@ -126,9 +142,10 @@ class ScrollableSegmentedViewModel: NSObject, ObservableObject {
     @Published var selectedIndicatorOffset: CGFloat = 0
     @Published var currentHeight: CGFloat = 0
     @Published var currentId: String
-
+    @Published var horizontalScrollHeight: CGFloat = 500
     weak var horizontalScrollView: UIScrollView? {
         didSet {
+            horizontalScrollView?.isScrollEnabled = pageModels.count > 1
             horizontalScrollView?.delegate = self
             horizontalScrollCancellable = horizontalScrollView?.publisher(for: \.contentOffset).removeDuplicates()
                 .sink(receiveValue: { [weak self] value in guard let self = self else { return }
@@ -221,20 +238,30 @@ class ScrollableSegmentedViewModel: NSObject, ObservableObject {
     func scrollTo(offset: CGFloat) {
         horizontalScrollView?.scrollRectToVisible(.init(x: offset, y: 1, width: viewWidth, height: 1), animated: true)
     }
-    init(pageModels: [PageModel]) {
+    public init(pageModels: [PageModel], fixedHeight: Bool = true) {
         self.currentId = pageModels.first?.id ?? ""
         self.pageModels = pageModels
+        self.fixedHeight = fixedHeight
+    }
+
+    public func update(pageModels: [PageModel]) {
+        self.pageModels = pageModels
+        horizontalScrollView?.isScrollEnabled = pageModels.count > 1
+        guard pageModels.firstIndex(where: { $0.id == currentId }) == nil else {
+            currentId = pageModels.first?.id ?? ""
+            return
+        }
     }
 }
 
 extension ScrollableSegmentedViewModel: UIScrollViewDelegate {
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+    public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
             scrollToNearestWith(offset: scrollView.contentOffset.x)
         }
     }
 
-    func scrollViewWillEndDragging(
+    public func scrollViewWillEndDragging(
         _ scrollView: UIScrollView,
         withVelocity velocity: CGPoint,
         targetContentOffset: UnsafeMutablePointer<CGPoint>
@@ -264,26 +291,22 @@ extension ScrollableSegmentedViewModel: UIScrollViewDelegate {
         }
     }
 
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+    public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         currentHeight = heights.values.max(by: { $1 > $0 }) ?? 0
     }
 }
 
-struct PageModel: Identifiable {
-    let id: String
+public struct PageModel: Identifiable {
+    public let id: String
     let title: String
+
+    public init(id: String, title: String) {
+        self.id = id
+        self.title = title
+    }
 }
-
+//
 #Preview{
-    let store: ContractStore = globalPresentableStoreContainer.get()
-
-    let fetchContractsService = FetchContractsClientDemo()
-    Dependencies.shared.add(module: Module { () -> FetchContractsClient in fetchContractsService })
-
-    let featureFlags = FeatureFlagsDemo()
-    Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlags })
-
-    store.send(.fetchContracts)
     return VStack {
         ScrollableSegmentedView(
             vm: .init(
@@ -305,11 +328,12 @@ struct PageModel: Identifiable {
         ) { id in
             Group {
                 if id == "id1" {
-                    ContractInformationView(id: "contractId")
+                    hText("s")
                 } else if id == "id2" {
-                    ContractCoverageView(id: "contractId")
+                    hText("s")
                 } else {
-                    ContractDocumentsView(id: "contractId")
+                    hText("s")
+
                 }
 
             }

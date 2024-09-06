@@ -86,3 +86,17 @@ public enum ConversationType: Codable, Hashable {
     case service
     case claim
 }
+
+enum ConversationOpenStatus: String, CaseIterable {
+    case open
+    case closed
+
+    var title: String {
+        switch self {
+        case .open:
+            return L10n.chatConversationOpen
+        case .closed:
+            return L10n.chatConversationClosed
+        }
+    }
+}

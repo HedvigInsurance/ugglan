@@ -267,7 +267,7 @@ struct HomeTab: View {
                     .environmentObject(homeNavigationVm)
                     .configureTitle(L10n.claimsYourClaim)
             }
-            .routerDestination(for: String.self) { conversation in
+            .routerDestination(for: String.self, options: [.hidesBottomBarWhenPushed]) { conversation in
                 InboxView()
                     .configureTitle(L10n.chatConversationInbox)
             }
