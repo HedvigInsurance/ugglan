@@ -13,9 +13,9 @@ public struct InboxView: View {
     public var body: some View {
         ScrollableSegmentedView(vm: vm.scrollVM) { id in
             if id == ConversationOpenStatus.open.rawValue {
-                displayMessages(for: vm.openedConversations)
+                displayMessages(for: .open)
             } else {
-                displayMessages(for: vm.closedConversations)
+                displayMessages(for: .closed)
             }
         }
         .padding(.top, .padding16)
@@ -26,10 +26,10 @@ public struct InboxView: View {
     }
 
     @ViewBuilder
-    private func displayMessages(for conversations: [Conversation]) -> some View {
+    private func displayMessages(for status: ConversationOpenStatus) -> some View {
         hForm {
-            hSection(conversations) { conversation in
-                rowView(for: conversation)
+            hSection(vm.conversations[status] ?? []) { conversation in
+                rowView(for: conversation, with: status)
                     .onTapGesture {
                         NotificationCenter.default.post(name: .openChat, object: conversation)
                     }
@@ -44,11 +44,11 @@ public struct InboxView: View {
         .background(Color.clear)
     }
 
-    func rowView(for conversation: Conversation) -> some View {
+    func rowView(for conversation: Conversation, with status: ConversationOpenStatus) -> some View {
         hRow {
             rowViewContent(for: conversation)
         }
-        .shouldShowDivider(vm.shouldHideDivider(for: conversation))
+        .shouldShowDivider(vm.shouldHideDivider(for: conversation, of: status))
     }
 
     func rowViewContent(for conversation: Conversation) -> some View {
@@ -128,24 +128,26 @@ public struct InboxView: View {
 
 class InboxViewModel: ObservableObject {
     @Inject var service: ConversationsClient
-    @Published var openedConversations: [Conversation] = []
-    @Published var closedConversations: [Conversation] = []
+    @Published var conversations: [ConversationOpenStatus: [Conversation]] = [:]
 
     private var pollTimerCancellable: AnyCancellable?
     @PresentableStore var store: ChatStore
     private var chatClosedObserver: NSObjectProtocol?
     @Published var scrollVM = ScrollableSegmentedViewModel(pageModels: [], fixedHeight: false)
-    func shouldHideDivider(for conversation: Conversation) -> Bool {
-        //        guard let indexOfCurrent = conversations.firstIndex(where: { $0.id == conversation.id }) else {
-        //            return true
-        //        }
-        //        let indexOfNext = indexOfCurrent + 1
-        //        guard indexOfNext < conversations.count else {
-        //            return true
-        //        }
-        //        let currentConversation = conversations[indexOfCurrent]
-        //        let nextConversation = conversations[indexOfNext]
-        //        return currentConversation.hasNewMessage != nextConversation.hasNewMessage
+    func shouldHideDivider(for conversation: Conversation, of conversationsStatus: ConversationOpenStatus) -> Bool {
+
+        guard let conversations = self.conversations[conversationsStatus],
+            let indexOfCurrent = conversations.firstIndex(where: { $0.id == conversation.id })
+        else {
+            return true
+        }
+        let indexOfNext = indexOfCurrent + 1
+        guard indexOfNext < conversations.count else {
+            return true
+        }
+        let currentConversation = conversations[indexOfCurrent]
+        let nextConversation = conversations[indexOfNext]
+        return currentConversation.hasNewMessage != nextConversation.hasNewMessage
         return true
     }
 
@@ -194,8 +196,8 @@ class InboxViewModel: ObservableObject {
                     )
                 }
                 withAnimation {
-                    self.openedConversations = openedConversations
-                    self.closedConversations = closedConversations
+                    self.conversations[.open] = openedConversations
+                    self.conversations[.closed] = closedConversations
                     scrollVM.update(pageModels: pageModels)
                 }
             }
