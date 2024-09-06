@@ -52,7 +52,7 @@ public struct InboxView: View {
                 }
                 if let subtitle = conversation.getConversationSubTitle {
                     hText(subtitle, style: .body1)
-                        .foregroundColor(hTextColor.Translucent.secondary)
+                        .foregroundColor(getNewestMessageColor(for: conversation))
                         .lineLimit(3)
                 }
             }
@@ -100,7 +100,6 @@ public struct InboxView: View {
     private func getNewestMessage(for conversation: Conversation) -> some View {
         if let newestMessage = conversation.newestMessage {
             hText(newestMessage.latestMessageText, style: .label)
-                .foregroundColor(hTextColor.Translucent.secondary)
                 .lineLimit(1)
                 .fixedSize(horizontal: false, vertical: true)
                 .foregroundColor(getNewestMessageColor(for: conversation))
@@ -121,7 +120,7 @@ public struct InboxView: View {
         if conversation.hasNewMessage {
             hTextColor.Translucent.primary
         } else {
-            hTextColor.Opaque.secondary
+            hTextColor.Translucent.secondary
         }
     }
 }
