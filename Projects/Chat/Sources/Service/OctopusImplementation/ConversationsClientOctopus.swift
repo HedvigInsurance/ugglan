@@ -18,9 +18,16 @@ public class ConversationsClientOctopus: ConversationsClient {
         }
 
         let conversationsSortedByDate = conversations.sorted(by: {
-            $0.newestMessage?.sentAt ?? $0.createdAt?.localDateToIso8601Date ?? Date() > $1.newestMessage?.sentAt ?? $1
-                .createdAt?
-                .localDateToIso8601Date ?? Date()
+            if $0.hasNewMessage && !$1.hasNewMessage {
+                return true
+            } else if !$0.hasNewMessage && $1.hasNewMessage {
+                return false
+            } else if $0.isConversationOpen == true && $1.isConversationOpen == false {
+                return true
+            } else if $0.isConversationOpen == false && $1.isConversationOpen == true {
+                return false
+            }
+            return $0.getAnyDate > $1.getAnyDate
         })
         return conversationsSortedByDate
     }

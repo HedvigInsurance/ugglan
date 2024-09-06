@@ -79,6 +79,10 @@ public struct Conversation: Identifiable, Hashable, Codable {
         }
         return nil
     }
+
+    var getAnyDate: Date {
+        newestMessage?.sentAt ?? createdAt?.localDateToIso8601Date ?? Date()
+    }
 }
 
 public enum ConversationType: Codable, Hashable {

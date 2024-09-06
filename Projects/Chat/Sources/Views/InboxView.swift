@@ -65,12 +65,23 @@ public struct InboxView: View {
     private func getRightView(for conversation: Conversation) -> some View {
         if conversation.hasNewMessage {
             hText(L10n.chatNewMessage, style: .label)
-                .foregroundColor(hTextColor.Opaque.black)
+                .foregroundColor(hSignalColor.Blue.text)
                 .padding(.horizontal, .padding6)
                 .padding(.vertical, 3)
                 .background(
                     RoundedRectangle(cornerRadius: 6)
-                        .fill(hHighlightColor.Blue.fillTwo)
+                        .fill(hHighlightColor.Blue.fillOne)
+                )
+                .transition(.scale.combined(with: .opacity))
+                .matchedGeometryEffect(id: "rightView_\(conversation.id)", in: animationNamespace)
+        } else if conversation.isConversationOpen == false {
+            hText(L10n.chatConversationClosed, style: .label)
+                .foregroundColor(hTextColor.Opaque.accordion)
+                .padding(.horizontal, .padding6)
+                .padding(.vertical, 3)
+                .background(
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(hSurfaceColor.Opaque.primary)
                 )
                 .transition(.scale.combined(with: .opacity))
                 .matchedGeometryEffect(id: "rightView_\(conversation.id)", in: animationNamespace)
@@ -165,7 +176,6 @@ class InboxViewModel: ObservableObject {
     func fetchMessages() async {
         do {
             let conversations = try await service.getConversations()
-            let store: ChatStore = globalPresentableStoreContainer.get()
             withAnimation {
                 self.conversations = conversations
             }
