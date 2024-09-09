@@ -10,7 +10,7 @@ public struct Conversation: Identifiable, Hashable, Codable {
         newestMessage: Message?,
         createdAt: String?,
         statusMessage: String?,
-        isConversationOpen: Bool?,
+        status: ConversationStatus,
         hasClaim: Bool,
         claimType: String?,
         unreadMessageCount: Int
@@ -20,7 +20,7 @@ public struct Conversation: Identifiable, Hashable, Codable {
         self.newestMessage = newestMessage
         self.createdAt = createdAt
         self.statusMessage = statusMessage
-        self.isConversationOpen = isConversationOpen
+        self.status = status
         self.hasClaim = hasClaim
         self.claimType = claimType
         self.unreadMessageCount = unreadMessageCount
@@ -35,7 +35,7 @@ public struct Conversation: Identifiable, Hashable, Codable {
     public let newestMessage: Message?
     let createdAt: String?
     let statusMessage: String?
-    let isConversationOpen: Bool?
+    let status: ConversationStatus
     let hasClaim: Bool
     let claimType: String?
     let unreadMessageCount: Int
@@ -53,7 +53,7 @@ public struct Conversation: Identifiable, Hashable, Codable {
         self.createdAt = fragment.createdAt
         self.statusMessage = fragment.statusMessage
         self.type = type
-        self.isConversationOpen = fragment.isOpen
+        self.status = fragment.isOpen ? .open : .closed
         self.hasClaim = fragment.claim != nil
         self.claimType = fragment.claim?.claimType
         self.unreadMessageCount = fragment.unreadMessageCount
@@ -83,10 +83,23 @@ public struct Conversation: Identifiable, Hashable, Codable {
     var getAnyDate: Date {
         newestMessage?.sentAt ?? createdAt?.localDateToIso8601Date ?? Date()
     }
+
+    var isOpened: Bool {
+        status == .open
+    }
+
+    var isClosed: Bool {
+        status == .closed
+    }
 }
 
 public enum ConversationType: Codable, Hashable {
     case legacy
     case service
     case claim
+}
+
+public enum ConversationStatus: Codable, Hashable {
+    case open
+    case closed
 }

@@ -74,7 +74,7 @@ public struct InboxView: View {
                 )
                 .transition(.scale.combined(with: .opacity))
                 .matchedGeometryEffect(id: "rightView_\(conversation.id)", in: animationNamespace)
-        } else if conversation.isConversationOpen == false {
+        } else if conversation.isClosed {
             hText(L10n.chatConversationClosed, style: .label)
                 .foregroundColor(hTextColor.Opaque.accordion)
                 .padding(.horizontal, .padding6)

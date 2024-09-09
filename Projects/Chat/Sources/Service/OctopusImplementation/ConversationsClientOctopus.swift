@@ -22,9 +22,9 @@ public class ConversationsClientOctopus: ConversationsClient {
                 return true
             } else if !$0.hasNewMessage && $1.hasNewMessage {
                 return false
-            } else if $0.isConversationOpen == true && $1.isConversationOpen == false {
+            } else if $0.isOpened && $1.isClosed {
                 return true
-            } else if $0.isConversationOpen == false && $1.isConversationOpen == true {
+            } else if $0.isClosed && $1.isOpened {
                 return false
             }
             return $0.getAnyDate > $1.getAnyDate
@@ -124,7 +124,7 @@ extension OctopusGraphQL.ConversationFragment {
             newestMessage: self.newestMessage?.fragments.messageFragment.asMessage(),
             createdAt: self.createdAt,
             statusMessage: self.statusMessage,
-            isConversationOpen: self.isOpen,
+            status: self.isOpen ? .open : .closed,
             hasClaim: self.claim != nil,
             claimType: self.claim?.claimType,
             unreadMessageCount: self.unreadMessageCount
