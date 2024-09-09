@@ -21,9 +21,7 @@ struct MovingFlowAddExtraBuildingView: View {
                     livingArea
                 }
                 .sectionContainerStyle(.transparent)
-                hSection {
-                    connectedToWater
-                }
+                connectedToWater
                 hSection {
                     VStack {
                         hButton.LargeButton(type: .primary) {
@@ -143,5 +141,13 @@ class MovingFlowAddExtraBuildingViewModel: ObservableObject {
         livingAreaError = (Int(livingArea) ?? 0) > 0 ? nil : L10n.changeAddressExtraBuildingSizeError
         buildingTypeError = buildingType == nil ? L10n.changeAddressExtraBuildingTypeError : nil
         return livingAreaError == nil && buildingTypeError == nil
+    }
+}
+
+struct MovingFlowAddExtraBuildingView_Previews: PreviewProvider {
+    @State static var isOn: ExtraBuildingTypeNavigationModel? = .init()
+
+    static var previews: some View {
+        MovingFlowAddExtraBuildingView(isBuildingTypePickerPresented: $isOn)
     }
 }
