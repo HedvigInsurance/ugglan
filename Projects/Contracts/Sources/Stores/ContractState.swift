@@ -61,3 +61,13 @@ extension ContractState {
         !(activeContracts.compactMap { $0 }.isEmpty)
     }
 }
+
+extension ContractStore: GetExistingCoInsured {
+    public func getNotInContract(contractId: String) -> [EditCoInsuredShared.CoInsuredModel] {
+        return state.fetchAllCoInsuredNotInContract(contractId: contractId)
+    }
+
+    public func get() -> [EditCoInsuredShared.CoInsuredModel] {
+        return state.fetchAllCoInsured
+    }
+}

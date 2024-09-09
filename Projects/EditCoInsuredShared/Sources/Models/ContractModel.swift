@@ -109,9 +109,9 @@ public struct ProductVariant: Codable, Hashable {
 extension InsuredPeopleConfig {
     public init(
         contract: Contract,
+        preSelectedCoInsuredList: [CoInsuredModel],
         fromInfoCard: Bool
     ) {
-        //        let store: ContractStore = globalPresentableStoreContainer.get()
         self.init(
             id: contract.id,
             contractCoInsured: contract.coInsured,
@@ -119,10 +119,8 @@ extension InsuredPeopleConfig {
             activeFrom: contract.upcomingChangedAgreement?.activeFrom,
             numberOfMissingCoInsured: contract.nbOfMissingCoInsured,
             numberOfMissingCoInsuredWithoutTermination: contract.nbOfMissingCoInsuredWithoutTermination,
-            //             TODO: CHECK
             displayName: contract.currentAgreement?.productVariant.displayName ?? "",
-            preSelectedCoInsuredList: [],
-            //            preSelectedCoInsuredList: store.state.fetchAllCoInsuredNotInContract(contractId: contract.id),
+            preSelectedCoInsuredList: preSelectedCoInsuredList,
             contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
             holderFirstName: contract.firstName,
             holderLastName: contract.lastName,

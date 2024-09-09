@@ -2,14 +2,24 @@ import Combine
 import Foundation
 import hCore
 
+public protocol GetExistingCoInsured {
+    func get() -> [CoInsuredModel]
+    func getNotInContract(contractId: String) -> [CoInsuredModel]
+}
+
 public class EditCoInsuredViewModel: ObservableObject {
     @Published public var editCoInsuredModelDetent: EditCoInsuredNavigationModel?
     @Published public var editCoInsuredModelFullScreen: EditCoInsuredNavigationModel?
     @Published public var editCoInsuredModelMissingAlert: InsuredPeopleConfig?
     public var editCoInsuredSharedService = EditCoInsuredSharedService()
     public static var updatedCoInsuredForContractId = PassthroughSubject<String?, Never>()
+    let existingCoInsured: GetExistingCoInsured
 
-    public init() {}
+    public init(
+        existingCoInsured: GetExistingCoInsured
+    ) {
+        self.existingCoInsured = existingCoInsured
+    }
 
     public func start(fromContract: InsuredPeopleConfig? = nil, forMissingCoInsured: Bool = false) {
 
@@ -28,7 +38,11 @@ public class EditCoInsuredViewModel: ObservableObject {
                             && ($0.nbOfMissingCoInsuredWithoutTermination > 0 || !forMissingCoInsured)
                     })
                     .compactMap({
-                        InsuredPeopleConfig(contract: $0, fromInfoCard: true)
+                        InsuredPeopleConfig(
+                            contract: $0,
+                            preSelectedCoInsuredList: existingCoInsured.get(),
+                            fromInfoCard: true
+                        )
                     })
 
                 if contractsSupportingCoInsured.count > 1 {
@@ -64,7 +78,11 @@ public class EditCoInsuredViewModel: ObservableObject {
             try await Task.sleep(nanoseconds: 400_000_000)
 
             if let missingContract {
-                let missingContractConfig = InsuredPeopleConfig(contract: missingContract, fromInfoCard: false)
+                let missingContractConfig = InsuredPeopleConfig(
+                    contract: missingContract,
+                    preSelectedCoInsuredList: existingCoInsured.get(),
+                    fromInfoCard: false
+                )
                 editCoInsuredModelMissingAlert = missingContractConfig
             }
         }
