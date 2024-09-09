@@ -2,9 +2,8 @@ import Combine
 import Foundation
 import hCore
 
-public protocol GetExistingCoInsured {
-    func get() -> [CoInsuredModel]
-    func getNotInContract(contractId: String) -> [CoInsuredModel]
+public protocol ExistingCoInsured {
+    func get(contractId: String) -> [CoInsuredModel]
 }
 
 public class EditCoInsuredViewModel: ObservableObject {
@@ -13,10 +12,10 @@ public class EditCoInsuredViewModel: ObservableObject {
     @Published public var editCoInsuredModelMissingAlert: InsuredPeopleConfig?
     public var editCoInsuredSharedService = EditCoInsuredSharedService()
     public static var updatedCoInsuredForContractId = PassthroughSubject<String?, Never>()
-    let existingCoInsured: GetExistingCoInsured
+    let existingCoInsured: ExistingCoInsured
 
     public init(
-        existingCoInsured: GetExistingCoInsured
+        existingCoInsured: ExistingCoInsured
     ) {
         self.existingCoInsured = existingCoInsured
     }
@@ -40,7 +39,7 @@ public class EditCoInsuredViewModel: ObservableObject {
                     .compactMap({
                         InsuredPeopleConfig(
                             contract: $0,
-                            preSelectedCoInsuredList: existingCoInsured.get(),
+                            preSelectedCoInsuredList: existingCoInsured.get(contractId: $0.id),
                             fromInfoCard: true
                         )
                     })
@@ -80,7 +79,7 @@ public class EditCoInsuredViewModel: ObservableObject {
             if let missingContract {
                 let missingContractConfig = InsuredPeopleConfig(
                     contract: missingContract,
-                    preSelectedCoInsuredList: existingCoInsured.getNotInContract(contractId: missingContract.id),
+                    preSelectedCoInsuredList: existingCoInsured.get(contractId: missingContract.id),
                     fromInfoCard: false
                 )
                 editCoInsuredModelMissingAlert = missingContractConfig

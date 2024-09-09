@@ -62,12 +62,8 @@ extension ContractState {
     }
 }
 
-extension ContractStore: GetExistingCoInsured {
-    public func getNotInContract(contractId: String) -> [EditCoInsuredShared.CoInsuredModel] {
+extension ContractStore: ExistingCoInsured {
+    public func get(contractId: String) -> [EditCoInsuredShared.CoInsuredModel] {
         return state.fetchAllCoInsuredNotInContract(contractId: contractId)
-    }
-
-    public func get() -> [EditCoInsuredShared.CoInsuredModel] {
-        return state.fetchAllCoInsured
     }
 }
