@@ -31,6 +31,13 @@ public class HelpCenterNavigationViewModel: ObservableObject {
     }
 }
 
+enum HelpCenterNavigationRouterType: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        return .init(describing: InboxView.self)
+    }
+    case inbox
+}
+
 public struct HelpCenterNavigation<Content: View>: View {
     @ObservedObject var helpCenterVm: HelpCenterNavigationViewModel
     @EnvironmentObject private var homeVm: HomeNavigationViewModel
@@ -51,16 +58,19 @@ public struct HelpCenterNavigation<Content: View>: View {
             HelpCenterStartView(
                 onQuickAction: { quickAction in
                     handle(quickAction: quickAction)
-                },
-                helpCenterModel: HelpCenterModel.getDefault()
+                }
             )
             .navigationTitle(L10n.hcTitle)
             .withDismissButton()
             .routerDestination(for: Question.self) { question in
-                HelpCenterQuestionView(question: question)
+                HelpCenterQuestionView(question: question, router: router)
             }
             .routerDestination(for: CommonTopic.self) { topic in
-                HelpCenterTopicView(commonTopic: topic)
+                HelpCenterTopicView(commonTopic: topic, router: router)
+            }
+            .routerDestination(for: HelpCenterNavigationRouterType.self) { _ in
+                InboxView()
+                    .configureTitle(L10n.chatConversationInbox)
             }
         }
         .ignoresSafeArea()

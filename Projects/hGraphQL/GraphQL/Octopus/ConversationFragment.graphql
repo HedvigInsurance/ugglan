@@ -3,6 +3,7 @@ fragment ConversationFragment on Conversation {
     createdAt
     id
     isOpen
+    unreadMessageCount
     newestMessage {
         ... MessageFragment
     }

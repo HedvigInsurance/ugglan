@@ -6,11 +6,13 @@ import hCoreUI
 struct HelpCenterTopicView: View {
     private var commonTopic: CommonTopic
     @PresentableStore var store: HomeStore
-
+    @ObservedObject var router: Router
     public init(
-        commonTopic: CommonTopic
+        commonTopic: CommonTopic,
+        router: Router
     ) {
         self.commonTopic = commonTopic
+        self.router = router
     }
 
     var body: some View {
@@ -31,7 +33,7 @@ struct HelpCenterTopicView: View {
                     }
                 }
                 .sectionContainerStyle(.transparent)
-                SupportView(topic: commonTopic.type)
+                SupportView(topic: commonTopic.type, router: router)
             }
         }
         .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary))
@@ -85,6 +87,7 @@ struct HelpCenterTopicView: View {
             type: .payments,
             commonQuestions: questions,
             allQuestions: questions
-        )
+        ),
+        router: Router()
     )
 }

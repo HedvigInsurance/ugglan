@@ -139,7 +139,8 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
                 statusMessage: nil,
                 isConversationOpen: true,
                 hasClaim: true,
-                claimType: "claim type"
+                claimType: "claim type",
+                unreadMessageCount: 0
             )
         )
         return VStack(spacing: 20) {
@@ -172,7 +173,8 @@ struct ClaimReopened_Previews: PreviewProvider {
                 statusMessage: nil,
                 isConversationOpen: true,
                 hasClaim: true,
-                claimType: "claim type"
+                claimType: "claim type",
+                unreadMessageCount: 0
             )
         )
         return VStack(spacing: 20) {
@@ -205,7 +207,8 @@ struct ClaimPaid_Previews: PreviewProvider {
                 statusMessage: nil,
                 isConversationOpen: true,
                 hasClaim: true,
-                claimType: "claim type"
+                claimType: "claim type",
+                unreadMessageCount: 0
             )
         )
         return VStack(spacing: 20) {
@@ -237,7 +240,8 @@ struct ClaimNotCompensated_Previews: PreviewProvider {
                 statusMessage: nil,
                 isConversationOpen: true,
                 hasClaim: true,
-                claimType: "claim type"
+                claimType: "claim type",
+                unreadMessageCount: 0
             )
         )
         return VStack(spacing: 20) {
@@ -270,7 +274,8 @@ struct ClaimNotCovered_Previews: PreviewProvider {
                 statusMessage: nil,
                 isConversationOpen: true,
                 hasClaim: true,
-                claimType: "claim type"
+                claimType: "claim type",
+                unreadMessageCount: 0
             )
         )
         return VStack(spacing: 20) {
@@ -303,7 +308,8 @@ struct ClaimClosed_Previews: PreviewProvider {
                 statusMessage: nil,
                 isConversationOpen: true,
                 hasClaim: true,
-                claimType: "claim type"
+                claimType: "claim type",
+                unreadMessageCount: 0
             )
         )
         return VStack(spacing: 20) {

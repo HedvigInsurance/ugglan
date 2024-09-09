@@ -21,21 +21,12 @@ public class FetchClaimClientOctopus: hFetchClaimClient {
 
     public init() {}
     public func get() async throws -> [ClaimModel] {
-        if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
-            let data = try await octopus.client.fetch(
-                query: OctopusGraphQL.ClaimsQueryWithConversationQuery(),
-                cachePolicy: .fetchIgnoringCacheCompletely
-            )
-            let claimData = data.currentMember.claims.map { ClaimModel(claim: $0) }
-            return claimData
-        } else {
-            let data = try await octopus.client.fetch(
-                query: OctopusGraphQL.ClaimsQuery(),
-                cachePolicy: .fetchIgnoringCacheCompletely
-            )
-            let claimData = data.currentMember.claims.map { ClaimModel(claim: $0) }
-            return claimData
-        }
+        let data = try await octopus.client.fetch(
+            query: OctopusGraphQL.ClaimsQueryWithConversationQuery(),
+            cachePolicy: .fetchIgnoringCacheCompletely
+        )
+        let claimData = data.currentMember.claims.map { ClaimModel(claim: $0) }
+        return claimData
     }
 
     public func getFiles() async throws -> [String: [File]] {

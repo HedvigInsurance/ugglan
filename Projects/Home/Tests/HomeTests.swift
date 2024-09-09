@@ -84,17 +84,24 @@ final class HomeTests: XCTestCase {
 
         let dateOfLastMessage = "2024-07-16".localDateToDate!
 
-        let lastMessages: [String: Date] = [
-            "message1": Date(),
-            "message2": dateOfLastMessage,
-        ]
+        let lastMessagesState = MessageState(
+            hasNewMessages: true,
+            hasSentOrRecievedAtLeastOneMessage: true,
+            lastMessageTimeStamp: nil
+        )
 
         let mockService = MockData.createMockHomeService(
-            fetchLastMessagesDates: { lastMessages }
+            fetchLatestMessageState: { lastMessagesState }
         )
         self.sut = mockService
 
-        let respondedLastMessages = try! await mockService.getLastMessagesDates()
-        assert(respondedLastMessages == lastMessages)
+        let respondedLastMessages = try! await mockService.getMessagesState()
+        assert(respondedLastMessages.hasNewMessages == lastMessagesState.hasNewMessages)
+        assert(
+            respondedLastMessages.hasSentOrRecievedAtLeastOneMessage
+                == lastMessagesState.hasSentOrRecievedAtLeastOneMessage
+        )
+        assert(respondedLastMessages.lastMessageTimeStamp == lastMessagesState.lastMessageTimeStamp)
+
     }
 }

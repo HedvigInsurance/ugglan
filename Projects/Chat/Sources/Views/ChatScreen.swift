@@ -159,21 +159,6 @@ public struct ChatScreen: View {
     }
 }
 
-#Preview{
-    let client = ChatDemoClient()
-    Dependencies.shared.add(
-        module: Module { () -> FetchMessagesClient in
-            client
-        }
-    )
-    Dependencies.shared.add(
-        module: Module { () -> SendMessageClient in
-            client
-        }
-    )
-    return ChatScreen(vm: .init(chatService: MessagesService(topic: nil))).environmentObject(ChatNavigationViewModel())
-}
-
 class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
 
     let isScrolling = PassthroughSubject<Bool, Never>()

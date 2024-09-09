@@ -2,12 +2,16 @@ import Foundation
 import SwiftUI
 import hCore
 
-extension hForm {
+extension View {
     public func setHomeNavigationBars(
         with options: Binding<[ToolbarOptionType]>,
+        and vcName: String,
         action: @escaping (_: ToolbarOptionType) -> Void
     ) -> some View {
-        ModifiedContent(content: self, modifier: ToolbarButtonsViewModifier(action: action, types: options))
+        ModifiedContent(
+            content: self,
+            modifier: ToolbarButtonsViewModifier(action: action, types: options, vcName: vcName)
+        )
     }
 }
 
@@ -24,15 +28,9 @@ public enum ToolbarOptionType: Codable, Equatable {
         case .firstVet:
             return hCoreUIAssets.firstVetQuickNav.image
         case .chat:
-            if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
-                return hCoreUIAssets.inbox.image
-            }
-            return hCoreUIAssets.chatQuickNav.image
+            return hCoreUIAssets.inbox.image
         case .chatNotification:
-            if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
-                return hCoreUIAssets.inboxNotification.image
-            }
-            return hCoreUIAssets.chatQuickNavNotification.image
+            return hCoreUIAssets.inboxNotification.image
         }
     }
 
@@ -173,7 +171,13 @@ struct ToolbarButtonsView: View {
     @State var displayTooltip = false
     var action: ((_: ToolbarOptionType)) -> Void
     @Binding var types: [ToolbarOptionType]
-
+    private var spacing: CGFloat {
+        if #available(iOS 18.0, *) {
+            return 0
+        } else {
+            return -8
+        }
+    }
     init(
         types: Binding<[ToolbarOptionType]>,
         action: @escaping (_: ToolbarOptionType) -> Void
@@ -183,8 +187,7 @@ struct ToolbarButtonsView: View {
     }
 
     var body: some View {
-        HStack(spacing: -8) {
-
+        HStack(spacing: spacing) {
             ForEach(Array(types.enumerated()), id: \.element.identifiableId) { index, type in
                 VStack {
                     withAnimation(nil) {
@@ -222,14 +225,43 @@ struct ToolbarButtonsView: View {
 
 struct ToolbarButtonsViewModifier: ViewModifier {
     let action: (_: ToolbarOptionType) -> Void
+    @StateObject var navVm = ToolbarButtonsViewModifierViewModel()
     @Binding var types: [ToolbarOptionType]
+    let vcName: String
     func body(content: Content) -> some View {
-        content
-            .navigationBarItems(
-                trailing:
-                    ToolbarButtonsView(types: $types, action: action)
-            )
+        if #available(iOS 18.0, *) {
+            content
+                .introspectNavigationController(customize: { nav in
+                    if self.navVm.nav != nav {
+                        self.navVm.nav = nav
+                        setNavigation()
+                    }
+                })
+                .onChange(of: types) { value in
+                    setNavigation()
+                }
+        } else {
+            content
+                .navigationBarItems(
+                    trailing:
+                        ToolbarButtonsView(types: $types, action: action)
+                )
+        }
     }
+
+    private func setNavigation() {
+        if let vc = self.navVm.nav?.viewControllers.first(where: { $0.debugDescription == vcName }) {
+            let viewToInject = ToolbarButtonsView(types: $types, action: action)
+            let hostingVc = UIHostingController(rootView: viewToInject)
+            let viewToPlace = hostingVc.view!
+            viewToPlace.backgroundColor = .clear
+            vc.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: viewToPlace)
+        }
+    }
+}
+
+class ToolbarButtonsViewModifierViewModel: ObservableObject {
+    weak var nav: UINavigationController?
 }
 
 extension TimeInterval {

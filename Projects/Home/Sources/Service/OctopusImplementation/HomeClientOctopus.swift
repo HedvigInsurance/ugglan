@@ -91,32 +91,35 @@ public class HomeClientOctopus: HomeClient {
         return quickActions
     }
 
-    public func getLastMessagesDates() async throws -> [String: Date] {
-        if featureFlags.isConversationBasedMessagesEnabled {
-            let data = try await self.octopus.client.fetch(
-                query: OctopusGraphQL.ConversationsTimeStampQuery(),
-                cachePolicy: .fetchIgnoringCacheCompletely
-            )
-            var conversationIdsWithTimestamp = Dictionary(
-                uniqueKeysWithValues: data.currentMember.conversations.map {
-                    ($0.id, $0.newestMessage?.sentAt.localDateToIso8601Date)
-                }
-            )
-            if let legacyConversation = data.currentMember.legacyConversation {
-                conversationIdsWithTimestamp[legacyConversation.id] =
-                    legacyConversation.newestMessage?.sentAt.localDateToIso8601Date
-            }
-            return conversationIdsWithTimestamp.compactMapValues({ $0 })
-        } else {
-            let data = try await self.octopus.client
-                .fetch(
-                    query: OctopusGraphQL.ChatMessageTimeStampQuery(until: GraphQLNullable.null),
-                    cachePolicy: .fetchIgnoringCacheCompletely
-                )
-            return Dictionary(
-                uniqueKeysWithValues: data.chat.messages.map { ($0.id, $0.sentAt.localDateToIso8601Date ?? Date()) }
-            )
+    public func getMessagesState() async throws -> MessageState {
+        let data = try await self.octopus.client.fetch(
+            query: OctopusGraphQL.ConversationsTimeStampQuery(),
+            cachePolicy: .fetchIgnoringCacheCompletely
+        )
+
+        var conversationsTimestamps = data.currentMember.conversations.map {
+            $0.newestMessage?.sentAt.localDateToIso8601Date
         }
+        let hasNewMessages =
+            (data.currentMember.conversations.first(where: { $0.unreadMessageCount > 0 })?.unreadMessageCount ?? data
+                .currentMember.legacyConversation?
+                .unreadMessageCount ?? 0) > 0
+        let hasSentOrRecievedAtLeastOneMessage: Bool = {
+            !data.currentMember.conversations.isEmpty || data.currentMember.legacyConversation?.newestMessage != nil
+        }()
+
+        if let legacyConversation = data.currentMember.legacyConversation {
+            if let date = legacyConversation.newestMessage?.sentAt.localDateToIso8601Date {
+                conversationsTimestamps.append(date)
+            }
+        }
+        let maxDate = conversationsTimestamps.compactMap({ $0 }).max()
+
+        return .init(
+            hasNewMessages: hasNewMessages,
+            hasSentOrRecievedAtLeastOneMessage: hasSentOrRecievedAtLeastOneMessage,
+            lastMessageTimeStamp: maxDate
+        )
     }
 }
 

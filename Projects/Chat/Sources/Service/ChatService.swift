@@ -35,9 +35,6 @@ public class ConversationService: ChatServiceProtocol {
             olderToken = data.olderToken
         }
         newerToken = data.newerToken
-        if let sendAt = data.messages.first?.sentAt {
-            store.send(.setLastMessageTimestampForConversation(id: conversationId, date: sendAt))
-        }
         return .init(
             hasPreviousMessage: olderToken != nil,
             messages: data.messages,
@@ -129,65 +126,5 @@ public class NewConversationService: ChatServiceProtocol {
             throw ConversationsError.errorMesage(message: L10n.chatFailedToSend)
         }
         return try await conversationService!.send(message: message)
-    }
-}
-
-public class MessagesService: ChatServiceProtocol {
-    public var type: ChatServiceType = .oldChat
-    @Inject var client: FetchMessagesClient
-    @Inject var service: SendMessageClient
-    @PresentableStore var store: ChatStore
-
-    private var previousTimeStamp: String?
-    let topic: ChatTopicType?
-
-    public init(topic: ChatTopicType?) {
-        self.topic = topic
-    }
-
-    public func getNewMessages() async throws -> ChatData {
-        let data = try await get(nil)
-        if previousTimeStamp == nil {
-            previousTimeStamp = data.olderToken
-        }
-
-        if let sendAt = data.messages.first?.sentAt {
-            store.send(.setLastMessageDate(date: sendAt))
-        }
-        return .init(
-            hasPreviousMessage: data.hasNext,
-            messages: data.messages,
-            banner: data.banner,
-            isConversationOpen: nil,
-            title: data.title,
-            subtitle: nil
-        )
-    }
-
-    public func getPreviousMessages() async throws -> ChatData {
-        let data = try await get(previousTimeStamp)
-        previousTimeStamp = data.olderToken
-        return .init(
-            hasPreviousMessage: data.hasNext,
-            messages: data.messages,
-            banner: data.banner,
-            isConversationOpen: nil,
-            title: data.title,
-            subtitle: nil
-        )
-    }
-
-    public func send(message: Message) async throws -> Message {
-        return try await send(message: message, topic: topic)
-    }
-
-    public func get(_ next: String?) async throws -> MessagesData {
-        log.info("FetchMessagesService: get", error: nil, attributes: nil)
-        return try await client.get(next)
-    }
-
-    public func send(message: Message, topic: ChatTopicType?) async throws -> Message {
-        log.info("SendMessagesService: send", error: nil, attributes: nil)
-        return try await service.send(message: message, topic: topic)
     }
 }
