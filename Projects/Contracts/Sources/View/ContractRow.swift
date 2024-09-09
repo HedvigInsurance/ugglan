@@ -142,6 +142,10 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                         )
                     )
                     .padding(.trailing, .padding4)
+                } else {
+                    StatusPill(
+                        text: L10n.dashboardInsuranceStatusActive
+                    )
                 }
                 Spacer()
                 logo
