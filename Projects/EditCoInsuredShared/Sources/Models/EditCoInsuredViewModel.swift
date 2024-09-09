@@ -80,7 +80,7 @@ public class EditCoInsuredViewModel: ObservableObject {
             if let missingContract {
                 let missingContractConfig = InsuredPeopleConfig(
                     contract: missingContract,
-                    preSelectedCoInsuredList: existingCoInsured.get(),
+                    preSelectedCoInsuredList: existingCoInsured.getNotInContract(contractId: missingContract.id),
                     fromInfoCard: false
                 )
                 editCoInsuredModelMissingAlert = missingContractConfig
