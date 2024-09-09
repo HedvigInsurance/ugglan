@@ -21,15 +21,15 @@ struct MockData {
                 .connectPayments,
             ]
         },
-        fetchLastMessagesDates: @escaping FetchLastMessagesDates = {
-            [:]
+        fetchLatestMessageState: @escaping FetchLatestMessageState = {
+            .init(hasNewMessages: false, hasSentOrRecievedAtLeastOneMessage: false, lastMessageTimeStamp: nil)
         }
     ) -> MockHomeService {
         let service = MockHomeService(
             fetchImportantMessages: fetchImportantMessages,
             fetchMemberState: fetchMemberState,
             fetchQuickActions: fetchQuickActions,
-            fetchLastMessagesDates: fetchLastMessagesDates
+            fetchLatestMessageState: fetchLatestMessageState
         )
         Dependencies.shared.add(module: Module { () -> HomeClient in service })
         return service
@@ -39,32 +39,32 @@ struct MockData {
 typealias FetchImportantMessages = () async throws -> [ImportantMessage]
 typealias FetchMemberState = () async throws -> MemberState
 typealias FetchQuickActions = () async throws -> [QuickAction]
-typealias FetchLastMessagesDates = () async throws -> [String: Date]
+typealias FetchLatestMessageState = () async throws -> Home.MessageState
 
 class MockHomeService: HomeClient {
     var events = [Event]()
     var fetchImportantMessages: FetchImportantMessages
     var fetchMemberState: FetchMemberState
     var fetchQuickActions: FetchQuickActions
-    var fetchLastMessagesDates: FetchLastMessagesDates
+    var fetchLatestMessageState: FetchLatestMessageState
 
     enum Event {
         case getImportantMessages
         case getMemberState
         case getQuickActions
-        case getLastMessagesDates
+        case getMessagesState
     }
 
     init(
         fetchImportantMessages: @escaping FetchImportantMessages,
         fetchMemberState: @escaping FetchMemberState,
         fetchQuickActions: @escaping FetchQuickActions,
-        fetchLastMessagesDates: @escaping FetchLastMessagesDates
+        fetchLatestMessageState: @escaping FetchLatestMessageState
     ) {
         self.fetchImportantMessages = fetchImportantMessages
         self.fetchMemberState = fetchMemberState
         self.fetchQuickActions = fetchQuickActions
-        self.fetchLastMessagesDates = fetchLastMessagesDates
+        self.fetchLatestMessageState = fetchLatestMessageState
     }
 
     func getImportantMessages() async throws -> [ImportantMessage] {
@@ -85,9 +85,9 @@ class MockHomeService: HomeClient {
         return data
     }
 
-    func getLastMessagesDates() async throws -> [String: Date] {
-        events.append(.getLastMessagesDates)
-        let data = try await fetchLastMessagesDates()
+    func getMessagesState() async throws -> Home.MessageState {
+        events.append(.getMessagesState)
+        let data = try await fetchLatestMessageState()
         return data
     }
 }
