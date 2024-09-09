@@ -119,7 +119,7 @@ public struct HelpCenterStartView: View {
                                 name: "help center quick action",
                                 attributes: ["action": quickAction.id]
                             )
-                            //                            onQuickAction(quickAction)
+                            onQuickAction(quickAction)
                         }
                     }
                     .withoutHorizontalPadding
