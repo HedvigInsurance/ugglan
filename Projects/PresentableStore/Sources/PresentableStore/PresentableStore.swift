@@ -51,12 +51,15 @@ open class StateStore<State: StateProtocol, Action: ActionProtocol>: Store {
 
         let previousState = stateWriteSignal.value
 
-        stateWriteSignal.value = reduce(stateWriteSignal.value, action)
+        let newValue = reduce(stateWriteSignal.value, action)
+        DispatchQueue.main.async { [weak self] in
+            self?.stateWriteSignal.value = newValue
+        }
         actionCallbacker.send(action)
 
         DispatchQueue.global(qos: .background)
             .async {
-                Self.persist(self.stateWriteSignal.value)
+                Self.persist(newValue)
             }
 
         let newState = stateWriteSignal.value
