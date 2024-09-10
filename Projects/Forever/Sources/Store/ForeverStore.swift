@@ -14,7 +14,6 @@ public final class ForeverStore: LoadingStateStore<ForeverState, ForeverAction, 
         switch action {
         case .fetch:
             do {
-                try await Task.sleep(nanoseconds: 3_000_000_000)
                 let data = try await self.foreverService.getMemberReferralInformation()
                 send(.setForeverData(data: data))
             } catch {
