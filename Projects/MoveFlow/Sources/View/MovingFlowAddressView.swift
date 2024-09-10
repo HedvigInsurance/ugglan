@@ -11,7 +11,7 @@ struct MovingFlowAddressView: View {
     var body: some View {
         switch vm.store.state.selectedHousingType {
         case .apartment, .rental:
-            form.hRetryView(MoveFlowStore.self, forAction: .requestMoveIntent, binding: $vm.error)
+            form.retryView(MoveFlowStore.self, forAction: .requestMoveIntent, binding: $vm.error)
                 .onDisappear {
                     vm.clearErrors()
                 }

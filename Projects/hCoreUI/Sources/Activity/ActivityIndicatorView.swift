@@ -270,7 +270,7 @@ struct trackLoadingButtonModifier<StoreType: StoreLoading & Store>: ViewModifier
 }
 
 extension View {
-    public func hRetryView<StoreType: StoreLoading & Store>(
+    public func retryView<StoreType: StoreLoading & Store>(
         _ type: StoreType.Type,
         forAction action: StoreType.Loading,
         binding: Binding<String?>
@@ -500,7 +500,7 @@ public struct LoadingViewWithContentt: ViewModifier {
 }
 
 extension View {
-    public func hLoading(_ isLoading: Binding<Bool>, _ error: Binding<String?>) -> some View {
+    public func loading(_ isLoading: Binding<Bool>, _ error: Binding<String?>) -> some View {
         modifier(LoadingViewWithContentt(isLoading: isLoading, error: error))
     }
 }

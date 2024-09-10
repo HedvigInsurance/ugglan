@@ -65,7 +65,7 @@ public struct ListScreen: View {
                 .padding(.vertical, .padding16)
             }
         }
-        .hLoading($vm.isLoading, $vm.error)
+        .loading($vm.isLoading, $vm.error)
         .toolbar {
             ToolbarItem(
                 placement: infoButtonPlacement
