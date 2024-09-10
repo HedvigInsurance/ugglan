@@ -222,6 +222,11 @@ public class hPresentableStoreContainer: NSObject {
         return store
     }
 
+    public func get<S: Store>(of type: S.Type) -> S {
+        let store: S = get()
+        return store
+    }
+
     public func initialize<S: Store>(_ store: S) {
         setAssociatedValue(store, forKey: S.getKey())
         debugger?.registerStore(store)

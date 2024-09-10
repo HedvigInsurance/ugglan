@@ -91,10 +91,7 @@ public class HomeNavigationViewModel: ObservableObject {
 
     public var connectPaymentVm = ConnectPaymentViewModel()
     public var editCoInsuredVm = EditCoInsuredViewModel(
-        existingCoInsured: {
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-            return contractStore
-        }()
+        existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
     )
 }
 

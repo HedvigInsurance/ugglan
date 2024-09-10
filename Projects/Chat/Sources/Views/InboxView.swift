@@ -165,7 +165,6 @@ class InboxViewModel: ObservableObject {
     func fetchMessages() async {
         do {
             let conversations = try await service.getConversations()
-            let store: ChatStore = globalPresentableStoreContainer.get()
             withAnimation {
                 self.conversations = conversations
             }

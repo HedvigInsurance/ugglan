@@ -1,6 +1,7 @@
 import Contracts
 import EditCoInsuredShared
 import Foundation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -14,10 +15,7 @@ public class TravelCertificateNavigationViewModel: ObservableObject {
     var whoIsTravelingViewModel: WhoIsTravelingViewModel?
 
     public var editCoInsuredVm = EditCoInsuredViewModel(
-        existingCoInsured: {
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-            return contractStore
-        }()
+        existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
     )
 }
 
