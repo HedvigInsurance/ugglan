@@ -634,7 +634,6 @@ public struct TermsAndConditions: Identifiable, Codable, Hashable {
     public let url: String
 }
 
-/* TODO: USE THE ONE IN EDIT CO-INSURED PROJECT? */
 extension InsuredPeopleConfig {
     public init(
         contract: Contract,

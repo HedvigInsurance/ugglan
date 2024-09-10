@@ -1,5 +1,6 @@
 import EditCoInsuredShared
 import Foundation
+import Presentation
 import SafariServices
 import SwiftUI
 import TerminateContracts
@@ -94,7 +95,12 @@ public class ContractsNavigationViewModel: ObservableObject {
     @Published public var insuranceUpdate: Contract?
     @Published public var isChangeAddressPresented = false
 
-    public var editCoInsuredVm = EditCoInsuredViewModel()
+    public var editCoInsuredVm = EditCoInsuredViewModel(
+        existingCoInsured: {
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+            return contractStore
+        }()
+    )
 
     public init() {}
 }

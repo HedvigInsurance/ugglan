@@ -1,3 +1,4 @@
+import Contracts
 import EditCoInsuredShared
 import Foundation
 import Presentation
@@ -13,7 +14,12 @@ public class TravelCertificateNavigationViewModel: ObservableObject {
     var startDateViewModel: StartDateViewModel?
     var whoIsTravelingViewModel: WhoIsTravelingViewModel?
 
-    public var editCoInsuredVm = EditCoInsuredViewModel()
+    public var editCoInsuredVm = EditCoInsuredViewModel(
+        existingCoInsured: {
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+            return contractStore
+        }()
+    )
 }
 
 struct TravelInsuranceSpecificationNavigationModel: Hashable, Identifiable {
