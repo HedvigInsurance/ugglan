@@ -118,7 +118,6 @@ private class PDFPreviewViewModel: ObservableObject {
             activityItems: [thingToShare],
             applicationActivities: nil
         )
-        //        viewController.preferredPresentationStyle = .activityView
 
         if let popover = viewController.popoverPresentationController, let sourceRect = navItem?.bounds {
             popover.sourceView = navItem!.view
