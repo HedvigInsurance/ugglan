@@ -152,6 +152,7 @@ class HomeVM: ObservableObject {
     private var chatNotificationPullTimerCancellable: AnyCancellable?
     @Published var toolbarOptionTypes: [ToolbarOptionType] = []
     private var chatNotificationPullTimer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
+
     init() {
         let store: HomeStore = globalPresentableStoreContainer.get()
         memberContractState = store.state.memberContractState
@@ -175,7 +176,8 @@ class HomeVM: ObservableObject {
         store.send(.fetchChatNotifications)
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         contractStore.send(.fetch)
-
+        let paymentStore: PaymentStore = globalPresentableStoreContainer.get()
+        paymentStore.send(.fetchPaymentStatus)
         chatNotificationPullTimer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
         chatNotificationPullTimerCancellable = chatNotificationPullTimer.receive(on: RunLoop.main)
             .sink { _ in

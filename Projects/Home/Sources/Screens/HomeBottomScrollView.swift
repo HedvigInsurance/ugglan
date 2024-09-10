@@ -86,6 +86,7 @@ class HomeButtonScrollViewModel: ObservableObject {
         let homeStore: HomeStore = globalPresentableStoreContainer.get()
         homeStore.stateSignal
             .map({ $0.memberContractState })
+            .prepend()
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] memberContractState in
                 switch memberContractState {
@@ -105,9 +106,11 @@ class HomeButtonScrollViewModel: ObservableObject {
         let needsPaymentSetupPublisher = paymentStore.stateSignal
             .map({ $0.paymentStatusData?.status })
             .removeDuplicates()
+            .prepend()
         let memberStatePublisher = homeStore.stateSignal
             .map({ $0.memberContractState })
             .removeDuplicates()
+            .prepend()
 
         Publishers.CombineLatest(needsPaymentSetupPublisher, memberStatePublisher)
             .receive(on: RunLoop.main)
@@ -115,11 +118,11 @@ class HomeButtonScrollViewModel: ObservableObject {
                 self?.setConnectPayments(for: memberState, status: paymentStatus)
             })
             .store(in: &cancellables)
+
         setConnectPayments(
             for: homeStore.state.memberContractState,
             status: paymentStore.state.paymentStatusData?.status
         )
-        paymentStore.send(.fetchPaymentStatus)
     }
 
     private func setConnectPayments(for userStatus: MemberContractState?, status: PayinMethodStatus?) {

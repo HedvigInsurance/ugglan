@@ -20,9 +20,6 @@ public struct ConnectPaymentCardView: View {
                 getStatusInfoView(from: status)
             }
         }
-        .onAppear {
-            store.send(.fetchPaymentStatus)
-        }
     }
 
     @ViewBuilder
