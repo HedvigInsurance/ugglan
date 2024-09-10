@@ -77,7 +77,7 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(
                     url: "https://github.com/pointfreeco/swift-snapshot-testing",
-                    .upToNextMajor(from: "1.9.0")
+                    .upToNextMajor(from: "1.17.4")
                 )
             ]
         case .reveal: return []
