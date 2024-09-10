@@ -64,7 +64,7 @@ struct ContractTable: View {
                         }
                     }
                 }
-                .hPresentableStoreLensAnimation(.spring())
+                .presentableStoreLensAnimation(.spring())
                 .sectionContainerStyle(.transparent)
             }
             if !showTerminated {
@@ -102,7 +102,7 @@ struct ContractTable: View {
                             .transition(.slide)
                         }
                     }
-                    .hPresentableStoreLensAnimation(.spring())
+                    .presentableStoreLensAnimation(.spring())
                     .sectionContainerStyle(.transparent)
                 }
                 .padding(.vertical, .padding24)

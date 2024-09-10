@@ -126,7 +126,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                 hText(L10n.saveAndContinueButtonLabel)
                             }
                             .hTrackLoading(SubmitClaimStore.self, action: .postAudioRecording)
-                            .hPresentableStoreLensAnimation(.default)
+                            .presentableStoreLensAnimation(.default)
                             hButton.LargeButton(type: .ghost) {
                                 withAnimation(.spring()) {
                                     store.send(.resetAudioRecording)
@@ -136,7 +136,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                 hText(L10n.embarkRecordAgain)
                             }
                             .hDisableOn(SubmitClaimStore.self, [.postAudioRecording])
-                            .hPresentableStoreLensAnimation(.default)
+                            .presentableStoreLensAnimation(.default)
                         }
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                         .onAppear {

@@ -84,7 +84,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
             hText(L10n.generalContinueButton, style: .body1)
         }
         .hTrackLoading(SubmitClaimStore.self, action: .postDateOfOccurrenceAndLocation)
-        .hPresentableStoreLensAnimation(.default)
+        .presentableStoreLensAnimation(.default)
     }
 }
 

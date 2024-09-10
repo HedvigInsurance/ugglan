@@ -142,7 +142,7 @@ struct SupportView: View {
                     }
                     .padding(.top, .padding24)
                 }
-                .hPresentableStoreLensAnimation(.default)
+                .presentableStoreLensAnimation(.default)
             }
             .padding(.vertical, .padding32)
             .padding(.bottom, .padding24)

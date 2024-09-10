@@ -125,7 +125,7 @@ public struct ContractDetail: View {
                 .sectionContainerStyle(.transparent)
                 .padding(.top, .padding8)
             }
-            .hPresentableStoreLensAnimation(.default)
+            .presentableStoreLensAnimation(.default)
             .introspectViewController { [weak vm] vc in
                 vm?.vc = vc
             }

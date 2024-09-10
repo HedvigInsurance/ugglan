@@ -38,6 +38,6 @@ struct CrossSellingStack: View {
                 .transition(.slide)
             }
         }
-        .hPresentableStoreLensAnimation(.spring())
+        .presentableStoreLensAnimation(.spring())
     }
 }

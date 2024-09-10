@@ -39,7 +39,7 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
                             hText(vm.keyboardEnabled ? L10n.generalSaveButton : L10n.generalContinueButton)
                         }
                         .hTrackLoading(SubmitClaimStore.self, action: .postPhoneNumber)
-                        .hPresentableStoreLensAnimation(.default)
+                        .presentableStoreLensAnimation(.default)
                         .disabled(!(vm.enableContinueButton || vm.keyboardEnabled))
 
                     }

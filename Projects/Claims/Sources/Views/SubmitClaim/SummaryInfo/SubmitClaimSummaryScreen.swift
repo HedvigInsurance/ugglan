@@ -54,7 +54,7 @@ public struct SubmitClaimSummaryScreen: View {
                         hText(L10n.embarkSubmitClaim)
                     }
                     .hTrackLoading(SubmitClaimStore.self, action: .postSummary)
-                    .hPresentableStoreLensAnimation(.default)
+                    .presentableStoreLensAnimation(.default)
 
                 }
             }

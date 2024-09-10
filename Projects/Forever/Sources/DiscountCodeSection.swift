@@ -55,7 +55,7 @@ struct DiscountCodeSectionView: View {
                 }
             }
         }
-        .hPresentableStoreLensAnimation(.spring())
+        .presentableStoreLensAnimation(.spring())
         .sectionContainerStyle(.transparent)
     }
 }

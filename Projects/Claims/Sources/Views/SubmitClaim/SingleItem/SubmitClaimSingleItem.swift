@@ -33,7 +33,7 @@ public struct SubmitClaimSingleItem: View {
                             hText(L10n.generalContinueButton)
                         }
                         .hTrackLoading(SubmitClaimStore.self, action: .postSingleItem)
-                        .hPresentableStoreLensAnimation(.default)
+                        .presentableStoreLensAnimation(.default)
                     }
                     .sectionContainerStyle(.transparent)
                 }

@@ -91,7 +91,7 @@ public struct PaymentHistoryView: View {
                     .sectionContainerStyle(.transparent)
                 }
             }
-            .hPresentableStoreLensAnimation(.default)
+            .presentableStoreLensAnimation(.default)
         }
         .task {
             let store: PaymentStore = globalPresentableStoreContainer.get()

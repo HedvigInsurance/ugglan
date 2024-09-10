@@ -43,7 +43,7 @@ public struct SubmitClaimCheckoutScreen: View {
                 .sectionContainerStyle(.transparent)
             }
         }
-        .hPresentableStoreLensAnimation(.spring())
+        .presentableStoreLensAnimation(.spring())
         .claimErrorTrackerFor([.postSingleItemCheckout])
     }
 

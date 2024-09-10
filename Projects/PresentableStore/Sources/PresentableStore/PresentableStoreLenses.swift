@@ -6,7 +6,7 @@ public struct PresentableStoreLens<S: Store, Value: Equatable, Content: View>: V
     typealias Getter = (_ state: S.State) -> Value
     typealias Setter = (_ value: Value) -> S.Action?
 
-    @Environment(\.hPresentableStoreLensAnimation) var animation
+    @Environment(\.presentableStoreLensAnimation) var animation
     @State var value: Value
     var getter: Getter
     var setter: Setter
@@ -78,7 +78,7 @@ public struct PresentableLoadingStoreLens<
     ErrorContent: View,
     FinishedContent: View
 >: View {
-    @Environment(\.hPresentableStoreLensAnimation) var animation
+    @Environment(\.presentableStoreLensAnimation) var animation
     @State var state: LoadingState<String>?
     var loadingState: S.Loading
 
@@ -135,14 +135,14 @@ private struct EnvironmentPresentableStoreLensAnimation: EnvironmentKey {
 }
 
 extension EnvironmentValues {
-    public var hPresentableStoreLensAnimation: Animation? {
+    public var presentableStoreLensAnimation: Animation? {
         get { self[EnvironmentPresentableStoreLensAnimation.self] }
         set { self[EnvironmentPresentableStoreLensAnimation.self] = newValue }
     }
 }
 
 extension View {
-    public func hPresentableStoreLensAnimation(_ animation: Animation?) -> some View {
-        self.environment(\.hPresentableStoreLensAnimation, animation)
+    public func presentableStoreLensAnimation(_ animation: Animation?) -> some View {
+        self.environment(\.presentableStoreLensAnimation, animation)
     }
 }

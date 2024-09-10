@@ -77,7 +77,7 @@ public struct ProcessingView<S: Store & StoreLoading>: View {
                 }
             }
         }
-        .hPresentableStoreLensAnimation(.default)
+        .presentableStoreLensAnimation(.default)
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.25) {
                 withAnimation(.easeInOut(duration: 1.25)) {
@@ -195,7 +195,7 @@ public struct ProcesssingView: View {
                 }
             }
         }
-        .hPresentableStoreLensAnimation(.default)
+        .presentableStoreLensAnimation(.default)
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
                 withAnimation(.easeInOut(duration: 1.25)) {

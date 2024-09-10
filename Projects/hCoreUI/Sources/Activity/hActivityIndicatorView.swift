@@ -84,7 +84,7 @@ public struct hLoadingViewWithContent<Content: View, StoreType: StoreLoading & S
     var content: () -> Content
     @PresentableStore var store: StoreType
     private let actions: [StoreType.Loading]
-    @Environment(\.hPresentableStoreLensAnimation) var animation
+    @Environment(\.presentableStoreLensAnimation) var animation
     @State var presentError = false
     @State var error = ""
     @State var isLoading = false
@@ -216,7 +216,7 @@ struct hTrackLoadingButtonModifier<StoreType: StoreLoading & Store>: ViewModifie
     @PresentableStore var store: StoreType
     let actions: [StoreType.Loading]
     @State private var isLoading = false
-    @Environment(\.hPresentableStoreLensAnimation) var animation
+    @Environment(\.presentableStoreLensAnimation) var animation
 
     public init(
         _ type: StoreType.Type,
@@ -283,7 +283,7 @@ private struct RetryViewWithError<StoreType: StoreLoading & Store>: ViewModifier
     @PresentableStore var store: StoreType
     let action: StoreType.Loading
     @Binding private var error: String?
-    @Environment(\.hPresentableStoreLensAnimation) var animation
+    @Environment(\.presentableStoreLensAnimation) var animation
 
     public init(
         _ type: StoreType.Type,
@@ -343,7 +343,7 @@ public struct LoadingViewWithGenericError<Content: View, StoreType: StoreLoading
     var content: () -> Content
     @PresentableStore var store: StoreType
     private let actions: [StoreType.Loading]
-    @Environment(\.hPresentableStoreLensAnimation) var animation
+    @Environment(\.presentableStoreLensAnimation) var animation
     @State var presentError = false
     @State var error = ""
     @State var isLoading = false

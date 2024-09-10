@@ -63,7 +63,7 @@ struct MovingFlowAddressView: View {
         }
         .hFormTitle(title: .init(.standard, .displayXSLong, L10n.changeAddressEnterNewAddressTitle))
         .sectionContainerStyle(.transparent)
-        .hPresentableStoreLensAnimation(.default)
+        .presentableStoreLensAnimation(.default)
     }
 
     func addressField() -> some View {

@@ -271,7 +271,7 @@ struct ShowTagList: View {
                     hText(L10n.generalContinueButton, style: .body1)
                 }
                 .hTrackLoading(SubmitClaimStore.self, action: .startClaim)
-                .hPresentableStoreLensAnimation(.default)
+                .presentableStoreLensAnimation(.default)
             }
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
