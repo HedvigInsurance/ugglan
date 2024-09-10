@@ -13,7 +13,12 @@ import hCoreUI
 public class HelpCenterNavigationViewModel: ObservableObject {
     @Published var quickActions = QuickActions()
     var connectPaymentsVm = ConnectPaymentViewModel()
-    public let editCoInsuredVm = EditCoInsuredViewModel()
+    public let editCoInsuredVm = EditCoInsuredViewModel(
+        existingCoInsured: {
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+            return contractStore
+        }()
+    )
     let terminateInsuranceVm = TerminateInsuranceViewModel()
 
     struct QuickActions {

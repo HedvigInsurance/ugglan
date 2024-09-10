@@ -67,7 +67,6 @@ struct EditCoInsured: ViewModifier {
     }
 }
 
-//
 enum InsuredPeopleConfigType {
     case oneItem
     case list
