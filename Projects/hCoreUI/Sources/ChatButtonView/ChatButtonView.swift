@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
-import hCore
 @_spi(Advanced) import SwiftUIIntrospect
+import hCore
 
 extension View {
     public func setHomeNavigationBars(
