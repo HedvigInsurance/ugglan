@@ -45,9 +45,9 @@ public enum ExternalDependencies: CaseIterable {
         case .disk:
             return [.package(url: "https://github.com/HedvigInsurance/Disk", .upToNextMajor(from: "0.6.5"))]
         case .kingfisher:
-            return [.package(url: "https://github.com/onevcat/Kingfisher", .upToNextMajor(from: "7.10.0"))]
+            return [.package(url: "https://github.com/onevcat/Kingfisher", .upToNextMajor(from: "7.12.0"))]
         case .snapkit:
-            return [.package(url: "https://github.com/SnapKit/SnapKit", .upToNextMajor(from: "5.7.0"))]
+            return [.package(url: "https://github.com/SnapKit/SnapKit", .upToNextMajor(from: "5.7.1"))]
         case .markdownkit:
             return [
                 .package(
@@ -59,7 +59,7 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(
                     url: "https://github.com/pointfreeco/swift-snapshot-testing",
-                    .upToNextMajor(from: "1.9.0")
+                    .upToNextMajor(from: "1.17.4")
                 )
             ]
         case .reveal: return []
@@ -83,7 +83,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .unleashProxyClientSwift:
             return [
-                .package(url: "https://github.com/Unleash/unleash-proxy-client-swift", .upToNextMajor(from: "1.1.1"))
+                .package(url: "https://github.com/Unleash/unleash-proxy-client-swift", .upToNextMajor(from: "1.2.1"))
             ]
         case .apolloIosCodegen:
             return [
