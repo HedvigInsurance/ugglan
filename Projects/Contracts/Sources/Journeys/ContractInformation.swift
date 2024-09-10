@@ -328,7 +328,7 @@ struct ContractInformationView: View {
                             hText(L10n.terminationButton, style: .body1)
                                 .foregroundColor(hTextColor.Opaque.secondary)
                         }
-                        .hTrackLoading(TerminationContractStore.self, action: .getInitialStep)
+                        .trackLoading(TerminationContractStore.self, action: .getInitialStep)
                     }
                     .sectionContainerStyle(.transparent)
                 }

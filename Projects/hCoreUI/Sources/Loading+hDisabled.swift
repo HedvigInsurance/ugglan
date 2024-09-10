@@ -35,7 +35,7 @@ private struct DisableInputModifier<StoreType: StoreLoading & Store>: ViewModifi
 }
 
 extension View {
-    public func hDisableOn<StoreType: StoreLoading & Store>(
+    public func disableOn<StoreType: StoreLoading & Store>(
         _ store: StoreType.Type,
         _ actions: [StoreType.Loading]
     ) -> some View {

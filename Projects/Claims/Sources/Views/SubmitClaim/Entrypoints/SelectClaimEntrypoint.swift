@@ -256,7 +256,7 @@ struct ShowTagList: View {
                         )
                     }
                 }
-                .hDisableOn(SubmitClaimStore.self, [.startClaim])
+                .disableOn(SubmitClaimStore.self, [.startClaim])
                 hButton.LargeButton(type: .primary) {
                     if selection != nil && selection != "" {
                         notValid = false
@@ -270,7 +270,7 @@ struct ShowTagList: View {
                 } content: {
                     hText(L10n.generalContinueButton, style: .body1)
                 }
-                .hTrackLoading(SubmitClaimStore.self, action: .startClaim)
+                .trackLoading(SubmitClaimStore.self, action: .startClaim)
                 .presentableStoreLensAnimation(.default)
             }
             .onAppear {

@@ -77,7 +77,7 @@ struct TerminationSurveyScreen: View {
             }
             .sectionContainerStyle(.transparent)
         }
-        .hTrackLoading(TerminationContractStore.self, action: .sendSurvey)
+        .trackLoading(TerminationContractStore.self, action: .sendSurvey)
     }
 
     @ViewBuilder

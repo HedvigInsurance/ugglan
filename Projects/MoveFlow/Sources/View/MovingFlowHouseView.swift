@@ -19,7 +19,7 @@ struct MovingFlowHouseView: View {
                         isSubleted
                         extraBuildingTypes
                     }
-                    .hDisableOn(MoveFlowStore.self, [.requestMoveIntent])
+                    .disableOn(MoveFlowStore.self, [.requestMoveIntent])
                     hSection {
                         InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
                     }
@@ -29,7 +29,7 @@ struct MovingFlowHouseView: View {
                         } content: {
                             hText(L10n.saveAndContinueButtonLabel, style: .body1)
                         }
-                        .hTrackLoading(MoveFlowStore.self, action: .requestMoveIntent)
+                        .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
                     }
 
                 }

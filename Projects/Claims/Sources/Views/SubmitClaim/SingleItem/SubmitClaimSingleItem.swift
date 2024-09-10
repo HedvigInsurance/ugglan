@@ -26,13 +26,13 @@ public struct SubmitClaimSingleItem: View {
                 ) { singleItemStep in
                     hSection {
                         getFields(singleItemStep: singleItemStep)
-                            .hDisableOn(SubmitClaimStore.self, [.postSingleItem])
+                            .disableOn(SubmitClaimStore.self, [.postSingleItem])
                         hButton.LargeButton(type: .primary) {
                             store.send(.singleItemRequest(purchasePrice: singleItemStep?.purchasePrice))
                         } content: {
                             hText(L10n.generalContinueButton)
                         }
-                        .hTrackLoading(SubmitClaimStore.self, action: .postSingleItem)
+                        .trackLoading(SubmitClaimStore.self, action: .postSingleItem)
                         .presentableStoreLensAnimation(.default)
                     }
                     .sectionContainerStyle(.transparent)

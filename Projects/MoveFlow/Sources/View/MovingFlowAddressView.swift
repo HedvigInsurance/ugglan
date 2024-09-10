@@ -43,7 +43,7 @@ struct MovingFlowAddressView: View {
                         isStudentField()
                     }
                 }
-                .hDisableOn(MoveFlowStore.self, [.requestMoveIntent])
+                .disableOn(MoveFlowStore.self, [.requestMoveIntent])
                 hSection {
                     InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
                 }
@@ -53,7 +53,7 @@ struct MovingFlowAddressView: View {
                     } content: {
                         hText(vm.continueButtonTitle, style: .body1)
                     }
-                    .hTrackLoading(MoveFlowStore.self, action: .requestMoveIntent)
+                    .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
                 }
 
             }

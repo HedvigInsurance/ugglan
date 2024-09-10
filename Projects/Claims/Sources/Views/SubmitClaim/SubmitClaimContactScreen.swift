@@ -25,7 +25,7 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
                             placeholder: L10n.phoneNumberRowTitle,
                             error: $vm.phoneNumberError
                         )
-                        .hDisableOn(SubmitClaimStore.self, [.postPhoneNumber])
+                        .disableOn(SubmitClaimStore.self, [.postPhoneNumber])
                         hButton.LargeButton(type: .primary) {
                             if vm.keyboardEnabled {
                                 withAnimation {
@@ -38,7 +38,7 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
                         } content: {
                             hText(vm.keyboardEnabled ? L10n.generalSaveButton : L10n.generalContinueButton)
                         }
-                        .hTrackLoading(SubmitClaimStore.self, action: .postPhoneNumber)
+                        .trackLoading(SubmitClaimStore.self, action: .postPhoneNumber)
                         .presentableStoreLensAnimation(.default)
                         .disabled(!(vm.enableContinueButton || vm.keyboardEnabled))
 

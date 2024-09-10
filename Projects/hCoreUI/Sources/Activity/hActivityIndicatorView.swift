@@ -204,15 +204,15 @@ public struct hLoadingViewWithContent<Content: View, StoreType: StoreLoading & S
 }
 
 extension View {
-    public func hTrackLoading<StoreType: StoreLoading & Store>(
+    public func trackLoading<StoreType: StoreLoading & Store>(
         _ type: StoreType.Type,
         action: StoreType.Loading
     ) -> some View {
-        modifier(hTrackLoadingButtonModifier(type, action))
+        modifier(trackLoadingButtonModifier(type, action))
     }
 }
 
-struct hTrackLoadingButtonModifier<StoreType: StoreLoading & Store>: ViewModifier {
+struct trackLoadingButtonModifier<StoreType: StoreLoading & Store>: ViewModifier {
     @PresentableStore var store: StoreType
     let actions: [StoreType.Loading]
     @State private var isLoading = false

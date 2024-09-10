@@ -67,7 +67,7 @@ struct InsuredPeopleNewScreen: View {
                         } content: {
                             hText(L10n.generalSaveChangesButton)
                         }
-                        .hTrackLoading(EditCoInsuredStore.self, action: .postCoInsured)
+                        .trackLoading(EditCoInsuredStore.self, action: .postCoInsured)
                         .disabled(
                             (vm.config.contractCoInsured.count + vm.coInsuredAdded.count)
                                 < nbOfMissingCoInsured
@@ -81,7 +81,7 @@ struct InsuredPeopleNewScreen: View {
                 } content: {
                     hText(L10n.generalCancelButton)
                 }
-                .hDisableOn(EditCoInsuredStore.self, [.postCoInsured])
+                .disableOn(EditCoInsuredStore.self, [.postCoInsured])
             }
         }
     }

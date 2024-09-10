@@ -25,7 +25,7 @@ public struct SubmitClaimSummaryScreen: View {
                         dateOfPurchase
                         purchasePrice
                     }
-                    .hDisableOn(SubmitClaimStore.self, [.postSummary])
+                    .disableOn(SubmitClaimStore.self, [.postSummary])
                 }
                 .withHeader {
                     HStack {
@@ -53,7 +53,7 @@ public struct SubmitClaimSummaryScreen: View {
                     } content: {
                         hText(L10n.embarkSubmitClaim)
                     }
-                    .hTrackLoading(SubmitClaimStore.self, action: .postSummary)
+                    .trackLoading(SubmitClaimStore.self, action: .postSummary)
                     .presentableStoreLensAnimation(.default)
 
                 }

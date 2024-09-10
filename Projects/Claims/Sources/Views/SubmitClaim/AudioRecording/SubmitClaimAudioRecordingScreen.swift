@@ -125,7 +125,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                             } content: {
                                 hText(L10n.saveAndContinueButtonLabel)
                             }
-                            .hTrackLoading(SubmitClaimStore.self, action: .postAudioRecording)
+                            .trackLoading(SubmitClaimStore.self, action: .postAudioRecording)
                             .presentableStoreLensAnimation(.default)
                             hButton.LargeButton(type: .ghost) {
                                 withAnimation(.spring()) {
@@ -135,7 +135,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                             } content: {
                                 hText(L10n.embarkRecordAgain)
                             }
-                            .hDisableOn(SubmitClaimStore.self, [.postAudioRecording])
+                            .disableOn(SubmitClaimStore.self, [.postAudioRecording])
                             .presentableStoreLensAnimation(.default)
                         }
                         .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -217,7 +217,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                 } content: {
                     hText(L10n.saveAndContinueButtonLabel)
                 }
-                .hTrackLoading(SubmitClaimStore.self, action: .postAudioRecording)
+                .trackLoading(SubmitClaimStore.self, action: .postAudioRecording)
                 hButton.LargeButton(type: .ghost) {
                     withAnimation {
                         self.isAudioInput = true
@@ -225,7 +225,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                 } content: {
                     hText(L10n.claimsUseAudioRecording, style: .body1)
                 }
-                .hDisableOn(SubmitClaimStore.self, [.postAudioRecording])
+                .disableOn(SubmitClaimStore.self, [.postAudioRecording])
             }
             .sectionContainerStyle(.transparent)
         }

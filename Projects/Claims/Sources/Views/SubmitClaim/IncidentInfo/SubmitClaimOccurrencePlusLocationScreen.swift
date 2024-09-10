@@ -22,7 +22,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
                 VStack(spacing: 0) {
                     hSection {
                         displayFieldsAndNotice
-                            .hDisableOn(SubmitClaimStore.self, [.postDateOfOccurrenceAndLocation])
+                            .disableOn(SubmitClaimStore.self, [.postDateOfOccurrenceAndLocation])
                         continueButton
                     }
                     .sectionContainerStyle(.transparent)
@@ -83,7 +83,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
         } content: {
             hText(L10n.generalContinueButton, style: .body1)
         }
-        .hTrackLoading(SubmitClaimStore.self, action: .postDateOfOccurrenceAndLocation)
+        .trackLoading(SubmitClaimStore.self, action: .postDateOfOccurrenceAndLocation)
         .presentableStoreLensAnimation(.default)
     }
 }
