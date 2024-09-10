@@ -3,7 +3,7 @@ import PresentableStore
 import SwiftUI
 import hCore
 
-public struct hLoadingViewWithState<Content: View, LoadingView: View, ErrorView: View, StoreType: StoreLoading & Store>:
+public struct LoadingViewWithState<Content: View, LoadingView: View, ErrorView: View, StoreType: StoreLoading & Store>:
     View
 {
     var content: () -> Content
@@ -80,7 +80,7 @@ public struct hLoadingViewWithState<Content: View, LoadingView: View, ErrorView:
     }
 }
 
-public struct hLoadingViewWithContent<Content: View, StoreType: StoreLoading & Store>: View {
+public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & Store>: View {
     var content: () -> Content
     @PresentableStore var store: StoreType
     private let actions: [StoreType.Loading]
@@ -142,9 +142,9 @@ public struct hLoadingViewWithContent<Content: View, StoreType: StoreLoading & S
     @discardableResult
     private func handle(
         allActions: [StoreType.Loading: LoadingState<String>]
-    ) -> hLoadingViewWithContent.ChangeStateValue? {
+    ) -> LoadingViewWithContent.ChangeStateValue? {
         let actions = allActions.filter({ self.actions.contains($0.key) })
-        var state: hLoadingViewWithContent.ChangeStateValue?
+        var state: LoadingViewWithContent.ChangeStateValue?
         if actions.count > 0 {
             if actions.filter({ $0.value == .loading }).count > 0 {
                 state = .init(isLoading: true, presentError: false, error: nil)
@@ -169,7 +169,7 @@ public struct hLoadingViewWithContent<Content: View, StoreType: StoreLoading & S
         }
         return state
     }
-    private func changeState(to state: hLoadingViewWithContent.ChangeStateValue) {
+    private func changeState(to state: LoadingViewWithContent.ChangeStateValue) {
         DispatchQueue.main.async {
             if let animation {
                 withAnimation(animation) {

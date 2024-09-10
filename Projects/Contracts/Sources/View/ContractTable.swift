@@ -35,7 +35,7 @@ struct ContractTable: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            hLoadingViewWithContent(ContractStore.self, [.fetchContracts], [.fetchContracts], showLoading: false) {
+            LoadingViewWithContent(ContractStore.self, [.fetchContracts], [.fetchContracts], showLoading: false) {
                 hSection {
                     PresentableStoreLens(
                         ContractStore.self,

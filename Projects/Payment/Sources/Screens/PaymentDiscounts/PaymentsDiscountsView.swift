@@ -182,7 +182,7 @@ struct PaymentsDiscountViewNoDiscounts_Previews: PreviewProvider {
 struct PaymentsDiscountsRootView: View {
     @PresentableStore var store: PaymentStore
     var body: some View {
-        hLoadingViewWithContent(
+        LoadingViewWithContent(
             PaymentStore.self,
             [.getDiscountsData],
             [.fetchDiscountsData]

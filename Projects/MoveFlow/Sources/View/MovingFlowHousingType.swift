@@ -10,7 +10,7 @@ public struct MovingFlowHousingTypeView: View {
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
 
     public var body: some View {
-        hLoadingViewWithState(
+        LoadingViewWithState(
             MoveFlowStore.self,
             .fetchMoveIntent
         ) {
