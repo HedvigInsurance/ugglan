@@ -1,6 +1,7 @@
 import Combine
 import Foundation
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 
 public enum hTextFieldOptions: Hashable {
@@ -230,7 +231,7 @@ struct hTextFieldFocusStateModifier<Value: hTextFieldFocusStateCompliant>: ViewM
     }
 
     func body(content: Content) -> some View {
-        content.introspectTextField { textField in
+        content.introspect(.textField, on: .iOS(.v13...)) { textField in
             if self.textField != textField {
                 self.textField = textField
             }

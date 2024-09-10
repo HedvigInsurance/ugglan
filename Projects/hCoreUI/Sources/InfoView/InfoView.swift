@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 import hGraphQL
 
@@ -134,7 +135,7 @@ public struct InfoView: View {
             }
             .padding(.horizontal, .padding24)
         }
-        .introspectViewController { vc in
+        .introspect(.viewController, on: .iOS(.v13...)) { vc in
             vm.vc = vc
         }
     }

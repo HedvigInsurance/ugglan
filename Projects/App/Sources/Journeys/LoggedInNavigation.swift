@@ -13,6 +13,7 @@ import Presentation
 import Profile
 import SafariServices
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 import TerminateContracts
 import TravelCertificate
 import hCore
@@ -80,7 +81,7 @@ struct LoggedInNavigation: View {
         ) {
             EuroBonusNavigation(useOwnNavigation: true)
         }
-        .introspectTabBarController { tabBar in
+        .introspect(.tabView, on: .iOS(.v13...)) { tabBar in
             vm.tabBar = tabBar
         }
     }
