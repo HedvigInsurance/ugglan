@@ -36,7 +36,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         globalPresentableStoreContainer.deletePersistanceContainer()
 
         // create new store container to remove all old store instances
-        globalPresentableStoreContainer = hPresentableStoreContainer()
+        globalPresentableStoreContainer = PresentableStoreContainer()
 
         ApolloClient.initAndRegisterClient()
     }

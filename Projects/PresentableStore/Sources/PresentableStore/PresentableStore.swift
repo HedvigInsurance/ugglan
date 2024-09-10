@@ -209,7 +209,7 @@ public protocol Debugger {
     func registerStore<S: Store>(_ store: S)
 }
 
-public class hPresentableStoreContainer: NSObject {
+public class PresentableStoreContainer: NSObject {
     public func get<S: Store>() -> S {
         if let store: S = associatedValue(forKey: S.getKey()) {
             return store
@@ -247,7 +247,7 @@ public class hPresentableStoreContainer: NSObject {
 }
 
 /// Set this to automatically populate all presentables with your global PresentableStoreContainer
-public var globalPresentableStoreContainer = hPresentableStoreContainer()
+public var globalPresentableStoreContainer = PresentableStoreContainer()
 
 public protocol LoadingProtocol: Codable & Equatable & Hashable {}
 
