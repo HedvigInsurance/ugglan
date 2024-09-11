@@ -50,7 +50,7 @@ extension ChatData {
         with messages: [Message] = [],
         hasPreviousMessages: Bool = false,
         banner: String? = nil,
-        isConversationOpen: Bool? = nil,
+        isConversationOpen: ConversationStatus? = nil,
         title: String? = nil,
         subtitle: String? = nil
     ) {

@@ -12,7 +12,7 @@ public class ChatScreenViewModel: ObservableObject {
     @Published var isFetchingPreviousMessages = false
     @Published var scrollToMessage: Message?
     @Published var banner: Markdown?
-    @Published var isConversationOpen = true
+    @Published var conversationStatus: ConversationStatus = .open
     @Published var shouldShowBanner = true
     var chatInputVm: ChatInputViewModel = .init()
     @Published var title: String = L10n.chatTitle
@@ -107,7 +107,7 @@ public class ChatScreenViewModel: ObservableObject {
                     })
                 }
                 self.banner = chatData.banner
-                self.isConversationOpen = chatData.isConversationOpen ?? true
+                self.conversationStatus = chatData.isConversationOpen ?? .open
                 addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
                 self.hasNext = chatData.hasPreviousMessage
                 isFetchingPreviousMessages = false
@@ -134,7 +134,7 @@ public class ChatScreenViewModel: ObservableObject {
                 self.lastDeliveredMessage = self.messages.first(where: { $0.sender == .member && $0.remoteId != nil })
             }
             self.banner = chatData.banner
-            self.isConversationOpen = chatData.isConversationOpen ?? true
+            self.conversationStatus = chatData.isConversationOpen ?? .open
             addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
             if hasNext == nil {
                 hasNext = chatData.hasPreviousMessage

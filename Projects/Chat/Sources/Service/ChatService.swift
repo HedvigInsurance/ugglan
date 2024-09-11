@@ -39,7 +39,7 @@ public class ConversationService: ChatServiceProtocol {
             hasPreviousMessage: olderToken != nil,
             messages: data.messages,
             banner: data.banner,
-            isConversationOpen: data.isConversationOpen ?? true,
+            isConversationOpen: data.isConversationOpen ?? true ? .open : .closed,
             title: data.screenTitle,
             subtitle: data.subtitle
         )
@@ -57,7 +57,7 @@ public class ConversationService: ChatServiceProtocol {
             hasPreviousMessage: olderToken != nil,
             messages: data.messages,
             banner: data.banner,
-            isConversationOpen: data.isConversationOpen ?? true,
+            isConversationOpen: data.isConversationOpen ?? true ? .open : .closed,
             title: data.screenTitle,
             subtitle: data.subtitle
         )
@@ -88,7 +88,7 @@ public class NewConversationService: ChatServiceProtocol {
             hasPreviousMessage: false,
             messages: [],
             banner: nil,
-            isConversationOpen: true,
+            isConversationOpen: .open,
             title: L10n.chatNewConversationTitle,
             subtitle: L10n.chatNewConversationSubtitle
         )
@@ -103,7 +103,7 @@ public class NewConversationService: ChatServiceProtocol {
             hasPreviousMessage: false,
             messages: [],
             banner: nil,
-            isConversationOpen: true,
+            isConversationOpen: .open,
             title: nil,
             subtitle: nil
         )
