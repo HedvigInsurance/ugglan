@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 
 extension View {
@@ -39,9 +40,9 @@ private struct DismissButton: ViewModifier {
                         }
                 }
             }
-            .introspectViewController(customize: { vc in
+            .introspect(.viewController, on: .iOS(.v13...)) { vc in
                 vm.vc = vc
-            })
+            }
             .alert(isPresented: $isPresented) {
                 Alert(
                     title: Text(title),
@@ -83,8 +84,8 @@ private struct CloseButtonModifier: ViewModifier {
                         .offset(y: CGFloat(-reducedTopSpacing))
                 }
             }
-            .introspectViewController(customize: { vc in
+            .introspect(.viewController, on: .iOS(.v13...)) { vc in
                 vm.vc = vc
-            })
+            }
     }
 }

@@ -77,7 +77,7 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(
                     url: "https://github.com/pointfreeco/swift-snapshot-testing",
-                    .upToNextMajor(from: "1.9.0")
+                    .upToNextMajor(from: "1.17.4")
                 )
             ]
         case .reveal: return []
@@ -93,7 +93,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .introspect:
             return [
-                .package(url: "https://github.com/siteline/SwiftUI-Introspect", .exact("0.3.1"))
+                .package(url: "https://github.com/siteline/SwiftUI-Introspect", .exact("1.3.0"))
             ]
         case .svgkit:
             return [
@@ -101,7 +101,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .unleashProxyClientSwift:
             return [
-                .package(url: "https://github.com/Unleash/unleash-proxy-client-swift", .upToNextMajor(from: "1.1.1"))
+                .package(url: "https://github.com/Unleash/unleash-proxy-client-swift", .upToNextMajor(from: "1.2.1"))
             ]
         case .apolloIosCodegen:
             return [
@@ -169,7 +169,7 @@ public enum ExternalDependencies: CaseIterable {
                 .package(product: "TagKit")
             ]
         case .introspect:
-            return [.package(product: "Introspect")]
+            return [.package(product: "SwiftUIIntrospect")]
         case .svgkit:
             return [.package(product: "SVGKit")]
         case .unleashProxyClientSwift:

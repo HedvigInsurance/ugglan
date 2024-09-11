@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 
 extension View {
@@ -231,12 +232,14 @@ struct ToolbarButtonsViewModifier: ViewModifier {
     func body(content: Content) -> some View {
         if #available(iOS 18.0, *) {
             content
-                .introspectNavigationController(customize: { nav in
-                    if self.navVm.nav != nav {
-                        self.navVm.nav = nav
-                        setNavigation()
+                .introspect(.viewController, on: .iOS(.v18...)) { vc in
+                    if let nav = vc.navigationController {
+                        if self.navVm.nav != nav {
+                            self.navVm.nav = nav
+                            setNavigation()
+                        }
                     }
-                })
+                }
                 .onChange(of: types) { value in
                     setNavigation()
                 }

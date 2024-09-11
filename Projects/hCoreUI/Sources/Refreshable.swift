@@ -1,5 +1,4 @@
 import Foundation
-import Introspect
 import SwiftUI
 
 extension View {

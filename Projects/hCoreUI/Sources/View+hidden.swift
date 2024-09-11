@@ -1,4 +1,5 @@
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 
 extension View {
     public func hidden(_ hide: Binding<Bool>) -> some View {
@@ -15,25 +16,26 @@ struct HideViewController: ViewModifier {
     }
 
     func body(content: Content) -> some View {
-        content.introspectViewController { vc in
-            DispatchQueue.main.async { [weak vc] in
-                self.vc = vc
-            }
-        }
-        .onChange(of: hide) { [weak vc] newValue in
-            if let vc = vc {
-                UIView.animate(withDuration: 0.4) {
-                    let properVC: UIViewController? = {
-                        if #available(iOS 16.0, *) {
-                            return self.findProperVC(from: vc)
-                        } else {
-                            return vc.navigationController?.view.superview?.viewController ?? vc
-                        }
-                    }()
-                    properVC?.view.alpha = hide ? 0 : 1
+        content
+            .introspect(.viewController, on: .iOS(.v13...)) { vc in
+                DispatchQueue.main.async { [weak vc] in
+                    self.vc = vc
                 }
             }
-        }
+            .onChange(of: hide) { [weak vc] newValue in
+                if let vc = vc {
+                    UIView.animate(withDuration: 0.4) {
+                        let properVC: UIViewController? = {
+                            if #available(iOS 16.0, *) {
+                                return self.findProperVC(from: vc)
+                            } else {
+                                return vc.navigationController?.view.superview?.viewController ?? vc
+                            }
+                        }()
+                        properVC?.view.alpha = hide ? 0 : 1
+                    }
+                }
+            }
     }
 
     private func findProperVC(from vc: UIViewController?) -> UIViewController? {
