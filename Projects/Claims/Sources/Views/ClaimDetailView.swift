@@ -325,41 +325,41 @@ public struct ClaimDetailView: View {
     }
 }
 
-//struct ClaimDetailView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        Dependencies.shared.add(module: Module { () -> hFetchClaimClient in FetchClaimClientDemo() })
-//        let featureFlags = FeatureFlagsDemo()
-//        Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlags })
-//        let networkClient = NetworkClient()
-//        Dependencies.shared.add(module: Module { () -> AdyenClient in networkClient })
-//
-//        let claim = ClaimModel(
-//            id: "claimId",
-//            status: .beingHandled,
-//            outcome: .none,
-//            submittedAt: "2023-11-11",
-//            signedAudioURL: "https://filesamples.com/samples/audio/m4a/sample3.m4a",
-//            memberFreeText: nil,
-//            payoutAmount: nil,
-//            targetFileUploadUri: "",
-//            claimType: "Broken item",
-//            incidentDate: "2024-02-15",
-//            productVariant: nil,
-//            conversation: .init(
-//                id: "",
-//                type: .claim,
-//                newestMessage: nil,
-//                createdAt: nil,
-//                statusMessage: nil,
-//                isConversationOpen: true,
-//                hasClaim: true,
-//                claimType: "claim type",
-//                unreadMessageCount: 0
-//            )
-//        )
-//        return ClaimDetailView(claim: claim).environmentObject(HomeNavigationViewModel())
-//    }
-//}
+struct ClaimDetailView_Previews: PreviewProvider {
+    static var previews: some View {
+        Dependencies.shared.add(module: Module { () -> hFetchClaimClient in FetchClaimClientDemo() })
+        let featureFlags = FeatureFlagsDemo()
+        Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlags })
+        let networkClient = NetworkClient()
+        Dependencies.shared.add(module: Module { () -> AdyenClient in networkClient })
+
+        let claim = ClaimModel(
+            id: "claimId",
+            status: .beingHandled,
+            outcome: .none,
+            submittedAt: "2023-11-11",
+            signedAudioURL: "https://filesamples.com/samples/audio/m4a/sample3.m4a",
+            memberFreeText: nil,
+            payoutAmount: nil,
+            targetFileUploadUri: "",
+            claimType: "Broken item",
+            incidentDate: "2024-02-15",
+            productVariant: nil,
+            conversation: .init(
+                id: "",
+                type: .claim,
+                newestMessage: nil,
+                createdAt: nil,
+                statusMessage: nil,
+                status: .open,
+                hasClaim: true,
+                claimType: "claim type",
+                unreadMessageCount: 0
+            )
+        )
+        return ClaimDetailView(claim: claim).environmentObject(HomeNavigationViewModel())
+    }
+}
 
 public class ClaimDetailViewModel: ObservableObject {
     @PresentableStore var store: ClaimsStore
