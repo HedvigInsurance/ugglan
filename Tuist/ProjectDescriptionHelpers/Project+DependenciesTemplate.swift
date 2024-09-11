@@ -93,7 +93,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .introspect:
             return [
-                .package(url: "https://github.com/siteline/SwiftUI-Introspect", .exact("0.3.1"))
+                .package(url: "https://github.com/siteline/SwiftUI-Introspect", .exact("1.3.0"))
             ]
         case .svgkit:
             return [
@@ -169,7 +169,7 @@ public enum ExternalDependencies: CaseIterable {
                 .package(product: "TagKit")
             ]
         case .introspect:
-            return [.package(product: "Introspect")]
+            return [.package(product: "SwiftUIIntrospect")]
         case .svgkit:
             return [.package(product: "SVGKit")]
         case .unleashProxyClientSwift:

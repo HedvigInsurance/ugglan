@@ -1,12 +1,13 @@
 import Foundation
 import Presentation
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 import hCoreUI
 
 extension View {
-    public var addClaimsProgressBar: some View {
-        self.introspectViewController { vc in
+    @MainActor public var addClaimsProgressBar: some View {
+        self.introspect(.viewController, on: .iOS(.v13...)) { vc in
             let progressViewTag = "navigationProgressBar".hashValue
             let store: SubmitClaimStore = globalPresentableStoreContainer.get()
             if let navigationBar = vc.navigationController?.navigationBar,

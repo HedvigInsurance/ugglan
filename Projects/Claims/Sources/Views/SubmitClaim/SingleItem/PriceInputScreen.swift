@@ -1,5 +1,6 @@
 import Presentation
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 import hCoreUI
 
@@ -56,7 +57,7 @@ struct PriceInputScreen: View {
             }
             .padding(.vertical, .padding16)
         }
-        .introspectScrollView { scrollView in
+        .introspect(.scrollView, on: .iOS(.v13...)) { scrollView in
             scrollView.keyboardDismissMode = .interactive
         }
     }

@@ -1,5 +1,6 @@
 import Combine
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 
 public struct InfoCardScrollView<Content: View, cardItem: Identifiable>: View {
     private let content: (cardItem) -> Content
@@ -38,7 +39,7 @@ public struct InfoCardScrollView<Content: View, cardItem: Identifiable>: View {
         .transition(.offset(.zero))
         .animation(.easeInOut(duration: 0.1), value: UUID())
         .frame(width: vm.cardWidth, height: vm.scrollViewHeight)
-        .introspectScrollView { scrollView in
+        .introspect(.scrollView, on: .iOS(.v13...)) { scrollView in
             scrollView.delegate = vm
             scrollView.clipsToBounds = false
         }
