@@ -1,7 +1,7 @@
 import Combine
 import Foundation
-import Introspect
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 
 public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
@@ -134,7 +134,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                 self.animate = false
             }
         }
-        .introspectTextField { [weak vm] textField in
+        .introspect(.textField, on: .iOS(.v13...)) { [weak vm] textField in
             vm?.textField = textField
             if masking.keyboardType == .numberPad {
                 let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 200, height: 44))

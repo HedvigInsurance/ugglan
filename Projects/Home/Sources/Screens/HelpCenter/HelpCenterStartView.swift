@@ -2,6 +2,7 @@ import Combine
 import Contracts
 import PresentableStore
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 import hCoreUI
 import hGraphQL
@@ -76,7 +77,7 @@ public struct HelpCenterStartView: View {
         .hFormObserveKeyboard
         .edgesIgnoringSafeArea(.bottom)
         .dismissKeyboard()
-        .introspectViewController(customize: { [weak vm] vc in
+        .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in
             if !(vm?.didSetInitialSearchAppearance ?? false) {
                 vc.navigationItem.hidesSearchBarWhenScrolling = false
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak vc] in
@@ -85,8 +86,8 @@ public struct HelpCenterStartView: View {
                 }
                 vm?.didSetInitialSearchAppearance = true
             }
-        })
-        .introspectViewController { vc in
+        }
+        .introspect(.viewController, on: .iOS(.v13...)) { vc in
             vc.navigationItem.searchController = vm.searchController
             vc.definesPresentationContext = true
             vm.updateColors()

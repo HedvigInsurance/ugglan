@@ -4,7 +4,6 @@ import DatadogCrashReporting
 import DatadogLogs
 import DatadogRUM
 import DatadogTrace
-import Introspect
 import PresentableStore
 import Profile
 import SwiftUI

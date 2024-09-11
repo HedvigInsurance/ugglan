@@ -2,6 +2,7 @@ import Combine
 import Foundation
 import PresentableStore
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 import TerminateContracts
 import hCore
 import hCoreUI
@@ -126,7 +127,7 @@ public struct ContractDetail: View {
                 .padding(.top, .padding8)
             }
             .presentableStoreLensAnimation(.default)
-            .introspectViewController { [weak vm] vc in
+            .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in
                 vm?.vc = vc
             }
         }

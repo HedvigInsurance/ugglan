@@ -1,5 +1,6 @@
 import Combine
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 import WebKit
 import hCore
 
@@ -97,7 +98,7 @@ public struct DocumentPreview: View {
                 )
             }
         }
-        .introspectViewController { vc in
+        .introspect(.viewController, on: .iOS(.v13...)) { vc in
             vm.vc = vc
         }
     }

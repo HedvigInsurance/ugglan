@@ -1,6 +1,7 @@
 import Foundation
 import PresentableStore
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 
 extension View {
     public func detent<SwiftUIContent: View>(
@@ -97,9 +98,9 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
     @ViewBuilder
     func body(content: Content) -> some View {
         content
-            .introspectViewController(customize: { vc in
+            .introspect(.viewController, on: .iOS(.v13...)) { vc in
                 presentationViewModel.rootVC = vc
-            })
+            }
             .onAppear {
                 handle(isPresent: presented)
             }

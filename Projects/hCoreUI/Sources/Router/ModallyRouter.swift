@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 
 extension View {
     public func modally<SwiftUIContent: View>(
@@ -73,9 +74,9 @@ private struct ModallySizeModifier<SwiftUIContent>: ViewModifier where SwiftUICo
     @ViewBuilder
     func body(content: Content) -> some View {
         content
-            .introspectViewController(customize: { vc in
+            .introspect(.viewController, on: .iOS(.v13...)) { vc in
                 presentationViewModel.rootVC = vc
-            })
+            }
             .onAppear {
                 handle(isPresent: presented)
             }

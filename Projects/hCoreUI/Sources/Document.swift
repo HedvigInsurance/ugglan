@@ -2,6 +2,7 @@ import Foundation
 import PDFKit
 import SafariServices
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 
 public struct Document: Equatable, Identifiable {
@@ -34,7 +35,7 @@ public struct PDFPreview: View {
                 loadingIndicatorView
             } else if let data = vm.data {
                 DocumentRepresentable(data: data, name: vm.document.title)
-                    .introspectViewController { vc in
+                    .introspect(.viewController, on: .iOS(.v13...)) { vc in
                         let navBarItem = UIBarButtonItem(
                             image: UIImage(systemName: "square.and.arrow.up"),
                             style: .plain,

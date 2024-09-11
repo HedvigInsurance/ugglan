@@ -1,4 +1,5 @@
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 
 public struct DatePickerView: View {
@@ -24,7 +25,7 @@ public struct DatePickerView: View {
                             .tint(hSignalColor.Green.element)
                             .datePickerStyle(.graphical)
                             .frame(height: 340)
-                            .introspectDatePicker { [weak vm] datePicker in
+                            .introspect(.datePicker, on: .iOS(.v13...)) { [weak vm] datePicker in
                                 vm?.datePicker = datePicker
                                 vm?.updateColors()
                             }

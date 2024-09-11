@@ -37,7 +37,8 @@ public enum ExternalDependencies: CaseIterable {
     public func swiftPackages() -> [Package] {
         switch self {
         case .hero: return [.package(url: "https://github.com/HeroTransitions/Hero", .upToNextMajor(from: "1.6.3"))]
-        case .apollo: return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("1.13.0"))]
+        case .apollo:
+            return [.package(url: "https://github.com/apollographql/apollo-ios", .upToNextMajor(from: "1.15.1"))]
         case .dynamiccolor:
             return [
                 .package(url: "https://github.com/yannickl/DynamicColor", .upToNextMajor(from: "5.0.1"))
@@ -75,7 +76,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .introspect:
             return [
-                .package(url: "https://github.com/siteline/SwiftUI-Introspect", .exact("0.3.1"))
+                .package(url: "https://github.com/siteline/SwiftUI-Introspect", .exact("1.3.0"))
             ]
         case .svgkit:
             return [
@@ -87,11 +88,11 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .apolloIosCodegen:
             return [
-                .package(url: "https://github.com/apollographql/apollo-ios-codegen", .exact("1.13.0"))
+                .package(url: "https://github.com/apollographql/apollo-ios-codegen", .upToNextMajor(from: "1.15.1"))
             ]
         case .argumentParser:
             return [
-                .package(url: "https://github.com/apple/swift-argument-parser", .upToNextMajor(from: "1.3.0"))
+                .package(url: "https://github.com/apple/swift-argument-parser", .upToNextMajor(from: "1.5.0"))
             ]
         case .presentableStore:
             return [
@@ -151,7 +152,7 @@ public enum ExternalDependencies: CaseIterable {
                 .package(product: "TagKit")
             ]
         case .introspect:
-            return [.package(product: "Introspect")]
+            return [.package(product: "SwiftUIIntrospect")]
         case .svgkit:
             return [.package(product: "SVGKit")]
         case .unleashProxyClientSwift:

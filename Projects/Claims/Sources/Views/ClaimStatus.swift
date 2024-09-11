@@ -137,7 +137,7 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
                 newestMessage: nil,
                 createdAt: nil,
                 statusMessage: nil,
-                isConversationOpen: true,
+                status: .open,
                 hasClaim: true,
                 claimType: "claim type",
                 unreadMessageCount: 0
@@ -171,7 +171,7 @@ struct ClaimReopened_Previews: PreviewProvider {
                 newestMessage: nil,
                 createdAt: nil,
                 statusMessage: nil,
-                isConversationOpen: true,
+                status: .open,
                 hasClaim: true,
                 claimType: "claim type",
                 unreadMessageCount: 0
@@ -205,7 +205,7 @@ struct ClaimPaid_Previews: PreviewProvider {
                 newestMessage: nil,
                 createdAt: nil,
                 statusMessage: nil,
-                isConversationOpen: true,
+                status: .open,
                 hasClaim: true,
                 claimType: "claim type",
                 unreadMessageCount: 0
@@ -238,7 +238,7 @@ struct ClaimNotCompensated_Previews: PreviewProvider {
                 newestMessage: nil,
                 createdAt: nil,
                 statusMessage: nil,
-                isConversationOpen: true,
+                status: .open,
                 hasClaim: true,
                 claimType: "claim type",
                 unreadMessageCount: 0
@@ -272,7 +272,7 @@ struct ClaimNotCovered_Previews: PreviewProvider {
                 newestMessage: nil,
                 createdAt: nil,
                 statusMessage: nil,
-                isConversationOpen: true,
+                status: .open,
                 hasClaim: true,
                 claimType: "claim type",
                 unreadMessageCount: 0
@@ -306,7 +306,7 @@ struct ClaimClosed_Previews: PreviewProvider {
                 newestMessage: nil,
                 createdAt: nil,
                 statusMessage: nil,
-                isConversationOpen: true,
+                status: .open,
                 hasClaim: true,
                 claimType: "claim type",
                 unreadMessageCount: 0

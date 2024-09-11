@@ -1,6 +1,7 @@
 import Combine
 import PresentableStore
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 import hCoreUI
 import hGraphQL
@@ -58,7 +59,7 @@ public struct MyInfoView: View {
             .opacity(vm.inEditMode ? 1 : 0)
         })
         .sectionContainerStyle(.transparent)
-        .introspectViewController { vc in
+        .introspect(.viewController, on: .iOS(.v13...)) { vc in
             self.vm.vc = vc
         }
         .alert(isPresented: $vm.showAlert) {

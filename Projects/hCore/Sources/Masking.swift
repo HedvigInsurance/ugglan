@@ -1,6 +1,6 @@
 import Foundation
-import Introspect
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 
 public enum MaskType {
     case none
@@ -342,7 +342,7 @@ extension Masking: ViewModifier {
             .autocapitalization(autocapitalizationType)
             .disableAutocorrection(disableAutocorrection)
             .autocorrectionDisabled()
-            .introspectTextField { textField in
+            .introspect(.textField, on: .iOS(.v13...)) { textField in
                 textField.spellCheckingType = spellCheckingType
             }
     }
