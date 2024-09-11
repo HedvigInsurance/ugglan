@@ -110,7 +110,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .argumentParser:
             return [
-                .package(url: "https://github.com/apple/swift-argument-parser", .upToNextMajor(from: "1.3.0"))
+                .package(url: "https://github.com/apple/swift-argument-parser", .upToNextMajor(from: "1.5.0"))
             ]
         }
     }
