@@ -52,7 +52,7 @@ public struct InboxView: View {
                 }
                 if let subtitle = conversation.getConversationSubTitle {
                     hText(subtitle, style: .body1)
-                        .foregroundColor(hTextColor.Translucent.secondary)
+                        .foregroundColor(getNewestMessageColor(for: conversation))
                         .lineLimit(3)
                 }
             }
@@ -65,12 +65,23 @@ public struct InboxView: View {
     private func getRightView(for conversation: Conversation) -> some View {
         if conversation.hasNewMessage {
             hText(L10n.chatNewMessage, style: .label)
-                .foregroundColor(hTextColor.Opaque.black)
+                .foregroundColor(hSignalColor.Blue.text)
                 .padding(.horizontal, .padding6)
                 .padding(.vertical, 3)
                 .background(
                     RoundedRectangle(cornerRadius: 6)
-                        .fill(hHighlightColor.Blue.fillTwo)
+                        .fill(hHighlightColor.Blue.fillOne)
+                )
+                .transition(.scale.combined(with: .opacity))
+                .matchedGeometryEffect(id: "rightView_\(conversation.id)", in: animationNamespace)
+        } else if conversation.isClosed {
+            hText(L10n.chatConversationClosed, style: .label)
+                .foregroundColor(hTextColor.Opaque.accordion)
+                .padding(.horizontal, .padding6)
+                .padding(.vertical, 3)
+                .background(
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(hSurfaceColor.Opaque.primary)
                 )
                 .transition(.scale.combined(with: .opacity))
                 .matchedGeometryEffect(id: "rightView_\(conversation.id)", in: animationNamespace)
@@ -89,7 +100,6 @@ public struct InboxView: View {
     private func getNewestMessage(for conversation: Conversation) -> some View {
         if let newestMessage = conversation.newestMessage {
             hText(newestMessage.latestMessageText, style: .label)
-                .foregroundColor(hTextColor.Translucent.secondary)
                 .lineLimit(1)
                 .fixedSize(horizontal: false, vertical: true)
                 .foregroundColor(getNewestMessageColor(for: conversation))
@@ -110,7 +120,7 @@ public struct InboxView: View {
         if conversation.hasNewMessage {
             hTextColor.Translucent.primary
         } else {
-            hTextColor.Opaque.secondary
+            hTextColor.Translucent.secondary
         }
     }
 }
@@ -165,7 +175,6 @@ class InboxViewModel: ObservableObject {
     func fetchMessages() async {
         do {
             let conversations = try await service.getConversations()
-            let store: ChatStore = globalPresentableStoreContainer.get()
             withAnimation {
                 self.conversations = conversations
             }

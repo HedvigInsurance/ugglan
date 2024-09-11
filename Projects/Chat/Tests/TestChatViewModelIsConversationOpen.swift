@@ -19,7 +19,7 @@ final class TestChatViewModelIsConversationOpen: XCTestCase {
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
-        assert(model.isConversationOpen == true)
+        assert(model.isConversationOpen)
         self.sut = mockService
     }
 
@@ -40,7 +40,7 @@ final class TestChatViewModelIsConversationOpen: XCTestCase {
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
-        assert(model.isConversationOpen == false)
+        assert(!model.isConversationOpen)
         self.sut = mockService
     }
 
