@@ -52,7 +52,7 @@ public struct InboxView: View {
                 }
                 if let subtitle = conversation.getConversationSubTitle {
                     hText(subtitle, style: .body1)
-                        .foregroundColor(hTextColor.Translucent.secondary)
+                        .foregroundColor(getNewestMessageColor(for: conversation))
                         .lineLimit(3)
                 }
             }
@@ -63,14 +63,25 @@ public struct InboxView: View {
 
     @ViewBuilder
     private func getRightView(for conversation: Conversation) -> some View {
-        if vm.hasNotification(conversation: conversation) {
+        if conversation.hasNewMessage {
             hText(L10n.chatNewMessage, style: .label)
-                .foregroundColor(hTextColor.Opaque.black)
+                .foregroundColor(hSignalColor.Blue.text)
                 .padding(.horizontal, .padding6)
                 .padding(.vertical, 3)
                 .background(
                     RoundedRectangle(cornerRadius: 6)
-                        .fill(hHighlightColor.Blue.fillTwo)
+                        .fill(hHighlightColor.Blue.fillOne)
+                )
+                .transition(.scale.combined(with: .opacity))
+                .matchedGeometryEffect(id: "rightView_\(conversation.id)", in: animationNamespace)
+        } else if conversation.isClosed {
+            hText(L10n.chatConversationClosed, style: .label)
+                .foregroundColor(hTextColor.Opaque.accordion)
+                .padding(.horizontal, .padding6)
+                .padding(.vertical, 3)
+                .background(
+                    RoundedRectangle(cornerRadius: 6)
+                        .fill(hSurfaceColor.Opaque.primary)
                 )
                 .transition(.scale.combined(with: .opacity))
                 .matchedGeometryEffect(id: "rightView_\(conversation.id)", in: animationNamespace)
@@ -89,7 +100,6 @@ public struct InboxView: View {
     private func getNewestMessage(for conversation: Conversation) -> some View {
         if let newestMessage = conversation.newestMessage {
             hText(newestMessage.latestMessageText, style: .label)
-                .foregroundColor(hTextColor.Translucent.secondary)
                 .lineLimit(1)
                 .fixedSize(horizontal: false, vertical: true)
                 .foregroundColor(getNewestMessageColor(for: conversation))
@@ -98,7 +108,7 @@ public struct InboxView: View {
 
     @hColorBuilder
     private func getBackgroundColor(for conversation: Conversation) -> some hColor {
-        if vm.hasNotification(conversation: conversation) {
+        if conversation.hasNewMessage {
             hSurfaceColor.Translucent.primary
         } else {
             hColorBase(.clear)
@@ -107,10 +117,10 @@ public struct InboxView: View {
 
     @hColorBuilder
     private func getNewestMessageColor(for conversation: Conversation) -> some hColor {
-        if vm.hasNotification(conversation: conversation) {
+        if conversation.hasNewMessage {
             hTextColor.Translucent.primary
         } else {
-            hTextColor.Opaque.secondary
+            hTextColor.Translucent.secondary
         }
     }
 }
@@ -118,17 +128,9 @@ public struct InboxView: View {
 class InboxViewModel: ObservableObject {
     @Inject var service: ConversationsClient
     @Published var conversations: [Conversation] = []
-    @Published private var conversationsTimeStamp = [String: Date]()
-    private var conversationTimeStampCancellable: AnyCancellable?
     private var pollTimerCancellable: AnyCancellable?
     @PresentableStore var store: ChatStore
-
-    func hasNotification(conversation: Conversation) -> Bool {
-        return store.hasNotification(
-            conversationId: conversation.id,
-            timeStamp: conversation.newestMessage?.sentAt ?? conversation.createdAt?.localDateToIso8601Date
-        )
-    }
+    private var chatClosedObserver: NSObjectProtocol?
 
     func shouldHideDivider(for conversation: Conversation) -> Bool {
         guard let indexOfCurrent = conversations.firstIndex(where: { $0.id == conversation.id }) else {
@@ -140,18 +142,19 @@ class InboxViewModel: ObservableObject {
         }
         let currentConversation = conversations[indexOfCurrent]
         let nextConversation = conversations[indexOfNext]
-        return hasNotification(conversation: currentConversation) != hasNotification(conversation: nextConversation)
+        return currentConversation.hasNewMessage != nextConversation.hasNewMessage
     }
 
     init() {
-        let store: ChatStore = globalPresentableStoreContainer.get()
-        conversationTimeStampCancellable = store.stateSignal.plain().publisher
-            .map({ $0.conversationsTimeStamp })
-            .receive(on: RunLoop.main)
-            .sink { [weak self] value in
-                self?.conversationsTimeStamp = value
-            }
-        self.conversationsTimeStamp = store.state.conversationsTimeStamp
+        configureFetching()
+        chatClosedObserver = NotificationCenter.default.addObserver(forName: .chatClosed, object: nil, queue: nil) {
+            [weak self] notification in  //
+            self?.configureFetching()
+        }
+    }
+
+    private func configureFetching() {
+        pollTimerCancellable = nil
         Task {
             await fetchMessages()
         }
@@ -172,22 +175,17 @@ class InboxViewModel: ObservableObject {
     func fetchMessages() async {
         do {
             let conversations = try await service.getConversations()
-            let store: ChatStore = globalPresentableStoreContainer.get()
-            let conversationsTimeStamp = store.state.conversationsTimeStamp
-            for conversation in conversations {
-                if conversationsTimeStamp[conversation.id] == nil,
-                    let newestMessageSentAt = conversation.newestMessage?.sentAt
-                {
-                    await store.sendAsync(
-                        .setLastMessageTimestampForConversation(id: conversation.id, date: newestMessageSentAt)
-                    )
-                }
-            }
             withAnimation {
                 self.conversations = conversations
             }
         } catch _ {
             //TODO: EXCEPTION
+        }
+    }
+
+    deinit {
+        if let chatClosedObserver {
+            NotificationCenter.default.removeObserver(chatClosedObserver)
         }
     }
 }

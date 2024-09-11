@@ -29,23 +29,15 @@ public class HomeNavigationViewModel: ObservableObject {
         NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: nil) {
             [weak self] notification in
             var openChat: ChatConversation?
-            if Dependencies.featureFlags().isConversationBasedMessagesEnabled {
-                self?.openChatOptions = [.alwaysOpenOnTop, .withoutGrabber]
-                if let conversation = notification.object as? Chat.Conversation {
-                    openChat = .init(
-                        chatType: .conversationId(id: conversation.id)
-                    )
-                } else if let id = notification.object as? String {
-                    openChat = .init(chatType: .conversationId(id: id))
-                } else {
-                    openChat = .init(chatType: .newConversation)
-                }
+            self?.openChatOptions = [.alwaysOpenOnTop, .withoutGrabber]
+            if let conversation = notification.object as? Chat.Conversation {
+                openChat = .init(
+                    chatType: .conversationId(id: conversation.id)
+                )
+            } else if let id = notification.object as? String {
+                openChat = .init(chatType: .conversationId(id: id))
             } else {
-                if let topicWrapper = notification.object as? ChatTopicWrapper, let topic = topicWrapper.topic {
-                    openChat = .init(chatType: .topic(topic: topic))
-                } else {
-                    openChat = .init(chatType: .none)
-                }
+                openChat = .init(chatType: .newConversation)
             }
             if self?.openChat == nil {
                 self?.openChat = openChat
@@ -56,18 +48,6 @@ public class HomeNavigationViewModel: ObservableObject {
                 }
             }
         }
-
-        let store: ChatStore = globalPresentableStoreContainer.get()
-        store.stateSignal.plain()
-            .publisher
-            .map({ $0.messagesTimeStamp })
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .sink { value in
-                let homeStore: HomeStore = globalPresentableStoreContainer.get()
-                homeStore.send(.setChatNotificationTimeStamp(sentAt: value))
-            }
-            .store(in: &cancellables)
 
     }
 
@@ -110,7 +90,12 @@ public class HomeNavigationViewModel: ObservableObject {
     }
 
     public var connectPaymentVm = ConnectPaymentViewModel()
-    public var editCoInsuredVm = EditCoInsuredViewModel()
+    public var editCoInsuredVm = EditCoInsuredViewModel(
+        existingCoInsured: {
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+            return contractStore
+        }()
+    )
 }
 
 extension HomeNavigationViewModel.FileUrlModel.FileUrlModelType {

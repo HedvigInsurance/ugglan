@@ -76,6 +76,12 @@ class NavBar: UINavigationBar {
             let stringFromClass = NSStringFromClass(subview.classForCoder)
             if stringFromClass.contains("BarContent") {
                 subview.clipsToBounds = false
+                subview.frame = CGRect(
+                    x: 0,
+                    y: 0,
+                    width: self.frame.width + 8,
+                    height: subview.frame.size.height
+                )
             }
         }
     }

@@ -129,6 +129,10 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable {
         return terminationDate == nil
     }
 
+    public var isTerminated: Bool {
+        return terminationDate != nil
+    }
+
     public var terminatedToday: Bool {
         if terminationDate == Date().localDateString {
             return true
@@ -370,6 +374,59 @@ extension PillowType {
     }
 }
 
+extension Contract.TypeOfContract {
+    var isHomeInsurance: Bool {
+        switch self {
+        case .seHouse:
+            return true
+        case .seApartmentBrf:
+            return true
+        case .seApartmentRent:
+            return true
+        case .seApartmentStudentBrf:
+            return true
+        case .seApartmentStudentRent:
+            return true
+        case .seAccident:
+            return false
+        case .seAccidentStudent:
+            return false
+        case .seCarTraffic:
+            return false
+        case .seCarHalf:
+            return false
+        case .seCarFull:
+            return false
+        case .seCarTrialFull:
+            return false
+        case .seCarTrialHalf:
+            return false
+        case .seGroupApartmentBrf:
+            return true
+        case .seGroupApartmentRent:
+            return true
+        case .seQasaShortTermRental:
+            return true
+        case .seQasaLongTermRental:
+            return true
+        case .seDogBasic:
+            return false
+        case .seDogStandard:
+            return false
+        case .seDogPremium:
+            return false
+        case .seCatBasic:
+            return false
+        case .seCatStandard:
+            return false
+        case .seCatPremium:
+            return false
+        case .unknown:
+            return false
+        }
+    }
+}
+
 public struct ContractRenewal: Codable, Hashable {
     public let renewalDate: String
     public let certificateUrl: String?
@@ -477,7 +534,6 @@ public struct TermsAndConditions: Identifiable, Codable, Hashable {
     public let url: String
 }
 
-/* TODO: USE THE ONE IN EDIT CO-INSURED PROJECT? */
 extension InsuredPeopleConfig {
     public init(
         contract: Contract,

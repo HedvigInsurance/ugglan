@@ -12,12 +12,4 @@ public struct FlowClaimPhoneNumberStepModel: FlowClaimStepModel {
         self.id = id
         self.phoneNumber = phoneNumber
     }
-
-    init(
-        with data: OctopusGraphQL.FlowClaimPhoneNumberStepFragment
-    ) {
-        self.id = data.id
-        self.phoneNumber = data.phoneNumber
-
-    }
 }

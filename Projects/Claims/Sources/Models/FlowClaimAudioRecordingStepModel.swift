@@ -25,20 +25,6 @@ public struct FlowClaimAudioRecordingStepModel: FlowClaimStepModel {
         self.optionalAudio = optionalAudio
     }
 
-    init?(
-        with data: OctopusGraphQL.FlowClaimAudioRecordingStepFragment?
-    ) {
-        guard let data else {
-            return nil
-        }
-        self.id = data.id
-        self.questions = data.questions
-        self.audioContent = .init(with: (data.audioContent?.fragments.flowClaimAudioContentFragment))
-        self.textQuestions = data.freeTextQuestions
-        self.inputTextContent = data.freeText
-        self.optionalAudio = data.freeTextAvailable
-    }
-
     func getUrl() -> URL? {
         guard let url = audioContent?.signedUrl else { return nil }
         return URL(string: url)

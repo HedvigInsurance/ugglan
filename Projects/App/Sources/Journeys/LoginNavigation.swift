@@ -24,7 +24,7 @@ struct LoginNavigation: View {
                 .embededInNavigation()
 
         }
-        .detent(presented: $vm.showLogin, style: [.large], tracking: Localization.Locale.currentLocale.market) {
+        .detent(presented: $vm.showLogin, style: [.large], tracking: Localization.Locale.currentLocale.code) {
             Group {
                 BankIDLoginQRView {
                     let store: UgglanStore = globalPresentableStoreContainer.get()

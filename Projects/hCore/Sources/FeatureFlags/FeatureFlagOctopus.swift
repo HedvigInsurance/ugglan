@@ -143,10 +143,6 @@ public class FeatureFlagsUnleash: FeatureFlags {
             paymentType = .trustly
         }
 
-        let conversationBasedMessagesKey = "enable_conversation_based_messages"
-        isConversationBasedMessagesEnabled = unleashClient.isEnabled(name: conversationBasedMessagesKey)
-        featureFlags[conversationBasedMessagesKey] = isConversationBasedMessagesEnabled
-
         log.info(
             "Feature flag set",
             attributes: ["featureFlags": featureFlags]

@@ -39,7 +39,8 @@ public enum ExternalDependencies: CaseIterable {
     public func swiftPackages() -> [Package] {
         switch self {
         case .hero: return [.package(url: "https://github.com/HeroTransitions/Hero", .upToNextMajor(from: "1.6.3"))]
-        case .apollo: return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("1.13.0"))]
+        case .apollo:
+            return [.package(url: "https://github.com/apollographql/apollo-ios", .upToNextMajor(from: "1.15.1"))]
         case .flow:
             return [.package(url: "https://github.com/HedvigInsurance/Flow", .upToNextMajor(from: "1.8.10"))]
         case .form:
@@ -63,9 +64,9 @@ public enum ExternalDependencies: CaseIterable {
         case .disk:
             return [.package(url: "https://github.com/HedvigInsurance/Disk", .upToNextMajor(from: "0.6.5"))]
         case .kingfisher:
-            return [.package(url: "https://github.com/onevcat/Kingfisher", .upToNextMajor(from: "7.10.0"))]
+            return [.package(url: "https://github.com/onevcat/Kingfisher", .upToNextMajor(from: "7.12.0"))]
         case .snapkit:
-            return [.package(url: "https://github.com/SnapKit/SnapKit", .upToNextMajor(from: "5.7.0"))]
+            return [.package(url: "https://github.com/SnapKit/SnapKit", .upToNextMajor(from: "5.7.1"))]
         case .markdownkit:
             return [
                 .package(
@@ -77,12 +78,12 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(
                     url: "https://github.com/pointfreeco/swift-snapshot-testing",
-                    .upToNextMajor(from: "1.9.0")
+                    .upToNextMajor(from: "1.17.4")
                 )
             ]
         case .reveal: return []
         case .datadog:
-            return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("2.7.1"))]
+            return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("2.16.0"))]
         case .authlib:
             return [
                 .package(url: "https://github.com/HedvigInsurance/authlib.git", .exact("1.3.2120240730134747"))
@@ -93,7 +94,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .introspect:
             return [
-                .package(url: "https://github.com/siteline/SwiftUI-Introspect", .exact("0.3.1"))
+                .package(url: "https://github.com/siteline/SwiftUI-Introspect", .exact("1.3.0"))
             ]
         case .svgkit:
             return [
@@ -101,11 +102,11 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .unleashProxyClientSwift:
             return [
-                .package(url: "https://github.com/Unleash/unleash-proxy-client-swift", .upToNextMajor(from: "1.1.1"))
+                .package(url: "https://github.com/Unleash/unleash-proxy-client-swift", .upToNextMajor(from: "1.2.1"))
             ]
         case .apolloIosCodegen:
             return [
-                .package(url: "https://github.com/apollographql/apollo-ios-codegen", .exact("1.13.0"))
+                .package(url: "https://github.com/apollographql/apollo-ios-codegen", .upToNextMajor(from: "1.15.1"))
             ]
         case .argumentParser:
             return [
@@ -169,7 +170,7 @@ public enum ExternalDependencies: CaseIterable {
                 .package(product: "TagKit")
             ]
         case .introspect:
-            return [.package(product: "Introspect")]
+            return [.package(product: "SwiftUIIntrospect")]
         case .svgkit:
             return [.package(product: "SVGKit")]
         case .unleashProxyClientSwift:

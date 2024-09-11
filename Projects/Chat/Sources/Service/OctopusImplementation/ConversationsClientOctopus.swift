@@ -18,9 +18,16 @@ public class ConversationsClientOctopus: ConversationsClient {
         }
 
         let conversationsSortedByDate = conversations.sorted(by: {
-            $0.newestMessage?.sentAt ?? $0.createdAt?.localDateToIso8601Date ?? Date() > $1.newestMessage?.sentAt ?? $1
-                .createdAt?
-                .localDateToIso8601Date ?? Date()
+            if $0.hasNewMessage && !$1.hasNewMessage {
+                return true
+            } else if !$0.hasNewMessage && $1.hasNewMessage {
+                return false
+            } else if $0.isOpened && $1.isClosed {
+                return true
+            } else if $0.isClosed && $1.isOpened {
+                return false
+            }
+            return $0.getAnyDate > $1.getAnyDate
         })
         return conversationsSortedByDate
     }
@@ -64,13 +71,6 @@ public class ConversationClientOctopus: ConversationClient {
         let mutation = hGraphQL.OctopusGraphQL.ConversationSendMessageMutation(input: input)
         let data = try await octopus.client.perform(mutation: mutation)
         if let message = data.conversationSendMessage.message?.fragments.messageFragment {
-            let store: ChatStore = globalPresentableStoreContainer.get()
-            store.send(
-                .setLastMessageTimestampForConversation(
-                    id: conversationId,
-                    date: message.sentAt.localDateToIso8601Date ?? Date()
-                )
-            )
             return message.asMessage()
         } else if let errorMessage = data.conversationSendMessage.userError?.message {
             throw ConversationsError.errorMesage(message: errorMessage)
@@ -98,15 +98,14 @@ public class ConversationClientOctopus: ConversationClient {
         }
         let messages = conversation.messagePage.messages.compactMap({ $0.fragments.messageFragment.asMessage() })
         let newerToken = conversation.messagePage.newerToken
-        let olderToken = conversation.messagePage.olderToken
+        let newOlderToken = conversation.messagePage.olderToken
         let banner = conversation.statusMessage
         let isConversationOpen = conversation.isOpen
         let hasClaim = conversation.claim != nil
-
         return .init(
             messages: messages,
             banner: banner,
-            olderToken: olderToken,
+            olderToken: newOlderToken,
             newerToken: newerToken,
             isConversationOpen: isConversationOpen,
             createdAt: conversation.createdAt,
@@ -125,9 +124,49 @@ extension OctopusGraphQL.ConversationFragment {
             newestMessage: self.newestMessage?.fragments.messageFragment.asMessage(),
             createdAt: self.createdAt,
             statusMessage: self.statusMessage,
-            isConversationOpen: self.isOpen,
+            status: self.isOpen ? .open : .closed,
             hasClaim: self.claim != nil,
-            claimType: self.claim?.claimType
+            claimType: self.claim?.claimType,
+            unreadMessageCount: self.unreadMessageCount
         )
+    }
+}
+
+extension OctopusGraphQL.MessageFragment {
+    func asMessage() -> Message {
+        return .init(
+            remoteId: id,
+            type: messageType,
+            sender: self.sender == .hedvig ? .hedvig : .member,
+            date: self.sentAt.localDateToIso8601Date ?? Date()
+        )
+    }
+
+    private var messageType: MessageType {
+        if let text = self.asChatMessageText?.text {
+            let urlText = text.trimmingCharacters(in: .whitespacesAndNewlines)
+            if let url = URL(string: urlText), urlText.isUrl {
+                if urlText.isGIFURL {
+                    return .file(file: .init(id: self.id, size: 0, mimeType: .GIF, name: "", source: .url(url: url)))
+                } else if urlText.isCrossSell {
+                    return .crossSell(url: url)
+                } else if urlText.isDeepLink {
+                    return .deepLink(url: url)
+                } else {
+                    return .otherLink(url: url)
+                }
+            } else {
+                return .text(text: text)
+            }
+        } else if let file = self.asChatMessageFile {
+            if let url = URL(string: file.signedUrl) {
+                let mimeType = MimeType.findBy(mimeType: file.mimeType)
+                return .file(file: .init(id: id, size: 0, mimeType: mimeType, name: "", source: .url(url: url)))
+            } else {
+                return .unknown
+            }
+        } else {
+            return .unknown
+        }
     }
 }

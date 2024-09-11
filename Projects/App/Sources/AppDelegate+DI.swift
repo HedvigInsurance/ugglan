@@ -22,6 +22,8 @@ extension ApolloClient {
         let authorizationService = AuthenticationClientAuthLib()
         Dependencies.shared.add(module: Module { () -> AuthenticationClient in authorizationService })
         let ugglanStore: UgglanStore = globalPresentableStoreContainer.get()
+        let dateService = DateService()
+        Dependencies.shared.add(module: Module { () -> DateService in dateService })
         if ugglanStore.state.isDemoMode {
             let featureFlags = FeatureFlagsDemo()
             let hPaymentService = hPaymentClientDemo()
@@ -52,12 +54,9 @@ extension ApolloClient {
             Dependencies.shared.add(module: Module { () -> ConversationClient in conversationClient })
             Dependencies.shared.add(module: Module { () -> AdyenClient in adyenClient })
         } else {
-            let hApollo = self.createClient()
             let paymentService = hPaymentClientOctopus()
             let hCampaignsService = hCampaingsClientOctopus()
             let networkClient = NetworkClient()
-            let messagesClient = FetchMessagesClientOctopus()
-            let sendMessage = SendMessagesClientOctopus()
             let moveFlowService = MoveFlowClientOctopus()
             let foreverService = ForeverClientOctopus()
             let profileService = ProfileClientOctopus()
@@ -77,12 +76,9 @@ extension ApolloClient {
             let conversationsClient = ConversationsClientOctopus()
             switch Environment.current {
             case .staging:
-                Dependencies.shared.add(module: Module { hApollo.octopus })
                 Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlagsUnleash })
                 Dependencies.shared.add(module: Module { () -> TravelInsuranceClient in travelInsuranceService })
                 Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
-                Dependencies.shared.add(module: Module { () -> FetchMessagesClient in messagesClient })
-                Dependencies.shared.add(module: Module { () -> SendMessageClient in sendMessage })
                 Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> AdyenClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> hPaymentClient in paymentService })
@@ -106,12 +102,9 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> ConversationClient in conversationClient })
                 Dependencies.shared.add(module: Module { () -> ConversationsClient in conversationsClient })
             case .production, .custom:
-                Dependencies.shared.add(module: Module { hApollo.octopus })
                 Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlagsUnleash })
                 Dependencies.shared.add(module: Module { () -> TravelInsuranceClient in travelInsuranceService })
                 Dependencies.shared.add(module: Module { () -> ChatFileUploaderClient in networkClient })
-                Dependencies.shared.add(module: Module { () -> FetchMessagesClient in messagesClient })
-                Dependencies.shared.add(module: Module { () -> SendMessageClient in sendMessage })
                 Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> AdyenClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> hPaymentClient in paymentService })
@@ -138,4 +131,10 @@ extension ApolloClient {
             }
         }
     }
+
+    public static func initNetwworkClients() {
+        let hApollo = self.createClient()
+        Dependencies.shared.add(module: Module { hApollo.octopus })
+    }
+
 }

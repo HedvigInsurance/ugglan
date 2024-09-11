@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 
 extension View {
@@ -37,12 +38,11 @@ private struct DismissButton: ViewModifier {
                         .onTapGesture {
                             isPresented = true
                         }
-                        .offset(x: 8)
                 }
             }
-            .introspectViewController(customize: { vc in
+            .introspect(.viewController, on: .iOS(.v13...)) { vc in
                 vm.vc = vc
-            })
+            }
             .alert(isPresented: $isPresented) {
                 Alert(
                     title: Text(title),
@@ -81,11 +81,11 @@ private struct CloseButtonModifier: ViewModifier {
                         .onTapGesture {
                             vm.vc?.dismiss(animated: true)
                         }
-                        .offset(x: 8, y: CGFloat(-reducedTopSpacing))
+                        .offset(y: CGFloat(-reducedTopSpacing))
                 }
             }
-            .introspectViewController(customize: { vc in
+            .introspect(.viewController, on: .iOS(.v13...)) { vc in
                 vm.vc = vc
-            })
+            }
     }
 }

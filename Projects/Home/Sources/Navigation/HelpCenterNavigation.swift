@@ -13,7 +13,12 @@ import hCoreUI
 public class HelpCenterNavigationViewModel: ObservableObject {
     @Published var quickActions = QuickActions()
     var connectPaymentsVm = ConnectPaymentViewModel()
-    public let editCoInsuredVm = EditCoInsuredViewModel()
+    public let editCoInsuredVm = EditCoInsuredViewModel(
+        existingCoInsured: {
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+            return contractStore
+        }()
+    )
     let terminateInsuranceVm = TerminateInsuranceViewModel()
 
     struct QuickActions {
@@ -29,6 +34,13 @@ public class HelpCenterNavigationViewModel: ObservableObject {
         var id: String?
         var topic: ChatTopicType?
     }
+}
+
+enum HelpCenterNavigationRouterType: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        return .init(describing: InboxView.self)
+    }
+    case inbox
 }
 
 public struct HelpCenterNavigation<Content: View>: View {
@@ -51,16 +63,19 @@ public struct HelpCenterNavigation<Content: View>: View {
             HelpCenterStartView(
                 onQuickAction: { quickAction in
                     handle(quickAction: quickAction)
-                },
-                helpCenterModel: HelpCenterModel.getDefault()
+                }
             )
             .navigationTitle(L10n.hcTitle)
             .withDismissButton()
             .routerDestination(for: Question.self) { question in
-                HelpCenterQuestionView(question: question)
+                HelpCenterQuestionView(question: question, router: router)
             }
             .routerDestination(for: CommonTopic.self) { topic in
-                HelpCenterTopicView(commonTopic: topic)
+                HelpCenterTopicView(commonTopic: topic, router: router)
+            }
+            .routerDestination(for: HelpCenterNavigationRouterType.self) { _ in
+                InboxView()
+                    .configureTitle(L10n.chatConversationInbox)
             }
         }
         .ignoresSafeArea()

@@ -2,23 +2,21 @@ import Combine
 import Contracts
 import Presentation
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 import hCoreUI
 import hGraphQL
 
 public struct HelpCenterStartView: View {
-    @ObservedObject var vm: HelpCenterStartViewModel
+    @StateObject var vm = HelpCenterStartViewModel(helpCenterModel: .getDefault())
     @PresentableStore var store: HomeStore
     let onQuickAction: (QuickAction) -> Void
     @EnvironmentObject var router: Router
-    @State var vc: UIViewController?
 
     public init(
-        onQuickAction: @escaping (QuickAction) -> Void,
-        helpCenterModel: HelpCenterModel
+        onQuickAction: @escaping (QuickAction) -> Void
     ) {
         self.onQuickAction = onQuickAction
-        self.vm = .init(helpCenterModel: helpCenterModel)
     }
 
     public var body: some View {
@@ -67,7 +65,7 @@ public struct HelpCenterStartView: View {
                 }
                 .sectionContainerStyle(.transparent)
                 if !vm.searchInProgress {
-                    SupportView(topic: nil)
+                    SupportView(topic: nil, router: router)
                         .padding(.top, .padding40)
                 }
             }
@@ -79,7 +77,7 @@ public struct HelpCenterStartView: View {
         .hFormObserveKeyboard
         .edgesIgnoringSafeArea(.bottom)
         .dismissKeyboard()
-        .introspectViewController(customize: { [weak vm] vc in
+        .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in
             if !(vm?.didSetInitialSearchAppearance ?? false) {
                 vc.navigationItem.hidesSearchBarWhenScrolling = false
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak vc] in
@@ -88,8 +86,8 @@ public struct HelpCenterStartView: View {
                 }
                 vm?.didSetInitialSearchAppearance = true
             }
-        })
-        .introspectViewController { vc in
+        }
+        .introspect(.viewController, on: .iOS(.v13...)) { vc in
             vc.navigationItem.searchController = vm.searchController
             vc.definesPresentationContext = true
             vm.updateColors()
@@ -151,8 +149,8 @@ public struct HelpCenterStartView: View {
                         Spacer()
                     }
                     .withChevronAccessory
-                    .onTap {
-                        router.push(item)
+                    .onTap { [weak router] in
+                        router?.push(item)
                     }
                 }
                 .withoutHorizontalPadding
@@ -164,7 +162,7 @@ public struct HelpCenterStartView: View {
 }
 
 class HelpCenterStartViewModel: NSObject, ObservableObject {
-    var helpCenterModel: HelpCenterModel
+    let helpCenterModel: HelpCenterModel
     @PresentableStore var store: HomeStore
     var didSetInitialSearchAppearance = false
     @Published var quickActions: [QuickAction] = []
@@ -279,8 +277,7 @@ extension HelpCenterStartViewModel: UISearchControllerDelegate {
     return HelpCenterStartView(
         onQuickAction: { _ in
 
-        },
-        helpCenterModel: HelpCenterModel.getDefault()
+        }
     )
 }
 

@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 import UIKit
 
 public protocol TrackingViewNameProtocol {
@@ -269,22 +270,22 @@ private struct EmbededInNavigation: ViewModifier {
 }
 
 extension View {
-    public func configureTitle(_ title: String) -> some View {
-        self.introspectViewController { vc in
+    @MainActor public func configureTitle(_ title: String) -> some View {
+        self.introspect(.viewController, on: .iOS(.v13...)) { vc in
             UIView.performWithoutAnimation { [weak vc] in
                 vc?.title = title
             }
         }
     }
 
-    public func configureTitleView(_ titleView: some TitleView) -> some View {
-        self.introspectViewController { vc in
+    @MainActor public func configureTitleView(_ titleView: some TitleView) -> some View {
+        self.introspect(.viewController, on: .iOS(.v13...)) { vc in
             vc.navigationItem.titleView = titleView.getTitleView()
         }
     }
 
-    public var enableModalInPresentation: some View {
-        self.introspectViewController { vc in
+    @MainActor public var enableModalInPresentation: some View {
+        self.introspect(.viewController, on: .iOS(.v13...)) { vc in
             vc.isModalInPresentation = true
         }
     }

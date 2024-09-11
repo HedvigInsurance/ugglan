@@ -3,9 +3,10 @@ import hGraphQL
 
 public struct FlowClaimDateOfOccurrencePlusLocationStepModel: FlowClaimStepModel {
     let id: String
+
     init(
-        with data: OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationStepFragment
+        id: String
     ) {
-        self.id = data.id
+        self.id = id
     }
 }

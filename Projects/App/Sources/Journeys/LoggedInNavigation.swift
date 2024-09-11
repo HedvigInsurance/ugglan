@@ -13,6 +13,7 @@ import Presentation
 import Profile
 import SafariServices
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 import TerminateContracts
 import TravelCertificate
 import hCore
@@ -80,7 +81,7 @@ struct LoggedInNavigation: View {
         ) {
             EuroBonusNavigation(useOwnNavigation: true)
         }
-        .introspectTabBarController { tabBar in
+        .introspect(.tabView, on: .iOS(.v13...)) { tabBar in
             vm.tabBar = tabBar
         }
     }
@@ -99,7 +100,7 @@ struct LoggedInNavigation: View {
         ContractsNavigation(contractsNavigationVm: vm.contractsNavigationVm) { redirectType in
             switch redirectType {
             case .chat:
-                ChatScreen(vm: .init(chatService: MessagesService(topic: nil)))
+                ChatScreen(vm: .init(chatService: NewConversationService()))
             case .movingFlow:
                 MovingFlowNavigation()
             case let .pdf(document):
@@ -305,7 +306,7 @@ struct HomeTab: View {
                                     .init(
                                         id: "",
                                         imageUrl: $0.imageUrl,
-                                        url: "",
+                                        url: $0.url,
                                         phoneNumber: $0.phoneNumber
                                     )
                                 }),
@@ -391,22 +392,35 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isMoveContractPresented = false
     @Published var isEuroBonusPresented = false
     @Published var isUrlPresented: URL?
+    private var openDeepLinkObserver: NSObjectProtocol?
+    private var registerForPushNotificationsObserver: NSObjectProtocol?
+    private var handlePushNotificationObserver: NSObjectProtocol?
+    private var chatClosedObserver: NSObjectProtocol?
 
     private var cancellables = Set<AnyCancellable>()
     weak var tabBar: UITabBarController?
     init() {
-        NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) {
+        openDeepLinkObserver = NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) {
             [weak self] notification in
             let deepLinkUrl = notification.object as? URL
             self?.handleDeepLinks(deepLinkUrl: deepLinkUrl)
         }
 
-        NotificationCenter.default.addObserver(forName: .registerForPushNotifications, object: nil, queue: nil) {
-            notification in
+        registerForPushNotificationsObserver = NotificationCenter.default.addObserver(
+            forName: .registerForPushNotifications,
+            object: nil,
+            queue: nil
+        ) {
+            [weak self]
+            notification in guard let self = self else { return }
             UIApplication.shared.appDelegate.registerForPushNotifications {}
         }
 
-        NotificationCenter.default.addObserver(forName: .handlePushNotification, object: nil, queue: nil) {
+        handlePushNotificationObserver = NotificationCenter.default.addObserver(
+            forName: .handlePushNotification,
+            object: nil,
+            queue: nil
+        ) {
             [weak self]
             notification in
             if self?.hasLaunchFinished.value == true {
@@ -418,7 +432,11 @@ class LoggedInNavigationViewModel: ObservableObject {
                         self?.hasLaunchFinishedCancellable = nil
                     }
             }
-
+        }
+        chatClosedObserver = NotificationCenter.default.addObserver(forName: .chatClosed, object: nil, queue: nil) {
+            notification in
+            let store: HomeStore = globalPresentableStoreContainer.get()
+            store.send(.fetchChatNotifications)
         }
 
         EditCoInsuredViewModel.updatedCoInsuredForContractId
@@ -470,6 +488,10 @@ class LoggedInNavigationViewModel: ObservableObject {
             case .CROSS_SELL:
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 self.selectedTab = 1
+            case .OPEN_CONTACT_INFO:
+                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+                self.selectedTab = 4
+                self.profileNavigationVm.pushToProfile()
             }
         }
     }
@@ -530,6 +552,10 @@ class LoggedInNavigationViewModel: ObservableObject {
                 self.terminateInsuranceVm.start(with: contractsConfig)
             case .openChat:
                 NotificationCenter.default.post(name: .openChat, object: nil)
+            case .contactInfo:
+                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+                self.selectedTab = 4
+                self.profileNavigationVm.pushToProfile()
             case nil:
                 openUrl(url: url)
             }
@@ -568,6 +594,18 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     deinit {
+        if let openDeepLinkObserver = openDeepLinkObserver {
+            NotificationCenter.default.removeObserver(openDeepLinkObserver)
+        }
+        if let registerForPushNotificationsObserver = registerForPushNotificationsObserver {
+            NotificationCenter.default.removeObserver(registerForPushNotificationsObserver)
+        }
+        if let handlePushNotificationObserver = handlePushNotificationObserver {
+            NotificationCenter.default.removeObserver(handlePushNotificationObserver)
+        }
+        if let chatClosedObserver = chatClosedObserver {
+            NotificationCenter.default.removeObserver(chatClosedObserver)
+        }
         NotificationCenter.default.removeObserver(self)
     }
 }

@@ -23,19 +23,14 @@ struct CrossSellingStack: View {
                 }
                 .withHeader {
                     if withHeader {
-                        VStack(spacing: 16) {
-                            HStack(alignment: .center, spacing: 8) {
-                                CrossSellingUnseenCircle()
-                                hText(L10n.InsuranceTab.CrossSells.title)
-                                    .padding(.leading, 2)
-                                    .foregroundColor(hTextColor.Opaque.primary)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                            }
-                            Divider()
-                                .overlay(hSurfaceColor.Opaque.primary)
-                                .frame(height: 1)
-                                .padding(.bottom, .padding8)
+                        HStack(alignment: .center, spacing: 8) {
+                            CrossSellingUnseenCircle()
+                            hText(L10n.InsuranceTab.CrossSells.title)
+                                .padding(.leading, 2)
+                                .foregroundColor(hTextColor.Opaque.primary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
                         }
+                        .padding(.bottom, .padding8)
                     }
                 }
                 .sectionContainerStyle(.transparent)

@@ -1,6 +1,6 @@
 import Foundation
-import Introspect
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 
 public enum MaskType {
     case none
@@ -13,7 +13,6 @@ public enum MaskType {
     case birthDateCoInsured(minAge: Int)
     case digits
     case euroBonus
-    case fullName
     case firstName
     case lastName
 }
@@ -56,14 +55,13 @@ public struct Masking {
         case .none: return true
         case .disabledSuggestion: return true
         case .euroBonus: return text.count > 3
-        case .fullName:
-            let fullNameRegex = "^[a-zA-Z]+(?:[\\s.]+[a-zA-Z]+)*$"
-            let fullNamePredicate = NSPredicate(format: "SELF MATCHES %@", fullNameRegex)
-            return fullNamePredicate.evaluate(with: text)
         case .firstName, .lastName:
-            let nameRegEx = "[(A-Z|Å|Ä|Ö)a-zåäö\\s]*"
-            let namePredicate = NSPredicate(format: "SELF MATCHES %@", nameRegEx)
-            return text.count > 0 && namePredicate.evaluate(with: text)
+            let invalidChars = CharacterSet.whitespaces.union(.letters).inverted
+            let range = text.rangeOfCharacter(from: invalidChars)
+            if range != nil {
+                return false
+            }
+            return text.count > 0
         }
     }
 
@@ -77,7 +75,6 @@ public struct Masking {
         case .address: return text.replacingOccurrences(of: "\\s", with: "", options: .regularExpression)
         case .disabledSuggestion: return text
         case .euroBonus: return text.replacingOccurrences(of: "-", with: "")
-        case .fullName: return text
         case .firstName, .lastName: return text
         case .birthDateCoInsured: return text
         }
@@ -136,7 +133,7 @@ public struct Masking {
     public var keyboardType: UIKeyboardType {
         switch type {
         case .birthDate, .personalNumber,
-            .postalCode, .digits, .fullName, .birthDateCoInsured:
+            .postalCode, .digits, .birthDateCoInsured:
             return .numberPad
         case .email: return .emailAddress
         case .none: return .default
@@ -183,8 +180,6 @@ public struct Masking {
             return nil
         case .euroBonus:
             return nil
-        case .fullName:
-            return L10n.TravelCertificate.fullNameLabel
         case .firstName:
             return L10n.contractFirstName
         case .lastName:
@@ -211,8 +206,6 @@ public struct Masking {
         case .disabledSuggestion:
             return nil
         case .euroBonus:
-            return nil
-        case .fullName:
             return nil
         case .firstName, .lastName: return nil
         }
@@ -311,7 +304,6 @@ public struct Masking {
         case .disabledSuggestion: return text
         case .euroBonus:
             return uppercasedAlphaNumeric(maxCount: 12)
-        case .fullName: return text
         case .firstName, .lastName: return text
         }
     }
@@ -325,7 +317,7 @@ extension Masking: ViewModifier {
             .autocapitalization(autocapitalizationType)
             .disableAutocorrection(disableAutocorrection)
             .autocorrectionDisabled()
-            .introspectTextField { textField in
+            .introspect(.textField, on: .iOS(.v13...)) { textField in
                 textField.spellCheckingType = spellCheckingType
             }
     }

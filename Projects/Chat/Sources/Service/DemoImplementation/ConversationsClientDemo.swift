@@ -22,9 +22,10 @@ public class ConversationsDemoClient: ConversationsClient {
                 ),
                 createdAt: "2024-06-20",
                 statusMessage: "status message",
-                isConversationOpen: false,
+                status: .closed,
                 hasClaim: false,
-                claimType: nil
+                claimType: nil,
+                unreadMessageCount: 0
             ),
 
             Conversation(
@@ -38,9 +39,10 @@ public class ConversationsDemoClient: ConversationsClient {
                 ),
                 createdAt: "2024-06-10",
                 statusMessage: "status message",
-                isConversationOpen: true,
+                status: .open,
                 hasClaim: false,
-                claimType: nil
+                claimType: nil,
+                unreadMessageCount: 0
             ),
 
             Conversation(
@@ -57,9 +59,10 @@ public class ConversationsDemoClient: ConversationsClient {
                 ),
                 createdAt: "2024-06-10",
                 statusMessage: "status message",
-                isConversationOpen: true,
+                status: .open,
                 hasClaim: true,
-                claimType: nil
+                claimType: nil,
+                unreadMessageCount: 0
             ),
 
             Conversation(
@@ -76,9 +79,10 @@ public class ConversationsDemoClient: ConversationsClient {
                 ),
                 createdAt: "2024-06-19",
                 statusMessage: "status message",
-                isConversationOpen: true,
+                status: .open,
                 hasClaim: true,
-                claimType: "claim type"
+                claimType: "claim type",
+                unreadMessageCount: 0
             ),
         ]
 
@@ -95,9 +99,10 @@ public class ConversationsDemoClient: ConversationsClient {
             newestMessage: nil,
             createdAt: nil,
             statusMessage: "status message",
-            isConversationOpen: true,
+            status: .open,
             hasClaim: false,
-            claimType: nil
+            claimType: nil,
+            unreadMessageCount: 0
         )
     }
 }

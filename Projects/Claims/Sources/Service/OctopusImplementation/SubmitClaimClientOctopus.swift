@@ -604,3 +604,140 @@ extension OctopusGraphQL.FlowClaimSummaryNextMutation: ClaimStepLoadingType {
         return .postSummary
     }
 }
+
+extension FlowClaimSuccessStepModel {
+    init(
+        with data: OctopusGraphQL.FlowClaimSuccessStepFragment
+    ) {
+        self.id = data.id
+    }
+}
+
+extension FlowClaimFailedStepModel {
+    init(
+        with data: OctopusGraphQL.FlowClaimFailedStepFragment
+    ) {
+        self.id = data.id
+    }
+}
+
+extension FlowClaimDateOfOccurenceStepModel {
+    init(
+        with data: OctopusGraphQL.FlowClaimDateOfOccurrenceStepFragment
+    ) {
+        self.id = data.id
+        self.dateOfOccurence = data.dateOfOccurrence
+        self.maxDate = data.maxDate
+    }
+
+    func getMaxDate() -> Date {
+        return maxDate?.localDateToDate ?? Date()
+    }
+}
+
+extension FlowClaimDateOfOccurrencePlusLocationStepModel {
+    init(
+        with data: OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationStepFragment
+    ) {
+        self.id = data.id
+    }
+}
+
+extension FlowClaimLocationStepModel {
+    init(
+        with data: OctopusGraphQL.FlowClaimLocationStepFragment
+    ) {
+        self.id = data.id
+        self.location = data.location
+        self.options = data.options.map({ .init(with: $0) })
+    }
+}
+
+extension FlowClaimAudioRecordingStepModel {
+    init?(
+        with data: OctopusGraphQL.FlowClaimAudioRecordingStepFragment?
+    ) {
+        guard let data else {
+            return nil
+        }
+        self.id = data.id
+        self.questions = data.questions
+        self.audioContent = .init(with: (data.audioContent?.fragments.flowClaimAudioContentFragment))
+        self.textQuestions = data.freeTextQuestions
+        self.inputTextContent = data.freeText
+        self.optionalAudio = data.freeTextAvailable
+    }
+}
+
+extension FlowClaimPhoneNumberStepModel {
+    init(
+        with data: OctopusGraphQL.FlowClaimPhoneNumberStepFragment
+    ) {
+        self.id = data.id
+        self.phoneNumber = data.phoneNumber
+    }
+}
+
+extension FlowClaimContractSelectStepModel {
+    init(
+        with data: OctopusGraphQL.FlowClaimContractSelectStepFragment
+    ) {
+        self.selectedContractId = data.options.first?.id
+        self.availableContractOptions = data.options.map({ .init(with: $0) })
+    }
+}
+
+extension FlowClaimContractSelectOptionModel {
+    init(
+        with data: OctopusGraphQL.FlowClaimContractSelectStepFragment.Option
+    ) {
+        self.displayName = data.displayName
+        self.id = data.id
+    }
+}
+
+extension FlowClaimConfirmEmergencyStepModel {
+    init(
+        with data: OctopusGraphQL.FlowClaimConfirmEmergencyStepFragment
+    ) {
+        self.id = data.id
+        self.text = data.text
+        self.confirmEmergency = data.confirmEmergency
+        self.options = data.options.map({ data in
+            FlowClaimConfirmEmergencyOption(displayName: data.displayName, value: data.displayValue)
+        })
+    }
+}
+
+extension FlowClaimFileUploadStepModel {
+    init?(
+        with data: OctopusGraphQL.FlowClaimFileUploadStepFragment?
+    ) {
+        guard let data else {
+            return nil
+        }
+        self.id = data.id
+        self.title = data.title
+        self.targetUploadUrl = data.targetUploadUrl
+        self.uploads = data.uploads.compactMap({
+            FlowClaimFileUploadStepFileModel(
+                fileId: $0.fileId,
+                signedUrl: $0.signedUrl,
+                mimeType: $0.mimeType,
+                name: $0.name
+            )
+        })
+    }
+}
+
+extension FlowClaimSummaryStepModel {
+    init(
+        with data: OctopusGraphQL.FlowClaimSummaryStepFragment
+    ) {
+        self.id = data.id
+        self.title = data.title
+        self.shouldShowDateOfOccurence = true
+        self.shouldShowLocation = true
+        self.shouldShowSingleItem = data.singleItemStep != nil
+    }
+}

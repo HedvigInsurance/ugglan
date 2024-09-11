@@ -137,9 +137,10 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
                 newestMessage: nil,
                 createdAt: nil,
                 statusMessage: nil,
-                isConversationOpen: true,
+                status: .open,
                 hasClaim: true,
-                claimType: "claim type"
+                claimType: "claim type",
+                unreadMessageCount: 0
             )
         )
         return VStack(spacing: 20) {
@@ -170,9 +171,10 @@ struct ClaimReopened_Previews: PreviewProvider {
                 newestMessage: nil,
                 createdAt: nil,
                 statusMessage: nil,
-                isConversationOpen: true,
+                status: .open,
                 hasClaim: true,
-                claimType: "claim type"
+                claimType: "claim type",
+                unreadMessageCount: 0
             )
         )
         return VStack(spacing: 20) {
@@ -203,9 +205,10 @@ struct ClaimPaid_Previews: PreviewProvider {
                 newestMessage: nil,
                 createdAt: nil,
                 statusMessage: nil,
-                isConversationOpen: true,
+                status: .open,
                 hasClaim: true,
-                claimType: "claim type"
+                claimType: "claim type",
+                unreadMessageCount: 0
             )
         )
         return VStack(spacing: 20) {
@@ -235,9 +238,10 @@ struct ClaimNotCompensated_Previews: PreviewProvider {
                 newestMessage: nil,
                 createdAt: nil,
                 statusMessage: nil,
-                isConversationOpen: true,
+                status: .open,
                 hasClaim: true,
-                claimType: "claim type"
+                claimType: "claim type",
+                unreadMessageCount: 0
             )
         )
         return VStack(spacing: 20) {
@@ -268,9 +272,10 @@ struct ClaimNotCovered_Previews: PreviewProvider {
                 newestMessage: nil,
                 createdAt: nil,
                 statusMessage: nil,
-                isConversationOpen: true,
+                status: .open,
                 hasClaim: true,
-                claimType: "claim type"
+                claimType: "claim type",
+                unreadMessageCount: 0
             )
         )
         return VStack(spacing: 20) {
@@ -301,9 +306,10 @@ struct ClaimClosed_Previews: PreviewProvider {
                 newestMessage: nil,
                 createdAt: nil,
                 statusMessage: nil,
-                isConversationOpen: true,
+                status: .open,
                 hasClaim: true,
-                claimType: "claim type"
+                claimType: "claim type",
+                unreadMessageCount: 0
             )
         )
         return VStack(spacing: 20) {

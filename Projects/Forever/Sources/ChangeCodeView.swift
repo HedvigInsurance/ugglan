@@ -30,7 +30,7 @@ class ChangeCodeViewModel: ObservableObject {
         )
 
         inputVm.onSave = { [weak self] text in
-            try await self?.handleOnSave()
+            try await self?.handleOnSave(text: text)
         }
 
         inputVm.onDismiss = { [weak self] in
@@ -44,15 +44,12 @@ class ChangeCodeViewModel: ObservableObject {
     }
 
     @MainActor
-    private func handleOnSave() async throws {
-        inputVm.onSave = { [weak self] text in
-            try await self?.foreverService.changeCode(code: text)
-            let store: ForeverStore = globalPresentableStoreContainer.get()
-            store.send(.fetch)
-            self?.router?.push(ForeverRouterActions.success)
-        }
+    private func handleOnSave(text: String) async throws {
+        try await self.foreverService.changeCode(code: text)
+        let store: ForeverStore = globalPresentableStoreContainer.get()
+        store.send(.fetch)
+        self.router?.push(ForeverRouterActions.success)
     }
-
 }
 
 struct ChangeCodeView_Previews: PreviewProvider {
