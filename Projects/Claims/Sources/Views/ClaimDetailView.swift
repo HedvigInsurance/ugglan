@@ -351,7 +351,7 @@ struct ClaimDetailView_Previews: PreviewProvider {
                 newestMessage: nil,
                 createdAt: nil,
                 statusMessage: nil,
-                isConversationOpen: true,
+                status: .open,
                 hasClaim: true,
                 claimType: "claim type",
                 unreadMessageCount: 0
