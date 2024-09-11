@@ -39,7 +39,8 @@ public enum ExternalDependencies: CaseIterable {
     public func swiftPackages() -> [Package] {
         switch self {
         case .hero: return [.package(url: "https://github.com/HeroTransitions/Hero", .upToNextMajor(from: "1.6.3"))]
-        case .apollo: return [.package(url: "https://github.com/apollographql/apollo-ios", .exact("1.15.1"))]
+        case .apollo:
+            return [.package(url: "https://github.com/apollographql/apollo-ios", .upToNextMajor(from: "1.15.1"))]
         case .flow:
             return [.package(url: "https://github.com/HedvigInsurance/Flow", .upToNextMajor(from: "1.8.10"))]
         case .form:
