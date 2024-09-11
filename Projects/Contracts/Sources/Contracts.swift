@@ -1,6 +1,6 @@
 import EditCoInsuredShared
 import Foundation
-import Presentation
+import PresentableStore
 import SwiftUI
 import TerminateContracts
 import hCore

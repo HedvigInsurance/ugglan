@@ -1,5 +1,5 @@
 import Foundation
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -73,9 +73,6 @@ public struct ForeverView: View {
                     }
                 }
             }
-            .onAppear {
-                store.send(.fetch)
-            }
             .toolbar {
                 ToolbarItem(
                     placement: .topBarTrailing
@@ -114,6 +111,9 @@ public struct ForeverView: View {
                     }
             })
         )
+        .onAppear {
+            store.send(.fetch)
+        }
     }
 
     private func recalculateHeight() {
@@ -124,7 +124,7 @@ public struct ForeverView: View {
 struct ForeverView_Previews: PreviewProvider {
     @PresentableStore static var store: ForeverStore
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.send(.en_SE)
         return ForeverView()
             .onAppear {
                 Dependencies.shared.add(module: Module { () -> ForeverClient in ForeverClientDemo() })

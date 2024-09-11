@@ -2,7 +2,7 @@ import Chat
 import Contracts
 import EditCoInsuredShared
 import Payment
-import Presentation
+import PresentableStore
 import SafariServices
 import SwiftUI
 import TerminateContracts
@@ -14,10 +14,7 @@ public class HelpCenterNavigationViewModel: ObservableObject {
     @Published var quickActions = QuickActions()
     var connectPaymentsVm = ConnectPaymentViewModel()
     public let editCoInsuredVm = EditCoInsuredViewModel(
-        existingCoInsured: {
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-            return contractStore
-        }()
+        existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
     )
     let terminateInsuranceVm = TerminateInsuranceViewModel()
 

@@ -1,5 +1,5 @@
 import Combine
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -211,7 +211,7 @@ class SetTerminationDateLandingScreenViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     init() {
         let terminationStore: TerminationContractStore = globalPresentableStoreContainer.get()
-        terminationStore.stateSignal.plain().publisher
+        terminationStore.stateSignal
             .map({ $0.terminationDateStep?.date })
             .removeDuplicates()
             .receive(on: RunLoop.main)

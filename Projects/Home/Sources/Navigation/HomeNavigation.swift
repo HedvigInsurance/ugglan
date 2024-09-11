@@ -4,7 +4,7 @@ import Contracts
 import EditCoInsuredShared
 import Foundation
 import Payment
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -91,10 +91,7 @@ public class HomeNavigationViewModel: ObservableObject {
 
     public var connectPaymentVm = ConnectPaymentViewModel()
     public var editCoInsuredVm = EditCoInsuredViewModel(
-        existingCoInsured: {
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-            return contractStore
-        }()
+        existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
     )
 }
 

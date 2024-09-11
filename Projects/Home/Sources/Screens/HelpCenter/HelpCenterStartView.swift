@@ -1,6 +1,6 @@
 import Combine
 import Contracts
-import Presentation
+import PresentableStore
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore
@@ -194,7 +194,7 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
         let store: HomeStore = globalPresentableStoreContainer.get()
         super.init()
 
-        quickActionCancellable = store.stateSignal.plain().publisher
+        quickActionCancellable = store.stateSignal
             .map({ $0.quickActions })
             .receive(on: RunLoop.main)
             .removeDuplicates()

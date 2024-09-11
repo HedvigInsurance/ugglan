@@ -1,5 +1,5 @@
 import Combine
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -80,15 +80,17 @@ public struct MovingFlowNavigation: View {
         .environmentObject(movingFlowVm)
         .onAppear {
             let store: MoveFlowStore = globalPresentableStoreContainer.get()
-            cancellable = store.actionSignal.publisher.sink { _ in
-            } receiveValue: { action in
-                switch action {
-                case .navigation(.openConfirmScreen):
-                    router.push(MovingFlowRouterActions.confirm)
-                default:
-                    break
+            cancellable = store.actionSignal
+                .receive(on: RunLoop.main)
+                .sink { _ in
+                } receiveValue: { action in
+                    switch action {
+                    case .navigation(.openConfirmScreen):
+                        router.push(MovingFlowRouterActions.confirm)
+                    default:
+                        break
+                    }
                 }
-            }
         }
         .detent(presented: $movingFlowVm.isAddExtraBuildingPresented, style: [.height]) {
             MovingFlowAddExtraBuildingView(isBuildingTypePickerPresented: $isBuildingTypePickerPresented)

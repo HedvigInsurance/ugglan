@@ -1,7 +1,7 @@
 import Apollo
 import Contracts
 import Foundation
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -21,8 +21,8 @@ public struct ProfileState: StateProtocol {
     }
 
     public var canCreateTravelInsurance: Bool {
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        return !contractStore.state.activeContracts.filter({ $0.supportsTravelCertificate }).isEmpty
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        return store.state.activeContracts.filter({ $0.supportsTravelCertificate }).isEmpty
     }
 
     public init() {

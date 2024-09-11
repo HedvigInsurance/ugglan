@@ -1,4 +1,4 @@
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -43,8 +43,6 @@ struct SelectContractScreen: View {
             .hDisableScroll
             .onReceive(
                 store.loadingSignal
-                    .plain()
-                    .publisher
             ) { value in
                 withAnimation {
                     isLoading = value[.postContractSelect] == .loading

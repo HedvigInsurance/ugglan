@@ -1,4 +1,4 @@
-import Presentation
+import PresentableStore
 import XCTest
 
 @testable import Payment
@@ -32,7 +32,7 @@ final class StorePaymentStatusTests: XCTestCase {
         await store.sendAsync(.fetchPaymentStatus)
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.getPaymentStatus] == nil
+            store.loadingState[.getPaymentStatus] == nil
         }
         assert(store.state.paymentStatusData == statusData)
         assert(mockService.events.count == 1)
@@ -48,7 +48,7 @@ final class StorePaymentStatusTests: XCTestCase {
         await store.sendAsync(.fetchPaymentStatus)
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.getPaymentStatus] != nil
+            store.loadingState[.getPaymentStatus] != nil
         }
         assert(store.state.paymentDiscountsData == nil)
         assert(mockService.events.count == 1)

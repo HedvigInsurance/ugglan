@@ -4,7 +4,7 @@ import DatadogCrashReporting
 import DatadogLogs
 import DatadogRUM
 import DatadogTrace
-import Presentation
+import PresentableStore
 import Profile
 import SwiftUI
 import hCore

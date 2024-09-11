@@ -1,6 +1,6 @@
 import Combine
 import Foundation
-import Presentation
+import PresentableStore
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import TerminateContracts
@@ -146,8 +146,7 @@ class ContractDetailsViewModel: ObservableObject {
 
     private func observeContractState() {
         let id = self.id
-        observeContractStateCancellable = store.stateSignal.plain()
-            .publisher
+        observeContractStateCancellable = store.stateSignal
             .map({ $0.contractForId(id)?.id })
             .eraseToAnyPublisher()
             .removeDuplicates()

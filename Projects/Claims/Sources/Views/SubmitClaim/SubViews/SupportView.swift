@@ -1,4 +1,5 @@
 import Foundation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -30,7 +31,7 @@ struct SupportView: View {
 }
 struct SupportView_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.send(.en_SE)
         return SupportView(openChat: {})
     }
 }

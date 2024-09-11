@@ -1,4 +1,4 @@
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -10,7 +10,7 @@ struct MovingFlowProcessingView: View {
     var onErrorButtonAction: () -> Void
 
     var body: some View {
-        ProcessingView<MoveFlowStore>(
+        hProcessingView<MoveFlowStore>(
             MoveFlowStore.self,
             loading: .confirmMoveIntent,
             loadingViewText: L10n.changeAddressMakingChanges,
@@ -37,7 +37,7 @@ class ProcessingViewModel: ObservableObject {
 
 struct SuccessScreen_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .sv_SE
+        Localization.Locale.currentLocale.send(.sv_SE)
         return MovingFlowProcessingView(onSuccessButtonAction: {}, onErrorButtonAction: {})
     }
 }

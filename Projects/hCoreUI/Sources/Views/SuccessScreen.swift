@@ -1,4 +1,4 @@
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 
@@ -130,7 +130,7 @@ struct SuccessScreen_Previews: PreviewProvider {
 
 struct SuccessScreenWithCustomBottom_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.send(.en_SE)
         return SuccessScreen(title: "TITLE", subtitle: "SUBTITLE")
             .hSuccessBottomAttachedView {
                 hSection {

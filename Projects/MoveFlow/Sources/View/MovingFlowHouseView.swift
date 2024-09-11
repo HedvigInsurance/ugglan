@@ -1,4 +1,4 @@
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -176,7 +176,7 @@ struct MovingFlowHouseView: View {
 
 struct MovingFlowHouseView_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .nb_NO
+        Localization.Locale.currentLocale.send(.nb_NO)
         return MovingFlowHouseView(vm: HouseInformationInputModel())
     }
 }

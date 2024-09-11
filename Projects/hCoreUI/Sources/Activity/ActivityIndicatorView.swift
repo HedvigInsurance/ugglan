@@ -1,5 +1,5 @@
 import Foundation
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 
@@ -32,8 +32,6 @@ public struct LoadingViewWithState<Content: View, LoadingView: View, ErrorView: 
         getView
             .onReceive(
                 store.loadingSignal
-                    .plain()
-                    .publisher
             ) { value in
                 withAnimation {
                     if let state = value[action] {
@@ -53,7 +51,7 @@ public struct LoadingViewWithState<Content: View, LoadingView: View, ErrorView: 
             }
             .onAppear {
                 withAnimation {
-                    if let state = store.loadingSignal.value[action] {
+                    if let state = store.loadingState[action] {
                         switch state {
                         case .loading:
                             showOnLoading = true
@@ -128,14 +126,12 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
         }
         .onReceive(
             store.loadingSignal
-                .plain()
-                .publisher
         ) { value in
             handle(allActions: value)
         }
         .onAppear {
             let store: StoreType = globalPresentableStoreContainer.get()
-            if let state = handle(allActions: store.loadingSignal.value) {
+            if let state = handle(allActions: store.loadingState) {
                 isLoading = state.isLoading
                 error = state.error ?? ""
                 presentError = state.presentError
@@ -168,6 +164,7 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
             state = .init(isLoading: false, presentError: false, error: nil)
         }
         if let state {
+            print("STATE IS \(state)")
             changeState(to: state)
         }
         return state
@@ -206,7 +203,16 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
     }
 }
 
-struct TrackLoadingButtonModifier<StoreType: StoreLoading & Store>: ViewModifier {
+extension View {
+    public func trackLoading<StoreType: StoreLoading & Store>(
+        _ type: StoreType.Type,
+        action: StoreType.Loading
+    ) -> some View {
+        modifier(trackLoadingButtonModifier(type, action))
+    }
+}
+
+struct trackLoadingButtonModifier<StoreType: StoreLoading & Store>: ViewModifier {
     @PresentableStore var store: StoreType
     let actions: [StoreType.Loading]
     @State private var isLoading = false
@@ -222,13 +228,11 @@ struct TrackLoadingButtonModifier<StoreType: StoreLoading & Store>: ViewModifier
         content
             .onReceive(
                 store.loadingSignal
-                    .plain()
-                    .publisher
             ) { value in
                 handle(allActions: value)
             }
             .onAppear {
-                handle(allActions: store.loadingSignal.value)
+                handle(allActions: store.loadingState)
             }
             .hButtonIsLoading(isLoading)
     }
@@ -266,15 +270,6 @@ struct TrackLoadingButtonModifier<StoreType: StoreLoading & Store>: ViewModifier
 }
 
 extension View {
-    public func trackLoading<StoreType: StoreLoading & Store>(
-        _ type: StoreType.Type,
-        action: StoreType.Loading
-    ) -> some View {
-        modifier(TrackLoadingButtonModifier(type, action))
-    }
-}
-
-extension View {
     public func retryView<StoreType: StoreLoading & Store>(
         _ type: StoreType.Type,
         forAction action: StoreType.Loading,
@@ -284,7 +279,7 @@ extension View {
     }
 }
 
-struct RetryViewWithError<StoreType: StoreLoading & Store>: ViewModifier {
+private struct RetryViewWithError<StoreType: StoreLoading & Store>: ViewModifier {
     @PresentableStore var store: StoreType
     let action: StoreType.Loading
     @Binding private var error: String?
@@ -316,13 +311,11 @@ struct RetryViewWithError<StoreType: StoreLoading & Store>: ViewModifier {
         }
         .onReceive(
             store.loadingSignal
-                .plain()
-                .publisher
         ) { value in
             handle(allActions: value)
         }
         .onAppear {
-            handle(allActions: store.loadingSignal.value)
+            handle(allActions: store.loadingState)
         }
     }
 
@@ -399,14 +392,12 @@ public struct LoadingViewWithGenericError<Content: View, StoreType: StoreLoading
         }
         .onReceive(
             store.loadingSignal
-                .plain()
-                .publisher
         ) { value in
             handle(allActions: value)
         }
         .onAppear {
             let store: StoreType = globalPresentableStoreContainer.get()
-            if let state = handle(allActions: store.loadingSignal.value) {
+            if let state = handle(allActions: store.loadingState) {
                 isLoading = state.isLoading
                 error = state.error ?? ""
                 presentError = state.presentError

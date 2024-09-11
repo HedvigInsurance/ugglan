@@ -1,5 +1,5 @@
 import Combine
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -149,50 +149,52 @@ public struct ClaimsNavigation: View {
         .environmentObject(claimsNavigationVm)
         .onAppear {
             let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-            cancellable = store.actionSignal.publisher.sink { _ in
-            } receiveValue: { action in
-                switch action {
-                case .dismissNewClaimFlow:
-                    router.dismiss()
-                case let .navigationAction(navigationAction):
-                    switch navigationAction {
-                    case .openTriagingEntrypointScreen:
-                        router.push(ClaimsRouterActions.triagingEntrypoint)
-                    case .openTriagingOptionScreen:
-                        router.push(ClaimsRouterActions.triagingOption)
-                    case let .openDateOfOccurrencePlusLocationScreen(option):
-                        router.push(ClaimsRouterActions.dateOfOccurrancePlusLocation(option: option))
-                    case .openSelectContractScreen:
-                        router.push(ClaimsRouterActions.selectContract)
-                    case let .openPhoneNumberScreen(model):
-                        router.push(ClaimsRouterActions.phoneNumber(model: model))
-                    case .openAudioRecordingScreen:
-                        router.push(ClaimsRouterActions.audioRecording)
-                    case .openSingleItemScreen:
-                        router.push(ClaimsRouterActions.singleItem)
-                    case .openSummaryScreen:
-                        router.push(ClaimsRouterActions.summary)
-                    case let .openDeflectScreen(type):
-                        router.push(ClaimsRouterActions.deflect(type: type))
-                    case .openConfirmEmergencyScreen:
-                        router.push(ClaimsRouterActions.emergencySelect)
-                    case .openFileUploadScreen:
-                        router.push(ClaimsRouterActions.uploadFiles)
-                    case .openClaimCheckoutScreen:
-                        router.push(ClaimsRouterActions.checkOutNoRepair)
-                    case .openSuccessScreen:
-                        router.push(ClaimsRouterActionsWithoutBackButton.success)
-                    case .openFailureSceen:
-                        router.push(ClaimsRouterActionsWithoutBackButton.failure)
-                    case .openUpdateAppScreen:
-                        router.push(ClaimsRouterActionsWithoutBackButton.updateApp)
+            cancellable = store.actionSignal
+                .receive(on: RunLoop.main)
+                .sink { _ in
+                } receiveValue: { action in
+                    switch action {
+                    case .dismissNewClaimFlow:
+                        router.dismiss()
+                    case let .navigationAction(navigationAction):
+                        switch navigationAction {
+                        case .openTriagingEntrypointScreen:
+                            router.push(ClaimsRouterActions.triagingEntrypoint)
+                        case .openTriagingOptionScreen:
+                            router.push(ClaimsRouterActions.triagingOption)
+                        case let .openDateOfOccurrencePlusLocationScreen(option):
+                            router.push(ClaimsRouterActions.dateOfOccurrancePlusLocation(option: option))
+                        case .openSelectContractScreen:
+                            router.push(ClaimsRouterActions.selectContract)
+                        case let .openPhoneNumberScreen(model):
+                            router.push(ClaimsRouterActions.phoneNumber(model: model))
+                        case .openAudioRecordingScreen:
+                            router.push(ClaimsRouterActions.audioRecording)
+                        case .openSingleItemScreen:
+                            router.push(ClaimsRouterActions.singleItem)
+                        case .openSummaryScreen:
+                            router.push(ClaimsRouterActions.summary)
+                        case let .openDeflectScreen(type):
+                            router.push(ClaimsRouterActions.deflect(type: type))
+                        case .openConfirmEmergencyScreen:
+                            router.push(ClaimsRouterActions.emergencySelect)
+                        case .openFileUploadScreen:
+                            router.push(ClaimsRouterActions.uploadFiles)
+                        case .openClaimCheckoutScreen:
+                            router.push(ClaimsRouterActions.checkOutNoRepair)
+                        case .openSuccessScreen:
+                            router.push(ClaimsRouterActionsWithoutBackButton.success)
+                        case .openFailureSceen:
+                            router.push(ClaimsRouterActionsWithoutBackButton.failure)
+                        case .openUpdateAppScreen:
+                            router.push(ClaimsRouterActionsWithoutBackButton.updateApp)
+                        default:
+                            break
+                        }
                     default:
                         break
                     }
-                default:
-                    break
                 }
-            }
         }
         .detent(
             presented: $claimsNavigationVm.isLocationPickerPresented,

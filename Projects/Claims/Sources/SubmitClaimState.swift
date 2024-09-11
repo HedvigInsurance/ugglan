@@ -1,5 +1,5 @@
 import Foundation
-import Presentation
+import PresentableStore
 import hCore
 
 public struct SubmitClaimsState: StateProtocol {

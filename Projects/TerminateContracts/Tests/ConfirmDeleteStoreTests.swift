@@ -1,4 +1,4 @@
-import Presentation
+import PresentableStore
 import XCTest
 
 @testable import TerminateContracts
@@ -54,8 +54,8 @@ final class ConfirmDeleteStoreTests: XCTestCase {
         await store.sendAsync(.sendConfirmDelete)
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.sendTerminationDate] != .loading
-                && store.loadingSignal.value[.sendTerminationDate] == nil
+            store.loadingState[.sendTerminationDate] != .loading
+                && store.loadingState[.sendTerminationDate] == nil
         }
         assert(store.state.successStep == nil)
         assert(store.state.failedStep != nil)
@@ -76,8 +76,8 @@ final class ConfirmDeleteStoreTests: XCTestCase {
         await store.sendAsync(.sendConfirmDelete)
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.sendTerminationDate] != .loading
-                && store.loadingSignal.value[.sendTerminationDate] != nil
+            store.loadingState[.sendTerminationDate] != .loading
+                && store.loadingState[.sendTerminationDate] != nil
         }
         assert(store.state.successStep == nil)
         assert(store.state.failedStep == nil)

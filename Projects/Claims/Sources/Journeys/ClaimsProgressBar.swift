@@ -1,5 +1,5 @@
 import Foundation
-import Presentation
+import PresentableStore
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore
@@ -13,7 +13,9 @@ extension View {
             if let navigationBar = vc.navigationController?.navigationBar,
                 navigationBar.subviews.first(where: { $0.tag == progressViewTag }) == nil
             {
-                let progresView = UIProgressView(color: UIColor.brand(.primaryBackground(false)))
+
+                let progresView = UIProgressView()
+                progresView.backgroundColor = UIColor.brand(.primaryBackground(false))
                 progresView.layer.cornerRadius = 2
                 progresView.tag = progressViewTag
                 progresView.tintColor = .brand(.primaryText(false))
@@ -26,7 +28,9 @@ extension View {
                 }
                 progresView.progress = store.state.progress ?? 0
                 progresView.alpha = store.state.progress == nil ? 0 : 1
-                store.progressCancellable = store.stateSignal.plain().publisher.map({ $0.progress })
+                store.progressCancellable = store.stateSignal
+                    .map({ $0.progress })
+                    .receive(on: RunLoop.main)
                     .sink { [weak progresView] progress in
                         if let progress {
                             UIView.animate(withDuration: 0.4) {

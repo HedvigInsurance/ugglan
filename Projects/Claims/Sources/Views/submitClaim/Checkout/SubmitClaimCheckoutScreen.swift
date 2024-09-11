@@ -1,4 +1,4 @@
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -213,7 +213,7 @@ public struct SubmitClaimCheckoutScreen: View {
 
 struct SubmitClaimCheckoutRepairScreen_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.send(.en_SE)
         return SubmitClaimCheckoutScreen()
             .onAppear {
                 let store: SubmitClaimStore = globalPresentableStoreContainer.get()
@@ -277,7 +277,7 @@ struct SubmitClaimCheckoutRepairScreen_Previews: PreviewProvider {
 
 struct SubmitClaimCheckoutNoRepairScreen_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.send(.en_SE)
         return SubmitClaimCheckoutScreen()
             .onAppear {
                 let store: SubmitClaimStore = globalPresentableStoreContainer.get()

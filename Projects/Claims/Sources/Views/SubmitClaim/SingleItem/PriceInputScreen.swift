@@ -1,4 +1,4 @@
-import Presentation
+import PresentableStore
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore

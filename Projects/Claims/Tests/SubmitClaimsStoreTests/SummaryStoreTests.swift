@@ -1,4 +1,4 @@
-import Presentation
+import PresentableStore
 import XCTest
 
 @testable import Claims
@@ -84,7 +84,7 @@ final class SummaryStoreTests: XCTestCase {
         await store.sendAsync(.summaryRequest)
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.postSummary] == nil
+            store.loadingState[.postSummary] == nil
         }
 
         assert(store.state.successStep == nil)
@@ -105,7 +105,7 @@ final class SummaryStoreTests: XCTestCase {
         await store.sendAsync(.summaryRequest)
 
         await waitUntil(description: "loading state") {
-            if case .error = store.loadingSignal.value[.postSummary] { return true } else { return false }
+            if case .error = store.loadingState[.postSummary] { return true } else { return false }
         }
 
         assert(store.state.successStep == nil)

@@ -1,4 +1,4 @@
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -12,7 +12,7 @@ public class ForeverNavigationViewModel: ObservableObject {
         let store: ForeverStore = globalPresentableStoreContainer.get()
         let discount = store.state.foreverData?.monthlyDiscountPerReferral.formattedAmount
         let url =
-            "\(hGraphQL.Environment.current.webBaseURL)/\(hCore.Localization.Locale.currentLocale.webPath)/forever/\(code)"
+            "\(hGraphQL.Environment.current.webBaseURL)/\(hCore.Localization.Locale.currentLocale.value.webPath)/forever/\(code)"
         let message = L10n.referralSmsMessage(discount ?? "", url)
 
         let activityVC = UIActivityViewController(

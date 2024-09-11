@@ -1,6 +1,6 @@
 import Contracts
 import Foundation
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI

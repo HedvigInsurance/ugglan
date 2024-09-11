@@ -1,4 +1,4 @@
-import Presentation
+import PresentableStore
 import XCTest
 
 @testable import Profile
@@ -37,7 +37,7 @@ final class ProfileStoreTests: XCTestCase {
         self.store = store
         await store.sendAsync(.fetchProfileState)
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.fetchProfileState] == nil
+            store.loadingState[.fetchProfileState] == nil
         }
         assert(store.state.memberDetails == memberData)
         assert(store.state.partnerData == partnerData)
@@ -56,7 +56,7 @@ final class ProfileStoreTests: XCTestCase {
         self.store = store
         await store.sendAsync(.fetchProfileState)
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.fetchProfileState] != nil
+            store.loadingState[.fetchProfileState] != nil
         }
         assert(store.state.memberDetails == nil)
         assert(store.state.partnerData == nil)
@@ -84,7 +84,7 @@ final class ProfileStoreTests: XCTestCase {
         self.store = store
         await store.sendAsync(.fetchMemberDetails)
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.fetchMemberDetails] == nil
+            store.loadingState[.fetchMemberDetails] == nil
         }
         assert(store.state.memberDetails == memberData)
         assert(store.state.hasTravelCertificates == false)
@@ -102,7 +102,7 @@ final class ProfileStoreTests: XCTestCase {
         self.store = store
         await store.sendAsync(.fetchMemberDetails)
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.fetchMemberDetails] != nil
+            store.loadingState[.fetchMemberDetails] != nil
         }
         assert(store.state.memberDetails == nil)
         assert(store.state.hasTravelCertificates == false)
@@ -123,7 +123,7 @@ final class ProfileStoreTests: XCTestCase {
         self.store = store
         await store.sendAsync(.updateLanguage)
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.updateLanguage] == nil
+            store.loadingState[.updateLanguage] == nil
         }
         assert(Localization.Locale.currentLocale == locale)
 
@@ -143,7 +143,7 @@ final class ProfileStoreTests: XCTestCase {
         self.store = store
         await store.sendAsync(.updateLanguage)
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.updateLanguage] != nil
+            store.loadingState[.updateLanguage] != nil
         }
         assert(Localization.Locale.currentLocale == locale)
 

@@ -1,4 +1,4 @@
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -215,7 +215,7 @@ struct PaymentDetailsView: View {
 
 struct PaymentDetails_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.send(.en_SE)
         let data = PaymentData(
             id: "id",
             payment: .init(

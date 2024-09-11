@@ -3,7 +3,7 @@ import Chat
 import Contracts
 import EditCoInsuredShared
 import Foundation
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -182,7 +182,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         }
 
         if state.hasSentOrRecievedAtLeastOneMessage
-            || Localization.Locale.currentLocale.market != .se
+            || Localization.Locale.currentLocale.value.market != .se
         {
             if state.showChatNotification {
                 types.append(.chatNotification(lastMessageTimeStamp: self.state.latestConversationTimeStamp))

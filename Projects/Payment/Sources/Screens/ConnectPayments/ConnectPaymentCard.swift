@@ -1,5 +1,5 @@
 import Foundation
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -19,9 +19,6 @@ public struct ConnectPaymentCardView: View {
             if let status = paymentStatusData?.status {
                 getStatusInfoView(from: status)
             }
-        }
-        .onAppear {
-            store.send(.fetchPaymentStatus)
         }
     }
 

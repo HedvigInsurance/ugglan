@@ -1,4 +1,4 @@
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -164,7 +164,7 @@ struct MovingFlowAddressView: View {
 
 struct SelectAddress_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.send(.en_SE)
         return VStack { MovingFlowAddressView(vm: AddressInputModel()) }
     }
 }

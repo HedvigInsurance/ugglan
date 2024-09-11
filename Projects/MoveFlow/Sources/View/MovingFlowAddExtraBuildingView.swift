@@ -1,4 +1,5 @@
 import Combine
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -127,7 +128,6 @@ class MovingFlowAddExtraBuildingViewModel: ObservableObject {
 
     func trackBuildingTypeAction() {
         store.actionSignal
-            .publisher
             .receive(on: RunLoop.main)
             .sink { [weak self] action in
                 if case let .setExtraBuildingType(type) = action {

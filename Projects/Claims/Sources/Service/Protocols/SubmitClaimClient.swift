@@ -1,5 +1,3 @@
-import Presentation
-
 public protocol SubmitClaimClient {
     func startClaim(entrypointId: String?, entrypointOptionId: String?) async throws -> SubmitClaimStepResponse
     func updateContact(phoneNumber: String, context: String) async throws -> SubmitClaimStepResponse

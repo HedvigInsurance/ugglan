@@ -1,4 +1,4 @@
-import Presentation
+import PresentableStore
 
 public struct EditCoInsuredState: StateProtocol {
     public init() {}

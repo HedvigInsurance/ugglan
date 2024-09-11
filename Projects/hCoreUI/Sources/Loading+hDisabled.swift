@@ -1,9 +1,7 @@
-import Foundation
-import Presentation
+import PresentableStore
 import SwiftUI
-import hCore
 
-struct DisableInputModifier<StoreType: StoreLoading & Store>: ViewModifier {
+private struct DisableInputModifier<StoreType: StoreLoading & Store>: ViewModifier {
     @PresentableStore var store: StoreType
     private let actions: [StoreType.Loading]
     @State var disabled = false
@@ -18,13 +16,11 @@ struct DisableInputModifier<StoreType: StoreLoading & Store>: ViewModifier {
         content
             .onReceive(
                 store.loadingSignal
-                    .plain()
-                    .publisher
             ) { value in
                 handleDisabled(value)
             }
             .onAppear {
-                handleDisabled(store.loadingSignal.value)
+                handleDisabled(store.loadingState)
             }
             .disabled(disabled)
     }

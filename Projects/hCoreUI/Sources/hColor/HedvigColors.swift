@@ -1,5 +1,4 @@
 import DynamicColor
-import Form
 import Foundation
 import SwiftUI
 import hCore
@@ -103,13 +102,6 @@ extension UIColor {
         var color: UIColor {
             return self.color(with: nil)
         }
-        var textStyle: TextStyle {
-            TextStyle.default.restyled { (style: inout TextStyle) in
-                style.font = font
-                style.color = color
-                style.adjustsFontForContentSizeCategory = true
-            }
-        }
 
         private var font: UIFont {
             switch self {
@@ -128,7 +120,4 @@ extension UIColor {
     public static func brand(_ color: BrandColorNew, style: UIUserInterfaceStyle? = nil) -> UIColor {
         color.color(with: style)
     }
-
-    public static func brandStyle(_ color: BrandColorNew) -> TextStyle { color.textStyle }
-
 }

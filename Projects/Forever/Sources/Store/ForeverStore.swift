@@ -1,6 +1,6 @@
 import Apollo
 import Foundation
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 
@@ -36,7 +36,6 @@ public final class ForeverStore: LoadingStateStore<ForeverState, ForeverAction, 
             self.removeLoading(for: .fetchForeverData)
             newState.foreverData = data
         }
-
         return newState
     }
 }

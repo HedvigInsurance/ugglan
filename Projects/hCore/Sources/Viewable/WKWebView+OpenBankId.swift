@@ -1,5 +1,6 @@
 import Foundation
-import Presentation
+import PresentableStore
+import UIKit
 import WebKit
 
 class OpenBankIdHandler: NSObject, WKURLSchemeHandler {
@@ -13,13 +14,14 @@ class OpenBankIdHandler: NSObject, WKURLSchemeHandler {
         if UIApplication.shared.canOpenURL(url) {
             UIApplication.shared.open(url, options: [:], completionHandler: nil)
         } else {
-            let alert = Alert<Void>(
+            let alert = UIAlertController(
                 title: L10n.trustlyMissingBankIdAppAlertTitle,
                 message: L10n.trustlyMissingBankIdAppAlertMessage,
-                actions: [Alert.Action(title: L10n.trustlyMissingBankIdAppAlertAction) { () }]
+                preferredStyle: .alert
             )
-
-            presentingViewController.present(alert)
+            let action = UIAlertAction(title: L10n.trustlyMissingBankIdAppAlertAction, style: .default)
+            alert.addAction(action)
+            presentingViewController.present(alert, animated: true)
         }
     }
 

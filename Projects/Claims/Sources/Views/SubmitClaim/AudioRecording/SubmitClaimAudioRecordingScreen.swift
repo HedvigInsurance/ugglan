@@ -1,7 +1,7 @@
 import AVFAudio
 import Combine
 import Foundation
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI

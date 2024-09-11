@@ -1,5 +1,5 @@
 import Kingfisher
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI

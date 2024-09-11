@@ -3,7 +3,7 @@ import Combine
 import Contracts
 import EditCoInsuredShared
 import Payment
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -86,8 +86,8 @@ class HomeButtonScrollViewModel: ObservableObject {
         let homeStore: HomeStore = globalPresentableStoreContainer.get()
         homeStore.stateSignal
             .map({ $0.memberContractState })
-            .plain()
-            .publisher.receive(on: RunLoop.main)
+            .prepend()
+            .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] memberContractState in
                 switch memberContractState {
                 case .terminated:
@@ -103,14 +103,14 @@ class HomeButtonScrollViewModel: ObservableObject {
         default:
             handleItem(.terminated, with: false)
         }
-        let needsPaymentSetupPublisher = paymentStore.stateSignal.plain()
+        let needsPaymentSetupPublisher = paymentStore.stateSignal
             .map({ $0.paymentStatusData?.status })
-            .distinct()
-            .publisher
-        let memberStatePublisher = homeStore.stateSignal.plain()
+            .removeDuplicates()
+            .prepend()
+        let memberStatePublisher = homeStore.stateSignal
             .map({ $0.memberContractState })
-            .distinct()
-            .publisher
+            .removeDuplicates()
+            .prepend()
 
         Publishers.CombineLatest(needsPaymentSetupPublisher, memberStatePublisher)
             .receive(on: RunLoop.main)
@@ -118,11 +118,11 @@ class HomeButtonScrollViewModel: ObservableObject {
                 self?.setConnectPayments(for: memberState, status: paymentStatus)
             })
             .store(in: &cancellables)
+
         setConnectPayments(
             for: homeStore.state.memberContractState,
             status: paymentStore.state.paymentStatusData?.status
         )
-        paymentStore.send(.fetchPaymentStatus)
     }
 
     private func setConnectPayments(for userStatus: MemberContractState?, status: PayinMethodStatus?) {
@@ -135,10 +135,9 @@ class HomeButtonScrollViewModel: ObservableObject {
 
     private func handleImportantMessages() {
         let homeStore: HomeStore = globalPresentableStoreContainer.get()
-        homeStore.stateSignal.plain()
+        homeStore.stateSignal
             .map({ $0.getImportantMessageToShow() })
-            .distinct()
-            .publisher
+            .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] importantMessages in guard let self = self else { return }
                 var oldItems = self.items
@@ -169,10 +168,9 @@ class HomeButtonScrollViewModel: ObservableObject {
 
     private func handleRenewalCardView() {
         let homeStore: HomeStore = globalPresentableStoreContainer.get()
-        homeStore.stateSignal.plain()
+        homeStore.stateSignal
             .map({ $0.upcomingRenewalContracts.count > 0 })
-            .distinct()
-            .publisher
+            .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] show in
                 self?.handleItem(.renewal, with: show)
@@ -194,12 +192,11 @@ class HomeButtonScrollViewModel: ObservableObject {
 
     private func handleMissingCoInsured() {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        contractStore.stateSignal.plain()
+        contractStore.stateSignal
             .map({
                 $0.activeContracts.hasMissingCoInsured
             })
-            .distinct()
-            .publisher
+            .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] show in
                 self?.handleItem(.missingCoInsured, with: show)
@@ -214,8 +211,7 @@ class HomeButtonScrollViewModel: ObservableObject {
         let store: HomeStore = globalPresentableStoreContainer.get()
         store.stateSignal
             .map({ $0.memberContractState })
-            .plain()
-            .publisher.receive(on: RunLoop.main)
+            .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] memberContractState in
                 switch memberContractState {
                 case .terminated:

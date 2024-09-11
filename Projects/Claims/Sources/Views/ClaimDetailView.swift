@@ -4,7 +4,7 @@ import Home
 import Kingfisher
 import Payment
 import Photos
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -383,7 +383,7 @@ public class ClaimDetailViewModel: ObservableObject {
         Task {
             await fetchFiles()
         }
-        store.actionSignal.publisher
+        store.actionSignal
             .filter { action in
                 if case .refreshFiles = action {
                     return true
@@ -412,7 +412,7 @@ public class ClaimDetailViewModel: ObservableObject {
     private func handleClaimChat() {
         let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
         let claimId = self.claim.id
-        claimStore.stateSignal.plain().publisher
+        claimStore.stateSignal
             .map({ $0.claim(for: claimId) })
             .compactMap({ $0?.conversation?.hasNewMessage })
             .removeDuplicates()

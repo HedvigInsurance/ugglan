@@ -1,5 +1,5 @@
 import Foundation
-import Presentation
+import PresentableStore
 import Profile
 import SwiftUI
 import hCore
@@ -17,7 +17,7 @@ extension AppDelegate {
         let optionalDictionary: [String: String?] = [
             "memberId": memberId,
             "appVersion": Bundle.main.appVersion,
-            "market": Localization.Locale.currentLocale.market.rawValue,
+            "market": Localization.Locale.currentLocale.value.market.rawValue,
             "osVersion": UIDevice.current.systemVersion,
         ]
 
@@ -27,11 +27,8 @@ extension AppDelegate {
 
     private func observeUpdate() {
         cancellables.removeAll()
-        Localization.Locale.$currentLocale
-            .atOnce()
-            .distinct()
-            .plain()
-            .publisher
+        Localization.Locale.currentLocale
+            .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { locale in
                 Dependencies.featureFlags().updateContext(context: self.getContext)
@@ -42,9 +39,7 @@ extension AppDelegate {
 
         profileStore.stateSignal
             .map({ $0.memberDetails?.id })
-            .distinct()
-            .plain()
-            .publisher
+            .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { memberId in
                 Dependencies.featureFlags().updateContext(context: self.getContext)

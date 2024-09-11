@@ -23,7 +23,7 @@ public enum MaskType {
 public struct Masking {
     public let type: MaskType
 
-    @ReadWriteState private var previousText = ""
+    private var previousText = ""
 
     public init(type: MaskType) { self.type = type }
 
@@ -345,5 +345,11 @@ extension Masking: ViewModifier {
             .introspect(.textField, on: .iOS(.v13...)) { textField in
                 textField.spellCheckingType = spellCheckingType
             }
+    }
+}
+
+extension Character {
+    public var isDigit: Bool {
+        return "0123456789".contains(String(self))
     }
 }
