@@ -9,7 +9,7 @@ struct MockData {
                 hasPreviousMessage: false,
                 messages: [],
                 banner: nil,
-                isConversationOpen: nil,
+                conversationStatus: nil,
                 title: nil,
                 subtitle: nil
             )
@@ -19,7 +19,7 @@ struct MockData {
                 hasPreviousMessage: false,
                 messages: [],
                 banner: nil,
-                isConversationOpen: nil,
+                conversationStatus: nil,
                 title: nil,
                 subtitle: nil
             )
@@ -50,7 +50,7 @@ extension ChatData {
         with messages: [Message] = [],
         hasPreviousMessages: Bool = false,
         banner: String? = nil,
-        isConversationOpen: ConversationStatus? = nil,
+        conversationStatus: ConversationStatus? = nil,
         title: String? = nil,
         subtitle: String? = nil
     ) {
@@ -58,7 +58,7 @@ extension ChatData {
             hasPreviousMessage: hasPreviousMessages,
             messages: messages,
             banner: banner,
-            isConversationOpen: isConversationOpen,
+            conversationStatus: conversationStatus,
             title: title,
             subtitle: subtitle
         )

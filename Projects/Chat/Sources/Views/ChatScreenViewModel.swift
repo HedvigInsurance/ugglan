@@ -107,7 +107,7 @@ public class ChatScreenViewModel: ObservableObject {
                     })
                 }
                 self.banner = chatData.banner
-                self.conversationStatus = chatData.isConversationOpen ?? .open
+                self.conversationStatus = chatData.conversationStatus ?? .open
                 addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
                 self.hasNext = chatData.hasPreviousMessage
                 isFetchingPreviousMessages = false
@@ -134,7 +134,7 @@ public class ChatScreenViewModel: ObservableObject {
                 self.lastDeliveredMessage = self.messages.first(where: { $0.sender == .member && $0.remoteId != nil })
             }
             self.banner = chatData.banner
-            self.conversationStatus = chatData.isConversationOpen ?? .open
+            self.conversationStatus = chatData.conversationStatus ?? .open
             addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
             if hasNext == nil {
                 hasNext = chatData.hasPreviousMessage
