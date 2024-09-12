@@ -254,7 +254,6 @@ struct HomeTab: View {
 
     var body: some View {
         let claims = Claims()
-
         return RouterHost(router: homeNavigationVm.router, tracking: self) {
             HomeView(
                 claimsContent: claims,
