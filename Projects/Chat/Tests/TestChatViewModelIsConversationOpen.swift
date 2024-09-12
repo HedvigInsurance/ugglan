@@ -15,11 +15,11 @@ final class TestChatViewModelIsConversationOpen: XCTestCase {
 
     func testIsConverationOpenSuccess() async {
         let mockService = MockData.createMockChatService(
-            fetchNewMessages: { .init(isConversationOpen: true) }
+            fetchNewMessages: { .init(conversationStatus: .open) }
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
-        assert(model.isConversationOpen)
+        assert(model.conversationStatus == .open)
         self.sut = mockService
     }
 
@@ -28,19 +28,19 @@ final class TestChatViewModelIsConversationOpen: XCTestCase {
             fetchNewMessages: { throw ChatError.fetchMessagesFailed }
         )
         let model = ChatScreenViewModel(chatService: mockService)
-        let initialValue = model.isConversationOpen
+        let initialValue = model.conversationStatus
         await model.startFetchingNewMessages()
-        assert(model.isConversationOpen == initialValue)
+        assert(model.conversationStatus == initialValue)
         self.sut = mockService
     }
 
     func testIsConverationClosedSuccess() async {
         let mockService = MockData.createMockChatService(
-            fetchNewMessages: { .init(isConversationOpen: false) }
+            fetchNewMessages: { .init(conversationStatus: .closed) }
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
-        assert(!model.isConversationOpen)
+        assert(model.conversationStatus == .closed)
         self.sut = mockService
     }
 
@@ -49,9 +49,9 @@ final class TestChatViewModelIsConversationOpen: XCTestCase {
             fetchNewMessages: { throw ChatError.fetchMessagesFailed }
         )
         let model = ChatScreenViewModel(chatService: mockService)
-        let initialValue = model.isConversationOpen
+        let initialValue = model.conversationStatus
         await model.startFetchingNewMessages()
-        assert(model.isConversationOpen == initialValue)
+        assert(model.conversationStatus == initialValue)
         self.sut = mockService
     }
 
