@@ -80,7 +80,9 @@ public struct hCounterField: View {
             self.startAnimation()
         }
         .onAppear {
-            self.textToShow = textForValue(value) ?? ""
+            withAnimation {
+                self.textToShow = textForValue(value) ?? ""
+            }
         }
         .onChange(of: textToShow) { value in
             shouldMoveLabel = placeholder != "" && value != ""
