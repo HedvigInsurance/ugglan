@@ -68,7 +68,7 @@ struct EditContract: View {
                                         contractsNavigationVm.editCoInsuredVm.start(fromContract: configContract)
                                     }
                                 } else {
-                                    NotificationCenter.default.post(name: .openChat, object: nil)
+                                    NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                                 }
                             case .changeAddress:
                                 contractsNavigationVm.isChangeAddressPresented = true

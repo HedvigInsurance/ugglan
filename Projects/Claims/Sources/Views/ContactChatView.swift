@@ -30,7 +30,7 @@ struct ContactChatView: View {
             Spacer()
 
             Button {
-                NotificationCenter.default.post(name: .openChat, object: ChatTopicWrapper(topic: nil, onTop: true))
+                NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
             } label: {
             }
             .buttonStyle(ChatButtonStyle())
