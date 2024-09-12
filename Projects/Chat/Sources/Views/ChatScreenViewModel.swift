@@ -96,11 +96,13 @@ public class ChatScreenViewModel: ObservableObject {
     func fetchPreviousMessages(retry withAutomaticRetry: Bool = true) async {
         if let hasNext, hasNext, !isFetchingPreviousMessages {
             do {
+                let store: ChatStore = globalPresentableStoreContainer.get()
                 isFetchingPreviousMessages = true
                 let chatData = try await chatService.getPreviousMessages()
                 let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
                 withAnimation {
                     self.messages.append(contentsOf: newMessages)
+                    self.messages.append(contentsOf: store.state.failedMessages)
                     self.messages.sort(by: { $0.sentAt > $1.sentAt })
                     self.lastDeliveredMessage = self.messages.first(where: {
                         $0.sender == .member && $0.remoteId != nil
@@ -109,6 +111,7 @@ public class ChatScreenViewModel: ObservableObject {
                 self.banner = chatData.banner
                 self.conversationStatus = chatData.conversationStatus ?? .open
                 addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
+                addedMessagesIds.append(contentsOf: store.state.failedMessages.compactMap({ $0.id }))
                 self.hasNext = chatData.hasPreviousMessage
                 isFetchingPreviousMessages = false
             } catch _ {
@@ -126,16 +129,20 @@ public class ChatScreenViewModel: ObservableObject {
     @MainActor
     private func fetchMessages() async {
         do {
+            let store: ChatStore = globalPresentableStoreContainer.get()
             let chatData = try await chatService.getNewMessages()
             let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
             withAnimation {
                 self.messages.append(contentsOf: newMessages)
+                self.messages.append(contentsOf: store.state.failedMessages)
                 self.messages.sort(by: { $0.sentAt > $1.sentAt })
                 self.lastDeliveredMessage = self.messages.first(where: { $0.sender == .member && $0.remoteId != nil })
             }
             self.banner = chatData.banner
             self.conversationStatus = chatData.conversationStatus ?? .open
             addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
+            addedMessagesIds.append(contentsOf: store.state.failedMessages.compactMap({ $0.id }))
+
             if hasNext == nil {
                 hasNext = chatData.hasPreviousMessage
             }
@@ -157,6 +164,8 @@ public class ChatScreenViewModel: ObservableObject {
 
     @MainActor
     func retrySending(message: Message) async {
+        let store: ChatStore = globalPresentableStoreContainer.get()
+        store.send(.clearFailedMessage(message))
         await sendToClient(message: message)
     }
 
@@ -241,6 +250,8 @@ public class ChatScreenViewModel: ObservableObject {
     private func handleSendFail(for message: Message, with error: String) {
         if let index = messages.firstIndex(where: { $0.id == message.id }) {
             let newMessage = message.asFailed(with: error)
+            let store: ChatStore = globalPresentableStoreContainer.get()
+            store.send(.setFailedMessage(newMessage))
             let oldMessage = messages[index]
             switch oldMessage.status {
             case .failed:
@@ -250,11 +261,6 @@ public class ChatScreenViewModel: ObservableObject {
             }
         }
     }
-}
-
-public enum ChatServiceType {
-    case conversation
-    case oldChat
 }
 
 enum ConversationsError: Error {

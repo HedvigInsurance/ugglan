@@ -5,14 +5,12 @@ import hCoreUI
 import hGraphQL
 
 public protocol ChatServiceProtocol {
-    var type: ChatServiceType { get }
     func getNewMessages() async throws -> ChatData
     func getPreviousMessages() async throws -> ChatData
     func send(message: Message) async throws -> Message
 }
 
 public class ConversationService: ChatServiceProtocol {
-    public var type: ChatServiceType = .conversation
     @Inject var client: ConversationClient
     @PresentableStore var store: ChatStore
 
@@ -70,7 +68,6 @@ public class ConversationService: ChatServiceProtocol {
 }
 
 public class NewConversationService: ChatServiceProtocol {
-    public var type: ChatServiceType = .conversation
     @Inject var conversationsClient: ConversationsClient
     private var conversationService: ConversationService?
     private var generatingConversation = false
