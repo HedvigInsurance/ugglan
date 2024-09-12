@@ -9,6 +9,30 @@ struct MovingFlowHouseView: View {
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
 
     var body: some View {
+        LoadingViewWithErrorState(
+            MoveFlowStore.self,
+            .requestMoveIntent
+        ) {
+            form
+        } onError: { [weak vm] error in
+            GenericErrorView(
+                description: error,
+                buttons: .init(
+                    actionButton: .init(buttonAction: {
+                        vm?.error = nil
+                        let store: MoveFlowStore = globalPresentableStoreContainer.get()
+                        store.removeLoading(for: .requestMoveIntent)
+                    }),
+                    dismissButton: nil
+                )
+            )
+        }
+        .onDisappear {
+            vm.clearErrors()
+        }
+    }
+
+    var form: some View {
         hForm {
             VStack {
                 VStack(spacing: 16) {
@@ -29,7 +53,6 @@ struct MovingFlowHouseView: View {
                         } content: {
                             hText(L10n.saveAndContinueButtonLabel, style: .body1)
                         }
-                        .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
                     }
 
                 }
@@ -38,13 +61,10 @@ struct MovingFlowHouseView: View {
             .padding(.top, .padding16)
 
         }
+        .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
         .hFormTitle(title: .init(.standard, .displayXSLong, L10n.changeAddressInformationAboutYourHouse))
         .sectionContainerStyle(.transparent)
-        .retryView(MoveFlowStore.self, forAction: .requestMoveIntent, binding: $vm.error)
         .presentableStoreLensAnimation(.default)
-        .onDisappear {
-            vm.clearErrors()
-        }
     }
 
     private var yearOfConstructionField: some View {
@@ -138,6 +158,8 @@ struct MovingFlowHouseView: View {
                             hText(L10n.changeAddressAddBuilding)
                         }
                     }
+                    .hButtonDontShowLoadingWhenDisabled(true)
+                    .disableOn(MoveFlowStore.self, [.requestMoveIntent])
                     .fixedSize(horizontal: true, vertical: false)
                     .hUseLightMode
                     .padding(.top, .padding8)
@@ -244,6 +266,8 @@ public class HouseInformationInputModel: ObservableObject {
         yearOfConstructionError = nil
         ancillaryAreaError = nil
         bathroomsError = nil
+        let store: MoveFlowStore = globalPresentableStoreContainer.get()
+        store.removeLoading(for: .requestMoveIntent)
     }
 }
 
