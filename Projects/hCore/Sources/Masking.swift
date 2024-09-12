@@ -62,7 +62,7 @@ public struct Masking {
         case .disabledSuggestion: return true
         case .euroBonus: return text.count > 3
         case .firstName, .lastName:
-            let invalidChars = CharacterSet.whitespaces.union(.letters).inverted
+            let invalidChars = CharacterSet.whitespaces.union(.letters).union(CharacterSet(charactersIn: "-")).inverted
             let range = text.rangeOfCharacter(from: invalidChars)
             if range != nil {
                 return false

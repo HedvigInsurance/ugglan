@@ -5,7 +5,7 @@ public struct ChatData {
     let hasPreviousMessage: Bool
     let messages: [Message]
     let banner: Markdown?
-    let isConversationOpen: Bool?
+    let conversationStatus: ConversationStatus?
     let title: String?
     let subtitle: String?
 }

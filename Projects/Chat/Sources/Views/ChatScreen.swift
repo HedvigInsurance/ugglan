@@ -63,7 +63,7 @@ public struct ChatScreen: View {
         ScrollView {
             LazyVStack(spacing: 8) {
                 ForEach(vm.messages) { message in
-                    messageView(for: message, isConversationOpen: vm.isConversationOpen)
+                    messageView(for: message, conversationStatus: vm.conversationStatus)
                         .flippedUpsideDown()
                         .onAppear {
                             if message.id == vm.messages.last?.id {
@@ -86,13 +86,13 @@ public struct ChatScreen: View {
         .padding(.bottom, -8)
     }
 
-    private func messageView(for message: Message, isConversationOpen: Bool) -> some View {
+    private func messageView(for message: Message, conversationStatus: ConversationStatus) -> some View {
         HStack(alignment: .center, spacing: 0) {
             if message.sender == .member {
                 Spacer()
             }
             VStack(alignment: message.sender == .hedvig ? .leading : .trailing, spacing: 4) {
-                MessageView(message: message, isConversationOpen: isConversationOpen)
+                MessageView(message: message, conversationStatus: conversationStatus)
                     .frame(
                         maxWidth: 300,
                         alignment: message.sender == .member ? .trailing : .leading
@@ -142,7 +142,7 @@ public struct ChatScreen: View {
                     .hInfoCardCustomView {
                         MarkdownView(
                             config: .init(
-                                text: !vm.isConversationOpen ? L10n.chatConversationClosedInfo : banner,
+                                text: (vm.conversationStatus == .closed) ? L10n.chatConversationClosedInfo : banner,
                                 fontStyle: .label,
                                 color: hSignalColor.Blue.text,
                                 linkColor: hSignalColor.Blue.text,
