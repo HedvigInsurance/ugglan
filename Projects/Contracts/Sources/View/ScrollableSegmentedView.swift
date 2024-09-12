@@ -1,6 +1,7 @@
 import Combine
 import PresentableStore
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 import hCoreUI
 
@@ -110,7 +111,7 @@ struct ScrollableSegmentedView<Content: View>: View {
         .findScrollView { scrollView in
             vm.horizontalScrollView = scrollView
         }
-        .frame(height: vm.currentHeight)
+        .frame(height: vm.currentHeight == 0 ? nil : vm.currentHeight)
     }
 }
 
@@ -319,11 +320,15 @@ struct PageModel: Identifiable {
 }
 
 extension View {
+    @MainActor
     func setDisabledScroll() -> some View {
         if #available(iOS 16.0, *) {
             return self.scrollDisabled(true)
         } else {
-            return self
+            return self.introspect(.scrollView, on: .iOS(.v13...)) { view in
+                view.isScrollEnabled = false
+                view.isUserInteractionEnabled = false
+            }
         }
     }
 }

@@ -36,56 +36,17 @@ public struct ContractDetail: View {
     @StateObject private var vm: ContractDetailsViewModel
     var id: String
 
-    let contractOverview: ContractInformationView
-    let contractCoverage: ContractCoverageView
-    let contractDocuments: ContractDocumentsView
     @StateObject var crollableSegmentedViewModel = ScrollableSegmentedViewModel(
         pageModels: ContractDetailsViews.allCases.compactMap({ .init(id: $0.id, title: $0.title) })
     )
     @State private var selectedView = ContractDetailsViews.overview
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
 
-    @ViewBuilder
-    func viewFor(view: ContractDetailsViews) -> some View {
-        switch view {
-        case .overview:
-            contractOverview
-        case .coverage:
-            contractCoverage
-                .padding(.top, .padding8)
-        case .details:
-            contractDocuments
-                .padding(.top, .padding8)
-        }
-    }
-
     public init(
         id: String
     ) {
         self.id = id
         self._vm = .init(wrappedValue: .init(id: id))
-        contractOverview = ContractInformationView(id: id)
-        contractCoverage = ContractCoverageView(id: id)
-        contractDocuments = ContractDocumentsView(id: id)
-
-        let font = Fonts.fontFor(style: .label)
-        UISegmentedControl.appearance()
-            .setTitleTextAttributes(
-                [
-                    NSAttributedString.Key.foregroundColor: UIColor.brand(.secondaryText),
-                    NSAttributedString.Key.font: font,
-                ],
-                for: .normal
-            )
-
-        UISegmentedControl.appearance()
-            .setTitleTextAttributes(
-                [
-                    NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText(false)),
-                    NSAttributedString.Key.font: font,
-                ],
-                for: .selected
-            )
     }
 
     public var body: some View {
