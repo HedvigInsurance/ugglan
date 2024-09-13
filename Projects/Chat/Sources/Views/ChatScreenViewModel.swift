@@ -28,11 +28,11 @@ public class ChatScreenViewModel: ObservableObject {
     private var isFetching = false
     private var haveSentAMessage = false
     private var openDeepLinkObserver: NSObjectProtocol?
-    private var onTitleTap: () -> Void
+    private var onTitleTap: () -> Void?
 
     public init(
         chatService: ChatServiceProtocol,
-        onTitleTap: @escaping () -> Void
+        onTitleTap: @escaping () -> Void = {}
     ) {
         self.chatService = chatService
         self.onTitleTap = onTitleTap

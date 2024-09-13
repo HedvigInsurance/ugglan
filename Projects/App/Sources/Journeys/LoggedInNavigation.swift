@@ -100,7 +100,7 @@ struct LoggedInNavigation: View {
         ContractsNavigation(contractsNavigationVm: vm.contractsNavigationVm) { redirectType in
             switch redirectType {
             case .chat:
-                ChatScreen(vm: .init(chatService: NewConversationService(), onTitleTap: {}))
+                ChatScreen(vm: .init(chatService: NewConversationService()))
             case .movingFlow:
                 MovingFlowNavigation()
             case let .pdf(document):
