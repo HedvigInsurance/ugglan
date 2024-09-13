@@ -16,7 +16,7 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         let newClaimContext = state.currentClaimContext ?? ""
         switch action {
         case .submitClaimOpenFreeTextChat:
-            NotificationCenter.default.post(name: .openChat, object: nil)
+            NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
         case let .startClaimRequest(entrypointId, entrypointOptionId):
             await executeAsync(loadingType: .startClaim) {
                 try await self.submitClaimClient.startClaim(

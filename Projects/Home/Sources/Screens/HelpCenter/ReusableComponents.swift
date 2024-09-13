@@ -107,7 +107,6 @@ struct QuestionsItems: View {
 }
 
 struct SupportView: View {
-    let topic: ChatTopicType?
     @PresentableStore var store: HomeStore
     @ObservedObject var router: Router
     var body: some View {
@@ -133,7 +132,7 @@ struct SupportView: View {
                         hButton.MediumButton(type: hasSentOrRecievedAtLeastOneMessage ? .ghost : .primary) {
                             NotificationCenter.default.post(
                                 name: .openChat,
-                                object: ChatTopicWrapper(topic: topic, onTop: true)
+                                object: ChatType.newConversation
                             )
                         } content: {
                             hText(L10n.hcChatButton)

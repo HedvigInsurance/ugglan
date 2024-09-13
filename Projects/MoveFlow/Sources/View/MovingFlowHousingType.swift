@@ -54,7 +54,7 @@ public struct MovingFlowHousingTypeView: View {
                         actionButton: .init(
                             buttonTitle: L10n.openChat,
                             buttonAction: {
-                                NotificationCenter.default.post(name: .openChat, object: nil)
+                                NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                             }
                         ),
                         dismissButton: nil

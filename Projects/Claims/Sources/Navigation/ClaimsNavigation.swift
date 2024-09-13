@@ -343,7 +343,7 @@ public struct ClaimsNavigation: View {
                 SubmitClaimDeflectScreen(
                     model: model,
                     openChat: {
-                        NotificationCenter.default.post(name: .openChat, object: nil)
+                        NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                     }
                 )
             }

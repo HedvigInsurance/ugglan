@@ -14,7 +14,9 @@ public enum DeepLink: String, Codable, CaseIterable {
     case helpCenter = "help-center"
     case moveContract = "move-contract"
     case terminateContract = "terminate-contract"
-    case openChat = "open-chat"
+    case conversation = "conversation"
+    case chat = "chat"
+    case inbox = "inbox"
     case contactInfo = "contact-info"
 
     public func wholeText(displayText: String) -> String {
@@ -47,10 +49,14 @@ public enum DeepLink: String, Codable, CaseIterable {
             return L10n.InsuranceDetails.changeAddressButton
         case .terminateContract:
             return L10n.hcQuickActionsTerminationTitle
-        case .openChat:
+        case .conversation:
             return L10n.chatTitle
         case .contactInfo:
             return L10n.profileMyInfoTitle
+        case .chat:
+            return L10n.chatConversationInbox
+        case .inbox:
+            return L10n.chatConversationInbox
         }
     }
 

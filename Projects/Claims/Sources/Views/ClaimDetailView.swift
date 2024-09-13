@@ -60,9 +60,15 @@ public struct ClaimDetailView: View {
                 case .firstVet:
                     break
                 case .chat:
-                    NotificationCenter.default.post(name: .openChat, object: vm.claim.conversation)
+                    NotificationCenter.default.post(
+                        name: .openChat,
+                        object: ChatType.conversationId(id: vm.claim.conversation?.id ?? "")
+                    )
                 case .chatNotification:
-                    NotificationCenter.default.post(name: .openChat, object: vm.claim.conversation)
+                    NotificationCenter.default.post(
+                        name: .openChat,
+                        object: ChatType.conversationId(id: vm.claim.conversation?.id ?? "")
+                    )
                 }
             }
         )
