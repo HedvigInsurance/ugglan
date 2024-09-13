@@ -26,7 +26,7 @@ public class HomeNavigationViewModel: ObservableObject {
 
     public init() {
 
-        NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: nil) {
+        NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: OperationQueue.main) {
             [weak self] notification in
             var openChat: ChatConversation?
             self?.openChatOptions = [.alwaysOpenOnTop, .withoutGrabber]

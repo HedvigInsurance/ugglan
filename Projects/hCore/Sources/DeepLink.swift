@@ -54,9 +54,9 @@ public enum DeepLink: String, Codable, CaseIterable {
         case .contactInfo:
             return L10n.profileMyInfoTitle
         case .chat:
-            return L10n.chatTitle
+            return L10n.chatConversationInbox
         case .inbox:
-            return L10n.chatTitle
+            return L10n.chatConversationInbox
         }
     }
 
