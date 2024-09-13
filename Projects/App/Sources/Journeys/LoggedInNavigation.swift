@@ -69,7 +69,7 @@ struct LoggedInNavigation: View {
                 homeStore.send(.fetchQuickActions)
             case .chat:
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                    NotificationCenter.default.post(name: .openChat, object: nil)
+                    NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                 }
             case let .openFeedback(url):
                 vm.openUrl(url: url)
@@ -116,7 +116,7 @@ struct LoggedInNavigation: View {
                     let homeStore: HomeStore = globalPresentableStoreContainer.get()
                     homeStore.send(.fetchQuickActions)
                 case .chat:
-                    NotificationCenter.default.post(name: .openChat, object: nil)
+                    NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                 case let .openFeedback(url):
                     vm.openUrl(url: url)
                 }
@@ -199,7 +199,7 @@ struct LoggedInNavigation: View {
                             }
                             NotificationCenter.default.post(
                                 name: .openChat,
-                                object: ChatTopicWrapper(topic: nil, onTop: false)
+                                object: ChatType.newConversation
                             )
                         default:
                             break
@@ -230,7 +230,7 @@ struct LoggedInNavigation: View {
                         switch profileDismissAction {
                         case .makeHomeTabActiveAndOpenChat:
                             vm?.selectedTab = 0
-                            NotificationCenter.default.post(name: .openChat, object: nil)
+                            NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                         default:
                             vm?.selectedTab = 0
                         }
@@ -334,7 +334,7 @@ struct HomeTab: View {
                         openChat: {
                             NotificationCenter.default.post(
                                 name: .openChat,
-                                object: ChatTopicWrapper(topic: nil, onTop: true)
+                                object: ChatType.newConversation
                             )
                         }
                     )
@@ -494,7 +494,11 @@ class LoggedInNavigationViewModel: ObservableObject {
             case .NEW_MESSAGE:
                 let userInfo = notification.userInfo
                 let conversationId = userInfo?["conversationId"] as? String
-                NotificationCenter.default.post(name: .openChat, object: conversationId)
+                let claimId = userInfo?["claimId"] as? String
+                NotificationCenter.default.post(
+                    name: .openChat,
+                    object: ChatType.conversationId(id: conversationId ?? "", claimId: claimId)
+                )
             case .REFERRAL_SUCCESS, .REFERRALS_ENABLED:
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 self.selectedTab = 2
@@ -574,8 +578,25 @@ class LoggedInNavigationViewModel: ObservableObject {
                         $0.asTerminationConfirmConfig
                     })
                 self.terminateInsuranceVm.start(with: contractsConfig)
-            case .openChat:
-                NotificationCenter.default.post(name: .openChat, object: nil)
+            case .conversation:
+                let conversationId = self.getConversationId(from: url)
+
+                Task {
+                    let conversationClient: ConversationsClient = Dependencies.shared.resolve()
+                    let conversations = try await conversationClient.getConversations()
+                    let isValidConversation = conversations.first(where: { $0.id == conversationId })
+
+                    if let conversationId, let isValidConversation {
+                        NotificationCenter.default.post(
+                            name: .openChat,
+                            object: ChatType.conversationId(id: conversationId, claimId: nil)
+                        )
+                    } else {
+                        NotificationCenter.default.post(name: .openChat, object: ChatType.inbox)
+                    }
+                }
+            case .chat, .inbox:
+                NotificationCenter.default.post(name: .openChat, object: ChatType.inbox)
             case .contactInfo:
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 self.selectedTab = 4
@@ -590,6 +611,12 @@ class LoggedInNavigationViewModel: ObservableObject {
         guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
         guard let queryItems = urlComponents.queryItems else { return nil }
         return queryItems.first(where: { $0.name == "contractId" })?.value
+    }
+
+    private func getConversationId(from url: URL) -> String? {
+        guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
+        guard let queryItems = urlComponents.queryItems else { return nil }
+        return queryItems.first(where: { $0.name == "conversationId" })?.value
     }
 
     public func openUrl(url: URL) {

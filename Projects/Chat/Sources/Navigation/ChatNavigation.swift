@@ -97,6 +97,9 @@ public struct ChatNavigation<Content: View>: View {
                     )
                 case .newConversation:
                     ChatScreen(vm: .init(chatService: NewConversationService()))
+                case .inbox:
+                    InboxView()
+                        .configureTitle(L10n.chatConversationInbox)
                 }
             }
             .withDismissButton(
