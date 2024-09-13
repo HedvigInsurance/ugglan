@@ -127,6 +127,7 @@ extension OctopusGraphQL.ConversationFragment {
             status: self.isOpen ? .open : .closed,
             hasClaim: self.claim != nil,
             claimType: self.claim?.claimType,
+            claimId: self.claim?.id,
             unreadMessageCount: self.unreadMessageCount
         )
     }

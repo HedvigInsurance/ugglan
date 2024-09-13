@@ -31,13 +31,11 @@ public class ChatScreenViewModel: ObservableObject {
     private var onTitleTap: () -> Void
 
     public init(
-        chatService: ChatServiceProtocol
+        chatService: ChatServiceProtocol,
+        onTitleTap: @escaping () -> Void
     ) {
         self.chatService = chatService
-
-        onTitleTap = {
-            /** TODO: OPEN CLAIM DETAILS WITH  CLAIMID **/
-        }
+        self.onTitleTap = onTitleTap
 
         chatInputVm.sendMessage = { [weak self] message in
             Task { [weak self] in

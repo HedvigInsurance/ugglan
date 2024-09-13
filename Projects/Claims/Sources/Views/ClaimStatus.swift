@@ -140,6 +140,7 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
                 status: .open,
                 hasClaim: true,
                 claimType: "claim type",
+                claimId: "claimId",
                 unreadMessageCount: 0
             )
         )
@@ -174,6 +175,7 @@ struct ClaimReopened_Previews: PreviewProvider {
                 status: .open,
                 hasClaim: true,
                 claimType: "claim type",
+                claimId: "claimId",
                 unreadMessageCount: 0
             )
         )
@@ -208,6 +210,7 @@ struct ClaimPaid_Previews: PreviewProvider {
                 status: .open,
                 hasClaim: true,
                 claimType: "claim type",
+                claimId: nil,
                 unreadMessageCount: 0
             )
         )
@@ -241,6 +244,7 @@ struct ClaimNotCompensated_Previews: PreviewProvider {
                 status: .open,
                 hasClaim: true,
                 claimType: "claim type",
+                claimId: "claimId",
                 unreadMessageCount: 0
             )
         )
@@ -275,6 +279,7 @@ struct ClaimNotCovered_Previews: PreviewProvider {
                 status: .open,
                 hasClaim: true,
                 claimType: "claim type",
+                claimId: nil,
                 unreadMessageCount: 0
             )
         )
@@ -309,6 +314,7 @@ struct ClaimClosed_Previews: PreviewProvider {
                 status: .open,
                 hasClaim: true,
                 claimType: "claim type",
+                claimId: nil,
                 unreadMessageCount: 0
             )
         )

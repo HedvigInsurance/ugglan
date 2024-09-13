@@ -100,7 +100,7 @@ struct LoggedInNavigation: View {
         ContractsNavigation(contractsNavigationVm: vm.contractsNavigationVm) { redirectType in
             switch redirectType {
             case .chat:
-                ChatScreen(vm: .init(chatService: NewConversationService()))
+                ChatScreen(vm: .init(chatService: NewConversationService(), onTitleTap: {}))
             case .movingFlow:
                 MovingFlowNavigation()
             case let .pdf(document):
@@ -369,15 +369,26 @@ struct HomeTab: View {
             options: $homeNavigationVm.openChatOptions,
             content: { openChat in
                 ChatNavigation(
-                    chatType: openChat.chatType
-                ) { type, onDone in
-                    AskForPushNotifications(
-                        text: L10n.chatActivateNotificationsBody,
-                        onActionExecuted: {
-                            onDone()
+                    chatType: openChat.chatType,
+                    redirectView: { viewType, onDone in
+                        switch viewType {
+                        case .notification:
+                            AskForPushNotifications(
+                                text: L10n.chatActivateNotificationsBody,
+                                onActionExecuted: {
+                                    onDone()
+                                }
+                            )
+                        case let .claimDetail(id):
+                            let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
+                            if let claim = claimStore.state.claim(for: id) {
+                                ClaimDetailView(claim: claim)
+                                    .configureTitle(L10n.claimsYourClaim)
+                            }
                         }
-                    )
-                }
+                    }
+                )
+
             }
         )
     }

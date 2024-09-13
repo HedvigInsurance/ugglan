@@ -354,6 +354,7 @@ struct ClaimDetailView_Previews: PreviewProvider {
                 status: .open,
                 hasClaim: true,
                 claimType: "claim type",
+                claimId: "claimId",
                 unreadMessageCount: 0
             )
         )
