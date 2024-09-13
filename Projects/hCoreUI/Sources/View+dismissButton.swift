@@ -34,10 +34,12 @@ private struct DismissButton: ViewModifier {
                 ToolbarItem(
                     placement: .topBarTrailing
                 ) {
-                    hCoreUIAssets.close.view
-                        .onTapGesture {
-                            isPresented = true
-                        }
+                    Button {
+                        isPresented = true
+                    } label: {
+                        hCoreUIAssets.close.view
+                    }
+                    .foregroundColor(hTextColor.Opaque.primary)
                 }
             }
             .introspect(.viewController, on: .iOS(.v13...)) { vc in
@@ -77,11 +79,13 @@ private struct CloseButtonModifier: ViewModifier {
                     placement: .topBarTrailing
 
                 ) {
-                    hCoreUIAssets.close.view
-                        .onTapGesture {
-                            vm.vc?.dismiss(animated: true)
-                        }
-                        .offset(y: CGFloat(-reducedTopSpacing))
+                    Button {
+                        vm.vc?.dismiss(animated: true)
+                    } label: {
+                        hCoreUIAssets.close.view
+                            .offset(y: CGFloat(-reducedTopSpacing))
+                    }
+                    .foregroundColor(hTextColor.Opaque.primary)
                 }
             }
             .introspect(.viewController, on: .iOS(.v13...)) { vc in
