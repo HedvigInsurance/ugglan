@@ -34,6 +34,7 @@ public class ConversationService: ChatServiceProtocol {
         }
         newerToken = data.newerToken
         return .init(
+            conversationId: conversationId,
             hasPreviousMessage: olderToken != nil,
             messages: data.messages,
             banner: data.banner,
@@ -52,6 +53,7 @@ public class ConversationService: ChatServiceProtocol {
         )
         self.olderToken = data.olderToken
         return .init(
+            conversationId: conversationId,
             hasPreviousMessage: olderToken != nil,
             messages: data.messages,
             banner: data.banner,
@@ -82,6 +84,7 @@ public class NewConversationService: ChatServiceProtocol {
             return try await conversationService.getNewMessages()
         }
         return .init(
+            conversationId: "",
             hasPreviousMessage: false,
             messages: [],
             banner: nil,
@@ -97,6 +100,7 @@ public class NewConversationService: ChatServiceProtocol {
             return try await conversationService.getPreviousMessages()
         }
         return .init(
+            conversationId: "",
             hasPreviousMessage: false,
             messages: [],
             banner: nil,

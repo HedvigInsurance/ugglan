@@ -6,13 +6,13 @@ public struct ChatState: StateProtocol {
     public init() {}
 
     @Transient(defaultValue: false) var askedForPushNotificationsPermission: Bool
-    public var failedMessages: [Message] = []
+    public var failedMessages: [String: [Message]] = [:]
 }
 
 public enum ChatAction: ActionProtocol {
     case checkPushNotificationStatus
-    case setFailedMessage(Message)
-    case clearFailedMessage(Message)
+    case setFailedMessage(conversationId: String, message: Message)
+    case clearFailedMessage(conversationId: String, message: Message)
 }
 
 final public class ChatStore: StateStore<ChatState, ChatAction> {
@@ -27,14 +27,16 @@ final public class ChatStore: StateStore<ChatState, ChatAction> {
         switch action {
         case .checkPushNotificationStatus:
             newState.askedForPushNotificationsPermission = true
-        case let .setFailedMessage(message):
+        case let .setFailedMessage(conversationId, message):
             var failedMessages = state.failedMessages
-            failedMessages.append(message)
+            var messages = failedMessages[conversationId]
+            messages?.append(message)
+            failedMessages[conversationId] = messages
             newState.failedMessages = failedMessages
-        case let .clearFailedMessage(message):
+        case let .clearFailedMessage(conversationId, message):
             var failedMessages = state.failedMessages
-            if let index = failedMessages.firstIndex(where: { $0.id == message.id }) {
-                failedMessages.remove(at: index)
+            if let index = failedMessages[conversationId]?.firstIndex(where: { $0.id == message.id }) {
+                failedMessages[conversationId]?.remove(at: index)
             }
             newState.failedMessages = failedMessages
         }
