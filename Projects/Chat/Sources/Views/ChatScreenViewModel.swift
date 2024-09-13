@@ -28,10 +28,16 @@ public class ChatScreenViewModel: ObservableObject {
     private var isFetching = false
     private var haveSentAMessage = false
     private var openDeepLinkObserver: NSObjectProtocol?
+    private var onTitleTap: () -> Void
+
     public init(
         chatService: ChatServiceProtocol
     ) {
         self.chatService = chatService
+
+        onTitleTap = {
+            /** TODO: OPEN CLAIM DETAILS WITH  CLAIMID **/
+        }
 
         chatInputVm.sendMessage = { [weak self] message in
             Task { [weak self] in
@@ -279,7 +285,14 @@ extension ChatScreenViewModel: TitleView {
     public func getTitleView() -> UIView {
         let view: UIView = UIHostingController(rootView: titleView).view
         view.backgroundColor = .clear
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture))
+        view.addGestureRecognizer(tapGesture)
+        view.isUserInteractionEnabled = true
         return view
+    }
+
+    @objc private func handleTapGesture() {
+        self.onTitleTap()
     }
 
     @ViewBuilder
