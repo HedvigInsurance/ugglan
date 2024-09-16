@@ -263,13 +263,14 @@ struct HomeTab: View {
                 }
             )
             .routerDestination(for: ClaimModel.self, options: [.hidesBottomBarWhenPushed]) { claim in
-                ClaimDetailView(claim: claim)
+                ClaimDetailView(claim: claim, fromChat: false)
                     .environmentObject(homeNavigationVm)
                     .configureTitle(L10n.claimsYourClaim)
             }
             .routerDestination(for: String.self) { conversation in
                 InboxView()
                     .configureTitle(L10n.chatConversationInbox)
+                    .environmentObject(homeNavigationVm)
             }
         }
         .environmentObject(homeNavigationVm)
@@ -382,13 +383,14 @@ struct HomeTab: View {
                         case let .claimDetail(id):
                             let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
                             if let claim = claimStore.state.claim(for: id) {
-                                ClaimDetailView(claim: claim)
+                                ClaimDetailView(claim: claim, fromChat: true)
                                     .configureTitle(L10n.claimsYourClaim)
+
                             }
                         }
                     }
                 )
-
+                .environmentObject(homeNavigationVm.router)
             }
         )
     }
