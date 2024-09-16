@@ -29,8 +29,8 @@ final public class ChatStore: StateStore<ChatState, ChatAction> {
             newState.askedForPushNotificationsPermission = true
         case let .setFailedMessage(conversationId, message):
             var failedMessages = state.failedMessages
-            var messages = failedMessages[conversationId]
-            messages?.append(message)
+            var messages = failedMessages[conversationId] ?? []
+            messages.append(message)
             failedMessages[conversationId] = messages
             newState.failedMessages = failedMessages
         case let .clearFailedMessage(conversationId, message):

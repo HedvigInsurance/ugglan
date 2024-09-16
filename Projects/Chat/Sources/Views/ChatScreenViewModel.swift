@@ -13,8 +13,8 @@ public class ChatScreenViewModel: ObservableObject {
     @Published var scrollToMessage: Message?
     @Published var banner: Markdown?
     @Published var conversationStatus: ConversationStatus = .open
-    @Published private var conversationId: String = ""
     @Published var shouldShowBanner = true
+    private var conversationId: String?
     var chatInputVm: ChatInputViewModel = .init()
     @Published var title: String = L10n.chatTitle
     @Published var subTitle: String?
@@ -110,7 +110,6 @@ public class ChatScreenViewModel: ObservableObject {
                 }
                 self.banner = chatData.banner
                 self.conversationStatus = chatData.conversationStatus ?? .open
-                self.conversationId = chatData.conversationId
                 addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
                 self.hasNext = chatData.hasPreviousMessage
                 isFetchingPreviousMessages = false
@@ -131,12 +130,13 @@ public class ChatScreenViewModel: ObservableObject {
         do {
             let store: ChatStore = globalPresentableStoreContainer.get()
             let chatData = try await chatService.getNewMessages()
+            self.conversationId = chatData.conversationId
             let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
             withAnimation {
                 self.messages.append(contentsOf: newMessages)
 
                 if hasNext == nil {
-                    if let failedMessages = store.state.failedMessages[conversationId] {
+                    if let conversationId, let failedMessages = store.state.failedMessages[conversationId] {
                         self.messages.insert(contentsOf: failedMessages.reversed(), at: 0)
                         addedMessagesIds.append(contentsOf: failedMessages.compactMap({ $0.id }))
                     }
@@ -147,7 +147,6 @@ public class ChatScreenViewModel: ObservableObject {
             }
             self.banner = chatData.banner
             self.conversationStatus = chatData.conversationStatus ?? .open
-            self.conversationId = chatData.conversationId
             addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
 
             if hasNext == nil {
@@ -178,7 +177,7 @@ public class ChatScreenViewModel: ObservableObject {
         do {
             let sentMessage = try await chatService.send(message: message)
             let store: ChatStore = globalPresentableStoreContainer.get()
-            store.send(.clearFailedMessage(conversationId: conversationId, message: message))
+            store.send(.clearFailedMessage(conversationId: conversationId ?? "", message: message))
             await handleSuccessAdding(for: sentMessage, to: message)
             haveSentAMessage = true
         } catch let ex {
@@ -264,7 +263,7 @@ public class ChatScreenViewModel: ObservableObject {
             default:
                 messages[index] = newMessage
                 let store: ChatStore = globalPresentableStoreContainer.get()
-                store.send(.setFailedMessage(conversationId: conversationId, message: newMessage))
+                store.send(.setFailedMessage(conversationId: conversationId ?? "", message: newMessage))
             }
         }
     }
