@@ -111,7 +111,8 @@ public class ConversationClientOctopus: ConversationClient {
             createdAt: conversation.createdAt,
             isLegacy: conversation.isLegacy,
             hasClaim: hasClaim,
-            claimType: conversation.claim?.claimType
+            claimType: conversation.claim?.claimType,
+            claimId: conversation.claim?.id
         )
     }
 }
@@ -127,7 +128,6 @@ extension OctopusGraphQL.ConversationFragment {
             status: self.isOpen ? .open : .closed,
             hasClaim: self.claim != nil,
             claimType: self.claim?.claimType,
-            claimId: self.claim?.id,
             unreadMessageCount: self.unreadMessageCount
         )
     }

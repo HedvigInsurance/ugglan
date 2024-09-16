@@ -52,7 +52,12 @@ public enum ChatRedirectViewType: Hashable {
 
 extension ChatRedirectViewType: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return "trackingName"
+        switch self {
+        case .notification:
+            return "AskForPushNotifications"
+        case .claimDetail:
+            return "ClaimDetailView"
+        }
     }
 
 }
@@ -84,14 +89,12 @@ public struct ChatNavigation<Content: View>: View {
         RouterHost(router: router, options: .navigationType(type: .large), tracking: ChatNavigationViewName.chat) {
             Group {
                 switch chatType {
-                case let .conversationId(conversationId, claimId):
+                case let .conversationId(conversationId):
                     ChatScreen(
                         vm: .init(
                             chatService: ConversationService(conversationId: conversationId),
-                            onTitleTap: {
-                                if let claimId {
-                                    router.push(ChatRedirectViewType.claimDetail(id: claimId))
-                                }
+                            onTitleTap: { claimId in
+                                router.push(ChatRedirectViewType.claimDetail(id: claimId))
                             }
                         )
                     )

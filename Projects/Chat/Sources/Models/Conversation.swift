@@ -12,7 +12,6 @@ public struct Conversation: Identifiable, Hashable, Codable {
         status: ConversationStatus,
         hasClaim: Bool,
         claimType: String?,
-        claimId: String?,
         unreadMessageCount: Int
     ) {
         self.id = id
@@ -23,7 +22,6 @@ public struct Conversation: Identifiable, Hashable, Codable {
         self.status = status
         self.hasClaim = hasClaim
         self.claimType = claimType
-        self.claimId = claimId
         self.unreadMessageCount = unreadMessageCount
     }
 
@@ -38,7 +36,6 @@ public struct Conversation: Identifiable, Hashable, Codable {
     let statusMessage: String?
     let status: ConversationStatus
     let hasClaim: Bool
-    public let claimId: String?
     let claimType: String?
     let unreadMessageCount: Int
 
@@ -57,7 +54,6 @@ public struct Conversation: Identifiable, Hashable, Codable {
         self.type = type
         self.status = fragment.isOpen ? .open : .closed
         self.hasClaim = fragment.claim != nil
-        self.claimId = fragment.claim?.id
         self.claimType = fragment.claim?.claimType
         self.unreadMessageCount = fragment.unreadMessageCount
     }

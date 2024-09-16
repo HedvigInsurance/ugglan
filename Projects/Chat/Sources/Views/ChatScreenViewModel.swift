@@ -28,11 +28,12 @@ public class ChatScreenViewModel: ObservableObject {
     private var isFetching = false
     private var haveSentAMessage = false
     private var openDeepLinkObserver: NSObjectProtocol?
-    private var onTitleTap: () -> Void?
+    private var onTitleTap: (String) -> Void?
+    private var claimId: String?
 
     public init(
         chatService: ChatServiceProtocol,
-        onTitleTap: @escaping () -> Void = {}
+        onTitleTap: @escaping (String) -> Void = { claimId in }
     ) {
         self.chatService = chatService
         self.onTitleTap = onTitleTap
@@ -103,6 +104,7 @@ public class ChatScreenViewModel: ObservableObject {
                 isFetchingPreviousMessages = true
                 let chatData = try await chatService.getPreviousMessages()
                 let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
+
                 withAnimation {
                     self.messages.append(contentsOf: newMessages)
                     self.messages.sort(by: { $0.sentAt > $1.sentAt })
@@ -145,6 +147,7 @@ public class ChatScreenViewModel: ObservableObject {
             }
             title = chatData.title ?? L10n.chatTitle
             subTitle = chatData.subtitle
+            claimId = chatData.claimId
         } catch _ {
             //We ignore this errors since we will fetch this every 5 seconds
         }
@@ -290,7 +293,9 @@ extension ChatScreenViewModel: TitleView {
     }
 
     @objc private func handleTapGesture() {
-        self.onTitleTap()
+        if let claimId {
+            self.onTitleTap(claimId)
+        }
     }
 
     @ViewBuilder

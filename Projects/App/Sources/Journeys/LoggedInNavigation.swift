@@ -494,10 +494,9 @@ class LoggedInNavigationViewModel: ObservableObject {
             case .NEW_MESSAGE:
                 let userInfo = notification.userInfo
                 let conversationId = userInfo?["conversationId"] as? String
-                let claimId = userInfo?["claimId"] as? String
                 NotificationCenter.default.post(
                     name: .openChat,
-                    object: ChatType.conversationId(id: conversationId ?? "", claimId: claimId)
+                    object: ChatType.conversationId(id: conversationId ?? "")
                 )
             case .REFERRAL_SUCCESS, .REFERRALS_ENABLED:
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
@@ -589,7 +588,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                     if let conversationId, let isValidConversation {
                         NotificationCenter.default.post(
                             name: .openChat,
-                            object: ChatType.conversationId(id: conversationId, claimId: nil)
+                            object: ChatType.conversationId(id: conversationId)
                         )
                     } else {
                         NotificationCenter.default.post(name: .openChat, object: ChatType.inbox)

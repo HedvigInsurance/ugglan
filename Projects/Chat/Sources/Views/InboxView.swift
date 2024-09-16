@@ -27,7 +27,7 @@ public struct InboxView: View {
                 .onTapGesture {
                     NotificationCenter.default.post(
                         name: .openChat,
-                        object: ChatType.conversationId(id: conversation.id, claimId: conversation.claimId)
+                        object: ChatType.conversationId(id: conversation.id)
                     )
                 }
                 .background(getBackgroundColor(for: conversation))

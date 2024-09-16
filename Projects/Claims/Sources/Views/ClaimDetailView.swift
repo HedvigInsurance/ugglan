@@ -62,12 +62,12 @@ public struct ClaimDetailView: View {
                 case .chat:
                     NotificationCenter.default.post(
                         name: .openChat,
-                        object: ChatType.conversationId(id: vm.claim.conversation?.id ?? "", claimId: vm.claim.id)
+                        object: ChatType.conversationId(id: vm.claim.conversation?.id ?? "")
                     )
                 case .chatNotification:
                     NotificationCenter.default.post(
                         name: .openChat,
-                        object: ChatType.conversationId(id: vm.claim.conversation?.id ?? "", claimId: vm.claim.id)
+                        object: ChatType.conversationId(id: vm.claim.conversation?.id ?? "")
                     )
                 }
             }
@@ -360,7 +360,6 @@ struct ClaimDetailView_Previews: PreviewProvider {
                 status: .open,
                 hasClaim: true,
                 claimType: "claim type",
-                claimId: "claimId",
                 unreadMessageCount: 0
             )
         )

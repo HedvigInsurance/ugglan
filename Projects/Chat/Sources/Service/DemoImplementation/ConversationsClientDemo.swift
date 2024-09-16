@@ -25,7 +25,6 @@ public class ConversationsDemoClient: ConversationsClient {
                 status: .closed,
                 hasClaim: false,
                 claimType: nil,
-                claimId: nil,
                 unreadMessageCount: 0
             ),
 
@@ -43,7 +42,6 @@ public class ConversationsDemoClient: ConversationsClient {
                 status: .open,
                 hasClaim: false,
                 claimType: nil,
-                claimId: nil,
                 unreadMessageCount: 0
             ),
 
@@ -64,7 +62,6 @@ public class ConversationsDemoClient: ConversationsClient {
                 status: .open,
                 hasClaim: true,
                 claimType: nil,
-                claimId: nil,
                 unreadMessageCount: 0
             ),
 
@@ -85,7 +82,6 @@ public class ConversationsDemoClient: ConversationsClient {
                 status: .open,
                 hasClaim: true,
                 claimType: "claim type",
-                claimId: "claimId",
                 unreadMessageCount: 0
             ),
         ]
@@ -106,7 +102,6 @@ public class ConversationsDemoClient: ConversationsClient {
             status: .open,
             hasClaim: false,
             claimType: nil,
-            claimId: nil,
             unreadMessageCount: 0
         )
     }
@@ -134,7 +129,8 @@ public class ConversationDemoClient: ConversationClient {
             createdAt: nil,
             isLegacy: false,
             hasClaim: false,
-            claimType: nil
+            claimType: nil,
+            claimId: nil
         )
     }
 
