@@ -5,13 +5,13 @@ on:
 
 jobs:
   deploy:
-    runs-on: macos-13
+    runs-on: macos-14
 
     steps:
       - uses: actions/checkout@v2
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: "15.4"
+          xcode-version: "15.4.0"
       - name: Setup .netrc file
         run: |
           echo -e "machine maven.pkg.github.com\n  login ${{ secrets.HEDVIG_GITHUB_PACKAGES_USER }}\n  password ${{ secrets.HEDVIG_GITHUB_PACKAGES_TOKEN }}" > ~/.netrc
