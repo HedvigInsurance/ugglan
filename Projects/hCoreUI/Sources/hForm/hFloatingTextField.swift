@@ -141,12 +141,12 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                 let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
                 if (equals?.next) != nil {
                     let button = UIButton(type: .custom)
-                    button.setTitle(L10n.generalDoneButton)
+                    button.setTitle(L10n.generalDoneButton, for: .normal)
                     button.backgroundColor = .clear
 
                     let color = UIColor.BrandColorNew.primaryText().color
                     button.setTitleColor(color, for: .normal)
-                    let nextButton = UIBarButtonItem(button: button)
+                    let nextButton = UIBarButtonItem(customView: button)
                     button.addTarget(vm, action: #selector(vm?.goToTheNextField(_:)), for: .touchUpInside)
                     toolbar.setItems([space, nextButton], animated: false)
                 } else {

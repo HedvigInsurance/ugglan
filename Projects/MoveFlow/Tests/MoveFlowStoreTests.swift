@@ -1,4 +1,4 @@
-import Presentation
+import PresentableStore
 import XCTest
 
 @testable import MoveFlow
@@ -43,7 +43,7 @@ final class MoveFlowStoreTests: XCTestCase {
         await store.sendAsync(.getMoveIntent)
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.fetchMoveIntent] == nil
+            store.loadingState[.fetchMoveIntent] == nil
         }
 
         assert(store.state.movingFlowModel == moveFlowModel)
@@ -62,7 +62,7 @@ final class MoveFlowStoreTests: XCTestCase {
         await store.sendAsync(.getMoveIntent)
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.fetchMoveIntent] != nil
+            store.loadingState[.fetchMoveIntent] != nil
         }
 
         assert(store.state.movingFlowModel == nil)
@@ -97,7 +97,7 @@ final class MoveFlowStoreTests: XCTestCase {
         await store.sendAsync(.requestMoveIntent)
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.requestMoveIntent] == nil
+            store.loadingState[.requestMoveIntent] == nil
         }
 
         assert(store.state.movingFlowModel == moveFlowModel)
@@ -116,7 +116,7 @@ final class MoveFlowStoreTests: XCTestCase {
         await store.sendAsync(.requestMoveIntent)
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.requestMoveIntent] != nil
+            store.loadingState[.requestMoveIntent] != nil
         }
 
         assert(store.state.movingFlowModel == nil)
@@ -134,7 +134,7 @@ final class MoveFlowStoreTests: XCTestCase {
         await store.sendAsync(.confirmMoveIntent)
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.confirmMoveIntent] == nil
+            store.loadingState[.confirmMoveIntent] == nil
         }
 
         assert(mockService.events.count == 1)
@@ -151,7 +151,7 @@ final class MoveFlowStoreTests: XCTestCase {
         await store.sendAsync(.confirmMoveIntent)
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.confirmMoveIntent] != nil
+            store.loadingState[.confirmMoveIntent] != nil
         }
 
         assert(mockService.events.count == 1)

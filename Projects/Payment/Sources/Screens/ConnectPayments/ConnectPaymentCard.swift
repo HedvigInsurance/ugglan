@@ -1,5 +1,5 @@
 import Foundation
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -20,9 +20,6 @@ public struct ConnectPaymentCardView: View {
                 getStatusInfoView(from: status)
             }
         }
-        .onAppear {
-            store.send(.fetchPaymentStatus)
-        }
     }
 
     @ViewBuilder
@@ -37,7 +34,7 @@ public struct ConnectPaymentCardView: View {
                     .init(
                         buttonTitle: L10n.General.chatButton,
                         buttonAction: {
-                            if let url = DeepLink.getUrl(from: .openChat) {
+                            if let url = DeepLink.getUrl(from: .conversation) {
                                 router.push(PaymentsRouterAction.openUrl(url: url))
                             }
                         }

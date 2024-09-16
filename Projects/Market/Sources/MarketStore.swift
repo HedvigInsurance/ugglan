@@ -1,5 +1,5 @@
 import Foundation
-import Presentation
+import PresentableStore
 import hCore
 
 public struct MarketState: StateProtocol {
@@ -18,7 +18,7 @@ public final class MarketStore: StateStore<MarketState, MarketAction> {
         switch action {
         case let .selectLanguage(language):
             if let language = Localization.Locale(rawValue: language) {
-                Localization.Locale.currentLocale = language
+                Localization.Locale.currentLocale.send(language)
             }
         }
     }

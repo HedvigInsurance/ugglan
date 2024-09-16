@@ -1,5 +1,5 @@
 import Combine
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -102,26 +102,29 @@ struct TerminationFlowNavigation: View {
         .environmentObject(vm)
         .onAppear { [weak vm] in
             let store: TerminationContractStore = globalPresentableStoreContainer.get()
-            vm?.cancellable = store.actionSignal.publisher.sink { _ in
-            } receiveValue: { [weak vm] action in
-                switch action {
-                case let .navigationAction(navigationAction):
-                    switch navigationAction {
-                    case .openTerminationSuccessScreen:
-                        vm?.router.push(TerminationFlowFinalRouterActions.success)
-                    case .openTerminationFailScreen:
-                        vm?.router.push(TerminationFlowFinalRouterActions.fail)
-                    case .openTerminationUpdateAppScreen:
-                        vm?.router.push(TerminationFlowFinalRouterActions.updateApp)
-                    case .openTerminationSurveyStep(let options, let type):
-                        vm?.router.push(TerminationFlowRouterActions.surveyStep(options: options, subtitleType: type))
-                    case let .openSetTerminationDateLandingScreen(config):
-                        vm?.router.push(TerminationFlowRouterActions.terminationDate(config: config))
+            vm?.cancellable = store.actionSignal
+                .receive(on: RunLoop.main)
+                .sink { _ in
+                } receiveValue: { [weak vm] action in
+                    switch action {
+                    case let .navigationAction(navigationAction):
+                        switch navigationAction {
+                        case .openTerminationSuccessScreen:
+                            vm?.router.push(TerminationFlowFinalRouterActions.success)
+                        case .openTerminationFailScreen:
+                            vm?.router.push(TerminationFlowFinalRouterActions.fail)
+                        case .openTerminationUpdateAppScreen:
+                            vm?.router.push(TerminationFlowFinalRouterActions.updateApp)
+                        case .openTerminationSurveyStep(let options, let type):
+                            vm?.router
+                                .push(TerminationFlowRouterActions.surveyStep(options: options, subtitleType: type))
+                        case let .openSetTerminationDateLandingScreen(config):
+                            vm?.router.push(TerminationFlowRouterActions.terminationDate(config: config))
+                        }
+                    default:
+                        break
                     }
-                default:
-                    break
                 }
-            }
         }
         .detent(
             presented: $vm.isDatePickerPresented,
@@ -248,6 +251,7 @@ struct TerminationFlowNavigation: View {
                 tabBarInfoView
             }
         }
+        .trackLoading(TerminationContractStore.self, action: .getInitialStep)
     }
 
     private func openUpdateAppTerminationScreen() -> some View {
@@ -301,7 +305,7 @@ struct TerminationFlowNavigation: View {
     }
 
     private func openProgressScreen() -> some View {
-        ProcessingView<TerminationContractStore>(
+        hProcessingView<TerminationContractStore>(
             showSuccessScreen: false,
             TerminationContractStore.self,
             loading: .sendTerminationDate,
@@ -416,29 +420,31 @@ public class TerminateInsuranceViewModel: ObservableObject {
             self.initialStep = .init(action: .router(action: .selectInsurance(configs: configs)))
         } else if let config = configs.first {
             let store: TerminationContractStore = globalPresentableStoreContainer.get()
-            firstStepCancellable = store.actionSignal.publisher.sink { _ in
-            } receiveValue: { [weak self] action in
-                switch action {
-                case let .navigationAction(navigationAction):
-                    switch navigationAction {
-                    case .openTerminationSuccessScreen:
-                        self?.initialStep = .init(action: .final(action: .success))
-                    case .openTerminationFailScreen:
-                        self?.initialStep = .init(action: .final(action: .fail))
-                    case .openTerminationUpdateAppScreen:
-                        self?.initialStep = .init(action: .final(action: .updateApp))
-                    case let .openTerminationSurveyStep(options, type):
-                        self?.initialStep = .init(
-                            action: .router(action: .surveyStep(options: options, subtitleType: type))
-                        )
-                    case let .openSetTerminationDateLandingScreen(config):
-                        self?.initialStep = .init(action: .router(action: .terminationDate(config: config)))
+            firstStepCancellable = store.actionSignal
+                .receive(on: RunLoop.main)
+                .sink { _ in
+                } receiveValue: { [weak self] action in
+                    switch action {
+                    case let .navigationAction(navigationAction):
+                        switch navigationAction {
+                        case .openTerminationSuccessScreen:
+                            self?.initialStep = .init(action: .final(action: .success))
+                        case .openTerminationFailScreen:
+                            self?.initialStep = .init(action: .final(action: .fail))
+                        case .openTerminationUpdateAppScreen:
+                            self?.initialStep = .init(action: .final(action: .updateApp))
+                        case let .openTerminationSurveyStep(options, type):
+                            self?.initialStep = .init(
+                                action: .router(action: .surveyStep(options: options, subtitleType: type))
+                            )
+                        case let .openSetTerminationDateLandingScreen(config):
+                            self?.initialStep = .init(action: .router(action: .terminationDate(config: config)))
+                        }
+                        self?.firstStepCancellable = nil
+                    default:
+                        break
                     }
-                    self?.firstStepCancellable = nil
-                default:
-                    break
                 }
-            }
             store.send(.startTermination(config: config))
         }
     }

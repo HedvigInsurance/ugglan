@@ -7,11 +7,10 @@ import Contracts
 import CoreDependencies
 import DatadogLogs
 import Forever
-import Form
 import Foundation
 import MoveFlow
 import Payment
-import Presentation
+import PresentableStore
 import Profile
 import SwiftUI
 import TerminateContracts
@@ -20,12 +19,6 @@ import UserNotifications
 import hCore
 import hCoreUI
 import hGraphQL
-
-#if PRESENTATION_DEBUGGER
-    #if compiler(>=5.5)
-        import PresentationDebugSupport
-    #endif
-#endif
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var cancellables = Set<AnyCancellable>()
@@ -180,15 +173,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         )
     }
 
-    func setupDebugger() {
-        #if PRESENTATION_DEBUGGER
-            #if compiler(>=5.5)
-                globalPresentableStoreContainer.debugger = PresentableStoreDebugger()
-                globalPresentableStoreContainer.debugger?.startServer()
-            #endif
-        #endif
-    }
-
     func setupPresentableStoreLogger() {
         globalPresentableStoreContainer.logger = { message in
             log.info(message)
@@ -203,9 +187,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         setupAnalyticsAndTracking()
 
-        localizationObserverTask = Localization.Locale.$currentLocale
-            .plain()
-            .publisher
+        localizationObserverTask = Localization.Locale.currentLocale
             .receive(on: RunLoop.main)
             .sink { locale in
                 ApplicationState.setPreferredLocale(locale)
@@ -215,16 +197,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
 
         ApolloClient.bundle = Bundle.main
-        ApolloClient.acceptLanguageHeader = Localization.Locale.currentLocale.acceptLanguageHeader
+        ApolloClient.acceptLanguageHeader = Localization.Locale.currentLocale.value.acceptLanguageHeader
         AskForRating().registerSession()
-        setupDebugger()
     }
 
     func application(
         _: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
-        Localization.Locale.currentLocale = ApplicationState.preferredLocale
+        Localization.Locale.currentLocale.send(ApplicationState.preferredLocale)
         setupSession()
         TokenRefresher.shared.onRefresh = { token in
             let authService = AuthenticationService()

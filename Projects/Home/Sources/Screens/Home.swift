@@ -4,7 +4,7 @@ import Combine
 import Contracts
 import Foundation
 import Payment
-import Presentation
+import PresentableStore
 import SafariServices
 import SwiftUI
 import hCore
@@ -152,13 +152,13 @@ class HomeVM: ObservableObject {
     private var chatNotificationPullTimerCancellable: AnyCancellable?
     @Published var toolbarOptionTypes: [ToolbarOptionType] = []
     private var chatNotificationPullTimer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
+
     init() {
         let store: HomeStore = globalPresentableStoreContainer.get()
         memberContractState = store.state.memberContractState
         store.stateSignal
             .map({ $0.memberContractState })
-            .plain()
-            .publisher.receive(on: RunLoop.main)
+            .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] value in
                 self?.memberContractState = value
             })
@@ -176,7 +176,8 @@ class HomeVM: ObservableObject {
         store.send(.fetchChatNotifications)
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         contractStore.send(.fetch)
-
+        let paymentStore: PaymentStore = globalPresentableStoreContainer.get()
+        paymentStore.send(.fetchPaymentStatus)
         chatNotificationPullTimer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
         chatNotificationPullTimerCancellable = chatNotificationPullTimer.receive(on: RunLoop.main)
             .sink { _ in
@@ -190,7 +191,7 @@ class HomeVM: ObservableObject {
             }
     }
     private func addObserverForApplicationDidBecomeActive() {
-        if ApplicationContext.shared.$isLoggedIn.value {
+        if ApplicationContext.shared.isLoggedIn {
             NotificationCenter.default.addObserver(
                 forName: UIApplication.didBecomeActiveNotification,
                 object: nil,
@@ -206,8 +207,7 @@ class HomeVM: ObservableObject {
         let store: HomeStore = globalPresentableStoreContainer.get()
         store.stateSignal
             .map({ $0.toolbarOptionTypes })
-            .plain()
-            .publisher.receive(on: RunLoop.main)
+            .receive(on: RunLoop.main)
             .sink(receiveValue: { [weak self] value in
                 self?.toolbarOptionTypes = value
             })
@@ -221,7 +221,7 @@ class HomeVM: ObservableObject {
 
 struct Active_Preview: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.send(.en_SE)
 
         return HomeView(
             claimsContent: Text(""),
@@ -245,7 +245,7 @@ struct Active_Preview: PreviewProvider {
 
 struct ActiveInFuture_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.send(.en_SE)
         return HomeView(
             claimsContent: Text(""),
             memberId: {
@@ -269,7 +269,7 @@ struct ActiveInFuture_Previews: PreviewProvider {
 
 struct TerminatedToday_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.send(.en_SE)
         return HomeView(
             claimsContent: Text(""),
             memberId: {
@@ -292,7 +292,7 @@ struct TerminatedToday_Previews: PreviewProvider {
 
 struct Terminated_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.send(.en_SE)
         return HomeView(
             claimsContent: Text(""),
             memberId: {
@@ -315,7 +315,7 @@ struct Terminated_Previews: PreviewProvider {
 
 struct Deleted_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.send(.en_SE)
         return HomeView(
             claimsContent: Text(""),
             memberId: {

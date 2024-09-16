@@ -1,4 +1,4 @@
-import Presentation
+import PresentableStore
 import XCTest
 
 @testable import Contracts
@@ -25,7 +25,7 @@ final class ContractStoreTests: XCTestCase {
         self.store = store
         await store.sendAsync(.fetchCrossSale)
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.fetchCrossSell] == nil
+            store.loadingState[.fetchCrossSell] == nil
         }
 
         assert(store.state.crossSells == CrossSell.getDefault)
@@ -42,7 +42,7 @@ final class ContractStoreTests: XCTestCase {
         self.store = store
         await store.sendAsync(.fetchCrossSale)
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.fetchCrossSell] != nil
+            store.loadingState[.fetchCrossSell] != nil
         }
 
         assert(store.state.crossSells.isEmpty)
@@ -58,7 +58,7 @@ final class ContractStoreTests: XCTestCase {
         self.store = store
         await store.sendAsync(.fetchContracts)
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.fetchContracts] == nil
+            store.loadingState[.fetchContracts] == nil
         }
 
         assert(store.state.activeContracts == ContractsStack.getDefault.activeContracts)
@@ -77,7 +77,7 @@ final class ContractStoreTests: XCTestCase {
         self.store = store
         await store.sendAsync(.fetchContracts)
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.fetchContracts] != nil
+            store.loadingState[.fetchContracts] != nil
         }
 
         assert(store.state.activeContracts.isEmpty)

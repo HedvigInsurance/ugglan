@@ -36,7 +36,7 @@ extension MonetaryAmount {
         case "SEK":
             return Locale(identifier: "sv_SE")
         default:
-            return Localization.Locale.currentLocale.foundation
+            return Localization.Locale.currentLocale.value.foundation
         }
     }
 

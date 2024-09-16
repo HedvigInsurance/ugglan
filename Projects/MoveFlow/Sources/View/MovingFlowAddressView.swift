@@ -1,20 +1,43 @@
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
 
 struct MovingFlowAddressView: View {
-    @StateObject var vm: AddressInputModel
+    @StateObject var vm: AddressInputModel = {
+        let store: MoveFlowStore = globalPresentableStoreContainer.get()
+        return store.addressInputModel
+    }()
+
     @EnvironmentObject var router: Router
+
+    public init() {}
 
     var body: some View {
         switch vm.store.state.selectedHousingType {
         case .apartment, .rental:
-            form.retryView(MoveFlowStore.self, forAction: .requestMoveIntent, binding: $vm.error)
-                .onDisappear {
-                    vm.clearErrors()
-                }
+            LoadingViewWithErrorState(
+                MoveFlowStore.self,
+                .requestMoveIntent
+            ) {
+                form
+            } onError: { [weak vm] error in
+                GenericErrorView(
+                    description: error,
+                    buttons: .init(
+                        actionButton: .init(buttonAction: {
+                            vm?.error = nil
+                            let store: MoveFlowStore = globalPresentableStoreContainer.get()
+                            store.removeLoading(for: .requestMoveIntent)
+                        }),
+                        dismissButton: nil
+                    )
+                )
+            }
+            .onDisappear {
+                vm.clearErrors()
+            }
         case .house:
             form
         }
@@ -53,7 +76,6 @@ struct MovingFlowAddressView: View {
                     } content: {
                         hText(vm.continueButtonTitle, style: .body1)
                     }
-                    .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
                 }
 
             }
@@ -64,6 +86,7 @@ struct MovingFlowAddressView: View {
         .hFormTitle(title: .init(.standard, .displayXSLong, L10n.changeAddressEnterNewAddressTitle))
         .sectionContainerStyle(.transparent)
         .presentableStoreLensAnimation(.default)
+        .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
     }
 
     func addressField() -> some View {
@@ -103,7 +126,6 @@ struct MovingFlowAddressView: View {
             placeholder: L10n.changeAddressCoInsuredLabel,
             minValue: 0,
             maxValue: (vm.store.state.movingFlowModel?.maxNumberOfCoinsuredFor(vm.store.state.selectedHousingType) ?? 5)
-                + 1
         ) { value in
             vm.type = nil
             if value > 0 {
@@ -164,8 +186,8 @@ struct MovingFlowAddressView: View {
 
 struct SelectAddress_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
-        return VStack { MovingFlowAddressView(vm: AddressInputModel()) }
+        Localization.Locale.currentLocale.send(.en_SE)
+        return VStack { MovingFlowAddressView() }
     }
 }
 
@@ -244,6 +266,8 @@ public class AddressInputModel: ObservableObject {
         postalCodeError = nil
         squareAreaError = nil
         accessDateError = nil
+        let store: MoveFlowStore = globalPresentableStoreContainer.get()
+        store.removeLoading(for: .requestMoveIntent)
     }
 
     var isStudentEnabled: Bool {

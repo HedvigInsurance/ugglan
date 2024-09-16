@@ -20,7 +20,7 @@ public enum MaskType {
 public struct Masking {
     public let type: MaskType
 
-    @ReadWriteState private var previousText = ""
+    private var previousText = ""
 
     public init(type: MaskType) { self.type = type }
 
@@ -56,7 +56,7 @@ public struct Masking {
         case .disabledSuggestion: return true
         case .euroBonus: return text.count > 3
         case .firstName, .lastName:
-            let invalidChars = CharacterSet.whitespaces.union(.letters).inverted
+            let invalidChars = CharacterSet.whitespaces.union(.letters).union(CharacterSet(charactersIn: "-")).inverted
             let range = text.rangeOfCharacter(from: invalidChars)
             if range != nil {
                 return false
@@ -320,5 +320,11 @@ extension Masking: ViewModifier {
             .introspect(.textField, on: .iOS(.v13...)) { textField in
                 textField.spellCheckingType = spellCheckingType
             }
+    }
+}
+
+extension Character {
+    public var isDigit: Bool {
+        return "0123456789".contains(String(self))
     }
 }

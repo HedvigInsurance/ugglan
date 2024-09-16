@@ -1,4 +1,5 @@
 import Foundation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -66,6 +67,7 @@ struct HeaderView: View {
                                 )
                             )
                             .foregroundColor(hTextColor.Opaque.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
                             .multilineTextAlignment(.center)
                             .padding(.top, .padding8)
                         }
@@ -90,7 +92,7 @@ struct HeaderView_Previews: PreviewProvider {
 struct HeaderView_Previews2: PreviewProvider {
     @PresentableStore static var store: ForeverStore
     static var previews: some View {
-        Localization.Locale.currentLocale = .en_SE
+        Localization.Locale.currentLocale.send(.en_SE)
         return HeaderView {}
             .onAppear {
 

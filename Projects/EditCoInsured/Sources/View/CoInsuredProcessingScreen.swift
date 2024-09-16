@@ -1,5 +1,5 @@
 import EditCoInsuredShared
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -22,7 +22,7 @@ struct CoInsuredProcessingScreen: View {
 
     var body: some View {
         RouterHost(router: router, options: [.navigationBarHidden]) {
-            ProcessingView(
+            hProcessingView(
                 showSuccessScreen: showSuccessScreen,
                 EditCoInsuredStore.self,
                 loading: .postCoInsured,

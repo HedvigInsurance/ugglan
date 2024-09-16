@@ -76,7 +76,7 @@ struct AuthorizationModel: Codable {
 
     var paymentUrl: URL? {
         let url =
-            "\(Environment.current.webBaseURL)/\(Localization.Locale.currentLocale.webPath)/payment/connect-legacy/start?authorizationCode=\(authorizationCode)"
+            "\(Environment.current.webBaseURL)/\(Localization.Locale.currentLocale.value.webPath)/payment/connect-legacy/start?authorizationCode=\(authorizationCode)"
         return URL(string: url)
     }
 }

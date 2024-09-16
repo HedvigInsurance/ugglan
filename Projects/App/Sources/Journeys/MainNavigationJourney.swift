@@ -5,7 +5,7 @@ import Home
 import Market
 import MoveFlow
 import Payment
-import Presentation
+import PresentableStore
 import Profile
 import SafariServices
 import SwiftUI
@@ -95,13 +95,12 @@ class MainNavigationViewModel: ObservableObject {
                 switch state {
                 case .loggedIn:
                     UIApplication.shared.registerForRemoteNotifications()
-                    ApplicationContext.shared.isLoggedIn = true
+                    ApplicationContext.shared.setValue(to: true)
                     withAnimation {
                         hasLaunchFinished = false
                     }
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()
                     await contractStore.sendAsync(.fetchContracts)
-
                     let profileStore: ProfileStore = globalPresentableStoreContainer.get()
                     await profileStore.sendAsync(.fetchMemberDetails)
                     await profileStore.sendAsync(.updateLanguage)
@@ -113,7 +112,7 @@ class MainNavigationViewModel: ObservableObject {
                         hasLaunchFinished = true
                     }
                 case .notLoggedIn:
-                    ApplicationContext.shared.isLoggedIn = false
+                    ApplicationContext.shared.setValue(to: false)
                     notLoggedInVm = .init()
                     loggedInVm = .init()
                     appDelegate.logout()
@@ -141,7 +140,7 @@ class MainNavigationViewModel: ObservableObject {
             }
         }
         if state == .loggedIn {
-            ApplicationContext.shared.isLoggedIn = true
+            ApplicationContext.shared.setValue(to: true)
             UIApplication.shared.registerForRemoteNotifications()
             showLaunchScreen = false
         }

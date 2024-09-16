@@ -1,6 +1,6 @@
 import Combine
 import Contracts
-import Presentation
+import PresentableStore
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore
@@ -65,7 +65,7 @@ public struct HelpCenterStartView: View {
                 }
                 .sectionContainerStyle(.transparent)
                 if !vm.searchInProgress {
-                    SupportView(topic: nil, router: router)
+                    SupportView(router: router)
                         .padding(.top, .padding40)
                 }
             }
@@ -194,7 +194,7 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
         let store: HomeStore = globalPresentableStoreContainer.get()
         super.init()
 
-        quickActionCancellable = store.stateSignal.plain().publisher
+        quickActionCancellable = store.stateSignal
             .map({ $0.quickActions })
             .receive(on: RunLoop.main)
             .removeDuplicates()
@@ -298,31 +298,26 @@ extension HelpCenterModel {
             commonTopics: [
                 .init(
                     title: L10n.hcPaymentsTitle,
-                    type: .payments,
                     commonQuestions: PaymentsQuestions.common().asQuestions(),
                     allQuestions: PaymentsQuestions.others().asQuestions()
                 ),
                 .init(
                     title: L10n.hcClaimsTitle,
-                    type: .claims,
                     commonQuestions: ClaimsQuestions.common().asQuestions(),
                     allQuestions: ClaimsQuestions.others().asQuestions()
                 ),
                 .init(
                     title: L10n.hcCoverageTitle,
-                    type: .coverage,
                     commonQuestions: CoverageQuestions.common().asQuestions(),
                     allQuestions: CoverageQuestions.others().asQuestions()
                 ),
                 .init(
                     title: L10n.hcInsurancesTitle,
-                    type: .myInsurance,
                     commonQuestions: InsuranceQuestions.common().asQuestions(),
                     allQuestions: InsuranceQuestions.others().asQuestions()
                 ),
                 .init(
                     title: L10n.hcGeneralTitle,
-                    type: nil,
                     commonQuestions: OtherQuestions.common().asQuestions(),
                     allQuestions: OtherQuestions.others().asQuestions()
                 ),

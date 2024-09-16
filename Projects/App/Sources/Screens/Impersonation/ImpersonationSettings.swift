@@ -1,6 +1,6 @@
 import Foundation
 import Market
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -19,7 +19,7 @@ struct ImpersonationSettings: View {
                     }
                     .onTap {
                         Task {
-                            Localization.Locale.currentLocale = locale
+                            Localization.Locale.currentLocale.send(locale)
                             await marketStore.sendAsync(.selectLanguage(language: locale.rawValue))
                             ApplicationState.preserveState(.loggedIn)
                             ApplicationState.state = .loggedIn

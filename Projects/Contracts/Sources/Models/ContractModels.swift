@@ -1,6 +1,6 @@
 import EditCoInsuredShared
 import Foundation
-import Presentation
+import PresentableStore
 import TerminateContracts
 import hCore
 import hCoreUI

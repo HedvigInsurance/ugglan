@@ -1,5 +1,6 @@
 import Foundation
 import Kingfisher
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -16,7 +17,7 @@ struct CrossSellingItem: View {
         if let urlString = crossSell.webActionURL, let url = URL(string: urlString) {
             UIApplication.shared.open(url)
         } else {
-            NotificationCenter.default.post(name: .openChat, object: nil)
+            NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
         }
     }
 

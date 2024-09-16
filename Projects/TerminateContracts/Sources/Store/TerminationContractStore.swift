@@ -1,6 +1,6 @@
 import Apollo
 import Foundation
-import Presentation
+import PresentableStore
 import hCore
 import hGraphQL
 
@@ -121,13 +121,13 @@ public final class TerminationContractStore: LoadingStateStore<
             if let action = action {
                 let data = try await action()
                 if let data = data {
-                    send(.setTerminationContext(context: data.context))
-                    send(data.action)
+                    await sendAsync(.setTerminationContext(context: data.context))
+                    await sendAsync(data.action)
                 }
             }
             self.removeLoading(for: loadingType)
         } catch let error {
-            send(.navigationAction(action: .openTerminationFailScreen))
+            await sendAsync(.navigationAction(action: .openTerminationFailScreen))
             self.setError(error.localizedDescription, for: loadingType)
         }
     }

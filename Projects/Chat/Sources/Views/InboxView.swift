@@ -1,5 +1,5 @@
 import Combine
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -25,7 +25,10 @@ public struct InboxView: View {
         hSection(vm.conversations) { conversation in
             rowView(for: conversation)
                 .onTapGesture {
-                    NotificationCenter.default.post(name: .openChat, object: conversation)
+                    NotificationCenter.default.post(
+                        name: .openChat,
+                        object: ChatType.conversationId(id: conversation.id)
+                    )
                 }
                 .background(getBackgroundColor(for: conversation))
         }

@@ -10,7 +10,7 @@ import Foundation
 import Home
 import MoveFlow
 import Payment
-import Presentation
+import PresentableStore
 import Profile
 import TerminateContracts
 import TravelCertificate

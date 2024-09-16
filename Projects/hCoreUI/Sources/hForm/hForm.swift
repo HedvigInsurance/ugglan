@@ -1,6 +1,7 @@
 import Combine
 import Foundation
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 import UIKit
 import hCore
 
@@ -9,6 +10,7 @@ private enum AnimationKeys {
 }
 
 public struct hForm<Content: View>: View, KeyboardReadable {
+    @StateObject private var vm = hFormVM()
     @State var bottomAttachedViewHeight: CGFloat = 0
     @State var scrollViewHeight: CGFloat = 0
     @State var contentHeight: CGFloat = 0
@@ -16,7 +18,6 @@ public struct hForm<Content: View>: View, KeyboardReadable {
     @State var additionalSpaceFromTop: CGFloat = 0
     @State var shouldIgnoreTitleMargins = false
     @State var mergeBottomViewWithContent = false
-    @State var scrollView: UIScrollView?
     @Environment(\.hFormBottomAttachedView) var bottomAttachedView
     @Environment(\.hFormTitle) var hFormTitle
     @Environment(\.hDisableScroll) var hDisableScroll
@@ -31,7 +32,6 @@ public struct hForm<Content: View>: View, KeyboardReadable {
     @State var lastTimeChangedMergeBottomViewWithContent = Date()
     @State var cancellable: AnyCancellable?
     @State var additionalContentOffset: CGFloat = 0
-    @State var vc: UIViewController?
     var content: Content
     @State private var enableAnimation = false
     @Namespace private var animation
@@ -225,40 +225,45 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                 shouldFollow: hIgnoreScrollOffsetChanges
             )
         )
-        .findScrollView { scrollView in
-            if mergeBottomWithContentIfNeeded {
-                self.scrollView = scrollView
+        .introspect(
+            .viewController,
+            on: .iOS(.v13...),
+            customize: { [weak vm] vc in
+                vm?.vc = vc
             }
-            scrollView.viewController?.setContentScrollView(scrollView, for: .top)
+        )
+        .introspect(.scrollView, on: .iOS(.v13...)) { [weak vm] scrollView in
+            if vm?.scrollView != scrollView {
+                vm?.scrollView = scrollView
+                if hDisableScroll || additionalSpaceFromTop > 0 {
+                    scrollView.bounces = false
+                } else {
+                    scrollView.bounces = true
+                }
+                if hObserveKeyboard {
+                    cancellable = keyboardPublisher.sink { _ in
+                    } receiveValue: { [weak scrollView] keyboardHeight in
+                        if let keyboardHeight {
+                            if let view = UIResponder.currentFirstResponder as? UIView {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak scrollView] in
+                                    guard let scrollView = scrollView else { return }
+                                    let pointToCheck = CGPoint(x: 0, y: view.frame.size.height)
+                                    let positionToMove = view.convert(pointToCheck, to: scrollView).y
 
-            if hDisableScroll || additionalSpaceFromTop > 0 {
-                scrollView.bounces = false
-            } else {
-                scrollView.bounces = true
-            }
-            if hObserveKeyboard {
-                cancellable = keyboardPublisher.sink { _ in
-                } receiveValue: { [weak scrollView] keyboardHeight in
-                    if let keyboardHeight {
-                        if let view = UIResponder.currentFirstResponder as? UIView {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak scrollView] in
-                                guard let scrollView = scrollView else { return }
-                                let pointToCheck = CGPoint(x: 0, y: view.frame.size.height)
-                                let positionToMove = view.convert(pointToCheck, to: scrollView).y
-
-                                let moveTo = positionToMove + bottomAttachedViewHeight + keyboardHeight
-                                scrollView.scrollRectToVisible(
-                                    .init(
-                                        x: 0,
-                                        y: moveTo,
-                                        width: view.frame.width,
-                                        height: view.frame.height
-                                    ),
-                                    animated: true
-                                )
+                                    let moveTo = positionToMove + bottomAttachedViewHeight + keyboardHeight
+                                    scrollView.scrollRectToVisible(
+                                        .init(
+                                            x: 0,
+                                            y: moveTo,
+                                            width: view.frame.width,
+                                            height: view.frame.height
+                                        ),
+                                        animated: true
+                                    )
+                                }
                             }
-                        }
 
+                        }
                     }
                 }
             }
@@ -319,7 +324,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
         var shouldMergeContent = false
         if mergeBottomWithContentIfNeeded {
             shouldMergeContent = mergeBottomViewWithContent
-            scrollView?.bounces = mergeBottomViewWithContent
+            vm.scrollView?.bounces = mergeBottomViewWithContent
             let dateToCompareWith = Date()
             let value = lastTimeChangedMergeBottomViewWithContent.timeIntervalSince(dateToCompareWith)
             if value < -0.01 {
@@ -327,7 +332,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                 let shouldMerge = contentSize < 0
                 lastTimeChangedMergeBottomViewWithContent = dateToCompareWith
                 shouldMergeContent = shouldMerge
-                scrollView?.bounces = shouldMerge
+                vm.scrollView?.bounces = shouldMerge
             }
         }
 
@@ -340,6 +345,19 @@ public struct hForm<Content: View>: View, KeyboardReadable {
         } else {
             self.additionalSpaceFromTop = additionalSpaceFromTop
             self.mergeBottomViewWithContent = shouldMergeContent
+        }
+    }
+}
+
+private class hFormVM: ObservableObject {
+    weak var scrollView: UIScrollView? {
+        didSet {
+            vc?.setContentScrollView(scrollView, for: .top)
+        }
+    }
+    weak var vc: UIViewController? {
+        didSet {
+            vc?.setContentScrollView(scrollView, for: .top)
         }
     }
 }

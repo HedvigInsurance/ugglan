@@ -3,7 +3,7 @@ import Chat
 import Contracts
 import EditCoInsuredShared
 import Foundation
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -48,7 +48,7 @@ public enum HomeAction: ActionProtocol {
     case fetchQuickActions
     case setQuickActions(quickActions: [QuickAction])
     case startClaim
-    case openFreeTextChat(from: ChatTopicType?)
+    case openFreeTextChat
     case openHelpCenter
     case showNewOffer
     case openFirstVet(partners: [FirstVetPartner])

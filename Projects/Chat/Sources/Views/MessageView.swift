@@ -1,13 +1,13 @@
 import Contracts
 import Foundation
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct MessageView: View {
     let message: Message
-    let isConversationOpen: Bool
+    let conversationStatus: ConversationStatus
 
     @State var height: CGFloat = 0
     @State var width: CGFloat = 0
@@ -17,7 +17,7 @@ struct MessageView: View {
             messageContent
                 .padding(.horizontal, message.horizontalPadding)
                 .padding(.vertical, message.verticalPadding)
-                .background(message.bgColor(isConversationOpen: isConversationOpen))
+                .background(message.bgColor(conversationStatus: conversationStatus))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .environment(\.colorScheme, .light)
             if case .failed = message.status {

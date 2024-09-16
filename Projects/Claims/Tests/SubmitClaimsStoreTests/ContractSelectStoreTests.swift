@@ -1,4 +1,4 @@
-import Presentation
+import PresentableStore
 import XCTest
 
 @testable import Claims
@@ -64,7 +64,7 @@ final class ContractSelectStoreTests: XCTestCase {
         await store.sendAsync(.contractSelectRequest(contractId: "contract id"))
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.postContractSelect] == nil
+            store.loadingState[.postContractSelect] == nil
         }
 
         assert(store.state.successStep == nil)
@@ -85,7 +85,7 @@ final class ContractSelectStoreTests: XCTestCase {
         await store.sendAsync(.contractSelectRequest(contractId: "contract id"))
 
         await waitUntil(description: "loading state") {
-            if case .error = store.loadingSignal.value[.postContractSelect] { return true } else { return false }
+            if case .error = store.loadingState[.postContractSelect] { return true } else { return false }
         }
 
         assert(store.state.successStep == nil)

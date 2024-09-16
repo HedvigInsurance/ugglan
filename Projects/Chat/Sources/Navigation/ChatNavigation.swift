@@ -1,5 +1,5 @@
 import Combine
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -77,6 +77,9 @@ public struct ChatNavigation<Content: View>: View {
                     ChatScreen(vm: .init(chatService: ConversationService(conversationId: id)))
                 case .newConversation:
                     ChatScreen(vm: .init(chatService: NewConversationService()))
+                case .inbox:
+                    InboxView()
+                        .configureTitle(L10n.chatConversationInbox)
                 }
             }
             .withDismissButton(

@@ -1,5 +1,6 @@
 import Apollo
 import Contracts
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -19,7 +20,7 @@ struct SettingsView: View {
             hSection {
                 VStack(spacing: 4) {
                     hFloatingField(
-                        value: Localization.Locale.currentLocale.displayName,
+                        value: Localization.Locale.currentLocale.value.displayName,
                         placeholder: L10n.settingsLanguageTitle,
                         onTap: {
                             profileNavigationVm.isLanguagePickerPresented = true

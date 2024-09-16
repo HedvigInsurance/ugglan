@@ -34,7 +34,7 @@ where MainContent: View, BottomContent: View {
                 }
             }
             .verticalPadding(0)
-            .padding(.bottom, .padding8)
+            .padding(.bottom, .padding16)
             VStack(alignment: .leading, spacing: 0) {
                 if let title = title {
                     hText(title)
@@ -45,7 +45,7 @@ where MainContent: View, BottomContent: View {
 
             }
             .padding(.horizontal, .padding16)
-            Spacer().frame(height: .padding8)
+            Spacer().frame(height: 16)
             bottomComponent()
                 .padding(.horizontal, .padding16)
         }

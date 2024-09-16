@@ -1,4 +1,4 @@
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -54,7 +54,7 @@ public struct MovingFlowHousingTypeView: View {
                         actionButton: .init(
                             buttonTitle: L10n.openChat,
                             buttonAction: {
-                                NotificationCenter.default.post(name: .openChat, object: nil)
+                                NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                             }
                         ),
                         dismissButton: nil
@@ -84,7 +84,7 @@ public struct MovingFlowHousingTypeView: View {
 
 struct MovingFlowTypeOfHome_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .sv_SE
+        Localization.Locale.currentLocale.send(.sv_SE)
         return MovingFlowHousingTypeView()
     }
 }

@@ -1,6 +1,6 @@
 import Apollo
 import Foundation
-import Presentation
+import PresentableStore
 import hCore
 import hGraphQL
 
@@ -28,8 +28,8 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                 self.setError(error.localizedDescription, for: .fetchContracts)
             }
         case .fetch:
-            send(.fetchCrossSale)
-            send(.fetchContracts)
+            await sendAsync(.fetchCrossSale)
+            await sendAsync(.fetchContracts)
         default:
             break
         }

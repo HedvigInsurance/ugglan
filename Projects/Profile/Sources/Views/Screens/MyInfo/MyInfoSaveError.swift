@@ -1,7 +1,12 @@
 import Foundation
 import hCore
 
-enum MyInfoSaveError { case emailEmpty, emailMalformed, phoneNumberEmpty, phoneNumberMalformed }
+enum MyInfoSaveError {
+    case emailEmpty
+    case emailMalformed
+    case phoneNumberEmpty
+    case phoneNumberMalformed
+}
 
 extension MyInfoSaveError: LocalizedError {
     var errorDescription: String? {

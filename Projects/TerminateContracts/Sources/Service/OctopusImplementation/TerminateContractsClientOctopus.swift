@@ -1,4 +1,4 @@
-import Presentation
+import PresentableStore
 import hCore
 import hGraphQL
 

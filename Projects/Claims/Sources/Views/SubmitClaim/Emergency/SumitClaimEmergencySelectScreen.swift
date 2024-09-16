@@ -1,3 +1,4 @@
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -34,8 +35,6 @@ struct SumitClaimEmergencySelectScreen: View {
             .hDisableScroll
             .onReceive(
                 store.loadingSignal
-                    .plain()
-                    .publisher
             ) { value in
                 withAnimation {
                     isLoading = value[.postConfirmEmergency] == .loading

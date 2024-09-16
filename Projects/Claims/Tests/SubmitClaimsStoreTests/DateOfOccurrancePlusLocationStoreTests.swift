@@ -1,4 +1,4 @@
-import Presentation
+import PresentableStore
 import XCTest
 
 @testable import Claims
@@ -70,7 +70,7 @@ final class DateOfOccurrancePlusLocationStoreTests: XCTestCase {
         await store.sendAsync(.dateOfOccurrenceAndLocationRequest)
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.postDateOfOccurrenceAndLocation] == nil
+            store.loadingState[.postDateOfOccurrenceAndLocation] == nil
         }
 
         assert(store.state.successStep == nil)
@@ -91,7 +91,7 @@ final class DateOfOccurrancePlusLocationStoreTests: XCTestCase {
         await store.sendAsync(.dateOfOccurrenceAndLocationRequest)
 
         await waitUntil(description: "loading state") {
-            if case .error = store.loadingSignal.value[.postDateOfOccurrenceAndLocation] {
+            if case .error = store.loadingState[.postDateOfOccurrenceAndLocation] {
                 return true
             } else {
                 return false

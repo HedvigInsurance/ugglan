@@ -1,5 +1,5 @@
 import Contracts
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -318,7 +318,7 @@ struct MovingFlowConfirm: View {
             hText(L10n.changeAddressNoFind, style: .body1)
             Spacing(height: 16)
             hButton.SmallButton(type: .primary) {
-                NotificationCenter.default.post(name: .openChat, object: nil)
+                NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
             } content: {
                 hText(L10n.openChat, style: .body1)
             }
@@ -343,7 +343,7 @@ public struct FieldInfo: Hashable, Equatable, Codable {
 
 struct MovingFlowConfirm_Previews: PreviewProvider {
     static var previews: some View {
-        Localization.Locale.currentLocale = .sv_SE
+        Localization.Locale.currentLocale.send(.sv_SE)
         return MovingFlowConfirm()
             .onAppear {
                 let store: MoveFlowStore = globalPresentableStoreContainer.get()

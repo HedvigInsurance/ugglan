@@ -4,7 +4,7 @@ import Contracts
 import EditCoInsuredShared
 import Foundation
 import Payment
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -26,19 +26,25 @@ public class HomeNavigationViewModel: ObservableObject {
 
     public init() {
 
-        NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: nil) {
+        NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: OperationQueue.main) {
             [weak self] notification in
             var openChat: ChatConversation?
             self?.openChatOptions = [.alwaysOpenOnTop, .withoutGrabber]
-            if let conversation = notification.object as? Chat.Conversation {
-                openChat = .init(
-                    chatType: .conversationId(id: conversation.id)
-                )
-            } else if let id = notification.object as? String {
-                openChat = .init(chatType: .conversationId(id: id))
+
+            if let chatType = notification.object as? ChatType {
+                switch chatType {
+                case let .conversationId(id):
+                    openChat = .init(chatType: .conversationId(id: id))
+                case .newConversation:
+                    openChat = .init(chatType: .newConversation)
+                case .inbox:
+                    openChat = .init(chatType: .inbox)
+                }
             } else {
-                openChat = .init(chatType: .newConversation)
+                // fallback on inbox view
+                openChat = .init(chatType: .inbox)
             }
+
             if self?.openChat == nil {
                 self?.openChat = openChat
             } else if self?.openChat != openChat {
@@ -91,10 +97,7 @@ public class HomeNavigationViewModel: ObservableObject {
 
     public var connectPaymentVm = ConnectPaymentViewModel()
     public var editCoInsuredVm = EditCoInsuredViewModel(
-        existingCoInsured: {
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-            return contractStore
-        }()
+        existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
     )
 }
 

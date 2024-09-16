@@ -1,5 +1,5 @@
 import Combine
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -81,7 +81,7 @@ struct LanguagePickerView_Previews: PreviewProvider {
 
 class LanguagePickerViewModel: ObservableObject {
     @Published var selectedLocale = Localization.Locale.currentLocale
-    @Published var selectedLocaleCode: String? = Localization.Locale.currentLocale.rawValue
+    @Published var selectedLocaleCode: String? = Localization.Locale.currentLocale.value.rawValue
 
     @Published var insertion: AnyTransition = .move(edge: .leading)
     @Published var removal: AnyTransition = .move(edge: .trailing)
@@ -90,7 +90,7 @@ class LanguagePickerViewModel: ObservableObject {
     init() {
         $selectedLocaleCode.sink { [weak self] selectedLocaleCode in
             if let selectedLocaleCode, let locale = Localization.Locale(rawValue: selectedLocaleCode) {
-                self?.selectedLocale = locale
+                self?.selectedLocale.value = locale
             }
         }
         .store(in: &cancellables)
@@ -98,6 +98,6 @@ class LanguagePickerViewModel: ObservableObject {
 
     func save() async {
         let store: MarketStore = globalPresentableStoreContainer.get()
-        await store.sendAsync(.selectLanguage(language: self.selectedLocale.rawValue))
+        await store.sendAsync(.selectLanguage(language: self.selectedLocale.value.rawValue))
     }
 }

@@ -89,6 +89,7 @@ public struct CheckboxToggleView: View {
     @Binding var isOn: Bool
     @Environment(\.hFieldSize) var fieldSize
     @State private var animate = false
+    @Environment(\.isEnabled) var isEnabled
 
     public init(
         title: String,
@@ -116,7 +117,7 @@ public struct CheckboxToggleView: View {
         VStack(alignment: .leading, spacing: .padding8) {
             HStack(alignment: .center, spacing: 0) {
                 hText(title, style: getTitleStyle(subtitle: subtitle))
-                    .foregroundColor(hTextColor.Opaque.primary)
+                    .foregroundColor(foregroundColor)
                     .fixedSize()
                 Spacer()
                 checkbox
@@ -164,6 +165,15 @@ public struct CheckboxToggleView: View {
             hSignalColor.Green.element
         } else {
             hFillColor.Opaque.disabled
+        }
+    }
+
+    @hColorBuilder
+    private var foregroundColor: some hColor {
+        if isEnabled {
+            hTextColor.Opaque.primary
+        } else {
+            hTextColor.Translucent.secondary
         }
     }
 }

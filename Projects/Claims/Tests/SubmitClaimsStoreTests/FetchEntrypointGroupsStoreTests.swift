@@ -1,4 +1,4 @@
-import Presentation
+import PresentableStore
 import XCTest
 
 @testable import Claims
@@ -58,7 +58,7 @@ final class FetchEntrypointGroupsStoreTests: XCTestCase {
         await store.sendAsync(.fetchEntrypointGroups)
 
         await waitUntil(description: "loading state") {
-            if case .error = store.loadingSignal.value[.fetchClaimEntrypointGroups] {
+            if case .error = store.loadingState[.fetchClaimEntrypointGroups] {
                 return true
             } else {
                 return false

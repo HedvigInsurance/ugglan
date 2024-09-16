@@ -4,7 +4,7 @@ import Authentication
 import Combine
 import Foundation
 import Market
-import Presentation
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -22,9 +22,8 @@ struct LoginNavigation: View {
             LanguagePickerView()
                 .navigationTitle(L10n.loginLanguagePreferences)
                 .embededInNavigation()
-
         }
-        .detent(presented: $vm.showLogin, style: [.large], tracking: Localization.Locale.currentLocale.code) {
+        .detent(presented: $vm.showLogin, style: [.large], tracking: Localization.Locale.currentLocale.value.code) {
             Group {
                 BankIDLoginQRView {
                     let store: UgglanStore = globalPresentableStoreContainer.get()
@@ -89,7 +88,7 @@ public struct NotLoggedInView: View {
                     Button {
                         vm.showLanguagePicker = true
                     } label: {
-                        Image(uiImage: Localization.Locale.currentLocale.icon)
+                        Image(uiImage: Localization.Locale.currentLocale.value.icon)
                             .padding(.padding8)
                     }
 
@@ -125,7 +124,7 @@ public class NotLoggedViewModel: ObservableObject {
     @Published var blurHash: String = ""
     @Published var imageURL: String = ""
     @Published var bootStrapped: Bool = false
-    @Published var locale: Localization.Locale = .currentLocale
+    @Published var locale: Localization.Locale = .currentLocale.value
     @Published var title: String = L10n.MarketLanguageScreen.title
     @Published var buttonText: String = L10n.MarketLanguageScreen.continueButtonText
     @Published var viewState: ViewState = .loading
@@ -136,13 +135,12 @@ public class NotLoggedViewModel: ObservableObject {
     var cancellables = Set<AnyCancellable>()
 
     init() {
-        Localization.Locale.$currentLocale
-            .distinct()
-            .plain()
-            .delay(by: 0.1)
-            .publisher
+        Localization.Locale.currentLocale
+            .removeDuplicates()
+            .delay(for: 0.1, scheduler: RunLoop.main)
             .receive(on: RunLoop.main)
             .sink { [weak self] value in
+                self?.locale = value
                 self?.title = L10n.MarketLanguageScreen.title
                 self?.buttonText = L10n.MarketLanguageScreen.continueButtonText
             }
@@ -177,8 +175,8 @@ public class NotLoggedViewModel: ObservableObject {
 
     func onOnBoardPressed() {
         var webUrl = Environment.current.webBaseURL
-        webUrl.appendPathComponent(Localization.Locale.currentLocale.webPath)
-        webUrl.appendPathComponent(Localization.Locale.currentLocale.priceQoutePath)
+        webUrl.appendPathComponent(Localization.Locale.currentLocale.value.webPath)
+        webUrl.appendPathComponent(Localization.Locale.currentLocale.value.priceQoutePath)
         webUrl =
             webUrl
             .appending("utm_source", value: "ios")

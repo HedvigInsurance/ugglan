@@ -1,61 +1,6 @@
 import Combine
-import Flow
 import Foundation
-import Presentation
 import SwiftUI
-
-class SignalSubscription<S: Subscriber, Value>: Subscription where S.Input == Value, S.Failure == Never {
-    private var subscriber: S?
-
-    fileprivate var bag: DisposeBag? = DisposeBag()
-    fileprivate var signal: Signal<Value>?
-
-    init(
-        signal: Signal<Value>,
-        subscriber: S
-    ) {
-        self.subscriber = subscriber
-
-        bag += signal.onValue { value in
-            let _ = subscriber.receive(value)
-        }
-    }
-
-    func request(_ demand: Subscribers.Demand) {}
-
-    func cancel() {
-        subscriber = nil
-        self.signal = nil
-        self.bag?.dispose()
-        self.bag = nil
-    }
-}
-
-public class SignalPublisher<Value>: Publisher {
-    public typealias Output = Value
-    public typealias Failure = Never
-
-    fileprivate var signal: Signal<Value>
-
-    init(
-        signal: Signal<Value>
-    ) {
-        self.signal = signal
-    }
-
-    public func receive<S: Subscriber>(
-        subscriber: S
-    ) where S.Input == Output, S.Failure == Failure {
-        let subscription = SignalSubscription(signal: signal, subscriber: subscriber)
-        subscriber.receive(subscription: subscription)
-    }
-}
-
-extension CoreSignal where Kind == Plain {
-    public var publisher: SignalPublisher<Value> {
-        SignalPublisher(signal: self)
-    }
-}
 
 public struct PresentableStoreLens<S: Store, Value: Equatable, Content: View>: View {
     typealias Getter = (_ state: S.State) -> Value
@@ -83,7 +28,7 @@ public struct PresentableStoreLens<S: Store, Value: Equatable, Content: View>: V
         let store: S = globalPresentableStoreContainer.get()
         self.store = store
 
-        self._value = State(initialValue: getter(store.stateSignal.value))
+        self._value = State(initialValue: getter(store.state))
     }
 
     public init(
@@ -98,7 +43,7 @@ public struct PresentableStoreLens<S: Store, Value: Equatable, Content: View>: V
         let store: S = globalPresentableStoreContainer.get()
         self.store = store
 
-        self._value = State(initialValue: getter(store.stateSignal.value))
+        self._value = State(initialValue: getter(store.state))
     }
 
     public var body: some View {
@@ -112,18 +57,16 @@ public struct PresentableStoreLens<S: Store, Value: Equatable, Content: View>: V
         )
         .onReceive(
             store.stateSignal
-                .plain()
-                .distinct({ lhs, rhs in
+                .removeDuplicates(by: { lhs, rhs in
                     self.getter(lhs) == self.getter(rhs)
                 })
-                .publisher
         ) { _ in
             if let animation = animation {
                 withAnimation(animation) {
-                    self.value = getter(store.stateSignal.value)
+                    self.value = getter(store.state)
                 }
             } else {
-                self.value = getter(store.stateSignal.value)
+                self.value = getter(store.state)
             }
         }
     }
@@ -157,7 +100,7 @@ public struct PresentableLoadingStoreLens<
         let store: S = globalPresentableStoreContainer.get()
         self.store = store
         self.loadingState = loadingState
-        let value = store.loadingSignal.value.first(where: { $0.key == loadingState })?.value
+        let value = store.loadingState.first(where: { $0.key == loadingState })?.value
         self._state = State(initialValue: value)
     }
 
@@ -174,8 +117,6 @@ public struct PresentableLoadingStoreLens<
         }
         .onReceive(
             store.loadingSignal
-                .plain()
-                .publisher
         ) { value in
             let currentValue = value.first(where: { $0.key == loadingState })?.value
             if let animation {
