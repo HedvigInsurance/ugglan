@@ -125,26 +125,32 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack(spacing: 0) {
+            HStack(spacing: .padding6) {
+                // if we have tier -> display this {
+                StatusPill(text: "Standard", type: .tier)
+                //                }
                 if let terminationMessage {
-                    StatusPill(text: terminationMessage).padding(.trailing, .padding4)
+                    StatusPill(text: terminationMessage, type: .text).padding(.trailing, .padding4)
                 } else if let activeFrom {
                     StatusPill(
                         text: L10n.dashboardInsuranceStatusActiveUpdateDate(
                             activeFrom.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-                        )
+                        ),
+                        type: .text
                     )
                     .padding(.trailing, .padding4)
                 } else if activeInFuture ?? false {
                     StatusPill(
                         text: L10n.contractStatusActiveInFuture(
                             masterInceptionDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-                        )
+                        ),
+                        type: .text
                     )
                     .padding(.trailing, .padding4)
                 } else {
                     StatusPill(
-                        text: L10n.dashboardInsuranceStatusActive
+                        text: L10n.dashboardInsuranceStatusActive,
+                        type: .text
                     )
                 }
                 Spacer()
@@ -172,8 +178,24 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     }
 }
 
+private enum PillType {
+    case text
+    case tier
+
+    @hColorBuilder
+    var getBackgroundColor: some hColor {
+        switch self {
+        case .text:
+            hFillColor.Translucent.tertiary
+        case .tier:
+            hFillColor.Translucent.secondary
+        }
+    }
+}
+
 private struct StatusPill: View {
     var text: String
+    var type: PillType
 
     var body: some View {
         VStack {
@@ -182,7 +204,7 @@ private struct StatusPill: View {
         .padding(.vertical, 3)
         .padding(.horizontal, .padding6)
         .foregroundColor(hTextColor.Opaque.white)
-        .background(hFillColor.Translucent.tertiary).colorScheme(.light)
+        .background(type.getBackgroundColor).colorScheme(.light)
         .cornerRadius(.cornerRadiusS)
     }
 }
