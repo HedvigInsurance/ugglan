@@ -71,7 +71,7 @@ public enum ChatNavigationViewName: TrackingViewNameProtocol {
 }
 
 public struct ChatNavigation<Content: View>: View {
-    @EnvironmentObject var router: Router
+    @StateObject var router = Router()
     @StateObject var chatNavigationViewModel = ChatNavigationViewModel()
 
     let chatType: ChatType

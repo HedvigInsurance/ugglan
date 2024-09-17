@@ -390,7 +390,6 @@ struct HomeTab: View {
                         }
                     }
                 )
-                .environmentObject(homeNavigationVm.router)
             }
         )
     }
