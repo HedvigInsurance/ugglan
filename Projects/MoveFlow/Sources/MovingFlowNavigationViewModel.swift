@@ -116,7 +116,7 @@ public struct MovingFlowNavigation: View {
 
     func openApartmentFillScreen() -> some View {
         let store: MoveFlowStore = globalPresentableStoreContainer.get()
-        return MovingFlowAddressView(vm: store.addressInputModel).withDismissButton()
+        return MovingFlowAddressView().withDismissButton()
     }
 
     func openHouseFillScreen() -> some View {

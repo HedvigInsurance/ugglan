@@ -27,10 +27,6 @@ public class HelpCenterNavigationViewModel: ObservableObject {
     }
 
     public init() {}
-    struct ChatTopicModel: Identifiable, Equatable {
-        var id: String?
-        var topic: ChatTopicType?
-    }
 }
 
 enum HelpCenterNavigationRouterType: TrackingViewNameProtocol {
@@ -115,7 +111,7 @@ public struct HelpCenterNavigation<Content: View>: View {
                 homeStore.send(.fetchQuickActions)
             case .chat:
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                    NotificationCenter.default.post(name: .openChat, object: nil)
+                    NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                 }
             case let .openFeedback(url):
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
@@ -151,7 +147,6 @@ public struct HelpCenterNavigation<Content: View>: View {
         case .changeAddress:
             helpCenterVm.quickActions.isChangeAddressPresented = true
         case .cancellation:
-            //            helpCenterVm.quickActions.isCancellationPresented = true
             let contractStore: ContractStore = globalPresentableStoreContainer.get()
 
             let contractsConfig: [TerminationConfirmConfig] = contractStore.state.activeContracts

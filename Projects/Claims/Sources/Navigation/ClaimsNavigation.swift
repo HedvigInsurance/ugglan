@@ -291,7 +291,7 @@ public struct ClaimsNavigation: View {
     ) -> some View {
         SubmitClaimOccurrencePlusLocationScreen(options: options)
             .resetProgressToPreviousValueOnDismiss
-            .withDismissButton()
+            .addDismissClaimsFlow()
     }
 
     private func openSelectContractScreen() -> some View {
@@ -303,7 +303,7 @@ public struct ClaimsNavigation: View {
     private func submitClaimPhoneNumberScreen(model: FlowClaimPhoneNumberStepModel) -> some View {
         SubmitClaimContactScreen(model: model)
             .resetProgressToPreviousValueOnDismiss
-            .withDismissButton()
+            .addDismissClaimsFlow()
     }
 
     private func openAudioRecordingSceen() -> some View {
@@ -311,7 +311,7 @@ public struct ClaimsNavigation: View {
         let url = store.state.audioRecordingStep?.getUrl()
         return SubmitClaimAudioRecordingScreen(url: url)
             .resetProgressToPreviousValueOnDismiss
-            .withDismissButton()
+            .addDismissClaimsFlow()
     }
 
     private func openSuccessScreen() -> some View {
@@ -321,14 +321,14 @@ public struct ClaimsNavigation: View {
     private func openSingleItemScreen() -> some View {
         SubmitClaimSingleItem()
             .resetProgressToPreviousValueOnDismiss
-            .withDismissButton()
+            .addDismissClaimsFlow()
     }
 
     private func openSummaryScreen() -> some View {
         SubmitClaimSummaryScreen()
             .configureTitle(L10n.Claims.Summary.Screen.title)
             .resetProgressToPreviousValueOnDismiss
-            .withDismissButton()
+            .addDismissClaimsFlow()
     }
 
     @ViewBuilder
@@ -343,7 +343,7 @@ public struct ClaimsNavigation: View {
                 SubmitClaimDeflectScreen(
                     model: model,
                     openChat: {
-                        NotificationCenter.default.post(name: .openChat, object: nil)
+                        NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                     }
                 )
             }
@@ -496,7 +496,7 @@ public struct ClaimsNavigation: View {
         ClaimFilesView(endPoint: model.endpoint, files: model.files) { uploadedFiles in
             router.dismiss()
         }
-        .withDismissButton()
+        .addDismissClaimsFlow()
         .configureTitle(L10n.ClaimStatusDetail.addedFiles)
     }
 }

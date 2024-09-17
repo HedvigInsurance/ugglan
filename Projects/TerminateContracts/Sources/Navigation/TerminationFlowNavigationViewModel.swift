@@ -251,6 +251,7 @@ struct TerminationFlowNavigation: View {
                 tabBarInfoView
             }
         }
+        .trackLoading(TerminationContractStore.self, action: .getInitialStep)
     }
 
     private func openUpdateAppTerminationScreen() -> some View {

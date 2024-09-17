@@ -48,7 +48,7 @@ public enum HomeAction: ActionProtocol {
     case fetchQuickActions
     case setQuickActions(quickActions: [QuickAction])
     case startClaim
-    case openFreeTextChat(from: ChatTopicType?)
+    case openFreeTextChat
     case openHelpCenter
     case showNewOffer
     case openFirstVet(partners: [FirstVetPartner])

@@ -34,7 +34,7 @@ public struct ConnectPaymentCardView: View {
                     .init(
                         buttonTitle: L10n.General.chatButton,
                         buttonAction: {
-                            if let url = DeepLink.getUrl(from: .openChat) {
+                            if let url = DeepLink.getUrl(from: .conversation) {
                                 router.push(PaymentsRouterAction.openUrl(url: url))
                             }
                         }
