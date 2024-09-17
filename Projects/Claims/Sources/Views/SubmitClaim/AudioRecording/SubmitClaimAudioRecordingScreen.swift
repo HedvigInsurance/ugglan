@@ -238,7 +238,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
         hSection {
             hTextView(
                 selectedValue: inputText,
-                placeholder: L10n.terminationSurveyFeedbackHint,
+                placeholder: L10n.claimsTextInputPlaceholder,
                 required: true,
                 maxCharacters: 2000
             ) { text in
