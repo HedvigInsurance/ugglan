@@ -8,12 +8,17 @@ public struct TierModel: Codable, Equatable, Hashable {
     let tiers: [TierLevel]
 }
 
-enum TierLevel: Codable, Equatable, Hashable {
+public enum TierLevel: Codable, Equatable, Hashable, Identifiable {
+    public var id: String {
+        return ""
+    }
+
+    case none
     case mini
     case standard
     case max
 
-    var title: String {
+    var title: String? {
         switch self {
         case .mini:
             return "Bas"
@@ -21,10 +26,12 @@ enum TierLevel: Codable, Equatable, Hashable {
             return "Standard"
         case .max:
             return "Max"
+        case .none:
+            return nil
         }
     }
 
-    var subTitle: String {
+    var subTitle: String? {
         switch self {
         case .mini:
             return "Vårt paket med grundläggande villkor."
@@ -32,10 +39,12 @@ enum TierLevel: Codable, Equatable, Hashable {
             return "Vårt mellanpaket med hög ersättning."
         case .max:
             return "Vårt största paket med högst ersättning."
+        case .none:
+            return nil
         }
     }
 
-    var premium: String {
+    var premium: String? {
         switch self {
         case .mini:
             return "199"
@@ -43,6 +52,8 @@ enum TierLevel: Codable, Equatable, Hashable {
             return "449"
         case .max:
             return "799"
+        case .none:
+            return nil
         }
     }
 }

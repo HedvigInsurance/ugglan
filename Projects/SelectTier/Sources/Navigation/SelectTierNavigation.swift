@@ -3,7 +3,9 @@ import SwiftUI
 import hCoreUI
 
 public class SelectTierNavigationViewModel: ObservableObject {
-    @Published public var isEditTierPresented = false
+    @Published public var isEditTierPresented: TierLevel?
+
+    init() {}
 }
 
 public struct SelectTierNavigation: View {
@@ -18,12 +20,13 @@ public struct SelectTierNavigation: View {
         }
         .environmentObject(selectTierNavigationVm)
         .detent(
-            presented: $selectTierNavigationVm.isEditTierPresented,
+            item: $selectTierNavigationVm.isEditTierPresented,
             style: [.height]
-        ) {
-            EditTier()
+        ) { tier in
+            EditTier(selectedTier: tier)
                 .configureTitle("Select your coverage")
                 .embededInNavigation(options: .navigationType(type: .large))
+                .environmentObject(selectTierNavigationVm)
         }
     }
 }

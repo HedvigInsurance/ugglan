@@ -5,6 +5,13 @@ import hCoreUI
 struct EditTier: View {
     @State var selectedTier: String?
     @StateObject var vm = SelectTierViewModel()
+    @EnvironmentObject var selectTierNavigationVm: SelectTierNavigationViewModel
+
+    init(
+        selectedTier: TierLevel?
+    ) {
+        self.selectedTier = selectedTier?.title
+    }
 
     var body: some View {
         hForm {
@@ -12,15 +19,15 @@ struct EditTier: View {
                 VStack(spacing: .padding4) {
                     ForEach(vm.tiers, id: \.self) { tier in
                         hRadioField(
-                            id: tier.title,
+                            id: tier.title ?? "",
                             leftView: {
                                 VStack(alignment: .leading, spacing: .padding8) {
                                     HStack {
-                                        hText(tier.title)
+                                        hText(tier.title ?? "")
                                         Spacer()
-                                        hText(tier.premium + " kr/mo")
+                                        hText(tier.premium ?? "" + " kr/mo")
                                     }
-                                    hText(tier.subTitle)
+                                    hText(tier.subTitle ?? "")
                                         .fixedSize()
                                 }
                                 .asAnyView
@@ -39,13 +46,13 @@ struct EditTier: View {
             hSection {
                 VStack(spacing: .padding8) {
                     hButton.LargeButton(type: .primary) {
-
+                        selectTierNavigationVm.isEditTierPresented = nil
                     } content: {
                         hText(L10n.generalContinueButton)
                     }
 
                     hButton.LargeButton(type: .ghost) {
-
+                        selectTierNavigationVm.isEditTierPresented = nil
                     } content: {
                         hText(L10n.generalCancelButton)
                     }
@@ -62,5 +69,5 @@ struct EditTier: View {
 }
 
 #Preview{
-    EditTier()
+    EditTier(selectedTier: nil)
 }
