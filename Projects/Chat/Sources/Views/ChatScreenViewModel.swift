@@ -29,11 +29,15 @@ public class ChatScreenViewModel: ObservableObject {
     private var isFetching = false
     private var haveSentAMessage = false
     private var openDeepLinkObserver: NSObjectProtocol?
+    private var onTitleTap: (String) -> Void?
+    private var claimId: String?
 
     public init(
-        chatService: ChatServiceProtocol
+        chatService: ChatServiceProtocol,
+        onTitleTap: @escaping (String) -> Void = { claimId in }
     ) {
         self.chatService = chatService
+        self.onTitleTap = onTitleTap
 
         chatInputVm.sendMessage = { [weak self] message in
             Task { [weak self] in
@@ -101,6 +105,7 @@ public class ChatScreenViewModel: ObservableObject {
                 isFetchingPreviousMessages = true
                 let chatData = try await chatService.getPreviousMessages()
                 let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
+
                 withAnimation {
                     self.messages.append(contentsOf: newMessages)
                     self.messages.sort(by: { $0.sentAt > $1.sentAt })
@@ -154,6 +159,7 @@ public class ChatScreenViewModel: ObservableObject {
             }
             title = chatData.title ?? L10n.chatTitle
             subTitle = chatData.subtitle
+            claimId = chatData.claimId
         } catch _ {
             //We ignore this errors since we will fetch this every 5 seconds
         }
@@ -291,7 +297,16 @@ extension ChatScreenViewModel: TitleView {
     public func getTitleView() -> UIView {
         let view: UIView = UIHostingController(rootView: titleView).view
         view.backgroundColor = .clear
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture))
+        view.addGestureRecognizer(tapGesture)
+        view.isUserInteractionEnabled = true
         return view
+    }
+
+    @objc private func handleTapGesture() {
+        if let claimId {
+            self.onTitleTap(claimId)
+        }
     }
 
     @ViewBuilder

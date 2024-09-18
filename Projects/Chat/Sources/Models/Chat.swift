@@ -9,4 +9,5 @@ public struct ChatData {
     let conversationStatus: ConversationStatus?
     let title: String?
     let subtitle: String?
+    let claimId: String?
 }
