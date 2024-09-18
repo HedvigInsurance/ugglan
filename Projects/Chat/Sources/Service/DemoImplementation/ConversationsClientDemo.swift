@@ -129,7 +129,8 @@ public class ConversationDemoClient: ConversationClient {
             createdAt: nil,
             isLegacy: false,
             hasClaim: false,
-            claimType: nil
+            claimType: nil,
+            claimId: nil
         )
     }
 

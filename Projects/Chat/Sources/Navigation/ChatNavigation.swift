@@ -7,6 +7,7 @@ import hCoreUI
 public class ChatNavigationViewModel: ObservableObject {
     @Published var isFilePresented: FileUrlModel?
     @Published var isAskForPushNotificationsPresented = false
+
     init() {}
 
     struct FileUrlModel: Identifiable, Equatable {
@@ -44,8 +45,21 @@ public class ChatNavigationViewModel: ObservableObject {
     }
 }
 
-public enum ChatRedirectViewType {
+public enum ChatRedirectViewType: Hashable {
     case notification
+    case claimDetail(id: String)
+}
+
+extension ChatRedirectViewType: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        switch self {
+        case .notification:
+            return "AskForPushNotifications"
+        case .claimDetail:
+            return "ClaimDetailView"
+        }
+    }
+
 }
 
 public enum ChatNavigationViewName: TrackingViewNameProtocol {
@@ -59,8 +73,10 @@ public enum ChatNavigationViewName: TrackingViewNameProtocol {
 public struct ChatNavigation<Content: View>: View {
     @StateObject var router = Router()
     @StateObject var chatNavigationViewModel = ChatNavigationViewModel()
+
     let chatType: ChatType
     @ViewBuilder var redirectView: (_ type: ChatRedirectViewType, _ onDone: @escaping () -> Void) -> Content
+
     public init(
         chatType: ChatType,
         @ViewBuilder redirectView: @escaping (_ type: ChatRedirectViewType, _ onDone: @escaping () -> Void) -> Content
@@ -73,8 +89,15 @@ public struct ChatNavigation<Content: View>: View {
         RouterHost(router: router, options: .navigationType(type: .large), tracking: ChatNavigationViewName.chat) {
             Group {
                 switch chatType {
-                case let .conversationId(id):
-                    ChatScreen(vm: .init(chatService: ConversationService(conversationId: id)))
+                case let .conversationId(conversationId):
+                    ChatScreen(
+                        vm: .init(
+                            chatService: ConversationService(conversationId: conversationId),
+                            onTitleTap: { claimId in
+                                router.push(ChatRedirectViewType.claimDetail(id: claimId))
+                            }
+                        )
+                    )
                 case .newConversation:
                     ChatScreen(vm: .init(chatService: NewConversationService()))
                 case .inbox:
@@ -85,6 +108,9 @@ public struct ChatNavigation<Content: View>: View {
             .withDismissButton(
                 reducedTopSpacing: Int(CGFloat.padding8)
             )
+            .routerDestination(for: ChatRedirectViewType.self) { value in
+                redirectView(value) {}
+            }
         }
         .environmentObject(chatNavigationViewModel)
         .detent(
