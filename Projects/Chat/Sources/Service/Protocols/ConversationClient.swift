@@ -26,6 +26,7 @@ public struct ConversationMessagesData {
     let isLegacy: Bool
     let hasClaim: Bool
     let claimType: String?
+    let claimId: String?
 
     var screenTitle: String {
         if isLegacy {

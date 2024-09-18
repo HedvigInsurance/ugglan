@@ -263,13 +263,14 @@ struct HomeTab: View {
                 }
             )
             .routerDestination(for: ClaimModel.self, options: [.hidesBottomBarWhenPushed]) { claim in
-                ClaimDetailView(claim: claim)
+                ClaimDetailView(claim: claim, fromChat: false)
                     .environmentObject(homeNavigationVm)
                     .configureTitle(L10n.claimsYourClaim)
             }
             .routerDestination(for: String.self) { conversation in
                 InboxView()
                     .configureTitle(L10n.chatConversationInbox)
+                    .environmentObject(homeNavigationVm)
             }
         }
         .environmentObject(homeNavigationVm)
@@ -369,15 +370,26 @@ struct HomeTab: View {
             options: $homeNavigationVm.openChatOptions,
             content: { openChat in
                 ChatNavigation(
-                    chatType: openChat.chatType
-                ) { type, onDone in
-                    AskForPushNotifications(
-                        text: L10n.chatActivateNotificationsBody,
-                        onActionExecuted: {
-                            onDone()
+                    chatType: openChat.chatType,
+                    redirectView: { viewType, onDone in
+                        switch viewType {
+                        case .notification:
+                            AskForPushNotifications(
+                                text: L10n.chatActivateNotificationsBody,
+                                onActionExecuted: {
+                                    onDone()
+                                }
+                            )
+                        case let .claimDetail(id):
+                            let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
+                            if let claim = claimStore.state.claim(for: id) {
+                                ClaimDetailView(claim: claim, fromChat: true)
+                                    .configureTitle(L10n.claimsYourClaim)
+
+                            }
                         }
-                    )
-                }
+                    }
+                )
             }
         )
     }
