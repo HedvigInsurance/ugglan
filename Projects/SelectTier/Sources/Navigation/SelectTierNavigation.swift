@@ -22,6 +22,7 @@ public struct SelectTierNavigation: View {
             style: [.height]
         ) {
             EditTier()
+                .configureTitle("Select your coverage")
                 .embededInNavigation(options: .navigationType(type: .large))
         }
     }

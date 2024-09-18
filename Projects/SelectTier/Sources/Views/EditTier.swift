@@ -4,38 +4,36 @@ import hCoreUI
 
 struct EditTier: View {
     @State var selectedTier: String?
+    @StateObject var vm = SelectTierViewModel()
 
     var body: some View {
         hForm {
-            hRadioField(
-                id: "id",
-                leftView: {
-                    AnyView(EmptyView())
-                },
-                selected: $selectedTier
-            )
-
-            /* TODO: IMPLEMENT THIS */
-            //            let config: ItemConfig = .init(
-            //                items: [()],
-            //                preSelectedItems: {
-            //                    return []
-            //                },
-            //                onSelected: { item in
-            //
-            //                },
-            //                onCancel: nil,
-            //                singleSelect: true,
-            //                attachToBottom: false,
-            //                disableIfNoneSelected: true,
-            //                manualInputPlaceholder: nil,
-            //                manualBrandName: nil,
-            //                withTitle: "title",
-            //                hButtonText: nil,
-            //                infoCard: nil,
-            //                fieldSize: .medium
-            //            )
-            //            ItemPickerScreen(config: config)
+            hSection {
+                VStack(spacing: .padding4) {
+                    ForEach(vm.tiers, id: \.self) { tier in
+                        hRadioField(
+                            id: tier.title,
+                            leftView: {
+                                VStack(alignment: .leading, spacing: .padding8) {
+                                    HStack {
+                                        hText(tier.title)
+                                        Spacer()
+                                        hText(tier.premium + " kr/mo")
+                                    }
+                                    hText(tier.subTitle)
+                                        .fixedSize()
+                                }
+                                .asAnyView
+                            },
+                            selected: $selectedTier,
+                            error: nil,
+                            useAnimation: true
+                        )
+                        .hFieldLeftAttachedView
+                    }
+                }
+            }
+            .sectionContainerStyle(.transparent)
         }
         .hFormAttachToBottom {
             hSection {
@@ -55,6 +53,10 @@ struct EditTier: View {
                 }
             }
             .sectionContainerStyle(.transparent)
+            .padding(.top, 16)
+        }
+        .onAppear {
+            self.selectedTier = vm.tiers.first?.title
         }
     }
 }

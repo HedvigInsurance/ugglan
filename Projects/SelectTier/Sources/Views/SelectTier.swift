@@ -39,7 +39,7 @@ struct SelectTier: View {
                     .padding(.bottom, 30)
 
                     VStack(spacing: .padding4) {
-                        DropdownView(value: vm.selectedTier.displayName, placeHolder: "Coverage level") {
+                        DropdownView(value: vm.selectedTier.title, placeHolder: "Coverage level") {
                             // on tap
                             selectTierNavigationVm.isEditTierPresented = true
                         }

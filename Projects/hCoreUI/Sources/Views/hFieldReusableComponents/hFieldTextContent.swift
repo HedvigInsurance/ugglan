@@ -43,8 +43,8 @@ public struct hFieldTextContent<T>: View {
         HStack(spacing: 8) {
             if leftAlign {
                 cellView?()
+                    .frame(maxHeight: .infinity, alignment: .top)
                 getTextField
-                Spacer()
             } else {
                 getTextField
                 Spacer()
