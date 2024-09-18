@@ -17,11 +17,15 @@ public struct ClaimDetailView: View {
     @State var showCamera = false
     @StateObject var vm: ClaimDetailViewModel
     @EnvironmentObject var homeVm: HomeNavigationViewModel
+    @EnvironmentObject var router: Router
+    private var fromChat: Bool
 
     public init(
-        claim: ClaimModel
+        claim: ClaimModel,
+        fromChat: Bool
     ) {
         self._vm = .init(wrappedValue: .init(claim: claim))
+        self.fromChat = fromChat
         if let url = URL(string: claim.signedAudioURL) {
             self._player = State(initialValue: AudioPlayer(url: url))
         }
@@ -60,10 +64,14 @@ public struct ClaimDetailView: View {
                 case .firstVet:
                     break
                 case .chat:
-                    NotificationCenter.default.post(
-                        name: .openChat,
-                        object: ChatType.conversationId(id: vm.claim.conversation?.id ?? "")
-                    )
+                    if fromChat {
+                        router.pop()
+                    } else {
+                        NotificationCenter.default.post(
+                            name: .openChat,
+                            object: ChatType.conversationId(id: vm.claim.conversation?.id ?? "")
+                        )
+                    }
                 case .chatNotification:
                     NotificationCenter.default.post(
                         name: .openChat,
@@ -363,7 +371,11 @@ struct ClaimDetailView_Previews: PreviewProvider {
                 unreadMessageCount: 0
             )
         )
-        return ClaimDetailView(claim: claim).environmentObject(HomeNavigationViewModel())
+        return ClaimDetailView(
+            claim: claim,
+            fromChat: false
+        )
+        .environmentObject(HomeNavigationViewModel())
     }
 }
 

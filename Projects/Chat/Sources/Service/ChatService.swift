@@ -41,7 +41,8 @@ public class ConversationService: ChatServiceProtocol {
             banner: data.banner,
             conversationStatus: data.isConversationOpen ?? true ? .open : .closed,
             title: data.screenTitle,
-            subtitle: data.subtitle
+            subtitle: data.subtitle,
+            claimId: data.claimId
         )
     }
 
@@ -59,7 +60,8 @@ public class ConversationService: ChatServiceProtocol {
             banner: data.banner,
             conversationStatus: data.isConversationOpen ?? true ? .open : .closed,
             title: data.screenTitle,
-            subtitle: data.subtitle
+            subtitle: data.subtitle,
+            claimId: data.claimId
         )
 
     }
@@ -90,7 +92,8 @@ public class NewConversationService: ChatServiceProtocol {
             banner: nil,
             conversationStatus: .open,
             title: L10n.chatNewConversationTitle,
-            subtitle: L10n.chatNewConversationSubtitle
+            subtitle: L10n.chatNewConversationSubtitle,
+            claimId: nil
         )
     }
 
@@ -105,7 +108,8 @@ public class NewConversationService: ChatServiceProtocol {
             banner: nil,
             conversationStatus: .open,
             title: nil,
-            subtitle: nil
+            subtitle: nil,
+            claimId: nil
         )
     }
 

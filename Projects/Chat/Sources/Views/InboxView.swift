@@ -151,7 +151,7 @@ class InboxViewModel: ObservableObject {
     init() {
         configureFetching()
         chatClosedObserver = NotificationCenter.default.addObserver(forName: .chatClosed, object: nil, queue: nil) {
-            [weak self] notification in  //
+            [weak self] notification in
             self?.configureFetching()
         }
     }

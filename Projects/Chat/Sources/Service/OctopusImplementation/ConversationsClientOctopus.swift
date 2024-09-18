@@ -111,7 +111,8 @@ public class ConversationClientOctopus: ConversationClient {
             createdAt: conversation.createdAt,
             isLegacy: conversation.isLegacy,
             hasClaim: hasClaim,
-            claimType: conversation.claim?.claimType
+            claimType: conversation.claim?.claimType,
+            claimId: conversation.claim?.id
         )
     }
 }
