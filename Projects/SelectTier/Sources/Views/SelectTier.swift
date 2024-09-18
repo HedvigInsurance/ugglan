@@ -5,6 +5,7 @@ import hGraphQL
 
 struct SelectTier: View {
     @StateObject var vm = SelectTierViewModel()
+    @EnvironmentObject var selectTierNavigationVm: SelectTierNavigationViewModel
 
     var body: some View {
         hForm {}
@@ -38,8 +39,9 @@ struct SelectTier: View {
                     .padding(.bottom, 30)
 
                     VStack(spacing: .padding4) {
-                        DropdownView(value: "Bas", placeHolder: "Coverage level") {
+                        DropdownView(value: vm.selectedTier.displayName, placeHolder: "Coverage level") {
                             // on tap
+                            selectTierNavigationVm.isEditTierPresented = true
                         }
                         .hFieldSize(.medium)
 
@@ -69,8 +71,11 @@ class SelectTierViewModel: ObservableObject {
     var insuranceDisplayName: String?
     var streetName: String?
     var premium: MonetaryAmount?
+    var tiers: [TierLevel] = []
+    @State var selectedTier: TierLevel
 
     init() {
+        self.selectedTier = tiers.first ?? .standard
         fetchTiers()
     }
 
@@ -80,6 +85,7 @@ class SelectTierViewModel: ObservableObject {
             self.insuranceDisplayName = data.insuranceDisplayName
             self.streetName = data.streetName
             self.premium = data.premium
+            self.tiers = data.tiers
         }
     }
 }

@@ -12,7 +12,8 @@ public class SelectTierClientDemo: SelectTierClient {
             id: "id",
             insuranceDisplayName: "Homeowner",
             streetName: "Bellmansgatan 19A",
-            premium: .init(amount: 449, currency: "SEK")
+            premium: .init(amount: 449, currency: "SEK"),
+            tiers: [.mini, .standard, .max]
         )
     }
 }
