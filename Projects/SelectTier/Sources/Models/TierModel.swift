@@ -1,3 +1,5 @@
+import hCore
+import hCoreUI
 import hGraphQL
 
 public struct TierModel: Codable, Equatable, Hashable {
@@ -58,6 +60,21 @@ public enum Tier: Codable, Equatable, Hashable, Identifiable {
         case .none:
             return nil
         }
+    }
+
+    var perils: [Perils] {
+        return [
+            .init(id: "id1", title: "title", description: "description", info: nil, color: nil, covered: []),
+            .init(id: "id2", title: "title2", description: "description", info: nil, color: nil, covered: []),
+            .init(id: "id3", title: "title3", description: "description", info: nil, color: nil, covered: []),
+        ]
+    }
+
+    var insurableLimits: [InsurableLimits] {
+        return [
+            .init(label: "label1", limit: "limit", description: "description"),
+            .init(label: "label2", limit: "limit", description: "description"),
+        ]
     }
 }
 

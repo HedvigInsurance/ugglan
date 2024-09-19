@@ -17,17 +17,13 @@ struct ContractCoverageView: View {
             }
         ) { contract in
             if let contract = contract {
-                VStack(spacing: 4) {
-                    InsurableLimitsSectionView(
-                        limits: contract.currentAgreement?.productVariant.insurableLimits ?? []
-                    ) { limit in
+                CoverageView(
+                    limits: contract.currentAgreement?.productVariant.insurableLimits ?? [],
+                    didTapInsurableLimit: { limit in
                         contractsNavigationVm.insurableLimit = limit
-                    }
-                    PerilCollection(
-                        perils: contract.currentAgreement?.productVariant.perils ?? []
-                    )
-                    .hFieldSize(.small)
-                }
+                    },
+                    perils: contract.currentAgreement?.productVariant.perils ?? []
+                )
             }
         }
     }

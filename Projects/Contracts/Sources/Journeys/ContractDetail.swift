@@ -36,7 +36,7 @@ public struct ContractDetail: View {
     @StateObject private var vm: ContractDetailsViewModel
     var id: String
 
-    @StateObject var crollableSegmentedViewModel = ScrollableSegmentedViewModel(
+    @StateObject var scrollableSegmentedViewModel = ScrollableSegmentedViewModel(
         pageModels: ContractDetailsViews.allCases.compactMap({ .init(id: $0.id, title: $0.title) })
     )
     @State private var selectedView = ContractDetailsViews.overview
@@ -65,7 +65,7 @@ public struct ContractDetail: View {
                         )
                     }
                     ScrollableSegmentedView(
-                        vm: crollableSegmentedViewModel,
+                        vm: scrollableSegmentedViewModel,
                         contentFor: { id in
                             Group {
                                 switch ContractDetailsViews(rawValue: id) {

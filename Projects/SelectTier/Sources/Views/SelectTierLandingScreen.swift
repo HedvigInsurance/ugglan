@@ -102,12 +102,12 @@ struct SelectTierLandingScreen: View {
         hSection {
             VStack(spacing: .padding8) {
                 hButton.LargeButton(type: .ghost) {
-                    // compare coverage level
+                    selectTierNavigationVm.isCompareTiersPresented = true
                 } content: {
                     hText("Compare coverage levels", style: .body1)
                 }
-                /* TODO: DISABLE IF NO TIER SELECTED */
                 hButton.LargeButton(type: .primary) {
+                    /** TODO: ADD ACTION **/
                 } content: {
                     hText(L10n.generalContinueButton)
                 }
