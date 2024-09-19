@@ -75,6 +75,8 @@ struct FilesGridView: View {
             }
         case .url(let url):
             fileModel = .init(type: .url(url: url))
+        case .data:
+            break
         }
     }
 }

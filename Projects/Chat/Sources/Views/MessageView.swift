@@ -8,23 +8,39 @@ import hCoreUI
 struct MessageView: View {
     let message: Message
     let conversationStatus: ConversationStatus
-
+    @ObservedObject var vm: ChatScreenViewModel
     @State var height: CGFloat = 0
     @State var width: CGFloat = 0
+    @State var showRetryOptions = false
     @ViewBuilder
     public var body: some View {
-        HStack {
+        HStack(spacing: 0) {
             messageContent
                 .padding(.horizontal, message.horizontalPadding)
                 .padding(.vertical, message.verticalPadding)
-                .background(message.bgColor(conversationStatus: conversationStatus))
-                .clipShape(RoundedRectangle(cornerRadius: 12))
                 .environment(\.colorScheme, .light)
             if case .failed = message.status {
                 hCoreUIAssets.infoFilled.view
                     .resizable()
-                    .frame(width: 16, height: 16)
+                    .frame(width: 24, height: 24)
                     .foregroundColor(hSignalColor.Red.element)
+                    .padding(.leading, .padding8)
+                    .padding(.vertical, .padding24)
+                    .onTapGesture {
+                        showRetryOptions = true
+                    }
+            }
+        }
+        .confirmationDialog("", isPresented: $showRetryOptions, titleVisibility: .hidden) { [weak vm] in
+            Button(L10n.generalRetry) {
+                Task {
+                    await vm?.retrySending(message: message)
+                }
+            }
+            Button(L10n.General.remove, role: .destructive) {
+                vm?.deleteFailed(message: message)
+            }
+            Button(L10n.generalCancelButton, role: .cancel) {
             }
         }
     }
@@ -38,39 +54,12 @@ struct MessageView: View {
                     .frame(width: 24, height: 24)
                     .foregroundColor(hSignalColor.Red.element)
             }
-            switch message.type {
-            case let .text(text):
-                MarkdownView(
-                    config: .init(
-                        text: text,
-                        fontStyle: .body1,
-                        color: hTextColor.Opaque.primary,
-                        linkColor: hTextColor.Opaque.primary,
-                        linkUnderlineStyle: .thick,
-                        maxWidth: 300,
-                        onUrlClicked: { url in
-                            NotificationCenter.default.post(name: .openDeepLink, object: url)
-                        }
-                    )
-                )
-                .environment(\.colorScheme, .light)
-
-            case let .file(file):
-                ChatFileView(file: file).frame(maxHeight: 200)
-            case let .crossSell(url):
-                LinkView(vm: .init(url: url))
-            case let .deepLink(url):
-                if let type = DeepLink.getType(from: url) {
-                    Button {
-                        NotificationCenter.default.post(name: .openDeepLink, object: url)
-                    } label: {
-                        Text(type.title(displayText: url.contractName ?? type.importantText))
-                            .multilineTextAlignment(.leading)
-                    }
-                } else {
+            Group {
+                switch message.type {
+                case let .text(text):
                     MarkdownView(
                         config: .init(
-                            text: url.absoluteString,
+                            text: text,
                             fontStyle: .body1,
                             color: hTextColor.Opaque.primary,
                             linkColor: hTextColor.Opaque.primary,
@@ -82,13 +71,45 @@ struct MessageView: View {
                         )
                     )
                     .environment(\.colorScheme, .light)
+
+                case let .file(file):
+                    ChatFileView(file: file, status: message.status).frame(maxHeight: 200)
+                case let .crossSell(url):
+                    LinkView(vm: .init(url: url))
+                case let .deepLink(url):
+                    if let type = DeepLink.getType(from: url) {
+                        Button {
+                            NotificationCenter.default.post(name: .openDeepLink, object: url)
+                        } label: {
+                            Text(type.title(displayText: url.contractName ?? type.importantText))
+                                .multilineTextAlignment(.leading)
+                        }
+                    } else {
+                        MarkdownView(
+                            config: .init(
+                                text: url.absoluteString,
+                                fontStyle: .body1,
+                                color: hTextColor.Opaque.primary,
+                                linkColor: hTextColor.Opaque.primary,
+                                linkUnderlineStyle: .thick,
+                                maxWidth: 300,
+                                onUrlClicked: { url in
+                                    NotificationCenter.default.post(name: .openDeepLink, object: url)
+                                }
+                            )
+                        )
+                        .environment(\.colorScheme, .light)
+                    }
+                case let .otherLink(url):
+                    LinkView(
+                        vm: .init(url: url)
+                    )
+                case .unknown: Text("")
                 }
-            case let .otherLink(url):
-                LinkView(
-                    vm: .init(url: url)
-                )
-            case .unknown: Text("")
             }
+            .background(message.bgColor(conversationStatus: conversationStatus))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+
         }
     }
 }

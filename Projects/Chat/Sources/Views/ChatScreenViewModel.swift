@@ -235,6 +235,8 @@ public class ChatScreenViewModel: ObservableObject {
                     }
                 case .url:
                     break
+                case .data:
+                    break
                 }
             }
         default:
@@ -258,6 +260,14 @@ public class ChatScreenViewModel: ObservableObject {
         }
     }
 
+    func deleteFailed(message: Message) {
+        let store: ChatStore = globalPresentableStoreContainer.get()
+        withAnimation {
+            self.messages.removeAll(where: { $0.id == message.id })
+        }
+        store.send(.clearFailedMessage(conversationId: conversationId ?? "", message: message))
+    }
+
     @MainActor
     private func handleSendFail(for message: Message, with error: String) {
         if let index = messages.firstIndex(where: { $0.id == message.id }) {
@@ -269,7 +279,15 @@ public class ChatScreenViewModel: ObservableObject {
             default:
                 messages[index] = newMessage
                 let store: ChatStore = globalPresentableStoreContainer.get()
-                store.send(.setFailedMessage(conversationId: conversationId ?? "", message: newMessage))
+                switch newMessage.type {
+                case .file(let file):
+                    if let newFile = file.getAsDataFromUrl() {
+                        let fileMessage = newMessage.copyWith(type: .file(file: newFile))
+                        store.send(.setFailedMessage(conversationId: conversationId ?? "", message: fileMessage))
+                    }
+                default:
+                    store.send(.setFailedMessage(conversationId: conversationId ?? "", message: newMessage))
+                }
             }
         }
     }

@@ -5,16 +5,29 @@ import hCoreUI
 
 struct ChatFileView: View {
     let file: File
+    let status: MessageStatus
     @EnvironmentObject var chatNavigationVm: ChatNavigationViewModel
 
-    init(file: File) {
+    init(file: File, status: MessageStatus = .draft) {
         self.file = file
+        self.status = status
     }
     let processor = DownsamplingImageProcessor(
         size: CGSize(width: 300, height: 300)
     )
     @ViewBuilder
     var body: some View {
+        if case .failed = status {
+            fileView
+        } else {
+            fileView
+                .onTapGesture {
+                    showFile()
+                }
+        }
+    }
+
+    private var fileView: some View {
         Group {
             if file.mimeType.isImage {
                 imageView
@@ -22,17 +35,14 @@ struct ChatFileView: View {
                 otherFile
             }
         }
-        .onTapGesture {
-            showFile()
-        }
     }
 
     @ViewBuilder
     var imageView: some View {
-        if file.mimeType == .GIF {
+        if file.mimeType == .GIF, let url = file.url {
             KFAnimatedImage(
                 source: Kingfisher.Source.network(
-                    Kingfisher.KF.ImageResource(downloadURL: file.url, cacheKey: file.id)
+                    Kingfisher.KF.ImageResource(downloadURL: url, cacheKey: file.id)
                 )
             )
             .targetCache(ImageCache.default)
@@ -82,6 +92,8 @@ struct ChatFileView: View {
             chatNavigationVm.isFilePresented = .init(url: url)
         case .url(let url):
             chatNavigationVm.isFilePresented = .init(url: url)
+        case .data(let data):
+            break
         }
     }
 
@@ -93,8 +105,11 @@ struct ChatFileView: View {
             return Kingfisher.Source.network(
                 Kingfisher.KF.ImageResource(downloadURL: url, cacheKey: file.id)
             )
+        case .data(let data):
+            return Kingfisher.Source.provider(InMemoryImageDataProvider(cacheKey: file.id, data: data))
         }
     }
+
 }
 
 #Preview{
@@ -134,4 +149,29 @@ struct ChatFileView: View {
             ChatFileView(file: file3)
             Spacer()
         }
+}
+
+public struct InMemoryImageDataProvider: ImageDataProvider {
+
+    public var cacheKey: String
+    let data: Data
+    /// Provides the data which represents image. Kingfisher uses the data you pass in the
+    /// handler to process images and caches it for later use.
+    ///
+    /// - Parameter handler: The handler you should call when you prepared your data.
+    ///                      If the data is loaded successfully, call the handler with
+    ///                      a `.success` with the data associated. Otherwise, call it
+    ///                      with a `.failure` and pass the error.
+    ///
+    /// - Note:
+    /// If the `handler` is called with a `.failure` with error, a `dataProviderError` of
+    /// `ImageSettingErrorReason` will be finally thrown out to you as the `KingfisherError`
+    /// from the framework.
+    public func data(handler: @escaping (Result<Data, Error>) -> Void) {
+        handler(.success(data))
+    }
+
+    /// The content URL represents this provider, if exists.
+    public var contentURL: URL?
+
 }
