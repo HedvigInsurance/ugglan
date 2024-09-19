@@ -3,10 +3,16 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct SelectTier: View {
-    @StateObject var vm = SelectTierViewModel()
+struct SelectTierLandingScreen: View {
+    var vm: SelectTierViewModel
     @EnvironmentObject var selectTierNavigationVm: SelectTierNavigationViewModel
-    
+
+    init(
+        vm: SelectTierViewModel
+    ) {
+        self.vm = vm
+    }
+
     var body: some View {
         hForm {}
             .hFormTitle(
@@ -26,11 +32,11 @@ struct SelectTier: View {
                 VStack(spacing: .padding4) {
                     informationCard
                     buttons
-                    .padding(.bottom, 16)
+                        .padding(.bottom, 16)
                 }
             }
     }
-    
+
     private var informationCard: some View {
         hSection {
             VStack(spacing: 0) {
@@ -47,34 +53,51 @@ struct SelectTier: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
-                
+
                 VStack(spacing: .padding4) {
                     DropdownView(value: vm.selectedTier?.title ?? "", placeHolder: "Select coverage level") {
-                        selectTierNavigationVm.isEditTierPresented = vm.selectedTier ?? TierLevel.none
+                        selectTierNavigationVm.isEditTierPresented = true
                     }
-                    DropdownView(value: "", placeHolder: "Select deductible level") {
-                        // on tap
+                    DropdownView(value: vm.selectedDeductible?.title ?? "", placeHolder: "Select deductible level") {
+                        selectTierNavigationVm.isEditDeductiblePresented = true
                     }
                 }
                 .hFieldSize(.small)
                 .hWithTransparentColor
                 .hWithoutHorizontalPadding
-                
+
                 hRow {
                     HStack(alignment: .top) {
                         hText("Total")
                         Spacer()
                         VStack(alignment: .trailing, spacing: 0) {
-                            hText("- kr/mo")
-                            hText("Current price 279 kr/mo", style: .label)
+                            if vm.isValid {
+                                hText(vm.newPremium?.formattedAmount ?? "" + " kr/mo")
+                            } else {
+                                hText("- kr/mo")
+                                    .foregroundColor(hTextColor.Opaque.secondary)
+                            }
+
+                            if vm.isValid {
+                                hText(
+                                    "Current price " + (vm.currentPremium?.formattedAmount ?? "") + " kr/mo",
+                                    style: .label
+                                )
+                                .foregroundColor(hTextColor.Opaque.secondary)
+                            } else {
+                                hText(
+                                    "Previous price " + (vm.currentPremium?.formattedAmount ?? "") + " kr/mo",
+                                    style: .label
+                                )
+                                .foregroundColor(hTextColor.Opaque.secondary)
+                            }
                         }
-                        .foregroundColor(hTextColor.Opaque.secondary)
                     }
                 }
             }
         }
     }
-    
+
     private var buttons: some View {
         hSection {
             VStack(spacing: .padding8) {
@@ -88,7 +111,7 @@ struct SelectTier: View {
                 } content: {
                     hText(L10n.generalContinueButton)
                 }
-                .disabled(vm.selectedTier == nil)
+                .disabled(!vm.isValid)
             }
         }
         .sectionContainerStyle(.transparent)
@@ -99,13 +122,33 @@ public class SelectTierViewModel: ObservableObject {
     @Inject var service: SelectTierClient
     var insuranceDisplayName: String?
     var streetName: String?
-    var premium: MonetaryAmount?
-    var tiers: [TierLevel] = []
-    @State var selectedTier: TierLevel?
+    var tiers: [Tier] = []
+    var deductibles: [Deductible] = []
+    @Published var selectedTier: Tier?
+    @Published var selectedDeductible: Deductible?
+    var currentPremium: MonetaryAmount?
+    var newPremium: MonetaryAmount?
+
+    var isValid: Bool {
+        return selectedTier != nil && selectedDeductible != nil
+    }
 
     init() {
-        self.selectedTier = tiers.first ?? .standard
         fetchTiers()
+    }
+
+    func setTier(for tierId: String) {
+        Task {
+            let data = try await service.getTier()
+            self.selectedTier = data.tiers.first(where: { $0.id == tierId })
+        }
+    }
+
+    func setDeductible(for deductibleId: String) {
+        Task {
+            let data = try await service.getTier()
+            self.selectedDeductible = data.deductibles.first(where: { $0.id == deductibleId })
+        }
     }
 
     private func fetchTiers() {
@@ -113,13 +156,15 @@ public class SelectTierViewModel: ObservableObject {
             let data = try await service.getTier()
             self.insuranceDisplayName = data.insuranceDisplayName
             self.streetName = data.streetName
-            self.premium = data.premium
+            self.currentPremium = data.currentPremium
+            self.newPremium = data.newPremium
             self.tiers = data.tiers
+            self.deductibles = data.deductibles
         }
     }
 }
 
 #Preview{
     Dependencies.shared.add(module: Module { () -> SelectTierClient in SelectTierClientDemo() })
-    return SelectTier()
+    return SelectTierLandingScreen(vm: .init())
 }

@@ -4,13 +4,16 @@ public struct TierModel: Codable, Equatable, Hashable {
     let id: String
     let insuranceDisplayName: String
     let streetName: String
-    let premium: MonetaryAmount
-    let tiers: [TierLevel]
+    let currentPremium: MonetaryAmount
+    let newPremium: MonetaryAmount
+    let tiers: [Tier]
+    let deductibles: [Deductible]
 }
 
-public enum TierLevel: Codable, Equatable, Hashable, Identifiable {
+public enum Tier: Codable, Equatable, Hashable, Identifiable {
     public var id: String {
-        return ""
+        /* TODO: CHANGE */
+        return self.title ?? ""
     }
 
     case none
@@ -56,4 +59,11 @@ public enum TierLevel: Codable, Equatable, Hashable, Identifiable {
             return nil
         }
     }
+}
+
+public struct Deductible: Codable, Equatable, Hashable, Identifiable {
+    public let id: String
+    let title: String
+    let subTitle: String
+    let label: String
 }

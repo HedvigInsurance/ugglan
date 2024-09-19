@@ -3,7 +3,10 @@ import SwiftUI
 import hCoreUI
 
 public class SelectTierNavigationViewModel: ObservableObject {
-    @Published public var isEditTierPresented: TierLevel?
+    @Published public var isEditTierPresented = false
+    @Published public var isEditDeductiblePresented = false
+
+    var vm = SelectTierViewModel()
 
     init() {}
 }
@@ -16,15 +19,24 @@ public struct SelectTierNavigation: View {
 
     public var body: some View {
         RouterHost(router: router, options: []) {
-            SelectTier()
+            SelectTierLandingScreen(vm: selectTierNavigationVm.vm)
         }
         .environmentObject(selectTierNavigationVm)
         .detent(
-            item: $selectTierNavigationVm.isEditTierPresented,
+            presented: $selectTierNavigationVm.isEditTierPresented,
             style: [.height]
-        ) { tier in
-            EditTier(selectedTier: tier)
+        ) {
+            EditTier(vm: selectTierNavigationVm.vm)
                 .configureTitle("Select your coverage")
+                .embededInNavigation(options: .navigationType(type: .large))
+                .environmentObject(selectTierNavigationVm)
+        }
+        .detent(
+            presented: $selectTierNavigationVm.isEditDeductiblePresented,
+            style: [.height]
+        ) {
+            EditDeductible(vm: selectTierNavigationVm.vm)
+                .configureTitle("Select your deductible")
                 .embededInNavigation(options: .navigationType(type: .large))
                 .environmentObject(selectTierNavigationVm)
         }

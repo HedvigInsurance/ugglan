@@ -2,8 +2,8 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct EditTier: View {
-    @State var selectedTier: String?
+struct EditDeductible: View {
+    @State var selectedDeductible: String?
     var vm: SelectTierViewModel
     @EnvironmentObject var selectTierNavigationVm: SelectTierNavigationViewModel
 
@@ -17,22 +17,22 @@ struct EditTier: View {
         hForm {
             hSection {
                 VStack(spacing: .padding4) {
-                    ForEach(vm.tiers, id: \.self) { tier in
+                    ForEach(vm.deductibles, id: \.self) { deductible in
                         hRadioField(
-                            id: tier.title ?? "",
+                            id: deductible.title,
                             leftView: {
                                 VStack(alignment: .leading, spacing: .padding8) {
                                     HStack {
-                                        hText(tier.title ?? "")
+                                        hText(deductible.title)
                                         Spacer()
-                                        hText(tier.premium ?? "" + " kr/mo")
+                                        hText(deductible.label)
                                     }
-                                    hText(tier.subTitle ?? "")
+                                    hText(deductible.subTitle)
                                         .fixedSize()
                                 }
                                 .asAnyView
                             },
-                            selected: $selectedTier,
+                            selected: $selectedDeductible,
                             error: nil,
                             useAnimation: true
                         )
@@ -46,14 +46,14 @@ struct EditTier: View {
             hSection {
                 VStack(spacing: .padding8) {
                     hButton.LargeButton(type: .primary) {
-                        vm.setTier(for: self.selectedTier ?? "")
-                        selectTierNavigationVm.isEditTierPresented = false
+                        vm.setDeductible(for: self.selectedDeductible ?? "")
+                        selectTierNavigationVm.isEditDeductiblePresented = false
                     } content: {
                         hText(L10n.generalContinueButton)
                     }
 
                     hButton.LargeButton(type: .ghost) {
-                        selectTierNavigationVm.isEditTierPresented = false
+                        selectTierNavigationVm.isEditDeductiblePresented = false
                     } content: {
                         hText(L10n.generalCancelButton)
                     }
@@ -64,11 +64,11 @@ struct EditTier: View {
             .padding(.top, 16)
         }
         .onAppear {
-            self.selectedTier = vm.selectedTier?.title ?? vm.tiers.first?.title
+            self.selectedDeductible = vm.selectedDeductible?.title ?? vm.deductibles.first?.title
         }
     }
 }
 
 #Preview{
-    EditTier(vm: .init())
+    EditDeductible(vm: .init())
 }
