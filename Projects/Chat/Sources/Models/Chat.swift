@@ -2,6 +2,7 @@ import Foundation
 import hCore
 
 public struct ChatData {
+    let conversationId: String
     let hasPreviousMessage: Bool
     let messages: [Message]
     let banner: Markdown?

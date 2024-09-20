@@ -17,17 +17,30 @@ public struct File: Codable, Equatable, Identifiable, Hashable {
         self.source = source
     }
 
-    public var url: URL {
+    public var url: URL? {
         switch source {
         case .localFile(let url, _):
             return url
         case .url(let url):
             return url
+        default:
+            return nil
         }
+    }
+
+    public func getAsDataFromUrl() -> File? {
+        guard let url else {
+            return nil
+        }
+        if let data = try? Data(contentsOf: url) {
+            return .init(id: id, size: size, mimeType: mimeType, name: name, source: .data(data: data))
+        }
+        return nil
     }
 }
 
 public enum FileSource: Codable, Equatable, Hashable {
+    case data(data: Data)
     case localFile(url: URL, thumbnailURL: URL?)
     case url(url: URL)
 }

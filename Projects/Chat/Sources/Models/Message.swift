@@ -56,6 +56,11 @@ public struct Message: Identifiable, Codable, Hashable {
     func asFailed(with error: String) -> Message {
         return Message(localId: UUID().uuidString, type: type, date: sentAt, status: .failed(error: error))
     }
+
+    func copyWith(type: MessageType) -> Message {
+        return Message(localId: localId, type: type, date: sentAt, status: status)
+    }
+
 }
 
 enum MessageSender: Codable, Hashable {

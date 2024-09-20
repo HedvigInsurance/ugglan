@@ -70,9 +70,17 @@ enum FileUploadRequest {
             let url = URL(string: baseUrlString)!
             let multipartFormDataRequest = MultipartFormDataRequest(url: url)
             for file in files {
-                guard case let .localFile(url, _) = file.source,
-                    let data = try? Data(contentsOf: url) /*FileManager.default.contents(atPath: url.path)*/
-                else { throw NetworkError.badRequest(message: nil) }
+                let data: Data? = {
+                    switch file.source {
+                    case .data(let data):
+                        return data
+                    case .localFile(let url, _):
+                        return try? Data(contentsOf: url)
+                    case .url:
+                        return nil
+                    }
+                }()
+                guard let data else { throw NetworkError.badRequest(message: nil) }
                 multipartFormDataRequest.addDataField(
                     fieldName: "files",
                     fileName: file.name,
