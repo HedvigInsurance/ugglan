@@ -9,6 +9,8 @@ fragment ProductVariantFragment on ProductVariant {
         ...InsuranceDocumentFragment
     }
     displayName
+    displayNameTier
+    displayNameTierLong
     insurableLimits {
         label
         limit

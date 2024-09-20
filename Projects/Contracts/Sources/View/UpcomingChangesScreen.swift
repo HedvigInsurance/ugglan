@@ -76,7 +76,9 @@ struct UpcomingChangesScreen_Previews: PreviewProvider {
                         perils: [],
                         insurableLimits: [],
                         documents: [],
-                        displayName: ""
+                        displayName: "",
+                        displayNameTier: "display name tier",
+                        displayNameTierLong: "display name tier long"
                     )
             )
         )
