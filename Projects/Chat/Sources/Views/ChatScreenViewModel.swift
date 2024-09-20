@@ -31,7 +31,7 @@ public class ChatScreenViewModel: ObservableObject {
     private var openDeepLinkObserver: NSObjectProtocol?
     private var onTitleTap: (String) -> Void?
     private var claimId: String?
-
+    private var sendingMessagesIds = [String]()
     public init(
         chatService: ChatServiceProtocol,
         onTitleTap: @escaping (String) -> Void = { claimId in }
@@ -180,14 +180,18 @@ public class ChatScreenViewModel: ObservableObject {
     }
 
     private func sendToClient(message: Message) async {
-        do {
-            let sentMessage = try await chatService.send(message: message)
-            let store: ChatStore = globalPresentableStoreContainer.get()
-            store.send(.clearFailedMessage(conversationId: conversationId ?? "", message: message))
-            await handleSuccessAdding(for: sentMessage, to: message)
-            haveSentAMessage = true
-        } catch let ex {
-            await handleSendFail(for: message, with: ex.localizedDescription)
+        if !sendingMessagesIds.contains(message.id) {
+            sendingMessagesIds.append(message.id)
+            do {
+                let sentMessage = try await chatService.send(message: message)
+                let store: ChatStore = globalPresentableStoreContainer.get()
+                store.send(.clearFailedMessage(conversationId: conversationId ?? "", message: message))
+                await handleSuccessAdding(for: sentMessage, to: message)
+                haveSentAMessage = true
+            } catch let ex {
+                await handleSendFail(for: message, with: ex.localizedDescription)
+            }
+            sendingMessagesIds.removeAll(where: { $0 == message.id })
         }
     }
 
