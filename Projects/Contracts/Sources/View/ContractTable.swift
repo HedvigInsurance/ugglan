@@ -118,7 +118,9 @@ struct ContractTable: View {
                 state.activeContracts
             }
         ) { activeContracts in
-            if !activeContracts.filter({ $0.typeOfContract.isHomeInsurance && !$0.isTerminated }).isEmpty {
+            if !activeContracts.filter({ $0.typeOfContract.isHomeInsurance && !$0.isTerminated }).isEmpty
+                && Dependencies.featureFlags().isMovingFlowEnabled
+            {
                 hSection {
                     InfoCard(text: L10n.insurancesTabMovingFlowInfoTitle, type: .campaign)
                         .buttons([
