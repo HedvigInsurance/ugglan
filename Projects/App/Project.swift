@@ -92,7 +92,7 @@ let appDependencies: [TargetDependency] = [
         .project(target: "Authentication", path: .relativeToRoot("Projects/Authentication")),
         .project(target: "EditCoInsured", path: .relativeToRoot("Projects/EditCoInsured")),
         .project(target: "EditCoInsuredShared", path: .relativeToRoot("Projects/EditCoInsuredShared")),
-        .project(target: "SelectTier", path: .relativeToRoot("Projects/SelectTier")),
+        .project(target: "ChangeTier", path: .relativeToRoot("Projects/ChangeTier")),
         .project(target: "CoreDependencies", path: .relativeToRoot("Dependencies/CoreDependencies")),
         .project(target: "AppDependencies", path: .relativeToRoot("Dependencies/AppDependencies")),
         .project(

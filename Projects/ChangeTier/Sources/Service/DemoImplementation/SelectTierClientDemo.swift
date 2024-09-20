@@ -6,7 +6,7 @@ public class SelectTierClientDemo: SelectTierClient {
 
     public init() {}
 
-    public func getTier() async throws -> TierModel {
+    public func getTier() async throws -> ChangeTierIntentModel {
         /* TODO: REPLACE WITH REAL DATA */
         return .init(
             id: "id",

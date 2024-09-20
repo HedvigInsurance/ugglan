@@ -1,6 +1,6 @@
 import hGraphQL
 
-public struct TierModel: Codable, Equatable, Hashable {
+public struct ChangeTierIntentModel: Codable, Equatable, Hashable {
     let id: String
     let insuranceDisplayName: String
     let streetName: String
