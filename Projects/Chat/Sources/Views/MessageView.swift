@@ -16,8 +16,6 @@ struct MessageView: View {
     public var body: some View {
         HStack(spacing: 0) {
             messageContent
-                .padding(.horizontal, message.horizontalPadding)
-                .padding(.vertical, message.verticalPadding)
                 .environment(\.colorScheme, .light)
             if case .failed = message.status {
                 hCoreUIAssets.infoFilled.view
@@ -107,10 +105,12 @@ struct MessageView: View {
                 case .unknown: Text("")
                 }
             }
+            .padding(.horizontal, message.horizontalPadding)
+            .padding(.vertical, message.verticalPadding)
             .background(message.bgColor(conversationStatus: conversationStatus))
             .clipShape(RoundedRectangle(cornerRadius: 12))
-
         }
+
     }
 }
 
