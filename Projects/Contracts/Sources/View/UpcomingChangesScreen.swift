@@ -77,8 +77,7 @@ struct UpcomingChangesScreen_Previews: PreviewProvider {
                         insurableLimits: [],
                         documents: [],
                         displayName: "",
-                        displayNameTier: "display name tier",
-                        displayNameTierLong: "display name tier long"
+                        displayNameTier: "display name tier"
                     )
             )
         )

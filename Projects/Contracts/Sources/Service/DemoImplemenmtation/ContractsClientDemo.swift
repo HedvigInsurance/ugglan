@@ -28,8 +28,7 @@ public class FetchContractsClientDemo: FetchContractsClient {
             ],
             documents: [.init(displayName: "Display name", url: "https://www.hedvig.com", type: .generalTerms)],
             displayName: "Home Insurance Rent",
-            displayNameTier: "display name tier",
-            displayNameTierLong: "display name tier long"
+            displayNameTier: "Standard"
         )
         let agreement = Agreement(
             certificateUrl: nil,
