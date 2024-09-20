@@ -4,14 +4,8 @@ import hCoreUI
 import hGraphQL
 
 struct SelectTierLandingScreen: View {
-    var vm: SelectTierViewModel
+    @ObservedObject var vm: SelectTierViewModel
     @EnvironmentObject var selectTierNavigationVm: SelectTierNavigationViewModel
-
-    init(
-        vm: SelectTierViewModel
-    ) {
-        self.vm = vm
-    }
 
     var body: some View {
         hForm {}

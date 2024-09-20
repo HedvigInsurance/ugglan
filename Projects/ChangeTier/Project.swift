@@ -2,7 +2,7 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.framework(
-    name: "SelectTier",
+    name: "ChangeTier",
     targets: Set([.framework, .example, .tests]),
     projects: ["hCore", "hCoreUI"],
     sdks: [],

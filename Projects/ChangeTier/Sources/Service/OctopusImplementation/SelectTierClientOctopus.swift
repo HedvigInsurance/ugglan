@@ -3,7 +3,7 @@ import hCore
 public class SelectTierClientOctopus: SelectTierClient {
     public init() {}
 
-    public func getTier() async throws -> TierModel {
+    public func getTier() async throws -> ChangeTierIntentModel {
         return .init(
             id: "id",
             insuranceDisplayName: "Homeowner",

@@ -2,7 +2,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct EditDeductible: View {
+struct EditDeductibleView: View {
     @State var selectedDeductible: String?
     var vm: SelectTierViewModel
     @EnvironmentObject var selectTierNavigationVm: SelectTierNavigationViewModel
@@ -70,5 +70,5 @@ struct EditDeductible: View {
 }
 
 #Preview{
-    EditDeductible(vm: .init())
+    EditDeductibleView(vm: .init())
 }

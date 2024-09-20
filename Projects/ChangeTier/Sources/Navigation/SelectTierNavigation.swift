@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
-import hCoreUI
 import hCore
+import hCoreUI
 
 public class SelectTierNavigationViewModel: ObservableObject {
     @Published public var isEditTierPresented = false
@@ -39,7 +39,7 @@ public struct SelectTierNavigation: View {
             presented: $selectTierNavigationVm.isEditDeductiblePresented,
             style: [.height]
         ) {
-            EditDeductible(vm: selectTierNavigationVm.vm)
+            EditDeductibleView(vm: selectTierNavigationVm.vm)
                 .configureTitle("Select your deductible")
                 .embededInNavigation(options: .navigationType(type: .large))
                 .environmentObject(selectTierNavigationVm)
