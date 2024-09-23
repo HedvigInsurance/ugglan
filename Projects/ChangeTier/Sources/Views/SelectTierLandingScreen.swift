@@ -13,13 +13,13 @@ struct SelectTierLandingScreen: View {
                 title: .init(
                     .small,
                     .body2,
-                    "Customize your insurance",
+                    L10n.tierFlowTitle,
                     alignment: .leading
                 ),
                 subTitle: .init(
                     .small,
                     .body2,
-                    "Select your coverage level and deductible"
+                    L10n.tierFlowSubtitle
                 )
             )
             .hFormAttachToBottom {
@@ -49,9 +49,9 @@ struct SelectTierLandingScreen: View {
                 }
 
                 VStack(spacing: .padding4) {
-                    if vm.alreadyHasHighestTier {
+                    if vm.canEditTier {
                         hSection {
-                            hFloatingField(value: "Max", placeholder: "Coverage level") {
+                            hFloatingField(value: "Max", placeholder: L10n.tierFlowCoverageLabel) {
                                 selectTierNavigationVm.isTierLockedInfoViewPresented = true
                             }
                             .hFieldLockedState
@@ -61,13 +61,13 @@ struct SelectTierLandingScreen: View {
                             }
                         }
                     } else {
-                        DropdownView(value: vm.selectedTier?.name ?? "", placeHolder: "Select coverage level") {
+                        DropdownView(value: vm.selectedTier?.name ?? "", placeHolder: L10n.tierFlowCoverageLabel) {
                             selectTierNavigationVm.isEditTierPresented = true
                         }
                     }
                     DropdownView(
                         value: vm.selectedDeductible?.deductibleAmount?.formattedAmount ?? "",
-                        placeHolder: "Select deductible level"
+                        placeHolder: L10n.tierFlowDeductibleLabel
                     ) {
                         selectTierNavigationVm.isEditDeductiblePresented = true
                     }
@@ -78,25 +78,19 @@ struct SelectTierLandingScreen: View {
 
                 hRow {
                     HStack(alignment: .top) {
-                        hText("Total")
+                        hText(L10n.tierFlowTotal)
                         Spacer()
                         VStack(alignment: .trailing, spacing: 0) {
-                            if vm.isValid {
-                                hText(vm.newPremium?.formattedAmount ?? "" + " kr/mo")
+                            if let newPremium = vm.newPremium {
+                                hText(newPremium.formattedAmount + " kr/mo")
                             } else {
-                                hText("- kr/mo")
-                                    .foregroundColor(hTextColor.Opaque.secondary)
+                                hText(vm.currentPremium?.formattedAmount ?? "" + " kr/mo")
                             }
 
-                            if vm.isValid {
+                            if vm.newPremium != vm.currentPremium {
                                 hText(
-                                    "Current price " + (vm.currentPremium?.formattedAmount ?? "") + " kr/mo",
-                                    style: .label
-                                )
-                                .foregroundColor(hTextColor.Opaque.secondary)
-                            } else {
-                                hText(
-                                    "Previous price " + (vm.currentPremium?.formattedAmount ?? "") + " kr/mo",
+                                    L10n.tierFlowPreviousPrice + " " + (vm.currentPremium?.formattedAmount ?? "")
+                                        + " kr/mo",
                                     style: .label
                                 )
                                 .foregroundColor(hTextColor.Opaque.secondary)
@@ -114,7 +108,7 @@ struct SelectTierLandingScreen: View {
                 hButton.LargeButton(type: .ghost) {
                     selectTierNavigationVm.isCompareTiersPresented = true
                 } content: {
-                    hText("Compare coverage levels", style: .body1)
+                    hText(L10n.tierFlowCompareButton, style: .body1)
                 }
                 hButton.LargeButton(type: .primary) {
                     /** TODO: ADD ACTION **/
@@ -133,25 +127,29 @@ public class SelectTierViewModel: ObservableObject {
     var displayName: String?
     var exposureName: String?
     var tiers: [Tier] = []
-    var tierLevel: Int = 0
-    @Published var selectedTier: Tier?
-    @Published var selectedDeductible: Deductible?
+
     var currentPremium: MonetaryAmount?
+    var currentTierName: String?
+    var currentDeductible: Deductible?
     var newPremium: MonetaryAmount?
 
+    @Published var selectedTier: Tier?
+    @Published var selectedDeductible: Deductible?
+
     var isValid: Bool {
-        /* TODO: IMPLEMENT CHECK TO COMPARE NEW TIER AND DEDUCTIBLE ISN'T SAME AS CURRENT */
-        return selectedTier != nil && selectedDeductible != nil
+        let selectedTierIsSameAsCurrent = currentTierName == selectedTier?.name
+        let selectedDeductibleIsSameAsCurrent = currentDeductible == selectedDeductible
+        let hasSelectedValues = selectedTier != nil && selectedDeductible != nil
+
+        return hasSelectedValues && !(selectedTierIsSameAsCurrent && selectedDeductibleIsSameAsCurrent)
     }
 
     init() {
         fetchTiers()
     }
 
-    var alreadyHasHighestTier: Bool {
-        /* TODO: FETCH FROM CURRENT AGREEMENT */
-        return true
-    }
+    /* TODO: FETCH supportsChangeTier FROM CURRENT AGREEMENT */
+    var canEditTier = false
 
     func setTier(for tierId: String) {
         Task {
@@ -173,7 +171,15 @@ public class SelectTierViewModel: ObservableObject {
             self.displayName = data.tiers.first?.productVariant.displayName
             self.exposureName = data.tiers.first?.exposureName
             self.currentPremium = data.currentPremium
-            self.newPremium = .init(amount: "", currency: "") /* TODO: IMPLEMENT **/
+
+            /* TODO: IMPLEMENT **/
+            self.newPremium = .init(amount: "", currency: "")
+            self.currentTierName = "Max"
+            self.currentDeductible = .init(
+                id: "id",
+                deductibleAmount: .init(amount: "449", currency: "SEK"),
+                deductiblePercentage: 25
+            )
         }
     }
 }

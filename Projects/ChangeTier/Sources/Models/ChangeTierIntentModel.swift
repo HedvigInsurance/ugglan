@@ -27,9 +27,15 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable {
     }
 }
 
-public struct Deductible: Codable, Equatable, Hashable, Identifiable {
+public struct Deductible: Codable, Hashable, Identifiable {
     public let id: String
 
     let deductibleAmount: MonetaryAmount?
     let deductiblePercentage: Int?
+}
+
+extension Deductible: Equatable {
+    static public func == (lhs: Deductible, rhs: Deductible) -> Bool {
+        return lhs.deductibleAmount == rhs.deductibleAmount && lhs.deductiblePercentage == rhs.deductiblePercentage
+    }
 }

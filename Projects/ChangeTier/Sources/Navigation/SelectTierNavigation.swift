@@ -33,7 +33,7 @@ public struct SelectTierNavigation: View {
             style: [.height]
         ) {
             EditTier(vm: selectTierNavigationVm.vm)
-                .configureTitle("Select your coverage")
+                .configureTitle(L10n.tierFlowSelectCoverageTitle)
                 .embededInNavigation(options: .navigationType(type: .large))
                 .environmentObject(selectTierNavigationVm)
         }
@@ -42,7 +42,7 @@ public struct SelectTierNavigation: View {
             style: [.height]
         ) {
             EditDeductibleView(vm: selectTierNavigationVm.vm)
-                .configureTitle("Select your deductible")
+                .configureTitle(L10n.tierFlowSelectDeductibleTitle)
                 .embededInNavigation(options: .navigationType(type: .large))
                 .environmentObject(selectTierNavigationVm)
         }
@@ -62,14 +62,13 @@ public struct SelectTierNavigation: View {
             options: .constant(.alwaysOpenOnTop)
         ) {
             InfoView(
-                title: "Already at the highest coverage level",
-                description:
-                    "You are note able to downgrade your coverage level during your twelve month contract period."
+                title: L10n.tierFlowLockedInfoTitle,
+                description: L10n.tierFlowLockedInfoDescription
             )
         }
         .modally(presented: $selectTierNavigationVm.isCompareTiersPresented) {
             CompareTierScreen(vm: selectTierNavigationVm.vm)
-                .configureTitle("Compare coverage levels")
+                .configureTitle(L10n.tierFlowCompareButton)
                 .withDismissButton()
                 .embededInNavigation(options: .navigationType(type: .large))
                 .environmentObject(selectTierNavigationVm)
