@@ -1,4 +1,5 @@
 import Foundation
+import hCore
 
 public class FetchContractsClientDemo: FetchContractsClient {
     public init() {}

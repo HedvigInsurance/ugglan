@@ -17,18 +17,21 @@ struct EditDeductibleView: View {
         hForm {
             hSection {
                 VStack(spacing: .padding4) {
-                    ForEach(vm.deductibles, id: \.self) { deductible in
+                    let deductibles: [Deductible] = vm.selectedTier?.deductibles ?? []
+
+                    ForEach(deductibles, id: \.self) { deductible in
                         hRadioField(
-                            id: deductible.title,
+                            id: deductible.id,
                             leftView: {
                                 VStack(alignment: .leading, spacing: .padding8) {
                                     HStack {
-                                        hText(deductible.title)
+                                        hText(deductible.deductibleAmount?.formattedAmount ?? "")
                                         Spacer()
-                                        hText(deductible.label)
+                                        hText(String(deductible.deductiblePercentage ?? 0))
                                     }
-                                    hText(deductible.subTitle)
-                                        .fixedSize()
+                                    /* TODO: NOT SURE TO INCLUDE THIS DESIGN WISE */
+                                    //                                    hText(deductible.subTitle)
+                                    //                                        .fixedSize()
                                 }
                                 .asAnyView
                             },
@@ -64,7 +67,7 @@ struct EditDeductibleView: View {
             .padding(.top, 16)
         }
         .onAppear {
-            self.selectedDeductible = vm.selectedDeductible?.title ?? vm.deductibles.first?.title
+            self.selectedDeductible = vm.selectedDeductible?.id ?? vm.selectedTier?.deductibles.first?.id
         }
     }
 }

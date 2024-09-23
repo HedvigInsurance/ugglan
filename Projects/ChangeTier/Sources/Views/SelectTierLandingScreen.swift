@@ -40,8 +40,8 @@ struct SelectTierLandingScreen: View {
                             .resizable()
                             .frame(width: 48, height: 48)
                         VStack(alignment: .leading, spacing: 0) {
-                            hText(vm.insuranceDisplayName ?? "")
-                            hText(vm.streetName ?? "")
+                            hText(vm.displayName ?? "")
+                            hText(vm.exposureName ?? "")
                                 .foregroundColor(hTextColor.Opaque.secondary)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -49,10 +49,26 @@ struct SelectTierLandingScreen: View {
                 }
 
                 VStack(spacing: .padding4) {
-                    DropdownView(value: vm.selectedTier?.title ?? "", placeHolder: "Select coverage level") {
-                        selectTierNavigationVm.isEditTierPresented = true
+                    if vm.alreadyHasHighestTier {
+                        hSection {
+                            hFloatingField(value: "Max", placeholder: "Coverage level") {
+                                /* TODO: OPEN INFO THINGY */
+                            }
+                            .hFieldLockedState
+                            .hFieldTrailingView {
+                                Image(uiImage: hCoreUIAssets.lock.image)
+                                    .foregroundColor(hTextColor.Opaque.secondary)
+                            }
+                        }
+                    } else {
+                        DropdownView(value: vm.selectedTier?.name ?? "", placeHolder: "Select coverage level") {
+                            selectTierNavigationVm.isEditTierPresented = true
+                        }
                     }
-                    DropdownView(value: vm.selectedDeductible?.title ?? "", placeHolder: "Select deductible level") {
+                    DropdownView(
+                        value: vm.selectedDeductible?.deductibleAmount?.formattedAmount ?? "",
+                        placeHolder: "Select deductible level"
+                    ) {
                         selectTierNavigationVm.isEditDeductiblePresented = true
                     }
                 }
@@ -114,10 +130,11 @@ struct SelectTierLandingScreen: View {
 
 public class SelectTierViewModel: ObservableObject {
     @Inject var service: SelectTierClient
-    var insuranceDisplayName: String?
-    var streetName: String?
+    var displayName: String?
+    var exposureName: String?
     var tiers: [Tier] = []
-    var deductibles: [Deductible] = []
+    //    var deductibles: [Deductible] = []
+    var tierLevel: Int = 0
     @Published var selectedTier: Tier?
     @Published var selectedDeductible: Deductible?
     var currentPremium: MonetaryAmount?
@@ -131,6 +148,11 @@ public class SelectTierViewModel: ObservableObject {
         fetchTiers()
     }
 
+    var alreadyHasHighestTier: Bool {
+        /* TODO: IMPLEMENT */
+        return false
+    }
+
     func setTier(for tierId: String) {
         Task {
             let data = try await service.getTier()
@@ -141,19 +163,19 @@ public class SelectTierViewModel: ObservableObject {
     func setDeductible(for deductibleId: String) {
         Task {
             let data = try await service.getTier()
-            self.selectedDeductible = data.deductibles.first(where: { $0.id == deductibleId })
+            self.selectedDeductible = selectedTier?.deductibles.first(where: { $0.id == deductibleId })
         }
     }
 
     private func fetchTiers() {
         Task {
             let data = try await service.getTier()
-            self.insuranceDisplayName = data.insuranceDisplayName
-            self.streetName = data.streetName
+            self.displayName = data.tiers.first?.productVariant.displayName
+            self.exposureName = data.tiers.first?.exposureName
             self.currentPremium = data.currentPremium
-            self.newPremium = data.newPremium
+            self.newPremium = .init(amount: "", currency: "") /* TODO: IMPLEMENT **/
             self.tiers = data.tiers
-            self.deductibles = data.deductibles
+            //            self.deductibles = [] /* TODO: IMPLEMENT **/
         }
     }
 }

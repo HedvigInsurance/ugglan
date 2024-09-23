@@ -8,6 +8,7 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 extension String: TrackingViewNameProtocol {
     public var nameForTracking: String {

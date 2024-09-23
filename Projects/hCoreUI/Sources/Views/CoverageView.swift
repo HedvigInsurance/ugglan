@@ -1,5 +1,6 @@
 import SwiftUI
 import hCore
+import hGraphQL
 
 public struct CoverageView: View {
     let limits: [InsurableLimits]

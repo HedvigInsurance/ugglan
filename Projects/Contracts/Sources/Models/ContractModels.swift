@@ -6,53 +6,6 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct ProductVariant: Codable, Hashable {
-    let termsVersion: String
-    let typeOfContract: String
-    let partner: String?
-    let perils: [Perils]
-    let insurableLimits: [InsurableLimits]
-    public let documents: [InsuranceTerm]
-    public let displayName: String
-
-    init(
-        termsVersion: String,
-        typeOfContract: String,
-        partner: String?,
-        perils: [Perils],
-        insurableLimits: [InsurableLimits],
-        documents: [InsuranceTerm],
-        displayName: String
-    ) {
-        self.termsVersion = termsVersion
-        self.typeOfContract = typeOfContract
-        self.partner = partner
-        self.perils = perils
-        self.insurableLimits = insurableLimits
-        self.documents = documents
-        self.displayName = displayName
-    }
-
-    public init(
-        data: OctopusGraphQL.ProductVariantFragment
-    ) {
-        self.displayName = data.displayName
-        self.termsVersion = data.termsVersion
-        self.typeOfContract = data.typeOfContract
-        self.partner = data.partner ?? ""
-        self.perils = data.perils.map({ .init(fragment: $0) })
-        self.insurableLimits = data.insurableLimits.map({ .init($0) })
-        self.documents = data.documents.map({ .init($0) })
-    }
-
-    public init?(
-        data: OctopusGraphQL.ProductVariantFragment?
-    ) {
-        guard let data else { return nil }
-        self.init(data: data)
-    }
-}
-
 public struct Contract: Codable, Hashable, Equatable, Identifiable {
     public init(
         id: String,
@@ -553,7 +506,7 @@ public struct Agreement: Codable, Hashable {
         activeTo: String?,
         premium: MonetaryAmount,
         displayItems: [AgreementDisplayItem],
-        productVariant: ProductVariant
+        productVariant: hCore.ProductVariant
     ) {
         self.certificateUrl = certificateUrl
         self.activeFrom = activeFrom
@@ -568,12 +521,12 @@ public struct Agreement: Codable, Hashable {
     public let activeTo: String?
     public let premium: MonetaryAmount
     public let displayItems: [AgreementDisplayItem]
-    public let productVariant: ProductVariant
+    public let productVariant: hCore.ProductVariant
 
     init(
         premium: MonetaryAmount,
         displayItems: [AgreementDisplayItem],
-        productVariant: ProductVariant
+        productVariant: hCore.ProductVariant
     ) {
         self.premium = premium
         self.displayItems = displayItems

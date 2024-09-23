@@ -1,5 +1,6 @@
 import Apollo
 import Authentication
+import ChangeTier
 import Chat
 import Claims
 import Contracts
@@ -12,7 +13,6 @@ import MoveFlow
 import Payment
 import PresentableStore
 import Profile
-import SelectTier
 import TerminateContracts
 import TravelCertificate
 import hCore

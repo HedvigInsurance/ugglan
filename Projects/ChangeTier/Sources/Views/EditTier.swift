@@ -19,15 +19,16 @@ struct EditTier: View {
                 VStack(spacing: .padding4) {
                     ForEach(vm.tiers, id: \.self) { tier in
                         hRadioField(
-                            id: tier.title ?? "",
+                            id: tier.id,
                             leftView: {
                                 VStack(alignment: .leading, spacing: .padding8) {
                                     HStack {
-                                        hText(tier.title ?? "")
+                                        hText(tier.name)
                                         Spacer()
-                                        hText(tier.premium ?? "" + " kr/mo")
+                                        hText(tier.premium.formattedAmount + " kr/mo")
                                     }
-                                    hText(tier.subTitle ?? "")
+                                    hText(String(tier.exposureName ?? ""))
+                                        .foregroundColor(hTextColor.Opaque.secondary)
                                         .fixedSize()
                                 }
                                 .asAnyView
@@ -64,11 +65,18 @@ struct EditTier: View {
             .padding(.top, 16)
         }
         .onAppear {
-            self.selectedTier = vm.selectedTier?.title ?? vm.tiers.first?.title
+            self.selectedTier = vm.selectedTier?.name ?? vm.tiers.first?.name
         }
     }
 }
 
 #Preview{
     EditTier(vm: .init())
+}
+
+extension Sequence {
+    func uniqued<Type: Hashable>(by keyPath: KeyPath<Element, Type>) -> [Element] {
+        var set = Set<Type>()
+        return filter { set.insert($0[keyPath: keyPath]).inserted }
+    }
 }

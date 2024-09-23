@@ -2,6 +2,7 @@ import Foundation
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 public class SelectTierNavigationViewModel: ObservableObject {
     @Published public var isEditTierPresented = false

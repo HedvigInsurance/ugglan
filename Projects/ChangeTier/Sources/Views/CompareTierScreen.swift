@@ -13,7 +13,7 @@ struct CompareTierScreen: View {
     ) {
         self.vm = vm
         self.scrollableSegmentedViewModel = ScrollableSegmentedViewModel(
-            pageModels: vm.tiers.compactMap({ .init(id: $0.id, title: $0.title ?? "") })
+            pageModels: vm.tiers.compactMap({ .init(id: $0.id, title: $0.name) })
         )
     }
 
@@ -23,8 +23,8 @@ struct CompareTierScreen: View {
                 vm: scrollableSegmentedViewModel,
                 contentFor: { id in
                     let tier = vm.tiers.first(where: { $0.id == id })
-                    let limits = tier?.insurableLimits ?? []
-                    let perils = tier?.perils ?? []
+                    let limits = tier?.productVariant.insurableLimits ?? []
+                    let perils = tier?.productVariant.perils ?? []
 
                     return CoverageView(
                         limits: limits,
