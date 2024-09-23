@@ -38,11 +38,36 @@ public class SelectTierClientOctopus: SelectTierClient {
                         termsVersion: "",
                         typeOfContract: "",
                         partner: nil,
-                        perils: [],
+                        perils: [
+                            .init(
+                                id: "id1",
+                                title: "title1",
+                                description: "description1",
+                                info: nil,
+                                color: nil,
+                                covered: []
+                            ),
+                            .init(
+                                id: "id2",
+                                title: "title2",
+                                description: "description2",
+                                info: nil,
+                                color: nil,
+                                covered: []
+                            ),
+                            .init(
+                                id: "id3",
+                                title: "title3",
+                                description: "description3",
+                                info: nil,
+                                color: nil,
+                                covered: []
+                            ),
+                        ],
                         insurableLimits: [],
                         documents: [],
                         displayName: "Homeowner",
-                        displayNameTier: "Standard",
+                        displayNameTier: "Bas",
                         displayNameTierLong: "Vårt mellanpaket med hög ersättning."
                     )
                 ),
@@ -74,7 +99,32 @@ public class SelectTierClientOctopus: SelectTierClient {
                         termsVersion: "",
                         typeOfContract: "",
                         partner: nil,
-                        perils: [],
+                        perils: [
+                            .init(
+                                id: "id1",
+                                title: "title1",
+                                description: "description1",
+                                info: nil,
+                                color: nil,
+                                covered: []
+                            ),
+                            .init(
+                                id: "id2",
+                                title: "title2",
+                                description: "description2",
+                                info: nil,
+                                color: nil,
+                                covered: []
+                            ),
+                            .init(
+                                id: "id3",
+                                title: "title3",
+                                description: "description3",
+                                info: nil,
+                                color: nil,
+                                covered: []
+                            ),
+                        ],
                         insurableLimits: [],
                         documents: [],
                         displayName: "Homeowner",
@@ -110,11 +160,36 @@ public class SelectTierClientOctopus: SelectTierClient {
                         termsVersion: "",
                         typeOfContract: "",
                         partner: nil,
-                        perils: [],
+                        perils: [
+                            .init(
+                                id: "id1",
+                                title: "title1",
+                                description: "description1",
+                                info: nil,
+                                color: nil,
+                                covered: []
+                            ),
+                            .init(
+                                id: "id2",
+                                title: "title2",
+                                description: "description2",
+                                info: nil,
+                                color: nil,
+                                covered: []
+                            ),
+                            .init(
+                                id: "id3",
+                                title: "title3",
+                                description: "description3",
+                                info: nil,
+                                color: nil,
+                                covered: []
+                            ),
+                        ],
                         insurableLimits: [],
                         documents: [],
                         displayName: "Homeowner",
-                        displayNameTier: "Standard",
+                        displayNameTier: "Max",
                         displayNameTierLong: "Vårt mellanpaket med hög ersättning."
                     )
                 ),

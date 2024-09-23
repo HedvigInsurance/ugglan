@@ -82,15 +82,15 @@ struct SelectTierLandingScreen: View {
                         Spacer()
                         VStack(alignment: .trailing, spacing: 0) {
                             if let newPremium = vm.newPremium {
-                                hText(newPremium.formattedAmount + " kr/mo")
+                                hText(newPremium.formattedAmount + "/mo")
                             } else {
-                                hText(vm.currentPremium?.formattedAmount ?? "" + " kr/mo")
+                                hText(vm.currentPremium?.formattedAmount ?? "" + "/mo")
                             }
 
                             if vm.newPremium != vm.currentPremium {
                                 hText(
                                     L10n.tierFlowPreviousPrice + " " + (vm.currentPremium?.formattedAmount ?? "")
-                                        + " kr/mo",
+                                        + "/mo",
                                     style: .label
                                 )
                                 .foregroundColor(hTextColor.Opaque.secondary)
@@ -129,15 +129,17 @@ public class SelectTierViewModel: ObservableObject {
     var tiers: [Tier] = []
 
     var currentPremium: MonetaryAmount?
-    var currentTierName: String?
+    var currentTier: Tier?
     var currentDeductible: Deductible?
     var newPremium: MonetaryAmount?
+    /* TODO: FETCH supportsChangeTier FROM CURRENT AGREEMENT */
+    var canEditTier: Bool = false
 
     @Published var selectedTier: Tier?
     @Published var selectedDeductible: Deductible?
 
     var isValid: Bool {
-        let selectedTierIsSameAsCurrent = currentTierName == selectedTier?.name
+        let selectedTierIsSameAsCurrent = currentTier?.name == selectedTier?.name
         let selectedDeductibleIsSameAsCurrent = currentDeductible == selectedDeductible
         let hasSelectedValues = selectedTier != nil && selectedDeductible != nil
 
@@ -147,9 +149,6 @@ public class SelectTierViewModel: ObservableObject {
     init() {
         fetchTiers()
     }
-
-    /* TODO: FETCH supportsChangeTier FROM CURRENT AGREEMENT */
-    var canEditTier = false
 
     func setTier(for tierId: String) {
         Task {
@@ -173,13 +172,35 @@ public class SelectTierViewModel: ObservableObject {
             self.currentPremium = data.currentPremium
 
             /* TODO: IMPLEMENT **/
-            self.newPremium = .init(amount: "", currency: "")
-            self.currentTierName = "Max"
+            self.newPremium = .init(amount: "549", currency: "SEK")
+            self.currentTier = .init(
+                id: "id",
+                name: "Max",
+                level: 3,
+                deductibles: [],
+                premium: .init(amount: "", currency: ""),
+                displayItems: [],
+                exposureName: "",
+                productVariant: .init(
+                    termsVersion: "",
+                    typeOfContract: "",
+                    partner: "",
+                    perils: [],
+                    insurableLimits: [],
+                    documents: [],
+                    displayName: "",
+                    displayNameTier: "",
+                    displayNameTierLong: ""
+                )
+            )
             self.currentDeductible = .init(
                 id: "id",
                 deductibleAmount: .init(amount: "449", currency: "SEK"),
                 deductiblePercentage: 25
             )
+            self.canEditTier = false
+            self.selectedTier = currentTier
+            self.selectedDeductible = currentDeductible
         }
     }
 }

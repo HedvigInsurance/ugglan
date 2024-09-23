@@ -13,13 +13,19 @@ struct EditDeductibleView: View {
         self.vm = vm
     }
 
+    var getDeductibles: [Deductible] {
+        if !(vm.selectedTier?.deductibles.isEmpty ?? true) {
+            return vm.selectedTier?.deductibles ?? []
+        } else {
+            return vm.tiers.first(where: { $0.name == vm.selectedTier?.name })?.deductibles ?? []
+        }
+    }
+
     var body: some View {
         hForm {
             hSection {
                 VStack(spacing: .padding4) {
-                    let deductibles: [Deductible] = vm.selectedTier?.deductibles ?? []
-
-                    ForEach(deductibles, id: \.self) { deductible in
+                    ForEach(getDeductibles, id: \.self) { deductible in
                         hRadioField(
                             id: deductible.id,
                             leftView: {
