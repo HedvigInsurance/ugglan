@@ -61,7 +61,8 @@ public struct ContractDetail: View {
                             contractExposureName: contract.exposureDisplayName,
                             activeFrom: contract.upcomingChangedAgreement?.activeFrom,
                             activeInFuture: contract.activeInFuture,
-                            masterInceptionDate: contract.masterInceptionDate
+                            masterInceptionDate: contract.masterInceptionDate,
+                            tierDisplayName: contract.currentAgreement?.productVariant.displayNameTier
                         )
                     }
                     ScrollableSegmentedView(

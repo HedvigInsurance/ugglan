@@ -41,7 +41,8 @@ public class SelectTierClientOctopus: SelectTierClient {
                         perils: [],
                         insurableLimits: [],
                         documents: [],
-                        displayName: "Homeowner"
+                        displayName: "Homeowner",
+                        displayNameTier: "Standard"
                     )
                 ),
                 .init(
@@ -75,7 +76,8 @@ public class SelectTierClientOctopus: SelectTierClient {
                         perils: [],
                         insurableLimits: [],
                         documents: [],
-                        displayName: "Homeowner"
+                        displayName: "Homeowner",
+                        displayNameTier: "Standard"
                     )
                 ),
                 .init(
@@ -109,7 +111,8 @@ public class SelectTierClientOctopus: SelectTierClient {
                         perils: [],
                         insurableLimits: [],
                         documents: [],
-                        displayName: "Homeowner"
+                        displayName: "Homeowner",
+                        displayNameTier: "Standard"
                     )
                 ),
             ],

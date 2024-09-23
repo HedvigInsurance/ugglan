@@ -8,6 +8,7 @@ public struct ProductVariant: Codable, Hashable {
     public let insurableLimits: [InsurableLimits]
     public let documents: [InsuranceTerm]
     public let displayName: String
+    public let displayNameTier: String?
 
     public init(
         termsVersion: String,
@@ -16,7 +17,8 @@ public struct ProductVariant: Codable, Hashable {
         perils: [Perils],
         insurableLimits: [InsurableLimits],
         documents: [InsuranceTerm],
-        displayName: String
+        displayName: String,
+        displayNameTier: String?
     ) {
         self.termsVersion = termsVersion
         self.typeOfContract = typeOfContract
@@ -25,6 +27,7 @@ public struct ProductVariant: Codable, Hashable {
         self.insurableLimits = insurableLimits
         self.documents = documents
         self.displayName = displayName
+        self.displayNameTier = displayNameTier
     }
 
     public init(
@@ -37,6 +40,7 @@ public struct ProductVariant: Codable, Hashable {
         self.perils = data.perils.map({ .init(fragment: $0) })
         self.insurableLimits = data.insurableLimits.map({ .init($0) })
         self.documents = data.documents.map({ .init($0) })
+        self.displayNameTier = data.displayNameTier
     }
 
     public init?(
