@@ -27,7 +27,7 @@ struct EditTier: View {
                                         Spacer()
                                         hText(tier.premium.formattedAmount + " kr/mo")
                                     }
-                                    hText(String(tier.exposureName ?? ""))
+                                    hText(String(tier.productVariant.displayNameTierLong ?? ""))
                                         .foregroundColor(hTextColor.Opaque.secondary)
                                         .fixedSize()
                                 }

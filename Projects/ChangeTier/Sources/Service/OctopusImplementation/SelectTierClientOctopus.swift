@@ -42,7 +42,8 @@ public class SelectTierClientOctopus: SelectTierClient {
                         insurableLimits: [],
                         documents: [],
                         displayName: "Homeowner",
-                        displayNameTier: "Standard"
+                        displayNameTier: "Standard",
+                        displayNameTierLong: "Vårt mellanpaket med hög ersättning."
                     )
                 ),
                 .init(
@@ -77,7 +78,8 @@ public class SelectTierClientOctopus: SelectTierClient {
                         insurableLimits: [],
                         documents: [],
                         displayName: "Homeowner",
-                        displayNameTier: "Standard"
+                        displayNameTier: "Standard",
+                        displayNameTierLong: "Vårt mellanpaket med hög ersättning."
                     )
                 ),
                 .init(
@@ -112,7 +114,8 @@ public class SelectTierClientOctopus: SelectTierClient {
                         insurableLimits: [],
                         documents: [],
                         displayName: "Homeowner",
-                        displayNameTier: "Standard"
+                        displayNameTier: "Standard",
+                        displayNameTierLong: "Vårt mellanpaket med hög ersättning."
                     )
                 ),
             ],

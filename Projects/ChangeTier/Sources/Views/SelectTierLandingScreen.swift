@@ -133,7 +133,6 @@ public class SelectTierViewModel: ObservableObject {
     var displayName: String?
     var exposureName: String?
     var tiers: [Tier] = []
-    //    var deductibles: [Deductible] = []
     var tierLevel: Int = 0
     @Published var selectedTier: Tier?
     @Published var selectedDeductible: Deductible?
@@ -162,7 +161,6 @@ public class SelectTierViewModel: ObservableObject {
 
     func setDeductible(for deductibleId: String) {
         Task {
-            let data = try await service.getTier()
             self.selectedDeductible = selectedTier?.deductibles.first(where: { $0.id == deductibleId })
         }
     }
@@ -170,12 +168,11 @@ public class SelectTierViewModel: ObservableObject {
     private func fetchTiers() {
         Task {
             let data = try await service.getTier()
+            self.tiers = data.tiers
             self.displayName = data.tiers.first?.productVariant.displayName
             self.exposureName = data.tiers.first?.exposureName
             self.currentPremium = data.currentPremium
             self.newPremium = .init(amount: "", currency: "") /* TODO: IMPLEMENT **/
-            self.tiers = data.tiers
-            //            self.deductibles = [] /* TODO: IMPLEMENT **/
         }
     }
 }

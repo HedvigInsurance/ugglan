@@ -44,7 +44,8 @@ public class SelectTierClientDemo: SelectTierClient {
                         insurableLimits: [],
                         documents: [],
                         displayName: "Homeowner",
-                        displayNameTier: "Standard"
+                        displayNameTier: "Standard",
+                        displayNameTierLong: "Vårt mellanpaket med hög ersättning."
                     )
                 ),
                 .init(
@@ -79,7 +80,8 @@ public class SelectTierClientDemo: SelectTierClient {
                         insurableLimits: [],
                         documents: [],
                         displayName: "Homeowner",
-                        displayNameTier: "Standard"
+                        displayNameTier: "Standard",
+                        displayNameTierLong: "Vårt mellanpaket med hög ersättning."
                     )
                 ),
                 .init(
@@ -114,7 +116,8 @@ public class SelectTierClientDemo: SelectTierClient {
                         insurableLimits: [],
                         documents: [],
                         displayName: "Homeowner",
-                        displayNameTier: "Standard"
+                        displayNameTier: "Standard",
+                        displayNameTierLong: "Vårt mellanpaket med hög ersättning."
                     )
                 ),
             ],
