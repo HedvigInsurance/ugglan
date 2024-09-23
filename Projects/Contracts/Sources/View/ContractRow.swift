@@ -10,10 +10,10 @@ public struct ContractRow: View {
     let terminationMessage: String?
     let contractDisplayName: String
     let contractExposureName: String
-
     let activeFrom: String?
     let activeInFuture: Bool?
     let masterInceptionDate: String?
+    let tierDisplayName: String?
 
     let onClick: (() -> Void)?
 
@@ -25,16 +25,17 @@ public struct ContractRow: View {
         activeFrom: String? = nil,
         activeInFuture: Bool? = nil,
         masterInceptionDate: String? = nil,
+        tierDisplayName: String?,
         onClick: (() -> Void)? = nil
     ) {
         self.image = image
         self.terminationMessage = terminationMessage
         self.contractDisplayName = contractDisplayName
         self.contractExposureName = contractExposureName
-
         self.activeFrom = activeFrom
         self.activeInFuture = activeInFuture
         self.masterInceptionDate = masterInceptionDate
+        self.tierDisplayName = tierDisplayName
 
         self.onClick = onClick
     }
@@ -53,7 +54,8 @@ public struct ContractRow: View {
                 terminationMessage: terminationMessage,
                 activeFrom: activeFrom,
                 activeInFuture: activeInFuture,
-                masterInceptionDate: masterInceptionDate
+                masterInceptionDate: masterInceptionDate,
+                tierDisplayName: tierDisplayName
             )
         )
         .background(
@@ -72,20 +74,20 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     let contractDisplayName: String
     let contractExposureName: String
     let terminationMessage: String?
-
     let activeFrom: String?
     let activeInFuture: Bool?
     let masterInceptionDate: String?
+    let tierDisplayName: String?
 
     public init(
         image: UIImage?,
         contractDisplayName: String,
         contractExposureName: String,
         terminationMessage: String? = nil,
-
         activeFrom: String? = nil,
         activeInFuture: Bool? = nil,
-        masterInceptionDate: String? = nil
+        masterInceptionDate: String? = nil,
+        tierDisplayName: String?
     ) {
         self.image = image
         self.contractDisplayName = contractDisplayName
@@ -95,6 +97,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         self.activeFrom = activeFrom
         self.activeInFuture = activeInFuture
         self.masterInceptionDate = masterInceptionDate
+        self.tierDisplayName = tierDisplayName
     }
 
     @ViewBuilder var background: some View {
@@ -125,26 +128,32 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack(spacing: 0) {
+            HStack(spacing: .padding6) {
+                if let tierDisplayName {
+                    StatusPill(text: tierDisplayName, type: .tier)
+                }
                 if let terminationMessage {
-                    StatusPill(text: terminationMessage).padding(.trailing, .padding4)
+                    StatusPill(text: terminationMessage, type: .text).padding(.trailing, .padding4)
                 } else if let activeFrom {
                     StatusPill(
                         text: L10n.dashboardInsuranceStatusActiveUpdateDate(
                             activeFrom.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-                        )
+                        ),
+                        type: .text
                     )
                     .padding(.trailing, .padding4)
                 } else if activeInFuture ?? false {
                     StatusPill(
                         text: L10n.contractStatusActiveInFuture(
                             masterInceptionDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-                        )
+                        ),
+                        type: .text
                     )
                     .padding(.trailing, .padding4)
                 } else {
                     StatusPill(
-                        text: L10n.dashboardInsuranceStatusActive
+                        text: L10n.dashboardInsuranceStatusActive,
+                        type: .text
                     )
                 }
                 Spacer()
@@ -172,8 +181,24 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     }
 }
 
+private enum PillType {
+    case text
+    case tier
+
+    @hColorBuilder
+    var getBackgroundColor: some hColor {
+        switch self {
+        case .text:
+            hFillColor.Translucent.tertiary
+        case .tier:
+            hFillColor.Translucent.secondary
+        }
+    }
+}
+
 private struct StatusPill: View {
     var text: String
+    var type: PillType
 
     var body: some View {
         VStack {
@@ -182,7 +207,7 @@ private struct StatusPill: View {
         .padding(.vertical, 3)
         .padding(.horizontal, .padding6)
         .foregroundColor(hTextColor.Opaque.white)
-        .background(hFillColor.Translucent.tertiary).colorScheme(.light)
+        .background(type.getBackgroundColor).colorScheme(.light)
         .cornerRadius(.cornerRadiusS)
     }
 }
@@ -193,7 +218,8 @@ private struct StatusPill: View {
             image: hCoreUIAssets.pillowHome.image,
             terminationMessage: "Active",
             contractDisplayName: "Insurance",
-            contractExposureName: "Address ∙ Coverage"
+            contractExposureName: "Address ∙ Coverage",
+            tierDisplayName: "tier display name"
         )
     }
 }
