@@ -29,7 +29,7 @@ struct CompareTierScreen: View {
                     return CoverageView(
                         limits: limits,
                         didTapInsurableLimit: { limit in
-                            selectTierNavigationVm.insurableLimitIsPresented = limit
+                            selectTierNavigationVm.isInsurableLimitPresented = limit
                         },
                         perils: perils
                     )

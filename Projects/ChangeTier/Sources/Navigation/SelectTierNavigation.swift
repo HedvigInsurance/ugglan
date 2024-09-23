@@ -8,7 +8,8 @@ public class SelectTierNavigationViewModel: ObservableObject {
     @Published public var isEditTierPresented = false
     @Published public var isEditDeductiblePresented = false
     @Published public var isCompareTiersPresented = false
-    @Published public var insurableLimitIsPresented: InsurableLimits?
+    @Published public var isInsurableLimitPresented: InsurableLimits?
+    @Published public var isTierLockedInfoViewPresented = false
 
     var vm = SelectTierViewModel()
 
@@ -46,13 +47,24 @@ public struct SelectTierNavigation: View {
                 .environmentObject(selectTierNavigationVm)
         }
         .detent(
-            item: $selectTierNavigationVm.insurableLimitIsPresented,
+            item: $selectTierNavigationVm.isInsurableLimitPresented,
             style: [.height],
             options: .constant(.alwaysOpenOnTop)
         ) { insurableLimit in
             InfoView(
                 title: L10n.contractCoverageMoreInfo,
                 description: insurableLimit.description
+            )
+        }
+        .detent(
+            presented: $selectTierNavigationVm.isTierLockedInfoViewPresented,
+            style: [.height],
+            options: .constant(.alwaysOpenOnTop)
+        ) {
+            InfoView(
+                title: "Already at the highest coverage level",
+                description:
+                    "You are note able to downgrade your coverage level during your twelve month contract period."
             )
         }
         .modally(presented: $selectTierNavigationVm.isCompareTiersPresented) {

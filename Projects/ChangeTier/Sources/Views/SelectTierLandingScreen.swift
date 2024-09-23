@@ -52,7 +52,7 @@ struct SelectTierLandingScreen: View {
                     if vm.alreadyHasHighestTier {
                         hSection {
                             hFloatingField(value: "Max", placeholder: "Coverage level") {
-                                /* TODO: OPEN INFO THINGY */
+                                selectTierNavigationVm.isTierLockedInfoViewPresented = true
                             }
                             .hFieldLockedState
                             .hFieldTrailingView {
@@ -140,6 +140,7 @@ public class SelectTierViewModel: ObservableObject {
     var newPremium: MonetaryAmount?
 
     var isValid: Bool {
+        /* TODO: IMPLEMENT CHECK TO COMPARE NEW TIER AND DEDUCTIBLE ISN'T SAME AS CURRENT */
         return selectedTier != nil && selectedDeductible != nil
     }
 
@@ -148,8 +149,8 @@ public class SelectTierViewModel: ObservableObject {
     }
 
     var alreadyHasHighestTier: Bool {
-        /* TODO: IMPLEMENT */
-        return false
+        /* TODO: FETCH FROM CURRENT AGREEMENT */
+        return true
     }
 
     func setTier(for tierId: String) {
