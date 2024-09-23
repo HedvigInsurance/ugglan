@@ -150,21 +150,26 @@ public class SelectTierViewModel: ObservableObject {
         fetchTiers()
     }
 
+    @MainActor
     func setTier(for tierId: String) {
-        Task {
-            let data = try await service.getTier()
-            self.selectedTier = data.tiers.first(where: { $0.id == tierId })
+        withAnimation {
+            let newSelectedTier = tiers.first(where: { $0.id == tierId })
+            if newSelectedTier != selectedTier {
+                self.selectedDeductible = nil
+            }
+            self.selectedTier = newSelectedTier
         }
     }
 
+    @MainActor
     func setDeductible(for deductibleId: String) {
-        Task {
+        withAnimation {
             self.selectedDeductible = selectedTier?.deductibles.first(where: { $0.id == deductibleId })
         }
     }
 
     private func fetchTiers() {
-        Task {
+        Task { @MainActor in
             let data = try await service.getTier()
             self.tiers = data.tiers
             self.displayName = data.tiers.first?.productVariant.displayName
