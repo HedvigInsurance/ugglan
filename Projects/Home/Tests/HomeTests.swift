@@ -1,3 +1,4 @@
+import PresentableStore
 import XCTest
 import hCore
 
@@ -8,6 +9,7 @@ final class HomeTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
+        globalPresentableStoreContainer.deletePersistanceContainer()
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         sut = nil
     }
@@ -103,5 +105,76 @@ final class HomeTests: XCTestCase {
         )
         assert(respondedLastMessages.lastMessageTimeStamp == lastMessagesState.lastMessageTimeStamp)
 
+    }
+
+    func testHomeStoreWithMultipleActionsAtOnce() async throws {
+        for i in 1...100 {
+            try await iteratedStoreTest(iteration: i)
+        }
+        try await Task.sleep(nanoseconds: 100_000_000)
+    }
+
+    func iteratedStoreTest(iteration: Int) async throws {
+        globalPresentableStoreContainer.deletePersistanceContainer()
+        let messageState = Home.MessageState(
+            hasNewMessages: Bool.random(),
+            hasSentOrRecievedAtLeastOneMessage: Bool.random(),
+            lastMessageTimeStamp: Date()
+        )
+        let importantMessages: [ImportantMessage] = [ImportantMessage(id: "id", message: "message", linkInfo: nil)]
+        let futureStatuses: [FutureStatus] = [
+            .none, .pendingNonswitchable, .pendingSwitchable, .activeInFuture(inceptionDate: ""),
+        ]
+        let randomIndex = Int(arc4random()) % futureStatuses.count
+        let futureStatus = futureStatuses[randomIndex]
+        let memberState = MemberState.init(
+            contracts: [],
+            contractState: MemberContractState.allCases.randomElement() ?? .active,
+            futureState: futureStatus
+        )
+        MockData.createMockHomeService(
+            fetchImportantMessages: {
+                try await Task.sleep(nanoseconds: UInt64.random(in: 10_000_000...20_000_000))
+                return importantMessages
+            },
+            fetchMemberState: {
+                try await Task.sleep(nanoseconds: UInt64.random(in: 10_000_000...20_000_000))
+                return memberState
+            },
+            fetchQuickActions: {
+                try await Task.sleep(nanoseconds: UInt64.random(in: 10_000_000...20_000_000))
+                return [
+                    .sickAbroad(partners: []),
+                    .firstVet(partners: []),
+                ]
+            },
+            fetchLatestMessageState: {
+                try await Task.sleep(nanoseconds: UInt64.random(in: 10_000_000...20_000_000))
+                return messageState
+            }
+        )
+        print("ITERATION \(iteration)")
+        let store = HomeStore()
+        let storeInitialLatestConversationTimeStamp = store.state.latestConversationTimeStamp
+        store.send(.fetchMemberState)
+        store.send(.fetchImportantMessages)
+        store.send(.fetchQuickActions)
+        store.send(.fetchChatNotifications)
+        try await Task.sleep(nanoseconds: 50_000_000)
+
+        assert(store.state.memberContractState == memberState.contractState)
+        assert(store.state.futureStatus == memberState.futureState)
+        assert(store.state.contracts == memberState.contracts)
+        assert(store.state.importantMessages == importantMessages)
+        assert(store.state.quickActions.count == 2)
+        assert(store.state.toolbarOptionTypes.count == (messageState.hasSentOrRecievedAtLeastOneMessage ? 3 : 2))
+        assert(store.state.hidenImportantMessages.count == 0)
+        assert(store.state.upcomingRenewalContracts == [])
+        assert(store.state.showChatNotification == messageState.hasNewMessages)
+        assert(store.state.hasSentOrRecievedAtLeastOneMessage == messageState.hasSentOrRecievedAtLeastOneMessage)
+        assert(
+            store.state.latestConversationTimeStamp == messageState.lastMessageTimeStamp
+                || store.state.latestConversationTimeStamp == storeInitialLatestConversationTimeStamp
+        )
     }
 }
