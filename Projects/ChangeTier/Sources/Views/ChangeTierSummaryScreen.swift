@@ -51,6 +51,30 @@ struct ChangeTierSummaryScreen: View {
             }
             .sectionContainerStyle(.transparent)
         }
+        .hFormAttachToBottom {
+            hSection {
+                VStack(spacing: .padding16) {
+                    HStack {
+                        hText(L10n.tierFlowTotal)
+                        Spacer()
+                        hText(vm.newPremium?.formattedAmountPerMonth ?? "")
+                    }
+                    VStack(spacing: .padding8) {
+                        hButton.LargeButton(type: .primary) {
+                            /* TODO: IMPLEMENT */
+                        } content: {
+                            hText("Confirm changes")
+                        }
+                        hButton.LargeButton(type: .ghost) {
+                            /* TODO: IMPLEMENT. Scroll down */
+                        } content: {
+                            hText(L10n.tierFlowShowCoverage)
+                        }
+                    }
+                }
+            }
+            .sectionContainerStyle(.transparent)
+        }
     }
 
     var detailsView: some View {
@@ -78,6 +102,6 @@ struct ChangeTierSummaryScreen: View {
 }
 
 #Preview{
-    Dependencies.shared.add(module: Module { () -> SelectTierClient in SelectTierClientDemo() })
+    Dependencies.shared.add(module: Module { () -> SelectTierClient in ChangeTierClientDemo() })
     return ChangeTierSummaryScreen(vm: .init())
 }
