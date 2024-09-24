@@ -14,6 +14,7 @@ public class ChatScreenViewModel: ObservableObject {
     @Published var banner: Markdown?
     @Published var conversationStatus: ConversationStatus = .open
     @Published var shouldShowBanner = true
+    private var conversationId: String?
     var chatInputVm: ChatInputViewModel = .init()
     @Published var title: String = L10n.chatTitle
     @Published var subTitle: String?
@@ -30,7 +31,7 @@ public class ChatScreenViewModel: ObservableObject {
     private var openDeepLinkObserver: NSObjectProtocol?
     private var onTitleTap: (String) -> Void?
     private var claimId: String?
-
+    private var sendingMessagesIds = [String]()
     public init(
         chatService: ChatServiceProtocol,
         onTitleTap: @escaping (String) -> Void = { claimId in }
@@ -132,16 +133,27 @@ public class ChatScreenViewModel: ObservableObject {
     @MainActor
     private func fetchMessages() async {
         do {
+            let store: ChatStore = globalPresentableStoreContainer.get()
             let chatData = try await chatService.getNewMessages()
+            self.conversationId = chatData.conversationId
             let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
             withAnimation {
                 self.messages.append(contentsOf: newMessages)
+
+                if hasNext == nil {
+                    if let conversationId, let failedMessages = store.state.failedMessages[conversationId] {
+                        self.messages.insert(contentsOf: failedMessages.reversed(), at: 0)
+                        addedMessagesIds.append(contentsOf: failedMessages.compactMap({ $0.id }))
+                    }
+                }
+
                 self.messages.sort(by: { $0.sentAt > $1.sentAt })
                 self.lastDeliveredMessage = self.messages.first(where: { $0.sender == .member && $0.remoteId != nil })
             }
             self.banner = chatData.banner
             self.conversationStatus = chatData.conversationStatus ?? .open
             addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
+
             if hasNext == nil {
                 hasNext = chatData.hasPreviousMessage
             }
@@ -168,12 +180,18 @@ public class ChatScreenViewModel: ObservableObject {
     }
 
     private func sendToClient(message: Message) async {
-        do {
-            let sentMessage = try await chatService.send(message: message)
-            await handleSuccessAdding(for: sentMessage, to: message)
-            haveSentAMessage = true
-        } catch let ex {
-            await handleSendFail(for: message, with: ex.localizedDescription)
+        if !sendingMessagesIds.contains(message.id) {
+            sendingMessagesIds.append(message.id)
+            do {
+                let sentMessage = try await chatService.send(message: message)
+                let store: ChatStore = globalPresentableStoreContainer.get()
+                store.send(.clearFailedMessage(conversationId: conversationId ?? "", message: message))
+                await handleSuccessAdding(for: sentMessage, to: message)
+                haveSentAMessage = true
+            } catch let ex {
+                await handleSendFail(for: message, with: ex.localizedDescription)
+            }
+            sendingMessagesIds.removeAll(where: { $0 == message.id })
         }
     }
 
@@ -221,6 +239,8 @@ public class ChatScreenViewModel: ObservableObject {
                     }
                 case .url:
                     break
+                case .data:
+                    break
                 }
             }
         default:
@@ -244,6 +264,14 @@ public class ChatScreenViewModel: ObservableObject {
         }
     }
 
+    func deleteFailed(message: Message) {
+        let store: ChatStore = globalPresentableStoreContainer.get()
+        withAnimation {
+            self.messages.removeAll(where: { $0.id == message.id })
+        }
+        store.send(.clearFailedMessage(conversationId: conversationId ?? "", message: message))
+    }
+
     @MainActor
     private func handleSendFail(for message: Message, with error: String) {
         if let index = messages.firstIndex(where: { $0.id == message.id }) {
@@ -254,14 +282,19 @@ public class ChatScreenViewModel: ObservableObject {
                 break
             default:
                 messages[index] = newMessage
+                let store: ChatStore = globalPresentableStoreContainer.get()
+                switch newMessage.type {
+                case .file(let file):
+                    if let newFile = file.getAsDataFromUrl() {
+                        let fileMessage = newMessage.copyWith(type: .file(file: newFile))
+                        store.send(.setFailedMessage(conversationId: conversationId ?? "", message: fileMessage))
+                    }
+                default:
+                    store.send(.setFailedMessage(conversationId: conversationId ?? "", message: newMessage))
+                }
             }
         }
     }
-}
-
-public enum ChatServiceType {
-    case conversation
-    case oldChat
 }
 
 enum ConversationsError: Error {

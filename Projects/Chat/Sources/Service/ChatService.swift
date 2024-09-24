@@ -5,14 +5,12 @@ import hCoreUI
 import hGraphQL
 
 public protocol ChatServiceProtocol {
-    var type: ChatServiceType { get }
     func getNewMessages() async throws -> ChatData
     func getPreviousMessages() async throws -> ChatData
     func send(message: Message) async throws -> Message
 }
 
 public class ConversationService: ChatServiceProtocol {
-    public var type: ChatServiceType = .conversation
     @Inject var client: ConversationClient
     @PresentableStore var store: ChatStore
 
@@ -36,6 +34,7 @@ public class ConversationService: ChatServiceProtocol {
         }
         newerToken = data.newerToken
         return .init(
+            conversationId: conversationId,
             hasPreviousMessage: olderToken != nil,
             messages: data.messages,
             banner: data.banner,
@@ -55,6 +54,7 @@ public class ConversationService: ChatServiceProtocol {
         )
         self.olderToken = data.olderToken
         return .init(
+            conversationId: conversationId,
             hasPreviousMessage: olderToken != nil,
             messages: data.messages,
             banner: data.banner,
@@ -72,7 +72,6 @@ public class ConversationService: ChatServiceProtocol {
 }
 
 public class NewConversationService: ChatServiceProtocol {
-    public var type: ChatServiceType = .conversation
     @Inject var conversationsClient: ConversationsClient
     private var conversationService: ConversationService?
     private var generatingConversation = false
@@ -87,6 +86,7 @@ public class NewConversationService: ChatServiceProtocol {
             return try await conversationService.getNewMessages()
         }
         return .init(
+            conversationId: "",
             hasPreviousMessage: false,
             messages: [],
             banner: nil,
@@ -103,6 +103,7 @@ public class NewConversationService: ChatServiceProtocol {
             return try await conversationService.getPreviousMessages()
         }
         return .init(
+            conversationId: "",
             hasPreviousMessage: false,
             messages: [],
             banner: nil,
