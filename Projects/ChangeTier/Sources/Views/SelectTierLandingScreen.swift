@@ -166,7 +166,9 @@ public class SelectTierViewModel: ObservableObject {
     @MainActor
     func setDeductible(for deductibleId: String) {
         withAnimation {
-            self.selectedDeductible = selectedTier?.deductibles.first(where: { $0.id == deductibleId })
+            if let deductible = selectedTier?.deductibles.first(where: { $0.id == deductibleId }) {
+                self.selectedDeductible = deductible
+            }
         }
     }
 
@@ -184,7 +186,29 @@ public class SelectTierViewModel: ObservableObject {
                 id: "id",
                 name: "Max",
                 level: 3,
-                deductibles: [],
+                deductibles: [
+                    .init(
+                        id: "id",
+                        deductibleAmount: .init(amount: "1000", currency: "SEK"),
+                        deductiblePercentage: 0,
+                        subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                        premium: .init(amount: "1167", currency: "SEK")
+                    ),
+                    .init(
+                        id: "id2",
+                        deductibleAmount: .init(amount: "2000", currency: "SEK"),
+                        deductiblePercentage: 25,
+                        subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                        premium: .init(amount: "999", currency: "SEK")
+                    ),
+                    .init(
+                        id: "id3",
+                        deductibleAmount: .init(amount: "3000", currency: "SEK"),
+                        deductiblePercentage: 15,
+                        subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                        premium: .init(amount: "569", currency: "SEK")
+                    ),
+                ],
                 premium: .init(amount: "", currency: ""),
                 displayItems: [],
                 exposureName: "",
