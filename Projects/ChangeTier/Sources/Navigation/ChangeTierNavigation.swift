@@ -16,6 +16,19 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     init() {}
 }
 
+enum ChangeTierRouterActions {
+    case summary
+}
+
+extension ChangeTierRouterActions: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .summary:
+            return "Change tier summary"
+        }
+    }
+}
+
 public struct ChangeTierNavigation: View {
     @StateObject var router = Router()
     @StateObject var selectTierNavigationVm = ChangeTierNavigationViewModel()
@@ -26,6 +39,13 @@ public struct ChangeTierNavigation: View {
         RouterHost(router: router, options: []) {
             SelectTierLandingScreen(vm: selectTierNavigationVm.vm)
                 .withDismissButton()
+                .routerDestination(for: ChangeTierRouterActions.self) { action in
+                    switch action {
+                    case .summary:
+                        ChangeTierSummaryScreen(vm: selectTierNavigationVm.vm)
+                            .configureTitle("Summary")
+                    }
+                }
         }
         .environmentObject(selectTierNavigationVm)
         .detent(

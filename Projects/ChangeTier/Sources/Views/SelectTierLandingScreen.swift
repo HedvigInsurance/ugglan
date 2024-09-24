@@ -6,6 +6,7 @@ import hGraphQL
 struct SelectTierLandingScreen: View {
     @ObservedObject var vm: SelectTierViewModel
     @EnvironmentObject var selectTierNavigationVm: ChangeTierNavigationViewModel
+    @EnvironmentObject var router: Router
 
     var body: some View {
         hForm {}
@@ -114,7 +115,7 @@ struct SelectTierLandingScreen: View {
                     hText(L10n.tierFlowCompareButton, style: .body1)
                 }
                 hButton.LargeButton(type: .primary) {
-                    /** TODO: ADD ACTION **/
+                    router.push(ChangeTierRouterActions.summary)
                 } content: {
                     hText(L10n.generalContinueButton)
                 }
