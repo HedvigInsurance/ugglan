@@ -6,6 +6,7 @@ public class SelectTierClientOctopus: SelectTierClient {
 
     public func getTier() async throws -> ChangeTierIntentModel {
         /* TODO: REPLACE WITH REAL DATA */
+        // for all tierQuotes with tierLevel = X, fetch all deductible info and add as deductible
         return .init(
             id: "id",
             activationDate: Date(),
@@ -18,17 +19,23 @@ public class SelectTierClientOctopus: SelectTierClient {
                         .init(
                             id: "id",
                             deductibleAmount: .init(amount: "1000", currency: "SEK"),
-                            deductiblePercentage: 0
+                            deductiblePercentage: 0,
+                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                            premium: .init(amount: "1167", currency: "SEK")
                         ),
                         .init(
                             id: "id2",
                             deductibleAmount: .init(amount: "2000", currency: "SEK"),
-                            deductiblePercentage: 25
+                            deductiblePercentage: 25,
+                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                            premium: .init(amount: "999", currency: "SEK")
                         ),
                         .init(
                             id: "id3",
                             deductibleAmount: .init(amount: "3000", currency: "SEK"),
-                            deductiblePercentage: 15
+                            deductiblePercentage: 15,
+                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                            premium: .init(amount: "569", currency: "SEK")
                         ),
                     ],
                     premium: .init(amount: "530", currency: "SEK"),
@@ -79,17 +86,23 @@ public class SelectTierClientOctopus: SelectTierClient {
                         .init(
                             id: "id",
                             deductibleAmount: .init(amount: "1000", currency: "SEK"),
-                            deductiblePercentage: 0
+                            deductiblePercentage: 0,
+                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                            premium: .init(amount: "1167", currency: "SEK")
                         ),
                         .init(
                             id: "id2",
                             deductibleAmount: .init(amount: "2000", currency: "SEK"),
-                            deductiblePercentage: 25
+                            deductiblePercentage: 25,
+                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                            premium: .init(amount: "999", currency: "SEK")
                         ),
                         .init(
                             id: "id3",
                             deductibleAmount: .init(amount: "3000", currency: "SEK"),
-                            deductiblePercentage: 15
+                            deductiblePercentage: 15,
+                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                            premium: .init(amount: "569", currency: "SEK")
                         ),
                     ],
                     premium: .init(amount: "530", currency: "SEK"),
@@ -140,17 +153,23 @@ public class SelectTierClientOctopus: SelectTierClient {
                         .init(
                             id: "id",
                             deductibleAmount: .init(amount: "1000", currency: "SEK"),
-                            deductiblePercentage: 0
+                            deductiblePercentage: 0,
+                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                            premium: .init(amount: "1167", currency: "SEK")
                         ),
                         .init(
                             id: "id2",
                             deductibleAmount: .init(amount: "2000", currency: "SEK"),
-                            deductiblePercentage: 25
+                            deductiblePercentage: 25,
+                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                            premium: .init(amount: "999", currency: "SEK")
                         ),
                         .init(
                             id: "id3",
                             deductibleAmount: .init(amount: "3000", currency: "SEK"),
-                            deductiblePercentage: 15
+                            deductiblePercentage: 15,
+                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                            premium: .init(amount: "569", currency: "SEK")
                         ),
                     ],
                     premium: .init(amount: "530", currency: "SEK"),

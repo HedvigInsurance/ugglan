@@ -4,7 +4,7 @@ import hCoreUI
 
 struct CompareTierScreen: View {
     var vm: SelectTierViewModel
-    @EnvironmentObject var selectTierNavigationVm: SelectTierNavigationViewModel
+    @EnvironmentObject var selectTierNavigationVm: ChangeTierNavigationViewModel
 
     var scrollableSegmentedViewModel: ScrollableSegmentedViewModel
 

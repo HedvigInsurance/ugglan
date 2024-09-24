@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public class SelectTierNavigationViewModel: ObservableObject {
+public class ChangeTierNavigationViewModel: ObservableObject {
     @Published public var isEditTierPresented = false
     @Published public var isEditDeductiblePresented = false
     @Published public var isCompareTiersPresented = false
@@ -16,9 +16,9 @@ public class SelectTierNavigationViewModel: ObservableObject {
     init() {}
 }
 
-public struct SelectTierNavigation: View {
+public struct ChangeTierNavigation: View {
     @StateObject var router = Router()
-    @StateObject var selectTierNavigationVm = SelectTierNavigationViewModel()
+    @StateObject var selectTierNavigationVm = ChangeTierNavigationViewModel()
 
     public init() {}
 

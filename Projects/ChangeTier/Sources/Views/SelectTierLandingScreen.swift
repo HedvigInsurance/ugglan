@@ -5,7 +5,7 @@ import hGraphQL
 
 struct SelectTierLandingScreen: View {
     @ObservedObject var vm: SelectTierViewModel
-    @EnvironmentObject var selectTierNavigationVm: SelectTierNavigationViewModel
+    @EnvironmentObject var selectTierNavigationVm: ChangeTierNavigationViewModel
 
     var body: some View {
         hForm {}
@@ -51,7 +51,8 @@ struct SelectTierLandingScreen: View {
                 VStack(spacing: .padding4) {
                     if vm.canEditTier {
                         hSection {
-                            hFloatingField(value: "Max", placeholder: L10n.tierFlowCoverageLabel) {
+                            hFloatingField(value: vm.selectedTier?.name ?? "", placeholder: L10n.tierFlowCoverageLabel)
+                            {
                                 selectTierNavigationVm.isTierLockedInfoViewPresented = true
                             }
                             .hFieldLockedState
@@ -65,12 +66,14 @@ struct SelectTierLandingScreen: View {
                             selectTierNavigationVm.isEditTierPresented = true
                         }
                     }
+
                     DropdownView(
                         value: vm.selectedDeductible?.deductibleAmount?.formattedAmount ?? "",
                         placeHolder: L10n.tierFlowDeductibleLabel
                     ) {
                         selectTierNavigationVm.isEditDeductiblePresented = true
                     }
+                    .disabled(vm.selectedTier == nil)
                 }
                 .hFieldSize(.small)
                 .hWithTransparentColor
@@ -89,8 +92,7 @@ struct SelectTierLandingScreen: View {
 
                             if vm.newPremium != vm.currentPremium {
                                 hText(
-                                    L10n.tierFlowPreviousPrice + " " + (vm.currentPremium?.formattedAmount ?? "")
-                                        + "/mo",
+                                    L10n.tierFlowPreviousPrice(vm.currentPremium?.formattedAmount ?? "") + "/mo",
                                     style: .label
                                 )
                                 .foregroundColor(hTextColor.Opaque.secondary)
@@ -132,7 +134,6 @@ public class SelectTierViewModel: ObservableObject {
     var currentTier: Tier?
     var currentDeductible: Deductible?
     var newPremium: MonetaryAmount?
-    /* TODO: FETCH supportsChangeTier FROM CURRENT AGREEMENT */
     var canEditTier: Bool = false
 
     @Published var selectedTier: Tier?
@@ -151,9 +152,9 @@ public class SelectTierViewModel: ObservableObject {
     }
 
     @MainActor
-    func setTier(for tierId: String) {
+    func setTier(for tierName: String) {
         withAnimation {
-            let newSelectedTier = tiers.first(where: { $0.id == tierId })
+            let newSelectedTier = tiers.first(where: { $0.name == tierName })
             if newSelectedTier != selectedTier {
                 self.selectedDeductible = nil
             }
@@ -201,8 +202,11 @@ public class SelectTierViewModel: ObservableObject {
             self.currentDeductible = .init(
                 id: "id",
                 deductibleAmount: .init(amount: "449", currency: "SEK"),
-                deductiblePercentage: 25
+                deductiblePercentage: 25,
+                subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                premium: .init(amount: "999", currency: "SEK")
             )
+            /* TODO: FETCH supportsChangeTier FROM CURRENT AGREEMENT */
             self.canEditTier = false
             self.selectedTier = currentTier
             self.selectedDeductible = currentDeductible

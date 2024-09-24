@@ -5,7 +5,7 @@ import hCoreUI
 struct EditTier: View {
     @State var selectedTier: String?
     var vm: SelectTierViewModel
-    @EnvironmentObject var selectTierNavigationVm: SelectTierNavigationViewModel
+    @EnvironmentObject var selectTierNavigationVm: ChangeTierNavigationViewModel
 
     init(
         vm: SelectTierViewModel
@@ -19,13 +19,13 @@ struct EditTier: View {
                 VStack(spacing: .padding4) {
                     ForEach(vm.tiers, id: \.self) { tier in
                         hRadioField(
-                            id: tier.id,
+                            id: tier.name,
                             leftView: {
                                 VStack(alignment: .leading, spacing: .padding8) {
                                     HStack {
                                         hText(tier.name)
                                         Spacer()
-                                        hText(tier.premium.formattedAmount + " kr/mo")
+                                        hText(tier.premium.formattedAmount + "/mo")
                                     }
                                     hText(String(tier.productVariant.displayNameTierLong ?? ""))
                                         .foregroundColor(hTextColor.Opaque.secondary)

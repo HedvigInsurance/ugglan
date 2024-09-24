@@ -5,7 +5,7 @@ import hCoreUI
 struct EditDeductibleView: View {
     @State var selectedDeductible: String?
     var vm: SelectTierViewModel
-    @EnvironmentObject var selectTierNavigationVm: SelectTierNavigationViewModel
+    @EnvironmentObject var selectTierNavigationVm: ChangeTierNavigationViewModel
 
     init(
         vm: SelectTierViewModel
@@ -31,13 +31,15 @@ struct EditDeductibleView: View {
                             leftView: {
                                 VStack(alignment: .leading, spacing: .padding8) {
                                     HStack {
-                                        hText(deductible.deductibleAmount?.formattedAmount ?? "")
+                                        let displayTitle =
+                                            (deductible.deductibleAmount?.formattedAmount ?? "") + " + "
+                                            + String(deductible.deductiblePercentage ?? 0) + "%"
+                                        hText(displayTitle)
                                         Spacer()
-                                        hText(String(deductible.deductiblePercentage ?? 0))
+                                        hText(deductible.premium?.formattedAmount ?? "" + "/mo")
                                     }
-                                    /* TODO: NOT SURE TO INCLUDE THIS DESIGN WISE */
-                                    //                                    hText(deductible.subTitle)
-                                    //                                        .fixedSize()
+                                    hText(deductible.subTitle ?? "")
+                                        .foregroundColor(hTextColor.Opaque.secondary)
                                 }
                                 .asAnyView
                             },
@@ -58,7 +60,7 @@ struct EditDeductibleView: View {
                         vm.setDeductible(for: self.selectedDeductible ?? "")
                         selectTierNavigationVm.isEditDeductiblePresented = false
                     } content: {
-                        hText(L10n.generalContinueButton)
+                        hText(L10n.generalConfirm)
                     }
 
                     hButton.LargeButton(type: .ghost) {

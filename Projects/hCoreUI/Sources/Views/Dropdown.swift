@@ -4,6 +4,8 @@ public struct DropdownView: View {
     private var value: String
     private var placeHolder: String
     private var onTap: () -> Void
+    @Environment(\.isEnabled) var isEnabled
+    @Environment(\.hFieldLockedState) var isLocked
 
     public init(
         value: String,
@@ -26,9 +28,18 @@ public struct DropdownView: View {
             )
             .hFieldTrailingView {
                 hCoreUIAssets.chevronDown.view
-                    .foregroundColor(hFillColor.Opaque.primary)
+                    .foregroundColor(imageColor)
                     .frame(width: 24, height: 24)
             }
+        }
+    }
+
+    @hColorBuilder
+    var imageColor: some hColor {
+        if isEnabled && !isLocked {
+            hFillColor.Opaque.primary
+        } else {
+            hFillColor.Opaque.disabled
         }
     }
 }

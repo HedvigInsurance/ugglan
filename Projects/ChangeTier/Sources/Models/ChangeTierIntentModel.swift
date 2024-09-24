@@ -32,6 +32,9 @@ public struct Deductible: Codable, Hashable, Identifiable {
 
     let deductibleAmount: MonetaryAmount?
     let deductiblePercentage: Int?
+    let subTitle: String?
+
+    let premium: MonetaryAmount?
 }
 
 extension Deductible: Equatable {

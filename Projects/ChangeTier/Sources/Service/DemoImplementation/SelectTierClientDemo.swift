@@ -20,17 +20,23 @@ public class SelectTierClientDemo: SelectTierClient {
                         .init(
                             id: "id",
                             deductibleAmount: .init(amount: "1000", currency: "SEK"),
-                            deductiblePercentage: 0
+                            deductiblePercentage: 0,
+                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                            premium: .init(amount: "1167", currency: "SEK")
                         ),
                         .init(
                             id: "id2",
                             deductibleAmount: .init(amount: "2000", currency: "SEK"),
-                            deductiblePercentage: 25
+                            deductiblePercentage: 25,
+                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                            premium: .init(amount: "999", currency: "SEK")
                         ),
                         .init(
                             id: "id3",
                             deductibleAmount: .init(amount: "3000", currency: "SEK"),
-                            deductiblePercentage: 15
+                            deductiblePercentage: 15,
+                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                            premium: .init(amount: "569", currency: "SEK")
                         ),
                     ],
                     premium: .init(amount: "530", currency: "SEK"),
@@ -40,11 +46,36 @@ public class SelectTierClientDemo: SelectTierClient {
                         termsVersion: "",
                         typeOfContract: "",
                         partner: nil,
-                        perils: [],
+                        perils: [
+                            .init(
+                                id: "id1",
+                                title: "title1",
+                                description: "description1",
+                                info: nil,
+                                color: nil,
+                                covered: []
+                            ),
+                            .init(
+                                id: "id2",
+                                title: "title2",
+                                description: "description2",
+                                info: nil,
+                                color: nil,
+                                covered: []
+                            ),
+                            .init(
+                                id: "id3",
+                                title: "title3",
+                                description: "description3",
+                                info: nil,
+                                color: nil,
+                                covered: []
+                            ),
+                        ],
                         insurableLimits: [],
                         documents: [],
                         displayName: "Homeowner",
-                        displayNameTier: "Standard",
+                        displayNameTier: "Bas",
                         displayNameTierLong: "Vårt mellanpaket med hög ersättning."
                     )
                 ),
@@ -56,17 +87,23 @@ public class SelectTierClientDemo: SelectTierClient {
                         .init(
                             id: "id",
                             deductibleAmount: .init(amount: "1000", currency: "SEK"),
-                            deductiblePercentage: 0
+                            deductiblePercentage: 0,
+                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                            premium: .init(amount: "1167", currency: "SEK")
                         ),
                         .init(
                             id: "id2",
                             deductibleAmount: .init(amount: "2000", currency: "SEK"),
-                            deductiblePercentage: 25
+                            deductiblePercentage: 25,
+                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                            premium: .init(amount: "999", currency: "SEK")
                         ),
                         .init(
                             id: "id3",
                             deductibleAmount: .init(amount: "3000", currency: "SEK"),
-                            deductiblePercentage: 15
+                            deductiblePercentage: 15,
+                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                            premium: .init(amount: "569", currency: "SEK")
                         ),
                     ],
                     premium: .init(amount: "530", currency: "SEK"),
@@ -76,7 +113,32 @@ public class SelectTierClientDemo: SelectTierClient {
                         termsVersion: "",
                         typeOfContract: "",
                         partner: nil,
-                        perils: [],
+                        perils: [
+                            .init(
+                                id: "id1",
+                                title: "title1",
+                                description: "description1",
+                                info: nil,
+                                color: nil,
+                                covered: []
+                            ),
+                            .init(
+                                id: "id2",
+                                title: "title2",
+                                description: "description2",
+                                info: nil,
+                                color: nil,
+                                covered: []
+                            ),
+                            .init(
+                                id: "id3",
+                                title: "title3",
+                                description: "description3",
+                                info: nil,
+                                color: nil,
+                                covered: []
+                            ),
+                        ],
                         insurableLimits: [],
                         documents: [],
                         displayName: "Homeowner",
@@ -92,17 +154,23 @@ public class SelectTierClientDemo: SelectTierClient {
                         .init(
                             id: "id",
                             deductibleAmount: .init(amount: "1000", currency: "SEK"),
-                            deductiblePercentage: 0
+                            deductiblePercentage: 0,
+                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                            premium: .init(amount: "1167", currency: "SEK")
                         ),
                         .init(
                             id: "id2",
                             deductibleAmount: .init(amount: "2000", currency: "SEK"),
-                            deductiblePercentage: 25
+                            deductiblePercentage: 25,
+                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                            premium: .init(amount: "999", currency: "SEK")
                         ),
                         .init(
                             id: "id3",
                             deductibleAmount: .init(amount: "3000", currency: "SEK"),
-                            deductiblePercentage: 15
+                            deductiblePercentage: 15,
+                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                            premium: .init(amount: "569", currency: "SEK")
                         ),
                     ],
                     premium: .init(amount: "530", currency: "SEK"),
@@ -112,11 +180,36 @@ public class SelectTierClientDemo: SelectTierClient {
                         termsVersion: "",
                         typeOfContract: "",
                         partner: nil,
-                        perils: [],
+                        perils: [
+                            .init(
+                                id: "id1",
+                                title: "title1",
+                                description: "description1",
+                                info: nil,
+                                color: nil,
+                                covered: []
+                            ),
+                            .init(
+                                id: "id2",
+                                title: "title2",
+                                description: "description2",
+                                info: nil,
+                                color: nil,
+                                covered: []
+                            ),
+                            .init(
+                                id: "id3",
+                                title: "title3",
+                                description: "description3",
+                                info: nil,
+                                color: nil,
+                                covered: []
+                            ),
+                        ],
                         insurableLimits: [],
                         documents: [],
                         displayName: "Homeowner",
-                        displayNameTier: "Standard",
+                        displayNameTier: "Max",
                         displayNameTierLong: "Vårt mellanpaket med hög ersättning."
                     )
                 ),
