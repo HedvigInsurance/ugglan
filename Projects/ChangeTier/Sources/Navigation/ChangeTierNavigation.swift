@@ -24,7 +24,7 @@ public struct ChangeTierNavigation: View {
 
     public var body: some View {
         RouterHost(router: router, options: []) {
-            SelectTierLandingScreen(vm: selectTierNavigationVm.vm)
+            ChangeTierLandingScreen(vm: selectTierNavigationVm.vm)
                 .withDismissButton()
         }
         .environmentObject(selectTierNavigationVm)

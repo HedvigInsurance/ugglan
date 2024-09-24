@@ -39,7 +39,7 @@ extension ApolloClient {
             let submitClaimDemoService = SubmitClaimClientDemo()
             let conversationsClient = ConversationsDemoClient()
             let conversationClient = ConversationDemoClient()
-            let selectTierClient = SelectTierClientDemo()
+            let selectTierClient = ChangeTierClientDemo()
             let adyenClient = AdyenClientDemo()
             Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlags })
             Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentService })
@@ -77,7 +77,7 @@ extension ApolloClient {
             let submitClaimService = SubmitClaimClientOctopus()
             let conversationClient = ConversationClientOctopus()
             let conversationsClient = ConversationsClientOctopus()
-            let selectTierClient = SelectTierClientOctopus()
+            let selectTierClient = ChangeTierClientOctopus()
             switch Environment.current {
             case .staging:
                 Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlagsUnleash })
