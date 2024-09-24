@@ -74,7 +74,9 @@ open class StateStore<State: StateProtocol, Action: ActionProtocol>: Store {
                     },
                     action
                 )
+                semaphore.signal()
             }
+            semaphore.wait()
         }
     }
 
@@ -85,16 +87,14 @@ open class StateStore<State: StateProtocol, Action: ActionProtocol>: Store {
 
         stateWriteSignal.value = reduce(stateWriteSignal.value, action)
         actionCallbacker.send(action)
-
-        DispatchQueue.global(qos: .background)
-            .async {
-                Self.persist(self.stateWriteSignal.value)
-            }
-
         let newState = stateWriteSignal.value
 
         if newState != previousState {
             logger("🦄 \(String(describing: Self.self)): new state \n \(newState)")
+            DispatchQueue.global(qos: .background)
+                .async {
+                    Self.persist(self.stateWriteSignal.value)
+                }
         }
         await effects(
             {
