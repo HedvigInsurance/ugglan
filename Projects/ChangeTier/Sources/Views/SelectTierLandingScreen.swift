@@ -62,14 +62,15 @@ struct SelectTierLandingScreen: View {
                             }
                         }
                     } else {
-                        DropdownView(value: vm.selectedTier?.name ?? "", placeHolder: L10n.tierFlowCoverageLabel) {
+                        DropdownView(value: vm.selectedTier?.name ?? "", placeHolder: L10n.tierFlowCoveragePlaceholder)
+                        {
                             selectTierNavigationVm.isEditTierPresented = true
                         }
                     }
 
                     DropdownView(
                         value: vm.selectedDeductible?.deductibleAmount?.formattedAmount ?? "",
-                        placeHolder: L10n.tierFlowDeductibleLabel
+                        placeHolder: L10n.tierFlowDeductiblePlaceholder
                     ) {
                         selectTierNavigationVm.isEditDeductiblePresented = true
                     }
