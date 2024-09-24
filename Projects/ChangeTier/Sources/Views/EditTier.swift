@@ -25,7 +25,7 @@ struct EditTier: View {
                                     HStack {
                                         hText(tier.name)
                                         Spacer()
-                                        hText(tier.premium.formattedAmount + "/mo")
+                                        hText(tier.premium.formattedAmountPerMonth)
                                     }
                                     hText(String(tier.productVariant.displayNameTierLong ?? ""))
                                         .foregroundColor(hTextColor.Opaque.secondary)

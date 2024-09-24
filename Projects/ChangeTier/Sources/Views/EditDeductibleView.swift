@@ -36,7 +36,7 @@ struct EditDeductibleView: View {
                                             + String(deductible.deductiblePercentage ?? 0) + "%"
                                         hText(displayTitle)
                                         Spacer()
-                                        hText(deductible.premium?.formattedAmount ?? "" + "/mo")
+                                        hText(deductible.premium?.formattedAmountPerMonth ?? "")
                                     }
                                     hText(deductible.subTitle ?? "")
                                         .foregroundColor(hTextColor.Opaque.secondary)

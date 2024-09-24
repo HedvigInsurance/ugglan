@@ -85,14 +85,14 @@ struct SelectTierLandingScreen: View {
                         Spacer()
                         VStack(alignment: .trailing, spacing: 0) {
                             if let newPremium = vm.newPremium {
-                                hText(newPremium.formattedAmount + "/mo")
+                                hText(newPremium.formattedAmountPerMonth)
                             } else {
-                                hText(vm.currentPremium?.formattedAmount ?? "" + "/mo")
+                                hText(vm.currentPremium?.formattedAmountPerMonth ?? "")
                             }
 
                             if vm.newPremium != vm.currentPremium {
                                 hText(
-                                    L10n.tierFlowPreviousPrice(vm.currentPremium?.formattedAmount ?? "") + "/mo",
+                                    L10n.tierFlowPreviousPrice(vm.currentPremium?.formattedAmountPerMonth ?? ""),
                                     style: .label
                                 )
                                 .foregroundColor(hTextColor.Opaque.secondary)
