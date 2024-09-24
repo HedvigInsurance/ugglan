@@ -39,7 +39,11 @@ public class SelectTierClientOctopus: SelectTierClient {
                         ),
                     ],
                     premium: .init(amount: "530", currency: "SEK"),
-                    displayItems: [],
+                    displayItems: [
+                        .init(id: "id1", title: "Activation date", subTitle: nil, value: "24 sep 2024"),
+                        .init(id: "id2", title: "Coverage level", subTitle: nil, value: "Standard"),
+                        .init(id: "id3", title: "Deductible", subTitle: nil, value: "1750 kr"),
+                    ],
                     exposureName: "Bellmansgatan 19A",
                     productVariant: .init(
                         termsVersion: "",
@@ -106,7 +110,11 @@ public class SelectTierClientOctopus: SelectTierClient {
                         ),
                     ],
                     premium: .init(amount: "530", currency: "SEK"),
-                    displayItems: [],
+                    displayItems: [
+                        .init(id: "id1", title: "Activation date", subTitle: nil, value: "24 sep 2024"),
+                        .init(id: "id2", title: "Coverage level", subTitle: nil, value: "Standard"),
+                        .init(id: "id3", title: "Deductible", subTitle: nil, value: "1750 kr"),
+                    ],
                     exposureName: "Bellmansgatan 19A",
                     productVariant: .init(
                         termsVersion: "",
@@ -173,7 +181,11 @@ public class SelectTierClientOctopus: SelectTierClient {
                         ),
                     ],
                     premium: .init(amount: "530", currency: "SEK"),
-                    displayItems: [],
+                    displayItems: [
+                        .init(id: "id1", title: "Activation date", subTitle: nil, value: "24 sep 2024"),
+                        .init(id: "id2", title: "Coverage level", subTitle: nil, value: "Standard"),
+                        .init(id: "id3", title: "Deductible", subTitle: nil, value: "1750 kr"),
+                    ],
                     exposureName: "Bellmansgatan 19A",
                     productVariant: .init(
                         termsVersion: "",

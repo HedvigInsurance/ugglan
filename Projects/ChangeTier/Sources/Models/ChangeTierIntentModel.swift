@@ -20,7 +20,9 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable {
     let exposureName: String?
     let productVariant: ProductVariant
 
-    public struct TierDisplayItem: Codable, Equatable, Hashable {
+    public struct TierDisplayItem: Codable, Equatable, Hashable, Identifiable {
+        public var id: String
+
         let title: String
         let subTitle: String?
         let value: String

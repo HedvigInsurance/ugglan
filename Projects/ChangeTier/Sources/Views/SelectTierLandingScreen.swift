@@ -36,17 +36,10 @@ struct SelectTierLandingScreen: View {
         hSection {
             VStack(spacing: 0) {
                 hRow {
-                    HStack(spacing: .padding12) {
-                        Image(uiImage: hCoreUIAssets.pillowHome.image)
-                            .resizable()
-                            .frame(width: 48, height: 48)
-                        VStack(alignment: .leading, spacing: 0) {
-                            hText(vm.displayName ?? "")
-                            hText(vm.exposureName ?? "")
-                                .foregroundColor(hTextColor.Opaque.secondary)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    }
+                    ContractInformation(
+                        displayName: vm.displayName,
+                        exposureName: vm.exposureName
+                    )
                 }
 
                 VStack(spacing: .padding4) {
@@ -82,25 +75,10 @@ struct SelectTierLandingScreen: View {
                 .hWithoutHorizontalPadding
 
                 hRow {
-                    HStack(alignment: .top) {
-                        hText(L10n.tierFlowTotal)
-                        Spacer()
-                        VStack(alignment: .trailing, spacing: 0) {
-                            if let newPremium = vm.newPremium {
-                                hText(newPremium.formattedAmountPerMonth)
-                            } else {
-                                hText(vm.currentPremium?.formattedAmountPerMonth ?? "")
-                            }
-
-                            if vm.newPremium != vm.currentPremium {
-                                hText(
-                                    L10n.tierFlowPreviousPrice(vm.currentPremium?.formattedAmountPerMonth ?? ""),
-                                    style: .label
-                                )
-                                .foregroundColor(hTextColor.Opaque.secondary)
-                            }
-                        }
-                    }
+                    PriceField(
+                        newPremium: vm.newPremium,
+                        currentPremium: vm.currentPremium
+                    )
                 }
             }
         }
