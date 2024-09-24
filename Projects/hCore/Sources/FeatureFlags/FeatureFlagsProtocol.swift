@@ -18,6 +18,7 @@ public protocol FeatureFlags {
     func updateContext(context: [String: String])
     var osVersionTooLow: Bool { get set }
     var emailPreferencesEnabled: Bool { get set }
+    var isTiersEnabled: Bool { get set }
 }
 
 public enum PaymentType {
