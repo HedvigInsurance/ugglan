@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct SelectTierLandingScreen: View {
+struct ChangeTierLandingScreen: View {
     @ObservedObject var vm: SelectTierViewModel
     @EnvironmentObject var selectTierNavigationVm: ChangeTierNavigationViewModel
     @EnvironmentObject var router: Router
@@ -219,6 +219,6 @@ public class SelectTierViewModel: ObservableObject {
 }
 
 #Preview{
-    Dependencies.shared.add(module: Module { () -> SelectTierClient in SelectTierClientDemo() })
-    return SelectTierLandingScreen(vm: .init())
+    Dependencies.shared.add(module: Module { () -> SelectTierClient in ChangeTierClientDemo() })
+    return ChangeTierLandingScreen(vm: .init())
 }

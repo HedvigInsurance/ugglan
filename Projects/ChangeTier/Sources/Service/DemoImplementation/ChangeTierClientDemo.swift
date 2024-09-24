@@ -2,7 +2,7 @@ import Foundation
 import hCore
 import hGraphQL
 
-public class SelectTierClientDemo: SelectTierClient {
+public class ChangeTierClientDemo: SelectTierClient {
     @Inject var octopus: hOctopus
 
     public init() {}

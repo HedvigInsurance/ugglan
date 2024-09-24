@@ -1,7 +1,7 @@
 import Foundation
 import hCore
 
-public class SelectTierClientOctopus: SelectTierClient {
+public class ChangeTierClientOctopus: SelectTierClient {
     public init() {}
 
     public func getTier() async throws -> ChangeTierIntentModel {
