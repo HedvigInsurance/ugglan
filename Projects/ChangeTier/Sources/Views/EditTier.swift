@@ -41,6 +41,7 @@ struct EditTier: View {
                     }
                 }
             }
+            .padding(.top, 16)
             .sectionContainerStyle(.transparent)
         }
         .hFormAttachToBottom {
@@ -62,11 +63,33 @@ struct EditTier: View {
                 }
             }
             .sectionContainerStyle(.transparent)
-            .padding(.top, 16)
+            .padding(.top, .padding16)
         }
         .onAppear {
             self.selectedTier = vm.selectedTier?.name ?? vm.tiers.first?.name
         }
+        .configureTitleView(self)
+    }
+}
+
+extension EditTier: TitleView {
+    public func getTitleView() -> UIView {
+        let view: UIView = UIHostingController(rootView: titleView).view
+        view.backgroundColor = .clear
+        view.isUserInteractionEnabled = true
+        return view
+    }
+
+    @ViewBuilder
+    private var titleView: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            hText(L10n.tierFlowSelectCoverageTitle, style: .heading1)
+                .foregroundColor(hTextColor.Opaque.primary)
+            hText("Find the right coverage for your needs", style: .heading1)
+                .foregroundColor(hTextColor.Opaque.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.top, .padding8)
     }
 }
 

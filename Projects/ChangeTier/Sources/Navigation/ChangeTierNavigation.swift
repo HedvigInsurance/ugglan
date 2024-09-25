@@ -33,7 +33,6 @@ public struct ChangeTierNavigation: View {
             style: [.height]
         ) {
             EditTier(vm: selectTierNavigationVm.vm)
-                .configureTitle(L10n.tierFlowSelectCoverageTitle)
                 .embededInNavigation(options: .navigationType(type: .large))
                 .environmentObject(selectTierNavigationVm)
         }
@@ -42,7 +41,6 @@ public struct ChangeTierNavigation: View {
             style: [.height]
         ) {
             EditDeductibleView(vm: selectTierNavigationVm.vm)
-                .configureTitle(L10n.tierFlowSelectDeductibleTitle)
                 .embededInNavigation(options: .navigationType(type: .large))
                 .environmentObject(selectTierNavigationVm)
         }
