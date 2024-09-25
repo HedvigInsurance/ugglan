@@ -63,8 +63,8 @@ open class StateStore<State: StateProtocol, Action: ActionProtocol>: Store {
             if newValue != previousState {
                 logger("🦄 \(String(describing: Self.self)): new state \n \(newValue)")
                 DispatchQueue.global(qos: .background)
-                    .async {
-                        Self.persist(newValue)
+                    .async { [weak self] in guard let self = self else { return }
+                        Self.persist(self.stateWriteSignal.value)
                     }
             }
             Task { [weak self] in guard let self = self else { return }
@@ -92,7 +92,7 @@ open class StateStore<State: StateProtocol, Action: ActionProtocol>: Store {
         if newState != previousState {
             logger("🦄 \(String(describing: Self.self)): new state \n \(newState)")
             DispatchQueue.global(qos: .background)
-                .async {
+                .async { [weak self] in guard let self = self else { return }
                     Self.persist(self.stateWriteSignal.value)
                 }
         }
