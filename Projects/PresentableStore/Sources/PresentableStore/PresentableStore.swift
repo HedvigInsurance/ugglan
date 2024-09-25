@@ -45,7 +45,7 @@ open class StateStore<State: StateProtocol, Action: ActionProtocol>: Store {
         self.stateWriteSignal.value = state
     }
 
-    lazy var serialQueue = DispatchQueue(label: "quoue.\(String(describing: self))", qos: .default)
+    private lazy var serialQueue = DispatchQueue(label: "quoue.\(String(describing: self))", qos: .default)
     /// Sends an action to the store, which is then reduced to produce a new state
     public func send(_ action: Action) {
         logger("🦄 \(String(describing: Self.self)): sending \(action)")
