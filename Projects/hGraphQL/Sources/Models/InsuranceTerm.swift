@@ -23,7 +23,7 @@ public struct InsuranceTerm: Codable, Equatable, Hashable, Identifiable {
     }
 }
 
-public enum TypeOfDocument: Codable {
+public enum TypeOfDocument: Codable, Hashable {
     case termsAndConditions
     case preSaleInfoEuStandard
     case preSaleInfo
