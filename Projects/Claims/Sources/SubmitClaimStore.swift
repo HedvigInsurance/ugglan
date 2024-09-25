@@ -67,7 +67,7 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         case .fetchEntrypointGroups:
             do {
                 let data = try await self.fetchEntrypointsClient.get()
-                send(.setClaimEntrypointGroupsForSelection(data))
+                await sendAsync(.setClaimEntrypointGroupsForSelection(data))
             } catch {
                 setError(L10n.General.errorBody, for: .fetchClaimEntrypointGroups)
             }

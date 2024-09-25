@@ -45,35 +45,38 @@ open class StateStore<State: StateProtocol, Action: ActionProtocol>: Store {
         self.stateWriteSignal.value = state
     }
 
+    private lazy var serialQueue = DispatchQueue(label: "quoue.\(String(describing: self))", qos: .default)
     /// Sends an action to the store, which is then reduced to produce a new state
     public func send(_ action: Action) {
         logger("🦄 \(String(describing: Self.self)): sending \(action)")
-
-        let previousState = stateWriteSignal.value
-
-        let newValue = reduce(stateWriteSignal.value, action)
-        DispatchQueue.main.async { [weak self] in
-            self?.stateWriteSignal.value = newValue
-        }
-        actionCallbacker.send(action)
-
-        DispatchQueue.global(qos: .background)
-            .async {
-                Self.persist(newValue)
+        serialQueue.async { [weak self] in guard let self = self else { return }
+            let previousState = stateWriteSignal.value
+            let semaphore = DispatchSemaphore(value: 0)
+            let newValue = reduce(stateWriteSignal.value, action)
+            DispatchQueue.main.async { [weak self] in guard let self = self else { return }
+                self.stateWriteSignal.value = newValue
+                semaphore.signal()
             }
+            semaphore.wait()
+            actionCallbacker.send(action)
 
-        let newState = stateWriteSignal.value
-
-        if newState != previousState {
-            logger("🦄 \(String(describing: Self.self)): new state \n \(newState)")
-        }
-        Task {
-            await effects(
-                {
-                    self.stateWriteSignal.value
-                },
-                action
-            )
+            if newValue != previousState {
+                logger("🦄 \(String(describing: Self.self)): new state \n \(newValue)")
+                DispatchQueue.global(qos: .background)
+                    .async { [weak self] in guard let self = self else { return }
+                        Self.persist(self.stateWriteSignal.value)
+                    }
+            }
+            Task { [weak self] in guard let self = self else { return }
+                await effects(
+                    {
+                        self.stateWriteSignal.value
+                    },
+                    action
+                )
+                semaphore.signal()
+            }
+            semaphore.wait()
         }
     }
 
@@ -84,16 +87,14 @@ open class StateStore<State: StateProtocol, Action: ActionProtocol>: Store {
 
         stateWriteSignal.value = reduce(stateWriteSignal.value, action)
         actionCallbacker.send(action)
-
-        DispatchQueue.global(qos: .background)
-            .async {
-                Self.persist(self.stateWriteSignal.value)
-            }
-
         let newState = stateWriteSignal.value
 
         if newState != previousState {
             logger("🦄 \(String(describing: Self.self)): new state \n \(newState)")
+            DispatchQueue.global(qos: .background)
+                .async { [weak self] in guard let self = self else { return }
+                    Self.persist(self.stateWriteSignal.value)
+                }
         }
         await effects(
             {

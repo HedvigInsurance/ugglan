@@ -4,6 +4,7 @@ import hCore
 @testable import Home
 
 struct MockData {
+    @discardableResult
     static func createMockHomeService(
         fetchImportantMessages: @escaping FetchImportantMessages = {
             []

@@ -33,8 +33,9 @@ final class StartClaimStoreTests: XCTestCase {
         await store.sendAsync(
             .startClaimRequest(entrypointId: "entrypoint id", entrypointOptionId: "entrypoint option id")
         )
-
         assert(store.state.successStep != nil)
+        assert(store.state.currentClaimContext == "context")
+        assert(store.state.currentClaimId == "claim id")
         assert(store.state.failedStep == nil)
     }
 
