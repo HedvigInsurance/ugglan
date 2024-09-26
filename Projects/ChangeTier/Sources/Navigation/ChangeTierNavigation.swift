@@ -11,6 +11,7 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     @Published public var isInsurableLimitPresented: InsurableLimits?
     @Published public var isTierLockedInfoViewPresented = false
 
+    @StateObject var router = Router()
     var vm = SelectTierViewModel()
 
     init() {}
@@ -22,7 +23,6 @@ public enum ChangeTierSource {
 }
 
 public struct ChangeTierNavigation: View {
-    @StateObject var router = Router()
     @StateObject var selectTierNavigationVm = ChangeTierNavigationViewModel()
     var contractId: String
     var changeTierSource: ChangeTierSource
@@ -36,7 +36,7 @@ public struct ChangeTierNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(router: router, options: []) {
+        RouterHost(router: selectTierNavigationVm.router, options: []) {
             ChangeTierLandingScreen(vm: selectTierNavigationVm.vm, contractId: contractId)
                 .withDismissButton()
         }

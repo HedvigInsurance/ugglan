@@ -5,7 +5,8 @@ import hGraphQL
 
 struct ChangeTierLandingScreen: View {
     @ObservedObject var vm: SelectTierViewModel
-    @EnvironmentObject var selectTierNavigationVm: ChangeTierNavigationViewModel
+    @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
+    @EnvironmentObject var router: Router
     var contractId: String
 
     init(
@@ -18,6 +19,17 @@ struct ChangeTierLandingScreen: View {
     }
 
     var body: some View {
+        switch vm.viewState {
+        case .loading:
+            loadingView
+        case .success:
+            succesView
+        case .error:
+            errorView
+        }
+    }
+
+    var succesView: some View {
         hForm {}
             .hFormTitle(
                 title: .init(
@@ -63,7 +75,7 @@ struct ChangeTierLandingScreen: View {
                         hSection {
                             hFloatingField(value: vm.selectedTier?.name ?? "", placeholder: L10n.tierFlowCoverageLabel)
                             {
-                                selectTierNavigationVm.isTierLockedInfoViewPresented = true
+                                changeTierNavigationVm.isTierLockedInfoViewPresented = true
                             }
                             .hFieldLockedState
                             .hFieldTrailingView {
@@ -74,7 +86,7 @@ struct ChangeTierLandingScreen: View {
                     } else {
                         DropdownView(value: vm.selectedTier?.name ?? "", placeHolder: L10n.tierFlowCoveragePlaceholder)
                         {
-                            selectTierNavigationVm.isEditTierPresented = true
+                            changeTierNavigationVm.isEditTierPresented = true
                         }
                     }
 
@@ -82,7 +94,7 @@ struct ChangeTierLandingScreen: View {
                         value: vm.selectedDeductible?.deductibleAmount?.formattedAmount ?? "",
                         placeHolder: L10n.tierFlowDeductiblePlaceholder
                     ) {
-                        selectTierNavigationVm.isEditDeductiblePresented = true
+                        changeTierNavigationVm.isEditDeductiblePresented = true
                     }
                     .disabled(vm.selectedTier == nil)
                 }
@@ -119,7 +131,7 @@ struct ChangeTierLandingScreen: View {
         hSection {
             VStack(spacing: .padding8) {
                 hButton.LargeButton(type: .ghost) {
-                    selectTierNavigationVm.isCompareTiersPresented = true
+                    changeTierNavigationVm.isCompareTiersPresented = true
                 } content: {
                     hText(L10n.tierFlowCompareButton, style: .body1)
                 }
@@ -133,10 +145,49 @@ struct ChangeTierLandingScreen: View {
         }
         .sectionContainerStyle(.transparent)
     }
+
+    var loadingView: some View {
+        hSection {
+            VStack(spacing: 20) {
+                Spacer()
+                hText(L10n.tierFlowProcessing)
+                ProgressView()
+                    .frame(width: UIScreen.main.bounds.width * 0.53)
+                    .progressViewStyle(hProgressViewStyle())
+                Spacer()
+            }
+        }
+        .sectionContainerStyle(.transparent)
+    }
+
+    var errorView: some View {
+        GenericErrorView(
+            buttons: .init(
+                actionButton: .init(
+                    buttonAction: {
+                        vm.fetchTiers()
+                    }
+                ),
+                dismissButton: .init(
+                    buttonTitle: L10n.generalCloseButton,
+                    buttonAction: {
+                        router.dismiss()
+                    }
+                )
+            )
+        )
+    }
+}
+
+enum ChangeTierViewState {
+    case loading
+    case success
+    case error
 }
 
 public class SelectTierViewModel: ObservableObject {
     @Inject var service: SelectTierClient
+    @Published var viewState: ChangeTierViewState = .loading
     @Published var displayName: String?
     var exposureName: String?
     var tiers: [Tier] = []
@@ -183,21 +234,27 @@ public class SelectTierViewModel: ObservableObject {
         }
     }
 
-    private func fetchTiers() {
+    func fetchTiers() {
+        self.viewState = .loading
         Task { @MainActor in
-            let data = try await service.getTier(contractId: contractId ?? "")
-            self.tiers = data.tiers
-            self.displayName = data.tiers.first?.productVariant.displayName
-            self.exposureName = data.tiers.first?.exposureName
-            self.currentPremium = data.currentPremium
+            do {
+                let data = try await service.getTier(contractId: contractId ?? "")
+                self.tiers = data.tiers
+                self.displayName = data.tiers.first?.productVariant.displayName
+                self.exposureName = data.tiers.first?.exposureName
+                self.currentPremium = data.currentPremium
 
-            self.currentTier = data.currentTier
-            self.currentDeductible = data.currentDeductible
-            self.canEditTier = data.canEditTier
+                self.currentTier = data.currentTier
+                self.currentDeductible = data.currentDeductible
+                self.canEditTier = data.canEditTier
 
-            self.selectedTier = currentTier
-            self.selectedDeductible = currentDeductible
-            self.newPremium = selectedTier?.premium
+                self.selectedTier = currentTier
+                self.selectedDeductible = currentDeductible
+                self.newPremium = selectedTier?.premium
+                self.viewState = .success
+            } catch {
+                self.viewState = .error
+            }
         }
     }
 }
