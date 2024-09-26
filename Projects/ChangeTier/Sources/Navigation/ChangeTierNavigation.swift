@@ -12,7 +12,7 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     @Published public var isTierLockedInfoViewPresented = false
 
     @StateObject var router = Router()
-    var vm = SelectTierViewModel()
+    var vm = ChangeTierViewModel()
 
     init() {}
 }
@@ -23,7 +23,7 @@ public enum ChangeTierSource {
 }
 
 public struct ChangeTierNavigation: View {
-    @StateObject var selectTierNavigationVm = ChangeTierNavigationViewModel()
+    @StateObject var changeTierNavigationVm = ChangeTierNavigationViewModel()
     var contractId: String
     var changeTierSource: ChangeTierSource
 
@@ -36,29 +36,29 @@ public struct ChangeTierNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(router: selectTierNavigationVm.router, options: []) {
-            ChangeTierLandingScreen(vm: selectTierNavigationVm.vm, contractId: contractId)
+        RouterHost(router: changeTierNavigationVm.router, options: []) {
+            ChangeTierLandingScreen(vm: changeTierNavigationVm.vm, contractId: contractId)
                 .withDismissButton()
         }
-        .environmentObject(selectTierNavigationVm)
+        .environmentObject(changeTierNavigationVm)
         .detent(
-            presented: $selectTierNavigationVm.isEditTierPresented,
+            presented: $changeTierNavigationVm.isEditTierPresented,
             style: [.height]
         ) {
-            EditTier(vm: selectTierNavigationVm.vm)
+            EditTier(vm: changeTierNavigationVm.vm)
                 .embededInNavigation(options: .navigationType(type: .large))
-                .environmentObject(selectTierNavigationVm)
+                .environmentObject(changeTierNavigationVm)
         }
         .detent(
-            presented: $selectTierNavigationVm.isEditDeductiblePresented,
+            presented: $changeTierNavigationVm.isEditDeductiblePresented,
             style: [.height]
         ) {
-            EditDeductibleView(vm: selectTierNavigationVm.vm)
+            EditDeductibleView(vm: changeTierNavigationVm.vm)
                 .embededInNavigation(options: .navigationType(type: .large))
-                .environmentObject(selectTierNavigationVm)
+                .environmentObject(changeTierNavigationVm)
         }
         .detent(
-            item: $selectTierNavigationVm.isInsurableLimitPresented,
+            item: $changeTierNavigationVm.isInsurableLimitPresented,
             style: [.height],
             options: .constant(.alwaysOpenOnTop)
         ) { insurableLimit in
@@ -68,7 +68,7 @@ public struct ChangeTierNavigation: View {
             )
         }
         .detent(
-            presented: $selectTierNavigationVm.isTierLockedInfoViewPresented,
+            presented: $changeTierNavigationVm.isTierLockedInfoViewPresented,
             style: [.height],
             options: .constant(.alwaysOpenOnTop)
         ) {
@@ -77,12 +77,12 @@ public struct ChangeTierNavigation: View {
                 description: L10n.tierFlowLockedInfoDescription
             )
         }
-        .modally(presented: $selectTierNavigationVm.isCompareTiersPresented) {
-            CompareTierScreen(vm: selectTierNavigationVm.vm)
+        .modally(presented: $changeTierNavigationVm.isCompareTiersPresented) {
+            CompareTierScreen(vm: changeTierNavigationVm.vm)
                 .configureTitle(L10n.tierFlowCompareButton)
                 .withDismissButton()
                 .embededInNavigation(options: .navigationType(type: .large))
-                .environmentObject(selectTierNavigationVm)
+                .environmentObject(changeTierNavigationVm)
         }
     }
 }

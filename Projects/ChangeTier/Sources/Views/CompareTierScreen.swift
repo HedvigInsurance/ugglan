@@ -3,13 +3,13 @@ import hCore
 import hCoreUI
 
 struct CompareTierScreen: View {
-    var vm: SelectTierViewModel
-    @EnvironmentObject var selectTierNavigationVm: ChangeTierNavigationViewModel
+    var vm: ChangeTierViewModel
+    @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
 
     var scrollableSegmentedViewModel: ScrollableSegmentedViewModel
 
     init(
-        vm: SelectTierViewModel
+        vm: ChangeTierViewModel
     ) {
         self.vm = vm
         self.scrollableSegmentedViewModel = ScrollableSegmentedViewModel(
@@ -29,7 +29,7 @@ struct CompareTierScreen: View {
                     return CoverageView(
                         limits: limits,
                         didTapInsurableLimit: { limit in
-                            selectTierNavigationVm.isInsurableLimitPresented = limit
+                            changeTierNavigationVm.isInsurableLimitPresented = limit
                         },
                         perils: perils
                     )
