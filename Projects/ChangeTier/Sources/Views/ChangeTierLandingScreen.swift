@@ -65,25 +65,32 @@ struct ChangeTierLandingScreen: View {
                     if !vm.canEditTier {
                         hSection {
                             hFloatingField(value: vm.selectedTier?.name ?? "", placeholder: L10n.tierFlowCoverageLabel)
-                            {
-                                changeTierNavigationVm.isTierLockedInfoViewPresented = true
-                            }
+                            {}
                             .hFieldLockedState
                             .hFieldTrailingView {
                                 Image(uiImage: hCoreUIAssets.lock.image)
                                     .foregroundColor(hTextColor.Opaque.secondary)
                             }
+                            hText(L10n.tierFlowLockedInfoDescription, style: .label)
+                                .foregroundColor(hTextColor.Translucent.secondary)
+                                .padding(.horizontal, .padding16)
+                                .padding(.top, .padding4)
                         }
+                        .padding(.bottom, 8)
                     } else {
-                        DropdownView(value: vm.selectedTier?.name ?? "", placeHolder: L10n.tierFlowCoveragePlaceholder)
-                        {
+                        DropdownView(
+                            value: vm.selectedTier?.name ?? "",
+                            placeHolder: vm.selectedTier != nil
+                                ? L10n.tierFlowCoverageLabel : L10n.tierFlowCoveragePlaceholder
+                        ) {
                             changeTierNavigationVm.isEditTierPresented = true
                         }
                     }
 
                     DropdownView(
                         value: vm.selectedDeductible?.deductibleAmount?.formattedAmount ?? "",
-                        placeHolder: L10n.tierFlowDeductiblePlaceholder
+                        placeHolder: vm.selectedDeductible != nil
+                            ? L10n.tierFlowDeductibleLabel : L10n.tierFlowDeductiblePlaceholder
                     ) {
                         changeTierNavigationVm.isEditDeductiblePresented = true
                     }
