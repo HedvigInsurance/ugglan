@@ -9,7 +9,6 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     @Published public var isEditDeductiblePresented = false
     @Published public var isCompareTiersPresented = false
     @Published public var isInsurableLimitPresented: InsurableLimits?
-    @Published public var isTierLockedInfoViewPresented = false
 
     let router = Router()
     var vm: ChangeTierViewModel
@@ -73,16 +72,6 @@ public struct ChangeTierNavigation: View {
             InfoView(
                 title: L10n.contractCoverageMoreInfo,
                 description: insurableLimit.description
-            )
-        }
-        .detent(
-            presented: $changeTierNavigationVm.isTierLockedInfoViewPresented,
-            style: [.height],
-            options: .constant(.alwaysOpenOnTop)
-        ) {
-            InfoView(
-                title: L10n.tierFlowLockedInfoTitle,
-                description: L10n.tierFlowLockedInfoDescription
             )
         }
         .modally(presented: $changeTierNavigationVm.isCompareTiersPresented) {
