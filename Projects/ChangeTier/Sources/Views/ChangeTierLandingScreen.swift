@@ -4,13 +4,13 @@ import hCoreUI
 import hGraphQL
 
 struct ChangeTierLandingScreen: View {
-    @ObservedObject var vm: SelectTierViewModel
+    @ObservedObject var vm: ChangeTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
     @EnvironmentObject var router: Router
     var contractId: String
 
     init(
-        vm: SelectTierViewModel,
+        vm: ChangeTierViewModel,
         contractId: String
     ) {
         self.vm = vm
@@ -163,8 +163,8 @@ enum ChangeTierViewState {
     case error
 }
 
-public class SelectTierViewModel: ObservableObject {
-    @Inject var service: SelectTierClient
+public class ChangeTierViewModel: ObservableObject {
+    @Inject var service: ChangeTierClient
     @Published var viewState: ChangeTierViewState = .loading
     @Published var displayName: String?
     var exposureName: String?
@@ -238,6 +238,6 @@ public class SelectTierViewModel: ObservableObject {
 }
 
 #Preview{
-    Dependencies.shared.add(module: Module { () -> SelectTierClient in ChangeTierClientDemo() })
+    Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
     return ChangeTierLandingScreen(vm: .init(), contractId: "contractId")
 }

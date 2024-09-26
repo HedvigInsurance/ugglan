@@ -4,11 +4,11 @@ import hCoreUI
 
 struct EditTier: View {
     @State var selectedTier: String?
-    var vm: SelectTierViewModel
-    @EnvironmentObject var selectTierNavigationVm: ChangeTierNavigationViewModel
+    var vm: ChangeTierViewModel
+    @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
 
     init(
-        vm: SelectTierViewModel
+        vm: ChangeTierViewModel
     ) {
         self.vm = vm
         self.selectedTier = vm.selectedTier?.name ?? vm.tiers.first?.name
@@ -50,13 +50,13 @@ struct EditTier: View {
                 VStack(spacing: .padding8) {
                     hButton.LargeButton(type: .primary) {
                         vm.setTier(for: self.selectedTier ?? "")
-                        selectTierNavigationVm.isEditTierPresented = false
+                        changeTierNavigationVm.isEditTierPresented = false
                     } content: {
                         hText(L10n.generalContinueButton)
                     }
 
                     hButton.LargeButton(type: .ghost) {
-                        selectTierNavigationVm.isEditTierPresented = false
+                        changeTierNavigationVm.isEditTierPresented = false
                     } content: {
                         hText(L10n.generalCancelButton)
                     }

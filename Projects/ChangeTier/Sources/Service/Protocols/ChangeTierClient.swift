@@ -1,3 +1,3 @@
-public protocol SelectTierClient {
+public protocol ChangeTierClient {
     func getTier(contractId: String) async throws -> ChangeTierIntentModel
 }

@@ -4,12 +4,12 @@ import hCoreUI
 
 struct EditDeductibleView: View {
     @State var selectedDeductible: String?
-    var vm: SelectTierViewModel
+    var vm: ChangeTierViewModel
     let getDeductibles: [Deductible]
-    @EnvironmentObject var selectTierNavigationVm: ChangeTierNavigationViewModel
+    @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
 
     init(
-        vm: SelectTierViewModel
+        vm: ChangeTierViewModel
     ) {
         self.vm = vm
 
@@ -60,13 +60,13 @@ struct EditDeductibleView: View {
                 VStack(spacing: .padding8) {
                     hButton.LargeButton(type: .primary) {
                         vm.setDeductible(for: self.selectedDeductible ?? "")
-                        selectTierNavigationVm.isEditDeductiblePresented = false
+                        changeTierNavigationVm.isEditDeductiblePresented = false
                     } content: {
                         hText(L10n.generalConfirm)
                     }
 
                     hButton.LargeButton(type: .ghost) {
-                        selectTierNavigationVm.isEditDeductiblePresented = false
+                        changeTierNavigationVm.isEditDeductiblePresented = false
                     } content: {
                         hText(L10n.generalCancelButton)
                     }
