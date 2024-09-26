@@ -21,8 +21,8 @@ struct ChangeTierLandingScreen: View {
             loadingView
         case .success:
             succesView
-        case .error:
-            errorView
+        case let .error(errorMessage):
+            errorView(errorMessage: errorMessage)
         }
     }
 
@@ -165,8 +165,10 @@ struct ChangeTierLandingScreen: View {
         .sectionContainerStyle(.transparent)
     }
 
-    var errorView: some View {
+    func errorView(errorMessage: String?) -> some View {
         GenericErrorView(
+            title: L10n.somethingWentWrong,
+            description: errorMessage,
             buttons: .init(
                 actionButton: .init(
                     buttonAction: {
@@ -187,7 +189,7 @@ struct ChangeTierLandingScreen: View {
 enum ChangeTierViewState {
     case loading
     case success
-    case error
+    case error(errorMessage: String)
 }
 
 public class ChangeTierViewModel: ObservableObject {
@@ -247,7 +249,9 @@ public class ChangeTierViewModel: ObservableObject {
     }
 
     func fetchTiers() {
-        self.viewState = .loading
+        withAnimation {
+            self.viewState = .loading
+        }
         Task { @MainActor in
             do {
                 let data = try await service.getTier(
@@ -266,9 +270,14 @@ public class ChangeTierViewModel: ObservableObject {
                 self.selectedTier = currentTier
                 self.selectedDeductible = currentDeductible
                 self.newPremium = selectedTier?.premium
-                self.viewState = .success
-            } catch {
-                self.viewState = .error
+
+                withAnimation {
+                    self.viewState = .success
+                }
+            } catch let error {
+                withAnimation {
+                    self.viewState = .error(errorMessage: error.localizedDescription)
+                }
             }
         }
     }

@@ -4,8 +4,13 @@ import hCore
 public class ChangeTierClientOctopus: ChangeTierClient {
     public init() {}
 
-    public func getTier(contractId: String, tierSource: ChangeTierSource) async throws -> ChangeTierIntentModel {
+    public func getTier(contractId: String, tierSource: ChangeTierSource) async throws(ChangeTierError) -> ChangeTierIntentModel {
         /* TODO: REPLACE WITH REAL DATA */
+        do {
+            try await Task.sleep(nanoseconds: 2_000_000_000)
+        } catch {
+            
+        }
         return .init(
             id: "id",
             activationDate: Date(),
