@@ -79,7 +79,12 @@ public class ChangeTierClientDemo: ChangeTierClient {
                         displayName: "Homeowner",
                         displayNameTier: "Bas",
                         displayNameTierLong: "Vårt mellanpaket med hög ersättning."
-                    )
+                    ),
+                    FAQs: [
+                        .init(title: "question 1", description: "..."),
+                        .init(title: "question 2", description: "..."),
+                        .init(title: "question 3", description: "..."),
+                    ]
                 ),
                 .init(
                     id: "i2",
@@ -150,7 +155,12 @@ public class ChangeTierClientDemo: ChangeTierClient {
                         displayName: "Homeowner",
                         displayNameTier: "Standard",
                         displayNameTierLong: "Vårt mellanpaket med hög ersättning."
-                    )
+                    ),
+                    FAQs: [
+                        .init(title: "question 1", description: "..."),
+                        .init(title: "question 2", description: "..."),
+                        .init(title: "question 3", description: "..."),
+                    ]
                 ),
                 .init(
                     id: "id3",
@@ -221,7 +231,12 @@ public class ChangeTierClientDemo: ChangeTierClient {
                         displayName: "Homeowner",
                         displayNameTier: "Max",
                         displayNameTierLong: "Vårt mellanpaket med hög ersättning."
-                    )
+                    ),
+                    FAQs: [
+                        .init(title: "question 1", description: "..."),
+                        .init(title: "question 2", description: "..."),
+                        .init(title: "question 3", description: "..."),
+                    ]
                 ),
             ],
             currentPremium: .init(amount: "449", currency: "SEK"),
@@ -265,7 +280,12 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     displayName: "",
                     displayNameTier: "",
                     displayNameTierLong: ""
-                )
+                ),
+                FAQs: [
+                    .init(title: "question 1", description: "..."),
+                    .init(title: "question 2", description: "..."),
+                    .init(title: "question 3", description: "..."),
+                ]
             ),
             currentDeductible: .init(
                 id: "id",

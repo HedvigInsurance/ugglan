@@ -52,7 +52,7 @@ struct MovingFlowConfirm: View {
                         router.push(MovingFlowRouterWithHiddenBackButtonActions.processing)
                     }
                 )
-
+                QuoteSummaryScreen(vm: vm)
             }
         }
     }
