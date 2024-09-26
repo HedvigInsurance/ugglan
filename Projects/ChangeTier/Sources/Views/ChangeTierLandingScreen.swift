@@ -7,15 +7,12 @@ struct ChangeTierLandingScreen: View {
     @ObservedObject var vm: ChangeTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
     @EnvironmentObject var router: Router
-    var contractId: String
+    @State var progress: Float = 0
 
     init(
-        vm: ChangeTierViewModel,
-        contractId: String
+        vm: ChangeTierViewModel
     ) {
         self.vm = vm
-        self.contractId = contractId
-        vm.contractId = contractId
     }
 
     var body: some View {
@@ -51,6 +48,7 @@ struct ChangeTierLandingScreen: View {
                         .padding(.bottom, 16)
                 }
             }
+            .hDisableScroll
     }
 
     private var informationCard: some View {
@@ -151,8 +149,15 @@ struct ChangeTierLandingScreen: View {
             VStack(spacing: 20) {
                 Spacer()
                 hText(L10n.tierFlowProcessing)
-                ProgressView()
+                ProgressView(value: progress)
                     .frame(width: UIScreen.main.bounds.width * 0.53)
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                            withAnimation(.easeInOut(duration: 1.5).delay(0.5)) {
+                                progress = 1
+                            }
+                        }
+                    }
                     .progressViewStyle(hProgressViewStyle())
                 Spacer()
             }
@@ -191,7 +196,9 @@ public class ChangeTierViewModel: ObservableObject {
     @Published var displayName: String?
     var exposureName: String?
     var tiers: [Tier] = []
-    @Published var contractId: String?
+
+    var contractId: String
+    var changeTierSource: ChangeTierSource
 
     var currentPremium: MonetaryAmount?
     var currentTier: Tier?
@@ -210,7 +217,12 @@ public class ChangeTierViewModel: ObservableObject {
         return hasSelectedValues && !(selectedTierIsSameAsCurrent && selectedDeductibleIsSameAsCurrent)
     }
 
-    init() {
+    init(
+        contractId: String,
+        changeTierSource: ChangeTierSource
+    ) {
+        self.contractId = contractId
+        self.changeTierSource = changeTierSource
         fetchTiers()
     }
 
@@ -238,7 +250,10 @@ public class ChangeTierViewModel: ObservableObject {
         self.viewState = .loading
         Task { @MainActor in
             do {
-                let data = try await service.getTier(contractId: contractId ?? "")
+                let data = try await service.getTier(
+                    contractId: contractId,
+                    tierSource: changeTierSource
+                )
                 self.tiers = data.tiers
                 self.displayName = data.tiers.first?.productVariant.displayName
                 self.exposureName = data.tiers.first?.exposureName
@@ -261,5 +276,5 @@ public class ChangeTierViewModel: ObservableObject {
 
 #Preview{
     Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
-    return ChangeTierLandingScreen(vm: .init(), contractId: "contractId")
+    return ChangeTierLandingScreen(vm: .init(contractId: "contractId", changeTierSource: .changeTier))
 }

@@ -12,18 +12,24 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     @Published public var isTierLockedInfoViewPresented = false
 
     @StateObject var router = Router()
-    var vm = ChangeTierViewModel()
+    var vm: ChangeTierViewModel
 
-    init() {}
+    init(
+        vm: ChangeTierViewModel
+    ) {
+        self.vm = vm
+    }
 }
 
 public enum ChangeTierSource {
-    case termination
+    case changeTier
+    case betterPrice
+    case betterCoverage
     case moving
 }
 
 public struct ChangeTierNavigation: View {
-    @StateObject var changeTierNavigationVm = ChangeTierNavigationViewModel()
+    @ObservedObject var changeTierNavigationVm: ChangeTierNavigationViewModel
     var contractId: String
     var changeTierSource: ChangeTierSource
 
@@ -33,11 +39,17 @@ public struct ChangeTierNavigation: View {
     ) {
         self.contractId = contractId
         self.changeTierSource = changeTierSource
+        self.changeTierNavigationVm = .init(
+            vm: .init(
+                contractId: contractId,
+                changeTierSource: changeTierSource
+            )
+        )
     }
 
     public var body: some View {
         RouterHost(router: changeTierNavigationVm.router, options: []) {
-            ChangeTierLandingScreen(vm: changeTierNavigationVm.vm, contractId: contractId)
+            ChangeTierLandingScreen(vm: changeTierNavigationVm.vm)
                 .withDismissButton()
         }
         .environmentObject(changeTierNavigationVm)
