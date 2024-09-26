@@ -77,7 +77,7 @@ public struct QuoteSummaryScreen: View {
             hForm {
                 VStack(spacing: .padding16) {
                     VStack(spacing: .padding8) {
-                        ForEach(vm.contracts, id: \.displayName) { contract in
+                        ForEach(vm.contracts, id: \.id) { contract in
                             contractInfoView(for: contract)
                         }
                     }
@@ -115,7 +115,7 @@ public struct QuoteSummaryScreen: View {
 
     var scrollSection: some View {
         VStack(spacing: 0) {
-            ForEach(vm.contracts, id: \.displayName) { contract in
+            ForEach(vm.contracts, id: \.id) { contract in
                 coverageView(for: contract)
             }
             .padding(.top, .padding16)
