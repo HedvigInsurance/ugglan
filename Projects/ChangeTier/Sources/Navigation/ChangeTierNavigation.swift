@@ -11,7 +11,7 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     @Published public var isInsurableLimitPresented: InsurableLimits?
     @Published public var isTierLockedInfoViewPresented = false
 
-    @StateObject var router = Router()
+    let router = Router()
     var vm: ChangeTierViewModel
 
     init(
@@ -43,15 +43,11 @@ public enum ChangeTierSource {
 
 public struct ChangeTierNavigation: View {
     @ObservedObject var changeTierNavigationVm: ChangeTierNavigationViewModel
-    var contractId: String
-    var changeTierSource: ChangeTierSource
 
     public init(
         contractId: String,
         changeTierSource: ChangeTierSource
     ) {
-        self.contractId = contractId
-        self.changeTierSource = changeTierSource
         self.changeTierNavigationVm = .init(
             vm: .init(
                 contractId: contractId,
