@@ -102,5 +102,5 @@ extension EditDeductibleView: TitleView {
 }
 
 #Preview{
-    EditDeductibleView(vm: .init())
+    EditDeductibleView(vm: .init(contractId: "contractId", changeTierSource: .changeTier))
 }

@@ -4,9 +4,8 @@ import hCore
 public class ChangeTierClientOctopus: ChangeTierClient {
     public init() {}
 
-    public func getTier(contractId: String) async throws -> ChangeTierIntentModel {
+    public func getTier(contractId: String, tierSource: ChangeTierSource) async throws -> ChangeTierIntentModel {
         /* TODO: REPLACE WITH REAL DATA */
-        // for all tierQuotes with tierLevel = X, fetch all deductible info and add as deductible
         return .init(
             id: "id",
             activationDate: Date(),

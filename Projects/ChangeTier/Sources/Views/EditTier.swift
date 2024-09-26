@@ -92,5 +92,5 @@ extension EditTier: TitleView {
 }
 
 #Preview{
-    EditTier(vm: .init())
+    EditTier(vm: .init(contractId: "contractId", changeTierSource: .changeTier))
 }

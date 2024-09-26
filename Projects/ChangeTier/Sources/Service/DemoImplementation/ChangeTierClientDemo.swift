@@ -3,11 +3,9 @@ import hCore
 import hGraphQL
 
 public class ChangeTierClientDemo: ChangeTierClient {
-    @Inject var octopus: hOctopus
-
     public init() {}
 
-    public func getTier(contractId: String) async throws -> ChangeTierIntentModel {
+    public func getTier(contractId: String, tierSource: ChangeTierSource) async throws -> ChangeTierIntentModel {
         return .init(
             id: "id",
             activationDate: Date(),
