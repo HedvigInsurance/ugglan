@@ -5,7 +5,7 @@ import hCoreUI
 import hGraphQL
 
 struct ChangeTierSummaryScreen: View {
-    @ObservedObject var vm: SelectTierViewModel
+    @ObservedObject var vm: ChangeTierViewModel
     @EnvironmentObject var selectTierNavigationVm: ChangeTierNavigationViewModel
 
     var body: some View {
@@ -65,6 +65,6 @@ struct ChangeTierSummaryScreen: View {
 }
 
 #Preview{
-    Dependencies.shared.add(module: Module { () -> SelectTierClient in ChangeTierClientDemo() })
-    return ChangeTierSummaryScreen(vm: .init())
+    Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
+    return ChangeTierSummaryScreen(vm: .init(contractId: "contractId", changeTierSource: .changeTier))
 }

@@ -67,7 +67,7 @@ public struct ChangeTierNavigation: View {
                 .routerDestination(for: ChangeTierRouterActions.self) { action in
                     switch action {
                     case .summary:
-                        ChangeTierSummaryScreen(vm: selectTierNavigationVm.vm)
+                        ChangeTierSummaryScreen(vm: changeTierNavigationVm.vm)
                             .configureTitle("Summary")
                     }
                 }
