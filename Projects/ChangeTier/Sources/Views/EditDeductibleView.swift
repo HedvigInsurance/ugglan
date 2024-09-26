@@ -5,20 +5,21 @@ import hCoreUI
 struct EditDeductibleView: View {
     @State var selectedDeductible: String?
     var vm: SelectTierViewModel
+    let getDeductibles: [Deductible]
     @EnvironmentObject var selectTierNavigationVm: ChangeTierNavigationViewModel
 
     init(
         vm: SelectTierViewModel
     ) {
         self.vm = vm
-    }
 
-    var getDeductibles: [Deductible] {
         if !(vm.selectedTier?.deductibles.isEmpty ?? true) {
-            return vm.selectedTier?.deductibles ?? []
+            self.getDeductibles = vm.selectedTier?.deductibles ?? []
         } else {
-            return vm.tiers.first(where: { $0.name == vm.selectedTier?.name })?.deductibles ?? []
+            self.getDeductibles = vm.tiers.first(where: { $0.name == vm.selectedTier?.name })?.deductibles ?? []
         }
+
+        self.selectedDeductible = vm.selectedDeductible?.id ?? vm.selectedTier?.deductibles.first?.id
     }
 
     var body: some View {
@@ -74,9 +75,6 @@ struct EditDeductibleView: View {
             }
             .sectionContainerStyle(.transparent)
             .padding(.top, .padding16)
-        }
-        .onAppear {
-            self.selectedDeductible = vm.selectedDeductible?.id ?? vm.selectedTier?.deductibles.first?.id
         }
         .configureTitleView(self)
     }

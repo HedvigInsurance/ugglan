@@ -8,6 +8,9 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable {
     let activationDate: Date
     let tiers: [Tier]
     let currentPremium: MonetaryAmount
+    let currentTier: Tier?
+    let currentDeductible: Deductible?
+    let canEditTier: Bool
 }
 
 public struct Tier: Codable, Equatable, Hashable, Identifiable {

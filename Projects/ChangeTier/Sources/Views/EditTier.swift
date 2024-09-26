@@ -11,6 +11,7 @@ struct EditTier: View {
         vm: SelectTierViewModel
     ) {
         self.vm = vm
+        self.selectedTier = vm.selectedTier?.name ?? vm.tiers.first?.name
     }
 
     var body: some View {
@@ -65,9 +66,6 @@ struct EditTier: View {
             .sectionContainerStyle(.transparent)
             .padding(.top, .padding16)
         }
-        .onAppear {
-            self.selectedTier = vm.selectedTier?.name ?? vm.tiers.first?.name
-        }
         .configureTitleView(self)
     }
 }
@@ -95,11 +93,4 @@ extension EditTier: TitleView {
 
 #Preview{
     EditTier(vm: .init())
-}
-
-extension Sequence {
-    func uniqued<Type: Hashable>(by keyPath: KeyPath<Element, Type>) -> [Element] {
-        var set = Set<Type>()
-        return filter { set.insert($0[keyPath: keyPath]).inserted }
-    }
 }

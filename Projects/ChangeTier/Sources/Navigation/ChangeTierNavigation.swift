@@ -16,15 +16,28 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     init() {}
 }
 
+public enum ChangeTierSource {
+    case termination
+    case moving
+}
+
 public struct ChangeTierNavigation: View {
     @StateObject var router = Router()
     @StateObject var selectTierNavigationVm = ChangeTierNavigationViewModel()
+    var contractId: String
+    var changeTierSource: ChangeTierSource
 
-    public init() {}
+    public init(
+        contractId: String,
+        changeTierSource: ChangeTierSource
+    ) {
+        self.contractId = contractId
+        self.changeTierSource = changeTierSource
+    }
 
     public var body: some View {
         RouterHost(router: router, options: []) {
-            ChangeTierLandingScreen(vm: selectTierNavigationVm.vm)
+            ChangeTierLandingScreen(vm: selectTierNavigationVm.vm, contractId: contractId)
                 .withDismissButton()
         }
         .environmentObject(selectTierNavigationVm)

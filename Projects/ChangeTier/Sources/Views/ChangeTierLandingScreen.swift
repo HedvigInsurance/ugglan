@@ -6,6 +6,16 @@ import hGraphQL
 struct ChangeTierLandingScreen: View {
     @ObservedObject var vm: SelectTierViewModel
     @EnvironmentObject var selectTierNavigationVm: ChangeTierNavigationViewModel
+    var contractId: String
+
+    init(
+        vm: SelectTierViewModel,
+        contractId: String
+    ) {
+        self.vm = vm
+        self.contractId = contractId
+        vm.contractId = contractId
+    }
 
     var body: some View {
         hForm {}
@@ -49,7 +59,7 @@ struct ChangeTierLandingScreen: View {
                 }
 
                 VStack(spacing: .padding4) {
-                    if vm.canEditTier {
+                    if !vm.canEditTier {
                         hSection {
                             hFloatingField(value: vm.selectedTier?.name ?? "", placeholder: L10n.tierFlowCoverageLabel)
                             {
@@ -127,9 +137,10 @@ struct ChangeTierLandingScreen: View {
 
 public class SelectTierViewModel: ObservableObject {
     @Inject var service: SelectTierClient
-    var displayName: String?
+    @Published var displayName: String?
     var exposureName: String?
     var tiers: [Tier] = []
+    @Published var contractId: String?
 
     var currentPremium: MonetaryAmount?
     var currentTier: Tier?
@@ -174,72 +185,24 @@ public class SelectTierViewModel: ObservableObject {
 
     private func fetchTiers() {
         Task { @MainActor in
-            let data = try await service.getTier()
+            let data = try await service.getTier(contractId: contractId ?? "")
             self.tiers = data.tiers
             self.displayName = data.tiers.first?.productVariant.displayName
             self.exposureName = data.tiers.first?.exposureName
             self.currentPremium = data.currentPremium
 
-            /* TODO: IMPLEMENT **/
-            self.newPremium = .init(amount: "549", currency: "SEK")
-            self.currentTier = .init(
-                id: "id",
-                name: "Max",
-                level: 3,
-                deductibles: [
-                    .init(
-                        id: "id",
-                        deductibleAmount: .init(amount: "1000", currency: "SEK"),
-                        deductiblePercentage: 0,
-                        subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                        premium: .init(amount: "1167", currency: "SEK")
-                    ),
-                    .init(
-                        id: "id2",
-                        deductibleAmount: .init(amount: "2000", currency: "SEK"),
-                        deductiblePercentage: 25,
-                        subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                        premium: .init(amount: "999", currency: "SEK")
-                    ),
-                    .init(
-                        id: "id3",
-                        deductibleAmount: .init(amount: "3000", currency: "SEK"),
-                        deductiblePercentage: 15,
-                        subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                        premium: .init(amount: "569", currency: "SEK")
-                    ),
-                ],
-                premium: .init(amount: "", currency: ""),
-                displayItems: [],
-                exposureName: "",
-                productVariant: .init(
-                    termsVersion: "",
-                    typeOfContract: "",
-                    partner: "",
-                    perils: [],
-                    insurableLimits: [],
-                    documents: [],
-                    displayName: "",
-                    displayNameTier: "",
-                    displayNameTierLong: ""
-                )
-            )
-            self.currentDeductible = .init(
-                id: "id",
-                deductibleAmount: .init(amount: "449", currency: "SEK"),
-                deductiblePercentage: 25,
-                subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                premium: .init(amount: "999", currency: "SEK")
-            )
-            /* TODO: FETCH supportsChangeTier FROM CURRENT AGREEMENT */
-            self.canEditTier = false
+            self.currentTier = data.currentTier
+            self.currentDeductible = data.currentDeductible
+            self.canEditTier = data.canEditTier
+
             self.selectedTier = currentTier
             self.selectedDeductible = currentDeductible
+            self.newPremium = selectedTier?.premium
         }
     }
 }
 
 #Preview{
     Dependencies.shared.add(module: Module { () -> SelectTierClient in ChangeTierClientDemo() })
-    return ChangeTierLandingScreen(vm: .init())
+    return ChangeTierLandingScreen(vm: .init(), contractId: "contractId")
 }
