@@ -5,20 +5,21 @@ import hCoreUI
 struct EditDeductibleView: View {
     @State var selectedDeductible: String?
     var vm: SelectTierViewModel
+    let getDeductibles: [Deductible]
     @EnvironmentObject var selectTierNavigationVm: ChangeTierNavigationViewModel
 
     init(
         vm: SelectTierViewModel
     ) {
         self.vm = vm
-    }
 
-    var getDeductibles: [Deductible] {
         if !(vm.selectedTier?.deductibles.isEmpty ?? true) {
-            return vm.selectedTier?.deductibles ?? []
+            self.getDeductibles = vm.selectedTier?.deductibles ?? []
         } else {
-            return vm.tiers.first(where: { $0.name == vm.selectedTier?.name })?.deductibles ?? []
+            self.getDeductibles = vm.tiers.first(where: { $0.name == vm.selectedTier?.name })?.deductibles ?? []
         }
+
+        self.selectedDeductible = vm.selectedDeductible?.id ?? vm.selectedTier?.deductibles.first?.id
     }
 
     var body: some View {
@@ -51,6 +52,7 @@ struct EditDeductibleView: View {
                     }
                 }
             }
+            .padding(.top, 16)
             .sectionContainerStyle(.transparent)
         }
         .hFormAttachToBottom {
@@ -72,11 +74,30 @@ struct EditDeductibleView: View {
                 }
             }
             .sectionContainerStyle(.transparent)
-            .padding(.top, 16)
+            .padding(.top, .padding16)
         }
-        .onAppear {
-            self.selectedDeductible = vm.selectedDeductible?.id ?? vm.selectedTier?.deductibles.first?.id
+        .configureTitleView(self)
+    }
+}
+
+extension EditDeductibleView: TitleView {
+    public func getTitleView() -> UIView {
+        let view: UIView = UIHostingController(rootView: titleView).view
+        view.backgroundColor = .clear
+        view.isUserInteractionEnabled = true
+        return view
+    }
+
+    @ViewBuilder
+    private var titleView: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            hText(L10n.tierFlowSelectDeductibleTitle, style: .heading1)
+                .foregroundColor(hTextColor.Opaque.primary)
+            hText("Amount deducted from the compensation", style: .heading1)
+                .foregroundColor(hTextColor.Opaque.secondary)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.top, .padding8)
     }
 }
 

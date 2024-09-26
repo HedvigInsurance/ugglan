@@ -11,6 +11,7 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     @Published public var isInsurableLimitPresented: InsurableLimits?
     @Published public var isTierLockedInfoViewPresented = false
 
+    @StateObject var router = Router()
     var vm = SelectTierViewModel()
 
     init() {}
@@ -29,15 +30,27 @@ extension ChangeTierRouterActions: TrackingViewNameProtocol {
     }
 }
 
-public struct ChangeTierNavigation: View {
-    @StateObject var router = Router()
-    @StateObject var selectTierNavigationVm = ChangeTierNavigationViewModel()
+public enum ChangeTierSource {
+    case termination
+    case moving
+}
 
-    public init() {}
+public struct ChangeTierNavigation: View {
+    @StateObject var selectTierNavigationVm = ChangeTierNavigationViewModel()
+    var contractId: String
+    var changeTierSource: ChangeTierSource
+
+    public init(
+        contractId: String,
+        changeTierSource: ChangeTierSource
+    ) {
+        self.contractId = contractId
+        self.changeTierSource = changeTierSource
+    }
 
     public var body: some View {
-        RouterHost(router: router, options: []) {
-            ChangeTierLandingScreen(vm: selectTierNavigationVm.vm)
+        RouterHost(router: selectTierNavigationVm.router, options: []) {
+            ChangeTierLandingScreen(vm: selectTierNavigationVm.vm, contractId: contractId)
                 .withDismissButton()
                 .routerDestination(for: ChangeTierRouterActions.self) { action in
                     switch action {
@@ -53,7 +66,6 @@ public struct ChangeTierNavigation: View {
             style: [.height]
         ) {
             EditTier(vm: selectTierNavigationVm.vm)
-                .configureTitle(L10n.tierFlowSelectCoverageTitle)
                 .embededInNavigation(options: .navigationType(type: .large))
                 .environmentObject(selectTierNavigationVm)
         }
@@ -62,7 +74,6 @@ public struct ChangeTierNavigation: View {
             style: [.height]
         ) {
             EditDeductibleView(vm: selectTierNavigationVm.vm)
-                .configureTitle(L10n.tierFlowSelectDeductibleTitle)
                 .embededInNavigation(options: .navigationType(type: .large))
                 .environmentObject(selectTierNavigationVm)
         }

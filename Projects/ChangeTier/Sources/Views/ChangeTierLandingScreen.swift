@@ -5,10 +5,31 @@ import hGraphQL
 
 struct ChangeTierLandingScreen: View {
     @ObservedObject var vm: SelectTierViewModel
-    @EnvironmentObject var selectTierNavigationVm: ChangeTierNavigationViewModel
+    @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
     @EnvironmentObject var router: Router
+    var contractId: String
+
+    init(
+        vm: SelectTierViewModel,
+        contractId: String
+    ) {
+        self.vm = vm
+        self.contractId = contractId
+        vm.contractId = contractId
+    }
 
     var body: some View {
+        switch vm.viewState {
+        case .loading:
+            loadingView
+        case .success:
+            succesView
+        case .error:
+            errorView
+        }
+    }
+
+    var succesView: some View {
         hForm {}
             .hFormTitle(
                 title: .init(
@@ -43,11 +64,11 @@ struct ChangeTierLandingScreen: View {
                 }
 
                 VStack(spacing: .padding4) {
-                    if vm.canEditTier {
+                    if !vm.canEditTier {
                         hSection {
                             hFloatingField(value: vm.selectedTier?.name ?? "", placeholder: L10n.tierFlowCoverageLabel)
                             {
-                                selectTierNavigationVm.isTierLockedInfoViewPresented = true
+                                changeTierNavigationVm.isTierLockedInfoViewPresented = true
                             }
                             .hFieldLockedState
                             .hFieldTrailingView {
@@ -58,7 +79,7 @@ struct ChangeTierLandingScreen: View {
                     } else {
                         DropdownView(value: vm.selectedTier?.name ?? "", placeHolder: L10n.tierFlowCoveragePlaceholder)
                         {
-                            selectTierNavigationVm.isEditTierPresented = true
+                            changeTierNavigationVm.isEditTierPresented = true
                         }
                     }
 
@@ -66,7 +87,7 @@ struct ChangeTierLandingScreen: View {
                         value: vm.selectedDeductible?.deductibleAmount?.formattedAmount ?? "",
                         placeHolder: L10n.tierFlowDeductiblePlaceholder
                     ) {
-                        selectTierNavigationVm.isEditDeductiblePresented = true
+                        changeTierNavigationVm.isEditDeductiblePresented = true
                     }
                     .disabled(vm.selectedTier == nil)
                 }
@@ -88,7 +109,7 @@ struct ChangeTierLandingScreen: View {
         hSection {
             VStack(spacing: .padding8) {
                 hButton.LargeButton(type: .ghost) {
-                    selectTierNavigationVm.isCompareTiersPresented = true
+                    changeTierNavigationVm.isCompareTiersPresented = true
                 } content: {
                     hText(L10n.tierFlowCompareButton, style: .body1)
                 }
@@ -102,13 +123,53 @@ struct ChangeTierLandingScreen: View {
         }
         .sectionContainerStyle(.transparent)
     }
+
+    var loadingView: some View {
+        hSection {
+            VStack(spacing: 20) {
+                Spacer()
+                hText(L10n.tierFlowProcessing)
+                ProgressView()
+                    .frame(width: UIScreen.main.bounds.width * 0.53)
+                    .progressViewStyle(hProgressViewStyle())
+                Spacer()
+            }
+        }
+        .sectionContainerStyle(.transparent)
+    }
+
+    var errorView: some View {
+        GenericErrorView(
+            buttons: .init(
+                actionButton: .init(
+                    buttonAction: {
+                        vm.fetchTiers()
+                    }
+                ),
+                dismissButton: .init(
+                    buttonTitle: L10n.generalCloseButton,
+                    buttonAction: {
+                        router.dismiss()
+                    }
+                )
+            )
+        )
+    }
+}
+
+enum ChangeTierViewState {
+    case loading
+    case success
+    case error
 }
 
 public class SelectTierViewModel: ObservableObject {
     @Inject var service: SelectTierClient
-    var displayName: String?
+    @Published var viewState: ChangeTierViewState = .loading
+    @Published var displayName: String?
     var exposureName: String?
     var tiers: [Tier] = []
+    @Published var contractId: String?
 
     var currentPremium: MonetaryAmount?
     var currentTier: Tier?
@@ -151,74 +212,32 @@ public class SelectTierViewModel: ObservableObject {
         }
     }
 
-    private func fetchTiers() {
+    func fetchTiers() {
+        self.viewState = .loading
         Task { @MainActor in
-            let data = try await service.getTier()
-            self.tiers = data.tiers
-            self.displayName = data.tiers.first?.productVariant.displayName
-            self.exposureName = data.tiers.first?.exposureName
-            self.currentPremium = data.currentPremium
+            do {
+                let data = try await service.getTier(contractId: contractId ?? "")
+                self.tiers = data.tiers
+                self.displayName = data.tiers.first?.productVariant.displayName
+                self.exposureName = data.tiers.first?.exposureName
+                self.currentPremium = data.currentPremium
 
-            /* TODO: IMPLEMENT **/
-            self.newPremium = .init(amount: "549", currency: "SEK")
-            self.currentTier = .init(
-                id: "id",
-                name: "Max",
-                level: 3,
-                deductibles: [
-                    .init(
-                        id: "id",
-                        deductibleAmount: .init(amount: "1000", currency: "SEK"),
-                        deductiblePercentage: 0,
-                        subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                        premium: .init(amount: "1167", currency: "SEK")
-                    ),
-                    .init(
-                        id: "id2",
-                        deductibleAmount: .init(amount: "2000", currency: "SEK"),
-                        deductiblePercentage: 25,
-                        subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                        premium: .init(amount: "999", currency: "SEK")
-                    ),
-                    .init(
-                        id: "id3",
-                        deductibleAmount: .init(amount: "3000", currency: "SEK"),
-                        deductiblePercentage: 15,
-                        subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                        premium: .init(amount: "569", currency: "SEK")
-                    ),
-                ],
-                premium: .init(amount: "", currency: ""),
-                displayItems: [],
-                exposureName: "",
-                productVariant: .init(
-                    termsVersion: "",
-                    typeOfContract: "",
-                    partner: "",
-                    perils: [],
-                    insurableLimits: [],
-                    documents: [],
-                    displayName: "",
-                    displayNameTier: "",
-                    displayNameTierLong: ""
-                )
-            )
-            self.currentDeductible = .init(
-                id: "id",
-                deductibleAmount: .init(amount: "449", currency: "SEK"),
-                deductiblePercentage: 25,
-                subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                premium: .init(amount: "999", currency: "SEK")
-            )
-            /* TODO: FETCH supportsChangeTier FROM CURRENT AGREEMENT */
-            self.canEditTier = false
-            self.selectedTier = currentTier
-            self.selectedDeductible = currentDeductible
+                self.currentTier = data.currentTier
+                self.currentDeductible = data.currentDeductible
+                self.canEditTier = data.canEditTier
+
+                self.selectedTier = currentTier
+                self.selectedDeductible = currentDeductible
+                self.newPremium = selectedTier?.premium
+                self.viewState = .success
+            } catch {
+                self.viewState = .error
+            }
         }
     }
 }
 
 #Preview{
     Dependencies.shared.add(module: Module { () -> SelectTierClient in ChangeTierClientDemo() })
-    return ChangeTierLandingScreen(vm: .init())
+    return ChangeTierLandingScreen(vm: .init(), contractId: "contractId")
 }
