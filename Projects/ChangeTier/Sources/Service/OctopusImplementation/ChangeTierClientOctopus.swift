@@ -25,15 +25,14 @@ public class ChangeTierClientOctopus: ChangeTierClient {
             let data = try await octopus.client.perform(mutation: mutation)
             let intent = data.changeTierDeductibleCreateIntent.intent
             
-            // list of all unique tierNames
-            var uniqueTierNames: [String] = []
-            
             let FAQs: [FAQ] = [
                 .init(title: "question 1", description: "..."),
                 .init(title: "question 2", description: "..."),
                 .init(title: "question 3", description: "..."),
             ]
             
+            // list of all unique tierNames
+            var uniqueTierNames: [String] = []
             intent?.quotes.forEach({ tier in
                 let tierNameIsNotInList = uniqueTierNames.first(where: { $0 == (tier.tierName ?? "") })?.isEmpty
                 if let tierName = tier.tierName, tierNameIsNotInList ?? false {
@@ -42,7 +41,6 @@ public class ChangeTierClientOctopus: ChangeTierClient {
             })
             
             var allTiers: [Tier] = []
-            
             
             /* fetch from contract **/
             let contractsQuery = OctopusGraphQL.ContractsQuery()
@@ -67,7 +65,6 @@ public class ChangeTierClientOctopus: ChangeTierClient {
             /* filter tiers and deductibles*/
             uniqueTierNames.forEach({ tierName in
                 let allQuotesWithNameX = intent?.quotes.filter({ $0.tierName == tierName })
-                
                 let allDeductiblesForX: [Deductible] = allQuotesWithNameX?.map({ quote in
                         return .init(
                             deductibleAmount: .init(optionalFragment: quote.deductible?.amount.fragments.moneyFragment),
@@ -92,6 +89,9 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                         FAQs: FAQs)
                 )
             })
+            
+            /* map currentTier with existing */
+            let currentTier: Tier? = allTiers.first(where: { $0.name == currentContract?.currentAgreement.productVariant.displayNameTier })
 
             let intentModel: ChangeTierIntentModel = .init(
                 id: "",
@@ -100,7 +100,7 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                 currentPremium: .init(
                     amount: String(currentContract?.currentAgreement.premium.amount ?? 0),
                     currency: currentContract?.currentAgreement.premium.currencyCode.rawValue ?? ""),
-                currentTier: nil, /* TODO */
+                currentTier: currentTier,
                 currentDeductible: currentDeductible,
                 canEditTier: currentContract?.supportsChangeTier ?? false
             )

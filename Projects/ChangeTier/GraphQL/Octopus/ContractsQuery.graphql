@@ -15,6 +15,9 @@ query ContractsQuery {
         premium {
             ...MoneyFragment
         }
+        productVariant {
+            displayNameTier
+        }
       }
     }
   }
