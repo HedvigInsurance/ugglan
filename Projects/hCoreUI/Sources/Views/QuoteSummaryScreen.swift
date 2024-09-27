@@ -148,7 +148,7 @@ public struct QuoteSummaryScreen: View {
                         let isExpanded = index != nil
 
                         if isExpanded {
-                            detailsView(for: contract) /* TODO: IMPLEMENT */
+                            detailsView(for: contract)
                         }
 
                         hButton.MediumButton(
@@ -333,54 +333,6 @@ public struct QuoteSummaryScreen: View {
             }
             .fixedSize()
             Spacing(height: 103)
-        }
-    }
-}
-
-/* TODO: MOVE */
-struct ContractInformation: View {
-    let displayName: String?
-    let exposureName: String?
-
-    var body: some View {
-        HStack(spacing: .padding12) {
-            Image(uiImage: hCoreUIAssets.pillowHome.image)
-                .resizable()
-                .frame(width: 48, height: 48)
-            VStack(alignment: .leading, spacing: 0) {
-                hText(displayName ?? "", style: .heading1)
-                hText(exposureName ?? "", style: .body1)
-                    .foregroundColor(hTextColor.Opaque.secondary)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-}
-
-struct PriceField: View {
-    let newPremium: MonetaryAmount?
-    let currentPremium: MonetaryAmount?
-
-    var body: some View {
-
-        HStack(alignment: .top) {
-            hText(L10n.tierFlowTotal)
-            Spacer()
-            VStack(alignment: .trailing, spacing: 0) {
-                if let newPremium = newPremium {
-                    hText(newPremium.formattedAmountPerMonth)
-                } else {
-                    hText(currentPremium?.formattedAmountPerMonth ?? "")
-                }
-
-                if newPremium != currentPremium {
-                    hText(
-                        L10n.tierFlowPreviousPrice(currentPremium?.formattedAmountPerMonth ?? ""),
-                        style: .label
-                    )
-                    .foregroundColor(hTextColor.Opaque.secondary)
-                }
-            }
         }
     }
 }
