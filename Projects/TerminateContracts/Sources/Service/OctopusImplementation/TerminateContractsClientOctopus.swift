@@ -207,6 +207,10 @@ extension GraphQLEnum<OctopusGraphQL.FlowTerminationSurveyRedirectAction> {
             switch t {
             case .updateAddress:
                 return .updateAddress
+            case .changeTierFoundBetterPrice:
+                return .changeTierFoundBetterPrice
+            case .changeTierMissingCoverageAndTerms:
+                return .changeTierMissingCoverageAndTerms
             }
         case .unknown:
             return nil
