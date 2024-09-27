@@ -3,41 +3,41 @@ import hCore
 import hCoreUI
 
 struct ChangeTierSummaryScreen: View {
-    @ObservedObject var vm: ChangeTierViewModel
+    @ObservedObject var changeTierVm: ChangeTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
 
     var body: some View {
         let displayItems: [QuoteDisplayItem] =
-            vm.selectedTier?.displayItems.map({ .init(title: $0.title, value: $0.value) }) ?? []
+            changeTierVm.selectedTier?.displayItems.map({ .init(title: $0.title, value: $0.value) }) ?? []
 
         let vm = QuoteSummaryViewModel(
             contract: [
                 .init(
-                    id: vm.currentTier?.id ?? "",
-                    displayName: vm.displayName ?? "",
-                    exposureName: vm.exposureName ?? "",
-                    newPremium: vm.newPremium,
-                    currentPremium: vm.currentPremium,
-                    documents: vm.selectedTier?.productVariant.documents ?? [],
+                    id: changeTierVm.currentTier?.id ?? "",
+                    displayName: changeTierVm.displayName ?? "",
+                    exposureName: changeTierVm.exposureName ?? "",
+                    newPremium: changeTierVm.newPremium,
+                    currentPremium: changeTierVm.currentPremium,
+                    documents: changeTierVm.selectedTier?.productVariant?.documents ?? [],
                     onDocumentTap: { document in
                         if let url = URL(string: document.url) {
                             changeTierNavigationVm.document = .init(url: url, title: document.displayName)
                         }
                     },
                     displayItems: displayItems,
-                    insuranceLimits: vm.selectedTier?.productVariant.insurableLimits ?? [],
+                    insuranceLimits: changeTierVm.selectedTier?.productVariant?.insurableLimits ?? [],
                     onLimitTap: { limit in
                         changeTierNavigationVm.isInsurableLimitPresented = limit
                     }
                 )
             ],
-            total: vm.newPremium ?? .init(amount: "", currency: ""),
+            total: changeTierVm.newPremium ?? .init(amount: "", currency: ""),
             FAQModel: (
                 title: L10n.tierFlowQaTitle, subtitle: L10n.tierFlowQaSubtitle,
-                questions: vm.selectedTier?.FAQs ?? []
+                questions: changeTierVm.selectedTier?.FAQs ?? []
             ),
             onConfirmClick: {
-                /* TODO: IMPLEMENT */
+                changeTierVm.commitTier()
             }
         )
 
@@ -47,5 +47,5 @@ struct ChangeTierSummaryScreen: View {
 
 #Preview{
     Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
-    return ChangeTierSummaryScreen(vm: .init(contractId: "contractId", changeTierSource: .changeTier))
+    return ChangeTierSummaryScreen(changeTierVm: .init(contractId: "contractId", changeTierSource: .changeTier))
 }

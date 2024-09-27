@@ -21,11 +21,21 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable {
     let premium: MonetaryAmount
     let displayItems: [TierDisplayItem]
     let exposureName: String?
-    let productVariant: ProductVariant
+    let productVariant: ProductVariant?
     let FAQs: [FAQ]
 
-    public struct TierDisplayItem: Codable, Equatable, Hashable, Identifiable {
-        public var id: String
+    public struct TierDisplayItem: Codable, Equatable, Hashable {
+        public var id = UUID()
+
+        public init(
+            title: String,
+            subTitle: String?,
+            value: String
+        ) {
+            self.title = title
+            self.subTitle = subTitle
+            self.value = value
+        }
 
         let title: String
         let subTitle: String?
@@ -34,13 +44,24 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable {
 }
 
 public struct Deductible: Codable, Hashable, Identifiable {
-    public let id: String
+    public var id: String = UUID().uuidString
 
     let deductibleAmount: MonetaryAmount?
     let deductiblePercentage: Int?
     let subTitle: String?
-
     let premium: MonetaryAmount?
+
+    public init(
+        deductibleAmount: MonetaryAmount?,
+        deductiblePercentage: Int?,
+        subTitle: String?,
+        premium: MonetaryAmount?
+    ) {
+        self.deductibleAmount = deductibleAmount
+        self.deductiblePercentage = deductiblePercentage
+        self.subTitle = subTitle
+        self.premium = premium
+    }
 }
 
 extension Deductible: Equatable {

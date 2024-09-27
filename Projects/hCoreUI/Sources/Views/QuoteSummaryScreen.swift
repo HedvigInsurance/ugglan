@@ -148,7 +148,7 @@ public struct QuoteSummaryScreen: View {
                         let isExpanded = index != nil
 
                         if isExpanded {
-                            detailsView(for: contract) /* TODO: IMPLEMENT */
+                            detailsView(for: contract)
                         }
 
                         hButton.MediumButton(

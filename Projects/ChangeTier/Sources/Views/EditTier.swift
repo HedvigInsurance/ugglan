@@ -28,7 +28,7 @@ struct EditTier: View {
                                         Spacer()
                                         hText(tier.premium.formattedAmountPerMonth)
                                     }
-                                    hText(String(tier.productVariant.displayNameTierLong ?? ""))
+                                    hText(String(tier.productVariant?.displayNameTierLong ?? ""))
                                         .foregroundColor(hTextColor.Opaque.secondary)
                                         .fixedSize()
                                 }

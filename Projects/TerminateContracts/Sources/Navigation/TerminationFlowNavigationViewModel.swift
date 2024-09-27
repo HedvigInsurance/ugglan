@@ -21,6 +21,10 @@ class TerminationFlowNavigationViewModel: ObservableObject {
                 }
             case .none:
                 break
+            case .changeTierFoundBetterPrice:
+                break
+            case .changeTierMissingCoverageAndTerms:
+                break
             }
         }
     }
