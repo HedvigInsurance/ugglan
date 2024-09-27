@@ -56,7 +56,7 @@ public struct MovingFlowNavigation: View {
     public init() {}
 
     public var body: some View {
-        RouterHost(router: router) {
+        RouterHost(router: router, tracking: MovingFlowDetentType.selectHousingType) {
             openSelectHousingScreen()
                 .routerDestination(for: HousingType.self) { housingType in
                     openApartmentFillScreen()
@@ -99,7 +99,7 @@ public struct MovingFlowNavigation: View {
                 }
                 .environmentObject(movingFlowVm)
                 .navigationTitle(L10n.changeAddressAddBuilding)
-                .embededInNavigation(options: [.navigationType(type: .large)])
+                .embededInNavigation(options: [.navigationType(type: .large)], tracking: MovingFlowDetentType.addExtraBuilding)
         }
         .detent(
             item: $movingFlowVm.document,
@@ -147,6 +147,24 @@ public struct MovingFlowNavigation: View {
             isBuildingTypePickerPresented: $isBuildingTypePickerPresented
         )
         .navigationTitle(L10n.changeAddressExtraBuildingContainerTitle)
-        .embededInNavigation(options: [.navigationType(type: .large)])
+        .embededInNavigation(options: [.navigationType(type: .large)], tracking: MovingFlowDetentType.typeOfBuildingPicker)
     }
+}
+
+private enum MovingFlowDetentType: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .selectHousingType:
+            return .init(describing: MovingFlowHousingTypeView.self)
+        case .addExtraBuilding:
+            return .init(describing: MovingFlowAddExtraBuildingView.self)
+        case .typeOfBuildingPicker:
+            return .init(describing: TypeOfBuildingPickerView.self)
+        }
+    }
+    
+    case selectHousingType
+    case addExtraBuilding
+    case typeOfBuildingPicker
+    
 }

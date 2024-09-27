@@ -29,11 +29,26 @@ public class HelpCenterNavigationViewModel: ObservableObject {
     public init() {}
 }
 
-enum HelpCenterNavigationRouterType: TrackingViewNameProtocol {
-    var nameForTracking: String {
+public enum HelpCenterNavigationRouterType: TrackingViewNameProtocol {
+    public var nameForTracking: String {
         return .init(describing: InboxView.self)
     }
     case inbox
+}
+
+private enum HelpCenterDetentRouterType: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .startView:
+            return .init(describing: HelpCenterStartView.self)
+        case .firstVet:
+            return .init(describing: FirstVetView.self)
+        }
+    }
+
+    case startView
+    case firstVet
+
 }
 
 public struct HelpCenterNavigation<Content: View>: View {
@@ -52,7 +67,7 @@ public struct HelpCenterNavigation<Content: View>: View {
     }
 
     public var body: some View {
-        RouterHost(router: router) {
+        RouterHost(router: router, tracking: HelpCenterDetentRouterType.startView) {
             HelpCenterStartView(
                 onQuickAction: { quickAction in
                     handle(quickAction: quickAction)
@@ -79,7 +94,10 @@ public struct HelpCenterNavigation<Content: View>: View {
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
                 .configureTitle(QuickAction.firstVet(partners: []).displayTitle)
                 .withDismissButton()
-                .embededInNavigation(options: .navigationType(type: .large))
+                .embededInNavigation(
+                    options: .navigationType(type: .large),
+                    tracking: HelpCenterDetentRouterType.firstVet
+                )
         }
         .detent(
             presented: $helpCenterVm.quickActions.isSickAbroadPresented,

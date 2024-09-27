@@ -317,3 +317,9 @@ public enum DateFormatter {
     case DDMMMYYYY
     case birthDate
 }
+
+extension DatePickerView: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        return .init(describing: DatePickerView.self)
+    }
+}

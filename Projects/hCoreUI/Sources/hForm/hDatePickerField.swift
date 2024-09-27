@@ -95,7 +95,7 @@ public struct hDatePickerField: View {
             style: [.height]
         ) { datePickerVm in
             DatePickerView(vm: datePickerVm)
-                .embededInNavigation(options: .largeNavigationBar)
+                .embededInNavigation(options: .largeNavigationBar, tracking: self)
         }
     }
 
@@ -179,5 +179,11 @@ public struct hDatePickerField: View {
             self.dateFormatter = dateFormatter
             self.buttonText = buttonText
         }
+    }
+}
+
+extension hDatePickerField: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        return .init(describing: DatePickerView.self)
     }
 }

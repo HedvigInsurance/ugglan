@@ -127,7 +127,7 @@ public struct ClaimDetailView: View {
             }
             .withDismissButton()
             .configureTitle(L10n.ClaimStatusDetail.addedFiles)
-            .embededInNavigation()
+            .embededInNavigation(tracking: ClaimDetailDetentType.fileUpload)
 
         }
     }
@@ -337,6 +337,17 @@ public struct ClaimDetailView: View {
             }
         }
     }
+}
+
+private enum ClaimDetailDetentType: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .fileUpload:
+            return .init(describing: ClaimFilesView.self)
+        }
+    }
+    
+    case fileUpload
 }
 
 struct ClaimDetailView_Previews: PreviewProvider {
