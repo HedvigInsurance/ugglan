@@ -25,29 +25,13 @@ public class ChangeTierClientOctopus: ChangeTierClient {
             let data = try await octopus.client.perform(mutation: mutation)
             let intent = data.changeTierDeductibleCreateIntent.intent
             
-            let FAQs: [FAQ] = [
-                .init(title: "question 1", description: "..."),
-                .init(title: "question 2", description: "..."),
-                .init(title: "question 3", description: "..."),
-            ]
-            
-            // list of all unique tierNames
-            var uniqueTierNames: [String] = []
-            intent?.quotes.forEach({ tier in
-                let tierNameIsNotInList = uniqueTierNames.first(where: { $0 == (tier.tierName ?? "") })?.isEmpty
-                if let tierName = tier.tierName, tierNameIsNotInList ?? false {
-                    uniqueTierNames.append(tierName)
-                }
-            })
-            
-            var allTiers: [Tier] = []
-            
             /* fetch from contract **/
             let contractsQuery = OctopusGraphQL.ContractsQuery()
             let contractData = try await octopus.client.fetch(query: contractsQuery, cachePolicy: .fetchIgnoringCacheCompletely)
             
             let currentContract = contractData.currentMember.activeContracts.first(where: { $0.id == contractId })
             
+            /* get current deductible */
             let deductible = currentContract?.currentAgreement.deductible
             let currentDeductible: Deductible? = {
                 if let currentContract, let deductible = deductible {
@@ -61,42 +45,15 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                 return nil
             }()
             
-            
-            /* filter tiers and deductibles*/
-            uniqueTierNames.forEach({ tierName in
-                let allQuotesWithNameX = intent?.quotes.filter({ $0.tierName == tierName })
-                let allDeductiblesForX: [Deductible] = allQuotesWithNameX?.map({ quote in
-                        return .init(
-                            deductibleAmount: .init(optionalFragment: quote.deductible?.amount.fragments.moneyFragment),
-                            deductiblePercentage: quote.deductible?.percentage,
-                            subTitle: quote.deductible?.displayText,
-                            premium: .init(optionalFragment: allQuotesWithNameX?.first?.premium.fragments.moneyFragment)
-                        )
-                }) ?? []
-                
-                let displayItems: [Tier.TierDisplayItem] = allQuotesWithNameX?.first?.displayItems.map({ .init(title: $0.displayTitle, subTitle: $0.displaySubtitle, value: $0.displayValue)}) ?? []
-                
-                allTiers.append(
-                    .init(
-                        id: allQuotesWithNameX?.first?.id ?? "",
-                        name: allQuotesWithNameX?.first?.tierName ?? "",
-                        level: allQuotesWithNameX?.first?.tierLevel ?? 0,
-                        deductibles: allDeductiblesForX,
-                        premium: .init(optionalFragment: allQuotesWithNameX?.first?.premium.fragments.moneyFragment) ?? .init(amount: "0", currency: "SEK"),
-                        displayItems: displayItems,
-                        exposureName: currentContract?.exposureDisplayName,
-                        productVariant: .init(data: allQuotesWithNameX?.first?.productVariant.fragments.productVariantFragment),
-                        FAQs: FAQs)
-                )
-            })
-            
-            /* map currentTier with existing */
-            let currentTier: Tier? = allTiers.first(where: { $0.name == currentContract?.currentAgreement.productVariant.displayNameTier })
+            let filteredTiers = getFilteredTiers(currentContract: currentContract, intent: intent)
 
+            /* map currentTier with existing */
+            let currentTier: Tier? = filteredTiers.first(where: { $0.name == currentContract?.currentAgreement.productVariant.displayNameTier })
+            
             let intentModel: ChangeTierIntentModel = .init(
                 id: "",
                 activationDate: intent?.activationDate.localDateToDate ?? Date(),
-                tiers: allTiers,
+                tiers: filteredTiers,
                 currentPremium: .init(
                     amount: String(currentContract?.currentAgreement.premium.amount ?? 0),
                     currency: currentContract?.currentAgreement.premium.currencyCode.rawValue ?? ""),
@@ -124,5 +81,54 @@ public class ChangeTierClientOctopus: ChangeTierClient {
         } catch {
             throw ChangeTierError.somethingWentWrong
         }
+    }
+    
+    func getFilteredTiers(currentContract: OctopusGraphQL.ContractsQuery.Data.CurrentMember.ActiveContract?, intent: OctopusGraphQL.ChangeTierDeductibleCreateIntentMutation.Data.ChangeTierDeductibleCreateIntent.Intent?) -> [Tier] {
+        // list of all unique tierNames
+        var allTiers: [Tier] = []
+        
+        var uniqueTierNames: [String] = []
+        intent?.quotes.forEach({ tier in
+            let tierNameIsNotInList = uniqueTierNames.first(where: { $0 == (tier.tierName ?? "") })?.isEmpty
+            if let tierName = tier.tierName, tierNameIsNotInList ?? false {
+                uniqueTierNames.append(tierName)
+            }
+        })
+
+        /* filter tiers and deductibles*/
+        uniqueTierNames.forEach({ tierName in
+            let allQuotesWithNameX = intent?.quotes.filter({ $0.tierName == tierName })
+            let allDeductiblesForX: [Deductible] = allQuotesWithNameX?.map({ quote in
+                    return .init(
+                        deductibleAmount: .init(optionalFragment: quote.deductible?.amount.fragments.moneyFragment),
+                        deductiblePercentage: quote.deductible?.percentage,
+                        subTitle: quote.deductible?.displayText,
+                        premium: .init(optionalFragment: allQuotesWithNameX?.first?.premium.fragments.moneyFragment)
+                    )
+            }) ?? []
+            
+            let displayItems: [Tier.TierDisplayItem] = allQuotesWithNameX?.first?.displayItems.map({ .init(title: $0.displayTitle, subTitle: $0.displaySubtitle, value: $0.displayValue)}) ?? []
+            
+            let FAQs: [FAQ] = [
+                .init(title: "question 1", description: "..."),
+                .init(title: "question 2", description: "..."),
+                .init(title: "question 3", description: "..."),
+            ]
+            
+            allTiers.append(
+                .init(
+                    id: allQuotesWithNameX?.first?.id ?? "",
+                    name: allQuotesWithNameX?.first?.tierName ?? "",
+                    level: allQuotesWithNameX?.first?.tierLevel ?? 0,
+                    deductibles: allDeductiblesForX,
+                    premium: .init(optionalFragment: allQuotesWithNameX?.first?.premium.fragments.moneyFragment) ?? .init(amount: "0", currency: "SEK"),
+                    displayItems: displayItems,
+                    exposureName: currentContract?.exposureDisplayName,
+                    productVariant: .init(data: allQuotesWithNameX?.first?.productVariant.fragments.productVariantFragment),
+                    FAQs: FAQs
+                )
+            )
+        })
+        return allTiers
     }
 }
