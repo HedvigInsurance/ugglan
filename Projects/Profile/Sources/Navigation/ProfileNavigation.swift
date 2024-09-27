@@ -70,17 +70,7 @@ public struct ProfileNavigation<Content: View>: View {
         .detent(
             item: $profileNavigationViewModel.isDeleteAccountPresented,
             style: [.height],
-            options: .constant(.withoutGrabber),
-            tracking: ProfileRedirectType.deleteAccount(
-                memberDetails: .init(
-                    id: "",
-                    firstName: "",
-                    lastName: "",
-                    phone: "",
-                    email: "",
-                    hasTravelCertificate: false
-                )
-            )
+            options: .constant(.withoutGrabber)
         ) { memberDetails in
             redirect(
                 .deleteAccount(
@@ -91,7 +81,6 @@ public struct ProfileNavigation<Content: View>: View {
         .detent(
             presented: $profileNavigationViewModel.isLanguagePickerPresented,
             style: [.height],
-            tracking: ProfileRedirectType.pickLanguage,
             content: {
                 redirect(.pickLanguage)
                     .configureTitle(L10n.MarketLanguageScreen.chooseLanguageLabel)

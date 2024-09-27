@@ -99,7 +99,10 @@ public struct MovingFlowNavigation: View {
                 }
                 .environmentObject(movingFlowVm)
                 .navigationTitle(L10n.changeAddressAddBuilding)
-                .embededInNavigation(options: [.navigationType(type: .large)], tracking: MovingFlowDetentType.addExtraBuilding)
+                .embededInNavigation(
+                    options: [.navigationType(type: .large)],
+                    tracking: MovingFlowDetentType.addExtraBuilding
+                )
         }
         .detent(
             item: $movingFlowVm.document,
@@ -147,7 +150,10 @@ public struct MovingFlowNavigation: View {
             isBuildingTypePickerPresented: $isBuildingTypePickerPresented
         )
         .navigationTitle(L10n.changeAddressExtraBuildingContainerTitle)
-        .embededInNavigation(options: [.navigationType(type: .large)], tracking: MovingFlowDetentType.typeOfBuildingPicker)
+        .embededInNavigation(
+            options: [.navigationType(type: .large)],
+            tracking: MovingFlowDetentType.typeOfBuildingPicker
+        )
     }
 }
 
@@ -162,9 +168,9 @@ private enum MovingFlowDetentType: TrackingViewNameProtocol {
             return .init(describing: TypeOfBuildingPickerView.self)
         }
     }
-    
+
     case selectHousingType
     case addExtraBuilding
     case typeOfBuildingPicker
-    
+
 }

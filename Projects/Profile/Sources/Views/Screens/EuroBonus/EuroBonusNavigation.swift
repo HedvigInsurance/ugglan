@@ -61,7 +61,10 @@ public struct EuroBonusNavigation: View {
                             }
                     }
                 }
-                .embededInNavigation(options: .navigationType(type: .large), tracking: EuroBonusDetentType.changeEuroBonus)
+                .embededInNavigation(
+                    options: .navigationType(type: .large),
+                    tracking: EuroBonusDetentType.changeEuroBonus
+                )
         }
     }
 }
@@ -75,8 +78,7 @@ private enum EuroBonusDetentType: TrackingViewNameProtocol {
             return .init(describing: ChangeEuroBonusView.self)
         }
     }
-    
-    
+
     case euroBonus
     case changeEuroBonus
 }

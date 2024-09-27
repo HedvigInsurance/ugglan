@@ -346,7 +346,7 @@ private enum ClaimDetailDetentType: TrackingViewNameProtocol {
             return .init(describing: ClaimFilesView.self)
         }
     }
-    
+
     case fileUpload
 }
 

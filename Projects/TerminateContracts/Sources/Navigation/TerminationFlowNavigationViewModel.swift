@@ -305,7 +305,10 @@ struct TerminationFlowNavigation: View {
             }
         )
         .navigationTitle(L10n.setTerminationDateText)
-        .embededInNavigation(options: [.navigationType(type: .large)], tracking: TerminationFlowDetentActions.terminationDate)
+        .embededInNavigation(
+            options: [.navigationType(type: .large)],
+            tracking: TerminationFlowDetentActions.terminationDate
+        )
     }
 
     private func openProgressScreen() -> some View {
@@ -471,7 +474,7 @@ enum TerminationFlowDetentActions: Hashable, TrackingViewNameProtocol {
             return .init(describing: SetTerminationDate.self)
         }
     }
-    
+
     case terminationDate
 }
 
