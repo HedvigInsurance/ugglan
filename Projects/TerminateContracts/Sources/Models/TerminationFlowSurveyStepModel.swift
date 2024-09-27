@@ -28,6 +28,8 @@ public struct TerminationFlowSurveyStepSuggestionAction: FlowStepModel {
 
 public enum FlowTerminationSurveyRedirectAction: FlowStepModel {
     case updateAddress
+    case changeTierFoundBetterPrice
+    case changeTierMissingCoverageAndTerms
 }
 
 struct TerminationFlowSurveyStepSuggestionRedirection: FlowStepModel {
