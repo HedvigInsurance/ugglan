@@ -238,49 +238,10 @@ public struct DetentPresentationOption: OptionSet {
 
 extension String {
     fileprivate func getViewName() -> String? {
-        let removedModifiedContent = self.replacingOccurrences(of: "ModifiedContent<", with: "")
-        guard let firstElement = removedModifiedContent.split(separator: ",").first else { return nil }
-        let nameToLog = String(firstElement)
-        if !nameToLog.shouldBeLoggedAsView {
+        if self.lowercased().contains("AnyView".lowercased()) || self.isEmpty {
             return nil
         }
-        let elements: [String] = {
-            if #available(iOS 16.0, *) {
-                return nameToLog.split(separator: "SizeModifier<").map({ String($0) })
-            } else {
-                return nameToLog.components(separatedBy: "SizeModifier<")
-            }
-        }()
-        if elements.count > 1, let lastElement = elements.last {
-            return String(lastElement).replacingOccurrences(of: "Optional<", with: "")
-                .replacingOccurrences(of: ">", with: "")
-        } else {
-            let elements = nameToLog.split(separator: ":")
-            if elements.count > 1, let firstElement = elements.first {
-                return String(firstElement).replacingOccurrences(of: "<", with: "")
-            }
-            return nameToLog
-        }
-    }
-    fileprivate var shouldBeLoggedAsView: Bool {
-
-        let array = [
-            String(describing: hNavigationController.self),
-            String(describing: hNavigationControllerWithLargerNavBar.self),
-            "EmbededInNavigation",
-            "PUPickerRemoteViewController",
-            "CAMImagePickerCameraViewController",
-            "CAMViewfinderViewController",
-            "UIDocumentBrowserViewController",
-            "Navigation",
-
-        ]
-        for element in array {
-            if self.contains(element) {
-                return false
-            }
-        }
-        return true
+        return self
     }
 }
 
