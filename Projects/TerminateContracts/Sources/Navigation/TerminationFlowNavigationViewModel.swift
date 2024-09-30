@@ -19,6 +19,10 @@ class TerminationFlowNavigationViewModel: ObservableObject {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     NotificationCenter.default.post(name: .openDeepLink, object: url)
                 }
+            case .changeTierFoundBetterPrice:
+                break
+            case .changeTierMissingCoverageAndTerms:
+                break
             case .none:
                 break
             }
