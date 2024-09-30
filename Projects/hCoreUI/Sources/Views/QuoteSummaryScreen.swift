@@ -128,9 +128,7 @@ public struct QuoteSummaryScreen: View {
     func contractInfoView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
         hSection {
             StatusCard(
-                onSelected: {
-
-                },
+                onSelected: {},
                 mainContent: ContractInformation(
                     displayName: contract.displayName,
                     exposureName: contract.exposureName
@@ -165,7 +163,10 @@ public struct QuoteSummaryScreen: View {
 
                         } content: {
                             let index = selectedContracts.firstIndex(of: contract.id)
-                            hText(index != nil ? "Hide details" : L10n.ClaimStatus.ClaimDetails.button)
+                            hText(
+                                index != nil
+                                    ? L10n.ClaimStatus.ClaimHideDetails.button : L10n.ClaimStatus.ClaimDetails.button
+                            )
                         }
                     }
                 }
