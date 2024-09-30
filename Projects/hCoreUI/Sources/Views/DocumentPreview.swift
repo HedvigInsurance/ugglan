@@ -49,7 +49,6 @@ public class DocumentPreviewModel: NSObject, ObservableObject {
 
 public struct DocumentPreview: View {
     @ObservedObject var vm: DocumentPreviewModel
-
     public init(vm: DocumentPreviewModel) {
         self.vm = vm
     }
@@ -101,7 +100,14 @@ public struct DocumentPreview: View {
         .introspect(.viewController, on: .iOS(.v13...)) { vc in
             vm.vc = vc
         }
+        .embededInNavigation(options: [.navigationBarHidden], tracking: self)
     }
+}
+extension DocumentPreview: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        return .init(describing: DocumentPreview.self)
+    }
+
 }
 
 extension DocumentPreviewModel: WKNavigationDelegate {

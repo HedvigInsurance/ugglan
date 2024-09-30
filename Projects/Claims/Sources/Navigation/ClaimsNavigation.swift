@@ -100,7 +100,11 @@ public struct ClaimsNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(router: router, options: [.navigationType(type: .withProgress)]) {
+        RouterHost(
+            router: router,
+            options: [.navigationType(type: .withProgress)],
+            tracking: ClaimsDetentType.entryPoints
+        ) {
             showClaimEntrypointGroup(origin: origin)
                 .routerDestination(for: ClaimsRouterActions.self) { routerAction in
                     switch routerAction {
@@ -201,7 +205,7 @@ public struct ClaimsNavigation: View {
             style: [.height]
         ) {
             openLocationScreen()
-                .embededInNavigation(options: .navigationType(type: .large))
+                .embededInNavigation(options: .navigationType(type: .large), tracking: ClaimsDetentType.locationPicker)
         }
         .detent(
             presented: $claimsNavigationVm.isBrandPickerPresented,
@@ -213,21 +217,21 @@ public struct ClaimsNavigation: View {
                 ) { brandModel in
                     openModelPickerScreen(brand: brandModel)
                 }
-                .embededInNavigation(options: .navigationType(type: .large))
+                .embededInNavigation(options: .navigationType(type: .large), tracking: ClaimsDetentType.brandPicker)
         }
         .detent(
             presented: $claimsNavigationVm.isPriceInputPresented,
             style: [.height]
         ) {
             openPriceInputScreen()
-                .embededInNavigation(options: .navigationType(type: .large))
+                .embededInNavigation(options: .navigationType(type: .large), tracking: ClaimsDetentType.priceInput)
         }
         .detent(
             presented: $claimsNavigationVm.isDamagePickerPresented,
             style: [.height]
         ) {
             openDamagePickerScreen()
-                .embededInNavigation(options: .navigationType(type: .large))
+                .embededInNavigation(options: .navigationType(type: .large), tracking: ClaimsDetentType.damagePicker)
         }
         .detent(
             item: $claimsNavigationVm.isInfoViewPresented,
@@ -499,6 +503,30 @@ public struct ClaimsNavigation: View {
         .addDismissClaimsFlow()
         .configureTitle(L10n.ClaimStatusDetail.addedFiles)
     }
+}
+
+private enum ClaimsDetentType: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .entryPoints:
+            return .init(describing: SelectClaimEntrypointGroup.self)
+        case .brandPicker:
+            return .init(describing: BrandPickerView.self)
+        case .priceInput:
+            return .init(describing: PriceInputScreen.self)
+        case .damagePicker:
+            return .init(describing: ItemPickerScreen<ClaimFlowItemProblemOptionModel>.self)
+        case .locationPicker:
+            return .init(describing: LocationView.self)
+        }
+
+    }
+
+    case entryPoints
+    case brandPicker
+    case priceInput
+    case damagePicker
+    case locationPicker
 }
 
 public struct InfoViewModel: Equatable, Identifiable {
