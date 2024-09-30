@@ -1,0 +1,24 @@
+query ContractsQuery {
+  currentMember {
+    activeContracts {
+      exposureDisplayName
+      supportsChangeTier
+      id
+      currentAgreement {
+        deductible {
+          amount {
+            ...MoneyFragment
+          }
+          percentage
+          displayText
+        }
+        premium {
+            ...MoneyFragment
+        }
+        productVariant {
+            displayNameTier
+        }
+      }
+    }
+  }
+}

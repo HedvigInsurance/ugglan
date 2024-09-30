@@ -23,8 +23,8 @@ struct CompareTierScreen: View {
                 vm: scrollableSegmentedViewModel,
                 contentFor: { id in
                     let tier = vm.tiers.first(where: { $0.id == id })
-                    let limits = tier?.productVariant.insurableLimits ?? []
-                    let perils = tier?.productVariant.perils ?? []
+                    let limits = tier?.productVariant?.insurableLimits ?? []
+                    let perils = tier?.productVariant?.perils ?? []
 
                     return CoverageView(
                         limits: limits,

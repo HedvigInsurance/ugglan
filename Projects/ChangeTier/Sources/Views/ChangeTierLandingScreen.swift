@@ -183,9 +183,9 @@ public class ChangeTierViewModel: ObservableObject {
     @Published var displayName: String?
     var exposureName: String?
     var tiers: [Tier] = []
-
     var contractId: String
     var changeTierSource: ChangeTierSource
+    @Published var quoteId: String = ""
 
     var currentPremium: MonetaryAmount?
     var currentTier: Tier?
@@ -244,7 +244,7 @@ public class ChangeTierViewModel: ObservableObject {
                     tierSource: changeTierSource
                 )
                 self.tiers = data.tiers
-                self.displayName = data.tiers.first?.productVariant.displayName
+                self.displayName = data.tiers.first?.productVariant?.displayName
                 self.exposureName = data.tiers.first?.exposureName
                 self.currentPremium = data.currentPremium
 
@@ -263,6 +263,16 @@ public class ChangeTierViewModel: ObservableObject {
                 withAnimation {
                     self.viewState = .error(errorMessage: error.localizedDescription)
                 }
+            }
+        }
+    }
+
+    public func commitTier() {
+        Task { @MainActor in
+            do {
+                try await service.commitTier(
+                    quoteId: quoteId
+                )
             }
         }
     }

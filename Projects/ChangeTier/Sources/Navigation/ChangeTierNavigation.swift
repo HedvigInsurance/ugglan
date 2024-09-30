@@ -38,7 +38,6 @@ public enum ChangeTierSource {
     case changeTier
     case betterPrice
     case betterCoverage
-    case moving
 }
 
 public struct ChangeTierNavigation: View {
@@ -63,7 +62,7 @@ public struct ChangeTierNavigation: View {
                 .routerDestination(for: ChangeTierRouterActions.self) { action in
                     switch action {
                     case .summary:
-                        ChangeTierSummaryScreen(vm: changeTierNavigationVm.vm)
+                        ChangeTierSummaryScreen(changeTierVm: changeTierNavigationVm.vm)
                             .configureTitle("Summary")
                     }
                 }
