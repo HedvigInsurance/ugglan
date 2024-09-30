@@ -146,7 +146,7 @@ public struct QuoteSummaryScreen: View {
                         let isExpanded = index != nil
 
                         if isExpanded {
-                            detailsView(for: contract) /* TODO: IMPLEMENT */
+                            detailsView(for: contract)
                         }
 
                         hButton.MediumButton(
@@ -181,7 +181,7 @@ public struct QuoteSummaryScreen: View {
             hRowDivider()
                 .hWithoutDividerPadding
             VStack(alignment: .leading, spacing: 0) {
-                hText("Details")
+                hText(L10n.changeAddressDetails)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 ForEach(contract.displayItems) { item in
                     rowItem(for: item)
@@ -247,7 +247,7 @@ public struct QuoteSummaryScreen: View {
                     hButton.LargeButton(type: .primary) {
                         vm.onConfirmClick()
                     } content: {
-                        hText("Confirm changes")
+                        hText(L10n.changeAddressAcceptOffer)
                     }
                     hButton.LargeButton(type: .ghost) {
                         withAnimation {
