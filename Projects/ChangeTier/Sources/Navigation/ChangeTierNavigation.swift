@@ -56,7 +56,11 @@ public struct ChangeTierNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(router: changeTierNavigationVm.router, options: []) {
+        RouterHost(
+            router: changeTierNavigationVm.router,
+            options: [],
+            tracking: ChangeTierTrackingType.changeTierLandingScreen
+        ) {
             ChangeTierLandingScreen(vm: changeTierNavigationVm.vm)
                 .withDismissButton()
                 .routerDestination(for: ChangeTierRouterActions.self) { action in
@@ -73,7 +77,7 @@ public struct ChangeTierNavigation: View {
             style: [.height]
         ) {
             EditTier(vm: changeTierNavigationVm.vm)
-                .embededInNavigation(options: .navigationType(type: .large))
+                .embededInNavigation(options: .navigationType(type: .large), tracking: ChangeTierTrackingType.editTier)
                 .environmentObject(changeTierNavigationVm)
         }
         .detent(
@@ -81,7 +85,10 @@ public struct ChangeTierNavigation: View {
             style: [.height]
         ) {
             EditDeductibleView(vm: changeTierNavigationVm.vm)
-                .embededInNavigation(options: .navigationType(type: .large))
+                .embededInNavigation(
+                    options: .navigationType(type: .large),
+                    tracking: ChangeTierTrackingType.editDeductible
+                )
                 .environmentObject(changeTierNavigationVm)
         }
         .detent(
@@ -98,7 +105,10 @@ public struct ChangeTierNavigation: View {
             CompareTierScreen(vm: changeTierNavigationVm.vm)
                 .configureTitle(L10n.tierFlowCompareButton)
                 .withDismissButton()
-                .embededInNavigation(options: .navigationType(type: .large))
+                .embededInNavigation(
+                    options: .navigationType(type: .large),
+                    tracking: ChangeTierTrackingType.compareTier
+                )
                 .environmentObject(changeTierNavigationVm)
         }
         .detent(
@@ -108,4 +118,24 @@ public struct ChangeTierNavigation: View {
             PDFPreview(document: .init(url: document.url, title: document.title))
         }
     }
+}
+
+private enum ChangeTierTrackingType: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .changeTierLandingScreen:
+            return .init(describing: ChangeTierLandingScreen.self)
+        case .editTier:
+            return .init(describing: EditTier.self)
+        case .editDeductible:
+            return .init(describing: EditDeductibleView.self)
+        case .compareTier:
+            return .init(describing: CompareTierScreen.self)
+        }
+    }
+
+    case changeTierLandingScreen
+    case editTier
+    case editDeductible
+    case compareTier
 }
