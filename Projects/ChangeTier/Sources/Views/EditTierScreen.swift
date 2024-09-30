@@ -2,49 +2,41 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct EditDeductibleView: View {
-    @State var selectedDeductible: String?
+struct EditTierScreen: View {
+    @State var selectedTier: String?
     private let vm: ChangeTierViewModel
-    private let deductibles: [Deductible]
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
 
     init(
         vm: ChangeTierViewModel
     ) {
         self.vm = vm
-
-        if !(vm.selectedTier?.deductibles.isEmpty ?? true) {
-            self.deductibles = vm.selectedTier?.deductibles ?? []
-        } else {
-            self.deductibles = vm.tiers.first(where: { $0.name == vm.selectedTier?.name })?.deductibles ?? []
-        }
-
-        self.selectedDeductible = vm.selectedDeductible?.id ?? vm.selectedTier?.deductibles.first?.id
+        self.selectedTier = vm.selectedTier?.name ?? vm.tiers.first?.name
     }
 
     var body: some View {
         hForm {
             hSection {
                 VStack(spacing: .padding4) {
-                    ForEach(deductibles, id: \.self) { deductible in
+                    ForEach(vm.tiers, id: \.self) { tier in
                         hRadioField(
-                            id: deductible.id,
+                            id: tier.name,
                             leftView: {
                                 VStack(alignment: .leading, spacing: .padding8) {
                                     HStack {
-                                        let displayTitle =
-                                            (deductible.deductibleAmount?.formattedAmount ?? "") + " + "
-                                            + String(deductible.deductiblePercentage ?? 0) + "%"
-                                        hText(displayTitle)
+                                        hText(tier.name)
                                         Spacer()
-                                        hText(deductible.premium?.formattedAmountPerMonth ?? "")
+                                        hText(tier.premium.formattedAmountPerMonth)
                                     }
-                                    hText(deductible.subTitle ?? "")
-                                        .foregroundColor(hTextColor.Opaque.secondary)
+                                    if let subTitle = tier.productVariant.displayNameTierLong {
+                                        hText(subTitle)
+                                            .foregroundColor(hTextColor.Opaque.secondary)
+                                            .fixedSize()
+                                    }
                                 }
                                 .asAnyView
                             },
-                            selected: $selectedDeductible,
+                            selected: $selectedTier,
                             error: nil,
                             useAnimation: true
                         )
@@ -59,14 +51,14 @@ struct EditDeductibleView: View {
             hSection {
                 VStack(spacing: .padding8) {
                     hButton.LargeButton(type: .primary) {
-                        vm.setDeductible(for: self.selectedDeductible ?? "")
-                        changeTierNavigationVm.isEditDeductiblePresented = false
+                        vm.setTier(for: self.selectedTier ?? "")
+                        changeTierNavigationVm.isEditTierPresented = false
                     } content: {
-                        hText(L10n.generalConfirm)
+                        hText(L10n.generalContinueButton)
                     }
 
                     hButton.LargeButton(type: .ghost) {
-                        changeTierNavigationVm.isEditDeductiblePresented = false
+                        changeTierNavigationVm.isEditTierPresented = false
                     } content: {
                         hText(L10n.generalCancelButton)
                     }
@@ -80,7 +72,7 @@ struct EditDeductibleView: View {
     }
 }
 
-extension EditDeductibleView: TitleView {
+extension EditTierScreen: TitleView {
     public func getTitleView() -> UIView {
         let view: UIView = UIHostingController(rootView: titleView).view
         view.backgroundColor = .clear
@@ -91,9 +83,9 @@ extension EditDeductibleView: TitleView {
     @ViewBuilder
     private var titleView: some View {
         VStack(alignment: .leading, spacing: 0) {
-            hText(L10n.tierFlowSelectDeductibleTitle, style: .heading1)
+            hText(L10n.tierFlowSelectCoverageTitle, style: .heading1)
                 .foregroundColor(hTextColor.Opaque.primary)
-            hText("Amount deducted from the compensation", style: .heading1)
+            hText("Find the right coverage for your needs", style: .heading1)
                 .foregroundColor(hTextColor.Opaque.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -102,5 +94,5 @@ extension EditDeductibleView: TitleView {
 }
 
 #Preview{
-    EditDeductibleView(vm: .init(contractId: "contractId", changeTierSource: .changeTier))
+    EditTierScreen(vm: .init(contractId: "contractId", changeTierSource: .changeTier))
 }

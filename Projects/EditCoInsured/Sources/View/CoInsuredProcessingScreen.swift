@@ -21,7 +21,7 @@ struct CoInsuredProcessingScreen: View {
     }
 
     var body: some View {
-        RouterHost(router: router, options: [.navigationBarHidden]) {
+        RouterHost(router: router, options: [.navigationBarHidden], tracking: self) {
             hProcessingView(
                 showSuccessScreen: showSuccessScreen,
                 EditCoInsuredStore.self,
@@ -67,6 +67,12 @@ struct CoInsuredProcessingScreen: View {
     }
 }
 
+extension CoInsuredProcessingScreen: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        return .init(describing: CoInsuredProcessingScreen.self)
+    }
+
+}
 class ProcessingViewModel: ObservableObject {
     @Published var progress: Float = 0
     @PresentableStore var store: EditCoInsuredStore
