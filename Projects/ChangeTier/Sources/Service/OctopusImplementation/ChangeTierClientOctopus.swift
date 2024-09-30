@@ -48,7 +48,9 @@ public class ChangeTierClientOctopus: ChangeTierClient {
             let filteredTiers = getFilteredTiers(currentContract: currentContract, intent: intent)
 
             /* map currentTier with existing */
-            let currentTier: Tier? = filteredTiers.first(where: { $0.name == currentContract?.currentAgreement.productVariant.displayNameTier })
+            let currentDisplayNameTier = currentContract?.currentAgreement.productVariant.displayNameTier
+            
+            let currentTier: Tier? = filteredTiers.first(where: { $0.name == currentDisplayNameTier })
             
             let intentModel: ChangeTierIntentModel = .init(
                 id: "",
@@ -90,7 +92,7 @@ public class ChangeTierClientOctopus: ChangeTierClient {
         var uniqueTierNames: [String] = []
         intent?.quotes.forEach({ tier in
             let tierNameIsNotInList = uniqueTierNames.first(where: { $0 == (tier.tierName ?? "") })?.isEmpty
-            if let tierName = tier.tierName, tierNameIsNotInList ?? false {
+            if let tierName = tier.tierName, tierNameIsNotInList ?? true {
                 uniqueTierNames.append(tierName)
             }
         })
