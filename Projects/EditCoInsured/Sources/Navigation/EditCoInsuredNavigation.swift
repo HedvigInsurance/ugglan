@@ -55,6 +55,20 @@ enum EditCoInsuredScreenTrackingType: TrackingViewNameProtocol {
     }
 }
 
+private enum EditCoInsuredDetentType: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .coInsuredInput:
+            return .init(describing: CoInusuredInputScreen.self)
+        case .selectCoInsured:
+            return .init(describing: SelectCoInsured.self)
+        }
+    }
+
+    case coInsuredInput
+    case selectCoInsured
+}
+
 public struct EditCoInsuredNavigation: View {
     let config: InsuredPeopleConfig
     @State var openSpecificScreen: EditCoInsuredScreenType
@@ -106,7 +120,10 @@ public struct EditCoInsuredNavigation: View {
             style: [.height]
         ) { coInsuredInputModel in
             coInsuredInput(coInsuredInputModel: coInsuredInputModel)
-                .embededInNavigation(options: [.navigationType(type: .large)])
+                .embededInNavigation(
+                    options: [.navigationType(type: .large)],
+                    tracking: EditCoInsuredDetentType.coInsuredInput
+                )
         }
         .detent(
             item: $editCoInsuredNavigationVm.selectCoInsured,
@@ -154,7 +171,7 @@ public struct EditCoInsuredNavigation: View {
     func openCoInsuredInput(
         coInsuredModelEdit: CoInsuredInputModel
     ) -> some View {
-        CoInusuredInput(
+        CoInusuredInputScreen(
             vm: .init(
                 coInsuredModel: coInsuredModelEdit.coInsuredModel,
                 actionType: coInsuredModelEdit.actionType,
@@ -230,7 +247,7 @@ public struct EditCoInsuredSelectInsuranceNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(router: router, options: .navigationType(type: .large)) {
+        RouterHost(router: router, options: .navigationType(type: .large), tracking: self) {
             openSelectInsurance()
         }
     }
@@ -272,6 +289,12 @@ public struct EditCoInsuredSelectInsuranceNavigation: View {
     }
 }
 
+extension EditCoInsuredSelectInsuranceNavigation: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        return .init(describing: ItemPickerScreen<InsuredPeopleConfig>.self)
+    }
+}
+
 public struct EditCoInsuredAlertNavigation: View {
     let config: InsuredPeopleConfig
     @StateObject var router = Router()
@@ -284,7 +307,7 @@ public struct EditCoInsuredAlertNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(router: router, options: .navigationType(type: .large)) {
+        RouterHost(router: router, options: .navigationType(type: .large), tracking: self) {
             openMissingCoInsuredAlert()
         }
     }
@@ -302,6 +325,11 @@ public struct EditCoInsuredAlertNavigation: View {
                 )
             }
         )
+    }
+}
+extension EditCoInsuredAlertNavigation: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        return .init(describing: MissingCoInsuredAlert.self)
     }
 }
 
