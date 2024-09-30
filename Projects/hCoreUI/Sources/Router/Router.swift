@@ -75,13 +75,13 @@ struct Builderrr<Content: View> {
 public struct RouterHost<Screen: View>: View {
     let router: Router
     let options: RouterOptions
-    let tracking: TrackingViewNameProtocol?
+    let tracking: TrackingViewNameProtocol
     @ViewBuilder var initialView: () -> Screen
 
     public init(
         router: Router,
         options: RouterOptions = [],
-        tracking: TrackingViewNameProtocol? = nil,
+        tracking: TrackingViewNameProtocol,
         @ViewBuilder initial: @escaping () -> Screen
     ) {
         self.initialView = initial
@@ -243,7 +243,7 @@ extension View {
     public func embededInNavigation(
         router: Router? = nil,
         options: RouterOptions = [],
-        tracking: TrackingViewNameProtocol? = nil
+        tracking: TrackingViewNameProtocol
     ) -> some View {
         return modifier(EmbededInNavigation(options: options, tracking: tracking, router: router))
     }
@@ -252,9 +252,9 @@ extension View {
 private struct EmbededInNavigation: ViewModifier {
     @StateObject var router = Router()
     let options: RouterOptions
-    let tracking: TrackingViewNameProtocol?
+    let tracking: TrackingViewNameProtocol
 
-    init(options: RouterOptions, tracking: TrackingViewNameProtocol?, router: Router? = nil) {
+    init(options: RouterOptions, tracking: TrackingViewNameProtocol, router: Router? = nil) {
         if let router {
             self._router = StateObject(wrappedValue: router)
         }

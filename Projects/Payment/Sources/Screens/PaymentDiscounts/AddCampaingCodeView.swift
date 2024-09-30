@@ -3,7 +3,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct AddCampaingCodeView: View {
+struct AddCampaignCodeView: View {
     @StateObject var vm = AddCampaingCodeViewModel()
     @EnvironmentObject var router: Router
 
@@ -74,6 +74,6 @@ class AddCampaingCodeViewModel: ObservableObject {
 struct AddCampaingCodeView_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> hCampaignClient in hCampaignClientDemo() })
-        return AddCampaingCodeView()
+        return AddCampaignCodeView()
     }
 }
