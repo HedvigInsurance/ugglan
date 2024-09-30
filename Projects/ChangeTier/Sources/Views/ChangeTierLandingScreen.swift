@@ -71,17 +71,20 @@ struct ChangeTierLandingScreen: View {
                 VStack(spacing: .padding4) {
                     if !vm.canEditTier {
                         hSection {
-                            hFloatingField(value: vm.selectedTier?.name ?? "", placeholder: L10n.tierFlowCoverageLabel)
-                            {}
-                            .hFieldLockedState
-                            .hFieldTrailingView {
-                                Image(uiImage: hCoreUIAssets.lock.image)
-                                    .foregroundColor(hTextColor.Opaque.secondary)
+                            VStack(alignment: .leading, spacing: .padding4) {
+                                hFloatingField(
+                                    value: vm.selectedTier?.name ?? "",
+                                    placeholder: L10n.tierFlowCoverageLabel
+                                ) {}
+                                .hFieldLockedState
+                                .hFieldTrailingView {
+                                    Image(uiImage: hCoreUIAssets.lock.image)
+                                        .foregroundColor(hTextColor.Opaque.secondary)
+                                }
+                                hText(L10n.tierFlowLockedInfoDescription, style: .label)
+                                    .foregroundColor(hTextColor.Translucent.secondary)
+                                    .padding(.leading, .padding16)
                             }
-                            hText(L10n.tierFlowLockedInfoDescription, style: .label)
-                                .foregroundColor(hTextColor.Translucent.secondary)
-                                .padding(.horizontal, .padding16)
-                                .padding(.top, .padding4)
                         }
                         .padding(.bottom, 8)
                     } else {
@@ -290,6 +293,6 @@ public class ChangeTierViewModel: ObservableObject {
 }
 
 #Preview{
-    Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
+    Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientOctopus() })
     return ChangeTierLandingScreen(vm: .init(contractId: "contractId", changeTierSource: .changeTier))
 }
