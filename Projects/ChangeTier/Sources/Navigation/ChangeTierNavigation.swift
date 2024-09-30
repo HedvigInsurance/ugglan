@@ -52,7 +52,7 @@ public struct ChangeTierNavigation: View {
             presented: $changeTierNavigationVm.isEditTierPresented,
             style: [.height]
         ) {
-            EditTier(vm: changeTierNavigationVm.vm)
+            EditTierScreen(vm: changeTierNavigationVm.vm)
                 .embededInNavigation(options: .navigationType(type: .large))
                 .environmentObject(changeTierNavigationVm)
         }
@@ -60,7 +60,7 @@ public struct ChangeTierNavigation: View {
             presented: $changeTierNavigationVm.isEditDeductiblePresented,
             style: [.height]
         ) {
-            EditDeductibleView(vm: changeTierNavigationVm.vm)
+            EditDeductibleScreen(vm: changeTierNavigationVm.vm)
                 .embededInNavigation(options: .navigationType(type: .large))
                 .environmentObject(changeTierNavigationVm)
         }
