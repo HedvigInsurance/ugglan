@@ -15,15 +15,15 @@ struct LoginNavigation: View {
     @StateObject private var router = Router()
     @StateObject private var otpState = OTPState()
     var body: some View {
-        RouterHost(router: router, options: .navigationBarHidden) {
+        RouterHost(router: router, options: .navigationBarHidden, tracking: LoginDetentType.notLoggedIn) {
             NotLoggedInView(vm: vm)
         }
         .detent(presented: $vm.showLanguagePicker, style: [.height]) {
             LanguageAndMarketPickerView()
                 .navigationTitle(L10n.loginMarketPickerPreferences)
-                .embededInNavigation()
+                .embededInNavigation(tracking: LoginDetentType.languageAndMarketPicker)
         }
-        .detent(presented: $vm.showLogin, style: [.large], tracking: Localization.Locale.currentLocale.value.market) {
+        .detent(presented: $vm.showLogin, style: [.large]) {
             Group {
                 switch Localization.Locale.currentLocale.value.market {
                 case .no, .dk:
@@ -52,9 +52,23 @@ struct LoginNavigation: View {
                     LoginErrorView(message: message)
                 }
             }
-            .embededInNavigation()
+            .embededInNavigation(tracking: Localization.Locale.currentLocale.value.market)
         }
     }
+}
+
+private enum LoginDetentType: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .notLoggedIn:
+            return .init(describing: NotLoggedInView.self)
+        case .languageAndMarketPicker:
+            return .init(describing: LanguageAndMarketPickerView.self)
+        }
+    }
+
+    case notLoggedIn
+    case languageAndMarketPicker
 }
 
 public struct NotLoggedInView: View {

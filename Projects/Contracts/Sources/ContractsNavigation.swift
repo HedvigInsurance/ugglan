@@ -22,7 +22,7 @@ public struct ContractsNavigation<Content: View>: View {
     }
 
     public var body: some View {
-        RouterHost(router: contractsNavigationVm.contractsRouter) {
+        RouterHost(router: contractsNavigationVm.contractsRouter, tracking: self) {
             Contracts(showTerminated: false)
                 .environmentObject(contractsNavigationVm)
                 .configureTitle(L10n.InsurancesTab.title)
@@ -62,7 +62,7 @@ public struct ContractsNavigation<Content: View>: View {
             EditContract(id: contract.id)
                 .configureTitle(L10n.contractChangeInformationTitle)
                 .environmentObject(contractsNavigationVm)
-                .embededInNavigation(options: .navigationType(type: .large))
+                .embededInNavigation(options: .navigationType(type: .large), tracking: ContractsDetentType.editContract)
         }
         .modally(presented: $contractsNavigationVm.isChangeAddressPresented) {
             redirect(.movingFlow)
@@ -136,5 +136,22 @@ extension TerminationConfirmConfig {
             contractExposureName: contract.exposureDisplayName,
             activeFrom: contract.currentAgreement?.activeFrom
         )
+    }
+}
+
+private enum ContractsDetentType: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        switch self {
+        case .editContract:
+            return .init(describing: EditContract.self)
+        }
+    }
+
+    case editContract
+}
+
+extension ContractsNavigation: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        return .init(describing: Contracts.self)
     }
 }

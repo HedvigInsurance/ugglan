@@ -8,7 +8,6 @@ extension View {
         presented: Binding<Bool>,
         style: [Detent],
         options: Binding<DetentPresentationOption> = .constant([]),
-        tracking: TrackingViewNameProtocol? = nil,
         @ViewBuilder content: @escaping () -> SwiftUIContent
     ) -> some View {
         modifier(
@@ -16,7 +15,6 @@ extension View {
                 presented: presented,
                 style: style,
                 options: options,
-                tracking: tracking,
                 content: content
             )
         )
@@ -26,11 +24,10 @@ extension View {
         item: Binding<Item?>,
         style: [Detent],
         options: Binding<DetentPresentationOption> = .constant([]),
-        tracking: TrackingViewNameProtocol? = nil,
         @ViewBuilder content: @escaping (Item) -> Content
     ) -> some View where Item: Identifiable & Equatable, Content: View {
         return modifier(
-            DetentSizeModifierModal(item: item, style: style, options: options, tracking: tracking, content: content)
+            DetentSizeModifierModal(item: item, style: style, options: options, content: content)
         )
     }
 }
@@ -42,12 +39,11 @@ where SwiftUIContent: View, Item: Identifiable & Equatable {
     @State var present: Bool = false
     let style: [Detent]
     @Binding var options: DetentPresentationOption
-    let tracking: TrackingViewNameProtocol?
 
     var content: (Item) -> SwiftUIContent
     func body(content: Content) -> some View {
         Group {
-            content.detent(presented: $present, style: style, options: $options, tracking: tracking) {
+            content.detent(presented: $present, style: style, options: $options) {
                 if let item = itemToRenderFrom {
                     self.content(item)
                 }
@@ -80,18 +76,15 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
     private let style: [Detent]
     @Binding var options: DetentPresentationOption
     @StateObject private var presentationViewModel = PresentationViewModel()
-    let tracking: TrackingViewNameProtocol?
     init(
         presented: Binding<Bool>,
         style: [Detent],
         options: Binding<DetentPresentationOption>,
-        tracking: TrackingViewNameProtocol? = nil,
         @ViewBuilder content: @escaping () -> SwiftUIContent
     ) {
         _presented = presented
         self.content = content
         self.style = style
-        self.tracking = tracking
         self._options = options
     }
 
@@ -133,8 +126,7 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                 }()
                 let content = self.content()
                 let vc = hHostingController(
-                    rootView: content,
-                    contentName: tracking?.nameForTracking ?? "\(Content.self)"
+                    rootView: content
                 )
                 let shouldUseBlur = style.contains(.height)
                 let delegate = DetentedTransitioningDelegate(
@@ -174,8 +166,8 @@ public class hHostingController<Content: View>: UIHostingController<Content> {
     var onViewWillDisappear: () -> Void = {}
     private let key = UUID().uuidString
     var onDeinit: () -> Void = {}
-    private let contentName: String
-    public init(rootView: Content, contentName: String) {
+    private let contentName: String?
+    public init(rootView: Content, contentName: String? = nil) {
         self.contentName = contentName
         super.init(rootView: rootView)
     }
@@ -222,7 +214,7 @@ public class hHostingController<Content: View>: UIHostingController<Content> {
     }
 
     public override var debugDescription: String {
-        return contentName
+        return contentName ?? ""
     }
 }
 
@@ -246,49 +238,10 @@ public struct DetentPresentationOption: OptionSet {
 
 extension String {
     fileprivate func getViewName() -> String? {
-        let removedModifiedContent = self.replacingOccurrences(of: "ModifiedContent<", with: "")
-        guard let firstElement = removedModifiedContent.split(separator: ",").first else { return nil }
-        let nameToLog = String(firstElement)
-        if !nameToLog.shouldBeLoggedAsView {
+        if self.lowercased().contains("AnyView".lowercased()) || self.isEmpty {
             return nil
         }
-        let elements: [String] = {
-            if #available(iOS 16.0, *) {
-                return nameToLog.split(separator: "SizeModifier<").map({ String($0) })
-            } else {
-                return nameToLog.components(separatedBy: "SizeModifier<")
-            }
-        }()
-        if elements.count > 1, let lastElement = elements.last {
-            return String(lastElement).replacingOccurrences(of: "Optional<", with: "")
-                .replacingOccurrences(of: ">", with: "")
-        } else {
-            let elements = nameToLog.split(separator: ":")
-            if elements.count > 1, let firstElement = elements.first {
-                return String(firstElement).replacingOccurrences(of: "<", with: "")
-            }
-            return nameToLog
-        }
-    }
-    fileprivate var shouldBeLoggedAsView: Bool {
-
-        let array = [
-            String(describing: hNavigationController.self),
-            String(describing: hNavigationControllerWithLargerNavBar.self),
-            "EmbededInNavigation",
-            "PUPickerRemoteViewController",
-            "CAMImagePickerCameraViewController",
-            "CAMViewfinderViewController",
-            "UIDocumentBrowserViewController",
-            "Navigation",
-
-        ]
-        for element in array {
-            if self.contains(element) {
-                return false
-            }
-        }
-        return true
+        return self
     }
 }
 

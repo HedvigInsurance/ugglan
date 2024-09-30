@@ -48,7 +48,7 @@ public struct ForeverNavigation: View {
     public var body: some View {
         Group {
             if useOwnNavigation {
-                RouterHost(router: router) {
+                RouterHost(router: router, tracking: ForeverNavigationDetentType.forever) {
                     ForeverView()
                         .configureTitle(L10n.ReferralsInfoSheet.headline)
                 }
@@ -74,11 +74,29 @@ public struct ForeverNavigation: View {
                     }
                 }
                 .configureTitle(L10n.ReferralsChange.changeCode)
-                .embededInNavigation(options: [.navigationType(type: .large)])
+                .embededInNavigation(
+                    options: [.navigationType(type: .large)],
+                    tracking: ForeverNavigationDetentType.changeCode
+                )
         }
         .environmentObject(foreverNavigationVm)
 
     }
+}
+
+private enum ForeverNavigationDetentType: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .forever:
+            return .init(describing: ForeverView.self)
+        case .changeCode:
+            return .init(describing: ChangeCodeView.self)
+        }
+    }
+
+    case forever
+    case changeCode
+
 }
 
 #Preview{
