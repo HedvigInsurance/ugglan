@@ -112,15 +112,11 @@ struct ChangeTierLandingScreen: View {
                         hText(L10n.tierFlowTotal)
                         Spacer()
                         VStack(alignment: .trailing, spacing: 0) {
-                            if let newPremium = vm.newPremium {
-                                hText(newPremium.formattedAmountPerMonth)
-                            } else {
-                                hText(vm.currentPremium?.formattedAmountPerMonth ?? "")
-                            }
+                            hText(newPremium?.formattedAmountPerMonth ?? currentPremium?.formattedAmountPerMonth ?? "")
 
-                            if vm.newPremium != vm.currentPremium {
+                            if let newPremium, newPremium != currentPremium {
                                 hText(
-                                    L10n.tierFlowPreviousPrice(vm.currentPremium?.formattedAmountPerMonth ?? ""),
+                                    L10n.tierFlowPreviousPrice(currentPremium?.formattedAmountPerMonth ?? ""),
                                     style: .label
                                 )
                                 .foregroundColor(hTextColor.Opaque.secondary)
