@@ -64,17 +64,20 @@ struct ChangeTierLandingScreen: View {
                 VStack(spacing: .padding4) {
                     if !vm.canEditTier {
                         hSection {
-                            hFloatingField(value: vm.selectedTier?.name ?? "", placeholder: L10n.tierFlowCoverageLabel)
-                            {}
-                            .hFieldLockedState
-                            .hFieldTrailingView {
-                                Image(uiImage: hCoreUIAssets.lock.image)
-                                    .foregroundColor(hTextColor.Opaque.secondary)
+                            VStack(alignment: .leading, spacing: .padding4) {
+                                hFloatingField(
+                                    value: vm.selectedTier?.name ?? "",
+                                    placeholder: L10n.tierFlowCoverageLabel
+                                ) {}
+                                .hFieldLockedState
+                                .hFieldTrailingView {
+                                    Image(uiImage: hCoreUIAssets.lock.image)
+                                        .foregroundColor(hTextColor.Opaque.secondary)
+                                }
+                                hText(L10n.tierFlowLockedInfoDescription, style: .label)
+                                    .foregroundColor(hTextColor.Translucent.secondary)
+                                    .padding(.leading, .padding16)
                             }
-                            hText(L10n.tierFlowLockedInfoDescription, style: .label)
-                                .foregroundColor(hTextColor.Translucent.secondary)
-                                .padding(.horizontal, .padding16)
-                                .padding(.top, .padding4)
                         }
                         .padding(.bottom, 8)
                     } else {
@@ -177,14 +180,14 @@ enum ChangeTierViewState {
     case error(errorMessage: String)
 }
 
-public class ChangeTierViewModel: ObservableObject {
-    @Inject var service: ChangeTierClient
+class ChangeTierViewModel: ObservableObject {
+    @Inject private var service: ChangeTierClient
     @Published var viewState: ChangeTierViewState = .loading
     @Published var displayName: String?
-    var exposureName: String?
-    var tiers: [Tier] = []
+    @Published var exposureName: String?
+    private(set) var tiers: [Tier] = []
 
-    var contractId: String
+    private var contractId: String
     var changeTierSource: ChangeTierSource
 
     var currentPremium: MonetaryAmount?
@@ -269,6 +272,6 @@ public class ChangeTierViewModel: ObservableObject {
 }
 
 #Preview{
-    Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
+    Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientOctopus() })
     return ChangeTierLandingScreen(vm: .init(contractId: "contractId", changeTierSource: .changeTier))
 }

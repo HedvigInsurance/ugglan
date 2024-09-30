@@ -3,10 +3,10 @@ import hCore
 import hCoreUI
 
 struct CompareTierScreen: View {
-    var vm: ChangeTierViewModel
+    private var vm: ChangeTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
 
-    var scrollableSegmentedViewModel: ScrollableSegmentedViewModel
+    private let scrollableSegmentedViewModel: ScrollableSegmentedViewModel
 
     init(
         vm: ChangeTierViewModel
