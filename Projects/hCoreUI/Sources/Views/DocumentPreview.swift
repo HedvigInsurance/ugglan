@@ -49,7 +49,6 @@ public class DocumentPreviewModel: NSObject, ObservableObject {
 
 public struct DocumentPreview: View {
     @ObservedObject var vm: DocumentPreviewModel
-    @StateObject var router = Router()
     public init(vm: DocumentPreviewModel) {
         self.vm = vm
     }
