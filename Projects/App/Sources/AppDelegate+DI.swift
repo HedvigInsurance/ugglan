@@ -53,6 +53,8 @@ extension ApolloClient {
             Dependencies.shared.add(module: Module { () -> ConversationsClient in conversationsClient })
             Dependencies.shared.add(module: Module { () -> ConversationClient in conversationClient })
             Dependencies.shared.add(module: Module { () -> AdyenClient in adyenClient })
+            //ss
+
         } else {
             let paymentService = hPaymentClientOctopus()
             let hCampaignsService = hCampaingsClientOctopus()
