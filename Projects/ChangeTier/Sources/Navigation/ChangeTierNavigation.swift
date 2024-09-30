@@ -76,7 +76,7 @@ public struct ChangeTierNavigation: View {
             presented: $changeTierNavigationVm.isEditTierPresented,
             style: [.height]
         ) {
-            EditTier(vm: changeTierNavigationVm.vm)
+            EditTierScreen(vm: changeTierNavigationVm.vm)
                 .embededInNavigation(options: .navigationType(type: .large), tracking: ChangeTierTrackingType.editTier)
                 .environmentObject(changeTierNavigationVm)
         }
@@ -84,7 +84,7 @@ public struct ChangeTierNavigation: View {
             presented: $changeTierNavigationVm.isEditDeductiblePresented,
             style: [.height]
         ) {
-            EditDeductibleView(vm: changeTierNavigationVm.vm)
+            EditDeductibleScreen(vm: changeTierNavigationVm.vm)
                 .embededInNavigation(
                     options: .navigationType(type: .large),
                     tracking: ChangeTierTrackingType.editDeductible
@@ -126,9 +126,9 @@ private enum ChangeTierTrackingType: TrackingViewNameProtocol {
         case .changeTierLandingScreen:
             return .init(describing: ChangeTierLandingScreen.self)
         case .editTier:
-            return .init(describing: EditTier.self)
+            return .init(describing: EditTierScreen.self)
         case .editDeductible:
-            return .init(describing: EditDeductibleView.self)
+            return .init(describing: EditDeductibleScreen.self)
         case .compareTier:
             return .init(describing: CompareTierScreen.self)
         }
