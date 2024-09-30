@@ -17,6 +17,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable {
         supportsAddressChange: Bool,
         supportsCoInsured: Bool,
         supportsTravelCertificate: Bool,
+        supportsChangeTier: Bool,
         upcomingChangedAgreement: Agreement?,
         upcomingRenewal: ContractRenewal?,
         firstName: String,
@@ -34,6 +35,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable {
         self.supportsCoInsured = supportsCoInsured
         self.supportsAddressChange = supportsAddressChange
         self.supportsTravelCertificate = supportsTravelCertificate
+        self.supportsChangeTier = supportsChangeTier
         self.upcomingChangedAgreement = upcomingChangedAgreement
         self.upcomingRenewal = upcomingRenewal
         self.firstName = firstName
@@ -50,6 +52,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable {
     public let terminationDate: String?
     public let selfChangeBlockers: String?
     public let supportsAddressChange: Bool
+    public let supportsChangeTier: Bool
     public let supportsCoInsured: Bool
     public let supportsTravelCertificate: Bool
     public let upcomingChangedAgreement: Agreement?
@@ -75,7 +78,12 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable {
     }
 
     public var showEditInfo: Bool {
-        return (supportsCoInsured || supportsAddressChange) && self.terminationDate == nil
+        return EditType.getTypes(for: self).count > 0 && self.terminationDate == nil
+    }
+
+    func onlyCoInsured() -> Bool {
+        let editTypes: [EditType] = EditType.getTypes(for: self)
+        return editTypes.count == 1 && editTypes.first == .coInsured
     }
 
     public var canTerminate: Bool {
@@ -173,6 +181,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable {
         supportsAddressChange = false
         supportsCoInsured = false
         supportsTravelCertificate = false
+        supportsChangeTier = false
         upcomingChangedAgreement = nil
         upcomingRenewal = nil
         selfChangeBlockers = nil
@@ -199,6 +208,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable {
         supportsAddressChange = contract.supportsMoving
         supportsCoInsured = contract.supportsCoInsured
         supportsTravelCertificate = contract.supportsTravelCertificate
+        supportsChangeTier = contract.supportsChangeTier
         upcomingChangedAgreement = .init(agreement: contract.upcomingChangedAgreement?.fragments.agreementFragment)
         upcomingRenewal = .init(upcoming: contract.upcomingChangedAgreement?.fragments.agreementFragment)
         typeOfContract = TypeOfContract.resolve(for: contract.currentAgreement.productVariant.typeOfContract)

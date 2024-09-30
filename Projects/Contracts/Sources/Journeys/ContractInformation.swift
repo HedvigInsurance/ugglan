@@ -57,7 +57,7 @@ struct ContractInformationView: View {
                                 if contract.showEditInfo {
                                     hSection {
                                         hButton.LargeButton(type: .secondary) {
-                                            if onlyCoInsured(contract)
+                                            if contract.onlyCoInsured()
                                                 && Dependencies.featureFlags().isEditCoInsuredEnabled
                                             {
                                                 let contract: InsuredPeopleConfig = .init(
@@ -70,7 +70,7 @@ struct ContractInformationView: View {
                                                 contractsNavigationVm.changeYourInformationContract = contract
                                             }
                                         } content: {
-                                            if onlyCoInsured(contract)
+                                            if contract.onlyCoInsured()
                                                 && Dependencies.featureFlags().isEditCoInsuredEnabled
                                             {
                                                 hText(L10n.contractEditCoinsured)
@@ -91,11 +91,6 @@ struct ContractInformationView: View {
             }
         }
         .sectionContainerStyle(.transparent)
-    }
-
-    func onlyCoInsured(_ contract: Contract) -> Bool {
-        let editTypes: [EditType] = EditType.getTypes(for: contract)
-        return editTypes.count == 1 && editTypes.first == .coInsured
     }
 
     func insuredField(contract: Contract) -> some View {

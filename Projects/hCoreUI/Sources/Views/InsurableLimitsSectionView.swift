@@ -23,9 +23,11 @@ public struct InsurableLimitsSectionView: View {
                 HStack(spacing: 0) {
                     Spacer()
                     HStack(alignment: .top) {
+                        Spacer()
                         hText(limit.limit)
-                            .fixedSize()
                             .foregroundColor(hTextColor.Opaque.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .multilineTextAlignment(.trailing)
                         Image(uiImage: hCoreUIAssets.infoFilled.image)
                             .resizable()
                             .foregroundColor(hTextColor.Opaque.secondary)
@@ -36,9 +38,8 @@ public struct InsurableLimitsSectionView: View {
                             }
 
                     }
-                    .frame(maxHeight: .infinity, alignment: .top)
-                    .fixedSize()
                 }
+
             }
             .onTap {
                 didTap(limit)
