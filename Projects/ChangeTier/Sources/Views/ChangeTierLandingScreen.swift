@@ -208,8 +208,8 @@ class ChangeTierViewModel: ObservableObject {
     @Published var exposureName: String?
     private(set) var tiers: [Tier] = []
 
-    private var contractId: String
-    var changeTierSource: ChangeTierSource
+    private let contractId: String
+    private let changeTierSource: ChangeTierSource
 
     var currentPremium: MonetaryAmount?
     var currentTier: Tier?
