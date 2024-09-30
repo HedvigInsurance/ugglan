@@ -207,15 +207,15 @@ class ChangeTierViewModel: ObservableObject {
     @Published var displayName: String?
     @Published var exposureName: String?
     private(set) var tiers: [Tier] = []
+    private var contractId: String
+    private var changeTierSource: ChangeTierSource
+    @Published var quoteId: String = ""
 
-    private let contractId: String
-    private let changeTierSource: ChangeTierSource
-
-    var currentPremium: MonetaryAmount?
-    var currentTier: Tier?
-    var currentDeductible: Deductible?
+    @Published var currentPremium: MonetaryAmount?
+    private var currentTier: Tier?
+    private var currentDeductible: Deductible?
     var newPremium: MonetaryAmount?
-    var canEditTier: Bool = false
+    @Published var canEditTier: Bool = false
 
     @Published var selectedTier: Tier?
     @Published var selectedDeductible: Deductible?
@@ -245,6 +245,7 @@ class ChangeTierViewModel: ObservableObject {
                 self.selectedDeductible = nil
             }
             self.selectedTier = newSelectedTier
+            self.newPremium = selectedTier?.premium
         }
     }
 
@@ -253,6 +254,7 @@ class ChangeTierViewModel: ObservableObject {
         withAnimation {
             if let deductible = selectedTier?.deductibles.first(where: { $0.id == deductibleId }) {
                 self.selectedDeductible = deductible
+                self.newPremium = deductible.premium
             }
         }
     }
