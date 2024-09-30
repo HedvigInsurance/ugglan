@@ -206,8 +206,7 @@ class ChangeTierViewModel: ObservableObject {
     @Published var viewState: ChangeTierViewState = .loading
     @Published var displayName: String?
     @Published var exposureName: String?
-    var tiers: [Tier] = []
-    /** todo: check **/
+    private(set) var tiers: [Tier] = []
 
     private var contractId: String
     var changeTierSource: ChangeTierSource
