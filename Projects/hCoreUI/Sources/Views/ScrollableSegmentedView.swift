@@ -282,50 +282,6 @@ public struct PageModel: Identifiable {
     }
 }
 
-//#Preview{
-//    let store: ContractStore = globalPresentableStoreContainer.get()
-//
-//    let fetchContractsService = FetchContractsClientDemo()
-//    Dependencies.shared.add(module: Module { () -> FetchContractsClient in fetchContractsService })
-//
-//    let featureFlags = FeatureFlagsDemo()
-//    Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlags })
-//
-//    store.send(.fetchContracts)
-//    return VStack {
-//        ScrollableSegmentedView(
-//            vm: .init(
-//                pageModels: [
-//                    .init(
-//                        id: "id1",
-//                        title: "title1"
-//                    ),
-//                    .init(
-//                        id: "id2",
-//                        title: "title2"
-//                    ),
-//                    .init(
-//                        id: "id3",
-//                        title: "title3"
-//                    ),
-//                ]
-//            )
-//        ) { id in
-//            Group {
-//                if id == "id1" {
-//                    ContractInformationView(id: "contractId")
-//                } else if id == "id2" {
-//                    ContractCoverageView(id: "contractId")
-//                } else {
-//                    ContractDocumentsView(id: "contractId")
-//                }
-//
-//            }
-//        }
-//    }
-//    .padding(.horizontal, 10)
-//}
-
 extension View {
     @MainActor
     func setDisabledScroll() -> some View {
