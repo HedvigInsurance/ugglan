@@ -13,11 +13,7 @@ struct PriceField: View {
             hText(L10n.tierFlowTotal)
             Spacer()
             VStack(alignment: .trailing, spacing: 0) {
-                if let newPremium = newPremium {
-                    hText(newPremium.formattedAmountPerMonth)
-                } else {
-                    hText(currentPremium?.formattedAmountPerMonth ?? "")
-                }
+                hText(newPremium?.formattedAmountPerMonth ?? currentPremium?.formattedAmountPerMonth ?? "")
 
                 if newPremium != currentPremium {
                     hText(
