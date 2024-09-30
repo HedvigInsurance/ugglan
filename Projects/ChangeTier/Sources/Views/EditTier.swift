@@ -28,9 +28,11 @@ struct EditTier: View {
                                         Spacer()
                                         hText(tier.premium.formattedAmountPerMonth)
                                     }
-                                    hText(String(tier.productVariant.displayNameTierLong ?? ""))
-                                        .foregroundColor(hTextColor.Opaque.secondary)
-                                        .fixedSize()
+                                    if let subTitle = tier.productVariant.displayNameTierLong {
+                                        hText(subTitle)
+                                            .foregroundColor(hTextColor.Opaque.secondary)
+                                            .fixedSize()
+                                    }
                                 }
                                 .asAnyView
                             },
