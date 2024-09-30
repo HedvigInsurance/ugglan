@@ -20,7 +20,7 @@ public struct DeleteAccountView: View {
     }
 
     public var body: some View {
-        RouterHost(router: router) {
+        RouterHost(router: router, tracking: DeleteDetentType.deleteAccountView) {
             hForm {
                 Spacing(height: vm.topSpacing)
                 hSection {
@@ -70,6 +70,17 @@ public struct DeleteAccountView: View {
             }
         }
     }
+}
+
+private enum DeleteDetentType: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .deleteAccountView:
+            return .init(describing: DeleteAccountView.self)
+        }
+    }
+
+    case deleteAccountView
 }
 
 struct ParagraphTextModifier<Color: hColor>: ViewModifier {
