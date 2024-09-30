@@ -4,8 +4,8 @@ import hCoreUI
 
 struct EditDeductibleView: View {
     @State var selectedDeductible: String?
-    var vm: ChangeTierViewModel
-    let getDeductibles: [Deductible]
+    private let vm: ChangeTierViewModel
+    private let deductibles: [Deductible]
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
 
     init(
@@ -14,9 +14,9 @@ struct EditDeductibleView: View {
         self.vm = vm
 
         if !(vm.selectedTier?.deductibles.isEmpty ?? true) {
-            self.getDeductibles = vm.selectedTier?.deductibles ?? []
+            self.deductibles = vm.selectedTier?.deductibles ?? []
         } else {
-            self.getDeductibles = vm.tiers.first(where: { $0.name == vm.selectedTier?.name })?.deductibles ?? []
+            self.deductibles = vm.tiers.first(where: { $0.name == vm.selectedTier?.name })?.deductibles ?? []
         }
 
         self.selectedDeductible = vm.selectedDeductible?.id ?? vm.selectedTier?.deductibles.first?.id
@@ -26,7 +26,7 @@ struct EditDeductibleView: View {
         hForm {
             hSection {
                 VStack(spacing: .padding4) {
-                    ForEach(getDeductibles, id: \.self) { deductible in
+                    ForEach(deductibles, id: \.self) { deductible in
                         hRadioField(
                             id: deductible.id,
                             leftView: {

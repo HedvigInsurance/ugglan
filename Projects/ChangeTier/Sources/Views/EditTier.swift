@@ -4,7 +4,7 @@ import hCoreUI
 
 struct EditTier: View {
     @State var selectedTier: String?
-    var vm: ChangeTierViewModel
+    private let vm: ChangeTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
 
     init(

@@ -201,14 +201,15 @@ enum ChangeTierViewState {
     case error(errorMessage: String)
 }
 
-public class ChangeTierViewModel: ObservableObject {
-    @Inject var service: ChangeTierClient
+class ChangeTierViewModel: ObservableObject {
+    @Inject private var service: ChangeTierClient
     @Published var viewState: ChangeTierViewState = .loading
     @Published var displayName: String?
-    var exposureName: String?
+    @Published var exposureName: String?
     var tiers: [Tier] = []
+    /** todo: check **/
 
-    var contractId: String
+    private var contractId: String
     var changeTierSource: ChangeTierSource
 
     var currentPremium: MonetaryAmount?
