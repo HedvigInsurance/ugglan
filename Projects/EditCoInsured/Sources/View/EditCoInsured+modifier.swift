@@ -16,9 +16,7 @@ struct EditCoInsured: ViewModifier {
         content
             .detent(
                 item: $vm.editCoInsuredModelDetent,
-                style: [.height],
-                tracking: vm.editCoInsuredModelDetent?.contractsSupportingCoInsured.count ?? 0 > 1
-                    ? InsuredPeopleConfigType.list : InsuredPeopleConfigType.oneItem
+                style: [.height]
             ) { coInsuredModel in
                 let contractsSupportingCoInsured = coInsuredModel.contractsSupportingCoInsured
                 if contractsSupportingCoInsured.count > 1 {
