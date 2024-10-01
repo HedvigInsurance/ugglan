@@ -108,7 +108,10 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                     )
             }) ?? []
             
-            let displayItems: [Tier.TierDisplayItem] = allQuotesWithNameX?.first?.displayItems.map({ .init(title: $0.displayTitle, subTitle: $0.displaySubtitle, value: $0.displayValue)}) ?? []
+            var displayItems: [Tier.TierDisplayItem] = []
+            allQuotesWithNameX?.forEach({
+                displayItems.append(contentsOf: $0.displayItems.map({ Tier.TierDisplayItem(title: $0.displayTitle, subTitle: $0.displaySubtitle, value: $0.displayValue)}))
+            })
             
             let FAQs: [FAQ] = [
                 .init(title: "question 1", description: "..."),
