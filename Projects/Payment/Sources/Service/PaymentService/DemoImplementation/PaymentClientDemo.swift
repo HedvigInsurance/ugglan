@@ -85,7 +85,7 @@ public class hPaymentClientDemo: hPaymentClient {
     public func getPaymentStatusData() async throws -> PaymentStatusData {
         try await Task.sleep(nanoseconds: 1_000_000_000)
         return PaymentStatusData(
-            status: .needsSetup,
+            status: .noNeedToConnect,
             displayName: "Connected bank",
             descriptor: "****1234"
         )
