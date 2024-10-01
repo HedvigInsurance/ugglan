@@ -61,7 +61,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
 public struct QuoteSummaryScreen: View {
     @ObservedObject var vm: QuoteSummaryViewModel
     private let showCoverageId = "showCoverageId"
-    @State var selectedContracts: [String] = [""]
+    @State var selectedContracts: [String] = []
     @State var spacingCoverage: CGFloat = 0
     @State var totalHeight: CGFloat = 0
     @State var selectedFAQ: [String] = [""]
