@@ -212,7 +212,9 @@ class ChangeTierViewModel: ObservableObject {
     var isValid: Bool {
         let selectedTierIsSameAsCurrent = currentTier?.name == selectedTier?.name
         let selectedDeductibleIsSameAsCurrent = currentDeductible == selectedDeductible
-        let hasSelectedValues = selectedTier != nil && selectedDeductible != nil
+        let isDeductibleValid = selectedDeductible != nil || selectedTier?.deductibles.isEmpty ?? false
+        let isTierValid = selectedTier != nil
+        let hasSelectedValues = isTierValid && isDeductibleValid
 
         return hasSelectedValues && !(selectedTierIsSameAsCurrent && selectedDeductibleIsSameAsCurrent)
     }
