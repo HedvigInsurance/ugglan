@@ -131,7 +131,8 @@ public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
         didSet {
             horizontalScrollView?.delegate = self
             horizontalScrollCancellable = horizontalScrollView?.publisher(for: \.contentOffset).removeDuplicates()
-                .sink(receiveValue: { [weak self] value in guard let self = self else { return }
+                .sink(receiveValue: { [weak self] value in
+                    guard let self = self else { return }
                     let allOffsets = self.getPagesOffset()
                     let titlePositions = self.titlesPositions.values.sorted(by: { $0.origin.x < $1.origin.x })
                     let sortedTitlePositions =

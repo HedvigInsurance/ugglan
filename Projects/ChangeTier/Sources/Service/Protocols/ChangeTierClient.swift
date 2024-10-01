@@ -2,7 +2,10 @@ import Foundation
 import hCore
 
 public protocol ChangeTierClient {
-    func getTier(contractId: String, tierSource: ChangeTierSource) async throws(ChangeTierError) -> ChangeTierIntentModel
+    func getTier(
+        contractId: String,
+        tierSource: ChangeTierSource
+    ) async throws(ChangeTierError) -> ChangeTierIntentModel
 }
 
 public enum ChangeTierError: Error {
