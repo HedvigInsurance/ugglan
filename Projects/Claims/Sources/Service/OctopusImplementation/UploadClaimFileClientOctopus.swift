@@ -49,6 +49,17 @@ extension NetworkClient: hClaimFileUploadClient {
                                 }
                             case .url(_):
                                 break
+                            case .data(let data):
+                                if MimeType.findBy(mimeType: file.element.mimeType).isImage,
+                                    let image = UIImage(data: data)
+                                {
+                                    let processor = DownsamplingImageProcessor(
+                                        size: CGSize(width: 300, height: 300)
+                                    )
+                                    var options = KingfisherParsedOptionsInfo.init(nil)
+                                    options.processor = processor
+                                    ImageCache.default.store(image, forKey: file.element.fileId, options: options)
+                                }
                             }
                         }
 

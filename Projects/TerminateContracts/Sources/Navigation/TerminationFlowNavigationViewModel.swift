@@ -19,6 +19,10 @@ class TerminationFlowNavigationViewModel: ObservableObject {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     NotificationCenter.default.post(name: .openDeepLink, object: url)
                 }
+            case .changeTierFoundBetterPrice:
+                break
+            case .changeTierMissingCoverageAndTerms:
+                break
             case .none:
                 break
             }
@@ -301,7 +305,10 @@ struct TerminationFlowNavigation: View {
             }
         )
         .navigationTitle(L10n.setTerminationDateText)
-        .embededInNavigation(options: [.navigationType(type: .large)])
+        .embededInNavigation(
+            options: [.navigationType(type: .large)],
+            tracking: TerminationFlowDetentActions.terminationDate
+        )
     }
 
     private func openProgressScreen() -> some View {
@@ -459,6 +466,18 @@ enum TerminationFlowActions: Hashable {
     case router(action: TerminationFlowRouterActions)
     case final(action: TerminationFlowFinalRouterActions)
 }
+
+enum TerminationFlowDetentActions: Hashable, TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .terminationDate:
+            return .init(describing: SetTerminationDate.self)
+        }
+    }
+
+    case terminationDate
+}
+
 extension TerminationFlowActions: TrackingViewNameProtocol {
     var nameForTracking: String {
         switch self {

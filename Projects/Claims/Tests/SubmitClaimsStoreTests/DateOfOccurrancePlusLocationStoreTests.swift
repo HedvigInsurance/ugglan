@@ -109,7 +109,7 @@ extension XCTestCase {
         if closure() {
             exc.fulfill()
         } else {
-            try! await Task.sleep(nanoseconds: 100_000_000)
+            try! await Task.sleep(nanoseconds: 50_000_000)
             Task {
                 await self.waitUntil(description: description, closure: closure)
                 if closure() {

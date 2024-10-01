@@ -40,7 +40,7 @@ public struct ProfileNavigation<Content: View>: View {
     }
 
     public var body: some View {
-        RouterHost(router: profileNavigationViewModel.profileRouter) {
+        RouterHost(router: profileNavigationViewModel.profileRouter, tracking: ProfileDetentType.profile) {
             ProfileView()
                 .routerDestination(for: ProfileRouterType.self) { redirectType in
                     switch redirectType {
@@ -70,17 +70,7 @@ public struct ProfileNavigation<Content: View>: View {
         .detent(
             item: $profileNavigationViewModel.isDeleteAccountPresented,
             style: [.height],
-            options: .constant(.withoutGrabber),
-            tracking: ProfileRedirectType.deleteAccount(
-                memberDetails: .init(
-                    id: "",
-                    firstName: "",
-                    lastName: "",
-                    phone: "",
-                    email: "",
-                    hasTravelCertificate: false
-                )
-            )
+            options: .constant(.withoutGrabber)
         ) { memberDetails in
             redirect(
                 .deleteAccount(
@@ -91,11 +81,13 @@ public struct ProfileNavigation<Content: View>: View {
         .detent(
             presented: $profileNavigationViewModel.isLanguagePickerPresented,
             style: [.height],
-            tracking: ProfileRedirectType.pickLanguage,
             content: {
                 redirect(.pickLanguage)
                     .configureTitle(L10n.MarketLanguageScreen.chooseLanguageLabel)
-                    .embededInNavigation(options: .navigationType(type: .large))
+                    .embededInNavigation(
+                        options: .navigationType(type: .large),
+                        tracking: ProfileDetentType.languagePicker
+                    )
             }
         )
         .modally(
@@ -112,6 +104,19 @@ public enum ProfileRouterType: Hashable {
     case appInfo
     case settings
     case euroBonus
+}
+private enum ProfileDetentType: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .profile:
+            return .init(describing: ProfileView.self)
+        case .languagePicker:
+            return .init(describing: LanguagePickerView.self)
+        }
+    }
+
+    case profile
+    case languagePicker
 }
 
 extension ProfileRouterType: TrackingViewNameProtocol {

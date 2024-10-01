@@ -6,7 +6,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct CoInusuredInput: View {
+struct CoInusuredInputScreen: View {
     @ObservedObject var insuredPeopleVm: InsuredPeopleNewScreenModel
     @ObservedObject var intentVm: IntentViewModel
     @PresentableStore var store: EditCoInsuredStore
@@ -424,7 +424,7 @@ struct CoInusuredInput: View {
 
 struct CoInusuredInput_Previews: PreviewProvider {
     static var previews: some View {
-        CoInusuredInput(
+        CoInusuredInputScreen(
             vm: .init(coInsuredModel: CoInsuredModel(), actionType: .add, contractId: ""),
             title: "title"
         )

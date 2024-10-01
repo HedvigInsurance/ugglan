@@ -16,7 +16,7 @@ public struct ClaimsJourneyMain: View {
     @State var shouldHideHonestyPledge = false
 
     public var body: some View {
-        RouterHost(router: claimsRouter) {
+        RouterHost(router: claimsRouter, tracking: self) {
             honestyPledge(from: from)
                 .onDisappear {
                     let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
@@ -63,4 +63,12 @@ public struct ClaimsJourneyMain: View {
             }
         })
     }
+}
+
+extension ClaimsJourneyMain: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        return .init(describing: HonestyPledge.self)
+
+    }
+
 }

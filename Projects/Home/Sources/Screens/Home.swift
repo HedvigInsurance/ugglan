@@ -36,6 +36,7 @@ extension HomeView {
         hForm {
             centralContent
         }
+        .hFormDontUseInitialAnimation
         .setHomeNavigationBars(
             with: $vm.toolbarOptionTypes,
             and: "HomeView",

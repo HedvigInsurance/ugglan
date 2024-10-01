@@ -28,6 +28,7 @@ public class FeatureFlagsUnleash: FeatureFlags {
     public var isSubmitClaimEnabled: Bool = true
     public var osVersionTooLow: Bool = false
     public var emailPreferencesEnabled: Bool = false
+    public var isTiersEnabled: Bool = false
     public func setup(with context: [String: String], onComplete: @escaping (_ success: Bool) -> Void) {
         unleashClient?.unsubscribe(name: "ready")
         unleashClient?.unsubscribe(name: "update")
@@ -134,6 +135,10 @@ public class FeatureFlagsUnleash: FeatureFlags {
         let helpCenterKey = "help_center"
         isHelpCenterEnabled = unleashClient.isEnabled(name: helpCenterKey)
         featureFlags[helpCenterKey] = isHelpCenterEnabled
+
+        let enableTiersKey = "enable_tiers"
+        isTiersEnabled = unleashClient.isEnabled(name: enableTiersKey)
+        featureFlags[enableTiersKey] = isTiersEnabled
 
         let paymentTypeKey = "payment_type"
         let paymentTypeName = unleashClient.getVariant(name: paymentTypeKey).name

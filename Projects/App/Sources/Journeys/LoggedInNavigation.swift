@@ -249,13 +249,14 @@ struct HomeTab: View {
                 }
             )
             .routerDestination(for: ClaimModel.self, options: [.hidesBottomBarWhenPushed]) { claim in
-                ClaimDetailView(claim: claim)
+                ClaimDetailView(claim: claim, fromChat: false)
                     .environmentObject(homeNavigationVm)
                     .configureTitle(L10n.claimsYourClaim)
             }
             .routerDestination(for: String.self) { conversation in
                 InboxView()
                     .configureTitle(L10n.chatConversationInbox)
+                    .environmentObject(homeNavigationVm)
             }
         }
         .environmentObject(homeNavigationVm)
@@ -326,7 +327,10 @@ struct HomeTab: View {
                     )
                     .configureTitle(model?.id.title ?? "")
                     .withDismissButton()
-                    .embededInNavigation(options: .navigationType(type: .large))
+                    .embededInNavigation(
+                        options: .navigationType(type: .large),
+                        tracking: LoggedInNavigationDetentType.submitClaimDeflect
+                    )
                 }
             }
             .handleEditCoInsured(with: loggedInVm.helpCenterVm.editCoInsuredVm)
@@ -340,14 +344,20 @@ struct HomeTab: View {
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
                 .configureTitle(QuickAction.firstVet(partners: []).displayTitle)
                 .withDismissButton()
-                .embededInNavigation(options: .navigationType(type: .large))
+                .embededInNavigation(
+                    options: .navigationType(type: .large),
+                    tracking: LoggedInNavigationDetentType.firstVet
+                )
         }
         .detent(
             presented: $homeNavigationVm.navBarItems.isNewOfferPresented,
             style: [.height]
         ) {
             CrossSellingScreen()
-                .embededInNavigation(options: .navigationType(type: .large))
+                .embededInNavigation(
+                    options: .navigationType(type: .large),
+                    tracking: LoggedInNavigationDetentType.crossSelling
+                )
         }
         .detent(
             item: $homeNavigationVm.openChat,
@@ -355,18 +365,46 @@ struct HomeTab: View {
             options: $homeNavigationVm.openChatOptions,
             content: { openChat in
                 ChatNavigation(
-                    chatType: openChat.chatType
-                ) { type, onDone in
-                    AskForPushNotifications(
-                        text: L10n.chatActivateNotificationsBody,
-                        onActionExecuted: {
-                            onDone()
+                    chatType: openChat.chatType,
+                    redirectView: { viewType, onDone in
+                        switch viewType {
+                        case .notification:
+                            AskForPushNotifications(
+                                text: L10n.chatActivateNotificationsBody,
+                                onActionExecuted: {
+                                    onDone()
+                                }
+                            )
+                        case let .claimDetail(id):
+                            let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
+                            if let claim = claimStore.state.claim(for: id) {
+                                ClaimDetailView(claim: claim, fromChat: true)
+                                    .configureTitle(L10n.claimsYourClaim)
+
+                            }
                         }
-                    )
-                }
+                    }
+                )
             }
         )
     }
+}
+
+private enum LoggedInNavigationDetentType: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .submitClaimDeflect:
+            return .init(describing: SubmitClaimDeflectScreen.self)
+        case .firstVet:
+            return .init(describing: FirstVetView.self)
+        case .crossSelling:
+            return .init(describing: CrossSellingScreen.self)
+        }
+    }
+
+    case submitClaimDeflect
+    case firstVet
+    case crossSelling
 }
 
 class LoggedInNavigationViewModel: ObservableObject {

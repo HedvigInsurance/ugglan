@@ -92,7 +92,7 @@ public struct ChatScreen: View {
                 Spacer()
             }
             VStack(alignment: message.sender == .hedvig ? .leading : .trailing, spacing: 4) {
-                MessageView(message: message, conversationStatus: conversationStatus)
+                MessageView(message: message, conversationStatus: conversationStatus, vm: vm)
                     .frame(
                         maxWidth: 300,
                         alignment: message.sender == .member ? .trailing : .leading

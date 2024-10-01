@@ -103,7 +103,6 @@ final class SummaryStoreTests: XCTestCase {
         )
 
         await store.sendAsync(.summaryRequest)
-
         await waitUntil(description: "loading state") {
             if case .error = store.loadingState[.postSummary] { return true } else { return false }
         }

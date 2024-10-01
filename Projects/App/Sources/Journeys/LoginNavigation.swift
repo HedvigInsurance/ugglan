@@ -15,15 +15,15 @@ struct LoginNavigation: View {
     @StateObject private var router = Router()
     @StateObject private var otpState = OTPState()
     var body: some View {
-        RouterHost(router: router, options: .navigationBarHidden) {
+        RouterHost(router: router, options: .navigationBarHidden, tracking: LoginDetentType.notLoggedIn) {
             NotLoggedInView(vm: vm)
         }
         .detent(presented: $vm.showLanguagePicker, style: [.height]) {
             LanguagePickerView()
                 .navigationTitle(L10n.loginLanguagePreferences)
-                .embededInNavigation()
+                .embededInNavigation(tracking: LoginDetentType.languagePicker)
         }
-        .detent(presented: $vm.showLogin, style: [.large], tracking: Localization.Locale.currentLocale.value.code) {
+        .detent(presented: $vm.showLogin, style: [.large]) {
             Group {
                 BankIDLoginQRView {
                     let store: UgglanStore = globalPresentableStoreContainer.get()
@@ -47,9 +47,23 @@ struct LoginNavigation: View {
                     LoginErrorView(message: message)
                 }
             }
-            .embededInNavigation()
+            .embededInNavigation(tracking: Localization.Locale.currentLocale.value.code)
         }
     }
+}
+
+private enum LoginDetentType: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .notLoggedIn:
+            return .init(describing: NotLoggedInView.self)
+        case .languagePicker:
+            return .init(describing: LanguagePickerView.self)
+        }
+    }
+
+    case notLoggedIn
+    case languagePicker
 }
 
 public struct NotLoggedInView: View {

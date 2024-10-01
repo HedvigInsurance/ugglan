@@ -25,7 +25,7 @@ public struct PaymentsNavigation<Content: View>: View {
     }
 
     public var body: some View {
-        RouterHost(router: router) {
+        RouterHost(router: router, tracking: PaymentsDetentActions.paymentsView) {
             PaymentsView()
                 .configureTitle(L10n.myPaymentTitle)
                 .routerDestination(for: PaymentData.self) { paymentData in
@@ -62,19 +62,42 @@ public struct PaymentsNavigation<Content: View>: View {
             presented: $paymentsNavigationVm.isAddCampaignPresented,
             style: [.height]
         ) {
-            AddCampaingCodeView()
+            AddCampaignCodeView()
                 .configureTitle(L10n.paymentsAddCampaignCode)
-                .embededInNavigation(options: .navigationType(type: .large))
+                .embededInNavigation(
+                    options: .navigationType(type: .large),
+                    tracking: PaymentsDetentActions.addCampaign
+                )
         }
         .detent(
             item: $paymentsNavigationVm.isDeleteCampaignPresented,
             style: [.height]
         ) { discount in
             DeleteCampaignView(vm: .init(discount: discount))
-                .embededInNavigation(options: .navigationType(type: .large))
+                .embededInNavigation(
+                    options: .navigationType(type: .large),
+                    tracking: PaymentsDetentActions.deleteCampaign
+                )
         }
         .handleConnectPayment(with: paymentsNavigationVm.connectPaymentVm)
     }
+}
+
+private enum PaymentsDetentActions: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .paymentsView:
+            return .init(describing: PaymentsView.self)
+        case .addCampaign:
+            return .init(describing: AddCampaignCodeView.self)
+        case .deleteCampaign:
+            return .init(describing: DeleteCampaignView.self)
+        }
+    }
+
+    case paymentsView
+    case addCampaign
+    case deleteCampaign
 }
 
 public enum PaymentsRouterAction: Hashable {

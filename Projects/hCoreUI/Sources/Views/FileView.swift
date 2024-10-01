@@ -23,6 +23,14 @@ public struct FileView: View {
                     imageFromLocalFile(url: thumbnailUrl ?? imageUrl)
                 case .url(let url):
                     imageFromRemote(url: url)
+                case let .data(data):
+                    if let image = UIImage(data: data) {
+                        Image(uiImage: image)
+                            .resizable()
+                            .aspectRatio(
+                                contentMode: .fill
+                            )
+                    }
                 }
             } else {
                 GeometryReader { geometry in
