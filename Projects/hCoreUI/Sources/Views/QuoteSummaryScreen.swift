@@ -183,7 +183,7 @@ public struct QuoteSummaryScreen: View {
             VStack(alignment: .leading, spacing: 0) {
                 hText(L10n.changeAddressDetails)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                ForEach(contract.displayItems) { item in
+                ForEach(contract.displayItems, id: \.displayTitle) { item in
                     rowItem(for: item)
                 }
             }

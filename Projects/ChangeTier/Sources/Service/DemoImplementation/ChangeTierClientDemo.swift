@@ -202,7 +202,9 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     typeOfContract: "",
                     partner: "",
                     perils: [],
-                    insurableLimits: [],
+                    insurableLimits: [
+                        .init(label: "label", limit: "limit", description: "description")
+                    ],
                     documents: [],
                     displayName: "",
                     displayNameTier: "",
