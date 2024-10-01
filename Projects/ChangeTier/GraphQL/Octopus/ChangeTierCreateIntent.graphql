@@ -2,6 +2,8 @@ mutation ChangeTierDeductibleCreateIntent($input: ChangeTierDeductibleCreateInte
   changeTierDeductibleCreateIntent(input: $input) {
     intent {
       activationDate
+      currentTierLevel
+      currentTierName
       quotes {
         id
         tierName
