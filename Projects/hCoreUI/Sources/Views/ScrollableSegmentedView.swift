@@ -3,19 +3,18 @@ import PresentableStore
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore
-import hCoreUI
 
-struct ScrollableSegmentedView<Content: View>: View {
+public struct ScrollableSegmentedView<Content: View>: View {
     @ObservedObject var vm: ScrollableSegmentedViewModel
     @ViewBuilder var contentFor: (_ id: String) -> Content
-    init(
+    public init(
         vm: ScrollableSegmentedViewModel,
         contentFor: @escaping (_ id: String) -> Content
     ) {
         self.vm = vm
         self.contentFor = contentFor
     }
-    var body: some View {
+    public var body: some View {
         VStack(spacing: .padding16) {
             headerControl
             scrollableContent
@@ -115,7 +114,7 @@ struct ScrollableSegmentedView<Content: View>: View {
     }
 }
 
-class ScrollableSegmentedViewModel: NSObject, ObservableObject {
+public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
     let pageModels: [PageModel]
     var heights: [String: CGFloat] = [:]
     var titlesPositions: [String: CGRect] = [:]
@@ -132,7 +131,8 @@ class ScrollableSegmentedViewModel: NSObject, ObservableObject {
         didSet {
             horizontalScrollView?.delegate = self
             horizontalScrollCancellable = horizontalScrollView?.publisher(for: \.contentOffset).removeDuplicates()
-                .sink(receiveValue: { [weak self] value in guard let self = self else { return }
+                .sink(receiveValue: { [weak self] value in
+                    guard let self = self else { return }
                     let allOffsets = self.getPagesOffset()
                     let titlePositions = self.titlesPositions.values.sorted(by: { $0.origin.x < $1.origin.x })
                     let sortedTitlePositions =
@@ -222,20 +222,20 @@ class ScrollableSegmentedViewModel: NSObject, ObservableObject {
     func scrollTo(offset: CGFloat) {
         horizontalScrollView?.scrollRectToVisible(.init(x: offset, y: 1, width: viewWidth, height: 1), animated: true)
     }
-    init(pageModels: [PageModel]) {
+    public init(pageModels: [PageModel]) {
         self.currentId = pageModels.first?.id ?? ""
         self.pageModels = pageModels
     }
 }
 
 extension ScrollableSegmentedViewModel: UIScrollViewDelegate {
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+    public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
             scrollToNearestWith(offset: scrollView.contentOffset.x)
         }
     }
 
-    func scrollViewWillEndDragging(
+    public func scrollViewWillEndDragging(
         _ scrollView: UIScrollView,
         withVelocity velocity: CGPoint,
         targetContentOffset: UnsafeMutablePointer<CGPoint>
@@ -265,58 +265,22 @@ extension ScrollableSegmentedViewModel: UIScrollViewDelegate {
         }
     }
 
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+    public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         currentHeight = heights.values.max(by: { $1 > $0 }) ?? 0
     }
 }
 
-struct PageModel: Identifiable {
-    let id: String
+public struct PageModel: Identifiable {
+    public let id: String
     let title: String
-}
 
-#Preview{
-    let store: ContractStore = globalPresentableStoreContainer.get()
-
-    let fetchContractsService = FetchContractsClientDemo()
-    Dependencies.shared.add(module: Module { () -> FetchContractsClient in fetchContractsService })
-
-    let featureFlags = FeatureFlagsDemo()
-    Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlags })
-
-    store.send(.fetchContracts)
-    return VStack {
-        ScrollableSegmentedView(
-            vm: .init(
-                pageModels: [
-                    .init(
-                        id: "id1",
-                        title: "title1"
-                    ),
-                    .init(
-                        id: "id2",
-                        title: "title2"
-                    ),
-                    .init(
-                        id: "id3",
-                        title: "title3"
-                    ),
-                ]
-            )
-        ) { id in
-            Group {
-                if id == "id1" {
-                    ContractInformationView(id: "contractId")
-                } else if id == "id2" {
-                    ContractCoverageView(id: "contractId")
-                } else {
-                    ContractDocumentsView(id: "contractId")
-                }
-
-            }
-        }
+    public init(
+        id: String,
+        title: String
+    ) {
+        self.id = id
+        self.title = title
     }
-    .padding(.horizontal, 10)
 }
 
 extension View {

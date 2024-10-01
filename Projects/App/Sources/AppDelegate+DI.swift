@@ -1,5 +1,6 @@
 import Apollo
 import Authentication
+import ChangeTier
 import Chat
 import Claims
 import Contracts
@@ -38,6 +39,7 @@ extension ApolloClient {
             let submitClaimDemoService = SubmitClaimClientDemo()
             let conversationsClient = ConversationsDemoClient()
             let conversationClient = ConversationDemoClient()
+            let changeTierClient = ChangeTierClientDemo()
             let adyenClient = AdyenClientDemo()
             Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlags })
             Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentService })
@@ -52,6 +54,7 @@ extension ApolloClient {
             Dependencies.shared.add(module: Module { () -> SubmitClaimClient in submitClaimDemoService })
             Dependencies.shared.add(module: Module { () -> ConversationsClient in conversationsClient })
             Dependencies.shared.add(module: Module { () -> ConversationClient in conversationClient })
+            Dependencies.shared.add(module: Module { () -> ChangeTierClient in changeTierClient })
             Dependencies.shared.add(module: Module { () -> AdyenClient in adyenClient })
         } else {
             let paymentService = hPaymentClientOctopus()
@@ -74,6 +77,7 @@ extension ApolloClient {
             let submitClaimService = SubmitClaimClientOctopus()
             let conversationClient = ConversationClientOctopus()
             let conversationsClient = ConversationsClientOctopus()
+            let changeTierClient = ChangeTierClientOctopus()
             switch Environment.current {
             case .staging:
                 Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlagsUnleash })
@@ -101,6 +105,7 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> SubmitClaimClient in submitClaimService })
                 Dependencies.shared.add(module: Module { () -> ConversationClient in conversationClient })
                 Dependencies.shared.add(module: Module { () -> ConversationsClient in conversationsClient })
+                Dependencies.shared.add(module: Module { () -> ChangeTierClient in changeTierClient })
             case .production, .custom:
                 Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlagsUnleash })
                 Dependencies.shared.add(module: Module { () -> TravelInsuranceClient in travelInsuranceService })
@@ -127,7 +132,7 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> SubmitClaimClient in submitClaimService })
                 Dependencies.shared.add(module: Module { () -> ConversationClient in conversationClient })
                 Dependencies.shared.add(module: Module { () -> ConversationsClient in conversationsClient })
-
+                Dependencies.shared.add(module: Module { () -> ChangeTierClient in changeTierClient })
             }
         }
     }

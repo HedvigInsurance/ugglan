@@ -6,6 +6,7 @@ import SwiftUI
 import TerminateContracts
 import hCore
 import hCoreUI
+import hGraphQL
 
 public struct ContractsNavigation<Content: View>: View {
     @ObservedObject var contractsNavigationVm: ContractsNavigationViewModel

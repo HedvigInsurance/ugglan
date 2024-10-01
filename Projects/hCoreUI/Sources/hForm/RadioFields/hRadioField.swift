@@ -58,12 +58,11 @@ public struct hRadioField: View {
                 leftView
             },
             cellView: {
-                AnyView(
-                    hRadioOptionSelectedView(
-                        selectedValue: $selected,
-                        value: id
-                    )
+                hRadioOptionSelectedView(
+                    selectedValue: $selected,
+                    value: id
                 )
+                .asAnyView
             }
         )
     }

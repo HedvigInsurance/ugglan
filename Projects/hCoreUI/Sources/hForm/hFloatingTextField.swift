@@ -328,6 +328,23 @@ extension View {
     }
 }
 
+private struct EnvironmentHWithTransparentBackgroundColor: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    public var hWithTransparentColor: Bool {
+        get { self[EnvironmentHWithTransparentBackgroundColor.self] }
+        set { self[EnvironmentHWithTransparentBackgroundColor.self] = newValue }
+    }
+}
+
+extension View {
+    public var hWithTransparentColor: some View {
+        self.environment(\.hWithTransparentColor, true)
+    }
+}
+
 private struct EnvironmentHFieldSize: EnvironmentKey {
     static let defaultValue: hFieldSize = .large
 }
