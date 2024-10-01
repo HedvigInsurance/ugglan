@@ -35,7 +35,6 @@ public class ChangeTierClientDemo: ChangeTierClient {
         ]
         
         return .init(
-            id: "id",
             activationDate: Date(),
             tiers: [
                 .init(

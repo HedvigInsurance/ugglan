@@ -53,7 +53,6 @@ public class ChangeTierClientOctopus: ChangeTierClient {
             let currentTier: Tier? = filteredTiers.first(where: { $0.name == currentDisplayNameTier })
             
             let intentModel: ChangeTierIntentModel = .init(
-                id: "",
                 activationDate: intent?.activationDate.localDateToDate ?? Date(),
                 tiers: filteredTiers,
                 currentPremium: .init(

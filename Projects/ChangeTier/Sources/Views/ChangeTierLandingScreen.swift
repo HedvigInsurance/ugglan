@@ -188,7 +188,6 @@ class ChangeTierViewModel: ObservableObject {
     private(set) var tiers: [Tier] = []
     private var contractId: String
     private var changeTierSource: ChangeTierSource
-    @Published var quoteId: String = ""
 
     @Published var currentPremium: MonetaryAmount?
     var currentTier: Tier?
@@ -275,9 +274,11 @@ class ChangeTierViewModel: ObservableObject {
     public func commitTier() {
         Task { @MainActor in
             do {
-                try await service.commitTier(
-                    quoteId: quoteId
-                )
+                if let id = selectedTier?.id {
+                    try await service.commitTier(
+                        quoteId: id
+                    )
+                }
             }
         }
     }

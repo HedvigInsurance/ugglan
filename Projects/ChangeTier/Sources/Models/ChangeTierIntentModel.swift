@@ -4,7 +4,6 @@ import hCoreUI
 import hGraphQL
 
 public struct ChangeTierIntentModel: Codable, Equatable, Hashable {
-    let id: String
     let activationDate: Date
     let tiers: [Tier]
     let currentPremium: MonetaryAmount
