@@ -290,7 +290,7 @@ class ChangeTierViewModel: ObservableObject {
     }
 }
 
-#Preview{
+#Preview {
     Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientOctopus() })
     return ChangeTierLandingScreen(vm: .init(contractId: "contractId", changeTierSource: .changeTier))
 }
