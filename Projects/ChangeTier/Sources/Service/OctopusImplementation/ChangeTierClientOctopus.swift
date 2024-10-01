@@ -99,14 +99,19 @@ public class ChangeTierClientOctopus: ChangeTierClient {
         /* filter tiers and deductibles*/
         uniqueTierNames.forEach({ tierName in
             let allQuotesWithNameX = intent?.quotes.filter({ $0.tierName == tierName })
-            let allDeductiblesForX: [Deductible] = allQuotesWithNameX?.map({ quote in
-                    return .init(
-                        deductibleAmount: .init(optionalFragment: quote.deductible?.amount.fragments.moneyFragment),
+            var allDeductiblesForX: [Deductible] = []
+            
+            allQuotesWithNameX?.forEach({ quote in
+                if let deductableAmount = quote.deductible?.amount {
+                    let deductible = Deductible(
+                        deductibleAmount: .init(fragment: deductableAmount.fragments.moneyFragment),
                         deductiblePercentage: quote.deductible?.percentage,
                         subTitle: quote.deductible?.displayText,
                         premium: .init(optionalFragment: allQuotesWithNameX?.first?.premium.fragments.moneyFragment)
                     )
-            }) ?? []
+                    allDeductiblesForX.append(deductible)
+                }
+            })
             
             var displayItems: [Tier.TierDisplayItem] = []
             allQuotesWithNameX?.forEach({
