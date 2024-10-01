@@ -115,11 +115,11 @@ public struct QuoteSummaryScreen: View {
 
     var scrollSection: some View {
         VStack(spacing: 0) {
-            //            ForEach(vm.contracts, id: \.id) { contract in
-            //                coverageView(for: contract)
-            //            }
-            //            .padding(.top, .padding16)
-            //            .id(showCoverageId)
+            ForEach(vm.contracts, id: \.id) { contract in
+                coverageView(for: contract)
+            }
+            .padding(.top, .padding16)
+            .id(showCoverageId)
             faqsComponent(for: vm.FAQModel.questions)
             chatComponent
         }
