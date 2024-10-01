@@ -29,7 +29,7 @@ extension ChangeTierRouterActions: TrackingViewNameProtocol {
     var nameForTracking: String {
         switch self {
         case .summary:
-            return "Change tier summary"
+            return .init(describing: ChangeTierSummaryScreen.self)
         }
     }
 }
@@ -67,7 +67,7 @@ public struct ChangeTierNavigation: View {
                     switch action {
                     case .summary:
                         ChangeTierSummaryScreen(changeTierVm: changeTierNavigationVm.vm)
-                            .configureTitle("Summary")
+                            .configureTitle(L10n.offerUpdateSummaryTitle)
                     }
                 }
         }
