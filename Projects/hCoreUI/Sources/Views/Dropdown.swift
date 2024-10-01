@@ -44,6 +44,6 @@ public struct DropdownView: View {
     }
 }
 
-#Preview{
+#Preview {
     DropdownView(value: "value", placeHolder: "placeholder", onTap: {})
 }
