@@ -53,7 +53,6 @@ public class ChangeTierClientOctopus: ChangeTierClient {
             let currentTier: Tier? = filteredTiers.first(where: { $0.name == currentDisplayNameTier })
             
             let intentModel: ChangeTierIntentModel = .init(
-                id: "",
                 activationDate: intent?.activationDate.localDateToDate ?? Date(),
                 tiers: filteredTiers,
                 currentPremium: .init(
@@ -100,16 +99,24 @@ public class ChangeTierClientOctopus: ChangeTierClient {
         /* filter tiers and deductibles*/
         uniqueTierNames.forEach({ tierName in
             let allQuotesWithNameX = intent?.quotes.filter({ $0.tierName == tierName })
-            let allDeductiblesForX: [Deductible] = allQuotesWithNameX?.map({ quote in
-                    return .init(
-                        deductibleAmount: .init(optionalFragment: quote.deductible?.amount.fragments.moneyFragment),
+            var allDeductiblesForX: [Deductible] = []
+            
+            allQuotesWithNameX?.forEach({ quote in
+                if let deductableAmount = quote.deductible?.amount {
+                    let deductible = Deductible(
+                        deductibleAmount: .init(fragment: deductableAmount.fragments.moneyFragment),
                         deductiblePercentage: quote.deductible?.percentage,
                         subTitle: quote.deductible?.displayText,
                         premium: .init(optionalFragment: allQuotesWithNameX?.first?.premium.fragments.moneyFragment)
                     )
-            }) ?? []
+                    allDeductiblesForX.append(deductible)
+                }
+            })
             
-            let displayItems: [Tier.TierDisplayItem] = allQuotesWithNameX?.first?.displayItems.map({ .init(title: $0.displayTitle, subTitle: $0.displaySubtitle, value: $0.displayValue)}) ?? []
+            var displayItems: [Tier.TierDisplayItem] = []
+            allQuotesWithNameX?.forEach({
+                displayItems.append(contentsOf: $0.displayItems.map({ Tier.TierDisplayItem(title: $0.displayTitle, subTitle: $0.displaySubtitle, value: $0.displayValue)}))
+            })
             
             let FAQs: [FAQ] = [
                 .init(title: "question 1", description: "..."),

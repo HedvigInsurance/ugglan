@@ -35,7 +35,6 @@ public class ChangeTierClientDemo: ChangeTierClient {
         ]
         
         return .init(
-            id: "id",
             activationDate: Date(),
             tiers: [
                 .init(
@@ -203,7 +202,9 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     typeOfContract: "",
                     partner: "",
                     perils: [],
-                    insurableLimits: [],
+                    insurableLimits: [
+                        .init(label: "label", limit: "limit", description: "description")
+                    ],
                     documents: [],
                     displayName: "",
                     displayNameTier: "",

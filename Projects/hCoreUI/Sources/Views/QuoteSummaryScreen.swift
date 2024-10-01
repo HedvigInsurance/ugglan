@@ -61,7 +61,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
 public struct QuoteSummaryScreen: View {
     @ObservedObject var vm: QuoteSummaryViewModel
     private let showCoverageId = "showCoverageId"
-    @State var selectedContracts: [String] = [""]
+    @State var selectedContracts: [String] = []
     @State var spacingCoverage: CGFloat = 0
     @State var totalHeight: CGFloat = 0
     @State var selectedFAQ: [String] = [""]
@@ -183,7 +183,7 @@ public struct QuoteSummaryScreen: View {
             VStack(alignment: .leading, spacing: 0) {
                 hText(L10n.changeAddressDetails)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                ForEach(contract.displayItems) { item in
+                ForEach(contract.displayItems, id: \.displayTitle) { item in
                     rowItem(for: item)
                 }
             }

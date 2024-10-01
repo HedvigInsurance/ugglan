@@ -36,8 +36,8 @@ public struct InsurableLimitsSectionView: View {
                             .onTapGesture {
                                 didTap(limit)
                             }
-
                     }
+                    .fixedSize(horizontal: false, vertical: true)
                 }
 
             }
@@ -55,6 +55,11 @@ struct InsurableLimitsSectionView_Previews: PreviewProvider {
         let limits: [InsurableLimits] = [
             .init(label: "TITLE", limit: "LIMIT", description: "DESCRIPTION"),
             .init(label: "VERY LONG TITLE TITLE", limit: "VERY LONG LIMIT LIMIT LIMIT", description: "DESCRIPTION"),
+            .init(
+                label: "VERY VERY VERY VERY VERY LONG TITLE TITLE",
+                limit: "VERY LONG LIMIT LIMIT LIMIT",
+                description: "DESCRIPTION"
+            ),
         ]
 
         return VStack {
