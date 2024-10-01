@@ -231,26 +231,6 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable {
         case seCatBasic = "SE_CAT_BASIC"
         case seCatStandard = "SE_CAT_STANDARD"
         case seCatPremium = "SE_CAT_PREMIUM"
-        case noHouse = "NO_HOUSE"
-        case noHomeContentOwn = "NO_HOME_CONTENT_OWN"
-        case noHomeContentRent = "NO_HOME_CONTENT_RENT"
-        case noHomeContentYouthOwn = "NO_HOME_CONTENT_YOUTH_OWN"
-        case noHomeContentYouthRent = "NO_HOME_CONTENT_YOUTH_RENT"
-        case noHomeContentStudentOwn = "NO_HOME_CONTENT_STUDENT_OWN"
-        case noHomeContentStudentRent = "NO_HOME_CONTENT_STUDENT_RENT"
-        case noTravel = "NO_TRAVEL"
-        case noTravelYouth = "NO_TRAVEL_YOUTH"
-        case noTravelStudent = "NO_TRAVEL_STUDENT"
-        case noAccident = "NO_ACCIDENT"
-        case dkHomeContentOwn = "DK_HOME_CONTENT_OWN"
-        case dkHomeContentRent = "DK_HOME_CONTENT_RENT"
-        case dkHomeContentStudentOwn = "DK_HOME_CONTENT_STUDENT_OWN"
-        case dkHomeContentStudentRent = "DK_HOME_CONTENT_STUDENT_RENT"
-        case dkHouse = "DK_HOUSE"
-        case dkAccident = "DK_ACCIDENT"
-        case dkAccidentStudent = "DK_ACCIDENT_STUDENT"
-        case dkTravel = "DK_TRAVEL"
-        case dkTravelStudent = "DK_TRAVEL_STUDENT"
         case unknown = "UNKNOWN"
 
         static func resolve(for typeOfContract: String) -> Self {
@@ -324,46 +304,6 @@ extension Contract.TypeOfContract {
             return .cat
         case .seCatPremium:
             return .cat
-        case .noHouse:
-            return .villa
-        case .noHomeContentOwn:
-            return .homeOwner
-        case .noHomeContentRent:
-            return .rental
-        case .noHomeContentYouthOwn:
-            return .homeOwner
-        case .noHomeContentYouthRent:
-            return .rental
-        case .noHomeContentStudentOwn:
-            return .student
-        case .noHomeContentStudentRent:
-            return .student
-        case .noTravel:
-            return .travel
-        case .noTravelYouth:
-            return .travel
-        case .noTravelStudent:
-            return .travel
-        case .noAccident:
-            return .accident
-        case .dkHomeContentOwn:
-            return .homeOwner
-        case .dkHomeContentRent:
-            return .rental
-        case .dkHomeContentStudentOwn:
-            return .homeOwner
-        case .dkHomeContentStudentRent:
-            return .rental
-        case .dkHouse:
-            return .villa
-        case .dkAccident:
-            return .accident
-        case .dkAccidentStudent:
-            return .accident
-        case .dkTravel:
-            return .travel
-        case .dkTravelStudent:
-            return .travel
         case .unknown:
             return .unknown
         }
@@ -433,46 +373,6 @@ extension Contract.TypeOfContract {
         case .seCatStandard:
             return false
         case .seCatPremium:
-            return false
-        case .noHouse:
-            return false
-        case .noHomeContentOwn:
-            return false
-        case .noHomeContentRent:
-            return false
-        case .noHomeContentYouthOwn:
-            return false
-        case .noHomeContentYouthRent:
-            return false
-        case .noHomeContentStudentOwn:
-            return false
-        case .noHomeContentStudentRent:
-            return false
-        case .noTravel:
-            return false
-        case .noTravelYouth:
-            return false
-        case .noTravelStudent:
-            return false
-        case .noAccident:
-            return false
-        case .dkHomeContentOwn:
-            return false
-        case .dkHomeContentRent:
-            return false
-        case .dkHomeContentStudentOwn:
-            return false
-        case .dkHomeContentStudentRent:
-            return false
-        case .dkHouse:
-            return false
-        case .dkAccident:
-            return false
-        case .dkAccidentStudent:
-            return false
-        case .dkTravel:
-            return false
-        case .dkTravelStudent:
             return false
         case .unknown:
             return false

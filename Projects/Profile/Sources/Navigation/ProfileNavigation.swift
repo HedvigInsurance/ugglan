@@ -111,7 +111,7 @@ private enum ProfileDetentType: TrackingViewNameProtocol {
         case .profile:
             return .init(describing: ProfileView.self)
         case .languagePicker:
-            return .init(describing: PickLanguage.self)
+            return .init(describing: LanguagePickerView.self)
         }
     }
 
@@ -151,8 +151,7 @@ extension ProfileRedirectType: TrackingViewNameProtocol {
         case .deleteRequestLoading:
             return .init(describing: DeleteRequestLoadingView.self)
         case .pickLanguage:
-            return .init(describing: PickLanguage.self)
+            return .init(describing: LanguagePickerView.self)
         }
     }
-
 }
