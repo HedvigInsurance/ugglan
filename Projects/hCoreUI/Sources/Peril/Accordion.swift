@@ -115,7 +115,7 @@ struct AccordionButtonStyle: SwiftUI.ButtonStyle {
     }
 }
 
-#Preview{
+#Preview {
     hSection {
         AccordionView(
             title: "Label",

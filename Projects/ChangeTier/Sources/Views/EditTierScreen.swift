@@ -93,6 +93,6 @@ extension EditTierScreen: TitleView {
     }
 }
 
-#Preview{
+#Preview {
     EditTierScreen(vm: .init(contractId: "contractId", changeTierSource: .changeTier))
 }

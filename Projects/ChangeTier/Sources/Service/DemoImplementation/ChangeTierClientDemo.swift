@@ -5,7 +5,10 @@ import hGraphQL
 public class ChangeTierClientDemo: ChangeTierClient {
     public init() {}
 
-    public func getTier(contractId: String, tierSource: ChangeTierSource) async throws(ChangeTierError) -> ChangeTierIntentModel {
+    public func getTier(
+        contractId: String,
+        tierSource: ChangeTierSource
+    ) async throws(ChangeTierError) -> ChangeTierIntentModel {
         return .init(
             id: "id",
             activationDate: Date(),

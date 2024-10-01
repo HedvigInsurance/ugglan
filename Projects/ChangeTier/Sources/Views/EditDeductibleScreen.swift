@@ -101,6 +101,6 @@ extension EditDeductibleScreen: TitleView {
     }
 }
 
-#Preview{
+#Preview {
     EditDeductibleScreen(vm: .init(contractId: "contractId", changeTierSource: .changeTier))
 }
