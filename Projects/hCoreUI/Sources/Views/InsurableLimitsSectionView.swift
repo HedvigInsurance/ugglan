@@ -24,7 +24,6 @@ public struct InsurableLimitsSectionView: View {
                     Spacer()
                     HStack(alignment: .top) {
                         hText(limit.limit)
-                            .fixedSize()
                             .foregroundColor(hTextColor.Opaque.secondary)
                         Image(uiImage: hCoreUIAssets.infoFilled.image)
                             .resizable()
@@ -34,10 +33,8 @@ public struct InsurableLimitsSectionView: View {
                             .onTapGesture {
                                 didTap(limit)
                             }
-
                     }
-                    .frame(maxHeight: .infinity, alignment: .top)
-                    .fixedSize()
+                    .fixedSize(horizontal: false, vertical: true)
                 }
             }
             .onTap {
@@ -54,6 +51,11 @@ struct InsurableLimitsSectionView_Previews: PreviewProvider {
         let limits: [InsurableLimits] = [
             .init(label: "TITLE", limit: "LIMIT", description: "DESCRIPTION"),
             .init(label: "VERY LONG TITLE TITLE", limit: "VERY LONG LIMIT LIMIT LIMIT", description: "DESCRIPTION"),
+            .init(
+                label: "VERY VERY VERY VERY VERY LONG TITLE TITLE",
+                limit: "VERY LONG LIMIT LIMIT LIMIT",
+                description: "DESCRIPTION"
+            ),
         ]
 
         return VStack {
