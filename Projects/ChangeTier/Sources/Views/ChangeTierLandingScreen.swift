@@ -201,7 +201,7 @@ class ChangeTierViewModel: ObservableObject {
     @Published var quoteId: String = ""
 
     @Published var currentPremium: MonetaryAmount?
-    private var currentTier: Tier?
+    var currentTier: Tier?
     private var currentDeductible: Deductible?
     var newPremium: MonetaryAmount?
     @Published var canEditTier: Bool = false
@@ -289,7 +289,7 @@ class ChangeTierViewModel: ObservableObject {
     }
 }
 
-#Preview {
+#Preview{
     Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientOctopus() })
     return ChangeTierLandingScreen(vm: .init(contractId: "contractId", changeTierSource: .changeTier))
 }
