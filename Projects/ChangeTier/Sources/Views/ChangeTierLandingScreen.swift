@@ -69,42 +69,10 @@ struct ChangeTierLandingScreen: View {
                 }
 
                 VStack(spacing: .padding4) {
-                    if !vm.canEditTier {
-                        hSection {
-                            VStack(alignment: .leading, spacing: .padding4) {
-                                hFloatingField(
-                                    value: vm.selectedTier?.name ?? "",
-                                    placeholder: L10n.tierFlowCoverageLabel
-                                ) {}
-                                .hFieldLockedState
-                                .hFieldTrailingView {
-                                    Image(uiImage: hCoreUIAssets.lock.image)
-                                        .foregroundColor(hTextColor.Opaque.secondary)
-                                }
-                                hText(L10n.tierFlowLockedInfoDescription, style: .label)
-                                    .foregroundColor(hTextColor.Translucent.secondary)
-                                    .padding(.leading, .padding16)
-                            }
-                        }
-                        .padding(.bottom, 8)
-                    } else {
-                        DropdownView(
-                            value: vm.selectedTier?.name ?? "",
-                            placeHolder: vm.selectedTier != nil
-                                ? L10n.tierFlowCoverageLabel : L10n.tierFlowCoveragePlaceholder
-                        ) {
-                            changeTierNavigationVm.isEditTierPresented = true
-                        }
+                    editTierView
+                    if vm.showDeductibleField {
+                        deductibleView
                     }
-
-                    DropdownView(
-                        value: vm.selectedDeductible?.deductibleAmount?.formattedAmount ?? "",
-                        placeHolder: vm.selectedDeductible != nil
-                            ? L10n.tierFlowDeductibleLabel : L10n.tierFlowDeductiblePlaceholder
-                    ) {
-                        changeTierNavigationVm.isEditDeductiblePresented = true
-                    }
-                    .disabled(vm.selectedTier == nil)
                 }
                 .hFieldSize(.small)
                 .hWithTransparentColor
@@ -132,6 +100,48 @@ struct ChangeTierLandingScreen: View {
                 }
             }
         }
+    }
+
+    @ViewBuilder
+    private var editTierView: some View {
+        if !vm.canEditTier {
+            hSection {
+                VStack(alignment: .leading, spacing: .padding4) {
+                    hFloatingField(
+                        value: vm.selectedTier?.name ?? "",
+                        placeholder: L10n.tierFlowCoverageLabel
+                    ) {}
+                    .hFieldLockedState
+                    .hFieldTrailingView {
+                        Image(uiImage: hCoreUIAssets.lock.image)
+                            .foregroundColor(hTextColor.Opaque.secondary)
+                    }
+                    hText(L10n.tierFlowLockedInfoDescription, style: .label)
+                        .foregroundColor(hTextColor.Translucent.secondary)
+                        .padding(.leading, .padding16)
+                }
+            }
+            .padding(.bottom, 8)
+        } else {
+            DropdownView(
+                value: vm.selectedTier?.name ?? "",
+                placeHolder: vm.selectedTier != nil
+                    ? L10n.tierFlowCoverageLabel : L10n.tierFlowCoveragePlaceholder
+            ) {
+                changeTierNavigationVm.isEditTierPresented = true
+            }
+        }
+    }
+
+    private var deductibleView: some View {
+        DropdownView(
+            value: vm.selectedDeductible?.deductibleAmount?.formattedAmount ?? "",
+            placeHolder: vm.selectedDeductible != nil
+                ? L10n.tierFlowDeductibleLabel : L10n.tierFlowDeductiblePlaceholder
+        ) {
+            changeTierNavigationVm.isEditDeductiblePresented = true
+        }
+        .disabled(vm.selectedTier == nil)
     }
 
     private var buttons: some View {
@@ -226,6 +236,10 @@ class ChangeTierViewModel: ObservableObject {
         let hasSelectedValues = selectedTier != nil && selectedDeductible != nil
 
         return hasSelectedValues && !(selectedTierIsSameAsCurrent && selectedDeductibleIsSameAsCurrent)
+    }
+
+    var showDeductibleField: Bool {
+        return !(selectedTier?.deductibles.isEmpty ?? true) && selectedTier != nil
     }
 
     init(
