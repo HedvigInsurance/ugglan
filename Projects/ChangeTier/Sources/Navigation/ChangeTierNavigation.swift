@@ -68,6 +68,7 @@ public struct ChangeTierNavigation: View {
                     case .summary:
                         ChangeTierSummaryScreen(changeTierVm: changeTierNavigationVm.vm)
                             .configureTitle(L10n.offerUpdateSummaryTitle)
+                            .withDismissButton()
                     }
                 }
         }

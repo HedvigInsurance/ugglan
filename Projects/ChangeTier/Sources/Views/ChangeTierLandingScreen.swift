@@ -191,6 +191,7 @@ enum ChangeTierViewState {
 }
 
 class ChangeTierViewModel: ObservableObject {
+    @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
     @Inject private var service: ChangeTierClient
     @Published var viewState: ChangeTierViewState = .loading
     @Published var displayName: String?
