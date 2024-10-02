@@ -34,6 +34,20 @@ extension ChangeTierRouterActions: TrackingViewNameProtocol {
     }
 }
 
+public struct ChangeTierInput: Equatable, Identifiable {
+    public var id: String {
+        contractId
+    }
+
+    public init(source: ChangeTierSource, contractId: String) {
+        self.source = source
+        self.contractId = contractId
+    }
+
+    let source: ChangeTierSource
+    let contractId: String
+}
+
 public enum ChangeTierSource {
     case changeTier
     case betterPrice
@@ -51,6 +65,17 @@ public struct ChangeTierNavigation: View {
             vm: .init(
                 contractId: contractId,
                 changeTierSource: changeTierSource
+            )
+        )
+    }
+
+    public init(
+        input: ChangeTierInput
+    ) {
+        self.changeTierNavigationVm = .init(
+            vm: .init(
+                contractId: input.contractId,
+                changeTierSource: input.source
             )
         )
     }

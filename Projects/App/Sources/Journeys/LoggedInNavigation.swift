@@ -74,6 +74,10 @@ struct LoggedInNavigation: View {
                 }
             case let .openFeedback(url):
                 vm.openUrl(url: url)
+            case .changeTierFoundBetterPrice:
+                break
+            case .changeTierMissingCoverageAndTerms:
+                break
             }
         }
         .modally(
@@ -106,8 +110,8 @@ struct LoggedInNavigation: View {
                 MovingFlowNavigation()
             case let .pdf(document):
                 PDFPreview(document: .init(url: document.url, title: document.title))
-            case let .changeTier(contractId):
-                ChangeTierNavigation(contractId: contractId, changeTierSource: .changeTier)
+            case let .changeTier(input):
+                ChangeTierNavigation(input: input)
             }
         } redirectAction: { action in
             switch action {
@@ -122,6 +126,10 @@ struct LoggedInNavigation: View {
                     NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                 case let .openFeedback(url):
                     vm.openUrl(url: url)
+                case let .changeTierFoundBetterPrice(contractId):
+                    vm.contractsNavigationVm.changeTierInput = .init(source: .betterPrice, contractId: contractId)
+                case let .changeTierMissingCoverageAndTerms(contractId):
+                    vm.contractsNavigationVm.changeTierInput = .init(source: .betterCoverage, contractId: contractId)
                 }
             }
         }
@@ -466,7 +474,8 @@ class LoggedInNavigationViewModel: ObservableObject {
             queue: nil
         ) {
             [weak self]
-            notification in guard let self = self else { return }
+            notification in
+            guard let self = self else { return }
             UIApplication.shared.appDelegate.registerForPushNotifications {}
         }
 

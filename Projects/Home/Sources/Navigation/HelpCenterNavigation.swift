@@ -151,6 +151,10 @@ public struct HelpCenterNavigation<Content: View>: View {
                         UIApplication.shared.open(url)
                     }
                 }
+            case .changeTierFoundBetterPrice:
+                break
+            case .changeTierMissingCoverageAndTerms:
+                break
             }
         }
         .environmentObject(helpCenterVm)
@@ -193,6 +197,6 @@ public enum HelpCenterRedirectType {
     case deflect
 }
 
-#Preview{
+#Preview {
     HelpCenterNavigation(helpCenterVm: .init(), redirect: { _ in })
 }
