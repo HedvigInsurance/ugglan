@@ -125,6 +125,7 @@ struct ChangeTierLandingScreen: View {
             ) {
                 changeTierNavigationVm.isEditTierPresented = true
             }
+            .colorScheme(.light)
         }
     }
 
