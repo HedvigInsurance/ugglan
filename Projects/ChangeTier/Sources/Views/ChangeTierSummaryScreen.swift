@@ -59,7 +59,7 @@ extension ChangeTierViewModel {
     }
 }
 
-#Preview{
+#Preview {
     Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
     return ChangeTierSummaryScreen(
         changeTierVm: .init(contractId: "contractId", changeTierSource: .changeTier),
