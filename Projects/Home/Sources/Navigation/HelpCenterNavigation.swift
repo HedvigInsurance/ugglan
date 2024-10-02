@@ -19,11 +19,13 @@ public class HelpCenterNavigationViewModel: ObservableObject {
     let terminateInsuranceVm = TerminateInsuranceViewModel()
 
     struct QuickActions {
+        var isEditContractPresented = false
         var isTravelCertificatePresented = false
         var isChangeAddressPresented = false
         var isCancellationPresented = false
         var isFirstVetPresented = false
         var isSickAbroadPresented = false
+        var isChangeTierPresented = false
     }
 
     public init() {}
@@ -162,23 +164,27 @@ public struct HelpCenterNavigation<Content: View>: View {
             helpCenterVm.connectPaymentsVm.set(for: nil)
         case .travelInsurance:
             helpCenterVm.quickActions.isTravelCertificatePresented = true
+        case let .editInsurance(insuranceQuickActions):
+            helpCenterVm.quickActions.isEditContractPresented = true
         case .changeAddress:
             helpCenterVm.quickActions.isChangeAddressPresented = true
         case .cancellation:
             let contractStore: ContractStore = globalPresentableStoreContainer.get()
-
             let contractsConfig: [TerminationConfirmConfig] = contractStore.state.activeContracts
                 .filter({ $0.canTerminate })
                 .map({
                     $0.asTerminationConfirmConfig
                 })
             helpCenterVm.terminateInsuranceVm.start(with: contractsConfig)
+        case .editCoInsured:
+            helpCenterVm.editCoInsuredVm.start()
+        case .upgradeCoverage:
+            helpCenterVm.quickActions.isChangeTierPresented = true
         case .firstVet:
             helpCenterVm.quickActions.isFirstVetPresented = true
         case .sickAbroad:
             helpCenterVm.quickActions.isSickAbroadPresented = true
-        case .editCoInsured:
-            helpCenterVm.editCoInsuredVm.start()
+
         }
     }
 
@@ -193,6 +199,6 @@ public enum HelpCenterRedirectType {
     case deflect
 }
 
-#Preview{
+#Preview {
     HelpCenterNavigation(helpCenterVm: .init(), redirect: { _ in })
 }

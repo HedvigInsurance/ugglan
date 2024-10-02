@@ -17,7 +17,7 @@ public class HomeClientDemo: HomeClient {
     }
 
     public func getQuickActions() async throws -> [QuickAction] {
-        return [.editCoInsured, .changeAddress]
+        return []
     }
 
     public func getMessagesState() async throws -> MessageState {
