@@ -68,6 +68,9 @@ public struct ContractsNavigation<Content: View>: View {
         .modally(presented: $contractsNavigationVm.isChangeAddressPresented) {
             redirect(.movingFlow)
         }
+        .modally(item: $contractsNavigationVm.changeTierContract) { contract in
+            redirect(.changeTier(contractId: contract.id))
+        }
         .detent(
             item: $contractsNavigationVm.insuranceUpdate,
             style: [.height]
@@ -95,6 +98,7 @@ public class ContractsNavigationViewModel: ObservableObject {
     @Published public var changeYourInformationContract: Contract?
     @Published public var insuranceUpdate: Contract?
     @Published public var isChangeAddressPresented = false
+    @Published public var changeTierContract: Contract?
 
     public var editCoInsuredVm = EditCoInsuredViewModel(
         existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
@@ -107,6 +111,7 @@ public enum RedirectType {
     case chat
     case movingFlow
     case pdf(document: Document)
+    case changeTier(contractId: String)
 }
 
 public enum RedirectAction {

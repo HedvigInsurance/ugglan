@@ -1,3 +1,4 @@
+import ChangeTier
 import Chat
 import Claims
 import Combine
@@ -105,6 +106,8 @@ struct LoggedInNavigation: View {
                 MovingFlowNavigation()
             case let .pdf(document):
                 PDFPreview(document: .init(url: document.url, title: document.title))
+            case let .changeTier(contractId):
+                ChangeTierNavigation(contractId: contractId, changeTierSource: .changeTier)
             }
         } redirectAction: { action in
             switch action {
