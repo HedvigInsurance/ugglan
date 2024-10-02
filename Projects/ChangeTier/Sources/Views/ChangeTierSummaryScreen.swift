@@ -54,6 +54,7 @@ extension ChangeTierViewModel {
             ),
             onConfirmClick: {
                 self.commitTier()
+                changeTierNavigationVm.router.push(ChangeTierRouterActionsWithoutBackButton.commitTier)
             }
         )
         return vm

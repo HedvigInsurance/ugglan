@@ -171,3 +171,20 @@ extension View {
         self.environment(\.hSuccessBottomAttachedView, AnyView(content()))
     }
 }
+
+private struct EnvironmentHCustomSuccessView: EnvironmentKey {
+    static let defaultValue: AnyView? = nil
+}
+
+extension EnvironmentValues {
+    public var hCustomSuccessView: AnyView? {
+        get { self[EnvironmentHCustomSuccessView.self] }
+        set { self[EnvironmentHCustomSuccessView.self] = newValue }
+    }
+}
+
+extension View {
+    public func hCustomSuccessView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        self.environment(\.hCustomSuccessView, AnyView(content()))
+    }
+}
