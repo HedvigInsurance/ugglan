@@ -26,11 +26,24 @@ enum ChangeTierRouterActions {
     case commitTier
 }
 
+enum ChangeTierRouterActionsWithoutBackButton {
+    case commitTier
+}
+
 extension ChangeTierRouterActions: TrackingViewNameProtocol {
     var nameForTracking: String {
         switch self {
         case .summary:
             return .init(describing: ChangeTierSummaryScreen.self)
+        case .commitTier:
+            return .init(describing: ChangeTierProcessingView.self)
+        }
+    }
+}
+
+extension ChangeTierRouterActionsWithoutBackButton: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
         case .commitTier:
             return .init(describing: ChangeTierProcessingView.self)
         }
@@ -75,6 +88,13 @@ public struct ChangeTierNavigation: View {
                         )
                         .configureTitle(L10n.offerUpdateSummaryTitle)
                         .withDismissButton()
+                    case .commitTier:
+                        ChangeTierProcessingView(vm: changeTierNavigationVm.vm)
+                    }
+                }
+                .routerDestination(for: ChangeTierRouterActionsWithoutBackButton.self, options: [.hidesBackButton]) {
+                    action in
+                    switch action {
                     case .commitTier:
                         ChangeTierProcessingView(vm: changeTierNavigationVm.vm)
                     }
