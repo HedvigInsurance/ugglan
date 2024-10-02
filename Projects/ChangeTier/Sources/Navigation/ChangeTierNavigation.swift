@@ -23,6 +23,7 @@ public class ChangeTierNavigationViewModel: ObservableObject {
 
 enum ChangeTierRouterActions {
     case summary
+    case commitTier
 }
 
 extension ChangeTierRouterActions: TrackingViewNameProtocol {
@@ -30,6 +31,8 @@ extension ChangeTierRouterActions: TrackingViewNameProtocol {
         switch self {
         case .summary:
             return .init(describing: ChangeTierSummaryScreen.self)
+        case .commitTier:
+            return .init(describing: ChangeTierProcessingView.self)
         }
     }
 }
@@ -72,6 +75,8 @@ public struct ChangeTierNavigation: View {
                         )
                         .configureTitle(L10n.offerUpdateSummaryTitle)
                         .withDismissButton()
+                    case .commitTier:
+                        ChangeTierProcessingView(vm: changeTierNavigationVm.vm)
                     }
                 }
         }
