@@ -67,9 +67,12 @@ public struct ChangeTierNavigation: View {
                 .routerDestination(for: ChangeTierRouterActions.self) { action in
                     switch action {
                     case .summary:
-                        ChangeTierSummaryScreen(vm: changeTierNavigationVm.vm)
-                            .configureTitle(L10n.offerUpdateSummaryTitle)
-                            .withDismissButton()
+                        ChangeTierSummaryScreen(
+                            changeTierVm: changeTierNavigationVm.vm,
+                            changeTierNavigationVm: changeTierNavigationVm
+                        )
+                        .configureTitle(L10n.offerUpdateSummaryTitle)
+                        .withDismissButton()
                     }
                 }
         }
