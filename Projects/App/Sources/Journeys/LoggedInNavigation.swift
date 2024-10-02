@@ -466,7 +466,8 @@ class LoggedInNavigationViewModel: ObservableObject {
             queue: nil
         ) {
             [weak self]
-            notification in guard let self = self else { return }
+            notification in
+            guard let self = self else { return }
             UIApplication.shared.appDelegate.registerForPushNotifications {}
         }
 
