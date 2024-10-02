@@ -247,9 +247,9 @@ struct ContractInformationView: View {
         {
             hSection {
                 HStack {
-                    if let _ = contract.coInsured.first(where: {
+                    if contract.coInsured.first(where: {
                         return ($0.activatesOn != nil || $0.terminatesOn != nil)
-                    }), Dependencies.featureFlags().isEditCoInsuredEnabled {
+                    }) != nil, Dependencies.featureFlags().isEditCoInsuredEnabled {
                         InfoCard(
                             text: L10n.contractCoinsuredUpdateInFuture(
                                 contract.coInsured.count,
