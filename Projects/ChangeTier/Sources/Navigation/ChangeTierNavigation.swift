@@ -53,18 +53,28 @@ public enum ChangeTierSource {
     case betterCoverage
 }
 
-public struct ChangeTierNavigation: View {
-    @ObservedObject var changeTierNavigationVm: ChangeTierNavigationViewModel
+public struct ChangeTierData: Equatable, Identifiable {
+    public var id = UUID()
+    let contractId: String
+    let changeTierSource: ChangeTierSource
 
     public init(
         contractId: String,
         changeTierSource: ChangeTierSource
     ) {
+        self.contractId = contractId
+        self.changeTierSource = changeTierSource
+    }
+}
+
+public struct ChangeTierNavigation: View {
+    @ObservedObject var changeTierNavigationVm: ChangeTierNavigationViewModel
+
+    public init(
+        changeTierData: ChangeTierData
+    ) {
         self.changeTierNavigationVm = .init(
-            vm: .init(
-                contractId: contractId,
-                changeTierSource: changeTierSource
-            )
+            vm: .init(changeTierData: changeTierData)
         )
     }
 

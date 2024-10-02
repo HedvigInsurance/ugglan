@@ -10,8 +10,7 @@ class ChangeTierViewModel: ObservableObject {
     @Published var displayName: String?
     @Published var exposureName: String?
     private(set) var tiers: [Tier] = []
-    private var contractId: String
-    private var changeTierSource: ChangeTierSource
+    private var changeTierData: ChangeTierData
 
     @Published var currentPremium: MonetaryAmount?
     var currentTier: Tier?
@@ -37,11 +36,9 @@ class ChangeTierViewModel: ObservableObject {
     }
 
     init(
-        contractId: String,
-        changeTierSource: ChangeTierSource
+        changeTierData: ChangeTierData
     ) {
-        self.contractId = contractId
-        self.changeTierSource = changeTierSource
+        self.changeTierData = changeTierData
         fetchTiers()
     }
 
@@ -74,8 +71,8 @@ class ChangeTierViewModel: ObservableObject {
         Task { @MainActor in
             do {
                 let data = try await service.getTier(
-                    contractId: contractId,
-                    tierSource: changeTierSource
+                    contractId: changeTierData.contractId,
+                    tierSource: changeTierData.changeTierSource
                 )
                 self.tiers = data.tiers
                 self.displayName = data.tiers.first?.productVariant?.displayName

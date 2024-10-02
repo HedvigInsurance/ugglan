@@ -62,11 +62,11 @@ struct LoggedInNavigation: View {
             MovingFlowNavigation()
         }
         .modally(
-            presented: $vm.isChangeTierPresented,
-            options: .constant(.alwaysOpenOnTop)
-        ) {
-            /* TODO: FILL WITH CORRECT VALUE */
-            ChangeTierNavigation(contractId: "contract-id", changeTierSource: .betterCoverage)
+            item: $vm.isChangeTierPresented,
+            options: .constant(.alwaysOpenOnTop),
+            tracking: nil
+        ) { changeTierData in
+            ChangeTierNavigation(changeTierData: changeTierData)
         }
         .handleTerminateInsurance(vm: vm.terminateInsuranceVm) { dismissType in
             switch dismissType {
@@ -114,7 +114,7 @@ struct LoggedInNavigation: View {
             case let .pdf(document):
                 PDFPreview(document: .init(url: document.url, title: document.title))
             case let .changeTier(contractId):
-                ChangeTierNavigation(contractId: contractId, changeTierSource: .changeTier)
+                ChangeTierNavigation(changeTierData: .init(contractId: contractId, changeTierSource: .changeTier))
             }
         } redirectAction: { action in
             switch action {
@@ -451,7 +451,7 @@ class LoggedInNavigationViewModel: ObservableObject {
 
     @Published var isTravelInsurancePresented = false
     @Published var isMoveContractPresented = false
-    @Published var isChangeTierPresented = false
+    @Published var isChangeTierPresented: ChangeTierData?
     @Published var isEuroBonusPresented = false
     @Published var isUrlPresented: URL?
     private var openDeepLinkObserver: NSObjectProtocol?
@@ -642,7 +642,14 @@ class LoggedInNavigationViewModel: ObservableObject {
             case nil:
                 openUrl(url: url)
             case .changeTier:
-                self.isChangeTierPresented = true
+                let contractId = self.getContractId(from: url)
+
+                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+                        self?.isChangeTierPresented = .init(contractId: contractId, changeTierSource: .changeTier)
+                    }
+                }
             }
         }
     }
