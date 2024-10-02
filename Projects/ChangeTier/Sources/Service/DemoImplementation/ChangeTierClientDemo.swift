@@ -5,8 +5,11 @@ import hGraphQL
 public class ChangeTierClientDemo: ChangeTierClient {
     public init() {}
 
-    public func getTier(contractId: String, tierSource: ChangeTierSource) async throws(ChangeTierError) -> ChangeTierIntentModel {
-        
+    public func getTier(
+        contractId: String,
+        tierSource: ChangeTierSource
+    ) async throws(ChangeTierError) -> ChangeTierIntentModel {
+
         let deductibles: [Deductible] = [
             .init(
                 deductibleAmount: .init(amount: "1000", currency: "SEK"),
@@ -27,13 +30,13 @@ public class ChangeTierClientDemo: ChangeTierClient {
                 premium: .init(amount: "569", currency: "SEK")
             ),
         ]
-        
+
         let displayItems: [Tier.TierDisplayItem] = [
             .init(title: "Activation date", subTitle: nil, value: "24 sep 2024"),
             .init(title: "Coverage level", subTitle: nil, value: "Standard"),
             .init(title: "Deductible", subTitle: nil, value: "1750 kr"),
         ]
-        
+
         return .init(
             activationDate: Date(),
             tiers: [
@@ -225,6 +228,6 @@ public class ChangeTierClientDemo: ChangeTierClient {
             canEditTier: true
         )
     }
-    
+
     public func commitTier(quoteId: String) async throws(ChangeTierError) {}
 }
