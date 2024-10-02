@@ -13,6 +13,7 @@ public enum DeepLink: String, Codable, CaseIterable {
     case travelCertificate = "travelCertificate"
     case helpCenter = "help-center"
     case moveContract = "move-contract"
+    case changeTier = "change-tier"
     case terminateContract = "terminate-contract"
     case conversation = "conversation"
     case chat = "chat"
@@ -57,6 +58,9 @@ public enum DeepLink: String, Codable, CaseIterable {
             return L10n.chatConversationInbox
         case .inbox:
             return L10n.chatConversationInbox
+        case .changeTier:
+            /* TODO: LOCALIZE */
+            return "Change tier"
         }
     }
 

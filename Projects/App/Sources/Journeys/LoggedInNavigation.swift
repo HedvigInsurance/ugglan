@@ -61,6 +61,13 @@ struct LoggedInNavigation: View {
         ) {
             MovingFlowNavigation()
         }
+        .modally(
+            presented: $vm.isChangeTierPresented,
+            options: .constant(.alwaysOpenOnTop)
+        ) {
+            /* TODO: FILL WITH CORRECT VALUE */
+            ChangeTierNavigation(contractId: "contract-id", changeTierSource: .betterCoverage)
+        }
         .handleTerminateInsurance(vm: vm.terminateInsuranceVm) { dismissType in
             switch dismissType {
             case .done:
@@ -444,6 +451,7 @@ class LoggedInNavigationViewModel: ObservableObject {
 
     @Published var isTravelInsurancePresented = false
     @Published var isMoveContractPresented = false
+    @Published var isChangeTierPresented = false
     @Published var isEuroBonusPresented = false
     @Published var isUrlPresented: URL?
     private var openDeepLinkObserver: NSObjectProtocol?
@@ -633,6 +641,8 @@ class LoggedInNavigationViewModel: ObservableObject {
                 self.profileNavigationVm.pushToProfile()
             case nil:
                 openUrl(url: url)
+            case .changeTier:
+                self.isChangeTierPresented = true
             }
         }
     }
