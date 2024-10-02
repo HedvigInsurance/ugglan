@@ -41,7 +41,11 @@ public class ChangeTierClientDemo: ChangeTierClient {
                         ),
                     ],
                     premium: .init(amount: "530", currency: "SEK"),
-                    displayItems: [],
+                    displayItems: [
+                        .init(id: "id1", title: "Activation date", subTitle: nil, value: "24 sep 2024"),
+                        .init(id: "id2", title: "Coverage level", subTitle: nil, value: "Standard"),
+                        .init(id: "id3", title: "Deductible", subTitle: nil, value: "1750 kr"),
+                    ],
                     exposureName: "Bellmansgatan 19A",
                     productVariant: .init(
                         termsVersion: "",
@@ -78,7 +82,12 @@ public class ChangeTierClientDemo: ChangeTierClient {
                         displayName: "Homeowner",
                         displayNameTier: "Bas",
                         displayNameTierLong: "Vårt mellanpaket med hög ersättning."
-                    )
+                    ),
+                    FAQs: [
+                        .init(title: "question 1", description: "..."),
+                        .init(title: "question 2", description: "..."),
+                        .init(title: "question 3", description: "..."),
+                    ]
                 ),
                 .init(
                     id: "i2",
@@ -108,7 +117,11 @@ public class ChangeTierClientDemo: ChangeTierClient {
                         ),
                     ],
                     premium: .init(amount: "530", currency: "SEK"),
-                    displayItems: [],
+                    displayItems: [
+                        .init(id: "id1", title: "Activation date", subTitle: nil, value: "24 sep 2024"),
+                        .init(id: "id2", title: "Coverage level", subTitle: nil, value: "Standard"),
+                        .init(id: "id3", title: "Deductible", subTitle: nil, value: "1750 kr"),
+                    ],
                     exposureName: "Bellmansgatan 19A",
                     productVariant: .init(
                         termsVersion: "",
@@ -145,7 +158,12 @@ public class ChangeTierClientDemo: ChangeTierClient {
                         displayName: "Homeowner",
                         displayNameTier: "Standard",
                         displayNameTierLong: "Vårt mellanpaket med hög ersättning."
-                    )
+                    ),
+                    FAQs: [
+                        .init(title: "question 1", description: "..."),
+                        .init(title: "question 2", description: "..."),
+                        .init(title: "question 3", description: "..."),
+                    ]
                 ),
                 .init(
                     id: "id3",
@@ -175,7 +193,11 @@ public class ChangeTierClientDemo: ChangeTierClient {
                         ),
                     ],
                     premium: .init(amount: "530", currency: "SEK"),
-                    displayItems: [],
+                    displayItems: [
+                        .init(id: "id1", title: "Activation date", subTitle: nil, value: "24 sep 2024"),
+                        .init(id: "id2", title: "Coverage level", subTitle: nil, value: "Standard"),
+                        .init(id: "id3", title: "Deductible", subTitle: nil, value: "1750 kr"),
+                    ],
                     exposureName: "Bellmansgatan 19A",
                     productVariant: .init(
                         termsVersion: "",
@@ -212,7 +234,12 @@ public class ChangeTierClientDemo: ChangeTierClient {
                         displayName: "Homeowner",
                         displayNameTier: "Max",
                         displayNameTierLong: "Vårt mellanpaket med hög ersättning."
-                    )
+                    ),
+                    FAQs: [
+                        .init(title: "question 1", description: "..."),
+                        .init(title: "question 2", description: "..."),
+                        .init(title: "question 3", description: "..."),
+                    ]
                 ),
             ],
             currentPremium: .init(amount: "449", currency: "SEK"),
@@ -251,12 +278,19 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     typeOfContract: "",
                     partner: "",
                     perils: [],
-                    insurableLimits: [],
+                    insurableLimits: [
+                        .init(label: "label", limit: "limit", description: "description")
+                    ],
                     documents: [],
                     displayName: "",
                     displayNameTier: "",
                     displayNameTierLong: ""
-                )
+                ),
+                FAQs: [
+                    .init(title: "question 1", description: "..."),
+                    .init(title: "question 2", description: "..."),
+                    .init(title: "question 3", description: "..."),
+                ]
             ),
             currentDeductible: .init(
                 id: "id",

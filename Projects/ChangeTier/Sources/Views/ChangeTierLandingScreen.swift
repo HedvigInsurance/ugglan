@@ -55,17 +55,10 @@ struct ChangeTierLandingScreen: View {
         hSection {
             VStack(spacing: 0) {
                 hRow {
-                    HStack(spacing: .padding12) {
-                        Image(uiImage: hCoreUIAssets.pillowHome.image)
-                            .resizable()
-                            .frame(width: 48, height: 48)
-                        VStack(alignment: .leading, spacing: 0) {
-                            hText(vm.displayName ?? "")
-                            hText(vm.exposureName ?? "")
-                                .foregroundColor(hTextColor.Opaque.secondary)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    }
+                    ContractInformation(
+                        displayName: vm.displayName,
+                        exposureName: vm.exposureName
+                    )
                 }
 
                 VStack(spacing: .padding4) {
@@ -79,24 +72,10 @@ struct ChangeTierLandingScreen: View {
                 .hWithoutHorizontalPadding
 
                 hRow {
-                    HStack(alignment: .top) {
-                        hText(L10n.tierFlowTotal)
-                        Spacer()
-                        VStack(alignment: .trailing, spacing: 0) {
-                            hText(
-                                vm.newPremium?.formattedAmountPerMonth ?? vm.currentPremium?.formattedAmountPerMonth
-                                    ?? ""
-                            )
-
-                            if let newPremium = vm.newPremium, newPremium != vm.currentPremium {
-                                hText(
-                                    L10n.tierFlowPreviousPrice(vm.currentPremium?.formattedAmountPerMonth ?? ""),
-                                    style: .label
-                                )
-                                .foregroundColor(hTextColor.Opaque.secondary)
-                            }
-                        }
-                    }
+                    PriceField(
+                        newPremium: vm.newPremium,
+                        currentPremium: vm.currentPremium
+                    )
                 }
             }
         }
@@ -153,7 +132,7 @@ struct ChangeTierLandingScreen: View {
                     hText(L10n.tierFlowCompareButton, style: .body1)
                 }
                 hButton.LargeButton(type: .primary) {
-                    /** TODO: ADD ACTION **/
+                    router.push(ChangeTierRouterActions.summary)
                 } content: {
                     hText(L10n.generalContinueButton)
                 }
@@ -222,7 +201,7 @@ class ChangeTierViewModel: ObservableObject {
     @Published var quoteId: String = ""
 
     @Published var currentPremium: MonetaryAmount?
-    private var currentTier: Tier?
+    var currentTier: Tier?
     private var currentDeductible: Deductible?
     var newPremium: MonetaryAmount?
     @Published var canEditTier: Bool = false

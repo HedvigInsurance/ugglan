@@ -32,15 +32,19 @@ struct EditDeductibleScreen: View {
                             leftView: {
                                 VStack(alignment: .leading, spacing: .padding8) {
                                     HStack {
-                                        let displayTitle =
-                                            (deductible.deductibleAmount?.formattedAmount ?? "") + " + "
-                                            + String(deductible.deductiblePercentage ?? 0) + "%"
-                                        hText(displayTitle)
+                                        hText(displayTitle(deductible: deductible))
                                         Spacer()
-                                        hText(deductible.premium?.formattedAmountPerMonth ?? "")
+                                        hPill(
+                                            text: deductible.premium?.formattedAmountPerMonth ?? "",
+                                            color: .grey(translucent: false),
+                                            colorLevel: .two
+                                        )
+                                        .hFieldSize(.small)
                                     }
-                                    hText(deductible.subTitle ?? "")
-                                        .foregroundColor(hTextColor.Opaque.secondary)
+                                    if let subTitle = deductible.subTitle {
+                                        hText(subTitle)
+                                            .foregroundColor(hTextColor.Opaque.secondary)
+                                    }
                                 }
                                 .asAnyView
                             },
@@ -78,6 +82,15 @@ struct EditDeductibleScreen: View {
         }
         .configureTitleView(self)
     }
+
+    func displayTitle(deductible: Deductible) -> String {
+        var displayTitle: String = (deductible.deductibleAmount?.formattedAmount ?? "")
+
+        if let deductiblePercentage = deductible.deductiblePercentage {
+            displayTitle += " + \(deductiblePercentage)%"
+        }
+        return displayTitle
+    }
 }
 
 extension EditDeductibleScreen: TitleView {
@@ -102,5 +115,6 @@ extension EditDeductibleScreen: TitleView {
 }
 
 #Preview {
-    EditDeductibleScreen(vm: .init(contractId: "contractId", changeTierSource: .changeTier))
+    Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientOctopus() })
+    return EditDeductibleScreen(vm: .init(contractId: "contractId", changeTierSource: .changeTier))
 }

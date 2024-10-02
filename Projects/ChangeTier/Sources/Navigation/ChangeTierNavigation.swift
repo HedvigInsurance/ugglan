@@ -9,6 +9,7 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     @Published public var isEditDeductiblePresented = false
     @Published public var isCompareTiersPresented = false
     @Published public var isInsurableLimitPresented: InsurableLimits?
+    @Published public var document: Document?
 
     let router = Router()
     var vm: ChangeTierViewModel
@@ -17,6 +18,19 @@ public class ChangeTierNavigationViewModel: ObservableObject {
         vm: ChangeTierViewModel
     ) {
         self.vm = vm
+    }
+}
+
+enum ChangeTierRouterActions {
+    case summary
+}
+
+extension ChangeTierRouterActions: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .summary:
+            return .init(describing: ChangeTierSummaryScreen.self)
+        }
     }
 }
 
@@ -50,6 +64,17 @@ public struct ChangeTierNavigation: View {
         ) {
             ChangeTierLandingScreen(vm: changeTierNavigationVm.vm)
                 .withDismissButton()
+                .routerDestination(for: ChangeTierRouterActions.self) { action in
+                    switch action {
+                    case .summary:
+                        ChangeTierSummaryScreen(
+                            changeTierVm: changeTierNavigationVm.vm,
+                            changeTierNavigationVm: changeTierNavigationVm
+                        )
+                        .configureTitle(L10n.offerUpdateSummaryTitle)
+                        .withDismissButton()
+                    }
+                }
         }
         .environmentObject(changeTierNavigationVm)
         .detent(
@@ -90,6 +115,12 @@ public struct ChangeTierNavigation: View {
                     tracking: ChangeTierTrackingType.compareTier
                 )
                 .environmentObject(changeTierNavigationVm)
+        }
+        .detent(
+            item: $changeTierNavigationVm.document,
+            style: [.large]
+        ) { document in
+            PDFPreview(document: .init(url: document.url, title: document.title))
         }
     }
 }
