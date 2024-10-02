@@ -345,20 +345,6 @@ struct TerminationFlowNavigation: View {
                     vm?.router.dismiss()
                     vm?.isFlowPresented(.done)
                 })
-                //                ,
-                //                ghostButton: .init(
-                //                    buttonTitle: L10n.terminationFlowShareFeedback,
-                //                    buttonAction: { [weak router] in
-                //                        router?.dismiss()
-                //                        log.addUserAction(type: .click, name: "terminationSurvey")
-                //                        let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                //                        if let surveyToURL = URL(string: store.state.successStep?.surveyUrl) {
-                //                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                //                                isFlowPresented(.openFeedback(url: surveyToURL))
-                //                            }
-                //                        }
-                //                    }
-                //                )
             )
         )
     }
