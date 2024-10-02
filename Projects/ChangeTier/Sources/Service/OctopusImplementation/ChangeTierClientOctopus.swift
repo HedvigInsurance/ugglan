@@ -48,9 +48,7 @@ public class ChangeTierClientOctopus: ChangeTierClient {
             let filteredTiers = getFilteredTiers(currentContract: currentContract, intent: intent)
 
             /* map currentTier with existing */
-            let currentDisplayNameTier = currentContract?.currentAgreement.productVariant.displayNameTier
-            
-            let currentTier: Tier? = filteredTiers.first(where: { $0.name == currentDisplayNameTier })
+            let currentTier: Tier? = filteredTiers.first(where: { $0.name == intent?.currentTierName && $0.level == intent?.currentTierLevel })
             
             let intentModel: ChangeTierIntentModel = .init(
                 activationDate: intent?.activationDate.localDateToDate ?? Date(),
