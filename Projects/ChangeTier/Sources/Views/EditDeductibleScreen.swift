@@ -114,7 +114,7 @@ extension EditDeductibleScreen: TitleView {
     }
 }
 
-#Preview{
+#Preview {
     Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientOctopus() })
     return EditDeductibleScreen(vm: .init(contractId: "contractId", changeTierSource: .changeTier))
 }
