@@ -6,8 +6,6 @@ import hGraphQL
 struct ChangeTierLandingScreen: View {
     @ObservedObject var vm: ChangeTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
-    @EnvironmentObject var router: Router
-    @State var progress: Float = 0
 
     init(
         vm: ChangeTierViewModel
@@ -16,13 +14,31 @@ struct ChangeTierLandingScreen: View {
     }
 
     var body: some View {
-        switch vm.viewState {
-        case .loading:
-            loadingView
-        case .success:
+        ProcessingStateView(
+            loadingViewText: L10n.tierFlowProcessing,
+            successViewTitle: nil,
+            successViewBody: nil,
+            successViewButtonAction: nil,
+            onAppearLoadingView: nil,
+            errorViewButtons: .init(
+                actionButton: .init(
+                    buttonTitle: nil,
+                    buttonAction: {
+                        vm.fetchTiers()
+                    }
+                ),
+                dismissButton:
+                    .init(
+                        buttonTitle: L10n.generalCloseButton,
+                        buttonAction: {
+                            changeTierNavigationVm.router.dismiss()
+                        }
+                    )
+            ),
+            state: $vm.viewState
+        )
+        .hCustomSuccessView {
             succesView
-        case let .error(errorMessage):
-            errorView(errorMessage: errorMessage)
         }
     }
 
@@ -132,7 +148,7 @@ struct ChangeTierLandingScreen: View {
                     hText(L10n.tierFlowCompareButton, style: .body1)
                 }
                 hButton.LargeButton(type: .primary) {
-                    router.push(ChangeTierRouterActions.summary)
+                    changeTierNavigationVm.router.push(ChangeTierRouterActions.summary)
                 } content: {
                     hText(L10n.generalContinueButton)
                 }
@@ -140,47 +156,6 @@ struct ChangeTierLandingScreen: View {
             }
         }
         .sectionContainerStyle(.transparent)
-    }
-
-    var loadingView: some View {
-        hSection {
-            VStack(spacing: 20) {
-                Spacer()
-                hText(L10n.tierFlowProcessing)
-                ProgressView(value: progress)
-                    .frame(width: UIScreen.main.bounds.width * 0.53)
-                    .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            withAnimation(.easeInOut(duration: 1.5).delay(0.5)) {
-                                progress = 1
-                            }
-                        }
-                    }
-                    .progressViewStyle(hProgressViewStyle())
-                Spacer()
-            }
-        }
-        .sectionContainerStyle(.transparent)
-    }
-
-    func errorView(errorMessage: String?) -> some View {
-        GenericErrorView(
-            title: L10n.somethingWentWrong,
-            description: errorMessage,
-            buttons: .init(
-                actionButton: .init(
-                    buttonAction: {
-                        vm.fetchTiers()
-                    }
-                ),
-                dismissButton: .init(
-                    buttonTitle: L10n.generalCloseButton,
-                    buttonAction: {
-                        router.dismiss()
-                    }
-                )
-            )
-        )
     }
 }
 

@@ -23,6 +23,7 @@ public struct ProcessingStateView: View {
 
     var errorViewButtons: ErrorViewButtonConfig?
     @Environment(\.hSuccessBottomAttachedView) var successBottomView
+    @Environment(\.hCustomSuccessView) var customSuccessView
 
     public init(
         showSuccessScreen: Bool? = true,
@@ -61,25 +62,29 @@ public struct ProcessingStateView: View {
 
     @ViewBuilder
     private var successView: some View {
-        if showSuccessScreen {
-            if successBottomView != nil {
-                SuccessScreen(title: successViewTitle ?? "", subtitle: successViewBody ?? "")
-            } else {
-                SuccessScreen(
-                    successViewTitle: successViewTitle ?? "",
-                    successViewBody: successViewBody ?? "",
-                    buttons: .init(
-                        actionButton: nil,
-                        primaryButton: nil,
-                        ghostButton: .init(buttonAction: successViewButtonAction ?? {})
-                    )
-                )
-            }
+        if customSuccessView != nil {
+            customSuccessView
         } else {
-            loadingView
-                .onAppear {
-                    onAppearLoadingView?()
+            if showSuccessScreen {
+                if successBottomView != nil {
+                    SuccessScreen(title: successViewTitle ?? "", subtitle: successViewBody ?? "")
+                } else {
+                    SuccessScreen(
+                        successViewTitle: successViewTitle ?? "",
+                        successViewBody: successViewBody ?? "",
+                        buttons: .init(
+                            actionButton: nil,
+                            primaryButton: nil,
+                            ghostButton: .init(buttonAction: successViewButtonAction ?? {})
+                        )
+                    )
                 }
+            } else {
+                loadingView
+                    .onAppear {
+                        onAppearLoadingView?()
+                    }
+            }
         }
     }
 
