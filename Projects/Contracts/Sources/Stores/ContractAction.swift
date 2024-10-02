@@ -40,7 +40,7 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
         switch self {
         case .coInsured: return L10n.contractEditCoinsured
         case .changeAddress: return L10n.InsuranceDetails.changeAddressButton
-        case .changeTier: return "Change Tier"
+        case .changeTier: return L10n.InsuranceDetails.changeCoverage
         }
     }
 
