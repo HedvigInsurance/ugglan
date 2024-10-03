@@ -51,7 +51,7 @@ enum ChatError: Error {
 
 extension ChatData {
     init(
-        conversationId: String,
+        conversationId: String = "",
         with messages: [Message] = [],
         hasPreviousMessages: Bool = false,
         banner: String? = nil,
