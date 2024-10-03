@@ -1,4 +1,4 @@
-import Presentation
+import PresentableStore
 import XCTest
 import hCore
 
