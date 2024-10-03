@@ -106,7 +106,7 @@ extension EditDeductibleScreen: TitleView {
         VStack(alignment: .leading, spacing: 0) {
             hText(L10n.tierFlowSelectDeductibleTitle, style: .heading1)
                 .foregroundColor(hTextColor.Opaque.primary)
-            hText("Amount deducted from the compensation", style: .heading1)
+            hText(L10n.tierFlowSelectCoverageSubtitle, style: .heading1)
                 .foregroundColor(hTextColor.Opaque.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -115,6 +115,6 @@ extension EditDeductibleScreen: TitleView {
 }
 
 #Preview {
-    Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientOctopus() })
+    Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
     return EditDeductibleScreen(vm: .init(contractId: "contractId", changeTierSource: .changeTier))
 }
