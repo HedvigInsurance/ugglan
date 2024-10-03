@@ -138,6 +138,7 @@ struct ChangeTierLandingScreen: View {
             changeTierNavigationVm.isEditDeductiblePresented = true
         }
         .disabled(vm.selectedTier == nil)
+        .colorScheme(.light)
     }
 
     private var buttons: some View {
