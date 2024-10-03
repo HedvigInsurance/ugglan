@@ -22,11 +22,16 @@ struct EditTierScreen: View {
                         hRadioField(
                             id: tier.name,
                             leftView: {
-                                VStack(alignment: .leading, spacing: .padding8) {
+                                VStack(alignment: .leading, spacing: 0) {
                                     HStack {
                                         hText(tier.name)
                                         Spacer()
-                                        hText(tier.premium.formattedAmountPerMonth)
+                                        hPill(
+                                            text: tier.premium.formattedAmountPerMonth,
+                                            color: .grey(translucent: false),
+                                            colorLevel: .one
+                                        )
+                                        .hFieldSize(.small)
                                     }
                                     if let subTitle = tier.productVariant?.displayNameTierLong {
                                         hText(subTitle)
@@ -85,7 +90,7 @@ extension EditTierScreen: TitleView {
         VStack(alignment: .leading, spacing: 0) {
             hText(L10n.tierFlowSelectCoverageTitle, style: .heading1)
                 .foregroundColor(hTextColor.Opaque.primary)
-            hText("Find the right coverage for your needs", style: .heading1)
+            hText(L10n.tierFlowSelectCoverageSubtitle, style: .heading1)
                 .foregroundColor(hTextColor.Opaque.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -94,5 +99,6 @@ extension EditTierScreen: TitleView {
 }
 
 #Preview {
-    EditTierScreen(vm: .init(contractId: "contractId", changeTierSource: .changeTier))
+    Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
+    return EditTierScreen(vm: .init(changeTierInput: .init(source: .betterCoverage, contractId: "contractId")))
 }

@@ -25,6 +25,10 @@ enum ChangeTierRouterActions {
     case summary
 }
 
+enum ChangeTierRouterActionsWithoutBackButton {
+    case commitTier
+}
+
 extension ChangeTierRouterActions: TrackingViewNameProtocol {
     var nameForTracking: String {
         switch self {
@@ -32,6 +36,29 @@ extension ChangeTierRouterActions: TrackingViewNameProtocol {
             return .init(describing: ChangeTierSummaryScreen.self)
         }
     }
+}
+
+extension ChangeTierRouterActionsWithoutBackButton: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .commitTier:
+            return .init(describing: ChangeTierProcessingView.self)
+        }
+    }
+}
+
+public struct ChangeTierInput: Equatable, Identifiable {
+    public var id: String {
+        contractId
+    }
+
+    public init(source: ChangeTierSource, contractId: String) {
+        self.source = source
+        self.contractId = contractId
+    }
+
+    let source: ChangeTierSource
+    let contractId: String
 }
 
 public enum ChangeTierSource {
@@ -44,14 +71,10 @@ public struct ChangeTierNavigation: View {
     @ObservedObject var changeTierNavigationVm: ChangeTierNavigationViewModel
 
     public init(
-        contractId: String,
-        changeTierSource: ChangeTierSource
+        input: ChangeTierInput
     ) {
         self.changeTierNavigationVm = .init(
-            vm: .init(
-                contractId: contractId,
-                changeTierSource: changeTierSource
-            )
+            vm: .init(changeTierInput: input)
         )
     }
 
@@ -72,6 +95,13 @@ public struct ChangeTierNavigation: View {
                         )
                         .configureTitle(L10n.offerUpdateSummaryTitle)
                         .withDismissButton()
+                    }
+                }
+                .routerDestination(for: ChangeTierRouterActionsWithoutBackButton.self, options: [.hidesBackButton]) {
+                    action in
+                    switch action {
+                    case .commitTier:
+                        ChangeTierProcessingView(vm: changeTierNavigationVm.vm)
                     }
                 }
         }

@@ -176,7 +176,11 @@ public enum PillColor {
         case let .grey(translucent):
             switch level {
             case .one:
-                hSurfaceColor.Opaque.primary
+                if translucent {
+                    hSurfaceColor.Opaque.primary
+                } else {
+                    hSurfaceColor.Translucent.primary
+                }
             case .two:
                 if translucent {
                     hSurfaceColor.Translucent.secondary

@@ -1,6 +1,5 @@
-query ContractsQuery {
-  currentMember {
-    activeContracts {
+query Contract($contractId: UUID!) {
+  contract(id: $contractId) {
       exposureDisplayName
       supportsChangeTier
       id
@@ -19,6 +18,5 @@ query ContractsQuery {
             displayNameTier
         }
       }
-    }
   }
 }

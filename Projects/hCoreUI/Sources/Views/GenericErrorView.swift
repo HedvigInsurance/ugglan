@@ -32,6 +32,7 @@ public struct GenericErrorView: View {
                         .padding(.bottom, .padding32)
                         .padding(.top, extraTopPadding ? 32 : 0)
                 }
+
             }
             .hFormContentPosition(.center)
             .hFormAttachToBottom {
@@ -62,7 +63,13 @@ public struct GenericErrorView: View {
                 .padding(.vertical, .padding16)
             }
         } else {
-            content
+            ZStack(alignment: .bottom) {
+                VStack {
+                    Spacer()
+                    content
+                    Spacer()
+                }
+            }
         }
     }
 

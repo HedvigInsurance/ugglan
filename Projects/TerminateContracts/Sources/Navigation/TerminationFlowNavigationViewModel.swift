@@ -9,6 +9,9 @@ class TerminationFlowNavigationViewModel: ObservableObject {
     @Published var isDatePickerPresented = false
     @Published var isConfirmTerminationPresented = false
     @Published var isProcessingPresented = false
+
+    fileprivate let isFlowPresented: (DismissTerminationAction) -> Void
+
     var redirectAction: FlowTerminationSurveyRedirectAction? {
         didSet {
             switch redirectAction {
@@ -19,15 +22,17 @@ class TerminationFlowNavigationViewModel: ObservableObject {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     NotificationCenter.default.post(name: .openDeepLink, object: url)
                 }
-            case .changeTierFoundBetterPrice:
-                break
-            case .changeTierMissingCoverageAndTerms:
-                break
+            case .changeTierFoundBetterPrice, .changeTierMissingCoverageAndTerms:
+                self.router.dismiss()
+                let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                if let contactId = store.state.config?.contractId {
+                    if case .changeTierFoundBetterPrice = redirectAction {
+                        isFlowPresented(.changeTierFoundBetterPrice(contractId: contactId))
+                    } else if case .changeTierMissingCoverageAndTerms = redirectAction {
+                        isFlowPresented(.changeTierMissingCoverageAndTerms(contractId: contactId))
+                    }
+                }
             case .none:
-                break
-            case .changeTierFoundBetterPrice:
-                break
-            case .changeTierMissingCoverageAndTerms:
                 break
             }
         }
@@ -45,15 +50,16 @@ class TerminationFlowNavigationViewModel: ObservableObject {
     let router = Router()
     var cancellable: AnyCancellable?
 
-    init() {}
+    init(isFlowPresented: @escaping (DismissTerminationAction) -> Void) {
+        self.isFlowPresented = isFlowPresented
+    }
 
 }
 
 struct TerminationFlowNavigation: View {
-    @StateObject private var vm = TerminationFlowNavigationViewModel()
+    @ObservedObject private var vm: TerminationFlowNavigationViewModel
     let configs: [TerminationConfirmConfig]
     let initialStep: TerminationFlowActions
-    private var isFlowPresented: (DismissTerminationAction) -> Void
 
     public init(
         initialStep: TerminationFlowActions,
@@ -62,7 +68,7 @@ struct TerminationFlowNavigation: View {
     ) {
         self.initialStep = initialStep
         self.configs = configs
-        self.isFlowPresented = isFlowPresented
+        self.vm = TerminationFlowNavigationViewModel(isFlowPresented: isFlowPresented)
     }
 
     public var body: some View {
@@ -337,22 +343,8 @@ struct TerminationFlowNavigation: View {
                 actionButton: nil,
                 primaryButton: .init(buttonAction: { [weak vm] in
                     vm?.router.dismiss()
-                    isFlowPresented(.done)
+                    vm?.isFlowPresented(.done)
                 })
-                //                ,
-                //                ghostButton: .init(
-                //                    buttonTitle: L10n.terminationFlowShareFeedback,
-                //                    buttonAction: { [weak router] in
-                //                        router?.dismiss()
-                //                        log.addUserAction(type: .click, name: "terminationSurvey")
-                //                        let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                //                        if let surveyToURL = URL(string: store.state.successStep?.surveyUrl) {
-                //                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                //                                isFlowPresented(.openFeedback(url: surveyToURL))
-                //                            }
-                //                        }
-                //                    }
-                //                )
             )
         )
     }
@@ -364,8 +356,8 @@ struct TerminationFlowNavigation: View {
             buttons: .init(
                 actionButton: .init(
                     buttonTitle: L10n.openChat,
-                    buttonAction: {
-                        isFlowPresented(.chat)
+                    buttonAction: { [weak vm] in
+                        vm?.isFlowPresented(.chat)
                     }
                 ),
                 dismissButton: .init(
@@ -535,4 +527,6 @@ public enum DismissTerminationAction {
     case done
     case chat
     case openFeedback(url: URL)
+    case changeTierFoundBetterPrice(contractId: String)
+    case changeTierMissingCoverageAndTerms(contractId: String)
 }

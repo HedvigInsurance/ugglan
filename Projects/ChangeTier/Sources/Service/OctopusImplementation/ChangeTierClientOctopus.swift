@@ -8,42 +8,41 @@ public class ChangeTierClientOctopus: ChangeTierClient {
 
     public init() {}
 
-    public func getTier(
-        contractId: String,
-        tierSource: ChangeTierSource
-    ) async throws(ChangeTierError) -> ChangeTierIntentModel {
+    public func getTier(input: ChangeTierInput) async throws(ChangeTierError) -> ChangeTierIntentModel {
 
         let source: OctopusGraphQL.ChangeTierDeductibleSource = {
-            switch tierSource {
+            switch input.source {
             case .changeTier: return .selfService
             case .betterCoverage: return .terminationBetterCoverage
             case .betterPrice: return .terminationBetterPrice
             }
         }()
 
-        let input: OctopusGraphQL.ChangeTierDeductibleCreateIntentInput = .init(
-            contractId: contractId,
-            source: .case(source)
-        )
-        let mutation = OctopusGraphQL.ChangeTierDeductibleCreateIntentMutation(input: input)
-
         do {
-            let data = try await octopus.client.perform(mutation: mutation)
-            let intent = data.changeTierDeductibleCreateIntent.intent
+            let input: OctopusGraphQL.ChangeTierDeductibleCreateIntentInput = .init(
+                contractId: input.contractId,
+                source: .case(source)
+            )
+            let mutation = OctopusGraphQL.ChangeTierDeductibleCreateIntentMutation(input: input)
+            async let createIntentdata = try octopus.client.perform(mutation: mutation)
 
-            /* fetch from contract **/
-            let contractsQuery = OctopusGraphQL.ContractsQuery()
-            let contractData = try await octopus.client.fetch(
+            let contractsQuery = OctopusGraphQL.ContractQuery(contractId: input.contractId)
+            async let contractData = try octopus.client.fetch(
                 query: contractsQuery,
                 cachePolicy: .fetchIgnoringCacheCompletely
             )
 
-            let currentContract = contractData.currentMember.activeContracts.first(where: { $0.id == contractId })
+            let data = try await [createIntentdata, contractData] as [Any]
+            let createIntentResponse = data[0] as! OctopusGraphQL.ChangeTierDeductibleCreateIntentMutation.Data
+            let contractResponse = data[1] as! OctopusGraphQL.ContractQuery.Data
+
+            let intent = createIntentResponse.changeTierDeductibleCreateIntent.intent
+            let currentContract = contractResponse.contract
 
             /* get current deductible */
-            let deductible = currentContract?.currentAgreement.deductible
+            let deductible = currentContract.currentAgreement.deductible
             let currentDeductible: Deductible? = {
-                if let currentContract, let deductible = deductible {
+                if let deductible = deductible {
                     return Deductible(
                         deductibleAmount: .init(fragment: deductible.amount.fragments.moneyFragment),
                         deductiblePercentage: deductible.percentage,
@@ -65,17 +64,16 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                 activationDate: intent?.activationDate.localDateToDate ?? Date(),
                 tiers: filteredTiers,
                 currentPremium: .init(
-                    amount: String(currentContract?.currentAgreement.premium.amount ?? 0),
-                    currency: currentContract?.currentAgreement.premium.currencyCode.rawValue ?? ""
+                    amount: String(currentContract.currentAgreement.premium.amount),
+                    currency: currentContract.currentAgreement.premium.currencyCode.rawValue
                 ),
                 currentTier: currentTier,
                 currentDeductible: currentDeductible,
-                canEditTier: currentContract?.supportsChangeTier ?? false
+                canEditTier: currentContract.supportsChangeTier
             )
 
             return intentModel
-
-        } catch {
+        } catch let ex {
             throw ChangeTierError.somethingWentWrong
         }
     }
@@ -95,7 +93,7 @@ public class ChangeTierClientOctopus: ChangeTierClient {
     }
 
     func getFilteredTiers(
-        currentContract: OctopusGraphQL.ContractsQuery.Data.CurrentMember.ActiveContract?,
+        currentContract: OctopusGraphQL.ContractQuery.Data.Contract?,
         intent: OctopusGraphQL.ChangeTierDeductibleCreateIntentMutation.Data.ChangeTierDeductibleCreateIntent.Intent?
     ) -> [Tier] {
         // list of all unique tierNames
