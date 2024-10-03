@@ -22,7 +22,7 @@ struct EditTierScreen: View {
                         hRadioField(
                             id: tier.name,
                             leftView: {
-                                VStack(alignment: .leading, spacing: .padding8) {
+                                VStack(alignment: .leading, spacing: 0) {
                                     HStack {
                                         hText(tier.name)
                                         Spacer()
