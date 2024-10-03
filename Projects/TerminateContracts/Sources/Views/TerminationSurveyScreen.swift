@@ -93,7 +93,7 @@ struct TerminationSurveyScreen: View {
                         }
                     )
                 ])
-                .hButtonIsLoading(false)
+                .hButtonIsLoading(terminationFlowNavigationViewModel.loadingActions[action.action] == .loading)
         case .redirect(let redirect):
             InfoCard(text: redirect.description, type: .campaign)
                 .buttons([
@@ -192,7 +192,7 @@ class SurveyScreenViewModel: ObservableObject {
     }
 }
 
-#Preview{
+#Preview {
     Localization.Locale.currentLocale.send(.en_SE)
     let options = [
         TerminationFlowSurveyStepModelOption(
@@ -255,7 +255,8 @@ struct TerminationFlowSurveyStepFeedBackView: View {
             placeholder: L10n.terminationSurveyFeedbackHint,
             required: vm.required,
             maxCharacters: 2000
-        ) { [weak vm] text in guard let vm else { return }
+        ) { [weak vm] text in
+            guard let vm else { return }
             vm.error = vm.required && text.isEmpty ? L10n.terminationSurveyFeedbackInfo : nil
             vm.text = text
         }
