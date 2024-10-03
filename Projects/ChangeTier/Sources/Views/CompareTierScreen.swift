@@ -23,37 +23,41 @@ struct CompareTierScreen: View {
                 vm: scrollableSegmentedViewModel,
                 contentFor: { id in
                     let currentTier = vm.tiers.first(where: { $0.id == id })
-                    let tierWithMostCoverage = vm.tiers.sorted(by: { $0.level > $1.level }).first
-                    let maxPerils = tierWithMostCoverage?.productVariant?.perils
-
                     let currentLimits = currentTier?.productVariant?.insurableLimits ?? []
-                    let currentPerils = currentTier?.productVariant?.perils ?? []
-
-                    let perilsNotCoveredByTier =
-                        maxPerils?.filter({ !currentPerils.contains($0) })
-                        .map({
-                            Perils(
-                                id: $0.id,
-                                title: $0.title,
-                                description: $0.description,
-                                info: $0.info,
-                                color: $0.color,
-                                covered: $0.covered,
-                                isDisabled: true
-                            )
-                        }) ?? []
-
-                    let allPerils = currentPerils + perilsNotCoveredByTier
+                    let perils = getFilteredPerils(currentTier: currentTier)
 
                     return CoverageView(
                         limits: currentLimits,
                         didTapInsurableLimit: { limit in
                             changeTierNavigationVm.isInsurableLimitPresented = limit
                         },
-                        perils: allPerils
+                        perils: perils
                     )
                 }
             )
         }
+    }
+
+    func getFilteredPerils(currentTier: Tier?) -> [Perils] {
+        let tierWithMostCoverage = vm.tiers.sorted(by: { $0.level > $1.level }).first
+        let maxPerils = tierWithMostCoverage?.productVariant?.perils
+        let currentPerils = currentTier?.productVariant?.perils ?? []
+
+        let perilsNotCoveredByTier =
+            maxPerils?.filter({ !currentPerils.contains($0) })
+            .map({
+                Perils(
+                    id: $0.id,
+                    title: $0.title,
+                    description: $0.description,
+                    info: $0.info,
+                    color: $0.color,
+                    covered: $0.covered,
+                    isDisabled: true
+                )
+            }) ?? []
+
+        let allPerils = currentPerils + perilsNotCoveredByTier
+        return allPerils
     }
 }
