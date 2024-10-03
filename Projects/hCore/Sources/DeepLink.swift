@@ -59,8 +59,7 @@ public enum DeepLink: String, Codable, CaseIterable {
         case .inbox:
             return L10n.chatConversationInbox
         case .changeTier:
-            /* TODO: LOCALIZE */
-            return "Change tier"
+            return L10n.InsuranceDetails.changeCoverage
         }
     }
 
