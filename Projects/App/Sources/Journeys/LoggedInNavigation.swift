@@ -74,10 +74,10 @@ struct LoggedInNavigation: View {
                 }
             case let .openFeedback(url):
                 vm.openUrl(url: url)
-            case .changeTierFoundBetterPrice:
-                break
-            case .changeTierMissingCoverageAndTerms:
-                break
+            case let .changeTierFoundBetterPrice(contractId):
+                vm.changeTierInput = .init(source: .betterPrice, contractId: contractId)
+            case let .changeTierMissingCoverageAndTerms(contractId):
+                vm.changeTierInput = .init(source: .betterCoverage, contractId: contractId)
             }
         }
         .modally(
@@ -85,6 +85,10 @@ struct LoggedInNavigation: View {
             options: .constant(.alwaysOpenOnTop)
         ) {
             EuroBonusNavigation(useOwnNavigation: true)
+        }
+
+        .modally(item: $vm.changeTierInput) { input in
+            ChangeTierNavigation(input: input)
         }
         .introspect(.tabView, on: .iOS(.v13...)) { tabBar in
             vm.tabBar = tabBar
@@ -454,6 +458,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isMoveContractPresented = false
     @Published var isEuroBonusPresented = false
     @Published var isUrlPresented: URL?
+    @Published var changeTierInput: ChangeTierInput?
     private var openDeepLinkObserver: NSObjectProtocol?
     private var registerForPushNotificationsObserver: NSObjectProtocol?
     private var handlePushNotificationObserver: NSObjectProtocol?

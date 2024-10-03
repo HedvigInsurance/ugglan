@@ -1,3 +1,4 @@
+import ChangeTier
 import Chat
 import Contracts
 import EditCoInsuredShared
@@ -12,6 +13,7 @@ import hCoreUI
 
 public class HelpCenterNavigationViewModel: ObservableObject {
     @Published var quickActions = QuickActions()
+    @Published var changeTierInput: ChangeTierInput?
     var connectPaymentsVm = ConnectPaymentViewModel()
     public let editCoInsuredVm = EditCoInsuredViewModel(
         existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
@@ -151,13 +153,16 @@ public struct HelpCenterNavigation<Content: View>: View {
                         UIApplication.shared.open(url)
                     }
                 }
-            case .changeTierFoundBetterPrice:
-                break
-            case .changeTierMissingCoverageAndTerms:
-                break
+            case let .changeTierFoundBetterPrice(contractId):
+                helpCenterVm.changeTierInput = .init(source: .betterPrice, contractId: contractId)
+            case let .changeTierMissingCoverageAndTerms(contractId):
+                helpCenterVm.changeTierInput = .init(source: .betterCoverage, contractId: contractId)
             }
         }
         .environmentObject(helpCenterVm)
+        .modally(item: $helpCenterVm.changeTierInput) { input in
+            ChangeTierNavigation(input: input)
+        }
     }
 
     private func handle(quickAction: QuickAction) {
