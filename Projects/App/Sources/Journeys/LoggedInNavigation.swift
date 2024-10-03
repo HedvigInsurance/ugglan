@@ -117,13 +117,8 @@ struct LoggedInNavigation: View {
                 MovingFlowNavigation()
             case let .pdf(document):
                 PDFPreview(document: .init(url: document.url, title: document.title))
-            //<<<<<<< HEAD
-            //            case let .changeTier(contractId):
-            //                ChangeTierNavigation(changeTierData: .init(contractId: contractId, changeTierSource: .changeTier))
-            //=======
             case let .changeTier(input):
                 ChangeTierNavigation(input: input)
-            //>>>>>>> feature/tiers/integrate-API
             }
         } redirectAction: { action in
             switch action {
