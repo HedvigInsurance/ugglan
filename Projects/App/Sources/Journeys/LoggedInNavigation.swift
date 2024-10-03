@@ -65,8 +65,8 @@ struct LoggedInNavigation: View {
             item: $vm.isChangeTierPresented,
             options: .constant(.alwaysOpenOnTop),
             tracking: nil
-        ) { changeTierData in
-            ChangeTierNavigation(changeTierData: changeTierData)
+        ) { changeTierInput in
+            ChangeTierNavigation(input: changeTierInput)
         }
         .handleTerminateInsurance(vm: vm.terminateInsuranceVm) { dismissType in
             switch dismissType {
@@ -81,6 +81,10 @@ struct LoggedInNavigation: View {
                 }
             case let .openFeedback(url):
                 vm.openUrl(url: url)
+            case .changeTierFoundBetterPrice:
+                break
+            case .changeTierMissingCoverageAndTerms:
+                break
             }
         }
         .modally(
@@ -113,8 +117,13 @@ struct LoggedInNavigation: View {
                 MovingFlowNavigation()
             case let .pdf(document):
                 PDFPreview(document: .init(url: document.url, title: document.title))
-            case let .changeTier(contractId):
-                ChangeTierNavigation(changeTierData: .init(contractId: contractId, changeTierSource: .changeTier))
+            //<<<<<<< HEAD
+            //            case let .changeTier(contractId):
+            //                ChangeTierNavigation(changeTierData: .init(contractId: contractId, changeTierSource: .changeTier))
+            //=======
+            case let .changeTier(input):
+                ChangeTierNavigation(input: input)
+            //>>>>>>> feature/tiers/integrate-API
             }
         } redirectAction: { action in
             switch action {
@@ -129,6 +138,10 @@ struct LoggedInNavigation: View {
                     NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                 case let .openFeedback(url):
                     vm.openUrl(url: url)
+                case let .changeTierFoundBetterPrice(contractId):
+                    vm.contractsNavigationVm.changeTierInput = .init(source: .betterPrice, contractId: contractId)
+                case let .changeTierMissingCoverageAndTerms(contractId):
+                    vm.contractsNavigationVm.changeTierInput = .init(source: .betterCoverage, contractId: contractId)
                 }
             }
         }
@@ -451,7 +464,7 @@ class LoggedInNavigationViewModel: ObservableObject {
 
     @Published var isTravelInsurancePresented = false
     @Published var isMoveContractPresented = false
-    @Published var isChangeTierPresented: ChangeTierData?
+    @Published var isChangeTierPresented: ChangeTierInput?
     @Published var isEuroBonusPresented = false
     @Published var isUrlPresented: URL?
     private var openDeepLinkObserver: NSObjectProtocol?
@@ -647,7 +660,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
                 if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
-                        self?.isChangeTierPresented = .init(contractId: contractId, changeTierSource: .changeTier)
+                        self?.isChangeTierPresented = .init(source: .changeTier, contractId: contractId)
                     }
                 }
             }

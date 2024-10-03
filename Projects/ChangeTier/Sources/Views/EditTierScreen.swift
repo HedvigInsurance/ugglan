@@ -94,5 +94,5 @@ extension EditTierScreen: TitleView {
 }
 
 #Preview {
-    EditTierScreen(vm: .init(changeTierData: .init(contractId: "contractId", changeTierSource: .changeTier)))
+    EditTierScreen(vm: .init(changeTierInput: .init(source: .betterCoverage, contractId: "contractId")))
 }

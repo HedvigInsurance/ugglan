@@ -74,7 +74,10 @@ struct EditContract: View {
                                 contractsNavigationVm.isChangeAddressPresented = true
                             case .changeTier:
                                 if let contract {
-                                    contractsNavigationVm.changeTierContract = contract
+                                    contractsNavigationVm.changeTierInput = .init(
+                                        source: .changeTier,
+                                        contractId: contract.id
+                                    )
                                 }
                             case nil:
                                 break

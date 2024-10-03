@@ -63,10 +63,10 @@ extension ChangeTierViewModel {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
-    let changeTierData: ChangeTierData = .init(contractId: "contractId", changeTierSource: .changeTier)
+    let changeTierInput: ChangeTierInput = .init(source: .changeTier, contractId: "contractId")
 
     return ChangeTierSummaryScreen(
-        changeTierVm: .init(changeTierData: changeTierData),
-        changeTierNavigationVm: .init(vm: .init(changeTierData: changeTierData))
+        changeTierVm: .init(changeTierInput: changeTierInput),
+        changeTierNavigationVm: .init(vm: .init(changeTierInput: changeTierInput))
     )
 }

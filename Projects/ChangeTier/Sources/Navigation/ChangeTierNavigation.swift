@@ -47,34 +47,34 @@ extension ChangeTierRouterActionsWithoutBackButton: TrackingViewNameProtocol {
     }
 }
 
+public struct ChangeTierInput: Equatable, Identifiable {
+    public var id: String {
+        contractId
+    }
+
+    public init(source: ChangeTierSource, contractId: String) {
+        self.source = source
+        self.contractId = contractId
+    }
+
+    let source: ChangeTierSource
+    let contractId: String
+}
+
 public enum ChangeTierSource {
     case changeTier
     case betterPrice
     case betterCoverage
 }
 
-public struct ChangeTierData: Equatable, Identifiable {
-    public var id = UUID()
-    let contractId: String
-    let changeTierSource: ChangeTierSource
-
-    public init(
-        contractId: String,
-        changeTierSource: ChangeTierSource
-    ) {
-        self.contractId = contractId
-        self.changeTierSource = changeTierSource
-    }
-}
-
 public struct ChangeTierNavigation: View {
     @ObservedObject var changeTierNavigationVm: ChangeTierNavigationViewModel
 
     public init(
-        changeTierData: ChangeTierData
+        input: ChangeTierInput
     ) {
         self.changeTierNavigationVm = .init(
-            vm: .init(changeTierData: changeTierData)
+            vm: .init(changeTierInput: input)
         )
     }
 

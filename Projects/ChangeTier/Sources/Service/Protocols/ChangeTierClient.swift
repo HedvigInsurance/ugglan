@@ -2,10 +2,7 @@ import Foundation
 import hCore
 
 public protocol ChangeTierClient {
-    func getTier(
-        contractId: String,
-        tierSource: ChangeTierSource
-    ) async throws(ChangeTierError) -> ChangeTierIntentModel
+    func getTier(input: ChangeTierInput) async throws(ChangeTierError) -> ChangeTierIntentModel
     func commitTier(quoteId: String) async throws(ChangeTierError)
 }
 
