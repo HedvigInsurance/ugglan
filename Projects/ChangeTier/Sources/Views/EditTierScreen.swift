@@ -26,7 +26,12 @@ struct EditTierScreen: View {
                                     HStack {
                                         hText(tier.name)
                                         Spacer()
-                                        hText(tier.premium.formattedAmountPerMonth)
+                                        hPill(
+                                            text: tier.premium.formattedAmountPerMonth,
+                                            color: .grey(translucent: false),
+                                            colorLevel: .one
+                                        )
+                                        .hFieldSize(.small)
                                     }
                                     if let subTitle = tier.productVariant?.displayNameTierLong {
                                         hText(subTitle)
@@ -94,5 +99,6 @@ extension EditTierScreen: TitleView {
 }
 
 #Preview {
-    EditTierScreen(vm: .init(changeTierInput: .init(source: .betterCoverage, contractId: "contractId")))
+    Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
+    return EditTierScreen(vm: .init(changeTierInput: .init(source: .betterCoverage, contractId: "contractId")))
 }
