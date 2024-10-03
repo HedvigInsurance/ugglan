@@ -22,16 +22,35 @@ struct CompareTierScreen: View {
             ScrollableSegmentedView(
                 vm: scrollableSegmentedViewModel,
                 contentFor: { id in
-                    let tier = vm.tiers.first(where: { $0.id == id })
-                    let limits = tier?.productVariant?.insurableLimits ?? []
-                    let perils = tier?.productVariant?.perils ?? []
+                    let currentTier = vm.tiers.first(where: { $0.id == id })
+                    let tierWithMostCoverage = vm.tiers.sorted(by: { $0.level > $1.level }).first
+                    let maxPerils = tierWithMostCoverage?.productVariant?.perils
+
+                    let currentLimits = currentTier?.productVariant?.insurableLimits ?? []
+                    let currentPerils = currentTier?.productVariant?.perils ?? []
+
+                    let perilsNotCoveredByTier =
+                        maxPerils?.filter({ !currentPerils.contains($0) })
+                        .map({
+                            Perils(
+                                id: $0.id,
+                                title: $0.title,
+                                description: $0.description,
+                                info: $0.info,
+                                color: $0.color,
+                                covered: $0.covered,
+                                isDisabled: true
+                            )
+                        }) ?? []
+
+                    let allPerils = currentPerils + perilsNotCoveredByTier
 
                     return CoverageView(
-                        limits: limits,
+                        limits: currentLimits,
                         didTapInsurableLimit: { limit in
                             changeTierNavigationVm.isInsurableLimitPresented = limit
                         },
-                        perils: perils
+                        perils: allPerils
                     )
                 }
             )

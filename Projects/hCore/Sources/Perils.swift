@@ -7,6 +7,7 @@ public struct Perils: Codable, Equatable, Hashable {
     public let info: String?
     public let color: String?
     public let covered: [String]
+    public let isDisabled: Bool
 
     public init(
         id: String?,
@@ -14,7 +15,8 @@ public struct Perils: Codable, Equatable, Hashable {
         description: String,
         info: String?,
         color: String?,
-        covered: [String]
+        covered: [String],
+        isDisabled: Bool? = false
     ) {
         self.id = id
         self.title = title
@@ -22,6 +24,7 @@ public struct Perils: Codable, Equatable, Hashable {
         self.info = info
         self.color = color
         self.covered = covered
+        self.isDisabled = isDisabled ?? false
     }
 
     public init(
@@ -33,5 +36,6 @@ public struct Perils: Codable, Equatable, Hashable {
         covered = fragment.covered
         color = fragment.colorCode
         info = fragment.info
+        isDisabled = false
     }
 }
