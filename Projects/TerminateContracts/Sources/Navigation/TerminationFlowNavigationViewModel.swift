@@ -26,35 +26,29 @@ class TerminationFlowNavigationViewModel: ObservableObject {
                 }
             case .changeTierFoundBetterPrice, .changeTierMissingCoverageAndTerms:
                 let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                if let contactId = store.state.config?.contractId {
-                    if case .changeTierFoundBetterPrice = redirectAction {
-                        Task { @MainActor [weak self] in
-                            guard let self = self else { return }
-                            loadingActions[.changeTierFoundBetterPrice] = .loading
-                            do {
-                                let input = ChangeTierInput(source: .betterPrice, contractId: contactId)
-                                let data = try await ChangeTierNavigationViewModel.getTiers(input: input)
-                                changeTierWrapper = .init(input: input, model: data)
-                                self.router.dismiss()
-                            } catch let ex {
-                                Toasts.shared.displayToastBar(toast: .init(type: .error, text: ex.localizedDescription))
-                            }
-                            loadingActions[.changeTierFoundBetterPrice] = nil
+                if let contactId = store.state.config?.contractId,
+                    let redirectAction,
+                    let source: ChangeTierSource = {
+                        if case .changeTierFoundBetterPrice = redirectAction {
+                            return .betterPrice
+                        } else if case .changeTierMissingCoverageAndTerms = redirectAction {
+                            return .betterCoverage
                         }
-                    } else if case .changeTierMissingCoverageAndTerms = redirectAction {
-                        Task { @MainActor [weak self] in
-                            guard let self = self else { return }
-                            loadingActions[.changeTierMissingCoverageAndTerms] = .loading
-                            do {
-                                let input = ChangeTierInput(source: .betterCoverage, contractId: contactId)
-                                let data = try await ChangeTierNavigationViewModel.getTiers(input: input)
-                                changeTierWrapper = .init(input: input, model: data)
-                                self.router.dismiss()
-                            } catch let ex {
-                                Toasts.shared.displayToastBar(toast: .init(type: .error, text: ex.localizedDescription))
-                            }
-                            loadingActions[.changeTierMissingCoverageAndTerms] = nil
+                        return nil
+                    }()
+                {
+                    let input = ChangeTierInput(source: source, contractId: contactId)
+                    loadingActions[redirectAction] = .loading
+                    Task { @MainActor [weak self] in
+                        guard let self = self else { return }
+                        do {
+                            let data = try await ChangeTierNavigationViewModel.getTiers(input: input)
+                            changeTierWrapper = .init(input: input, model: data)
+                            self.router.dismiss()
+                        } catch let ex {
+                            Toasts.shared.displayToastBar(toast: .init(type: .error, text: ex.localizedDescription))
                         }
+                        loadingActions[redirectAction] = nil
                     }
                 }
             case .none:
@@ -62,6 +56,40 @@ class TerminationFlowNavigationViewModel: ObservableObject {
             }
         }
     }
+
+    private func checkForQuotes(redirectAction: FlowTerminationSurveyRedirectAction) {
+        switch redirectAction {
+        case .updateAddress:
+            break
+        case .changeTierFoundBetterPrice, .changeTierMissingCoverageAndTerms:
+            let store: TerminationContractStore = globalPresentableStoreContainer.get()
+            if let contactId = store.state.config?.contractId,
+                let source: ChangeTierSource = {
+                    if case .changeTierFoundBetterPrice = redirectAction {
+                        return .betterPrice
+                    } else if case .changeTierMissingCoverageAndTerms = redirectAction {
+                        return .betterCoverage
+                    }
+                    return nil
+                }()
+            {
+                let input = ChangeTierInput(source: source, contractId: contactId)
+                loadingActions[redirectAction] = .loading
+                Task { @MainActor [weak self] in
+                    guard let self = self else { return }
+                    do {
+                        let data = try await ChangeTierNavigationViewModel.getTiers(input: input)
+                        changeTierWrapper = .init(input: input, model: data)
+                        self.router.dismiss()
+                    } catch let ex {
+                        Toasts.shared.displayToastBar(toast: .init(type: .error, text: ex.localizedDescription))
+                    }
+                    loadingActions[redirectAction] = nil
+                }
+            }
+        }
+    }
+
     var redirectUrl: URL? {
         didSet {
             if let redirectUrl {
