@@ -6,22 +6,26 @@ struct MockData {
     static func createMockChatService(
         fetchNewMessages: @escaping FetchNewMessages = {
             .init(
+                conversationId: "",
                 hasPreviousMessage: false,
                 messages: [],
                 banner: nil,
                 conversationStatus: nil,
                 title: nil,
-                subtitle: nil
+                subtitle: nil,
+                claimId: nil
             )
         },
         fetchPreviousMessages: @escaping FetchPreviousMessages = {
             .init(
+                conversationId: "",
                 hasPreviousMessage: false,
                 messages: [],
                 banner: nil,
                 conversationStatus: nil,
                 title: nil,
-                subtitle: nil
+                subtitle: nil,
+                claimId: nil
             )
         },
         sendMessage: @escaping SendMessage = { _ in .init(type: .text(text: "test")) }
@@ -47,26 +51,29 @@ enum ChatError: Error {
 
 extension ChatData {
     init(
+        conversationId: String,
         with messages: [Message] = [],
         hasPreviousMessages: Bool = false,
         banner: String? = nil,
         conversationStatus: ConversationStatus? = nil,
         title: String? = nil,
-        subtitle: String? = nil
+        subtitle: String? = nil,
+        claimId: String? = nil
     ) {
         self.init(
+            conversationId: conversationId,
             hasPreviousMessage: hasPreviousMessages,
             messages: messages,
             banner: banner,
             conversationStatus: conversationStatus,
             title: title,
-            subtitle: subtitle
+            subtitle: subtitle,
+            claimId: claimId
         )
     }
 }
 
 class MockConversationService: ChatServiceProtocol {
-    var type: Chat.ChatServiceType
     var events = [Event]()
     var fetchNewMessages: FetchNewMessages
     var fetchPreviousMessages: FetchPreviousMessages
@@ -83,7 +90,6 @@ class MockConversationService: ChatServiceProtocol {
         sendMessage: @escaping SendMessage
 
     ) {
-        self.type = .conversation
         self.fetchNewMessages = fetchNewMessages
         self.fetchPreviousMessages = fetchPreviousMessages
         self.sendMessage = sendMessage

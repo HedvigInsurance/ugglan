@@ -16,7 +16,7 @@ final class TestChatViewModelBanner: XCTestCase {
     func testBannerSuccess() async {
         let banner = "testBanner"
         let mockService = MockData.createMockChatService(
-            fetchNewMessages: { .init(banner: banner) }
+            fetchNewMessages: { .init(conversationId: "", banner: banner) }
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
@@ -39,8 +39,8 @@ final class TestChatViewModelBanner: XCTestCase {
         let banner = "testBanner"
         let updatedBanner = "updatedBanner"
         let mockService = MockData.createMockChatService(
-            fetchNewMessages: { .init(hasPreviousMessages: true, banner: banner) },
-            fetchPreviousMessages: { .init(banner: updatedBanner) }
+            fetchNewMessages: { .init(conversationId: "", hasPreviousMessages: true, banner: banner) },
+            fetchPreviousMessages: { .init(conversationId: "", banner: updatedBanner) }
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
