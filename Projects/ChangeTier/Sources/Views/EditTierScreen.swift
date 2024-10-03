@@ -85,7 +85,7 @@ extension EditTierScreen: TitleView {
         VStack(alignment: .leading, spacing: 0) {
             hText(L10n.tierFlowSelectCoverageTitle, style: .heading1)
                 .foregroundColor(hTextColor.Opaque.primary)
-            hText(tierFlowSelectCoverageSubtitle, style: .heading1)
+            hText(L10n.tierFlowSelectCoverageSubtitle, style: .heading1)
                 .foregroundColor(hTextColor.Opaque.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
