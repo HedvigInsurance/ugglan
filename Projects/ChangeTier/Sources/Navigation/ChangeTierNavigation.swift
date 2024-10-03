@@ -71,25 +71,10 @@ public struct ChangeTierNavigation: View {
     @ObservedObject var changeTierNavigationVm: ChangeTierNavigationViewModel
 
     public init(
-        contractId: String,
-        changeTierSource: ChangeTierSource
-    ) {
-        self.changeTierNavigationVm = .init(
-            vm: .init(
-                contractId: contractId,
-                changeTierSource: changeTierSource
-            )
-        )
-    }
-
-    public init(
         input: ChangeTierInput
     ) {
         self.changeTierNavigationVm = .init(
-            vm: .init(
-                contractId: input.contractId,
-                changeTierSource: input.source
-            )
+            vm: .init(changeTierInput: input)
         )
     }
 

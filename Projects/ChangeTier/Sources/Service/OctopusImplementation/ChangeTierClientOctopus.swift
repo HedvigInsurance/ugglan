@@ -8,13 +8,10 @@ public class ChangeTierClientOctopus: ChangeTierClient {
 
     public init() {}
 
-    public func getTier(
-        contractId: String,
-        tierSource: ChangeTierSource
-    ) async throws(ChangeTierError) -> ChangeTierIntentModel {
+    public func getTier(input: ChangeTierInput) async throws(ChangeTierError) -> ChangeTierIntentModel {
 
         let source: OctopusGraphQL.ChangeTierDeductibleSource = {
-            switch tierSource {
+            switch input.source {
             case .changeTier: return .selfService
             case .betterCoverage: return .terminationBetterCoverage
             case .betterPrice: return .terminationBetterPrice
@@ -23,13 +20,13 @@ public class ChangeTierClientOctopus: ChangeTierClient {
 
         do {
             let input: OctopusGraphQL.ChangeTierDeductibleCreateIntentInput = .init(
-                contractId: contractId,
+                contractId: input.contractId,
                 source: .case(source)
             )
             let mutation = OctopusGraphQL.ChangeTierDeductibleCreateIntentMutation(input: input)
             async let createIntentdata = try octopus.client.perform(mutation: mutation)
 
-            let contractsQuery = OctopusGraphQL.ContractQuery(contractId: contractId)
+            let contractsQuery = OctopusGraphQL.ContractQuery(contractId: input.contractId)
             async let contractData = try octopus.client.fetch(
                 query: contractsQuery,
                 cachePolicy: .fetchIgnoringCacheCompletely

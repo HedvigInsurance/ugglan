@@ -61,6 +61,13 @@ struct LoggedInNavigation: View {
         ) {
             MovingFlowNavigation()
         }
+        .modally(
+            item: $vm.isChangeTierPresented,
+            options: .constant(.alwaysOpenOnTop),
+            tracking: nil
+        ) { changeTierInput in
+            ChangeTierNavigation(input: changeTierInput)
+        }
         .handleTerminateInsurance(vm: vm.terminateInsuranceVm) { dismissType in
             switch dismissType {
             case .done:
@@ -456,6 +463,7 @@ class LoggedInNavigationViewModel: ObservableObject {
 
     @Published var isTravelInsurancePresented = false
     @Published var isMoveContractPresented = false
+    @Published var isChangeTierPresented: ChangeTierInput?
     @Published var isEuroBonusPresented = false
     @Published var isUrlPresented: URL?
     @Published var changeTierInput: ChangeTierInput?
@@ -646,6 +654,15 @@ class LoggedInNavigationViewModel: ObservableObject {
                 self.profileNavigationVm.pushToProfile()
             case nil:
                 openUrl(url: url)
+            case .changeTier:
+                let contractId = self.getContractId(from: url)
+
+                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+                        self?.isChangeTierPresented = .init(source: .changeTier, contractId: contractId)
+                    }
+                }
             }
         }
     }
