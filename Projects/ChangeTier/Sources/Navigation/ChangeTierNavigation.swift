@@ -19,10 +19,20 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     ) {
         self.vm = vm
     }
+
+    public static func getTiers(input: ChangeTierInput) async throws(ChangeTierError) -> ChangeTierIntentModel {
+        let client: ChangeTierClient = Dependencies.shared.resolve()
+        let data = try await client.getTier(input: input)
+        return data
+    }
 }
 
 enum ChangeTierRouterActions {
     case summary
+}
+
+enum ChangeTierRouterActionsWithoutBackButton {
+    case commitTier
 }
 
 extension ChangeTierRouterActions: TrackingViewNameProtocol {
@@ -34,25 +44,44 @@ extension ChangeTierRouterActions: TrackingViewNameProtocol {
     }
 }
 
+extension ChangeTierRouterActionsWithoutBackButton: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .commitTier:
+            return .init(describing: ChangeTierProcessingView.self)
+        }
+    }
+}
+
+public struct ChangeTierInput: Equatable, Identifiable {
+    public var id: String {
+        contractId
+    }
+
+    public init(source: ChangeTierSource, contractId: String) {
+        self.source = source
+        self.contractId = contractId
+    }
+
+    let source: ChangeTierSource
+    let contractId: String
+}
+
 public enum ChangeTierSource {
     case changeTier
     case betterPrice
     case betterCoverage
-    case moving
 }
 
 public struct ChangeTierNavigation: View {
     @ObservedObject var changeTierNavigationVm: ChangeTierNavigationViewModel
 
     public init(
-        contractId: String,
-        changeTierSource: ChangeTierSource
+        input: ChangeTierInput,
+        existingModel: ChangeTierIntentModel? = nil
     ) {
         self.changeTierNavigationVm = .init(
-            vm: .init(
-                contractId: contractId,
-                changeTierSource: changeTierSource
-            )
+            vm: .init(changeTierInput: input, changeTierIntentModel: existingModel)
         )
     }
 
@@ -73,6 +102,13 @@ public struct ChangeTierNavigation: View {
                         )
                         .configureTitle(L10n.offerUpdateSummaryTitle)
                         .withDismissButton()
+                    }
+                }
+                .routerDestination(for: ChangeTierRouterActionsWithoutBackButton.self, options: [.hidesBackButton]) {
+                    action in
+                    switch action {
+                    case .commitTier:
+                        ChangeTierProcessingView(vm: changeTierNavigationVm.vm)
                     }
                 }
         }

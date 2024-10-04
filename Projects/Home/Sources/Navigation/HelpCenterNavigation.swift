@@ -1,3 +1,4 @@
+import ChangeTier
 import Chat
 import Contracts
 import EditCoInsuredShared
@@ -151,6 +152,8 @@ public struct HelpCenterNavigation<Content: View>: View {
                         UIApplication.shared.open(url)
                     }
                 }
+            case .changeTierFoundBetterPriceStarted, .changeTierMissingCoverageAndTermsStarted:
+                break
             }
         }
         .environmentObject(helpCenterVm)
@@ -193,6 +196,6 @@ public enum HelpCenterRedirectType {
     case deflect
 }
 
-#Preview{
+#Preview {
     HelpCenterNavigation(helpCenterVm: .init(), redirect: { _ in })
 }

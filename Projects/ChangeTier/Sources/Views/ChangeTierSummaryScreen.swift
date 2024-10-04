@@ -33,14 +33,14 @@ extension ChangeTierViewModel {
                     exposureName: self.exposureName ?? "",
                     newPremium: self.newPremium,
                     currentPremium: self.currentPremium,
-                    documents: self.selectedTier?.productVariant.documents ?? [],
+                    documents: self.selectedTier?.productVariant?.documents ?? [],
                     onDocumentTap: { [weak self] document in
                         if let url = URL(string: document.url) {
                             changeTierNavigationVm.document = .init(url: url, title: document.displayName)
                         }
                     },
                     displayItems: displayItems,
-                    insuranceLimits: self.selectedTier?.productVariant.insurableLimits ?? [],
+                    insuranceLimits: self.selectedTier?.productVariant?.insurableLimits ?? [],
                     onLimitTap: { [weak self] limit in
                         changeTierNavigationVm.isInsurableLimitPresented = limit
                     }
@@ -48,11 +48,13 @@ extension ChangeTierViewModel {
             ],
             total: self.newPremium ?? .init(amount: "", currency: ""),
             FAQModel: (
-                title: L10n.tierFlowQaTitle, subtitle: L10n.tierFlowQaSubtitle,
+                title: L10n.tierFlowQaTitle,
+                subtitle: L10n.tierFlowQaSubtitle,
                 questions: self.selectedTier?.FAQs ?? []
             ),
             onConfirmClick: {
-                /* TODO: IMPLEMENT */
+                self.commitTier()
+                changeTierNavigationVm.router.push(ChangeTierRouterActionsWithoutBackButton.commitTier)
             }
         )
         return vm
@@ -61,8 +63,10 @@ extension ChangeTierViewModel {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
+    let changeTierInput: ChangeTierInput = .init(source: .changeTier, contractId: "contractId")
+
     return ChangeTierSummaryScreen(
-        changeTierVm: .init(contractId: "contractId", changeTierSource: .changeTier),
-        changeTierNavigationVm: .init(vm: .init(contractId: "contractId", changeTierSource: .changeTier))
+        changeTierVm: .init(changeTierInput: changeTierInput),
+        changeTierNavigationVm: .init(vm: .init(changeTierInput: changeTierInput))
     )
 }

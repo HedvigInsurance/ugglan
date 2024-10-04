@@ -1,3 +1,4 @@
+import ChangeTier
 import EditCoInsuredShared
 import Foundation
 import PresentableStore
@@ -68,6 +69,9 @@ public struct ContractsNavigation<Content: View>: View {
         .modally(presented: $contractsNavigationVm.isChangeAddressPresented) {
             redirect(.movingFlow)
         }
+        .modally(item: $contractsNavigationVm.changeTierInput) { input in
+            redirect(.changeTier(input: input))
+        }
         .detent(
             item: $contractsNavigationVm.insuranceUpdate,
             style: [.height]
@@ -80,7 +84,12 @@ public struct ContractsNavigation<Content: View>: View {
         }
         .handleTerminateInsurance(vm: contractsNavigationVm.terminateInsuranceVm) { dismissType in
             redirectAction(.termination(action: dismissType))
-            contractsNavigationVm.contractsRouter.popToRoot()
+            switch dismissType {
+            case .done, .chat, .openFeedback:
+                contractsNavigationVm.contractsRouter.popToRoot()
+            case .changeTierFoundBetterPriceStarted, .changeTierMissingCoverageAndTermsStarted:
+                break
+            }
         }
     }
 }
@@ -95,6 +104,7 @@ public class ContractsNavigationViewModel: ObservableObject {
     @Published public var changeYourInformationContract: Contract?
     @Published public var insuranceUpdate: Contract?
     @Published public var isChangeAddressPresented = false
+    @Published public var changeTierInput: ChangeTierInput?
 
     public var editCoInsuredVm = EditCoInsuredViewModel(
         existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
@@ -107,6 +117,7 @@ public enum RedirectType {
     case chat
     case movingFlow
     case pdf(document: Document)
+    case changeTier(input: ChangeTierInput)
 }
 
 public enum RedirectAction {

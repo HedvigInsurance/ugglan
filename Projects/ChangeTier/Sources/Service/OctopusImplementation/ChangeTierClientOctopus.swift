@@ -1,308 +1,172 @@
 import Foundation
 import hCore
+import hCoreUI
+import hGraphQL
 
 public class ChangeTierClientOctopus: ChangeTierClient {
+    @Inject var octopus: hOctopus
+
     public init() {}
 
-    public func getTier(
-        contractId: String,
-        tierSource: ChangeTierSource
-    ) async throws(ChangeTierError) -> ChangeTierIntentModel {
-        /* TODO: REPLACE WITH REAL DATA */
-        do {
-            try await Task.sleep(nanoseconds: 2_000_000_000)
-        } catch {
+    public func getTier(input: ChangeTierInput) async throws(ChangeTierError) -> ChangeTierIntentModel {
 
+        let source: OctopusGraphQL.ChangeTierDeductibleSource = {
+            switch input.source {
+            case .changeTier: return .selfService
+            case .betterCoverage: return .terminationBetterCoverage
+            case .betterPrice: return .terminationBetterPrice
+            }
+        }()
+
+        do {
+            let input: OctopusGraphQL.ChangeTierDeductibleCreateIntentInput = .init(
+                contractId: input.contractId,
+                source: .case(source)
+            )
+            let mutation = OctopusGraphQL.ChangeTierDeductibleCreateIntentMutation(input: input)
+            async let createIntentdata = try octopus.client.perform(mutation: mutation)
+
+            let contractsQuery = OctopusGraphQL.ContractQuery(contractId: input.contractId)
+            async let contractData = try octopus.client.fetch(
+                query: contractsQuery,
+                cachePolicy: .fetchIgnoringCacheCompletely
+            )
+
+            let data = try await [createIntentdata, contractData] as [Any]
+            let createIntentResponse = data[0] as! OctopusGraphQL.ChangeTierDeductibleCreateIntentMutation.Data
+            let contractResponse = data[1] as! OctopusGraphQL.ContractQuery.Data
+
+            let intent = createIntentResponse.changeTierDeductibleCreateIntent.intent
+            let currentContract = contractResponse.contract
+
+            /* get current deductible */
+            let deductible = currentContract.currentAgreement.deductible
+            let currentDeductible: Deductible? = {
+                if let deductible = deductible {
+                    return Deductible(
+                        deductibleAmount: .init(fragment: deductible.amount.fragments.moneyFragment),
+                        deductiblePercentage: deductible.percentage,
+                        subTitle: deductible.displayText,
+                        premium: .init(fragment: currentContract.currentAgreement.premium.fragments.moneyFragment)
+                    )
+                }
+                return nil
+            }()
+
+            let filteredTiers = getFilteredTiers(currentContract: currentContract, intent: intent)
+
+            /* map currentTier with existing */
+            let currentTier: Tier? = filteredTiers.first(where: {
+                $0.name == intent?.currentTierName && $0.level == intent?.currentTierLevel
+            })
+
+            let intentModel: ChangeTierIntentModel = .init(
+                activationDate: intent?.activationDate.localDateToDate ?? Date(),
+                tiers: filteredTiers,
+                currentPremium: .init(
+                    amount: String(currentContract.currentAgreement.premium.amount),
+                    currency: currentContract.currentAgreement.premium.currencyCode.rawValue
+                ),
+                currentTier: currentTier,
+                currentDeductible: currentDeductible,
+                canEditTier: currentContract.supportsChangeTier
+            )
+            if intentModel.tiers.isEmpty {
+                throw ChangeTierError.emptyList
+            }
+
+            return intentModel
+        } catch let ex {
+            throw ChangeTierError.somethingWentWrong
         }
-        return .init(
-            id: "id",
-            activationDate: Date(),
-            tiers: [
+    }
+
+    public func commitTier(quoteId: String) async throws(ChangeTierError) {
+        let input = OctopusGraphQL.ChangeTierDeductibleCommitIntentInput(quoteId: quoteId)
+        let mutation = OctopusGraphQL.ChangeTierDeductibleCommitIntentMutation(input: input)
+
+        do {
+            let data = try await octopus.client.perform(mutation: mutation)
+            if let userError = data.changeTierDeductibleCommitIntent.userError?.message {
+                throw ChangeTierError.errorMessage(message: userError)
+            }
+        } catch {
+            throw ChangeTierError.somethingWentWrong
+        }
+    }
+
+    func getFilteredTiers(
+        currentContract: OctopusGraphQL.ContractQuery.Data.Contract?,
+        intent: OctopusGraphQL.ChangeTierDeductibleCreateIntentMutation.Data.ChangeTierDeductibleCreateIntent.Intent?
+    ) -> [Tier] {
+        // list of all unique tierNames
+        var allTiers: [Tier] = []
+
+        var uniqueTierNames: [String] = []
+        intent?.quotes
+            .forEach({ tier in
+                let tierNameIsNotInList = uniqueTierNames.first(where: { $0 == (tier.tierName ?? "") })?.isEmpty
+                if let tierName = tier.tierName, tierNameIsNotInList ?? true {
+                    uniqueTierNames.append(tierName)
+                }
+            })
+
+        /* filter tiers and deductibles*/
+        uniqueTierNames.forEach({ tierName in
+            let allQuotesWithNameX = intent?.quotes.filter({ $0.tierName == tierName })
+            var allDeductiblesForX: [Deductible] = []
+
+            allQuotesWithNameX?
+                .forEach({ quote in
+                    if let deductableAmount = quote.deductible?.amount {
+                        let deductible = Deductible(
+                            deductibleAmount: .init(fragment: deductableAmount.fragments.moneyFragment),
+                            deductiblePercentage: (quote.deductible?.percentage == 0)
+                                ? nil : quote.deductible?.percentage,
+                            subTitle: quote.deductible?.displayText,
+                            premium: .init(optionalFragment: allQuotesWithNameX?.first?.premium.fragments.moneyFragment)
+                        )
+                        allDeductiblesForX.append(deductible)
+                    }
+                })
+
+            var displayItems: [Tier.TierDisplayItem] = []
+            allQuotesWithNameX?
+                .forEach({
+                    displayItems.append(
+                        contentsOf: $0.displayItems.map({
+                            Tier.TierDisplayItem(
+                                title: $0.displayTitle,
+                                subTitle: $0.displaySubtitle,
+                                value: $0.displayValue
+                            )
+                        })
+                    )
+                })
+
+            let FAQs: [FAQ] = [
+                .init(title: "question 1", description: "..."),
+                .init(title: "question 2", description: "..."),
+                .init(title: "question 3", description: "..."),
+            ]
+
+            allTiers.append(
                 .init(
-                    id: "id",
-                    name: "Bas",
-                    level: 0,
-                    deductibles: [
-                        .init(
-                            id: "id",
-                            deductibleAmount: .init(amount: "1000", currency: "SEK"),
-                            deductiblePercentage: 0,
-                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                            premium: .init(amount: "1167", currency: "SEK")
-                        ),
-                        .init(
-                            id: "id2",
-                            deductibleAmount: .init(amount: "2000", currency: "SEK"),
-                            deductiblePercentage: 25,
-                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                            premium: .init(amount: "999", currency: "SEK")
-                        ),
-                        .init(
-                            id: "id3",
-                            deductibleAmount: .init(amount: "3000", currency: "SEK"),
-                            deductiblePercentage: 15,
-                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                            premium: .init(amount: "569", currency: "SEK")
-                        ),
-                    ],
-                    premium: .init(amount: "530", currency: "SEK"),
-                    displayItems: [
-                        .init(id: "id1", title: "Activation date", subTitle: nil, value: "24 sep 2024"),
-                        .init(id: "id2", title: "Coverage level", subTitle: nil, value: "Standard"),
-                        .init(id: "id3", title: "Deductible", subTitle: nil, value: "1750 kr"),
-                    ],
-                    exposureName: "Bellmansgatan 19A",
+                    id: allQuotesWithNameX?.first?.id ?? "",
+                    name: allQuotesWithNameX?.first?.tierName ?? "",
+                    level: allQuotesWithNameX?.first?.tierLevel ?? 0,
+                    deductibles: allDeductiblesForX,
+                    premium: .init(optionalFragment: allQuotesWithNameX?.first?.premium.fragments.moneyFragment)
+                        ?? .init(amount: "0", currency: "SEK"),
+                    displayItems: displayItems,
+                    exposureName: currentContract?.exposureDisplayName,
                     productVariant: .init(
-                        termsVersion: "",
-                        typeOfContract: "",
-                        partner: nil,
-                        perils: [
-                            .init(
-                                id: "id1",
-                                title: "title1",
-                                description: "description1",
-                                info: nil,
-                                color: nil,
-                                covered: []
-                            ),
-                            .init(
-                                id: "id2",
-                                title: "title2",
-                                description: "description2",
-                                info: nil,
-                                color: nil,
-                                covered: []
-                            ),
-                            .init(
-                                id: "id3",
-                                title: "title3",
-                                description: "description3",
-                                info: nil,
-                                color: nil,
-                                covered: []
-                            ),
-                        ],
-                        insurableLimits: [],
-                        documents: [],
-                        displayName: "Homeowner",
-                        displayNameTier: "Bas",
-                        displayNameTierLong: "Vårt mellanpaket med hög ersättning."
+                        data: allQuotesWithNameX?.first?.productVariant.fragments.productVariantFragment
                     ),
-                    FAQs: [
-                        .init(title: "question 1", description: "..."),
-                        .init(title: "question 2", description: "..."),
-                        .init(title: "question 3", description: "..."),
-                    ]
-                ),
-                .init(
-                    id: "i2",
-                    name: "Standard",
-                    level: 0,
-                    deductibles: [
-                        .init(
-                            id: "id",
-                            deductibleAmount: .init(amount: "1000", currency: "SEK"),
-                            deductiblePercentage: 0,
-                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                            premium: .init(amount: "1167", currency: "SEK")
-                        ),
-                        .init(
-                            id: "id2",
-                            deductibleAmount: .init(amount: "2000", currency: "SEK"),
-                            deductiblePercentage: 25,
-                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                            premium: .init(amount: "999", currency: "SEK")
-                        ),
-                        .init(
-                            id: "id3",
-                            deductibleAmount: .init(amount: "3000", currency: "SEK"),
-                            deductiblePercentage: 15,
-                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                            premium: .init(amount: "569", currency: "SEK")
-                        ),
-                    ],
-                    premium: .init(amount: "530", currency: "SEK"),
-                    displayItems: [
-                        .init(id: "id1", title: "Activation date", subTitle: nil, value: "24 sep 2024"),
-                        .init(id: "id2", title: "Coverage level", subTitle: nil, value: "Standard"),
-                        .init(id: "id3", title: "Deductible", subTitle: nil, value: "1750 kr"),
-                    ],
-                    exposureName: "Bellmansgatan 19A",
-                    productVariant: .init(
-                        termsVersion: "",
-                        typeOfContract: "",
-                        partner: nil,
-                        perils: [
-                            .init(
-                                id: "id1",
-                                title: "title1",
-                                description: "description1",
-                                info: nil,
-                                color: nil,
-                                covered: []
-                            ),
-                            .init(
-                                id: "id2",
-                                title: "title2",
-                                description: "description2",
-                                info: nil,
-                                color: nil,
-                                covered: []
-                            ),
-                            .init(
-                                id: "id3",
-                                title: "title3",
-                                description: "description3",
-                                info: nil,
-                                color: nil,
-                                covered: []
-                            ),
-                        ],
-                        insurableLimits: [],
-                        documents: [],
-                        displayName: "Homeowner",
-                        displayNameTier: "Standard",
-                        displayNameTierLong: "Vårt mellanpaket med hög ersättning."
-                    ),
-                    FAQs: [
-                        .init(title: "question 1", description: "..."),
-                        .init(title: "question 2", description: "..."),
-                        .init(title: "question 3", description: "..."),
-                    ]
-                ),
-                .init(
-                    id: "id3",
-                    name: "Max",
-                    level: 0,
-                    deductibles: [
-                        .init(
-                            id: "id",
-                            deductibleAmount: .init(amount: "1000", currency: "SEK"),
-                            deductiblePercentage: 0,
-                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                            premium: .init(amount: "1167", currency: "SEK")
-                        ),
-                        .init(
-                            id: "id2",
-                            deductibleAmount: .init(amount: "2000", currency: "SEK"),
-                            deductiblePercentage: 25,
-                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                            premium: .init(amount: "999", currency: "SEK")
-                        ),
-                        .init(
-                            id: "id3",
-                            deductibleAmount: .init(amount: "3000", currency: "SEK"),
-                            deductiblePercentage: 15,
-                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                            premium: .init(amount: "569", currency: "SEK")
-                        ),
-                    ],
-                    premium: .init(amount: "530", currency: "SEK"),
-                    displayItems: [
-                        .init(id: "id1", title: "Activation date", subTitle: nil, value: "24 sep 2024"),
-                        .init(id: "id2", title: "Coverage level", subTitle: nil, value: "Standard"),
-                        .init(id: "id3", title: "Deductible", subTitle: nil, value: "1750 kr"),
-                    ],
-                    exposureName: "Bellmansgatan 19A",
-                    productVariant: .init(
-                        termsVersion: "",
-                        typeOfContract: "",
-                        partner: nil,
-                        perils: [
-                            .init(
-                                id: "id1",
-                                title: "title1",
-                                description: "description1",
-                                info: nil,
-                                color: nil,
-                                covered: []
-                            ),
-                            .init(
-                                id: "id2",
-                                title: "title2",
-                                description: "description2",
-                                info: nil,
-                                color: nil,
-                                covered: []
-                            ),
-                            .init(
-                                id: "id3",
-                                title: "title3",
-                                description: "description3",
-                                info: nil,
-                                color: nil,
-                                covered: []
-                            ),
-                        ],
-                        insurableLimits: [],
-                        documents: [],
-                        displayName: "Homeowner",
-                        displayNameTier: "Max",
-                        displayNameTierLong: "Vårt mellanpaket med hög ersättning."
-                    ),
-                    FAQs: [
-                        .init(title: "question 1", description: "..."),
-                        .init(title: "question 2", description: "..."),
-                        .init(title: "question 3", description: "..."),
-                    ]
-                ),
-            ],
-            currentPremium: .init(amount: "449", currency: "SEK"),
-            currentTier: .init(
-                id: "id",
-                name: "Max",
-                level: 3,
-                deductibles: [
-                    .init(
-                        id: "id",
-                        deductibleAmount: .init(amount: "1000", currency: "SEK"),
-                        deductiblePercentage: 0,
-                        subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                        premium: .init(amount: "1167", currency: "SEK")
-                    ),
-                    .init(
-                        id: "id2",
-                        deductibleAmount: .init(amount: "2000", currency: "SEK"),
-                        deductiblePercentage: 25,
-                        subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                        premium: .init(amount: "999", currency: "SEK")
-                    ),
-                    .init(
-                        id: "id3",
-                        deductibleAmount: .init(amount: "3000", currency: "SEK"),
-                        deductiblePercentage: 15,
-                        subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                        premium: .init(amount: "569", currency: "SEK")
-                    ),
-                ],
-                premium: .init(amount: "", currency: ""),
-                displayItems: [],
-                exposureName: "",
-                productVariant: .init(
-                    termsVersion: "",
-                    typeOfContract: "",
-                    partner: "",
-                    perils: [],
-                    insurableLimits: [],
-                    documents: [],
-                    displayName: "",
-                    displayNameTier: "",
-                    displayNameTierLong: ""
-                ),
-                FAQs: [
-                    .init(title: "question 1", description: "..."),
-                    .init(title: "question 2", description: "..."),
-                    .init(title: "question 3", description: "..."),
-                ]
-            ),
-            currentDeductible: .init(
-                id: "id",
-                deductibleAmount: .init(amount: "449", currency: "SEK"),
-                deductiblePercentage: 25,
-                subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                premium: .init(amount: "999", currency: "SEK")
-            ),
-            canEditTier: false
-        )
+                    FAQs: FAQs
+                )
+            )
+        })
+        return allTiers
     }
 }

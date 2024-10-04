@@ -6,8 +6,6 @@ import hGraphQL
 struct ChangeTierLandingScreen: View {
     @ObservedObject var vm: ChangeTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
-    @EnvironmentObject var router: Router
-    @State var progress: Float = 0
 
     init(
         vm: ChangeTierViewModel
@@ -16,13 +14,31 @@ struct ChangeTierLandingScreen: View {
     }
 
     var body: some View {
-        switch vm.viewState {
-        case .loading:
-            loadingView
-        case .success:
+        ProcessingStateView(
+            loadingViewText: L10n.tierFlowProcessing,
+            successViewTitle: nil,
+            successViewBody: nil,
+            successViewButtonAction: nil,
+            onAppearLoadingView: nil,
+            errorViewButtons: .init(
+                actionButton: .init(
+                    buttonTitle: nil,
+                    buttonAction: {
+                        vm.fetchTiers(nil)
+                    }
+                ),
+                dismissButton:
+                    .init(
+                        buttonTitle: L10n.generalCloseButton,
+                        buttonAction: {
+                            changeTierNavigationVm.router.dismiss()
+                        }
+                    )
+            ),
+            state: $vm.viewState
+        )
+        .hCustomSuccessView {
             succesView
-        case let .error(errorMessage):
-            errorView(errorMessage: errorMessage)
         }
     }
 
@@ -109,6 +125,7 @@ struct ChangeTierLandingScreen: View {
             ) {
                 changeTierNavigationVm.isEditTierPresented = true
             }
+            .colorScheme(.light)
         }
     }
 
@@ -121,6 +138,7 @@ struct ChangeTierLandingScreen: View {
             changeTierNavigationVm.isEditDeductiblePresented = true
         }
         .disabled(vm.selectedTier == nil)
+        .colorScheme(.light)
     }
 
     private var buttons: some View {
@@ -132,7 +150,7 @@ struct ChangeTierLandingScreen: View {
                     hText(L10n.tierFlowCompareButton, style: .body1)
                 }
                 hButton.LargeButton(type: .primary) {
-                    router.push(ChangeTierRouterActions.summary)
+                    changeTierNavigationVm.router.push(ChangeTierRouterActions.summary)
                 } content: {
                     hText(L10n.generalContinueButton)
                 }
@@ -141,155 +159,11 @@ struct ChangeTierLandingScreen: View {
         }
         .sectionContainerStyle(.transparent)
     }
-
-    var loadingView: some View {
-        hSection {
-            VStack(spacing: 20) {
-                Spacer()
-                hText(L10n.tierFlowProcessing)
-                ProgressView(value: progress)
-                    .frame(width: UIScreen.main.bounds.width * 0.53)
-                    .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            withAnimation(.easeInOut(duration: 1.5).delay(0.5)) {
-                                progress = 1
-                            }
-                        }
-                    }
-                    .progressViewStyle(hProgressViewStyle())
-                Spacer()
-            }
-        }
-        .sectionContainerStyle(.transparent)
-    }
-
-    func errorView(errorMessage: String?) -> some View {
-        GenericErrorView(
-            title: L10n.somethingWentWrong,
-            description: errorMessage,
-            buttons: .init(
-                actionButton: .init(
-                    buttonAction: {
-                        vm.fetchTiers()
-                    }
-                ),
-                dismissButton: .init(
-                    buttonTitle: L10n.generalCloseButton,
-                    buttonAction: {
-                        router.dismiss()
-                    }
-                )
-            )
-        )
-    }
-}
-
-enum ChangeTierViewState {
-    case loading
-    case success
-    case error(errorMessage: String)
-}
-
-class ChangeTierViewModel: ObservableObject {
-    @Inject private var service: ChangeTierClient
-    @Published var viewState: ChangeTierViewState = .loading
-    @Published var displayName: String?
-    @Published var exposureName: String?
-    private(set) var tiers: [Tier] = []
-    private var contractId: String
-    private var changeTierSource: ChangeTierSource
-    @Published var quoteId: String = ""
-
-    @Published var currentPremium: MonetaryAmount?
-    var currentTier: Tier?
-    private var currentDeductible: Deductible?
-    var newPremium: MonetaryAmount?
-    @Published var canEditTier: Bool = false
-
-    @Published var selectedTier: Tier?
-    @Published var selectedDeductible: Deductible?
-
-    var isValid: Bool {
-        let selectedTierIsSameAsCurrent = currentTier?.name == selectedTier?.name
-        let selectedDeductibleIsSameAsCurrent = currentDeductible == selectedDeductible
-        let isDeductibleValid = selectedDeductible != nil || selectedTier?.deductibles.isEmpty ?? false
-        let isTierValid = selectedTier != nil
-        let hasSelectedValues = isTierValid && isDeductibleValid
-
-        return hasSelectedValues && !(selectedTierIsSameAsCurrent && selectedDeductibleIsSameAsCurrent)
-    }
-
-    var showDeductibleField: Bool {
-        return !(selectedTier?.deductibles.isEmpty ?? true) && selectedTier != nil
-    }
-
-    init(
-        contractId: String,
-        changeTierSource: ChangeTierSource
-    ) {
-        self.contractId = contractId
-        self.changeTierSource = changeTierSource
-        fetchTiers()
-    }
-
-    @MainActor
-    func setTier(for tierName: String) {
-        withAnimation {
-            let newSelectedTier = tiers.first(where: { $0.name == tierName })
-            if newSelectedTier != selectedTier {
-                self.selectedDeductible = nil
-            }
-            self.selectedTier = newSelectedTier
-            self.newPremium = selectedTier?.premium
-        }
-    }
-
-    @MainActor
-    func setDeductible(for deductibleId: String) {
-        withAnimation {
-            if let deductible = selectedTier?.deductibles.first(where: { $0.id == deductibleId }) {
-                self.selectedDeductible = deductible
-                self.newPremium = deductible.premium
-            }
-        }
-    }
-
-    func fetchTiers() {
-        withAnimation {
-            self.viewState = .loading
-        }
-        Task { @MainActor in
-            do {
-                let data = try await service.getTier(
-                    contractId: contractId,
-                    tierSource: changeTierSource
-                )
-                self.tiers = data.tiers
-                self.displayName = data.tiers.first?.productVariant.displayName
-                self.exposureName = data.tiers.first?.exposureName
-                self.currentPremium = data.currentPremium
-
-                self.currentTier = data.currentTier
-                self.currentDeductible = data.currentDeductible
-                self.canEditTier = data.canEditTier
-
-                self.selectedTier = currentTier
-                self.selectedDeductible = currentDeductible
-                self.newPremium = selectedTier?.premium
-
-                withAnimation {
-                    self.viewState = .success
-                }
-            } catch let error {
-                withAnimation {
-                    self.viewState = .error(errorMessage: error.localizedDescription)
-                }
-            }
-        }
-    }
 }
 
 #Preview {
-    Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientOctopus() })
-    return ChangeTierLandingScreen(vm: .init(contractId: "contractId", changeTierSource: .changeTier))
+    Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
+    return ChangeTierLandingScreen(
+        vm: .init(changeTierInput: .init(source: .betterCoverage, contractId: "contractId"))
+    )
 }

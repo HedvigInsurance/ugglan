@@ -5,47 +5,45 @@ import hGraphQL
 public class ChangeTierClientDemo: ChangeTierClient {
     public init() {}
 
-    public func getTier(
-        contractId: String,
-        tierSource: ChangeTierSource
-    ) async throws(ChangeTierError) -> ChangeTierIntentModel {
+    public func getTier(input: ChangeTierInput) async throws(ChangeTierError) -> ChangeTierIntentModel {
+
+        let deductibles: [Deductible] = [
+            .init(
+                deductibleAmount: .init(amount: "1000", currency: "SEK"),
+                deductiblePercentage: 0,
+                subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                premium: .init(amount: "1167", currency: "SEK")
+            ),
+            .init(
+                deductibleAmount: .init(amount: "2000", currency: "SEK"),
+                deductiblePercentage: 25,
+                subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                premium: .init(amount: "999", currency: "SEK")
+            ),
+            .init(
+                deductibleAmount: .init(amount: "3000", currency: "SEK"),
+                deductiblePercentage: 15,
+                subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                premium: .init(amount: "569", currency: "SEK")
+            ),
+        ]
+
+        let displayItems: [Tier.TierDisplayItem] = [
+            .init(title: "Activation date", subTitle: nil, value: "24 sep 2024"),
+            .init(title: "Coverage level", subTitle: nil, value: "Standard"),
+            .init(title: "Deductible", subTitle: nil, value: "1750 kr"),
+        ]
+
         return .init(
-            id: "id",
             activationDate: Date(),
             tiers: [
                 .init(
                     id: "id",
                     name: "Bas",
                     level: 0,
-                    deductibles: [
-                        .init(
-                            id: "id",
-                            deductibleAmount: .init(amount: "1000", currency: "SEK"),
-                            deductiblePercentage: 0,
-                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                            premium: .init(amount: "1167", currency: "SEK")
-                        ),
-                        .init(
-                            id: "id2",
-                            deductibleAmount: .init(amount: "2000", currency: "SEK"),
-                            deductiblePercentage: 25,
-                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                            premium: .init(amount: "999", currency: "SEK")
-                        ),
-                        .init(
-                            id: "id3",
-                            deductibleAmount: .init(amount: "3000", currency: "SEK"),
-                            deductiblePercentage: 15,
-                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                            premium: .init(amount: "569", currency: "SEK")
-                        ),
-                    ],
+                    deductibles: deductibles,
                     premium: .init(amount: "530", currency: "SEK"),
-                    displayItems: [
-                        .init(id: "id1", title: "Activation date", subTitle: nil, value: "24 sep 2024"),
-                        .init(id: "id2", title: "Coverage level", subTitle: nil, value: "Standard"),
-                        .init(id: "id3", title: "Deductible", subTitle: nil, value: "1750 kr"),
-                    ],
+                    displayItems: displayItems,
                     exposureName: "Bellmansgatan 19A",
                     productVariant: .init(
                         termsVersion: "",
@@ -93,35 +91,9 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     id: "i2",
                     name: "Standard",
                     level: 0,
-                    deductibles: [
-                        .init(
-                            id: "id",
-                            deductibleAmount: .init(amount: "1000", currency: "SEK"),
-                            deductiblePercentage: 0,
-                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                            premium: .init(amount: "1167", currency: "SEK")
-                        ),
-                        .init(
-                            id: "id2",
-                            deductibleAmount: .init(amount: "2000", currency: "SEK"),
-                            deductiblePercentage: 25,
-                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                            premium: .init(amount: "999", currency: "SEK")
-                        ),
-                        .init(
-                            id: "id3",
-                            deductibleAmount: .init(amount: "3000", currency: "SEK"),
-                            deductiblePercentage: 15,
-                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                            premium: .init(amount: "569", currency: "SEK")
-                        ),
-                    ],
+                    deductibles: deductibles,
                     premium: .init(amount: "530", currency: "SEK"),
-                    displayItems: [
-                        .init(id: "id1", title: "Activation date", subTitle: nil, value: "24 sep 2024"),
-                        .init(id: "id2", title: "Coverage level", subTitle: nil, value: "Standard"),
-                        .init(id: "id3", title: "Deductible", subTitle: nil, value: "1750 kr"),
-                    ],
+                    displayItems: displayItems,
                     exposureName: "Bellmansgatan 19A",
                     productVariant: .init(
                         termsVersion: "",
@@ -169,35 +141,9 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     id: "id3",
                     name: "Max",
                     level: 0,
-                    deductibles: [
-                        .init(
-                            id: "id",
-                            deductibleAmount: .init(amount: "1000", currency: "SEK"),
-                            deductiblePercentage: 0,
-                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                            premium: .init(amount: "1167", currency: "SEK")
-                        ),
-                        .init(
-                            id: "id2",
-                            deductibleAmount: .init(amount: "2000", currency: "SEK"),
-                            deductiblePercentage: 25,
-                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                            premium: .init(amount: "999", currency: "SEK")
-                        ),
-                        .init(
-                            id: "id3",
-                            deductibleAmount: .init(amount: "3000", currency: "SEK"),
-                            deductiblePercentage: 15,
-                            subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                            premium: .init(amount: "569", currency: "SEK")
-                        ),
-                    ],
+                    deductibles: deductibles,
                     premium: .init(amount: "530", currency: "SEK"),
-                    displayItems: [
-                        .init(id: "id1", title: "Activation date", subTitle: nil, value: "24 sep 2024"),
-                        .init(id: "id2", title: "Coverage level", subTitle: nil, value: "Standard"),
-                        .init(id: "id3", title: "Deductible", subTitle: nil, value: "1750 kr"),
-                    ],
+                    displayItems: displayItems,
                     exposureName: "Bellmansgatan 19A",
                     productVariant: .init(
                         termsVersion: "",
@@ -247,29 +193,7 @@ public class ChangeTierClientDemo: ChangeTierClient {
                 id: "id",
                 name: "Max",
                 level: 3,
-                deductibles: [
-                    .init(
-                        id: "id",
-                        deductibleAmount: .init(amount: "1000", currency: "SEK"),
-                        deductiblePercentage: 0,
-                        subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                        premium: .init(amount: "1167", currency: "SEK")
-                    ),
-                    .init(
-                        id: "id2",
-                        deductibleAmount: .init(amount: "2000", currency: "SEK"),
-                        deductiblePercentage: 25,
-                        subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                        premium: .init(amount: "999", currency: "SEK")
-                    ),
-                    .init(
-                        id: "id3",
-                        deductibleAmount: .init(amount: "3000", currency: "SEK"),
-                        deductiblePercentage: 15,
-                        subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                        premium: .init(amount: "569", currency: "SEK")
-                    ),
-                ],
+                deductibles: deductibles,
                 premium: .init(amount: "", currency: ""),
                 displayItems: [],
                 exposureName: "",
@@ -293,7 +217,6 @@ public class ChangeTierClientDemo: ChangeTierClient {
                 ]
             ),
             currentDeductible: .init(
-                id: "id",
                 deductibleAmount: .init(amount: "449", currency: "SEK"),
                 deductiblePercentage: 25,
                 subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
@@ -302,4 +225,6 @@ public class ChangeTierClientDemo: ChangeTierClient {
             canEditTier: true
         )
     }
+
+    public func commitTier(quoteId: String) async throws(ChangeTierError) {}
 }

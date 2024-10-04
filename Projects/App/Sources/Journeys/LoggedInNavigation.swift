@@ -1,3 +1,4 @@
+import ChangeTier
 import Chat
 import Claims
 import Combine
@@ -60,6 +61,13 @@ struct LoggedInNavigation: View {
         ) {
             MovingFlowNavigation()
         }
+        .modally(
+            item: $vm.isChangeTierPresented,
+            options: .constant(.alwaysOpenOnTop),
+            tracking: nil
+        ) { changeTierInput in
+            ChangeTierNavigation(input: changeTierInput)
+        }
         .handleTerminateInsurance(vm: vm.terminateInsuranceVm) { dismissType in
             switch dismissType {
             case .done:
@@ -73,6 +81,8 @@ struct LoggedInNavigation: View {
                 }
             case let .openFeedback(url):
                 vm.openUrl(url: url)
+            case .changeTierFoundBetterPriceStarted, .changeTierMissingCoverageAndTermsStarted:
+                break
             }
         }
         .modally(
@@ -105,6 +115,8 @@ struct LoggedInNavigation: View {
                 MovingFlowNavigation()
             case let .pdf(document):
                 PDFPreview(document: .init(url: document.url, title: document.title))
+            case let .changeTier(input):
+                ChangeTierNavigation(input: input)
             }
         } redirectAction: { action in
             switch action {
@@ -119,6 +131,8 @@ struct LoggedInNavigation: View {
                     NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                 case let .openFeedback(url):
                     vm.openUrl(url: url)
+                case .changeTierFoundBetterPriceStarted, .changeTierMissingCoverageAndTermsStarted:
+                    break
                 }
             }
         }
@@ -441,6 +455,7 @@ class LoggedInNavigationViewModel: ObservableObject {
 
     @Published var isTravelInsurancePresented = false
     @Published var isMoveContractPresented = false
+    @Published var isChangeTierPresented: ChangeTierInput?
     @Published var isEuroBonusPresented = false
     @Published var isUrlPresented: URL?
     private var openDeepLinkObserver: NSObjectProtocol?
@@ -463,7 +478,8 @@ class LoggedInNavigationViewModel: ObservableObject {
             queue: nil
         ) {
             [weak self]
-            notification in guard let self = self else { return }
+            notification in
+            guard let self = self else { return }
             UIApplication.shared.appDelegate.registerForPushNotifications {}
         }
 
@@ -629,6 +645,15 @@ class LoggedInNavigationViewModel: ObservableObject {
                 self.profileNavigationVm.pushToProfile()
             case nil:
                 openUrl(url: url)
+            case .changeTier:
+                let contractId = self.getContractId(from: url)
+
+                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+                        self?.isChangeTierPresented = .init(source: .changeTier, contractId: contractId)
+                    }
+                }
             }
         }
     }

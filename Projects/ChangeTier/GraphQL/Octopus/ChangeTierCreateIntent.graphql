@@ -1,0 +1,35 @@
+mutation ChangeTierDeductibleCreateIntent($input: ChangeTierDeductibleCreateIntentInput!) {
+  changeTierDeductibleCreateIntent(input: $input) {
+    intent {
+      activationDate
+      currentTierLevel
+      currentTierName
+      quotes {
+        id
+        tierName
+        tierLevel
+        deductible {
+          amount {
+            ...MoneyFragment
+          }
+          percentage
+          displayText
+        }
+        premium {
+            ...MoneyFragment
+        }
+        displayItems {
+          displayTitle
+          displaySubtitle
+          displayValue
+        }
+        productVariant {
+            ...ProductVariantFragment
+        }
+      }
+    }
+    userError {
+      message
+    }
+  }
+}
