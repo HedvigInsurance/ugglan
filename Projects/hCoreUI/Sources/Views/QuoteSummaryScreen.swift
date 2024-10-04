@@ -152,7 +152,7 @@ public struct QuoteSummaryScreen: View {
                         hButton.MediumButton(
                             type: .secondary
                         ) {
-                            withAnimation {
+                            withAnimation(.snappy(duration: 0.5)) {
                                 let index = selectedContracts.firstIndex(of: contract.id)
                                 if let index {
                                     selectedContracts.remove(at: index)
