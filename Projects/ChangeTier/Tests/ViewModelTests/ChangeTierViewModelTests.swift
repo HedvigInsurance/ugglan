@@ -4,7 +4,7 @@ import hCore
 @testable import ChangeTier
 @testable import hCoreUI
 
-final class ChangeTierTests: XCTestCase {
+final class ChangeTierViewModelTests: XCTestCase {
     weak var sut: MockChangeTierService?
 
     let tiers: [Tier] = [
