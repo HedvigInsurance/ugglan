@@ -17,7 +17,7 @@ final class TestChatViewModelTitle: XCTestCase {
         let title = "testTitle"
         let subtitle = "testSubTitle"
         let mockService = MockData.createMockChatService(
-            fetchNewMessages: { .init(title: title, subtitle: subtitle) }
+            fetchNewMessages: { .init(conversationId: "", title: title, subtitle: subtitle) }
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
@@ -46,8 +46,10 @@ final class TestChatViewModelTitle: XCTestCase {
         let updatedTitle = "updatedTitle"
         let updatedSubtitle = "updatedSubTitle"
         let mockService = MockData.createMockChatService(
-            fetchNewMessages: { .init(hasPreviousMessages: true, title: title, subtitle: subtitle) },
-            fetchPreviousMessages: { .init(title: updatedTitle, subtitle: updatedSubtitle) }
+            fetchNewMessages: {
+                .init(conversationId: "", hasPreviousMessages: true, title: title, subtitle: subtitle)
+            },
+            fetchPreviousMessages: { .init(conversationId: "", title: updatedTitle, subtitle: updatedSubtitle) }
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()

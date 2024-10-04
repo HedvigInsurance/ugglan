@@ -357,7 +357,8 @@ private struct SmallButtonModifier: ViewModifier {
     func body(content: Content) -> some View {
         hSection {
             content
-                .padding(.vertical, .padding8)
+                .padding(.top, 6.5)
+                .padding(.bottom, 7.5)
                 .frame(minHeight: 32)
         }
         .sectionContainerStyle(.transparent)
