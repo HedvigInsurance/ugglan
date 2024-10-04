@@ -86,7 +86,7 @@ public struct ToastBarView: View {
     }
 }
 
-#Preview{
+#Preview {
     VStack {
         hSection {
             ToastBarView(
@@ -136,7 +136,7 @@ public class Toasts {
                 self?.list.removeFirst()
                 self?.showNext()
             }
-            if let viewToShowFrom = UIApplication.shared.getRootViewController()?.view {
+            if let viewToShowFrom = UIApplication.shared.getWindow() {
                 viewToShowFrom.addSubview(viewToShow)
                 viewToShow.snp.makeConstraints { make in
                     make.leading.top.trailing.equalToSuperview()
@@ -261,7 +261,7 @@ private class ToastUIView: UIView {
     }
 }
 
-#Preview{
+#Preview {
     VStack {
         Button(
             action: {

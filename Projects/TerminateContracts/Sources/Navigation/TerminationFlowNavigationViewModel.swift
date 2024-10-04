@@ -1,3 +1,4 @@
+import ChangeTier
 import Combine
 import PresentableStore
 import SwiftUI
@@ -9,8 +10,9 @@ class TerminationFlowNavigationViewModel: ObservableObject {
     @Published var isDatePickerPresented = false
     @Published var isConfirmTerminationPresented = false
     @Published var isProcessingPresented = false
-
-    fileprivate let isFlowPresented: (DismissTerminationAction) -> Void
+    @Published var changeTierWrapper: ChangeTierWrapper?
+    @Published var loadingActions: [FlowTerminationSurveyRedirectAction: LoadingState<String>] = [:]
+    var isFlowPresented: (DismissTerminationAction) -> Void = { _ in }
 
     var redirectAction: FlowTerminationSurveyRedirectAction? {
         didSet {
@@ -23,13 +25,30 @@ class TerminationFlowNavigationViewModel: ObservableObject {
                     NotificationCenter.default.post(name: .openDeepLink, object: url)
                 }
             case .changeTierFoundBetterPrice, .changeTierMissingCoverageAndTerms:
-                self.router.dismiss()
                 let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                if let contactId = store.state.config?.contractId {
-                    if case .changeTierFoundBetterPrice = redirectAction {
-                        isFlowPresented(.changeTierFoundBetterPrice(contractId: contactId))
-                    } else if case .changeTierMissingCoverageAndTerms = redirectAction {
-                        isFlowPresented(.changeTierMissingCoverageAndTerms(contractId: contactId))
+                if let contactId = store.state.config?.contractId,
+                    let redirectAction,
+                    let source: ChangeTierSource = {
+                        if case .changeTierFoundBetterPrice = redirectAction {
+                            return .betterPrice
+                        } else if case .changeTierMissingCoverageAndTerms = redirectAction {
+                            return .betterCoverage
+                        }
+                        return nil
+                    }()
+                {
+                    let input = ChangeTierInput(source: source, contractId: contactId)
+                    loadingActions[redirectAction] = .loading
+                    Task { @MainActor [weak self] in
+                        guard let self = self else { return }
+                        do {
+                            let data = try await ChangeTierNavigationViewModel.getTiers(input: input)
+                            changeTierWrapper = .init(input: input, model: data)
+                            self.router.dismiss()
+                        } catch let ex {
+                            Toasts.shared.displayToastBar(toast: .init(type: .error, text: ex.localizedDescription))
+                        }
+                        loadingActions[redirectAction] = nil
                     }
                 }
             case .none:
@@ -37,6 +56,7 @@ class TerminationFlowNavigationViewModel: ObservableObject {
             }
         }
     }
+
     var redirectUrl: URL? {
         didSet {
             if let redirectUrl {
@@ -50,8 +70,13 @@ class TerminationFlowNavigationViewModel: ObservableObject {
     let router = Router()
     var cancellable: AnyCancellable?
 
-    init(isFlowPresented: @escaping (DismissTerminationAction) -> Void) {
-        self.isFlowPresented = isFlowPresented
+    struct ChangeTierWrapper: Identifiable, Equatable {
+        var id: String {
+            input.id
+        }
+
+        let input: ChangeTierInput
+        let model: ChangeTierIntentModel
     }
 
 }
@@ -64,11 +89,11 @@ struct TerminationFlowNavigation: View {
     public init(
         initialStep: TerminationFlowActions,
         configs: [TerminationConfirmConfig],
-        isFlowPresented: @escaping (DismissTerminationAction) -> Void
+        vm: TerminationFlowNavigationViewModel
     ) {
         self.initialStep = initialStep
         self.configs = configs
-        self.vm = TerminationFlowNavigationViewModel(isFlowPresented: isFlowPresented)
+        self.vm = vm
     }
 
     public var body: some View {
@@ -392,6 +417,7 @@ extension View {
 
 struct TerminateInsurance: ViewModifier {
     @ObservedObject var vm: TerminateInsuranceViewModel
+    @StateObject var navigationVm = TerminationFlowNavigationViewModel()
     let onDismiss: (DismissTerminationAction) -> Void
     func body(content: Content) -> some View {
         content
@@ -403,10 +429,16 @@ struct TerminateInsurance: ViewModifier {
                 TerminationFlowNavigation(
                     initialStep: item.action,
                     configs: vm.configs,
-                    isFlowPresented: { dismissType in
+                    vm: navigationVm
+                )
+                .task {
+                    navigationVm.isFlowPresented = { dismissType in
                         onDismiss(dismissType)
                     }
-                )
+                }
+            }
+            .modally(item: $navigationVm.changeTierWrapper) { item in
+                ChangeTierNavigation(input: item.input, existingModel: item.model)
             }
     }
 }
@@ -527,6 +559,6 @@ public enum DismissTerminationAction {
     case done
     case chat
     case openFeedback(url: URL)
-    case changeTierFoundBetterPrice(contractId: String)
-    case changeTierMissingCoverageAndTerms(contractId: String)
+    case changeTierFoundBetterPriceStarted
+    case changeTierMissingCoverageAndTermsStarted
 }

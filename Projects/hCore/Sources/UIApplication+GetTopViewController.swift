@@ -40,6 +40,16 @@ extension UIApplication {
         return nil
     }
 
+    public func getWindow() -> UIWindow? {
+        return UIApplication.shared.connectedScenes
+            .map({ $0 as? UIWindowScene })
+            .compactMap({ $0 })
+            .first?
+            .windows
+            .filter({ $0.isKeyWindow })
+            .first
+    }
+
     public func getRootViewController() -> UIViewController? {
         return UIApplication.shared.connectedScenes
             .map({ $0 as? UIWindowScene })

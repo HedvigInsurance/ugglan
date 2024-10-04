@@ -24,7 +24,7 @@ struct EditTierScreen: View {
                             leftView: {
                                 VStack(alignment: .leading, spacing: 0) {
                                     HStack {
-                                        hText(tier.name)
+                                        hText(tier.productVariant?.displayNameTier ?? "")
                                         Spacer()
                                         hPill(
                                             text: tier.premium.formattedAmountPerMonth,

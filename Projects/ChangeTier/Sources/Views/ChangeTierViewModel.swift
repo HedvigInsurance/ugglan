@@ -36,10 +36,11 @@ class ChangeTierViewModel: ObservableObject {
     }
 
     init(
-        changeTierInput: ChangeTierInput
+        changeTierInput: ChangeTierInput,
+        changeTierIntentModel: ChangeTierIntentModel? = nil
     ) {
         self.changeTierInput = changeTierInput
-        fetchTiers()
+        fetchTiers(changeTierIntentModel)
     }
 
     @MainActor
@@ -64,13 +65,18 @@ class ChangeTierViewModel: ObservableObject {
         }
     }
 
-    func fetchTiers() {
+    func fetchTiers(_ existingModel: ChangeTierIntentModel?) {
         withAnimation {
             self.viewState = .loading
         }
         Task { @MainActor in
             do {
-                let data = try await service.getTier(input: changeTierInput)
+                let data: ChangeTierIntentModel = try await {
+                    if let existingModel = existingModel {
+                        return existingModel
+                    }
+                    return try await service.getTier(input: changeTierInput)
+                }()
                 self.tiers = data.tiers
                 self.displayName = data.tiers.first?.productVariant?.displayName
                 self.exposureName = data.tiers.first?.exposureName
