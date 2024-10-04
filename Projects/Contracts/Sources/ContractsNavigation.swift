@@ -61,10 +61,31 @@ public struct ContractsNavigation<Content: View>: View {
             item: $contractsNavigationVm.changeYourInformationContract,
             style: [.height]
         ) { contract in
-            EditContract(id: contract.id)
-                .configureTitle(L10n.contractChangeInformationTitle)
-                .environmentObject(contractsNavigationVm)
-                .embededInNavigation(options: .navigationType(type: .large), tracking: ContractsDetentType.editContract)
+            EditContractScreen(
+                editTypes: EditType.getTypes(for: contract),
+                onSelectedType: { selectedType in
+                    contractsNavigationVm.changeYourInformationContract = nil
+                    switch selectedType {
+                    case .coInsured:
+                        let configContract: InsuredPeopleConfig = .init(
+                            contract: contract,
+                            fromInfoCard: false
+                        )
+                        contractsNavigationVm.editCoInsuredVm.start(fromContract: configContract)
+                    case .changeAddress:
+                        contractsNavigationVm.isChangeAddressPresented = true
+                    case .changeTier:
+                        contractsNavigationVm.changeTierInput = .init(
+                            source: .changeTier,
+                            contractId: contract.id
+                        )
+                    case .cancellation:
+                        break
+                    }
+                }
+            )
+            .configureTitle(L10n.contractChangeInformationTitle)
+            .embededInNavigation(options: [.navigationType(type: .large)], tracking: ContractsDetentType.editContract)
         }
         .modally(presented: $contractsNavigationVm.isChangeAddressPresented) {
             redirect(.movingFlow)
@@ -155,7 +176,7 @@ private enum ContractsDetentType: TrackingViewNameProtocol {
     public var nameForTracking: String {
         switch self {
         case .editContract:
-            return .init(describing: EditContract.self)
+            return .init(describing: EditContractScreen.self)
         }
     }
 

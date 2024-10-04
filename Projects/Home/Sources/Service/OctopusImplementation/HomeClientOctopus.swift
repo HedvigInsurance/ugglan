@@ -60,7 +60,7 @@ public class HomeClientOctopus: HomeClient {
             contractAction.append(.cancellation)
         }
         if !contractAction.isEmpty {
-            quickActions.append(.editInsurance(actions: contractAction))
+            quickActions.append(.editInsurance(actions: .init(quickActions: contractAction)))
         }
         if actions?.isConnectPaymentEnabled == true {
             quickActions.append(.connectPayments)

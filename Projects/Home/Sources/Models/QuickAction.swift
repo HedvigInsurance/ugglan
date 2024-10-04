@@ -4,7 +4,7 @@ import hCore
 public enum QuickAction: Codable, Equatable, Hashable {
     case sickAbroad(partners: [SickAbroadPartner])
     case firstVet(partners: [FirstVetPartner])
-    case editInsurance(actions: [QuickAction])
+    case editInsurance(actions: EditInsuranceActionsWrapper)
     case travelInsurance
     case connectPayments
     case changeAddress
@@ -60,6 +60,56 @@ public enum QuickAction: Codable, Equatable, Hashable {
 
     var id: String {
         return displayTitle
+    }
+}
+
+extension QuickAction {
+    var asEditType: EditType? {
+        switch self {
+        case .sickAbroad:
+            return nil
+        case .firstVet:
+            return nil
+        case .editInsurance:
+            return nil
+        case .travelInsurance:
+            return nil
+        case .connectPayments:
+            return nil
+        case .changeAddress:
+            return .changeAddress
+        case .editCoInsured:
+            return .coInsured
+        case .upgradeCoverage:
+            return .changeTier
+        case .cancellation:
+            return .cancellation
+        }
+    }
+}
+
+extension EditType {
+    var asQuickAction: QuickAction {
+        switch self {
+        case .changeAddress:
+            return .changeAddress
+        case .coInsured:
+            return .editCoInsured
+        case .changeTier:
+            return .upgradeCoverage
+        case .cancellation:
+            return .cancellation
+        }
+    }
+}
+
+public struct EditInsuranceActionsWrapper: Codable, Equatable, Hashable, Identifiable {
+    public let id: String
+    let quickActions: [QuickAction]
+
+    init(quickActions: [QuickAction]) {
+        self.id = quickActions.compactMap({ $0.id }).joined(separator: ",")
+        self.quickActions = quickActions
     }
 }
 

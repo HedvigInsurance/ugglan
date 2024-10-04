@@ -20,7 +20,7 @@ public class HelpCenterNavigationViewModel: ObservableObject {
     let terminateInsuranceVm = TerminateInsuranceViewModel()
 
     struct QuickActions {
-        var isEditContractPresented = false
+        var editContractActions: EditInsuranceActionsWrapper?
         var isTravelCertificatePresented = false
         var isChangeAddressPresented = false
         var isCancellationPresented = false
@@ -46,11 +46,14 @@ private enum HelpCenterDetentRouterType: TrackingViewNameProtocol {
             return .init(describing: HelpCenterStartView.self)
         case .firstVet:
             return .init(describing: FirstVetView.self)
+        case .editYourInsurance:
+            return .init(describing: EditContractScreen.self)
         }
     }
 
     case startView
     case firstVet
+    case editYourInsurance
 
 }
 
@@ -122,6 +125,24 @@ public struct HelpCenterNavigation<Content: View>: View {
                 redirect(.moveFlow)
             }
         )
+
+        .detent(
+            item: $helpCenterVm.quickActions.editContractActions,
+            style: [.height],
+            content: { actionsWrapper in
+                EditContractScreen(
+                    editTypes: actionsWrapper.quickActions.compactMap({ $0.asEditType }),
+                    onSelectedType: { selectedType in
+                        self.handle(quickAction: selectedType.asQuickAction)
+                    }
+                )
+                .configureTitle("Edit your insurance")
+                .embededInNavigation(
+                    options: [.navigationType(type: .large)],
+                    tracking: HelpCenterDetentRouterType.editYourInsurance
+                )
+            }
+        )
         .handleConnectPayment(with: helpCenterVm.connectPaymentsVm)
         .handleTerminateInsurance(vm: helpCenterVm.terminateInsuranceVm) { dismissType in
             switch dismissType {
@@ -168,7 +189,7 @@ public struct HelpCenterNavigation<Content: View>: View {
         case .travelInsurance:
             helpCenterVm.quickActions.isTravelCertificatePresented = true
         case let .editInsurance(insuranceQuickActions):
-            helpCenterVm.quickActions.isEditContractPresented = true
+            helpCenterVm.quickActions.editContractActions = insuranceQuickActions
         case .changeAddress:
             helpCenterVm.quickActions.isChangeAddressPresented = true
         case .cancellation:
