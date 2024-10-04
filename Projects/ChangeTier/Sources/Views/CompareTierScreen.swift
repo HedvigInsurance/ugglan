@@ -1,10 +1,13 @@
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct CompareTierScreen: View {
     private var vm: ChangeTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
+    var perils: [Perils] = []
+    let limits: [InsurableLimits]
 
     private let scrollableSegmentedViewModel: ScrollableSegmentedViewModel
 
@@ -12,9 +15,14 @@ struct CompareTierScreen: View {
         vm: ChangeTierViewModel
     ) {
         self.vm = vm
+
+        let currentTier = vm.tiers.first(where: { $0.id == vm.selectedTier?.id })
+        self.limits = currentTier?.productVariant?.insurableLimits ?? []
+
         self.scrollableSegmentedViewModel = ScrollableSegmentedViewModel(
             pageModels: vm.tiers.compactMap({ .init(id: $0.id, title: $0.name) })
         )
+        self.perils = getFilteredPerils(currentTier: currentTier)
     }
 
     var body: some View {
@@ -22,12 +30,8 @@ struct CompareTierScreen: View {
             ScrollableSegmentedView(
                 vm: scrollableSegmentedViewModel,
                 contentFor: { id in
-                    let currentTier = vm.tiers.first(where: { $0.id == id })
-                    let currentLimits = currentTier?.productVariant?.insurableLimits ?? []
-                    let perils = getFilteredPerils(currentTier: currentTier)
-
                     return CoverageView(
-                        limits: currentLimits,
+                        limits: limits,
                         didTapInsurableLimit: { limit in
                             changeTierNavigationVm.isInsurableLimitPresented = limit
                         },
