@@ -1,3 +1,4 @@
+import ChangeTier
 import Combine
 import PresentableStore
 import SwiftUI
@@ -9,27 +10,26 @@ class TerminationFlowNavigationViewModel: ObservableObject {
     @Published var isDatePickerPresented = false
     @Published var isConfirmTerminationPresented = false
     @Published var isProcessingPresented = false
-
-    fileprivate let isFlowPresented: (DismissTerminationAction) -> Void
+    @Published var changeTierInput: ChangeTierInput?
+    var isFlowPresented: (DismissTerminationAction) -> Void = { _ in }
 
     var redirectAction: FlowTerminationSurveyRedirectAction? {
         didSet {
+            self.router.dismiss()
             switch redirectAction {
             case .updateAddress:
-                self.router.dismiss()
                 var url = Environment.current.deepLinkUrl
                 url.appendPathComponent(DeepLink.moveContract.rawValue)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     NotificationCenter.default.post(name: .openDeepLink, object: url)
                 }
             case .changeTierFoundBetterPrice, .changeTierMissingCoverageAndTerms:
-                self.router.dismiss()
                 let store: TerminationContractStore = globalPresentableStoreContainer.get()
                 if let contactId = store.state.config?.contractId {
                     if case .changeTierFoundBetterPrice = redirectAction {
-                        isFlowPresented(.changeTierFoundBetterPrice(contractId: contactId))
+                        changeTierInput = .init(source: .betterPrice, contractId: contactId)
                     } else if case .changeTierMissingCoverageAndTerms = redirectAction {
-                        isFlowPresented(.changeTierMissingCoverageAndTerms(contractId: contactId))
+                        changeTierInput = .init(source: .betterCoverage, contractId: contactId)
                     }
                 }
             case .none:
@@ -50,10 +50,6 @@ class TerminationFlowNavigationViewModel: ObservableObject {
     let router = Router()
     var cancellable: AnyCancellable?
 
-    init(isFlowPresented: @escaping (DismissTerminationAction) -> Void) {
-        self.isFlowPresented = isFlowPresented
-    }
-
 }
 
 struct TerminationFlowNavigation: View {
@@ -64,11 +60,11 @@ struct TerminationFlowNavigation: View {
     public init(
         initialStep: TerminationFlowActions,
         configs: [TerminationConfirmConfig],
-        isFlowPresented: @escaping (DismissTerminationAction) -> Void
+        vm: TerminationFlowNavigationViewModel
     ) {
         self.initialStep = initialStep
         self.configs = configs
-        self.vm = TerminationFlowNavigationViewModel(isFlowPresented: isFlowPresented)
+        self.vm = vm
     }
 
     public var body: some View {
@@ -392,6 +388,7 @@ extension View {
 
 struct TerminateInsurance: ViewModifier {
     @ObservedObject var vm: TerminateInsuranceViewModel
+    @StateObject var navigationVm = TerminationFlowNavigationViewModel()
     let onDismiss: (DismissTerminationAction) -> Void
     func body(content: Content) -> some View {
         content
@@ -403,10 +400,16 @@ struct TerminateInsurance: ViewModifier {
                 TerminationFlowNavigation(
                     initialStep: item.action,
                     configs: vm.configs,
-                    isFlowPresented: { dismissType in
+                    vm: navigationVm
+                )
+                .task {
+                    navigationVm.isFlowPresented = { dismissType in
                         onDismiss(dismissType)
                     }
-                )
+                }
+            }
+            .modally(item: $navigationVm.changeTierInput) { input in
+                ChangeTierNavigation(input: input)
             }
     }
 }
@@ -527,6 +530,6 @@ public enum DismissTerminationAction {
     case done
     case chat
     case openFeedback(url: URL)
-    case changeTierFoundBetterPrice(contractId: String)
-    case changeTierMissingCoverageAndTerms(contractId: String)
+    case changeTierFoundBetterPriceStarted
+    case changeTierMissingCoverageAndTermsStarted
 }
