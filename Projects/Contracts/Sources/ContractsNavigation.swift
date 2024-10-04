@@ -87,7 +87,7 @@ public struct ContractsNavigation<Content: View>: View {
             switch dismissType {
             case .done, .chat, .openFeedback:
                 contractsNavigationVm.contractsRouter.popToRoot()
-            case .changeTierFoundBetterPrice, .changeTierMissingCoverageAndTerms:
+            case .changeTierFoundBetterPriceStarted, .changeTierMissingCoverageAndTermsStarted:
                 break
             }
         }

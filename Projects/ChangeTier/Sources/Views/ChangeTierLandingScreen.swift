@@ -24,7 +24,7 @@ struct ChangeTierLandingScreen: View {
                 actionButton: .init(
                     buttonTitle: nil,
                     buttonAction: {
-                        vm.fetchTiers()
+                        vm.fetchTiers(nil)
                     }
                 ),
                 dismissButton:
@@ -138,6 +138,7 @@ struct ChangeTierLandingScreen: View {
             changeTierNavigationVm.isEditDeductiblePresented = true
         }
         .disabled(vm.selectedTier == nil)
+        .colorScheme(.light)
     }
 
     private var buttons: some View {

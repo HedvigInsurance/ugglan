@@ -71,6 +71,9 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                 currentDeductible: currentDeductible,
                 canEditTier: currentContract.supportsChangeTier
             )
+            if intentModel.tiers.isEmpty {
+                throw ChangeTierError.emptyList
+            }
 
             return intentModel
         } catch let ex {
