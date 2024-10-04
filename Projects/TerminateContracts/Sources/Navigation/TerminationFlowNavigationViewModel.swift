@@ -10,14 +10,15 @@ class TerminationFlowNavigationViewModel: ObservableObject {
     @Published var isDatePickerPresented = false
     @Published var isConfirmTerminationPresented = false
     @Published var isProcessingPresented = false
-    @Published var changeTierInput: ChangeTierInput?
+    @Published var changeTierWrapper: ChangeTierWrapper?
+    @Published var loadingActions: [FlowTerminationSurveyRedirectAction: LoadingState<String>] = [:]
     var isFlowPresented: (DismissTerminationAction) -> Void = { _ in }
 
     var redirectAction: FlowTerminationSurveyRedirectAction? {
         didSet {
-            self.router.dismiss()
             switch redirectAction {
             case .updateAddress:
+                self.router.dismiss()
                 var url = Environment.current.deepLinkUrl
                 url.appendPathComponent(DeepLink.moveContract.rawValue)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -25,11 +26,29 @@ class TerminationFlowNavigationViewModel: ObservableObject {
                 }
             case .changeTierFoundBetterPrice, .changeTierMissingCoverageAndTerms:
                 let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                if let contactId = store.state.config?.contractId {
-                    if case .changeTierFoundBetterPrice = redirectAction {
-                        changeTierInput = .init(source: .betterPrice, contractId: contactId)
-                    } else if case .changeTierMissingCoverageAndTerms = redirectAction {
-                        changeTierInput = .init(source: .betterCoverage, contractId: contactId)
+                if let contactId = store.state.config?.contractId,
+                    let redirectAction,
+                    let source: ChangeTierSource = {
+                        if case .changeTierFoundBetterPrice = redirectAction {
+                            return .betterPrice
+                        } else if case .changeTierMissingCoverageAndTerms = redirectAction {
+                            return .betterCoverage
+                        }
+                        return nil
+                    }()
+                {
+                    let input = ChangeTierInput(source: source, contractId: contactId)
+                    loadingActions[redirectAction] = .loading
+                    Task { @MainActor [weak self] in
+                        guard let self = self else { return }
+                        do {
+                            let data = try await ChangeTierNavigationViewModel.getTiers(input: input)
+                            changeTierWrapper = .init(input: input, model: data)
+                            self.router.dismiss()
+                        } catch let ex {
+                            Toasts.shared.displayToastBar(toast: .init(type: .error, text: ex.localizedDescription))
+                        }
+                        loadingActions[redirectAction] = nil
                     }
                 }
             case .none:
@@ -37,6 +56,7 @@ class TerminationFlowNavigationViewModel: ObservableObject {
             }
         }
     }
+
     var redirectUrl: URL? {
         didSet {
             if let redirectUrl {
@@ -49,6 +69,15 @@ class TerminationFlowNavigationViewModel: ObservableObject {
     }
     let router = Router()
     var cancellable: AnyCancellable?
+
+    struct ChangeTierWrapper: Identifiable, Equatable {
+        var id: String {
+            input.id
+        }
+
+        let input: ChangeTierInput
+        let model: ChangeTierIntentModel
+    }
 
 }
 
@@ -408,8 +437,8 @@ struct TerminateInsurance: ViewModifier {
                     }
                 }
             }
-            .modally(item: $navigationVm.changeTierInput) { input in
-                ChangeTierNavigation(input: input)
+            .modally(item: $navigationVm.changeTierWrapper) { item in
+                ChangeTierNavigation(input: item.input, existingModel: item.model)
             }
     }
 }

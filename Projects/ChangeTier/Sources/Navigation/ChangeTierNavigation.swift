@@ -19,6 +19,12 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     ) {
         self.vm = vm
     }
+
+    public static func getTiers(input: ChangeTierInput) async throws(ChangeTierError) -> ChangeTierIntentModel {
+        let client: ChangeTierClient = Dependencies.shared.resolve()
+        let data = try await client.getTier(input: input)
+        return data
+    }
 }
 
 enum ChangeTierRouterActions {
@@ -71,10 +77,11 @@ public struct ChangeTierNavigation: View {
     @ObservedObject var changeTierNavigationVm: ChangeTierNavigationViewModel
 
     public init(
-        input: ChangeTierInput
+        input: ChangeTierInput,
+        existingModel: ChangeTierIntentModel? = nil
     ) {
         self.changeTierNavigationVm = .init(
-            vm: .init(changeTierInput: input)
+            vm: .init(changeTierInput: input, changeTierIntentModel: existingModel)
         )
     }
 

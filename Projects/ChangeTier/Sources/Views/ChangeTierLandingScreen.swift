@@ -24,7 +24,7 @@ struct ChangeTierLandingScreen: View {
                 actionButton: .init(
                     buttonTitle: nil,
                     buttonAction: {
-                        vm.fetchTiers()
+                        vm.fetchTiers(nil)
                     }
                 ),
                 dismissButton:
