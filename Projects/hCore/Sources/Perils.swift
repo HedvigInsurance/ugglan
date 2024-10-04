@@ -38,4 +38,16 @@ public struct Perils: Codable, Equatable, Hashable {
         info = fragment.info
         isDisabled = false
     }
+
+    public func asDisabled() -> Perils {
+        return .init(
+            id: id,
+            title: title,
+            description: description,
+            info: info,
+            color: color,
+            covered: covered,
+            isDisabled: true
+        )
+    }
 }
