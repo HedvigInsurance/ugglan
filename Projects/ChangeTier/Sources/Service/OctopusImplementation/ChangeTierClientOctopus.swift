@@ -121,7 +121,8 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                     if let deductableAmount = quote.deductible?.amount {
                         let deductible = Deductible(
                             deductibleAmount: .init(fragment: deductableAmount.fragments.moneyFragment),
-                            deductiblePercentage: quote.deductible?.percentage,
+                            deductiblePercentage: (quote.deductible?.percentage == 0)
+                                ? nil : quote.deductible?.percentage,
                             subTitle: quote.deductible?.displayText,
                             premium: .init(optionalFragment: allQuotesWithNameX?.first?.premium.fragments.moneyFragment)
                         )
