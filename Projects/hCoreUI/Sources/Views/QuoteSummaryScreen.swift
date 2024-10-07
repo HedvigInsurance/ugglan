@@ -17,8 +17,6 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         let displayItems: [QuoteDisplayItem]
         let documents: [InsuranceTerm]
         let onDocumentTap: (_ document: InsuranceTerm) -> Void
-        let insuranceLimits: [InsurableLimits]
-        let onLimitTap: (_ limit: InsurableLimits) -> Void
 
         public init(
             id: String,
@@ -28,9 +26,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             currentPremium: MonetaryAmount?,
             documents: [InsuranceTerm],
             onDocumentTap: @escaping (_ document: InsuranceTerm) -> Void,
-            displayItems: [QuoteDisplayItem],
-            insuranceLimits: [InsurableLimits],
-            onLimitTap: @escaping (_ limit: InsurableLimits) -> Void
+            displayItems: [QuoteDisplayItem]
         ) {
             self.id = id
             self.displayName = displayName
@@ -40,8 +36,6 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             self.documents = documents
             self.onDocumentTap = onDocumentTap
             self.displayItems = displayItems
-            self.insuranceLimits = insuranceLimits
-            self.onLimitTap = onLimitTap
         }
     }
 
@@ -115,14 +109,11 @@ public struct QuoteSummaryScreen: View {
 
     var scrollSection: some View {
         VStack(spacing: 0) {
-            ForEach(vm.contracts, id: \.id) { contract in
-                coverageView(for: contract)
-            }
-            .padding(.top, .padding16)
-            .id(showCoverageId)
             faqsComponent(for: vm.FAQModel.questions)
             chatComponent
         }
+        .padding(.top, 180)
+        .id(showCoverageId)
     }
 
     func contractInfoView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
@@ -187,6 +178,18 @@ public struct QuoteSummaryScreen: View {
                     rowItem(for: item)
                 }
             }
+
+            VStack(alignment: .leading, spacing: 4) {
+                hText(L10n.confirmationScreenDocumentTitle)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                ForEach(contract.documents, id: \.displayName) { document in
+                    documentItem(for: document)
+                        .onTapGesture {
+                            contract.onDocumentTap(document)
+                        }
+                }
+            }
+
         }
     }
 
@@ -199,35 +202,21 @@ public struct QuoteSummaryScreen: View {
         .foregroundColor(hTextColor.Opaque.secondary)
     }
 
-    func coverageView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
-        VStack(spacing: 0) {
-            hSection {
-                VStack {
-                    hText(contract.exposureName, style: .body1)
-                        .padding(.vertical, .padding4)
-                        .padding(.horizontal, .padding8)
-
-                }
-                .background(whatIsCoveredBgColorScheme)
-                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .sectionContainerStyle(.transparent)
-
-            Spacing(height: 16)
-
-            InsurableLimitsSectionView(limits: contract.insuranceLimits) { limit in
-                contract.onLimitTap(limit)
-            }
-
-            Spacing(height: 32)
-
-            InsuranceTermView(documents: contract.documents) { document in
-                contract.onDocumentTap(document)
-            }
-
-            Spacing(height: 40)
+    func documentItem(for document: InsuranceTerm) -> some View {
+        HStack {
+            hAttributedTextView(
+                text: AttributedPDF().attributedPDFString(for: document.displayName),
+                useSecondaryColor: true
+            )
+            .foregroundColor(hTextColor.Opaque.secondary)
+            .padding(.horizontal, -6)
+            Spacer()
+            Image(uiImage: HCoreUIAsset.arrowNorthEast.image)
+                .resizable()
+                .frame(width: 16, height: 16)
+                .foregroundColor(hFillColor.Opaque.primary)
         }
+        .foregroundColor(hTextColor.Opaque.secondary)
     }
 
     private let whatIsCoveredBgColorScheme: some hColor = hColorScheme.init(
@@ -368,12 +357,6 @@ public struct FAQ: Codable, Equatable, Hashable {
 }
 
 #Preview(body: {
-    let mockLimits: [InsurableLimits] = [
-        .init(label: "Insured amount", limit: "1 000 000 kr", description: ""),
-        .init(label: "Insured amount", limit: "1 000 000 kr", description: ""),
-        .init(label: "Insured amount", limit: "1 000 000 kr", description: ""),
-    ]
-
     let documents: [InsuranceTerm] = [
         .init(displayName: "document 1", url: "https//hedvig.com", type: .generalTerms),
         .init(displayName: "document 2", url: "https//hedvig.com", type: .preSaleInfo),
@@ -399,9 +382,7 @@ public struct FAQ: Codable, Equatable, Hashable {
                     .init(title: "Limits", value: "mockLimits"),
                     .init(title: "Documents", value: "documents"),
                     .init(title: "FAQ", value: "mockFAQ"),
-                ],
-                insuranceLimits: mockLimits,
-                onLimitTap: { limit in }
+                ]
             ),
             .init(
                 id: "id2",
@@ -415,9 +396,7 @@ public struct FAQ: Codable, Equatable, Hashable {
                     .init(title: "Limits", value: "mockLimits"),
                     .init(title: "Documents", value: "documents"),
                     .init(title: "FAQ", value: "mockFAQ"),
-                ],
-                insuranceLimits: mockLimits,
-                onLimitTap: { limit in }
+                ]
             ),
         ],
         total: .init(amount: 999, currency: "SEK"),

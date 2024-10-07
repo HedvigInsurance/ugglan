@@ -39,11 +39,7 @@ extension ChangeTierViewModel {
                             changeTierNavigationVm.document = .init(url: url, title: document.displayName)
                         }
                     },
-                    displayItems: displayItems,
-                    insuranceLimits: self.selectedTier?.productVariant?.insurableLimits ?? [],
-                    onLimitTap: { [weak self] limit in
-                        changeTierNavigationVm.isInsurableLimitPresented = limit
-                    }
+                    displayItems: displayItems
                 )
             ],
             total: self.newPremium ?? .init(amount: "", currency: ""),

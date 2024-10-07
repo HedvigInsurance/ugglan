@@ -32,11 +32,7 @@ struct MovingFlowConfirm: View {
                                 movingFlowNavigationVm.document = .init(url: url, title: document.displayName)
                             }
                         },
-                        displayItems: $0.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }),
-                        insuranceLimits: $0.insurableLimits,
-                        onLimitTap: { limit in
-
-                        }
+                        displayItems: $0.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) })
                     )
                 })
 
