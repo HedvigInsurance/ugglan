@@ -70,7 +70,7 @@ final class ChangeTierServiceTests: XCTestCase {
                 FAQs: []
             ),
         ]
-        
+
         let changeTierIntentModel: ChangeTierIntentModel = .init(
             activationDate: Date(),
             tiers: tiers,
@@ -86,6 +86,9 @@ final class ChangeTierServiceTests: XCTestCase {
 
         self.sut = mockService
 
-        let respondedTiersData = try! await mockService.getTier(input: .init(source: .changeTier, contractId: "contractId"))
+        let respondedTiersData = try! await mockService.getTier(
+            input: .init(source: .changeTier, contractId: "contractId")
+        )
         assert(respondedTiersData == changeTierIntentModel)
     }
+}
