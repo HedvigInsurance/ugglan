@@ -185,6 +185,7 @@ public struct QuoteSummaryScreen: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 ForEach(contract.documents, id: \.displayName) { document in
                     documentItem(for: document)
+                        .background(hSurfaceColor.Opaque.primary)
                         .onTapGesture {
                             contract.onDocumentTap(document)
                         }
