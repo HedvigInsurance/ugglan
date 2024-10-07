@@ -142,23 +142,27 @@ final class ChangeTierViewModelTests: XCTestCase {
         assert(model.selectedTier?.name == "max")
     }
 
-    //    func testSetSelectedTierFailure() async {
-    //        let mockService = MockData.createMockChangeTier(
-    //            fetchTier: { _ in
-    //                throw ChangeTierError.somethingWentWrong
-    //            }
-    //        )
-    //
-    //        self.sut = mockService
-    //
-    //        let model = ChangeTierViewModel(changeTierInput: .init(source: .changeTier, contractId: "contractId"))
-    //
-    //        await model.fetchTiers(nil)
-    //
-    //        await model.setTier(for: "max")
-    //        assert(model.selectedTier? == nil)
-    //    assert(model == ChangeTierError.somethingWentWrong.localizedDescription)
-    //    }
+    func testSetSelectedTierFailure() async throws {
+        let mockService = MockData.createMockChangeTier(
+            fetchTier: { _ throws(ChangeTierError) in
+                throw ChangeTierError.somethingWentWrong
+            }
+        )
+
+        self.sut = mockService
+
+        let model = ChangeTierViewModel(changeTierInput: .init(source: .changeTier, contractId: "contractId"))
+
+        model.fetchTiers(nil)
+        try await Task.sleep(nanoseconds: 30_000_000)
+        await model.setTier(for: "max")
+        assert(model.selectedTier == nil)
+        if case .error(let errorMessage) = model.viewState {
+            assert(errorMessage == ChangeTierError.somethingWentWrong.localizedDescription)
+        } else {
+            assertionFailure("not proper state")
+        }
+    }
 
     func testSetSelectedDeductibleSuccess() async throws {
         let changeTierIntentModel: ChangeTierIntentModel = .init(
@@ -185,23 +189,26 @@ final class ChangeTierViewModelTests: XCTestCase {
         assert(model.selectedDeductible?.id == model.selectedTier?.deductibles.first?.id)
     }
 
-    //    func testSetSelectedDeductibleFailure() async {
-    //        let mockService = MockData.createMockChangeTier(
-    //            fetchTier: { _ in
-    //                throw ChangeTierError.somethingWentWrong
-    //            }
-    //        )
-    //
-    //        self.sut = mockService
-    //
-    //        let model = ChangeTierViewModel(changeTierInput: .init(source: .changeTier, contractId: "contractId"))
-    //
-    //        await model.fetchTiers(nil)
-    //
-    //        await model.setTier(for: "max")
-    //        await model.setDeductible(for: model.selectedTier?.deductibles.first?.id ?? "")
-    //        assert(model.selectedDeductible == nil)
-    //        assert(model.selectedTier? == nil)
-    //        assert(model == ChangeTierError.somethingWentWrong.localizedDescription)
-    //    }
+    func testSetSelectedDeductibleFailure() async throws {
+        let mockService = MockData.createMockChangeTier(
+            fetchTier: { _ throws(ChangeTierError) in
+                throw ChangeTierError.somethingWentWrong
+            }
+        )
+
+        self.sut = mockService
+
+        let model = ChangeTierViewModel(changeTierInput: .init(source: .changeTier, contractId: "contractId"))
+
+        model.fetchTiers(nil)
+        await model.setTier(for: "max")
+        await model.setDeductible(for: model.selectedTier?.deductibles.first?.id ?? "")
+        assert(model.selectedDeductible == nil)
+        assert(model.selectedTier == nil)
+        if case .error(let errorMessage) = model.viewState {
+            assert(errorMessage == ChangeTierError.somethingWentWrong.localizedDescription)
+        } else {
+            assertionFailure("not proper state")
+        }
+    }
 }
