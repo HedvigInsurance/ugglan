@@ -6,17 +6,21 @@ import hGraphQL
 public struct ChangeTierIntentModel: Codable, Equatable, Hashable {
     let activationDate: Date
     let tiers: [Tier]
-    let currentPremium: MonetaryAmount
+    let currentPremium: MonetaryAmount?
     let currentTier: Tier?
     let currentDeductible: Deductible?
+    let selectedTier: Tier?
+    let selectedDeductible: Deductible?
     let canEditTier: Bool
 
     public init(
         activationDate: Date,
         tiers: [Tier],
-        currentPremium: MonetaryAmount,
+        currentPremium: MonetaryAmount?,
         currentTier: Tier?,
         currentDeductible: Deductible?,
+        selectedTier: Tier?,
+        selectedDeductible: Deductible?,
         canEditTier: Bool
     ) {
         self.activationDate = activationDate
@@ -24,6 +28,8 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable {
         self.currentPremium = currentPremium
         self.currentTier = currentTier
         self.currentDeductible = currentDeductible
+        self.selectedTier = selectedTier
+        self.selectedDeductible = selectedDeductible
         self.canEditTier = canEditTier
     }
 }
@@ -86,14 +92,14 @@ public struct Deductible: Codable, Hashable, Identifiable {
     let deductibleAmount: MonetaryAmount?
     let deductiblePercentage: Int?
     let subTitle: String?
-    let premium: MonetaryAmount?
+    let premium: MonetaryAmount
 
     public init(
         id: String,
         deductibleAmount: MonetaryAmount?,
         deductiblePercentage: Int?,
         subTitle: String?,
-        premium: MonetaryAmount?
+        premium: MonetaryAmount
     ) {
         self.id = id
         self.deductibleAmount = deductibleAmount

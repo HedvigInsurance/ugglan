@@ -257,7 +257,7 @@ extension DisplayItem {
 
 extension ChangeTierIntentModel {
     static func initWith(data: [OctopusGraphQL.QuoteFragment.HomeQuote]) -> ChangeTierIntentModel {
-        var groupedQuotes = data.reduce([(tierName: String, quotes: [OctopusGraphQL.QuoteFragment.HomeQuote])]()) {
+        let groupedQuotes = data.reduce([(tierName: String, quotes: [OctopusGraphQL.QuoteFragment.HomeQuote])]()) {
             partialResult,
             data in
             var result = partialResult
@@ -311,12 +311,11 @@ extension ChangeTierIntentModel {
         let intentModel: ChangeTierIntentModel = .init(
             activationDate: data.first?.startDate.localDateToDate ?? Date(),
             tiers: tiers,
-            currentPremium: .init(
-                amount: "0",  //String(currentContract.currentAgreement.premium.amount),
-                currency: "SEK$$"  //currentContract.currentAgreement.premium.currencyCode.rawValue
-            ),
-            currentTier: currentTierAndDeductible.tier,
-            currentDeductible: currentTierAndDeductible.deductible,
+            currentPremium: nil,
+            currentTier: nil,
+            currentDeductible: nil,
+            selectedTier: currentTierAndDeductible.tier,
+            selectedDeductible: currentTierAndDeductible.deductible,
             canEditTier: true
         )
         return intentModel

@@ -87,9 +87,9 @@ public class ChangeTierViewModel: ObservableObject {
                 self.currentDeductible = data.currentDeductible
                 self.canEditTier = data.canEditTier
 
-                self.selectedTier = currentTier
-                self.selectedDeductible = currentDeductible
-                self.newPremium = selectedTier?.premium
+                self.selectedTier = data.selectedTier ?? currentTier
+                self.selectedDeductible = data.selectedDeductible ?? currentDeductible
+                self.newPremium = selectedDeductible?.premium
 
                 withAnimation {
                     self.viewState = .success

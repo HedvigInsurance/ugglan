@@ -15,9 +15,9 @@ struct PriceField: View {
             VStack(alignment: .trailing, spacing: 0) {
                 hText(newPremium?.formattedAmountPerMonth ?? currentPremium?.formattedAmountPerMonth ?? "")
 
-                if let newPremium, newPremium != currentPremium {
+                if let newPremium, let currentPremium, newPremium != currentPremium {
                     hText(
-                        L10n.tierFlowPreviousPrice(currentPremium?.formattedAmountPerMonth ?? ""),
+                        L10n.tierFlowPreviousPrice(currentPremium.formattedAmountPerMonth),
                         style: .label
                     )
                     .foregroundColor(hTextColor.Opaque.secondary)

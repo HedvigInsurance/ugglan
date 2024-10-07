@@ -35,7 +35,7 @@ struct EditDeductibleScreen: View {
                                         hText(displayTitle(deductible: deductible))
                                         Spacer()
                                         hPill(
-                                            text: deductible.premium?.formattedAmountPerMonth ?? "",
+                                            text: deductible.premium.formattedAmountPerMonth,
                                             color: .grey(translucent: false),
                                             colorLevel: .two
                                         )

@@ -36,7 +36,13 @@ public class ChangeTierClientOctopus: ChangeTierClient {
             let createIntentResponse = data[0] as! OctopusGraphQL.ChangeTierDeductibleCreateIntentMutation.Data
             let contractResponse = data[1] as! OctopusGraphQL.ContractQuery.Data
 
-            let intent = createIntentResponse.changeTierDeductibleCreateIntent.intent
+            if let error = createIntentResponse.changeTierDeductibleCreateIntent.userError, let message = error.message
+            {
+                throw ChangeTierError.errorMessage(message: message)
+            }
+            guard let intent = createIntentResponse.changeTierDeductibleCreateIntent.intent else {
+                throw ChangeTierError.somethingWentWrong
+            }
             let currentContract = contractResponse.contract
 
             /* get current deductible */
@@ -58,11 +64,11 @@ public class ChangeTierClientOctopus: ChangeTierClient {
 
             /* map currentTier with existing */
             let currentTier: Tier? = filteredTiers.first(where: {
-                $0.name == intent?.currentTierName && $0.level == intent?.currentTierLevel
+                $0.name == intent.currentTierName && $0.level == intent.currentTierLevel
             })
 
             let intentModel: ChangeTierIntentModel = .init(
-                activationDate: intent?.activationDate.localDateToDate ?? Date(),
+                activationDate: intent.activationDate.localDateToDate ?? Date(),
                 tiers: filteredTiers,
                 currentPremium: .init(
                     amount: String(currentContract.currentAgreement.premium.amount),
@@ -70,6 +76,8 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                 ),
                 currentTier: currentTier,
                 currentDeductible: currentDeductible,
+                selectedTier: nil,
+                selectedDeductible: nil,
                 canEditTier: currentContract.supportsChangeTier
             )
             if intentModel.tiers.isEmpty {
@@ -97,14 +105,14 @@ public class ChangeTierClientOctopus: ChangeTierClient {
     }
 
     func getFilteredTiers(
-        currentContract: OctopusGraphQL.ContractQuery.Data.Contract?,
-        intent: OctopusGraphQL.ChangeTierDeductibleCreateIntentMutation.Data.ChangeTierDeductibleCreateIntent.Intent?
+        currentContract: OctopusGraphQL.ContractQuery.Data.Contract,
+        intent: OctopusGraphQL.ChangeTierDeductibleCreateIntentMutation.Data.ChangeTierDeductibleCreateIntent.Intent
     ) -> [Tier] {
         // list of all unique tierNames
         var allTiers: [Tier] = []
 
         var uniqueTierNames: [String] = []
-        intent?.quotes
+        intent.quotes
             .forEach({ tier in
                 let tierNameIsNotInList = uniqueTierNames.first(where: { $0 == (tier.tierName ?? "") })?.isEmpty
                 if let tierName = tier.tierName, tierNameIsNotInList ?? true {
@@ -114,10 +122,10 @@ public class ChangeTierClientOctopus: ChangeTierClient {
 
         /* filter tiers and deductibles*/
         uniqueTierNames.forEach({ tierName in
-            let allQuotesWithNameX = intent?.quotes.filter({ $0.tierName == tierName })
+            let allQuotesWithNameX = intent.quotes.filter({ $0.tierName == tierName })
             var allDeductiblesForX: [Deductible] = []
 
-            allQuotesWithNameX?
+            allQuotesWithNameX
                 .forEach({ quote in
                     if let deductableAmount = quote.deductible?.amount {
                         let deductible = Deductible(
@@ -126,14 +134,14 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                             deductiblePercentage: (quote.deductible?.percentage == 0)
                                 ? nil : quote.deductible?.percentage,
                             subTitle: quote.deductible?.displayText,
-                            premium: .init(optionalFragment: allQuotesWithNameX?.first?.premium.fragments.moneyFragment)
+                            premium: .init(fragment: quote.premium.fragments.moneyFragment)
                         )
                         allDeductiblesForX.append(deductible)
                     }
                 })
 
             var displayItems: [Tier.TierDisplayItem] = []
-            allQuotesWithNameX?
+            allQuotesWithNameX
                 .forEach({
                     displayItems.append(
                         contentsOf: $0.displayItems.map({
@@ -154,16 +162,16 @@ public class ChangeTierClientOctopus: ChangeTierClient {
 
             allTiers.append(
                 .init(
-                    id: allQuotesWithNameX?.first?.id ?? "",
-                    name: allQuotesWithNameX?.first?.tierName ?? "",
-                    level: allQuotesWithNameX?.first?.tierLevel ?? 0,
+                    id: allQuotesWithNameX.first?.id ?? "",
+                    name: allQuotesWithNameX.first?.tierName ?? "",
+                    level: allQuotesWithNameX.first?.tierLevel ?? 0,
                     deductibles: allDeductiblesForX,
-                    premium: .init(optionalFragment: allQuotesWithNameX?.first?.premium.fragments.moneyFragment)
+                    premium: .init(optionalFragment: allQuotesWithNameX.first?.premium.fragments.moneyFragment)
                         ?? .init(amount: "0", currency: "SEK"),
                     displayItems: displayItems,
-                    exposureName: currentContract?.exposureDisplayName,
+                    exposureName: currentContract.exposureDisplayName,
                     productVariant: .init(
-                        data: allQuotesWithNameX?.first?.productVariant.fragments.productVariantFragment
+                        data: allQuotesWithNameX.first?.productVariant.fragments.productVariantFragment
                     ),
                     FAQs: FAQs
                 )

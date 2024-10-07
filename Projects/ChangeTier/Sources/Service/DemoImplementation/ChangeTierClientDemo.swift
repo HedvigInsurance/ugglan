@@ -226,6 +226,8 @@ public class ChangeTierClientDemo: ChangeTierClient {
                 subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
                 premium: .init(amount: "999", currency: "SEK")
             ),
+            selectedTier: nil,
+            selectedDeductible: nil,
             canEditTier: true
         )
     }
