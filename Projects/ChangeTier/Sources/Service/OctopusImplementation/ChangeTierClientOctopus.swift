@@ -44,6 +44,7 @@ public class ChangeTierClientOctopus: ChangeTierClient {
             let currentDeductible: Deductible? = {
                 if let deductible = deductible {
                     return Deductible(
+                        id: "current",
                         deductibleAmount: .init(fragment: deductible.amount.fragments.moneyFragment),
                         deductiblePercentage: deductible.percentage,
                         subTitle: deductible.displayText,
@@ -120,6 +121,7 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                 .forEach({ quote in
                     if let deductableAmount = quote.deductible?.amount {
                         let deductible = Deductible(
+                            id: quote.id,
                             deductibleAmount: .init(fragment: deductableAmount.fragments.moneyFragment),
                             deductiblePercentage: (quote.deductible?.percentage == 0)
                                 ? nil : quote.deductible?.percentage,

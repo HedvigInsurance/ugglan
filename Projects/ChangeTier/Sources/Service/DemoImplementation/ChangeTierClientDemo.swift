@@ -9,18 +9,21 @@ public class ChangeTierClientDemo: ChangeTierClient {
 
         let deductibles: [Deductible] = [
             .init(
+                id: "id1",
                 deductibleAmount: .init(amount: "1000", currency: "SEK"),
                 deductiblePercentage: 0,
                 subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
                 premium: .init(amount: "1167", currency: "SEK")
             ),
             .init(
+                id: "id2",
                 deductibleAmount: .init(amount: "2000", currency: "SEK"),
                 deductiblePercentage: 25,
                 subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
                 premium: .init(amount: "999", currency: "SEK")
             ),
             .init(
+                id: "id3",
                 deductibleAmount: .init(amount: "3000", currency: "SEK"),
                 deductiblePercentage: 15,
                 subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
@@ -217,6 +220,7 @@ public class ChangeTierClientDemo: ChangeTierClient {
                 ]
             ),
             currentDeductible: .init(
+                id: "id1",
                 deductibleAmount: .init(amount: "449", currency: "SEK"),
                 deductiblePercentage: 25,
                 subTitle: "Endast en rörlig del om 25% av skadekostnaden.",

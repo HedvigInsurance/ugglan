@@ -81,7 +81,7 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable {
 }
 
 public struct Deductible: Codable, Hashable, Identifiable {
-    public var id: String = UUID().uuidString
+    public var id: String
 
     let deductibleAmount: MonetaryAmount?
     let deductiblePercentage: Int?
@@ -89,11 +89,13 @@ public struct Deductible: Codable, Hashable, Identifiable {
     let premium: MonetaryAmount?
 
     public init(
+        id: String,
         deductibleAmount: MonetaryAmount?,
         deductiblePercentage: Int?,
         subTitle: String?,
         premium: MonetaryAmount?
     ) {
+        self.id = id
         self.deductibleAmount = deductibleAmount
         self.deductiblePercentage = deductiblePercentage
         self.subTitle = subTitle
