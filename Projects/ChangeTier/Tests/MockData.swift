@@ -6,7 +6,7 @@ import hCore
 struct MockData {
     @discardableResult
     static func createMockChangeTier(
-        fetchTier: @escaping GetTier = { input in
+        fetchTier: @escaping GetTier = { _ in
             .init(
                 activationDate: Date(),
                 tiers: [],
@@ -25,10 +25,6 @@ struct MockData {
         Dependencies.shared.add(module: Module { () -> ChangeTierClient in service })
         return service
     }
-}
-
-enum MockChangeTierError: Error {
-    case failure
 }
 
 typealias GetTier = (ChangeTier.ChangeTierInput) async throws(ChangeTier.ChangeTierError) ->

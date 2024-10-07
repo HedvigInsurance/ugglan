@@ -65,12 +65,12 @@ final class ChangeTierViewModelTests: XCTestCase {
     }
 
     override func tearDown() async throws {
-        //        Dependencies.shared.remove(for: ChangeTierClient.self)
-        //        try await Task.sleep(nanoseconds: 2_000_000)
-        //        XCTAssertNil(sut)
+        Dependencies.shared.remove(for: ChangeTierClient.self)
+        try await Task.sleep(nanoseconds: 20_000_000)
+        XCTAssertNil(sut)
     }
 
-    func testFetchTiersSuccess() async {
+    func testFetchTiersSuccess() async throws {
         let changeTierIntentModel: ChangeTierIntentModel = .init(
             activationDate: Date(),
             tiers: tiers,
@@ -90,35 +90,35 @@ final class ChangeTierViewModelTests: XCTestCase {
 
         model.fetchTiers(nil)
 
-        Task {
-            try await Task.sleep(nanoseconds: 3_000_000)
+        try await Task.sleep(nanoseconds: 30_000_000)
+        assert(model.tiers == tiers)
+        assert(model.tiers.first == tiers.first)
+        assert(model.tiers.count == tiers.count)
+    }
 
-            assert(model.tiers == tiers)
-            assert(model.tiers.first == tiers.first)
-            assert(model.tiers.count == tiers.count)
+    func testAddCampaingCodeViewModelFailure() async throws {
+        let mockService = MockData.createMockChangeTier(
+            fetchTier: { _ throws(ChangeTierError) in
+                throw ChangeTierError.somethingWentWrong
+            }
+        )
+
+        self.sut = mockService
+
+        let model = ChangeTierViewModel(changeTierInput: .init(source: .changeTier, contractId: "contractId"))
+
+        model.fetchTiers(nil)
+        try await Task.sleep(nanoseconds: 30_000_000)
+        assert(model.canEditTier == false)
+        assert(model.tiers.isEmpty)
+        if case .error(let errorMessage) = model.viewState {
+            assert(errorMessage == ChangeTierError.somethingWentWrong.localizedDescription)
+        } else {
+            assertionFailure("not proper state")
         }
     }
 
-    //        func testAddCampaingCodeViewModelFailure() async {
-    //            let mockService = MockData.createMockChangeTier(
-    //                fetchTier: { _ in
-    //                    throw ChangeTierError.somethingWentWrong
-    ////                    throw Error()
-    //                }
-    //            )
-    //
-    //            self.sut = mockService
-    //
-    //            let model = ChangeTierViewModel(changeTierInput: .init(source: .changeTier, contractId: "contractId"))
-    //
-    //            await model.fetchTiers(nil)
-    //
-    //            assert(model.canEditTier == false)
-    //            assert(model.tiers.isEmpty)
-    //            assert(model.viewState == .error(errorMessage: ChangeTierError.somethingWentWrong.localizedDescription))
-    //        }
-
-    func testSetSelectedTierSuccess() async {
+    func testSetSelectedTierSuccess() async throws {
         let changeTierIntentModel: ChangeTierIntentModel = .init(
             activationDate: Date(),
             tiers: tiers,
@@ -137,12 +137,9 @@ final class ChangeTierViewModelTests: XCTestCase {
         let model = ChangeTierViewModel(changeTierInput: .init(source: .changeTier, contractId: "contractId"))
 
         model.fetchTiers(nil)
-
-        Task {
-            try await Task.sleep(nanoseconds: 2_000_000)
-            await model.setTier(for: "max")
-            assert(model.selectedTier?.name == "max")
-        }
+        try await Task.sleep(nanoseconds: 30_000_000)
+        await model.setTier(for: "max")
+        assert(model.selectedTier?.name == "max")
     }
 
     //    func testSetSelectedTierFailure() async {
@@ -163,7 +160,7 @@ final class ChangeTierViewModelTests: XCTestCase {
     //    assert(model == ChangeTierError.somethingWentWrong.localizedDescription)
     //    }
 
-    func testSetSelectedDeductibleSuccess() async {
+    func testSetSelectedDeductibleSuccess() async throws {
         let changeTierIntentModel: ChangeTierIntentModel = .init(
             activationDate: Date(),
             tiers: tiers,
@@ -181,13 +178,11 @@ final class ChangeTierViewModelTests: XCTestCase {
 
         let model = ChangeTierViewModel(changeTierInput: .init(source: .changeTier, contractId: "contractId"))
 
-        Task {
-            try await Task.sleep(nanoseconds: 2_000_000)
-            await model.setTier(for: "max")
-            await model.setDeductible(for: model.selectedTier?.deductibles.first?.id ?? "")
-            assert(model.selectedDeductible != nil)
-            assert(model.selectedDeductible?.id == model.selectedTier?.deductibles.first?.id)
-        }
+        try await Task.sleep(nanoseconds: 30_000_000)
+        await model.setTier(for: "max")
+        await model.setDeductible(for: model.selectedTier?.deductibles.first?.id ?? "")
+        assert(model.selectedDeductible != nil)
+        assert(model.selectedDeductible?.id == model.selectedTier?.deductibles.first?.id)
     }
 
     //    func testSetSelectedDeductibleFailure() async {
