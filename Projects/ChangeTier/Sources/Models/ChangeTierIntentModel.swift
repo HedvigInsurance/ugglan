@@ -10,18 +10,56 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable {
     let currentTier: Tier?
     let currentDeductible: Deductible?
     let canEditTier: Bool
+
+    public init(
+        activationDate: Date,
+        tiers: [Tier],
+        currentPremium: MonetaryAmount,
+        currentTier: Tier?,
+        currentDeductible: Deductible?,
+        canEditTier: Bool
+    ) {
+        self.activationDate = activationDate
+        self.tiers = tiers
+        self.currentPremium = currentPremium
+        self.currentTier = currentTier
+        self.currentDeductible = currentDeductible
+        self.canEditTier = canEditTier
+    }
 }
 
 public struct Tier: Codable, Equatable, Hashable, Identifiable {
     public var id: String
     let name: String
     let level: Int
-    let deductibles: [Deductible]
+    public let deductibles: [Deductible]
     let premium: MonetaryAmount
     let displayItems: [TierDisplayItem]
     let exposureName: String?
     let productVariant: ProductVariant?
     let FAQs: [FAQ]
+
+    public init(
+        id: String,
+        name: String,
+        level: Int,
+        deductibles: [Deductible],
+        premium: MonetaryAmount,
+        displayItems: [TierDisplayItem],
+        exposureName: String?,
+        productVariant: ProductVariant?,
+        FAQs: [FAQ]
+    ) {
+        self.id = id
+        self.name = name
+        self.level = level
+        self.deductibles = deductibles
+        self.premium = premium
+        self.displayItems = displayItems
+        self.exposureName = exposureName
+        self.productVariant = productVariant
+        self.FAQs = FAQs
+    }
 
     public struct TierDisplayItem: Codable, Equatable, Hashable {
         public var id = UUID()

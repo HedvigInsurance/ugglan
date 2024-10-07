@@ -19,6 +19,7 @@ public protocol FeatureFlags {
     var osVersionTooLow: Bool { get set }
     var emailPreferencesEnabled: Bool { get set }
     var isTiersEnabled: Bool { get set }
+    var isMovingFlowWithTiersEnabled: Bool { get set }
 }
 
 public enum PaymentType {

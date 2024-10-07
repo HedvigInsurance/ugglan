@@ -25,8 +25,12 @@ public class MoveFlowClientOctopus: MoveFlowClient {
         addressInputModel: AddressInputModel,
         houseInformationInputModel: HouseInformationInputModel
     ) async throws -> MovingFlowModel {
-
+        let isMovingFlowWithTiersEnabled = Dependencies.featureFlags().isMovingFlowWithTiersEnabled
+        let apiVersion: OctopusGraphQL.MoveApiVersion =
+            isMovingFlowWithTiersEnabled
+            ? OctopusGraphQL.MoveApiVersion.v2TiersAndDeductibles : OctopusGraphQL.MoveApiVersion.v1
         let moveIntentRequestInput = OctopusGraphQL.MoveIntentRequestInput(
+            apiVersion: .init(apiVersion),
             moveToAddress: .init(
                 street: addressInputModel.address,
                 postalCode: addressInputModel.postalCode.replacingOccurrences(of: " ", with: "")
@@ -53,9 +57,12 @@ public class MoveFlowClientOctopus: MoveFlowClient {
         throw MovingFlowError.missingDataError(message: L10n.General.errorBody)
     }
 
-    public func confirmMoveIntent(intentId: String) async throws {
+    public func confirmMoveIntent(intentId: String, homeQuoteId: String?) async throws {
 
-        let mutation = OctopusGraphQL.MoveIntentCommitMutation(intentId: intentId)
+        let mutation = OctopusGraphQL.MoveIntentCommitMutation(
+            intentId: intentId,
+            homeQuoteId: GraphQLNullable.init(optionalValue: homeQuoteId)
+        )
         let data = try await octopus.client.perform(mutation: mutation)
 
         if let userError = data.moveIntentCommit.userError {
