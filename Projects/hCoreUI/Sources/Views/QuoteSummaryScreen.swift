@@ -111,8 +111,9 @@ public struct QuoteSummaryScreen: View {
         VStack(spacing: 0) {
             faqsComponent(for: vm.FAQModel.questions)
             chatComponent
+            Spacing(height: 380)
         }
-        .padding(.top, 180)
+        .padding(.top, 16)
         .id(showCoverageId)
     }
 
@@ -322,7 +323,6 @@ public struct QuoteSummaryScreen: View {
                 hText(L10n.openChat, style: .body1)
             }
             .fixedSize()
-            Spacing(height: 103)
         }
     }
 }
