@@ -4,13 +4,13 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-class ChangeTierViewModel: ObservableObject {
+public class ChangeTierViewModel: ObservableObject {
     @Inject private var service: ChangeTierClient
     @Published var viewState: ProcessingState = .loading
     @Published var displayName: String?
     @Published var exposureName: String?
     private(set) var tiers: [Tier] = []
-    private var changeTierInput: ChangeTierInput
+    private(set) var changeTierInput: ChangeTierInput
 
     @Published var currentPremium: MonetaryAmount?
     var currentTier: Tier?
@@ -35,12 +35,11 @@ class ChangeTierViewModel: ObservableObject {
         return !(selectedTier?.deductibles.isEmpty ?? true) && selectedTier != nil
     }
 
-    init(
-        changeTierInput: ChangeTierInput,
-        changeTierIntentModel: ChangeTierIntentModel? = nil
+    public init(
+        changeTierInput: ChangeTierInput
     ) {
         self.changeTierInput = changeTierInput
-        fetchTiers(changeTierIntentModel)
+        fetchTiers()
     }
 
     @MainActor
@@ -65,17 +64,19 @@ class ChangeTierViewModel: ObservableObject {
         }
     }
 
-    func fetchTiers(_ existingModel: ChangeTierIntentModel?) {
+    func fetchTiers() {
         withAnimation {
             self.viewState = .loading
         }
         Task { @MainActor in
             do {
                 let data: ChangeTierIntentModel = try await {
-                    if let existingModel = existingModel {
-                        return existingModel
+                    switch changeTierInput {
+                    case let .contractWithSource(data):
+                        return try await service.getTier(input: (data))
+                    case let .existingIntent(intent, _):
+                        return intent
                     }
-                    return try await service.getTier(input: changeTierInput)
                 }()
                 self.tiers = data.tiers
                 self.displayName = data.tiers.first?.productVariant?.displayName

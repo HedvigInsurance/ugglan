@@ -3,17 +3,17 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct ChangeTierLandingScreen: View {
+public struct ChangeTierLandingScreen: View {
     @ObservedObject var vm: ChangeTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
 
-    init(
+    public init(
         vm: ChangeTierViewModel
     ) {
         self.vm = vm
     }
 
-    var body: some View {
+    public var body: some View {
         ProcessingStateView(
             loadingViewText: L10n.tierFlowProcessing,
             successViewTitle: nil,
@@ -24,7 +24,7 @@ struct ChangeTierLandingScreen: View {
                 actionButton: .init(
                     buttonTitle: nil,
                     buttonAction: {
-                        vm.fetchTiers(nil)
+                        vm.fetchTiers()
                     }
                 ),
                 dismissButton:
@@ -150,7 +150,14 @@ struct ChangeTierLandingScreen: View {
                     hText(L10n.tierFlowCompareButton, style: .body1)
                 }
                 hButton.LargeButton(type: .primary) {
-                    changeTierNavigationVm.router.push(ChangeTierRouterActions.summary)
+                    switch vm.changeTierInput {
+                    case .contractWithSource:
+                        changeTierNavigationVm.router.push(ChangeTierRouterActions.summary)
+                    case let .existingIntent(_, onSelect):
+                        if let selectedTier = vm.selectedTier, let selectedDeductible = vm.selectedDeductible {
+                            onSelect((selectedTier, selectedDeductible))
+                        }
+                    }
                 } content: {
                     hText(L10n.generalContinueButton)
                 }
@@ -163,7 +170,6 @@ struct ChangeTierLandingScreen: View {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
-    return ChangeTierLandingScreen(
-        vm: .init(changeTierInput: .init(source: .betterCoverage, contractId: "contractId"))
-    )
+    let inputData = ChangeTierInputData(source: .betterCoverage, contractId: "")
+    return ChangeTierLandingScreen(vm: .init(changeTierInput: ChangeTierInput.contractWithSource(data: inputData)))
 }

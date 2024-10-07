@@ -16,10 +16,9 @@ public struct MovingFlowModel: Codable, Equatable, Hashable {
     let maxMovingDate: String
     let suggestedNumberCoInsured: Int
     let currentHomeAddresses: [MoveAddress]
-    let quotes: [Quote]
+    var quotes: [Quote]
     let faqs: [FAQ]
     let extraBuildingTypes: [ExtraBuildingType]
-    let homeQuotes: [Quote]
     let changeTier: ChangeTierIntentModel?
     init(from data: OctopusGraphQL.MoveIntentFragment) {
         id = data.id
@@ -49,8 +48,14 @@ public struct MovingFlowModel: Codable, Equatable, Hashable {
         currentHomeAddresses = data.currentHomeAddresses.compactMap({
             MoveAddress(from: $0.fragments.moveAddressFragment)
         })
-        quotes = data.fragments.quoteFragment.quotes.compactMap({ Quote(from: $0) })
-        homeQuotes = data.fragments.quoteFragment.mtaQuotes?.compactMap({ Quote(from: $0) }) ?? []
+        let quotes = data.fragments.quoteFragment.quotes
+        if !quotes.isEmpty {
+            self.quotes = data.fragments.quoteFragment.quotes.compactMap({ Quote(from: $0) })
+        } else if let homeQuotes = data.fragments.quoteFragment.mtaQuotes {
+            self.quotes = data.fragments.quoteFragment.mtaQuotes?.compactMap({ Quote(from: $0) }) ?? []
+        } else {
+            self.quotes = []
+        }
         changeTier = {
             if let data = data.fragments.quoteFragment.homeQuotes, !data.isEmpty {
                 return ChangeTierIntentModel.initWith(data: data)
@@ -97,7 +102,6 @@ public struct MovingFlowModel: Codable, Equatable, Hashable {
         self.quotes = quotes
         self.faqs = faqs
         self.extraBuildingTypes = extraBuildingTypes
-        self.homeQuotes = []
         self.changeTier = nil
     }
 
@@ -195,7 +199,6 @@ struct Quote: Codable, Equatable, Hashable {
         contractType = Contract.TypeOfContract(rawValue: data.productVariant.typeOfContract)
         displayItems = data.displayItems.map({ .init($0) })
     }
-
 }
 
 struct InsuranceDocument: Codable, Equatable, Hashable {

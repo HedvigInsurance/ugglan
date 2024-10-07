@@ -5,7 +5,7 @@ import hGraphQL
 public class ChangeTierClientDemo: ChangeTierClient {
     public init() {}
 
-    public func getTier(input: ChangeTierInput) async throws(ChangeTierError) -> ChangeTierIntentModel {
+    public func getTier(input: ChangeTierInputData) async throws(ChangeTierError) -> ChangeTierIntentModel {
 
         let deductibles: [Deductible] = [
             .init(
