@@ -243,15 +243,6 @@ class SurveyScreenViewModel: ObservableObject {
             ),
             subOptions: nil
         ),
-        //        .init(
-        //            id: "optionId3",
-        //            title: "Option title 3",
-        //            suggestion: nil,
-        //            feedBack: nil,
-        //            subOptions: [
-        //                .init(id: "subOptionId1", title: "", suggestion: <#T##TerminationFlowSurveyStepSuggestion?#>, feedBack: <#T##TerminationFlowSurveyStepFeedback?#>, subOptions: <#T##[TerminationFlowSurveyStepModelOption]?#>)
-        //            ]
-        //        ),
     ]
 
     return NavigationView {
