@@ -1,9 +1,9 @@
+import ChangeTier
 import Combine
 import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import ChangeTier
 
 public class MovingFlowNavigationViewModel: ObservableObject {
     public init() {}
@@ -149,11 +149,10 @@ public struct MovingFlowNavigation: View {
             }
         )
     }
-    
+
     func openChangeTier(model: ChangeTierIntentModel) -> some View {
         let model = ChangeTierInput.existingIntent(intent: model) { (tier, deducitlbe) in
-//            router.push(MovingFlowRouterActions.confirm)
-            Quote(
+            router.push(MovingFlowRouterActions.confirm)
         }
         return ChangeTierNavigation(input: model, router: router)
     }
