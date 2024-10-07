@@ -99,23 +99,24 @@ final class ChangeTierViewModelTests: XCTestCase {
         }
     }
 
-    //    func testAddCampaingCodeViewModelFailure() async {
-    //        let mockService = MockData.createMockChangeTier(
-    //            fetchTier: { _ in
-    //                throw ChangeTierError.somethingWentWrong
-    //            }
-    //        )
+    //        func testAddCampaingCodeViewModelFailure() async {
+    //            let mockService = MockData.createMockChangeTier(
+    //                fetchTier: { _ in
+    //                    throw ChangeTierError.somethingWentWrong
+    ////                    throw Error()
+    //                }
+    //            )
     //
-    //        self.sut = mockService
+    //            self.sut = mockService
     //
-    //        let model = ChangeTierViewModel(changeTierInput: .init(source: .changeTier, contractId: "contractId"))
+    //            let model = ChangeTierViewModel(changeTierInput: .init(source: .changeTier, contractId: "contractId"))
     //
-    //        await model.fetchTiers(nil)
+    //            await model.fetchTiers(nil)
     //
-    //        assert(model.canEditTier == false)
-    //        assert(model.tiers.isEmpty)
-    //        assert(model == ChangeTierError.somethingWentWrong.localizedDescription)
-    //    }
+    //            assert(model.canEditTier == false)
+    //            assert(model.tiers.isEmpty)
+    //            assert(model.viewState == .error(errorMessage: ChangeTierError.somethingWentWrong.localizedDescription))
+    //        }
 
     func testSetSelectedTierSuccess() async {
         let changeTierIntentModel: ChangeTierIntentModel = .init(
