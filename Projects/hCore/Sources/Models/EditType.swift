@@ -20,7 +20,7 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
         case .coInsured:
             return L10n.hcQuickActionsCoInsuredSubtitle
         case .changeTier:
-            return "Update coverage level and deductible"
+            return L10n.hcQuickActionsUpgradeCoverageTitle
         case .cancellation:
             return L10n.hcQuickActionsTerminationSubtitle
         }
