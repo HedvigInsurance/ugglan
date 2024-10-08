@@ -66,8 +66,13 @@ public class FeatureFlagsUnleash: FeatureFlags {
     }
 
     public func updateContext(context: [String: String]) {
-        if unleashClient?.context.toMap() != context {
-            unleashClient?.updateContext(context: context)
+        if let existingContext = unleashClient?.context.toMap() {
+            for contextKey in context.keys {
+                if existingContext[contextKey] != context[contextKey] {
+                    unleashClient?.updateContext(context: context)
+                    break
+                }
+            }
         }
     }
 
