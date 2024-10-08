@@ -209,11 +209,19 @@ public struct HelpCenterNavigation<Content: View>: View {
             helpCenterVm.editCoInsuredVm.start()
         case .upgradeCoverage:
             let contractStore: ContractStore = globalPresentableStoreContainer.get()
-            let contractsSupportingChangingTier = contractStore.state.activeContracts
+            let contractsSupportingChangingTier: [ChangeTierContract] = contractStore.state.activeContracts
                 .filter({ $0.supportsChangeTier })
-            /* TODO: DONT CHOOSE FIRST ONE */
-            let contractId = contractsSupportingChangingTier.first?.id ?? ""
-            helpCenterVm.quickActions.isChangeTierPresented = .init(source: .changeTier, contractId: contractId)
+                .map({
+                    .init(
+                        contractId: $0.id,
+                        contractDisplayName: $0.currentAgreement?.productVariant.displayName ?? "",
+                        contractExposureName: $0.exposureDisplayName
+                    )
+                })
+            helpCenterVm.quickActions.isChangeTierPresented = .init(
+                source: .changeTier,
+                contractIds: contractsSupportingChangingTier
+            )
         case .firstVet:
             helpCenterVm.quickActions.isFirstVetPresented = true
         case .sickAbroad:

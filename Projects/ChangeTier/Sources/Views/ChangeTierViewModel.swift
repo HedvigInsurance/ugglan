@@ -10,7 +10,7 @@ class ChangeTierViewModel: ObservableObject {
     @Published var displayName: String?
     @Published var exposureName: String?
     private(set) var tiers: [Tier] = []
-    private var changeTierInput: ChangeTierInput
+    var changeTierInput: ChangeTierInput
 
     @Published var currentPremium: MonetaryAmount?
     var currentTier: Tier?

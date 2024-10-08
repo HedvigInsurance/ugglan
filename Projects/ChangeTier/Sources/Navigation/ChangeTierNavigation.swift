@@ -55,16 +55,41 @@ extension ChangeTierRouterActionsWithoutBackButton: TrackingViewNameProtocol {
 
 public struct ChangeTierInput: Equatable, Identifiable {
     public var id: String {
-        contractId
+        contractIds.first?.contractId ?? ""
     }
 
-    public init(source: ChangeTierSource, contractId: String) {
+    public init(
+        source: ChangeTierSource,
+        contractIds: [ChangeTierContract]
+    ) {
         self.source = source
-        self.contractId = contractId
+        self.contractIds = contractIds
     }
 
     let source: ChangeTierSource
-    let contractId: String
+    let contractIds: [ChangeTierContract]
+}
+
+public struct ChangeTierContract: Hashable {
+    public var contractId: String
+    public var contractDisplayName: String
+    public var contractExposureName: String
+
+    public init(
+        contractId: String,
+        contractDisplayName: String,
+        contractExposureName: String
+    ) {
+        self.contractId = contractId
+        self.contractDisplayName = contractDisplayName
+        self.contractExposureName = contractExposureName
+    }
+}
+
+extension ChangeTierContract: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        return .init(describing: ChangeTierContract.self)
+    }
 }
 
 public enum ChangeTierSource {
@@ -91,26 +116,14 @@ public struct ChangeTierNavigation: View {
             options: [],
             tracking: ChangeTierTrackingType.changeTierLandingScreen
         ) {
-            ChangeTierLandingScreen(vm: changeTierNavigationVm.vm)
-                .withDismissButton()
-                .routerDestination(for: ChangeTierRouterActions.self) { action in
-                    switch action {
-                    case .summary:
-                        ChangeTierSummaryScreen(
-                            changeTierVm: changeTierNavigationVm.vm,
-                            changeTierNavigationVm: changeTierNavigationVm
-                        )
-                        .configureTitle(L10n.offerUpdateSummaryTitle)
-                        .withDismissButton()
+            if changeTierNavigationVm.vm.changeTierInput.contractIds.count > 1 {
+                SelectInsuranceScreen(vm: changeTierNavigationVm.vm)
+                    .routerDestination(for: ChangeTierContract.self) { changeTierContract in
+                        getScreen
                     }
-                }
-                .routerDestination(for: ChangeTierRouterActionsWithoutBackButton.self, options: [.hidesBackButton]) {
-                    action in
-                    switch action {
-                    case .commitTier:
-                        ChangeTierProcessingView(vm: changeTierNavigationVm.vm)
-                    }
-                }
+            } else {
+                getScreen
+            }
         }
         .environmentObject(changeTierNavigationVm)
         .detent(
@@ -158,6 +171,29 @@ public struct ChangeTierNavigation: View {
         ) { document in
             PDFPreview(document: .init(url: document.url, title: document.title))
         }
+    }
+
+    var getScreen: some View {
+        ChangeTierLandingScreen(vm: changeTierNavigationVm.vm)
+            .withDismissButton()
+            .routerDestination(for: ChangeTierRouterActions.self) { action in
+                switch action {
+                case .summary:
+                    ChangeTierSummaryScreen(
+                        changeTierVm: changeTierNavigationVm.vm,
+                        changeTierNavigationVm: changeTierNavigationVm
+                    )
+                    .configureTitle(L10n.offerUpdateSummaryTitle)
+                    .withDismissButton()
+                }
+            }
+            .routerDestination(for: ChangeTierRouterActionsWithoutBackButton.self, options: [.hidesBackButton]) {
+                action in
+                switch action {
+                case .commitTier:
+                    ChangeTierProcessingView(vm: changeTierNavigationVm.vm)
+                }
+            }
     }
 }
 

@@ -77,7 +77,13 @@ public struct ContractsNavigation<Content: View>: View {
                     case .changeTier:
                         contractsNavigationVm.changeTierInput = .init(
                             source: .changeTier,
-                            contractId: contract.id
+                            contractIds: [
+                                .init(
+                                    contractId: contract.id,
+                                    contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
+                                    contractExposureName: contract.exposureDisplayName
+                                )
+                            ]
                         )
                     case .cancellation:
                         break
