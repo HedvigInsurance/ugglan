@@ -59,8 +59,10 @@ public class HomeClientOctopus: HomeClient {
         if actions?.isCancelInsuranceEnabled == true && featureFlags.isTerminationFlowEnabled {
             contractAction.append(.cancellation)
         }
+        /* TODO: add parameter from backend to check if upgradeCOverage should be shown */
         if !contractAction.isEmpty {
-            quickActions.append(.editInsurance(actions: .init(quickActions: contractAction)))
+            let actions = contractAction + [.upgradeCoverage]
+            quickActions.append(.editInsurance(actions: .init(quickActions: actions)))
         }
         if actions?.isConnectPaymentEnabled == true {
             quickActions.append(.connectPayments)
@@ -68,9 +70,6 @@ public class HomeClientOctopus: HomeClient {
         if actions?.isTravelCertificateEnabled == true && featureFlags.isTravelInsuranceEnabled {
             quickActions.append(.travelInsurance)
         }
-        /* TODO: add parameter from backend to check if upgradeCOverage should be shown */
-        quickActions.append(.editInsurance(actions: .init(quickActions: [.upgradeCoverage])))
-
         if let firstVetSections = actions?.firstVetAction?.sections {
             let firstVetPartners = firstVetSections.compactMap({
                 FirstVetPartner(

@@ -26,7 +26,7 @@ public class HelpCenterNavigationViewModel: ObservableObject {
         var isCancellationPresented = false
         var isFirstVetPresented = false
         var isSickAbroadPresented = false
-        var isChangeTierPresented = false
+        var isChangeTierPresented: ChangeTierInput?
     }
 
     public init() {}
@@ -104,6 +104,11 @@ public struct HelpCenterNavigation<Content: View>: View {
                     options: .navigationType(type: .large),
                     tracking: HelpCenterDetentRouterType.firstVet
                 )
+        }
+        .modally(
+            item: $helpCenterVm.quickActions.isChangeTierPresented
+        ) { input in
+            ChangeTierNavigation(input: input, existingModel: nil)
         }
         .detent(
             presented: $helpCenterVm.quickActions.isSickAbroadPresented,
@@ -203,7 +208,12 @@ public struct HelpCenterNavigation<Content: View>: View {
         case .editCoInsured:
             helpCenterVm.editCoInsuredVm.start()
         case .upgradeCoverage:
-            helpCenterVm.quickActions.isChangeTierPresented = true
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+            let contractsSupportingChangingTier = contractStore.state.activeContracts
+                .filter({ $0.supportsChangeTier })
+            /* TODO: DONT CHOOSE FIRST ONE */
+            let contractId = contractsSupportingChangingTier.first?.id ?? ""
+            helpCenterVm.quickActions.isChangeTierPresented = .init(source: .changeTier, contractId: contractId)
         case .firstVet:
             helpCenterVm.quickActions.isFirstVetPresented = true
         case .sickAbroad:
