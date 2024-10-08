@@ -88,7 +88,9 @@ public struct QuoteSummaryScreen: View {
                     )
                     .padding(.bottom, spacingCoverage)
                 }
-                scrollSection
+                if !(vm.FAQModel?.questions.isEmpty ?? true) {
+                    scrollSection
+                }
             }
             .hFormAttachToBottom {
                 buttonComponent(proxy: proxy)
@@ -111,15 +113,10 @@ public struct QuoteSummaryScreen: View {
         VStack(spacing: 0) {
             if let questions = vm.FAQModel?.questions {
                 faqsComponent(for: questions)
-                Spacing(height: 64)
             }
+            Spacing(height: 64)
             chatComponent
-
-            if let questions = vm.FAQModel?.questions {
-                Spacing(height: 380)
-            } else {
-                Spacing(height: 600)
-            }
+            Spacing(height: 380)
         }
         .padding(.top, 16)
         .id(showCoverageId)
@@ -238,6 +235,9 @@ public struct QuoteSummaryScreen: View {
     private func buttonComponent(proxy: ScrollViewProxy) -> some View {
         hSection {
             VStack(spacing: .padding16) {
+                if vm.FAQModel?.questions.isEmpty ?? true {
+                    chatComponent
+                }
                 HStack {
                     hText(L10n.tierFlowTotal)
                     Spacer()
