@@ -59,11 +59,13 @@ public struct QuoteSummaryScreen: View {
     @State var spacingCoverage: CGFloat = 0
     @State var totalHeight: CGFloat = 0
     @State var selectedFAQ: [String] = [""]
+    private var isEmptyFaq: Bool
 
     public init(
         vm: QuoteSummaryViewModel
     ) {
         self.vm = vm
+        self.isEmptyFaq = vm.FAQModel?.questions.isEmpty ?? true
     }
 
     public var body: some View {
@@ -88,7 +90,7 @@ public struct QuoteSummaryScreen: View {
                     )
                     .padding(.bottom, vm.FAQModel?.questions.isEmpty ?? true ? 0 : spacingCoverage)
                 }
-                if !(vm.FAQModel?.questions.isEmpty ?? true) {
+                if !isEmptyFaq {
                     scrollSection
                 }
             }
@@ -235,7 +237,7 @@ public struct QuoteSummaryScreen: View {
     private func buttonComponent(proxy: ScrollViewProxy) -> some View {
         hSection {
             VStack(spacing: .padding16) {
-                if vm.FAQModel?.questions.isEmpty ?? true {
+                if isEmptyFaq {
                     chatComponent
                 }
                 HStack {
@@ -250,7 +252,7 @@ public struct QuoteSummaryScreen: View {
                         hText(L10n.changeAddressAcceptOffer)
                     }
 
-                    if !(vm.FAQModel?.questions.isEmpty ?? true) {
+                    if !isEmptyFaq {
                         hButton.LargeButton(type: .ghost) {
                             withAnimation {
                                 proxy.scrollTo(showCoverageId, anchor: .top)
