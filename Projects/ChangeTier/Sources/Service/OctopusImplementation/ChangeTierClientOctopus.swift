@@ -144,12 +144,6 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                     )
                 })
 
-            let FAQs: [FAQ] = [
-                .init(title: "question 1", description: "..."),
-                .init(title: "question 2", description: "..."),
-                .init(title: "question 3", description: "..."),
-            ]
-
             allTiers.append(
                 .init(
                     id: allQuotesWithNameX?.first?.id ?? "",
@@ -163,7 +157,7 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                     productVariant: .init(
                         data: allQuotesWithNameX?.first?.productVariant.fragments.productVariantFragment
                     ),
-                    FAQs: FAQs
+                    FAQs: nil
                 )
             )
         })

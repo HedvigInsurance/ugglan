@@ -5,7 +5,7 @@ import hGraphQL
 public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     let contracts: [ContractInfo]
     let total: MonetaryAmount
-    let FAQModel: (title: String, subtitle: String, questions: [FAQ])
+    let FAQModel: (title: String, subtitle: String, questions: [FAQ])?
     let onConfirmClick: () -> Void
 
     public struct ContractInfo: Identifiable {
@@ -42,7 +42,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     public init(
         contract: [ContractInfo],
         total: MonetaryAmount,
-        FAQModel: (title: String, subtitle: String, questions: [FAQ]),
+        FAQModel: (title: String, subtitle: String, questions: [FAQ])? = nil,
         onConfirmClick: @escaping () -> Void
     ) {
         self.contracts = contract
@@ -109,9 +109,17 @@ public struct QuoteSummaryScreen: View {
 
     var scrollSection: some View {
         VStack(spacing: 0) {
-            faqsComponent(for: vm.FAQModel.questions)
+            if let questions = vm.FAQModel?.questions {
+                faqsComponent(for: questions)
+                Spacing(height: 64)
+            }
             chatComponent
-            Spacing(height: 380)
+
+            if let questions = vm.FAQModel?.questions {
+                Spacing(height: 380)
+            } else {
+                Spacing(height: 600)
+            }
         }
         .padding(.top, 16)
         .id(showCoverageId)
@@ -196,10 +204,11 @@ public struct QuoteSummaryScreen: View {
     }
 
     func rowItem(for displayItem: QuoteDisplayItem) -> some View {
-        HStack {
+        HStack(alignment: .top) {
             hText(displayItem.displayTitle)
             Spacer()
             hText(displayItem.displayValue)
+                .multilineTextAlignment(.trailing)
         }
         .foregroundColor(hTextColor.Opaque.secondary)
     }
@@ -240,12 +249,15 @@ public struct QuoteSummaryScreen: View {
                     } content: {
                         hText(L10n.changeAddressAcceptOffer)
                     }
-                    hButton.LargeButton(type: .ghost) {
-                        withAnimation {
-                            proxy.scrollTo(showCoverageId, anchor: .top)
+
+                    if !(vm.FAQModel?.questions.isEmpty ?? true) {
+                        hButton.LargeButton(type: .ghost) {
+                            withAnimation {
+                                proxy.scrollTo(showCoverageId, anchor: .top)
+                            }
+                        } content: {
+                            hText(L10n.tierFlowShowCoverage)
                         }
-                    } content: {
-                        hText(L10n.tierFlowShowCoverage)
                     }
                 }
             }
@@ -259,8 +271,8 @@ public struct QuoteSummaryScreen: View {
             if !faqs.isEmpty {
                 hSection {
                     VStack(alignment: .leading, spacing: 0) {
-                        hText(vm.FAQModel.title)
-                        hText(vm.FAQModel.subtitle).foregroundColor(hTextColor.Opaque.secondary)
+                        hText(vm.FAQModel?.title ?? "")
+                        hText(vm.FAQModel?.subtitle ?? "").foregroundColor(hTextColor.Opaque.secondary)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
@@ -315,7 +327,6 @@ public struct QuoteSummaryScreen: View {
     @ViewBuilder
     var chatComponent: some View {
         VStack(spacing: 0) {
-            Spacing(height: 64)
             hText(L10n.changeAddressNoFind, style: .body1)
             Spacing(height: 16)
             hButton.SmallButton(type: .primary) {
@@ -380,7 +391,7 @@ public struct FAQ: Codable, Equatable, Hashable {
                 documents: documents,
                 onDocumentTap: { document in },
                 displayItems: [
-                    .init(title: "Limits", value: "mockLimits"),
+                    .init(title: "Limits", value: "mockLimits mockLimits long long long name"),
                     .init(title: "Documents", value: "documents"),
                     .init(title: "FAQ", value: "mockFAQ"),
                 ]
