@@ -27,18 +27,21 @@ struct TerminationSurveyScreen: View {
                                     )
                                     .hFieldSize(.medium)
                                     .zIndex(1)
-                                    if let suggestion = option.suggestion, option.id == vm.selectedOption?.id {
-                                        buildInfo(for: suggestion)
-                                            .matchedGeometryEffect(id: "buildInfo", in: animationNamespace)
-                                    }
+                                    Group {
+                                        if let suggestion = option.suggestion, option.id == vm.selectedOption?.id {
+                                            buildInfo(for: suggestion)
+                                                .matchedGeometryEffect(id: "buildInfo", in: animationNamespace)
+                                        }
 
-                                    if let feedBack = vm.allFeedBackViewModels[option.id],
-                                        option.id == vm.selectedOption?.id
-                                    {
-                                        TerminationFlowSurveyStepFeedBackView(
-                                            vm: feedBack
-                                        )
+                                        if let feedBack = vm.allFeedBackViewModels[option.id],
+                                            option.id == vm.selectedOption?.id
+                                        {
+                                            TerminationFlowSurveyStepFeedBackView(
+                                                vm: feedBack
+                                            )
+                                        }
                                     }
+                                    .frame(minHeight: 120)
                                 }
                             }
 
@@ -193,6 +196,7 @@ class SurveyScreenViewModel: ObservableObject {
 }
 
 #Preview {
+    Dependencies.shared.add(module: Module { () -> TerminateContractsClient in TerminateContractsClientDemo() })
     Localization.Locale.currentLocale.send(.en_SE)
     let options = [
         TerminationFlowSurveyStepModelOption(
