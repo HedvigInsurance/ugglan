@@ -86,7 +86,7 @@ public struct QuoteSummaryScreen: View {
                                 }
                         }
                     )
-                    .padding(.bottom, spacingCoverage)
+                    .padding(.bottom, vm.FAQModel?.questions.isEmpty ?? true ? 0 : spacingCoverage)
                 }
                 if !(vm.FAQModel?.questions.isEmpty ?? true) {
                     scrollSection
