@@ -7,7 +7,7 @@ public struct ChangeTierLandingScreen: View {
     @ObservedObject var vm: ChangeTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
 
-    public init(
+    init(
         vm: ChangeTierViewModel
     ) {
         self.vm = vm
