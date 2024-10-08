@@ -136,7 +136,7 @@ public struct HelpCenterNavigation<Content: View>: View {
                         self.handle(quickAction: selectedType.asQuickAction)
                     }
                 )
-                .configureTitle("Edit your insurance")
+                .configureTitle(L10n.hcQuickActionsEditInsuranceTitle)
                 .embededInNavigation(
                     options: [.navigationType(type: .large)],
                     tracking: HelpCenterDetentRouterType.editYourInsurance

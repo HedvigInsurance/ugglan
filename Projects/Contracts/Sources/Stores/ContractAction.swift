@@ -31,24 +31,6 @@ public enum ContractLoadingAction: LoadingProtocol {
     case fetchCrossSell
 }
 
-//public enum EditType: String, Codable, Hashable, CaseIterable {
-//    case changeAddress
-//    case coInsured
-//    case changeTier
-//
-//    var title: String {
-//        switch self {
-//        case .coInsured: return L10n.contractEditCoinsured
-//        case .changeAddress: return L10n.InsuranceDetails.changeAddressButton
-//        case .changeTier: return L10n.InsuranceDetails.changeCoverage
-//        }
-//    }
-//
-//    var buttonTitle: String {
-//        return L10n.generalContinueButton
-//    }
-//}
-
 extension EditType {
     public static func getTypes(for contract: Contract) -> [EditType] {
         var editTypes: [EditType] = []

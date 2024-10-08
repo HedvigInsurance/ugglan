@@ -68,6 +68,9 @@ public class HomeClientOctopus: HomeClient {
         if actions?.isTravelCertificateEnabled == true && featureFlags.isTravelInsuranceEnabled {
             quickActions.append(.travelInsurance)
         }
+        /* TODO: add parameter from backend to check if upgradeCOverage should be shown */
+        quickActions.append(.editInsurance(actions: .init(quickActions: [.upgradeCoverage])))
+
         if let firstVetSections = actions?.firstVetAction?.sections {
             let firstVetPartners = firstVetSections.compactMap({
                 FirstVetPartner(

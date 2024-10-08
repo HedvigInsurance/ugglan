@@ -19,7 +19,7 @@ public enum QuickAction: Codable, Equatable, Hashable {
         case .firstVet:
             return L10n.hcQuickActionsFirstvetTitle
         case .editInsurance:
-            return "Edit your insurance"
+            return L10n.hcQuickActionsEditInsuranceTitle
         case .travelInsurance:
             return L10n.hcQuickActionsTravelCertificate
         case .connectPayments:
@@ -29,7 +29,7 @@ public enum QuickAction: Codable, Equatable, Hashable {
         case .editCoInsured:
             return L10n.hcQuickActionsCoInsuredTitle
         case .upgradeCoverage:
-            return "Upgrade coverage"
+            return L10n.hcQuickActionsUpgradeCoverageTitle
         case .cancellation:
             return L10n.hcQuickActionsTerminationTitle
         }
@@ -42,7 +42,7 @@ public enum QuickAction: Codable, Equatable, Hashable {
         case .firstVet:
             return L10n.hcQuickActionsFirstvetSubtitle
         case .editInsurance:
-            return "Manage and update your insurance"
+            return L10n.hcQuickActionsEditInsuranceSubtitle
         case .travelInsurance:
             return L10n.hcQuickActionsTravelCertificateSubtitle
         case .connectPayments:
@@ -52,7 +52,7 @@ public enum QuickAction: Codable, Equatable, Hashable {
         case .editCoInsured:
             return L10n.hcQuickActionsCoInsuredSubtitle
         case .upgradeCoverage:
-            return "Adjust your insurance after your needs"
+            return L10n.hcQuickActionsUpgradeCoverageSubtitle
         case .cancellation:
             return L10n.hcQuickActionsTerminationSubtitle
         }
