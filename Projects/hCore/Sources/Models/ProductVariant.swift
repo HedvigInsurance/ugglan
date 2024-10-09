@@ -9,7 +9,7 @@ public struct ProductVariant: Codable, Hashable {
     public let documents: [InsuranceTerm]
     public let displayName: String
     public let displayNameTier: String?
-    public let tierDescription: String?
+    public let displayNameTierLong: String?
 
     public init(
         termsVersion: String,
@@ -20,7 +20,7 @@ public struct ProductVariant: Codable, Hashable {
         documents: [InsuranceTerm],
         displayName: String,
         displayNameTier: String?,
-        tierDescription: String?
+        displayNameTierLong: String?
     ) {
         self.termsVersion = termsVersion
         self.typeOfContract = typeOfContract
@@ -30,7 +30,7 @@ public struct ProductVariant: Codable, Hashable {
         self.documents = documents
         self.displayName = displayName
         self.displayNameTier = displayNameTier
-        self.tierDescription = tierDescription
+        self.displayNameTierLong = displayNameTierLong
     }
 
     public init(
@@ -44,7 +44,7 @@ public struct ProductVariant: Codable, Hashable {
         self.insurableLimits = data.insurableLimits.map({ .init($0) })
         self.documents = data.documents.map({ .init($0) })
         self.displayNameTier = data.displayNameTier
-        self.tierDescription = data.tierDescription
+        self.displayNameTierLong = data.displayNameTierLong
     }
 
     public init?(
