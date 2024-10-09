@@ -237,9 +237,6 @@ public struct QuoteSummaryScreen: View {
     private func buttonComponent(proxy: ScrollViewProxy) -> some View {
         hSection {
             VStack(spacing: .padding16) {
-                if isEmptyFaq {
-                    chatComponent
-                }
                 HStack {
                     hText(L10n.tierFlowTotal)
                     Spacer()
