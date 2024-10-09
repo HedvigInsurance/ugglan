@@ -218,7 +218,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable {
         self.ssn = ssn
     }
 
-    public enum TypeOfContract: String, Codable {
+    public enum TypeOfContract: String, Codable, CaseIterable {
         case seHouse = "SE_HOUSE"
         case seApartmentBrf = "SE_APARTMENT_BRF"
         case seApartmentRent = "SE_APARTMENT_RENT"
@@ -266,6 +266,12 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable {
         static func resolve(for typeOfContract: String) -> Self {
             if let concreteTypeOfContract = Self(rawValue: typeOfContract) {
                 return concreteTypeOfContract
+            }
+
+            if let mostLikelyTypeOfContract = TypeOfContract.allCases.first(where: {
+                typeOfContract.contains($0.rawValue)
+            }) {
+                return mostLikelyTypeOfContract
             }
 
             log.warn(
