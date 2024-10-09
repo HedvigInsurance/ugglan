@@ -1,91 +1,42 @@
 import Foundation
 
-public class ConversationsDemoClient: ConversationsClient {
-
-    public init() {}
-    public func getConversations() async throws -> [Conversation] {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd HH:mm"
-
-        let conversations = [
-            Conversation(
-                id: "id1",
-                type: .legacy,
-                newestMessage: .init(
-                    localId: "",
-                    remoteId: "",
-                    type: .text(
-                        text:
-                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-                    ),
-                    date: Date()
-                ),
-                createdAt: "2024-06-20",
-                statusMessage: "status message",
-                status: .closed,
-                hasClaim: false,
-                claimType: nil,
-                unreadMessageCount: 0
+public class ConversationsDemoClient: ConversationsClient, ConversationClient {
+    private var conversations: [Conversation] = []
+    private var messages = [String: [Message]]()
+    private let date = Date()
+    public init() {
+        let newestMessage = Message(
+            localId: UUID().uuidString,
+            remoteId: UUID().uuidString,
+            type: .text(
+                text:
+                    "I think someone took my computer"
             ),
-
-            Conversation(
-                id: "id2",
-                type: .service,
-                newestMessage: .init(
-                    localId: "localId2",
-                    remoteId: "remoteId2",
-                    type: .text(text: "Please tell us more what happened when the phone broke."),
-                    date: Date()
-                ),
-                createdAt: "2024-06-10",
-                statusMessage: "status message",
-                status: .open,
-                hasClaim: false,
-                claimType: nil,
-                unreadMessageCount: 0
-            ),
-
-            Conversation(
-                id: "id3",
-                type: .claim,
-                newestMessage: .init(
-                    localId: "localId2",
-                    remoteId: "remoteId2",
-                    type: .text(
-                        text:
-                            "Lorem ipsum dolor sit amet consectetur. Accumsan vitae adipiscing blandit id et interdum."
-                    ),
-                    date: Date().addingTimeInterval(-60)
-                ),
-                createdAt: "2024-06-10",
-                statusMessage: "status message",
-                status: .open,
-                hasClaim: true,
-                claimType: nil,
-                unreadMessageCount: 0
-            ),
-
-            Conversation(
-                id: "id4",
-                type: .claim,
-                newestMessage: .init(
-                    localId: "localId2",
-                    remoteId: "remoteId2",
-                    type: .text(
-                        text:
-                            "Lorem ipsum dolor sit amet consectetur. Accumsan vitae adipiscing blandit id et interdum."
-                    ),
-                    date: Date().addingTimeInterval(-60 * 60 * 24)
-                ),
-                createdAt: "2024-06-19",
-                statusMessage: "status message",
-                status: .open,
-                hasClaim: true,
-                claimType: "claim type",
-                unreadMessageCount: 0
+            date: date.addingTimeInterval(-60 * 60 * 3)
+        )
+        let conversation = Conversation(
+            id: "id1",
+            type: .service,
+            newestMessage: newestMessage,
+            createdAt: date.addingTimeInterval((-60 * 60 * 24 * 2)).localDateString,
+            statusMessage: "",
+            status: .open,
+            hasClaim: false,
+            claimType: nil,
+            unreadMessageCount: 0
+        )
+        conversations.append(conversation)
+        messages["id1"] = [
+            newestMessage,
+            .init(
+                remoteId: UUID().uuidString,
+                type: .text(text: "Hi, how may I help you?"),
+                sender: .hedvig,
+                date: date.addingTimeInterval(-60 * 60 * 21 * 2)
             ),
         ]
-
+    }
+    public func getConversations() async throws -> [Conversation] {
         let conversationsSortedByDate = conversations.sorted(by: {
             $0.newestMessage?.sentAt ?? Date() > $1.newestMessage?.sentAt ?? Date()
         })
@@ -93,9 +44,9 @@ public class ConversationsDemoClient: ConversationsClient {
     }
 
     public func createConversation(with id: UUID) async throws -> Conversation {
-        return Conversation(
+        let conversation = Conversation(
             id: id.uuidString,
-            type: .legacy,
+            type: .service,
             newestMessage: nil,
             createdAt: nil,
             statusMessage: "status message",
@@ -104,22 +55,16 @@ public class ConversationsDemoClient: ConversationsClient {
             claimType: nil,
             unreadMessageCount: 0
         )
+        self.conversations.append(conversation)
+        return conversation
     }
-}
-
-public class ConversationDemoClient: ConversationClient {
-
-    public init() {}
 
     public func getConversationMessages(
         for conversationId: String,
         olderToken: String?,
         newerToken: String?
     ) async throws -> ConversationMessagesData {
-        let messages = [
-            Message(type: .text(text: "text1")),
-            Message(type: .text(text: "text2")),
-        ]
+        let messages = messages[conversationId] ?? []
         return .init(
             messages: messages,
             banner: nil,
@@ -135,6 +80,23 @@ public class ConversationDemoClient: ConversationClient {
     }
 
     public func send(message: Message, for conversationId: String) async throws -> Message {
-        return Message(type: .text(text: "send message"))
+        var messages = self.messages[conversationId] ?? []
+        messages.append(message)
+        self.messages[conversationId] = messages
+        if let conversationIndex = conversations.firstIndex(where: { $0.id == conversationId }) {
+            let conversation = conversations[conversationIndex]
+            conversations[conversationIndex] = .init(
+                id: conversation.id,
+                type: conversation.type,
+                newestMessage: message,
+                createdAt: conversation.createdAt,
+                statusMessage: conversation.statusMessage,
+                status: conversation.status,
+                hasClaim: conversation.hasClaim,
+                claimType: conversation.claimType,
+                unreadMessageCount: conversation.unreadMessageCount
+            )
+        }
+        return message
     }
 }
