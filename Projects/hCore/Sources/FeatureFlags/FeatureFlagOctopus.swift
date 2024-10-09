@@ -11,7 +11,7 @@ public class FeatureFlagsUnleash: FeatureFlags {
     ) {
         self.environment = environment
     }
-
+    public var isDemoMode: Bool = false
     public var isConversationBasedMessagesEnabled: Bool = false
     public var loadingExperimentsSuccess: (Bool) -> Void = { _ in }
     public var isMovingFlowEnabled: Bool = false
@@ -64,8 +64,13 @@ public class FeatureFlagsUnleash: FeatureFlags {
     }
 
     public func updateContext(context: [String: String]) {
-        if unleashClient?.context.toMap() != context {
-            unleashClient?.updateContext(context: context)
+        if let existingContext = unleashClient?.context.toMap() {
+            for contextKey in context.keys {
+                if existingContext[contextKey] != context[contextKey] {
+                    unleashClient?.updateContext(context: context)
+                    break
+                }
+            }
         }
     }
 

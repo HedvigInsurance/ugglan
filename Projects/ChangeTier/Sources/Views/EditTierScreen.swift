@@ -33,7 +33,7 @@ struct EditTierScreen: View {
                                         )
                                         .hFieldSize(.small)
                                     }
-                                    if let subTitle = tier.productVariant?.displayNameTierLong {
+                                    if let subTitle = tier.productVariant?.tierDescription {
                                         hText(subTitle)
                                             .foregroundColor(hTextColor.Opaque.secondary)
                                             .fixedSize()

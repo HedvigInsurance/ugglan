@@ -3,6 +3,7 @@ import Foundation
 public class FeatureFlagsDemo: FeatureFlags {
     public init() {}
 
+    public var isDemoMode: Bool = true
     public var loadingExperimentsSuccess: (Bool) -> Void = { _ in }
     public var isMovingFlowEnabled: Bool = false
     public var isEditCoInsuredEnabled: Bool = false
