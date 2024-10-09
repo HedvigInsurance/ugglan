@@ -14,6 +14,7 @@ let ugglanConfigurations: [Configuration] = [
         settings: [
             "CODE_SIGN_STYLE": "automatic",
             "OTHER_SWIFT_FLAGS": "$(inherited) -DPRESENTATION_DEBUGGER",
+            "SWIFT_OPTIMIZATION_LEVEL": "[-Onone]",
         ],
         xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
     ),
@@ -22,6 +23,7 @@ let ugglanConfigurations: [Configuration] = [
         settings: [
             "CODE_SIGN_STYLE": "automatic",
             "OTHER_SWIFT_FLAGS": "$(inherited) -DPRESENTATION_DEBUGGER",
+            "SWIFT_OPTIMIZATION_LEVEL": "[-Onone]",
         ],
         xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
     ),
