@@ -43,13 +43,13 @@ class TerminationFlowNavigationViewModel: ObservableObject {
                         guard let self = self else { return }
                         do {
                             let newInput = try await ChangeTierNavigationViewModel.getTiers(input: input)
-                            changeTierInput = .existingIntent(
-                                intent: newInput,
-                                onSelect: { (tier, deductible) in
-                                    let ss = ""
-                                }
-                            )
-                            self.router.dismiss()
+                            DispatchQueue.main.async { [weak self] in
+                                self?.changeTierInput = .existingIntent(
+                                    intent: newInput,
+                                    onSelect: { _ in }
+                                )
+                                self?.router.dismiss()
+                            }
                         } catch let ex {
                             Toasts.shared.displayToastBar(toast: .init(type: .error, text: ex.localizedDescription))
                         }

@@ -74,9 +74,11 @@ struct EditContract: View {
                                 contractsNavigationVm.isChangeAddressPresented = true
                             case .changeTier:
                                 if let contract {
-                                    contractsNavigationVm.changeTierInput = .contractWithSource(
-                                        data: .init(source: .changeTier, contractId: contract.id)
-                                    )
+                                    DispatchQueue.main.async { [weak contractsNavigationVm] in
+                                        contractsNavigationVm?.changeTierInput = .contractWithSource(
+                                            data: .init(source: .changeTier, contractId: contract.id)
+                                        )
+                                    }
                                 }
                             case nil:
                                 break
