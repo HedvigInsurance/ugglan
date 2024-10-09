@@ -10,7 +10,7 @@ fragment ProductVariantFragment on ProductVariant {
     }
     displayName
     displayNameTier
-    displayNameTierLong
+    tierDescription
     insurableLimits {
         label
         limit

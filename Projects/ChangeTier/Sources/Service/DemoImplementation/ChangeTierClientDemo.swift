@@ -79,7 +79,7 @@ public class ChangeTierClientDemo: ChangeTierClient {
                         documents: [],
                         displayName: "Homeowner",
                         displayNameTier: "Bas",
-                        displayNameTierLong: "Vårt mellanpaket med hög ersättning."
+                        tierDescription: "Vårt mellanpaket med hög ersättning."
                     ),
                     FAQs: nil
                 ),
@@ -125,7 +125,7 @@ public class ChangeTierClientDemo: ChangeTierClient {
                         documents: [],
                         displayName: "Homeowner",
                         displayNameTier: "Standard",
-                        displayNameTierLong: "Vårt mellanpaket med hög ersättning."
+                        tierDescription: "Vårt mellanpaket med hög ersättning."
                     ),
                     FAQs: nil
                 ),
@@ -171,7 +171,7 @@ public class ChangeTierClientDemo: ChangeTierClient {
                         documents: [],
                         displayName: "Homeowner",
                         displayNameTier: "Max",
-                        displayNameTierLong: "Vårt mellanpaket med hög ersättning."
+                        tierDescription: "Vårt mellanpaket med hög ersättning."
                     ),
                     FAQs: nil
                 ),
@@ -196,7 +196,7 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     documents: [],
                     displayName: "",
                     displayNameTier: "",
-                    displayNameTierLong: ""
+                    tierDescription: ""
                 ),
                 FAQs: [
                     .init(title: "question 1", description: "..."),
