@@ -71,13 +71,7 @@ public class ChangeTierViewModel: ObservableObject {
         }
         Task { @MainActor in
             do {
-                var data: ChangeTierIntentModel!
-                switch changeTierInput {
-                case let .contractWithSource(source):
-                    data = try await service.getTier(input: source)
-                case let .existingIntent(intent, _):
-                    data = intent
-                }
+                var data = try await getData()
                 self.tiers = data.tiers
                 self.displayName = data.tiers.first?.productVariant?.displayName
                 self.exposureName = data.tiers.first?.exposureName
@@ -100,6 +94,15 @@ public class ChangeTierViewModel: ObservableObject {
                     self.viewState = .error(errorMessage: error.localizedDescription)
                 }
             }
+        }
+    }
+
+    private func getData() async throws -> ChangeTierIntentModel {
+        switch changeTierInput {
+        case let .contractWithSource(source):
+            return try await service.getTier(input: source)
+        case let .existingIntent(intent, _):
+            return intent
         }
     }
 
