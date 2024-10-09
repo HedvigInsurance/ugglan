@@ -78,7 +78,7 @@ struct UpcomingChangesScreen_Previews: PreviewProvider {
                         documents: [],
                         displayName: "",
                         displayNameTier: "Standard",
-                        displayNameTierLong: "Vårt mellanpaket med hög ersättning."
+                        tierDescription: "Vårt mellanpaket med hög ersättning."
                     )
             )
         )
