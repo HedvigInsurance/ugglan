@@ -153,10 +153,11 @@ public struct ChangeTierLandingScreen: View {
                     switch vm.changeTierInput {
                     case .contractWithSource:
                         changeTierNavigationVm.router.push(ChangeTierRouterActions.summary)
-                    case let .existingIntent(_, onSelect):
-                        if let selectedTier = vm.selectedTier, let selectedDeductible = vm.selectedDeductible {
-                            onSelect((selectedTier, selectedDeductible))
-                        }
+                    case let .existingIntent:
+                        //                        if let selectedTier = vm.selectedTier, let selectedDeductible = vm.selectedDeductible {
+                        //                            onSelect((selectedTier, selectedDeductible))
+                        //                        }
+                        break
                     }
                 } content: {
                     hText(L10n.generalContinueButton)
