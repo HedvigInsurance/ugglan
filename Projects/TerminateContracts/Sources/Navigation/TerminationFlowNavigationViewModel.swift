@@ -45,7 +45,8 @@ class TerminationFlowNavigationViewModel: ObservableObject {
                             let newInput = try await ChangeTierNavigationViewModel.getTiers(input: input)
                             DispatchQueue.main.async { [weak self] in
                                 self?.changeTierInput = .existingIntent(
-                                    intent: newInput
+                                    intent: newInput,
+                                    onSelect: { _ in }
                                 )
                                 self?.router.dismiss()
                             }

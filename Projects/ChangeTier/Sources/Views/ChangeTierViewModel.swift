@@ -75,7 +75,7 @@ public class ChangeTierViewModel: ObservableObject {
                 switch changeTierInput {
                 case let .contractWithSource(source):
                     data = try await service.getTier(input: source)
-                case let .existingIntent(intent):
+                case let .existingIntent(intent, _):
                     data = intent
                 }
                 self.tiers = data.tiers

@@ -151,20 +151,19 @@ public struct MovingFlowNavigation: View {
     }
 
     func openChangeTier(model: ChangeTierIntentModel) -> some View {
-        let model = ChangeTierInput.existingIntent(intent: model)
-        //        { (tier, deductible) in
-        //            let store: MoveFlowStore = globalPresentableStoreContainer.get()
-        //            let state = store.state
-        //            var movingFlowModel = state.movingFlowModel
-        //            let id = deductible.id
-        //            if let homeQuote = state.movingFlowModel?.potentialHomeQuotes.first(where: { $0.id == id }) {
-        //                movingFlowModel?.homeQuote = homeQuote
-        //            }
-        //            if let movingFlowModel {
-        //                store.send(.setMoveIntent(with: movingFlowModel))
-        //            }
-        //            router.push(MovingFlowRouterActions.confirm)
-        //        }
+        let model = ChangeTierInput.existingIntent(intent: model) { (tier, deductible) in
+            let store: MoveFlowStore = globalPresentableStoreContainer.get()
+            let state = store.state
+            var movingFlowModel = state.movingFlowModel
+            let id = deductible.id
+            if let homeQuote = state.movingFlowModel?.potentialHomeQuotes.first(where: { $0.id == id }) {
+                movingFlowModel?.homeQuote = homeQuote
+            }
+            if let movingFlowModel {
+                store.send(.setMoveIntent(with: movingFlowModel))
+            }
+            router.push(MovingFlowRouterActions.confirm)
+        }
         return ChangeTierNavigation(input: model, router: router)
     }
 
