@@ -10,7 +10,9 @@ struct ChangeTierProcessingView: View {
         ProcessingStateView(
             loadingViewText: L10n.tierFlowCommitProcessingLoadingTitle,
             successViewTitle: L10n.tierFlowCommitProcessingTitle,
-            successViewBody: L10n.tierFlowCommitProcessingDescription,
+            successViewBody: L10n.tierFlowCommitProcessingDescription(
+                vm.activationDate?.displayDateDDMMMYYYYFormat ?? ""
+            ),
             successViewButtonAction: {
                 changeTierNavigationVm.router.dismiss()
             },
