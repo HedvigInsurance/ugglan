@@ -72,12 +72,12 @@ class ChangeTierViewModel: ObservableObject {
         }
         Task { @MainActor in
             do {
-                let data: ChangeTierIntentModel = try await {
-                    if let existingModel = existingModel {
-                        return existingModel
-                    }
-                    return try await service.getTier(input: changeTierInput)
-                }()
+                var data: ChangeTierIntentModel!
+                if let existingModel = existingModel {
+                    data = existingModel
+                } else {
+                    data = try await service.getTier(input: changeTierInput)
+                }
                 self.tiers = data.tiers
                 self.displayName = data.tiers.first?.productVariant?.displayName
                 self.exposureName = data.tiers.first?.exposureName
