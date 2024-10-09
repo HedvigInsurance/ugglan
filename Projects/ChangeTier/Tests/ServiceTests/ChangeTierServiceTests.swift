@@ -37,7 +37,7 @@ final class ChangeTierServiceTests: XCTestCase {
                     documents: [],
                     displayName: "",
                     displayNameTier: nil,
-                    displayNameTierLong: nil
+                    tierDescription: nil
                 ),
                 FAQs: []
             ),
@@ -65,7 +65,7 @@ final class ChangeTierServiceTests: XCTestCase {
                     documents: [],
                     displayName: "",
                     displayNameTier: nil,
-                    displayNameTierLong: nil
+                    tierDescription: nil
                 ),
                 FAQs: []
             ),

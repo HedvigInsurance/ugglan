@@ -6,7 +6,19 @@ import hCore
 
 final class ChangeTierViewModelTests: XCTestCase {
     weak var sut: MockChangeTierService?
+    weak var vm: ChangeTierViewModel?
 
+    let currentTier = Tier(
+        id: "currentTier",
+        name: "current tier",
+        level: 1,
+        deductibles: [],
+        premium: .init(amount: "220", currency: "SEK"),
+        displayItems: [],
+        exposureName: nil,
+        productVariant: nil,
+        FAQs: []
+    )
     let tiers: [Tier] = [
         .init(
             id: "id1",
@@ -23,9 +35,9 @@ final class ChangeTierViewModelTests: XCTestCase {
                 perils: [],
                 insurableLimits: [],
                 documents: [],
-                displayName: "",
+                displayName: "displayName",
                 displayNameTier: nil,
-                displayNameTierLong: nil
+                tierDescription: nil
             ),
             FAQs: []
         ),
@@ -53,7 +65,7 @@ final class ChangeTierViewModelTests: XCTestCase {
                 documents: [],
                 displayName: "",
                 displayNameTier: nil,
-                displayNameTierLong: nil
+                tierDescription: nil
             ),
             FAQs: []
         ),
@@ -61,6 +73,7 @@ final class ChangeTierViewModelTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         sut = nil
     }
 
@@ -68,14 +81,16 @@ final class ChangeTierViewModelTests: XCTestCase {
         Dependencies.shared.remove(for: ChangeTierClient.self)
         try await Task.sleep(nanoseconds: 20_000_000)
         XCTAssertNil(sut)
+        XCTAssertNil(vm)
     }
 
     func testFetchTiersSuccess() async throws {
+        let activationDate = "2024-12-12".localDateToDate ?? Date()
         let changeTierIntentModel: ChangeTierIntentModel = .init(
-            activationDate: Date(),
+            activationDate: activationDate,
             tiers: tiers,
             currentPremium: .init(amount: "449", currency: "SEK"),
-            currentTier: nil,
+            currentTier: currentTier,
             currentDeductible: nil,
             canEditTier: true
         )
@@ -94,6 +109,12 @@ final class ChangeTierViewModelTests: XCTestCase {
         assert(model.tiers == tiers)
         assert(model.tiers.first == tiers.first)
         assert(model.tiers.count == tiers.count)
+        assert(model.exposureName == "exposureName")
+        assert(model.displayName == "displayName")
+        assert(model.activationDate == activationDate)
+        assert(model.canEditTier)
+        assert(model.viewState == .success)
+        assert(model.selectedTier == currentTier)
     }
 
     func testAddCampaingCodeViewModelFailure() async throws {
@@ -111,6 +132,11 @@ final class ChangeTierViewModelTests: XCTestCase {
         try await Task.sleep(nanoseconds: 30_000_000)
         assert(model.canEditTier == false)
         assert(model.tiers.isEmpty)
+        assert(model.exposureName == nil)
+        assert(model.displayName == nil)
+        assert(model.activationDate == nil)
+        assert(model.selectedTier == nil)
+
         if case .error(let errorMessage) = model.viewState {
             assert(errorMessage == ChangeTierError.somethingWentWrong.localizedDescription)
         } else {
@@ -119,11 +145,12 @@ final class ChangeTierViewModelTests: XCTestCase {
     }
 
     func testSetSelectedTierSuccess() async throws {
+        let activationDate = "2024-12-12".localDateToDate ?? Date()
         let changeTierIntentModel: ChangeTierIntentModel = .init(
-            activationDate: Date(),
+            activationDate: activationDate,
             tiers: tiers,
             currentPremium: .init(amount: "449", currency: "SEK"),
-            currentTier: nil,
+            currentTier: currentTier,
             currentDeductible: nil,
             canEditTier: true
         )
@@ -140,6 +167,15 @@ final class ChangeTierViewModelTests: XCTestCase {
         try await Task.sleep(nanoseconds: 30_000_000)
         await model.setTier(for: "max")
         assert(model.selectedTier?.name == "max")
+        assert(model.selectedTier == tiers[1])
+        assert(model.tiers == tiers)
+        assert(model.tiers.first == tiers.first)
+        assert(model.tiers.count == tiers.count)
+        assert(model.exposureName == "exposureName")
+        assert(model.displayName == "displayName")
+        assert(model.activationDate == activationDate)
+        assert(model.canEditTier)
+        assert(model.viewState == .success)
     }
 
     func testSetSelectedTierFailure() async throws {
@@ -157,6 +193,12 @@ final class ChangeTierViewModelTests: XCTestCase {
         try await Task.sleep(nanoseconds: 30_000_000)
         await model.setTier(for: "max")
         assert(model.selectedTier == nil)
+        assert(model.canEditTier == false)
+        assert(model.tiers.isEmpty)
+        assert(model.exposureName == nil)
+        assert(model.displayName == nil)
+        assert(model.activationDate == nil)
+        assert(model.selectedTier == nil)
         if case .error(let errorMessage) = model.viewState {
             assert(errorMessage == ChangeTierError.somethingWentWrong.localizedDescription)
         } else {
@@ -165,8 +207,9 @@ final class ChangeTierViewModelTests: XCTestCase {
     }
 
     func testSetSelectedDeductibleSuccess() async throws {
+        let activationDate = "2024-12-12".localDateToDate ?? Date()
         let changeTierIntentModel: ChangeTierIntentModel = .init(
-            activationDate: Date(),
+            activationDate: activationDate,
             tiers: tiers,
             currentPremium: .init(amount: "449", currency: "SEK"),
             currentTier: nil,
@@ -187,6 +230,16 @@ final class ChangeTierViewModelTests: XCTestCase {
         await model.setDeductible(for: model.selectedTier?.deductibles.first?.id ?? "")
         assert(model.selectedDeductible != nil)
         assert(model.selectedDeductible?.id == model.selectedTier?.deductibles.first?.id)
+        assert(model.selectedTier == tiers[1])
+        assert(model.selectedDeductible == tiers[1].deductibles[0])
+        assert(model.tiers == tiers)
+        assert(model.tiers.first == tiers.first)
+        assert(model.tiers.count == tiers.count)
+        assert(model.exposureName == "exposureName")
+        assert(model.displayName == "displayName")
+        assert(model.activationDate == activationDate)
+        assert(model.canEditTier)
+        assert(model.viewState == .success)
     }
 
     func testSetSelectedDeductibleFailure() async throws {
@@ -204,6 +257,12 @@ final class ChangeTierViewModelTests: XCTestCase {
         await model.setTier(for: "max")
         await model.setDeductible(for: model.selectedTier?.deductibles.first?.id ?? "")
         assert(model.selectedDeductible == nil)
+        assert(model.selectedTier == nil)
+        assert(model.canEditTier == false)
+        assert(model.tiers.isEmpty)
+        assert(model.exposureName == nil)
+        assert(model.displayName == nil)
+        assert(model.activationDate == nil)
         assert(model.selectedTier == nil)
         if case .error(let errorMessage) = model.viewState {
             assert(errorMessage == ChangeTierError.somethingWentWrong.localizedDescription)
