@@ -45,7 +45,7 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                 if let deductible = deductible {
                     return Deductible(
                         deductibleAmount: .init(fragment: deductible.amount.fragments.moneyFragment),
-                        deductiblePercentage: deductible.percentage,
+                        deductiblePercentage: (deductible.percentage == 0) ? nil : deductible.percentage,
                         subTitle: deductible.displayText,
                         premium: .init(fragment: currentContract.currentAgreement.premium.fragments.moneyFragment)
                     )
