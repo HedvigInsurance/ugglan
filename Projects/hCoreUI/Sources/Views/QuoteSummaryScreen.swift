@@ -17,6 +17,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         let displayItems: [QuoteDisplayItem]
         let documents: [InsuranceTerm]
         let onDocumentTap: (_ document: InsuranceTerm) -> Void
+        let insuranceLimits: [InsurableLimits]
 
         public init(
             id: String,
@@ -26,7 +27,8 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             currentPremium: MonetaryAmount?,
             documents: [InsuranceTerm],
             onDocumentTap: @escaping (_ document: InsuranceTerm) -> Void,
-            displayItems: [QuoteDisplayItem]
+            displayItems: [QuoteDisplayItem],
+            insuranceLimits: [InsurableLimits]
         ) {
             self.id = id
             self.displayName = displayName
@@ -36,6 +38,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             self.documents = documents
             self.onDocumentTap = onDocumentTap
             self.displayItems = displayItems
+            self.insuranceLimits = insuranceLimits
         }
     }
 
@@ -179,11 +182,21 @@ public struct QuoteSummaryScreen: View {
         VStack(spacing: .padding16) {
             hRowDivider()
                 .hWithoutDividerPadding
+
             VStack(alignment: .leading, spacing: 0) {
-                hText(L10n.changeAddressDetails)
+                hText(L10n.summaryScreenOverview)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 ForEach(contract.displayItems, id: \.displayTitle) { item in
                     rowItem(for: item)
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 0) {
+                hText(L10n.summaryScreenCoverage)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                ForEach(contract.insuranceLimits, id: \.limit) { limit in
+                    let displayItem: QuoteDisplayItem = .init(title: limit.limit, value: limit.label, id: limit.id)
+                    rowItem(for: displayItem)
                 }
             }
 
@@ -393,6 +406,11 @@ public struct FAQ: Codable, Equatable, Hashable {
                     .init(title: "Limits", value: "mockLimits mockLimits long long long name"),
                     .init(title: "Documents", value: "documents"),
                     .init(title: "FAQ", value: "mockFAQ"),
+                ],
+                insuranceLimits: [
+                    .init(label: "label", limit: "limit", description: "description"),
+                    .init(label: "label2", limit: "limit2", description: "description2"),
+                    .init(label: "label3", limit: "limit3", description: "description3"),
                 ]
             ),
             .init(
@@ -407,6 +425,11 @@ public struct FAQ: Codable, Equatable, Hashable {
                     .init(title: "Limits", value: "mockLimits"),
                     .init(title: "Documents", value: "documents"),
                     .init(title: "FAQ", value: "mockFAQ"),
+                ],
+                insuranceLimits: [
+                    .init(label: "label", limit: "limit", description: "description"),
+                    .init(label: "label2", limit: "limit2", description: "description2"),
+                    .init(label: "label3", limit: "limit3", description: "description3"),
                 ]
             ),
         ],
