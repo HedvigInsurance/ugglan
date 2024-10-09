@@ -71,7 +71,7 @@ public class ChangeTierViewModel: ObservableObject {
         }
         Task { @MainActor in
             do {
-                let data: ChangeTierIntentModel = try await {
+                let data: ChangeTierIntentModel = try await { @MainActor in
                     switch changeTierInput {
                     case let .contractWithSource(data):
                         return try await service.getTier(input: (data))
