@@ -35,7 +35,7 @@ struct EditDeductibleScreen: View {
                                         hText(displayTitle(deductible: deductible))
                                         Spacer()
                                         hPill(
-                                            text: deductible.premium?.formattedAmountPerMonth ?? "",
+                                            text: deductible.premium.formattedAmountPerMonth,
                                             color: .grey(translucent: false),
                                             colorLevel: .two
                                         )
@@ -116,12 +116,6 @@ extension EditDeductibleScreen: TitleView {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientOctopus() })
-    return EditDeductibleScreen(
-        vm: .init(
-            changeTierInput: .init(
-                source: .betterCoverage,
-                contractId: "contractId1"
-            )
-        )
-    )
+    let input = ChangeTierInput.contractWithSource(data: .init(source: .betterCoverage, contractId: "contractId"))
+    return EditDeductibleScreen(vm: .init(changeTierInput: input))
 }

@@ -1,5 +1,5 @@
-mutation MoveIntentCommit($intentId: ID!) {
-  moveIntentCommit(intentId: $intentId) {
+mutation MoveIntentCommit($intentId: ID!, $homeQuoteId: ID) {
+  moveIntentCommit(intentId: $intentId, homeQuoteId: $homeQuoteId) {
     moveIntent {
         ...MoveIntentFragment
     }

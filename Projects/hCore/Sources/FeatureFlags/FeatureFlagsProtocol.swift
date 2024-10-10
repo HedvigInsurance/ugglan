@@ -20,6 +20,7 @@ public protocol FeatureFlags {
     var emailPreferencesEnabled: Bool { get set }
     var isTiersEnabled: Bool { get set }
     var isDemoMode: Bool { get set }
+    var isMovingFlowWithTiersEnabled: Bool { get set }
 }
 
 public enum PaymentType {

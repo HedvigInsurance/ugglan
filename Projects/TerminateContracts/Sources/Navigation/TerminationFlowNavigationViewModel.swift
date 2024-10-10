@@ -10,7 +10,7 @@ class TerminationFlowNavigationViewModel: ObservableObject {
     @Published var isDatePickerPresented = false
     @Published var isConfirmTerminationPresented = false
     @Published var isProcessingPresented = false
-    @Published var changeTierWrapper: ChangeTierWrapper?
+    @Published var changeTierInput: ChangeTierInput?
     @Published var loadingActions: [FlowTerminationSurveyRedirectAction: LoadingState<String>] = [:]
     var isFlowPresented: (DismissTerminationAction) -> Void = { _ in }
 
@@ -26,7 +26,7 @@ class TerminationFlowNavigationViewModel: ObservableObject {
                 }
             case .changeTierFoundBetterPrice, .changeTierMissingCoverageAndTerms:
                 let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                if let contactConfig = store.state.config,
+                if let contractId = store.state.config?.contractId,
                     let redirectAction,
                     let source: ChangeTierSource = {
                         if case .changeTierFoundBetterPrice = redirectAction {
@@ -37,14 +37,19 @@ class TerminationFlowNavigationViewModel: ObservableObject {
                         return nil
                     }()
                 {
-                    let input = ChangeTierInput(source: source, contractId: contactConfig.contractId)
+                    let input = ChangeTierInputData(source: source, contractId: contractId)
                     loadingActions[redirectAction] = .loading
                     Task { @MainActor [weak self] in
                         guard let self = self else { return }
                         do {
-                            let data = try await ChangeTierNavigationViewModel.getTiers(input: input)
-                            changeTierWrapper = .init(input: input, model: data)
-                            self.router.dismiss()
+                            let newInput = try await ChangeTierNavigationViewModel.getTiers(input: input)
+                            DispatchQueue.main.async { [weak self] in
+                                self?.changeTierInput = .existingIntent(
+                                    intent: newInput,
+                                    onSelect: { _ in }
+                                )
+                                self?.router.dismiss()
+                            }
                         } catch let ex {
                             Toasts.shared.displayToastBar(toast: .init(type: .error, text: ex.localizedDescription))
                         }
@@ -69,16 +74,6 @@ class TerminationFlowNavigationViewModel: ObservableObject {
     }
     let router = Router()
     var cancellable: AnyCancellable?
-
-    struct ChangeTierWrapper: Identifiable, Equatable {
-        var id: String {
-            input.id
-        }
-
-        let input: ChangeTierInput
-        let model: ChangeTierIntentModel
-    }
-
 }
 
 struct TerminationFlowNavigation: View {
@@ -436,8 +431,8 @@ struct TerminateInsurance: ViewModifier {
                     }
                 }
             }
-            .modally(item: $navigationVm.changeTierWrapper) { item in
-                ChangeTierNavigation(input: item.input, existingModel: item.model)
+            .modally(item: $navigationVm.changeTierInput) { item in
+                ChangeTierNavigation(input: item)
             }
     }
 }

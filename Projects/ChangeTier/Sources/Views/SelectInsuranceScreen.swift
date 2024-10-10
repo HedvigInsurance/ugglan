@@ -29,9 +29,11 @@ struct SelectInsuranceScreen: View {
                 onSelected: { selected in
                     if let selectedContract = selected.first?.0 {
                         changeTierNavigationVm.vm = .init(
-                            changeTierInput: .init(
-                                source: changeTierContractsInput.source,
-                                contractId: selectedContract.contractId
+                            changeTierInput: .contractWithSource(
+                                data: .init(
+                                    source: changeTierContractsInput.source,
+                                    contractId: selectedContract.contractId
+                                )
                             )
                         )
                         changeTierNavigationVm.router.push(selectedContract)

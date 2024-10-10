@@ -11,15 +11,18 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     @Published public var isInsurableLimitPresented: InsurableLimits?
     @Published public var document: Document?
 
-    let router = Router()
+    let router: Router
 
     //make sure to set it!!!
     var vm: ChangeTierViewModel!
 
     let changeTierContractsInput: ChangeTierContractsInput?
+
     init(
+        router: Router,
         vm: ChangeTierViewModel
     ) {
+        self.router = router
         self.vm = vm
         self.changeTierContractsInput = nil
     }
@@ -29,16 +32,18 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     ) {
         if changeTierContractsInput.contracts.count == 1, let first = changeTierContractsInput.contracts.first {
             self.vm = .init(
-                changeTierInput: .init(source: changeTierContractsInput.source, contractId: first.contractId),
-                changeTierIntentModel: nil
+                changeTierInput: .contractWithSource(
+                    data: .init(source: changeTierContractsInput.source, contractId: first.contractId)
+                )
             )
             self.changeTierContractsInput = nil
         } else {
             self.changeTierContractsInput = changeTierContractsInput
         }
+        router = Router()
     }
 
-    public static func getTiers(input: ChangeTierInput) async throws(ChangeTierError) -> ChangeTierIntentModel {
+    public static func getTiers(input: ChangeTierInputData) async throws -> ChangeTierIntentModel {
         let client: ChangeTierClient = Dependencies.shared.resolve()
         let data = try await client.getTier(input: input)
         return data
@@ -71,7 +76,17 @@ extension ChangeTierRouterActionsWithoutBackButton: TrackingViewNameProtocol {
     }
 }
 
-public struct ChangeTierInput: Equatable, Identifiable {
+public enum ChangeTierInput: Identifiable, Equatable {
+    public var id: String {
+        return UUID().uuidString
+    }
+    public static func == (lhs: ChangeTierInput, rhs: ChangeTierInput) -> Bool {
+        return lhs.id != rhs.id
+    }
+    case contractWithSource(data: ChangeTierInputData)
+    case existingIntent(intent: ChangeTierIntentModel, onSelect: ((Tier, Deductible)) -> Void)
+}
+public struct ChangeTierInputData: Equatable, Identifiable {
     public var id: String {
         contractId
     }
@@ -134,35 +149,37 @@ public enum ChangeTierSource {
 
 public struct ChangeTierNavigation: View {
     @ObservedObject var changeTierNavigationVm: ChangeTierNavigationViewModel
-
+    private let useOwnNavigation: Bool
     public init(
         input: ChangeTierInput,
-        existingModel: ChangeTierIntentModel? = nil
+        router: Router? = nil
     ) {
         self.changeTierNavigationVm = .init(
-            vm: .init(changeTierInput: input, changeTierIntentModel: existingModel)
+            router: router ?? Router(),
+            vm: .init(changeTierInput: input)
         )
+        useOwnNavigation = router == nil
     }
 
     public init(
         input: ChangeTierContractsInput
     ) {
         self.changeTierNavigationVm = .init(changeTierContractsInput: input)
+        useOwnNavigation = true
     }
 
     public var body: some View {
-        RouterHost(
-            router: changeTierNavigationVm.router,
-            options: [],
-            tracking: ChangeTierTrackingType.changeTierLandingScreen
-        ) {
-            if let changeTierContracts = changeTierNavigationVm.changeTierContractsInput {
-                SelectInsuranceScreen(changeTierContractsInput: changeTierContracts)
-                    .routerDestination(for: ChangeTierContract.self) { changeTierContract in
-                        getScreen
-                    }
+        Group {
+            if useOwnNavigation {
+                RouterHost(
+                    router: changeTierNavigationVm.router,
+                    options: [],
+                    tracking: ChangeTierTrackingType.changeTierLandingScreen
+                ) {
+                    wrapperHost
+                }
             } else {
-                getScreen
+                wrapperHost
             }
         }
         .environmentObject(changeTierNavigationVm)
@@ -213,7 +230,20 @@ public struct ChangeTierNavigation: View {
         }
     }
 
+    private var wrapperHost: some View {
+        Group {
+            if let changeTierContracts = changeTierNavigationVm.changeTierContractsInput {
+                SelectInsuranceScreen(changeTierContractsInput: changeTierContracts)
+                    .routerDestination(for: ChangeTierContract.self) { changeTierContract in
+                        getScreen
+                    }
+            } else {
+                getScreen
+            }
+        }
+    }
     var getScreen: some View {
+
         ChangeTierLandingScreen(vm: changeTierNavigationVm.vm)
             .withDismissButton()
             .routerDestination(for: ChangeTierRouterActions.self) { action in

@@ -288,6 +288,7 @@ public struct QuoteSummaryScreen: View {
                 }
             }
         }
+        .padding(.top, .padding16)
         .sectionContainerStyle(.transparent)
     }
 

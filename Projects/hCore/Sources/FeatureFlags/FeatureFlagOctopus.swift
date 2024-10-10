@@ -29,6 +29,8 @@ public class FeatureFlagsUnleash: FeatureFlags {
     public var osVersionTooLow: Bool = false
     public var emailPreferencesEnabled: Bool = false
     public var isTiersEnabled: Bool = false
+    public var isMovingFlowWithTiersEnabled: Bool = true
+
     public func setup(with context: [String: String], onComplete: @escaping (_ success: Bool) -> Void) {
         unleashClient?.unsubscribe(name: "ready")
         unleashClient?.unsubscribe(name: "update")

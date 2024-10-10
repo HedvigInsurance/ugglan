@@ -23,7 +23,7 @@ fragment MoveIntentFragment on MoveIntent {
       maxHouseNumberCoInsured
       maxHouseSquareMeters
       suggestedNumberCoInsured
-        ...QuoteFragment
+      ...QuoteFragment
 }
 
 fragment MoveAddressFragment on MoveAddress {
@@ -48,5 +48,46 @@ fragment QuoteFragment on MoveIntent {
           displayTitle
           displayValue
         }
+      }
+      mtaQuotes {
+        premium {
+            ...MoneyFragment
+        }
+        startDate
+        exposureName
+        productVariant {
+            ...ProductVariantFragment
+        }
+        displayItems {
+          displaySubtitle
+          displayTitle
+          displayValue
+        }
+      }
+       homeQuotes {
+        deductible {
+          amount {
+             ...MoneyFragment
+          }
+          displayText
+          percentage
+        }
+        defaultChoice
+        displayItems {
+          displaySubtitle
+          displayTitle
+          displayValue
+        }
+        exposureName
+        id
+        premium {
+            ...MoneyFragment
+        }
+        productVariant {
+            ...ProductVariantFragment
+        }
+        startDate
+        tierLevel
+        tierName
       }
 }

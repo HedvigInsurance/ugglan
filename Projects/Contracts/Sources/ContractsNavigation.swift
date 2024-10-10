@@ -75,9 +75,8 @@ public struct ContractsNavigation<Content: View>: View {
                     case .changeAddress:
                         contractsNavigationVm.isChangeAddressPresented = true
                     case .changeTier:
-                        contractsNavigationVm.changeTierInput = .init(
-                            source: .changeTier,
-                            contractId: contract.id
+                        contractsNavigationVm.changeTierInput = .contractWithSource(
+                            data: .init(source: .changeTier, contractId: contract.id)
                         )
                     case .cancellation:
                         break

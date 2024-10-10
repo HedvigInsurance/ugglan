@@ -20,6 +20,8 @@ public class FeatureFlagsDemo: FeatureFlags {
     public var osVersionTooLow: Bool = false
     public var emailPreferencesEnabled: Bool = false
     public var isTiersEnabled: Bool = false
+    public var isMovingFlowWithTiersEnabled: Bool = false
+
     public func setup(with context: [String: String], onComplete: @escaping (_ success: Bool) -> Void) {
         loadingExperimentsSuccess = onComplete
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
