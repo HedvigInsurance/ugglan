@@ -129,7 +129,11 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                         .frame(maxWidth: .infinity, alignment: hFormTitle.title.alignment)
                         .multilineTextAlignment(hFormTitle.title.alignment == .center ? .center : .leading)
                         .padding(.top, shouldIgnoreTitleMargins ? 0 : hFormTitle.title.type.topMargin)
-                        .padding(.bottom, shouldIgnoreTitleMargins ? 0 : hFormTitle.title.type.bottomMargin)
+                        .padding(
+                            .bottom,
+                            shouldIgnoreTitleMargins
+                                ? 0 : hFormTitle.subTitle?.type.bottomMargin ?? hFormTitle.title.type.bottomMargin
+                        )
                         .padding(.horizontal, .padding16)
                         .background {
                             GeometryReader { proxy in

@@ -83,7 +83,19 @@ struct MovingFlowAddressView: View {
             .padding(.top, .padding16)
 
         }
-        .hFormTitle(title: .init(.standard, .displayXSLong, L10n.changeAddressEnterNewAddressTitle))
+        .hFormTitle(
+            title: .init(
+                .small,
+                .heading2,
+                L10n.movingEmbarkTitle,
+                alignment: .leading
+            ),
+            subTitle: .init(
+                .standard,
+                .heading2,
+                L10n.changeAddressEnterNewAddressTitle
+            )
+        )
         .sectionContainerStyle(.transparent)
         .presentableStoreLensAnimation(.default)
         .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)

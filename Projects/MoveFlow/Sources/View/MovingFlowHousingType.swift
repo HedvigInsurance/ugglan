@@ -15,7 +15,19 @@ public struct MovingFlowHousingTypeView: View {
             .fetchMoveIntent
         ) {
             hForm {}
-                .hFormTitle(title: .init(.standard, .displayXSLong, L10n.changeAddressSelectHousingTypeTitle))
+                .hFormTitle(
+                    title: .init(
+                        .small,
+                        .heading2,
+                        L10n.movingEmbarkTitle,
+                        alignment: .leading
+                    ),
+                    subTitle: .init(
+                        .small,
+                        .heading2,
+                        L10n.changeAddressSelectHousingTypeTitle
+                    )
+                )
                 .hFormAttachToBottom {
                     hSection {
                         VStack(spacing: 16) {
