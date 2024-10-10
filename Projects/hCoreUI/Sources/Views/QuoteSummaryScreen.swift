@@ -5,7 +5,7 @@ import hGraphQL
 public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     let contracts: [ContractInfo]
     let total: MonetaryAmount
-    let FAQModel: (title: String, subtitle: String, questions: [FAQ])
+    let FAQModel: (title: String, subtitle: String, questions: [FAQ])?
     let onConfirmClick: () -> Void
 
     public struct ContractInfo: Identifiable {
@@ -18,7 +18,6 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         let documents: [InsuranceTerm]
         let onDocumentTap: (_ document: InsuranceTerm) -> Void
         let insuranceLimits: [InsurableLimits]
-        let onLimitTap: (_ limit: InsurableLimits) -> Void
 
         public init(
             id: String,
@@ -29,8 +28,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             documents: [InsuranceTerm],
             onDocumentTap: @escaping (_ document: InsuranceTerm) -> Void,
             displayItems: [QuoteDisplayItem],
-            insuranceLimits: [InsurableLimits],
-            onLimitTap: @escaping (_ limit: InsurableLimits) -> Void
+            insuranceLimits: [InsurableLimits]
         ) {
             self.id = id
             self.displayName = displayName
@@ -41,14 +39,13 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             self.onDocumentTap = onDocumentTap
             self.displayItems = displayItems
             self.insuranceLimits = insuranceLimits
-            self.onLimitTap = onLimitTap
         }
     }
 
     public init(
         contract: [ContractInfo],
         total: MonetaryAmount,
-        FAQModel: (title: String, subtitle: String, questions: [FAQ]),
+        FAQModel: (title: String, subtitle: String, questions: [FAQ])? = nil,
         onConfirmClick: @escaping () -> Void
     ) {
         self.contracts = contract
@@ -65,11 +62,13 @@ public struct QuoteSummaryScreen: View {
     @State var spacingCoverage: CGFloat = 0
     @State var totalHeight: CGFloat = 0
     @State var selectedFAQ: [String] = [""]
+    private var isEmptyFaq: Bool
 
     public init(
         vm: QuoteSummaryViewModel
     ) {
         self.vm = vm
+        self.isEmptyFaq = vm.FAQModel?.questions.isEmpty ?? true
     }
 
     public var body: some View {
@@ -92,9 +91,11 @@ public struct QuoteSummaryScreen: View {
                                 }
                         }
                     )
-                    .padding(.bottom, spacingCoverage)
+                    .padding(.bottom, vm.FAQModel?.questions.isEmpty ?? true ? 0 : spacingCoverage)
                 }
-                scrollSection
+                if !isEmptyFaq {
+                    scrollSection
+                }
             }
             .hFormAttachToBottom {
                 buttonComponent(proxy: proxy)
@@ -115,14 +116,15 @@ public struct QuoteSummaryScreen: View {
 
     var scrollSection: some View {
         VStack(spacing: 0) {
-            ForEach(vm.contracts, id: \.id) { contract in
-                coverageView(for: contract)
+            if let questions = vm.FAQModel?.questions {
+                faqsComponent(for: questions)
             }
-            .padding(.top, .padding16)
-            .id(showCoverageId)
-            faqsComponent(for: vm.FAQModel.questions)
+            Spacing(height: 64)
             chatComponent
+            Spacing(height: 380)
         }
+        .padding(.top, 16)
+        .id(showCoverageId)
     }
 
     func contractInfoView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
@@ -180,54 +182,69 @@ public struct QuoteSummaryScreen: View {
         VStack(spacing: .padding16) {
             hRowDivider()
                 .hWithoutDividerPadding
-            VStack(alignment: .leading, spacing: 0) {
-                hText(L10n.changeAddressDetails)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                ForEach(contract.displayItems, id: \.displayTitle) { item in
-                    rowItem(for: item)
+
+            if !contract.displayItems.isEmpty {
+                VStack(alignment: .leading, spacing: 0) {
+                    hText(L10n.summaryScreenOverview)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    ForEach(contract.displayItems, id: \.displayTitle) { item in
+                        rowItem(for: item)
+                    }
+                }
+            }
+
+            if !contract.insuranceLimits.isEmpty {
+                VStack(alignment: .leading, spacing: 0) {
+                    hText(L10n.summaryScreenCoverage)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    ForEach(contract.insuranceLimits, id: \.limit) { limit in
+                        let displayItem: QuoteDisplayItem = .init(title: limit.label, value: limit.limit, id: limit.id)
+                        rowItem(for: displayItem)
+                    }
+                }
+            }
+
+            if !contract.documents.isEmpty {
+                VStack(alignment: .leading, spacing: 4) {
+                    hText(L10n.confirmationScreenDocumentTitle)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    ForEach(contract.documents, id: \.displayName) { document in
+                        documentItem(for: document)
+                            .background(hSurfaceColor.Opaque.primary)
+                            .onTapGesture {
+                                contract.onDocumentTap(document)
+                            }
+                    }
                 }
             }
         }
     }
 
     func rowItem(for displayItem: QuoteDisplayItem) -> some View {
-        HStack {
+        HStack(alignment: .top) {
             hText(displayItem.displayTitle)
             Spacer()
             hText(displayItem.displayValue)
+                .multilineTextAlignment(.trailing)
         }
         .foregroundColor(hTextColor.Opaque.secondary)
     }
 
-    func coverageView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
-        VStack(spacing: 0) {
-            hSection {
-                VStack {
-                    hText(contract.exposureName, style: .body1)
-                        .padding(.vertical, .padding4)
-                        .padding(.horizontal, .padding8)
-
-                }
-                .background(whatIsCoveredBgColorScheme)
-                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .sectionContainerStyle(.transparent)
-
-            Spacing(height: 16)
-
-            InsurableLimitsSectionView(limits: contract.insuranceLimits) { limit in
-                contract.onLimitTap(limit)
-            }
-
-            Spacing(height: 32)
-
-            InsuranceTermView(documents: contract.documents) { document in
-                contract.onDocumentTap(document)
-            }
-
-            Spacing(height: 40)
+    func documentItem(for document: InsuranceTerm) -> some View {
+        HStack {
+            hAttributedTextView(
+                text: AttributedPDF().attributedPDFString(for: document.displayName),
+                useSecondaryColor: true
+            )
+            .foregroundColor(hTextColor.Opaque.secondary)
+            .padding(.horizontal, -6)
+            Spacer()
+            Image(uiImage: HCoreUIAsset.arrowNorthEast.image)
+                .resizable()
+                .frame(width: 16, height: 16)
+                .foregroundColor(hFillColor.Opaque.primary)
         }
+        .foregroundColor(hTextColor.Opaque.secondary)
     }
 
     private let whatIsCoveredBgColorScheme: some hColor = hColorScheme.init(
@@ -249,12 +266,15 @@ public struct QuoteSummaryScreen: View {
                     } content: {
                         hText(L10n.changeAddressAcceptOffer)
                     }
-                    hButton.LargeButton(type: .ghost) {
-                        withAnimation {
-                            proxy.scrollTo(showCoverageId, anchor: .top)
+
+                    if !isEmptyFaq {
+                        hButton.LargeButton(type: .ghost) {
+                            withAnimation {
+                                proxy.scrollTo(showCoverageId, anchor: .top)
+                            }
+                        } content: {
+                            hText(L10n.summaryScreenLearnMoreButton)
                         }
-                    } content: {
-                        hText(L10n.tierFlowShowCoverage)
                     }
                 }
             }
@@ -268,8 +288,8 @@ public struct QuoteSummaryScreen: View {
             if !faqs.isEmpty {
                 hSection {
                     VStack(alignment: .leading, spacing: 0) {
-                        hText(vm.FAQModel.title)
-                        hText(vm.FAQModel.subtitle).foregroundColor(hTextColor.Opaque.secondary)
+                        hText(vm.FAQModel?.title ?? "")
+                        hText(vm.FAQModel?.subtitle ?? "").foregroundColor(hTextColor.Opaque.secondary)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
@@ -324,7 +344,6 @@ public struct QuoteSummaryScreen: View {
     @ViewBuilder
     var chatComponent: some View {
         VStack(spacing: 0) {
-            Spacing(height: 64)
             hText(L10n.changeAddressNoFind, style: .body1)
             Spacing(height: 16)
             hButton.SmallButton(type: .primary) {
@@ -333,7 +352,6 @@ public struct QuoteSummaryScreen: View {
                 hText(L10n.openChat, style: .body1)
             }
             .fixedSize()
-            Spacing(height: 103)
         }
     }
 }
@@ -368,12 +386,6 @@ public struct FAQ: Codable, Equatable, Hashable {
 }
 
 #Preview(body: {
-    let mockLimits: [InsurableLimits] = [
-        .init(label: "Insured amount", limit: "1 000 000 kr", description: ""),
-        .init(label: "Insured amount", limit: "1 000 000 kr", description: ""),
-        .init(label: "Insured amount", limit: "1 000 000 kr", description: ""),
-    ]
-
     let documents: [InsuranceTerm] = [
         .init(displayName: "document 1", url: "https//hedvig.com", type: .generalTerms),
         .init(displayName: "document 2", url: "https//hedvig.com", type: .preSaleInfo),
@@ -396,12 +408,11 @@ public struct FAQ: Codable, Equatable, Hashable {
                 documents: documents,
                 onDocumentTap: { document in },
                 displayItems: [
-                    .init(title: "Limits", value: "mockLimits"),
+                    .init(title: "Limits", value: "mockLimits mockLimits long long long name"),
                     .init(title: "Documents", value: "documents"),
                     .init(title: "FAQ", value: "mockFAQ"),
                 ],
-                insuranceLimits: mockLimits,
-                onLimitTap: { limit in }
+                insuranceLimits: []
             ),
             .init(
                 id: "id2",
@@ -416,8 +427,41 @@ public struct FAQ: Codable, Equatable, Hashable {
                     .init(title: "Documents", value: "documents"),
                     .init(title: "FAQ", value: "mockFAQ"),
                 ],
-                insuranceLimits: mockLimits,
-                onLimitTap: { limit in }
+                insuranceLimits: [
+                    .init(label: "label", limit: "limit", description: "description"),
+                    .init(label: "label2", limit: "limit2", description: "description2"),
+                    .init(label: "label3", limit: "limit3", description: "description3"),
+                ]
+            ),
+            .init(
+                id: "id3",
+                displayName: "Homeowner",
+                exposureName: "Bellmansgtan 19A",
+                newPremium: .init(amount: 999, currency: "SEK"),
+                currentPremium: .init(amount: 599, currency: "SEK"),
+                documents: documents,
+                onDocumentTap: { document in },
+                displayItems: [],
+                insuranceLimits: [
+                    .init(label: "label", limit: "limit", description: "description"),
+                    .init(label: "label2", limit: "limit2", description: "description2"),
+                    .init(label: "label3", limit: "limit3", description: "description3"),
+                ]
+            ),
+            .init(
+                id: "id4",
+                displayName: "Homeowner",
+                exposureName: "Bellmansgtan 19A",
+                newPremium: .init(amount: 999, currency: "SEK"),
+                currentPremium: .init(amount: 599, currency: "SEK"),
+                documents: [],
+                onDocumentTap: { document in },
+                displayItems: [],
+                insuranceLimits: [
+                    .init(label: "label", limit: "limit", description: "description"),
+                    .init(label: "label2", limit: "limit2", description: "description2"),
+                    .init(label: "label3", limit: "limit3", description: "description3"),
+                ]
             ),
         ],
         total: .init(amount: 999, currency: "SEK"),

@@ -100,7 +100,7 @@ public struct ChangeTierNavigation: View {
                             changeTierVm: changeTierNavigationVm.vm,
                             changeTierNavigationVm: changeTierNavigationVm
                         )
-                        .configureTitle(L10n.offerUpdateSummaryTitle)
+                        .configureTitle(L10n.tierFlowSummaryTitle)
                         .withDismissButton()
                     }
                 }
