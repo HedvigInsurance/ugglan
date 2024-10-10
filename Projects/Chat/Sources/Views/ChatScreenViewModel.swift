@@ -41,7 +41,19 @@ public class ChatScreenViewModel: ObservableObject {
 
         chatInputVm.sendMessage = { [weak self] message in
             Task { [weak self] in
-                await self?.send(message: message)
+                if Dependencies.featureFlags().isDemoMode {
+                    switch message.type {
+                    case .file(let file):
+                        if let newFile = file.getAsDataFromUrl() {
+                            let fileMessage = message.copyWith(type: .file(file: newFile))
+                            await self?.send(message: fileMessage)
+                        }
+                    default:
+                        await self?.send(message: message)
+                    }
+                } else {
+                    await self?.send(message: message)
+                }
             }
         }
 
@@ -63,7 +75,8 @@ public class ChatScreenViewModel: ObservableObject {
         }
         log.addUserAction(type: .click, name: "Chat open", error: nil, attributes: nil)
         openDeepLinkObserver = NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) {
-            [weak self] notification in guard let self = self else { return }
+            [weak self] notification in
+            guard let self = self else { return }
             if let deepLinkUrl = notification.object as? URL {
                 if let deepLink = DeepLink.getType(from: deepLinkUrl), deepLink == .helpCenter {
                     log.addUserAction(

@@ -17,6 +17,22 @@ public struct Message: Identifiable, Codable, Hashable {
     let type: MessageType
     var status: MessageStatus
 
+    init(
+        localId: String?,
+        remoteId: String?,
+        sender: MessageSender,
+        sentAt: Date,
+        type: MessageType,
+        status: MessageStatus
+    ) {
+        self.localId = localId
+        self.remoteId = remoteId
+        self.sender = sender
+        self.sentAt = sentAt
+        self.type = type
+        self.status = status
+    }
+
     init(type: MessageType) {
         self.localId = UUID().uuidString
         self.remoteId = nil
@@ -58,7 +74,7 @@ public struct Message: Identifiable, Codable, Hashable {
     }
 
     func copyWith(type: MessageType) -> Message {
-        return Message(localId: localId, type: type, date: sentAt, status: status)
+        return Message(localId: localId, remoteId: remoteId, sender: sender, sentAt: sentAt, type: type, status: status)
     }
 
 }

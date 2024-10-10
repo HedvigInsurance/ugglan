@@ -21,7 +21,7 @@ public class HomeClientDemo: HomeClient {
     }
 
     public func getMessagesState() async throws -> MessageState {
-        return .init(hasNewMessages: false, hasSentOrRecievedAtLeastOneMessage: false, lastMessageTimeStamp: nil)
+        return .init(hasNewMessages: false, hasSentOrRecievedAtLeastOneMessage: true, lastMessageTimeStamp: nil)
     }
 
     public func getNumberOfClaims() async throws -> Int {
