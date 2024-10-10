@@ -19,6 +19,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         let onDocumentTap: (_ document: InsuranceTerm) -> Void
         let insuranceLimits: [InsurableLimits]
         let typeOfContract: TypeOfContract?
+        let shouldShowDetails: Bool
 
         public init(
             id: String,
@@ -42,6 +43,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             self.displayItems = displayItems
             self.insuranceLimits = insuranceLimits
             self.typeOfContract = typeOfContract
+            self.shouldShowDetails = !(documents.isEmpty && displayItems.isEmpty && insuranceLimits.isEmpty)
         }
     }
 
@@ -155,24 +157,27 @@ public struct QuoteSummaryScreen: View {
                             detailsView(for: contract)
                         }
 
-                        hButton.MediumButton(
-                            type: .secondary
-                        ) {
-                            withAnimation(.snappy(duration: 0.5)) {
-                                let index = selectedContracts.firstIndex(of: contract.id)
-                                if let index {
-                                    selectedContracts.remove(at: index)
-                                } else {
-                                    selectedContracts.append(contract.id)
+                        if contract.shouldShowDetails {
+                            hButton.MediumButton(
+                                type: .secondary
+                            ) {
+                                withAnimation(.snappy(duration: 0.5)) {
+                                    let index = selectedContracts.firstIndex(of: contract.id)
+                                    if let index {
+                                        selectedContracts.remove(at: index)
+                                    } else {
+                                        selectedContracts.append(contract.id)
+                                    }
                                 }
-                            }
 
-                        } content: {
-                            let index = selectedContracts.firstIndex(of: contract.id)
-                            hText(
-                                index != nil
-                                    ? L10n.ClaimStatus.ClaimHideDetails.button : L10n.ClaimStatus.ClaimDetails.button
-                            )
+                            } content: {
+                                let index = selectedContracts.firstIndex(of: contract.id)
+                                hText(
+                                    index != nil
+                                        ? L10n.ClaimStatus.ClaimHideDetails.button
+                                        : L10n.ClaimStatus.ClaimDetails.button
+                                )
+                            }
                         }
                     }
                 }
@@ -464,11 +469,7 @@ public struct FAQ: Codable, Equatable, Hashable {
                 documents: [],
                 onDocumentTap: { document in },
                 displayItems: [],
-                insuranceLimits: [
-                    .init(label: "label", limit: "limit", description: "description"),
-                    .init(label: "label2", limit: "limit2", description: "description2"),
-                    .init(label: "label3", limit: "limit3", description: "description3"),
-                ],
+                insuranceLimits: [],
                 typeOfContract: .seAccident
             ),
         ],
