@@ -43,7 +43,7 @@ struct ChangeTierProcessingView_Previews: PreviewProvider {
         Localization.Locale.currentLocale.send(.sv_SE)
         let input = ChangeTierInput.contractWithSource(data: .init(source: .betterCoverage, contractId: "contractId"))
         return ChangeTierProcessingView(
-            vm: .init(changeTierInput: input)
+            vm: .init(changeTierInput: .contractWithSource(data: .init(source: .betterPrice, contractId: "contractId")))
         )
     }
 }
