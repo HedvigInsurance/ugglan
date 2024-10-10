@@ -273,7 +273,7 @@ public struct QuoteSummaryScreen: View {
                                 proxy.scrollTo(showCoverageId, anchor: .top)
                             }
                         } content: {
-                            hText(L10n.tierFlowShowCoverage)
+                            hText(L10n.summaryScreenLearnMoreButton)
                         }
                     }
                 }
