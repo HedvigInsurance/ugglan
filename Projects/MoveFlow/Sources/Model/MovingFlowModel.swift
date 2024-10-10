@@ -57,8 +57,9 @@ public struct MovingFlowModel: Codable, Equatable, Hashable {
     }
 
     var total: MonetaryAmount {
-        let amount = quotes.reduce(0, { $0 + $1.premium.floatAmount })
-        return MonetaryAmount(amount: amount, currency: quotes.first?.premium.currency ?? "")
+        let amount = quotes.reduce(0, { $0 + $1.premium.floatAmount }) + (homeQuote?.premium.floatAmount ?? 0)
+        let currency = homeQuote?.premium.currency ?? quotes.first?.premium.currency ?? ""
+        return MonetaryAmount(amount: amount, currency: currency)
     }
 
     var movingDate: String {
