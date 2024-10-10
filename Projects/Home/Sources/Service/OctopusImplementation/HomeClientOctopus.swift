@@ -59,10 +59,12 @@ public class HomeClientOctopus: HomeClient {
         if actions?.isCancelInsuranceEnabled == true && featureFlags.isTerminationFlowEnabled {
             contractAction.append(.cancellation)
         }
-        /* TODO: add parameter from backend to check if upgradeCOverage should be shown */
+
+        if actions?.isChangeTierEnabled == true && featureFlags.isTiersEnabled {
+            contractAction.append(.upgradeCoverage)
+        }
         if !contractAction.isEmpty {
-            let actions = contractAction + [.upgradeCoverage]
-            quickActions.append(.editInsurance(actions: .init(quickActions: actions)))
+            quickActions.append(.editInsurance(actions: .init(quickActions: contractAction)))
         }
         if actions?.isConnectPaymentEnabled == true {
             quickActions.append(.connectPayments)
