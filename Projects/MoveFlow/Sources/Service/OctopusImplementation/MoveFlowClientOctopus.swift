@@ -278,7 +278,7 @@ extension ChangeTierIntentModel {
                     return Deductible(
                         id: quote.id,
                         deductibleAmount: .init(optionalFragment: quote.deductible?.amount.fragments.moneyFragment),
-                        deductiblePercentage: quote.deductible?.percentage,
+                        deductiblePercentage: (quote.deductible?.percentage == 0) ? nil : quote.deductible?.percentage,
                         subTitle: quote.deductible?.displayText,
                         premium: .init(fragment: quote.premium.fragments.moneyFragment)
                     )
