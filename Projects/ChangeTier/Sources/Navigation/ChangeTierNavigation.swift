@@ -21,7 +21,7 @@ public class ChangeTierNavigationViewModel: ObservableObject {
         self.vm = vm
     }
 
-    public static func getTiers(input: ChangeTierInputData) async throws(ChangeTierError) -> ChangeTierIntentModel {
+    public static func getTiers(input: ChangeTierInputData) async throws -> ChangeTierIntentModel {
         let client: ChangeTierClient = Dependencies.shared.resolve()
         let data = try await client.getTier(input: input)
         return data
