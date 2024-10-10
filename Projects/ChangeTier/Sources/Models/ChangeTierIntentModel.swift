@@ -22,7 +22,7 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable {
     let displayItems: [TierDisplayItem]
     let exposureName: String?
     let productVariant: ProductVariant?
-    let FAQs: [FAQ]
+    let FAQs: [FAQ]?
 
     public struct TierDisplayItem: Codable, Equatable, Hashable {
         public var id = UUID()
