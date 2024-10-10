@@ -1,12 +1,13 @@
 import Foundation
 import hCore
+import hCoreUI
 
 public class FetchContractsClientDemo: FetchContractsClient {
     public init() {}
     public func getContracts() async throws -> ContractsStack {
         let variant = ProductVariant(
             termsVersion: "",
-            typeOfContract: Contract.TypeOfContract.seApartmentRent.rawValue,
+            typeOfContract: TypeOfContract.seApartmentRent.rawValue,
             partner: nil,
             perils: [],
             insurableLimits: [
@@ -62,7 +63,7 @@ public class FetchContractsClientDemo: FetchContractsClient {
             firstName: "",
             lastName: "",
             ssn: nil,
-            typeOfContract: Contract.TypeOfContract.seHouse,
+            typeOfContract: TypeOfContract.seHouse,
             coInsured: []
         )
         return .init(activeContracts: [contract], pendingContracts: [], terminatedContracts: [])

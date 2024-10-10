@@ -81,11 +81,7 @@ public class ChangeTierClientDemo: ChangeTierClient {
                         displayNameTier: "Bas",
                         tierDescription: "Vårt mellanpaket med hög ersättning."
                     ),
-                    FAQs: [
-                        .init(title: "question 1", description: "..."),
-                        .init(title: "question 2", description: "..."),
-                        .init(title: "question 3", description: "..."),
-                    ]
+                    FAQs: nil
                 ),
                 .init(
                     id: "i2",
@@ -131,11 +127,7 @@ public class ChangeTierClientDemo: ChangeTierClient {
                         displayNameTier: "Standard",
                         tierDescription: "Vårt mellanpaket med hög ersättning."
                     ),
-                    FAQs: [
-                        .init(title: "question 1", description: "..."),
-                        .init(title: "question 2", description: "..."),
-                        .init(title: "question 3", description: "..."),
-                    ]
+                    FAQs: nil
                 ),
                 .init(
                     id: "id3",
@@ -181,11 +173,7 @@ public class ChangeTierClientDemo: ChangeTierClient {
                         displayNameTier: "Max",
                         tierDescription: "Vårt mellanpaket med hög ersättning."
                     ),
-                    FAQs: [
-                        .init(title: "question 1", description: "..."),
-                        .init(title: "question 2", description: "..."),
-                        .init(title: "question 3", description: "..."),
-                    ]
+                    FAQs: nil
                 ),
             ],
             currentPremium: .init(amount: "449", currency: "SEK"),
@@ -222,7 +210,8 @@ public class ChangeTierClientDemo: ChangeTierClient {
                 subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
                 premium: .init(amount: "999", currency: "SEK")
             ),
-            canEditTier: true
+            canEditTier: true,
+            typeOfContract: .seApartmentBrf
         )
     }
 
