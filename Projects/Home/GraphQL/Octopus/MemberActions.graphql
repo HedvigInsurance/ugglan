@@ -14,6 +14,7 @@ query MemberActions {
       isConnectPaymentEnabled
       isEditCoInsuredEnabled
       isCancelInsuranceEnabled
+      isChangeTierEnabled
       firstVetAction {
         sections {
           buttonTitle

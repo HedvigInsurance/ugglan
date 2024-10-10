@@ -260,7 +260,6 @@ struct TerminationFlowNavigation: View {
                             contractExposureName: selectedContract.contractExposureName,
                             activeFrom: selectedContract.activeFrom
                         )
-                        //                    vm.router.push(config)
                         let store: TerminationContractStore = globalPresentableStoreContainer.get()
                         store.send(.startTermination(config: config))
                     }
