@@ -187,35 +187,40 @@ public struct QuoteSummaryScreen: View {
             hRowDivider()
                 .hWithoutDividerPadding
 
-            VStack(alignment: .leading, spacing: 0) {
-                hText(L10n.summaryScreenOverview)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                ForEach(contract.displayItems, id: \.displayTitle) { item in
-                    rowItem(for: item)
+            if !contract.displayItems.isEmpty {
+                VStack(alignment: .leading, spacing: 0) {
+                    hText(L10n.summaryScreenOverview)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    ForEach(contract.displayItems, id: \.displayTitle) { item in
+                        rowItem(for: item)
+                    }
                 }
             }
 
-            VStack(alignment: .leading, spacing: 0) {
-                hText(L10n.summaryScreenCoverage)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                ForEach(contract.insuranceLimits, id: \.limit) { limit in
-                    let displayItem: QuoteDisplayItem = .init(title: limit.limit, value: limit.label, id: limit.id)
-                    rowItem(for: displayItem)
+            if !contract.insuranceLimits.isEmpty {
+                VStack(alignment: .leading, spacing: 0) {
+                    hText(L10n.summaryScreenCoverage)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    ForEach(contract.insuranceLimits, id: \.limit) { limit in
+                        let displayItem: QuoteDisplayItem = .init(title: limit.label, value: limit.limit, id: limit.id)
+                        rowItem(for: displayItem)
+                    }
                 }
             }
 
-            VStack(alignment: .leading, spacing: 4) {
-                hText(L10n.confirmationScreenDocumentTitle)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                ForEach(contract.documents, id: \.displayName) { document in
-                    documentItem(for: document)
-                        .background(hSurfaceColor.Opaque.primary)
-                        .onTapGesture {
-                            contract.onDocumentTap(document)
-                        }
+            if !contract.documents.isEmpty {
+                VStack(alignment: .leading, spacing: 4) {
+                    hText(L10n.confirmationScreenDocumentTitle)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    ForEach(contract.documents, id: \.displayName) { document in
+                        documentItem(for: document)
+                            .background(hSurfaceColor.Opaque.primary)
+                            .onTapGesture {
+                                contract.onDocumentTap(document)
+                            }
+                    }
                 }
             }
-
         }
     }
 
@@ -272,7 +277,7 @@ public struct QuoteSummaryScreen: View {
                                 proxy.scrollTo(showCoverageId, anchor: .top)
                             }
                         } content: {
-                            hText(L10n.tierFlowShowCoverage)
+                            hText(L10n.summaryScreenLearnMoreButton)
                         }
                     }
                 }
@@ -411,11 +416,7 @@ public struct FAQ: Codable, Equatable, Hashable {
                     .init(title: "Documents", value: "documents"),
                     .init(title: "FAQ", value: "mockFAQ"),
                 ],
-                insuranceLimits: [
-                    .init(label: "label", limit: "limit", description: "description"),
-                    .init(label: "label2", limit: "limit2", description: "description2"),
-                    .init(label: "label3", limit: "limit3", description: "description3"),
-                ],
+                insuranceLimits: [],
                 typeOfContract: .seApartmentBrf
             ),
             .init(
@@ -431,6 +432,38 @@ public struct FAQ: Codable, Equatable, Hashable {
                     .init(title: "Documents", value: "documents"),
                     .init(title: "FAQ", value: "mockFAQ"),
                 ],
+                insuranceLimits: [
+                    .init(label: "label", limit: "limit", description: "description"),
+                    .init(label: "label2", limit: "limit2", description: "description2"),
+                    .init(label: "label3", limit: "limit3", description: "description3"),
+                ],
+                typeOfContract: .seAccident
+            ),
+            .init(
+                id: "id3",
+                displayName: "Homeowner",
+                exposureName: "Bellmansgtan 19A",
+                newPremium: .init(amount: 999, currency: "SEK"),
+                currentPremium: .init(amount: 599, currency: "SEK"),
+                documents: documents,
+                onDocumentTap: { document in },
+                displayItems: [],
+                insuranceLimits: [
+                    .init(label: "label", limit: "limit", description: "description"),
+                    .init(label: "label2", limit: "limit2", description: "description2"),
+                    .init(label: "label3", limit: "limit3", description: "description3"),
+                ],
+                typeOfContract: .seAccident
+            ),
+            .init(
+                id: "id4",
+                displayName: "Homeowner",
+                exposureName: "Bellmansgtan 19A",
+                newPremium: .init(amount: 999, currency: "SEK"),
+                currentPremium: .init(amount: 599, currency: "SEK"),
+                documents: [],
+                onDocumentTap: { document in },
+                displayItems: [],
                 insuranceLimits: [
                     .init(label: "label", limit: "limit", description: "description"),
                     .init(label: "label2", limit: "limit2", description: "description2"),
