@@ -100,6 +100,7 @@ struct MovingFlowHouseView: View {
                 equals: $vm.type,
                 focusValue: .ancillaryArea,
                 placeholder: L10n.changeAddressAncillaryAreaLabel,
+                suffix: "m\u{00B2}",
                 error: $vm.ancillaryAreaError
             )
         }
