@@ -42,7 +42,6 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     name: "Bas",
                     level: 0,
                     deductibles: deductibles,
-                    premium: .init(amount: "530", currency: "SEK"),
                     displayItems: displayItems,
                     exposureName: "Bellmansgatan 19A",
                     productVariant: .init(
@@ -88,7 +87,6 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     name: "Standard",
                     level: 0,
                     deductibles: deductibles,
-                    premium: .init(amount: "530", currency: "SEK"),
                     displayItems: displayItems,
                     exposureName: "Bellmansgatan 19A",
                     productVariant: .init(
@@ -134,7 +132,6 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     name: "Max",
                     level: 0,
                     deductibles: deductibles,
-                    premium: .init(amount: "530", currency: "SEK"),
                     displayItems: displayItems,
                     exposureName: "Bellmansgatan 19A",
                     productVariant: .init(
@@ -182,7 +179,6 @@ public class ChangeTierClientDemo: ChangeTierClient {
                 name: "Max",
                 level: 3,
                 deductibles: deductibles,
-                premium: .init(amount: "", currency: ""),
                 displayItems: [],
                 exposureName: "",
                 productVariant: .init(

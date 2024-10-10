@@ -50,10 +50,14 @@ class ChangeTierViewModel: ObservableObject {
         withAnimation {
             let newSelectedTier = tiers.first(where: { $0.name == tierName })
             if newSelectedTier != selectedTier {
-                self.selectedDeductible = nil
+                if newSelectedTier?.deductibles.count ?? 0 == 1 {
+                    self.selectedDeductible = newSelectedTier?.deductibles.first
+                } else {
+                    self.selectedDeductible = nil
+                }
             }
             self.selectedTier = newSelectedTier
-            self.newPremium = selectedTier?.premium
+            self.newPremium = selectedDeductible?.premium
         }
     }
 
@@ -92,8 +96,7 @@ class ChangeTierViewModel: ObservableObject {
 
                 self.selectedTier = currentTier
                 self.selectedDeductible = currentDeductible
-                self.newPremium = selectedTier?.premium
-
+                self.newPremium = selectedDeductible?.premium
                 withAnimation {
                     self.viewState = .success
                 }
