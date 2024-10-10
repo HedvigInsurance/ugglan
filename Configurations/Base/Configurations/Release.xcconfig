@@ -40,4 +40,3 @@ SWIFT_COMPILATION_MODE = wholemodule
 // Whether to perform App Store validation checks
 VALIDATE_PRODUCT = YES
 
-SWIFT_OPTIMIZATION_LEVEL = -Onone
