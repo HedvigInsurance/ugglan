@@ -11,7 +11,7 @@ struct EditTierScreen: View {
         vm: ChangeTierViewModel
     ) {
         self.vm = vm
-        self.selectedTier = vm.selectedTier?.name ?? vm.tiers.first?.name
+        self._selectedTier = State(initialValue: vm.selectedTier?.name)
     }
 
     var body: some View {
@@ -26,12 +26,14 @@ struct EditTierScreen: View {
                                     HStack {
                                         hText(tier.productVariant?.displayNameTier ?? "")
                                         Spacer()
-                                        hPill(
-                                            text: tier.premium.formattedAmountPerMonth,
-                                            color: .grey(translucent: false),
-                                            colorLevel: .one
-                                        )
-                                        .hFieldSize(.small)
+                                        if let premiumValue = tier.getPremium()?.formattedAmountPerMonth {
+                                            hPill(
+                                                text: premiumValue,
+                                                color: .grey(translucent: false),
+                                                colorLevel: .one
+                                            )
+                                            .hFieldSize(.small)
+                                        }
                                     }
                                     if let subTitle = tier.productVariant?.tierDescription {
                                         hText(subTitle)

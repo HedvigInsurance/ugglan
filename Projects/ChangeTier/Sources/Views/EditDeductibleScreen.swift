@@ -19,7 +19,7 @@ struct EditDeductibleScreen: View {
             self.deductibles = vm.tiers.first(where: { $0.name == vm.selectedTier?.name })?.deductibles ?? []
         }
 
-        self.selectedDeductible = vm.selectedDeductible?.id ?? vm.selectedTier?.deductibles.first?.id
+        self._selectedDeductible = State(initialValue: vm.selectedDeductible?.id)
     }
 
     var body: some View {

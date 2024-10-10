@@ -17,7 +17,6 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable {
     let name: String
     let level: Int
     let deductibles: [Deductible]
-    let premium: MonetaryAmount
     let displayItems: [TierDisplayItem]
     let exposureName: String?
     let productVariant: ProductVariant?
@@ -39,6 +38,13 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable {
         let title: String
         let subTitle: String?
         let value: String
+    }
+
+    func getPremium() -> MonetaryAmount? {
+        if deductibles.count == 1 {
+            return deductibles.first?.premium
+        }
+        return nil
     }
 }
 
