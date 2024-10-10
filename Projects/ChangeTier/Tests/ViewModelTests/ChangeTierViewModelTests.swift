@@ -102,7 +102,7 @@ final class ChangeTierViewModelTests: XCTestCase {
         self.sut = mockService
 
         let model = ChangeTierViewModel(changeTierInput: .init(source: .changeTier, contractId: "contractId"))
-
+        self.vm = model
         model.fetchTiers(nil)
 
         try await Task.sleep(nanoseconds: 30_000_000)
@@ -127,7 +127,7 @@ final class ChangeTierViewModelTests: XCTestCase {
         self.sut = mockService
 
         let model = ChangeTierViewModel(changeTierInput: .init(source: .changeTier, contractId: "contractId"))
-
+        self.vm = model
         model.fetchTiers(nil)
         try await Task.sleep(nanoseconds: 30_000_000)
         assert(model.canEditTier == false)
@@ -162,7 +162,7 @@ final class ChangeTierViewModelTests: XCTestCase {
         self.sut = mockService
 
         let model = ChangeTierViewModel(changeTierInput: .init(source: .changeTier, contractId: "contractId"))
-
+        self.vm = model
         model.fetchTiers(nil)
         try await Task.sleep(nanoseconds: 30_000_000)
         await model.setTier(for: "max")
@@ -188,7 +188,7 @@ final class ChangeTierViewModelTests: XCTestCase {
         self.sut = mockService
 
         let model = ChangeTierViewModel(changeTierInput: .init(source: .changeTier, contractId: "contractId"))
-
+        self.vm = model
         model.fetchTiers(nil)
         try await Task.sleep(nanoseconds: 30_000_000)
         await model.setTier(for: "max")
@@ -224,7 +224,7 @@ final class ChangeTierViewModelTests: XCTestCase {
         self.sut = mockService
 
         let model = ChangeTierViewModel(changeTierInput: .init(source: .changeTier, contractId: "contractId"))
-
+        self.vm = model
         try await Task.sleep(nanoseconds: 30_000_000)
         await model.setTier(for: "max")
         await model.setDeductible(for: model.selectedTier?.deductibles.first?.id ?? "")
@@ -252,7 +252,7 @@ final class ChangeTierViewModelTests: XCTestCase {
         self.sut = mockService
 
         let model = ChangeTierViewModel(changeTierInput: .init(source: .changeTier, contractId: "contractId"))
-
+        self.vm = model
         model.fetchTiers(nil)
         await model.setTier(for: "max")
         await model.setDeductible(for: model.selectedTier?.deductibles.first?.id ?? "")
