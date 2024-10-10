@@ -73,7 +73,8 @@ struct ChangeTierLandingScreen: View {
                 hRow {
                     ContractInformation(
                         displayName: vm.displayName,
-                        exposureName: vm.exposureName
+                        exposureName: vm.exposureName,
+                        pillowImage: vm.typeOfContract?.pillowType.bgImage
                     )
                 }
 

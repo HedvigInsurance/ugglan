@@ -38,7 +38,6 @@ extension ApolloClient {
             let notificationClient = NotificationClientDemo()
             let submitClaimDemoService = SubmitClaimClientDemo()
             let conversationsClient = ConversationsDemoClient()
-            let conversationClient = ConversationDemoClient()
             let changeTierClient = ChangeTierClientDemo()
             let adyenClient = AdyenClientDemo()
             Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlags })
@@ -53,7 +52,7 @@ extension ApolloClient {
             Dependencies.shared.add(module: Module { () -> NotificationClient in notificationClient })
             Dependencies.shared.add(module: Module { () -> SubmitClaimClient in submitClaimDemoService })
             Dependencies.shared.add(module: Module { () -> ConversationsClient in conversationsClient })
-            Dependencies.shared.add(module: Module { () -> ConversationClient in conversationClient })
+            Dependencies.shared.add(module: Module { () -> ConversationClient in conversationsClient })
             Dependencies.shared.add(module: Module { () -> ChangeTierClient in changeTierClient })
             Dependencies.shared.add(module: Module { () -> AdyenClient in adyenClient })
         } else {

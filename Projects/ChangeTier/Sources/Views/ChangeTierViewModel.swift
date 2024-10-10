@@ -12,6 +12,7 @@ class ChangeTierViewModel: ObservableObject {
     private(set) var tiers: [Tier] = []
     var changeTierInput: ChangeTierInput
     var activationDate: Date?
+    var typeOfContract: TypeOfContract?
 
     @Published var currentPremium: MonetaryAmount?
     var currentTier: Tier?
@@ -72,12 +73,12 @@ class ChangeTierViewModel: ObservableObject {
         }
         Task { @MainActor in
             do {
-                let data: ChangeTierIntentModel = try await {
-                    if let existingModel = existingModel {
-                        return existingModel
-                    }
-                    return try await service.getTier(input: changeTierInput)
-                }()
+                var data: ChangeTierIntentModel!
+                if let existingModel = existingModel {
+                    data = existingModel
+                } else {
+                    data = try await service.getTier(input: changeTierInput)
+                }
                 self.tiers = data.tiers
                 self.displayName = data.tiers.first?.productVariant?.displayName
                 self.exposureName = data.tiers.first?.exposureName
@@ -87,6 +88,7 @@ class ChangeTierViewModel: ObservableObject {
                 self.currentDeductible = data.currentDeductible
                 self.canEditTier = data.canEditTier
                 self.activationDate = data.activationDate
+                self.typeOfContract = data.typeOfContract
 
                 self.selectedTier = currentTier
                 self.selectedDeductible = currentDeductible

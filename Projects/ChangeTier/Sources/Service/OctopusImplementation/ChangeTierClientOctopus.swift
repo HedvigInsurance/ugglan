@@ -45,7 +45,7 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                 if let deductible = deductible {
                     return Deductible(
                         deductibleAmount: .init(fragment: deductible.amount.fragments.moneyFragment),
-                        deductiblePercentage: deductible.percentage,
+                        deductiblePercentage: (deductible.percentage == 0) ? nil : deductible.percentage,
                         subTitle: deductible.displayText,
                         premium: .init(fragment: currentContract.currentAgreement.premium.fragments.moneyFragment)
                     )
@@ -69,7 +69,9 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                 ),
                 currentTier: currentTier,
                 currentDeductible: currentDeductible,
-                canEditTier: currentContract.supportsChangeTier
+                canEditTier: currentContract.supportsChangeTier,
+                typeOfContract:
+                    TypeOfContract.resolve(for: currentContract.currentAgreement.productVariant.typeOfContract)
             )
             if intentModel.tiers.isEmpty {
                 throw ChangeTierError.emptyList
@@ -144,12 +146,6 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                     )
                 })
 
-            let FAQs: [FAQ] = [
-                .init(title: "question 1", description: "..."),
-                .init(title: "question 2", description: "..."),
-                .init(title: "question 3", description: "..."),
-            ]
-
             allTiers.append(
                 .init(
                     id: allQuotesWithNameX?.first?.id ?? "",
@@ -163,7 +159,7 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                     productVariant: .init(
                         data: allQuotesWithNameX?.first?.productVariant.fragments.productVariantFragment
                     ),
-                    FAQs: FAQs
+                    FAQs: nil
                 )
             )
         })

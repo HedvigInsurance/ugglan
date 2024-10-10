@@ -41,9 +41,7 @@ extension ChangeTierViewModel {
                     },
                     displayItems: displayItems,
                     insuranceLimits: self.selectedTier?.productVariant?.insurableLimits ?? [],
-                    onLimitTap: { [weak self] limit in
-                        changeTierNavigationVm.isInsurableLimitPresented = limit
-                    }
+                    typeOfContract: self.typeOfContract
                 )
             ],
             total: self.newPremium ?? .init(amount: "", currency: ""),

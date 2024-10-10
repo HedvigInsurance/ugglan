@@ -193,8 +193,9 @@ class InboxViewModel: ObservableObject {
     }
 }
 
-#Preview{
-    Dependencies.shared.add(module: Module { () -> ConversationClient in ConversationDemoClient() })
-    Dependencies.shared.add(module: Module { () -> ConversationsClient in ConversationsDemoClient() })
+#Preview {
+    let client = ConversationsDemoClient()
+    Dependencies.shared.add(module: Module { () -> ConversationClient in client })
+    Dependencies.shared.add(module: Module { () -> ConversationsClient in client })
     return InboxView()
 }
