@@ -191,7 +191,7 @@ extension Quote {
         })
         perils = productVariantFragment.perils.compactMap({ .init(fragment: $0) })
         documents = productVariantFragment.documents.compactMap({ .init($0) })
-        contractType = Contract.TypeOfContract(rawValue: data.productVariant.typeOfContract)
+        contractType = TypeOfContract(rawValue: data.productVariant.typeOfContract)
         displayItems = data.displayItems.map({ .init($0) })
     }
 
@@ -207,7 +207,7 @@ extension Quote {
         })
         perils = productVariantFragment.perils.compactMap({ .init(fragment: $0) })
         documents = productVariantFragment.documents.compactMap({ .init($0) })
-        contractType = Contract.TypeOfContract(rawValue: data.productVariant.typeOfContract)
+        contractType = TypeOfContract(rawValue: data.productVariant.typeOfContract)
         displayItems = data.displayItems.map({ .init($0) })
     }
 
@@ -223,7 +223,7 @@ extension Quote {
         })
         perils = productVariantFragment.perils.compactMap({ .init(fragment: $0) })
         documents = productVariantFragment.documents.compactMap({ .init($0) })
-        contractType = Contract.TypeOfContract(rawValue: data.productVariant.typeOfContract)
+        contractType = TypeOfContract(rawValue: data.productVariant.typeOfContract)
         displayItems = data.displayItems.map({ .init($0) })
     }
 }
@@ -316,7 +316,8 @@ extension ChangeTierIntentModel {
             currentDeductible: nil,
             selectedTier: currentTierAndDeductible.tier,
             selectedDeductible: currentTierAndDeductible.deductible,
-            canEditTier: true
+            canEditTier: true,
+            typeOfContract: TypeOfContract.resolve(for: data.first?.productVariant.typeOfContract ?? "")
         )
         return intentModel
     }

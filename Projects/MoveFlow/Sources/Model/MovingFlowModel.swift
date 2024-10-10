@@ -107,7 +107,7 @@ struct Quote: Codable, Equatable, Hashable {
     let insurableLimits: [InsurableLimits]
     let perils: [Perils]
     let documents: [InsuranceDocument]
-    let contractType: Contract.TypeOfContract?
+    let contractType: TypeOfContract?
     let id: String
     let displayItems: [DisplayItem]
     let exposureName: String?

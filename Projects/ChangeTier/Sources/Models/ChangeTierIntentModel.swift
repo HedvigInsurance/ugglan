@@ -12,7 +12,7 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable {
     let selectedTier: Tier?
     let selectedDeductible: Deductible?
     let canEditTier: Bool
-
+    let typeOfContract: TypeOfContract
     public init(
         activationDate: Date,
         tiers: [Tier],
@@ -21,7 +21,8 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable {
         currentDeductible: Deductible?,
         selectedTier: Tier?,
         selectedDeductible: Deductible?,
-        canEditTier: Bool
+        canEditTier: Bool,
+        typeOfContract: TypeOfContract
     ) {
         self.activationDate = activationDate
         self.tiers = tiers
@@ -31,6 +32,7 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable {
         self.selectedTier = selectedTier
         self.selectedDeductible = selectedDeductible
         self.canEditTier = canEditTier
+        self.typeOfContract = typeOfContract
     }
 }
 
@@ -43,7 +45,7 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable {
     let displayItems: [TierDisplayItem]
     let exposureName: String?
     let productVariant: ProductVariant?
-    let FAQs: [FAQ]
+    let FAQs: [FAQ]?
 
     public init(
         id: String,
@@ -54,7 +56,7 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable {
         displayItems: [TierDisplayItem],
         exposureName: String?,
         productVariant: ProductVariant?,
-        FAQs: [FAQ]
+        FAQs: [FAQ]?
     ) {
         self.id = id
         self.name = name

@@ -28,8 +28,7 @@ struct MovingFlowConfirm: View {
                             currentPremium: $0.premium,
                             documents: $0.documents.map({
                                 .init(displayName: $0.displayName, url: $0.url, type: .unknown)
-                            }
-                            ),
+                            }),
                             onDocumentTap: { document in
                                 if let url = URL(string: document.url) {
                                     movingFlowNavigationVm.document = .init(url: url, title: document.displayName)
@@ -38,9 +37,7 @@ struct MovingFlowConfirm: View {
                             displayItems: $0.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }
                             ),
                             insuranceLimits: $0.insurableLimits,
-                            onLimitTap: { limit in
-
-                            }
+                            typeOfContract: $0.contractType
                         )
                     })
 
