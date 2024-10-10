@@ -12,6 +12,7 @@ class ChangeTierViewModel: ObservableObject {
     private(set) var tiers: [Tier] = []
     private var changeTierInput: ChangeTierInput
     var activationDate: Date?
+    var typeOfContract: TypeOfContract?
 
     @Published var currentPremium: MonetaryAmount?
     var currentTier: Tier?
@@ -87,6 +88,7 @@ class ChangeTierViewModel: ObservableObject {
                 self.currentDeductible = data.currentDeductible
                 self.canEditTier = data.canEditTier
                 self.activationDate = data.activationDate
+                self.typeOfContract = data.typeOfContract
 
                 self.selectedTier = currentTier
                 self.selectedDeductible = currentDeductible

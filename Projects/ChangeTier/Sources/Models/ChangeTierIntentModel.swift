@@ -10,6 +10,7 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable {
     let currentTier: Tier?
     let currentDeductible: Deductible?
     let canEditTier: Bool
+    let typeOfContract: TypeOfContract
 }
 
 public struct Tier: Codable, Equatable, Hashable, Identifiable {

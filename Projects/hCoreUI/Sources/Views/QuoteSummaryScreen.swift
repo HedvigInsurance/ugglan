@@ -19,6 +19,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         let onDocumentTap: (_ document: InsuranceTerm) -> Void
         let insuranceLimits: [InsurableLimits]
         let onLimitTap: (_ limit: InsurableLimits) -> Void
+        let typeOfContract: TypeOfContract?
 
         public init(
             id: String,
@@ -30,7 +31,8 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             onDocumentTap: @escaping (_ document: InsuranceTerm) -> Void,
             displayItems: [QuoteDisplayItem],
             insuranceLimits: [InsurableLimits],
-            onLimitTap: @escaping (_ limit: InsurableLimits) -> Void
+            onLimitTap: @escaping (_ limit: InsurableLimits) -> Void,
+            typeOfContract: TypeOfContract?
         ) {
             self.id = id
             self.displayName = displayName
@@ -42,6 +44,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             self.displayItems = displayItems
             self.insuranceLimits = insuranceLimits
             self.onLimitTap = onLimitTap
+            self.typeOfContract = typeOfContract
         }
     }
 
@@ -131,7 +134,8 @@ public struct QuoteSummaryScreen: View {
                 onSelected: {},
                 mainContent: ContractInformation(
                     displayName: contract.displayName,
-                    exposureName: contract.exposureName
+                    exposureName: contract.exposureName,
+                    pillowImage: contract.typeOfContract?.pillowType.bgImage
                 ),
                 title: nil,
                 subTitle: nil,
@@ -401,7 +405,8 @@ public struct FAQ: Codable, Equatable, Hashable {
                     .init(title: "FAQ", value: "mockFAQ"),
                 ],
                 insuranceLimits: mockLimits,
-                onLimitTap: { limit in }
+                onLimitTap: { limit in },
+                typeOfContract: .seApartmentBrf
             ),
             .init(
                 id: "id2",
@@ -417,7 +422,8 @@ public struct FAQ: Codable, Equatable, Hashable {
                     .init(title: "FAQ", value: "mockFAQ"),
                 ],
                 insuranceLimits: mockLimits,
-                onLimitTap: { limit in }
+                onLimitTap: { limit in },
+                typeOfContract: .seAccident
             ),
         ],
         total: .init(amount: 999, currency: "SEK"),
