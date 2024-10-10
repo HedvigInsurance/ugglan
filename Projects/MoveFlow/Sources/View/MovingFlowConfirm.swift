@@ -33,7 +33,8 @@ struct MovingFlowConfirm: View {
                             }
                         },
                         displayItems: $0.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }),
-                        insuranceLimits: $0.insurableLimits
+                        insuranceLimits: $0.insurableLimits,
+                        typeOfContract: $0.contractType
                     )
                 })
 

@@ -40,7 +40,8 @@ extension ChangeTierViewModel {
                         }
                     },
                     displayItems: displayItems,
-                    insuranceLimits: self.selectedTier?.productVariant?.insurableLimits ?? []
+                    insuranceLimits: self.selectedTier?.productVariant?.insurableLimits ?? [],
+                    typeOfContract: self.typeOfContract
                 )
             ],
             total: self.newPremium ?? .init(amount: "", currency: ""),

@@ -18,6 +18,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         let documents: [InsuranceTerm]
         let onDocumentTap: (_ document: InsuranceTerm) -> Void
         let insuranceLimits: [InsurableLimits]
+        let typeOfContract: TypeOfContract?
 
         public init(
             id: String,
@@ -28,7 +29,8 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             documents: [InsuranceTerm],
             onDocumentTap: @escaping (_ document: InsuranceTerm) -> Void,
             displayItems: [QuoteDisplayItem],
-            insuranceLimits: [InsurableLimits]
+            insuranceLimits: [InsurableLimits],
+            typeOfContract: TypeOfContract?
         ) {
             self.id = id
             self.displayName = displayName
@@ -39,6 +41,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             self.onDocumentTap = onDocumentTap
             self.displayItems = displayItems
             self.insuranceLimits = insuranceLimits
+            self.typeOfContract = typeOfContract
         }
     }
 
@@ -133,7 +136,8 @@ public struct QuoteSummaryScreen: View {
                 onSelected: {},
                 mainContent: ContractInformation(
                     displayName: contract.displayName,
-                    exposureName: contract.exposureName
+                    exposureName: contract.exposureName,
+                    pillowImage: contract.typeOfContract?.pillowType.bgImage
                 ),
                 title: nil,
                 subTitle: nil,
@@ -412,7 +416,8 @@ public struct FAQ: Codable, Equatable, Hashable {
                     .init(title: "Documents", value: "documents"),
                     .init(title: "FAQ", value: "mockFAQ"),
                 ],
-                insuranceLimits: []
+                insuranceLimits: [],
+                typeOfContract: .seApartmentBrf
             ),
             .init(
                 id: "id2",
@@ -431,7 +436,8 @@ public struct FAQ: Codable, Equatable, Hashable {
                     .init(label: "label", limit: "limit", description: "description"),
                     .init(label: "label2", limit: "limit2", description: "description2"),
                     .init(label: "label3", limit: "limit3", description: "description3"),
-                ]
+                ],
+                typeOfContract: .seAccident
             ),
             .init(
                 id: "id3",
@@ -446,7 +452,8 @@ public struct FAQ: Codable, Equatable, Hashable {
                     .init(label: "label", limit: "limit", description: "description"),
                     .init(label: "label2", limit: "limit2", description: "description2"),
                     .init(label: "label3", limit: "limit3", description: "description3"),
-                ]
+                ],
+                typeOfContract: .seAccident
             ),
             .init(
                 id: "id4",
@@ -461,7 +468,8 @@ public struct FAQ: Codable, Equatable, Hashable {
                     .init(label: "label", limit: "limit", description: "description"),
                     .init(label: "label2", limit: "limit2", description: "description2"),
                     .init(label: "label3", limit: "limit3", description: "description3"),
-                ]
+                ],
+                typeOfContract: .seAccident
             ),
         ],
         total: .init(amount: 999, currency: "SEK"),

@@ -147,7 +147,7 @@ struct Quote: Codable, Equatable, Hashable {
     let insurableLimits: [InsurableLimits]
     let perils: [Perils]
     let documents: [InsuranceDocument]
-    let contractType: Contract.TypeOfContract?
+    let contractType: TypeOfContract?
     let id: String
     let displayItems: [DisplayItem]
     let exposureName: String?
@@ -163,7 +163,7 @@ struct Quote: Codable, Equatable, Hashable {
         })
         perils = productVariantFragment.perils.compactMap({ .init(fragment: $0) })
         documents = productVariantFragment.documents.compactMap({ .init($0) })
-        contractType = Contract.TypeOfContract(rawValue: data.productVariant.typeOfContract)
+        contractType = TypeOfContract(rawValue: data.productVariant.typeOfContract)
         displayItems = data.displayItems.map({ .init($0) })
     }
 }

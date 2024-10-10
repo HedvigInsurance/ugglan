@@ -15,6 +15,7 @@ query Contract($contractId: UUID!) {
             ...MoneyFragment
         }
         productVariant {
+            typeOfContract
             displayNameTier
         }
       }
