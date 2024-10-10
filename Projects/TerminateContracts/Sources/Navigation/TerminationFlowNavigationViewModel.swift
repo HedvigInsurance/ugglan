@@ -37,12 +37,7 @@ class TerminationFlowNavigationViewModel: ObservableObject {
                         return nil
                     }()
                 {
-                    let chageTierContract: ChangeTierContract = .init(
-                        contractId: contactConfig.contractId,
-                        contractDisplayName: contactConfig.contractDisplayName,
-                        contractExposureName: contactConfig.contractExposureName
-                    )
-                    let input = ChangeTierInput(source: source, contractIds: [chageTierContract])
+                    let input = ChangeTierInput(source: source, contractId: contactConfig.contractId)
                     loadingActions[redirectAction] = .loading
                     Task { @MainActor [weak self] in
                         guard let self = self else { return }
