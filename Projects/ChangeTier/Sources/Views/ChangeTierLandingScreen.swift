@@ -168,13 +168,7 @@ struct ChangeTierLandingScreen: View {
         vm: .init(
             changeTierInput: .init(
                 source: .betterCoverage,
-                contractIds: [
-                    .init(
-                        contractId: "contractId1",
-                        contractDisplayName: "contractDisplayName",
-                        contractExposureName: "contractExposureName"
-                    )
-                ]
+                contractId: "contractId1"
             )
         )
     )

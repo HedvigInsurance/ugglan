@@ -655,7 +655,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                             contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
                             contractExposureName: contract.exposureDisplayName
                         )
-                        self?.isChangeTierPresented = .init(source: .changeTier, contractIds: [changeTierContact])
+                        self?.isChangeTierPresented = .init(source: .changeTier, contractId: contractId)
                     }
                 }
             }

@@ -26,7 +26,7 @@ public class HelpCenterNavigationViewModel: ObservableObject {
         var isCancellationPresented = false
         var isFirstVetPresented = false
         var isSickAbroadPresented = false
-        var isChangeTierPresented: ChangeTierInput?
+        var isChangeTierPresented: ChangeTierContractsInput?
     }
 
     public init() {}
@@ -108,7 +108,7 @@ public struct HelpCenterNavigation<Content: View>: View {
         .modally(
             item: $helpCenterVm.quickActions.isChangeTierPresented
         ) { input in
-            ChangeTierNavigation(input: input, existingModel: nil)
+            ChangeTierNavigation(input: input)
         }
         .detent(
             presented: $helpCenterVm.quickActions.isSickAbroadPresented,
@@ -220,7 +220,7 @@ public struct HelpCenterNavigation<Content: View>: View {
                 })
             helpCenterVm.quickActions.isChangeTierPresented = .init(
                 source: .changeTier,
-                contractIds: contractsSupportingChangingTier
+                contracts: contractsSupportingChangingTier
             )
         case .firstVet:
             helpCenterVm.quickActions.isFirstVetPresented = true

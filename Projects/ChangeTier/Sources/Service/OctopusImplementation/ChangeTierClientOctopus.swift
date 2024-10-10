@@ -20,7 +20,7 @@ public class ChangeTierClientOctopus: ChangeTierClient {
 
         do {
             let input: OctopusGraphQL.ChangeTierDeductibleCreateIntentInput = .init(
-                contractId: input.contractIds.first?.contractId ?? "",
+                contractId: input.contractId,
                 source: .case(source)
             )
             let mutation = OctopusGraphQL.ChangeTierDeductibleCreateIntentMutation(input: input)

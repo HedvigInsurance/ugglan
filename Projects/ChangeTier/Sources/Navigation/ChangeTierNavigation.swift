@@ -12,12 +12,30 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     @Published public var document: Document?
 
     let router = Router()
-    var vm: ChangeTierViewModel
 
+    //make sure to set it!!!
+    var vm: ChangeTierViewModel!
+
+    let changeTierContractsInput: ChangeTierContractsInput?
     init(
         vm: ChangeTierViewModel
     ) {
         self.vm = vm
+        self.changeTierContractsInput = nil
+    }
+
+    init(
+        changeTierContractsInput: ChangeTierContractsInput
+    ) {
+        if changeTierContractsInput.contracts.count == 1, let first = changeTierContractsInput.contracts.first {
+            self.vm = .init(
+                changeTierInput: .init(source: changeTierContractsInput.source, contractId: first.contractId),
+                changeTierIntentModel: nil
+            )
+            self.changeTierContractsInput = nil
+        } else {
+            self.changeTierContractsInput = changeTierContractsInput
+        }
     }
 
     public static func getTiers(input: ChangeTierInput) async throws(ChangeTierError) -> ChangeTierIntentModel {
@@ -55,19 +73,35 @@ extension ChangeTierRouterActionsWithoutBackButton: TrackingViewNameProtocol {
 
 public struct ChangeTierInput: Equatable, Identifiable {
     public var id: String {
-        contractIds.first?.contractId ?? ""
+        contractId
     }
 
     public init(
         source: ChangeTierSource,
-        contractIds: [ChangeTierContract]
+        contractId: String
     ) {
         self.source = source
-        self.contractIds = contractIds
+        self.contractId = contractId
     }
 
     let source: ChangeTierSource
-    let contractIds: [ChangeTierContract]
+    let contractId: String
+}
+
+public struct ChangeTierContractsInput: Equatable, Identifiable {
+    public var id: String
+
+    public init(
+        source: ChangeTierSource,
+        contracts: [ChangeTierContract]
+    ) {
+        self.id = "\(Date().timeIntervalSince1970)"
+        self.source = source
+        self.contracts = contracts
+    }
+
+    let source: ChangeTierSource
+    let contracts: [ChangeTierContract]
 }
 
 public struct ChangeTierContract: Hashable {
@@ -110,14 +144,20 @@ public struct ChangeTierNavigation: View {
         )
     }
 
+    public init(
+        input: ChangeTierContractsInput
+    ) {
+        self.changeTierNavigationVm = .init(changeTierContractsInput: input)
+    }
+
     public var body: some View {
         RouterHost(
             router: changeTierNavigationVm.router,
             options: [],
             tracking: ChangeTierTrackingType.changeTierLandingScreen
         ) {
-            if changeTierNavigationVm.vm.changeTierInput.contractIds.count > 1 {
-                SelectInsuranceScreen(vm: changeTierNavigationVm.vm)
+            if let changeTierContracts = changeTierNavigationVm.changeTierContractsInput {
+                SelectInsuranceScreen(changeTierContractsInput: changeTierContracts)
                     .routerDestination(for: ChangeTierContract.self) { changeTierContract in
                         getScreen
                     }
