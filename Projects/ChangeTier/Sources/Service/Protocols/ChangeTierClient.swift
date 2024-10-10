@@ -2,8 +2,8 @@ import Foundation
 import hCore
 
 public protocol ChangeTierClient {
-    func getTier(input: ChangeTierInputData) async throws(ChangeTierError) -> ChangeTierIntentModel
-    func commitTier(quoteId: String) async throws(ChangeTierError)
+    func getTier(input: ChangeTierInputData) async throws -> ChangeTierIntentModel
+    func commitTier(quoteId: String) async throws
 }
 
 public enum ChangeTierError: Error {

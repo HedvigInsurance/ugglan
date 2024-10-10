@@ -8,7 +8,7 @@ public class ChangeTierClientOctopus: ChangeTierClient {
 
     public init() {}
 
-    public func getTier(input: ChangeTierInputData) async throws(ChangeTierError) -> ChangeTierIntentModel {
+    public func getTier(input: ChangeTierInputData) async throws -> ChangeTierIntentModel {
 
         let source: OctopusGraphQL.ChangeTierDeductibleSource = {
             switch input.source {
@@ -90,7 +90,7 @@ public class ChangeTierClientOctopus: ChangeTierClient {
         }
     }
 
-    public func commitTier(quoteId: String) async throws(ChangeTierError) {
+    public func commitTier(quoteId: String) async throws {
         let input = OctopusGraphQL.ChangeTierDeductibleCommitIntentInput(quoteId: quoteId)
         let mutation = OctopusGraphQL.ChangeTierDeductibleCommitIntentMutation(input: input)
 
