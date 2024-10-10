@@ -117,6 +117,7 @@ struct MovingFlowAddressView: View {
             equals: $vm.type,
             focusValue: .squareArea,
             placeholder: L10n.changeAddressNewLivingSpaceLabel,
+            suffix: "m\u{00B2}",
             error: $vm.squareAreaError
         )
     }
