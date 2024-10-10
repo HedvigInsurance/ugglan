@@ -26,7 +26,7 @@ class TerminationFlowNavigationViewModel: ObservableObject {
                 }
             case .changeTierFoundBetterPrice, .changeTierMissingCoverageAndTerms:
                 let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                if let contactId = store.state.config?.contractId,
+                if let contactConfig = store.state.config,
                     let redirectAction,
                     let source: ChangeTierSource = {
                         if case .changeTierFoundBetterPrice = redirectAction {
@@ -37,7 +37,7 @@ class TerminationFlowNavigationViewModel: ObservableObject {
                         return nil
                     }()
                 {
-                    let input = ChangeTierInput(source: source, contractId: contactId)
+                    let input = ChangeTierInput(source: source, contractId: contactConfig.contractId)
                     loadingActions[redirectAction] = .loading
                     Task { @MainActor [weak self] in
                         guard let self = self else { return }
@@ -265,7 +265,6 @@ struct TerminationFlowNavigation: View {
                             contractExposureName: selectedContract.contractExposureName,
                             activeFrom: selectedContract.activeFrom
                         )
-                        //                    vm.router.push(config)
                         let store: TerminationContractStore = globalPresentableStoreContainer.get()
                         store.send(.startTermination(config: config))
                     }

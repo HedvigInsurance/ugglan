@@ -42,7 +42,12 @@ struct ChangeTierProcessingView_Previews: PreviewProvider {
         Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
         Localization.Locale.currentLocale.send(.sv_SE)
         return ChangeTierProcessingView(
-            vm: .init(changeTierInput: .init(source: .betterCoverage, contractId: "contractId"))
+            vm: .init(
+                changeTierInput: .init(
+                    source: .betterCoverage,
+                    contractId: "contractId1"
+                )
+            )
         )
     }
 }

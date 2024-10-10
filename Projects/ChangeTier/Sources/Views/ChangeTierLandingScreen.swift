@@ -165,6 +165,11 @@ struct ChangeTierLandingScreen: View {
 #Preview {
     Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
     return ChangeTierLandingScreen(
-        vm: .init(changeTierInput: .init(source: .betterCoverage, contractId: "contractId"))
+        vm: .init(
+            changeTierInput: .init(
+                source: .betterCoverage,
+                contractId: "contractId1"
+            )
+        )
     )
 }

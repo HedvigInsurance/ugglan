@@ -12,12 +12,30 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     @Published public var document: Document?
 
     let router = Router()
-    var vm: ChangeTierViewModel
 
+    //make sure to set it!!!
+    var vm: ChangeTierViewModel!
+
+    let changeTierContractsInput: ChangeTierContractsInput?
     init(
         vm: ChangeTierViewModel
     ) {
         self.vm = vm
+        self.changeTierContractsInput = nil
+    }
+
+    init(
+        changeTierContractsInput: ChangeTierContractsInput
+    ) {
+        if changeTierContractsInput.contracts.count == 1, let first = changeTierContractsInput.contracts.first {
+            self.vm = .init(
+                changeTierInput: .init(source: changeTierContractsInput.source, contractId: first.contractId),
+                changeTierIntentModel: nil
+            )
+            self.changeTierContractsInput = nil
+        } else {
+            self.changeTierContractsInput = changeTierContractsInput
+        }
     }
 
     public static func getTiers(input: ChangeTierInput) async throws(ChangeTierError) -> ChangeTierIntentModel {
@@ -58,13 +76,54 @@ public struct ChangeTierInput: Equatable, Identifiable {
         contractId
     }
 
-    public init(source: ChangeTierSource, contractId: String) {
+    public init(
+        source: ChangeTierSource,
+        contractId: String
+    ) {
         self.source = source
         self.contractId = contractId
     }
 
     let source: ChangeTierSource
     let contractId: String
+}
+
+public struct ChangeTierContractsInput: Equatable, Identifiable {
+    public var id: String
+
+    public init(
+        source: ChangeTierSource,
+        contracts: [ChangeTierContract]
+    ) {
+        self.id = "\(Date().timeIntervalSince1970)"
+        self.source = source
+        self.contracts = contracts
+    }
+
+    let source: ChangeTierSource
+    let contracts: [ChangeTierContract]
+}
+
+public struct ChangeTierContract: Hashable {
+    public var contractId: String
+    public var contractDisplayName: String
+    public var contractExposureName: String
+
+    public init(
+        contractId: String,
+        contractDisplayName: String,
+        contractExposureName: String
+    ) {
+        self.contractId = contractId
+        self.contractDisplayName = contractDisplayName
+        self.contractExposureName = contractExposureName
+    }
+}
+
+extension ChangeTierContract: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        return .init(describing: ChangeTierContract.self)
+    }
 }
 
 public enum ChangeTierSource {
@@ -85,32 +144,26 @@ public struct ChangeTierNavigation: View {
         )
     }
 
+    public init(
+        input: ChangeTierContractsInput
+    ) {
+        self.changeTierNavigationVm = .init(changeTierContractsInput: input)
+    }
+
     public var body: some View {
         RouterHost(
             router: changeTierNavigationVm.router,
             options: [],
             tracking: ChangeTierTrackingType.changeTierLandingScreen
         ) {
-            ChangeTierLandingScreen(vm: changeTierNavigationVm.vm)
-                .withDismissButton()
-                .routerDestination(for: ChangeTierRouterActions.self) { action in
-                    switch action {
-                    case .summary:
-                        ChangeTierSummaryScreen(
-                            changeTierVm: changeTierNavigationVm.vm,
-                            changeTierNavigationVm: changeTierNavigationVm
-                        )
-                        .configureTitle(L10n.tierFlowSummaryTitle)
-                        .withDismissButton()
+            if let changeTierContracts = changeTierNavigationVm.changeTierContractsInput {
+                SelectInsuranceScreen(changeTierContractsInput: changeTierContracts)
+                    .routerDestination(for: ChangeTierContract.self) { changeTierContract in
+                        getScreen
                     }
-                }
-                .routerDestination(for: ChangeTierRouterActionsWithoutBackButton.self, options: [.hidesBackButton]) {
-                    action in
-                    switch action {
-                    case .commitTier:
-                        ChangeTierProcessingView(vm: changeTierNavigationVm.vm)
-                    }
-                }
+            } else {
+                getScreen
+            }
         }
         .environmentObject(changeTierNavigationVm)
         .detent(
@@ -158,6 +211,29 @@ public struct ChangeTierNavigation: View {
         ) { document in
             PDFPreview(document: .init(url: document.url, title: document.title))
         }
+    }
+
+    var getScreen: some View {
+        ChangeTierLandingScreen(vm: changeTierNavigationVm.vm)
+            .withDismissButton()
+            .routerDestination(for: ChangeTierRouterActions.self) { action in
+                switch action {
+                case .summary:
+                    ChangeTierSummaryScreen(
+                        changeTierVm: changeTierNavigationVm.vm,
+                        changeTierNavigationVm: changeTierNavigationVm
+                    )
+                    .configureTitle(L10n.offerUpdateSummaryTitle)
+                    .withDismissButton()
+                }
+            }
+            .routerDestination(for: ChangeTierRouterActionsWithoutBackButton.self, options: [.hidesBackButton]) {
+                action in
+                switch action {
+                case .commitTier:
+                    ChangeTierProcessingView(vm: changeTierNavigationVm.vm)
+                }
+            }
     }
 }
 

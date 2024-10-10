@@ -414,20 +414,21 @@ extension CGFloat {
 }
 
 extension CGFloat {
-    public static var padding4: CGFloat = 4
-    public static var padding6: CGFloat = 6
-    public static var padding8: CGFloat = 8
-    public static var padding10: CGFloat = 10
-    public static var padding12: CGFloat = 12
-    public static var padding16: CGFloat = 16
-    public static var padding24: CGFloat = 24
-    public static var padding32: CGFloat = 32
-    public static var padding40: CGFloat = 40
-    public static var padding48: CGFloat = 48
-    public static var padding56: CGFloat = 56
-    public static var padding64: CGFloat = 64
-    public static var padding72: CGFloat = 72
-    public static var padding80: CGFloat = 80
-    public static var padding88: CGFloat = 88
-    public static var padding96: CGFloat = 96
+    public static let padding2: CGFloat = 2
+    public static let padding4: CGFloat = 4
+    public static let padding6: CGFloat = 6
+    public static let padding8: CGFloat = 8
+    public static let padding10: CGFloat = 10
+    public static let padding12: CGFloat = 12
+    public static let padding16: CGFloat = 16
+    public static let padding24: CGFloat = 24
+    public static let padding32: CGFloat = 32
+    public static let padding40: CGFloat = 40
+    public static let padding48: CGFloat = 48
+    public static let padding56: CGFloat = 56
+    public static let padding64: CGFloat = 64
+    public static let padding72: CGFloat = 72
+    public static let padding80: CGFloat = 80
+    public static let padding88: CGFloat = 88
+    public static let padding96: CGFloat = 96
 }
