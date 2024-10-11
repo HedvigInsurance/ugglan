@@ -51,6 +51,7 @@ public class ChangeTierViewModel: ObservableObject {
             if newSelectedTier != selectedTier {
                 self.selectedDeductible = nil
             }
+            self.displayName = newSelectedTier?.productVariant?.displayName
             self.selectedTier = newSelectedTier
             self.newPremium = selectedTier?.premium
         }
