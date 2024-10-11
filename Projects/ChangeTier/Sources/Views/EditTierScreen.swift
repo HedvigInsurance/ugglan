@@ -11,7 +11,7 @@ struct EditTierScreen: View {
         vm: ChangeTierViewModel
     ) {
         self.vm = vm
-        self.selectedTier = vm.selectedTier?.name ?? vm.tiers.first?.name
+        self._selectedTier = State(initialValue: vm.selectedTier?.name ?? vm.tiers.first?.name)
     }
 
     var body: some View {
