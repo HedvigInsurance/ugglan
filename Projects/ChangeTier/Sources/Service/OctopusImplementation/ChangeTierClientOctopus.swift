@@ -88,6 +88,9 @@ public class ChangeTierClientOctopus: ChangeTierClient {
 
             return intentModel
         } catch let ex {
+            if let ex = ex as? ChangeTierError {
+                throw ex
+            }
             throw ChangeTierError.somethingWentWrong
         }
     }

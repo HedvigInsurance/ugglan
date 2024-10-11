@@ -24,6 +24,8 @@ struct StateView: View {
                 VStack(spacing: 0) {
                     hText(title)
                         .foregroundColor(hTextColor.Opaque.primary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, .padding32)
                     if let bodyText {
                         hText(bodyText)
                             .foregroundColor(hTextColor.Translucent.secondary)
@@ -108,7 +110,7 @@ public struct StateButton {
     }
 }
 
-#Preview{
+#Preview {
     StateView(
         type: .error,
         title: "title",

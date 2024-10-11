@@ -7,6 +7,7 @@ import hGraphQL
 public class ChangeTierViewModel: ObservableObject {
     @Inject private var service: ChangeTierClient
     @Published var viewState: ProcessingState = .loading
+    @Published var missingQuotes = false
     @Published var displayName: String?
     @Published var exposureName: String?
     private(set) var tiers: [Tier] = []
@@ -73,6 +74,7 @@ public class ChangeTierViewModel: ObservableObject {
 
     func fetchTiers() {
         withAnimation {
+            self.missingQuotes = false
             self.viewState = .loading
         }
         Task { @MainActor in
@@ -96,9 +98,17 @@ public class ChangeTierViewModel: ObservableObject {
                 withAnimation {
                     self.viewState = .success
                 }
-            } catch let error {
+            } catch let exception {
+                if let exception = exception as? ChangeTierError {
+                    if case .emptyList = exception {
+                        withAnimation {
+                            self.missingQuotes = true
+                        }
+                        return
+                    }
+                }
                 withAnimation {
-                    self.viewState = .error(errorMessage: error.localizedDescription)
+                    self.viewState = .error(errorMessage: exception.localizedDescription)
                 }
             }
         }

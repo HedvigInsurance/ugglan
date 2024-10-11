@@ -10,7 +10,7 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     @Published public var isCompareTiersPresented = false
     @Published public var isInsurableLimitPresented: InsurableLimits?
     @Published public var document: Document?
-
+    let useOwnNavigation: Bool
     let router: Router
 
     //make sure to set it!!!
@@ -19,10 +19,11 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     let changeTierContractsInput: ChangeTierContractsInput?
 
     init(
-        router: Router,
+        router: Router?,
         vm: ChangeTierViewModel
     ) {
-        self.router = router
+        self.router = router ?? Router()
+        self.useOwnNavigation = router == nil
         self.vm = vm
         self.changeTierContractsInput = nil
     }
@@ -41,12 +42,23 @@ public class ChangeTierNavigationViewModel: ObservableObject {
             self.changeTierContractsInput = changeTierContractsInput
         }
         router = Router()
+        self.useOwnNavigation = true
     }
 
     public static func getTiers(input: ChangeTierInputData) async throws -> ChangeTierIntentModel {
         let client: ChangeTierClient = Dependencies.shared.resolve()
         let data = try await client.getTier(input: input)
         return data
+    }
+
+    func missingQuotesGoBackPressed() {
+        if changeTierContractsInput != nil {
+            router.pop()
+        } else if useOwnNavigation {
+            router.dismiss()
+        } else {
+            router.pop()
+        }
     }
 }
 
@@ -149,28 +161,25 @@ public enum ChangeTierSource {
 
 public struct ChangeTierNavigation: View {
     @ObservedObject var changeTierNavigationVm: ChangeTierNavigationViewModel
-    private let useOwnNavigation: Bool
     public init(
         input: ChangeTierInput,
         router: Router? = nil
     ) {
         self.changeTierNavigationVm = .init(
-            router: router ?? Router(),
+            router: router,
             vm: .init(changeTierInput: input)
         )
-        useOwnNavigation = router == nil
     }
 
     public init(
         input: ChangeTierContractsInput
     ) {
         self.changeTierNavigationVm = .init(changeTierContractsInput: input)
-        useOwnNavigation = true
     }
 
     public var body: some View {
         Group {
-            if useOwnNavigation {
+            if changeTierNavigationVm.useOwnNavigation {
                 RouterHost(
                     router: changeTierNavigationVm.router,
                     options: [],
