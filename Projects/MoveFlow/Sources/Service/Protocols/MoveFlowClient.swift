@@ -8,5 +8,5 @@ public protocol MoveFlowClient {
         addressInputModel: AddressInputModel,
         houseInformationInputModel: HouseInformationInputModel
     ) async throws -> MovingFlowModel
-    func confirmMoveIntent(intentId: String) async throws
+    func confirmMoveIntent(intentId: String, homeQuoteId: String?) async throws
 }

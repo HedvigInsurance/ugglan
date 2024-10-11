@@ -102,30 +102,9 @@ public struct HelpCenterStartView: View {
                     .padding(.bottom, .padding4)
 
                 ForEach(quickActions, id: \.displayTitle) { quickAction in
-                    hSection {
-                        hRow {
-                            VStack(alignment: .leading, spacing: 0) {
-                                hText(quickAction.displayTitle)
-                                hText(quickAction.displaySubtitle, style: .label)
-                                    .foregroundColor(hTextColor.Opaque.secondary)
-
-                            }
-                            Spacer()
-                        }
-                        .withChevronAccessory
-                        .verticalPadding(12)
-                        .onTap {
-                            log.addUserAction(
-                                type: .click,
-                                name: "help center quick action",
-                                attributes: ["action": quickAction.id]
-                            )
-                            onQuickAction(quickAction)
-                        }
+                    QuickActionView(quickAction: quickAction) {
+                        onQuickAction(quickAction)
                     }
-                    .withoutHorizontalPadding
-                    .hSectionMinimumPadding
-                    .sectionContainerStyle(.opaque)
                 }
             }
         }
@@ -273,7 +252,7 @@ extension HelpCenterStartViewModel: UISearchControllerDelegate {
 
 }
 
-#Preview{
+#Preview {
     return HelpCenterStartView(
         onQuickAction: { _ in
 

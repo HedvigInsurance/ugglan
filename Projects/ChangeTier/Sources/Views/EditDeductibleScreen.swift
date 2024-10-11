@@ -19,7 +19,9 @@ struct EditDeductibleScreen: View {
             self.deductibles = vm.tiers.first(where: { $0.name == vm.selectedTier?.name })?.deductibles ?? []
         }
 
-        self._selectedDeductible = State(initialValue: vm.selectedDeductible?.id)
+        self._selectedDeductible = State(
+            initialValue: vm.selectedDeductible?.id ?? vm.selectedTier?.deductibles.first?.id
+        )
     }
 
     var body: some View {
@@ -35,7 +37,7 @@ struct EditDeductibleScreen: View {
                                         hText(displayTitle(deductible: deductible))
                                         Spacer()
                                         hPill(
-                                            text: deductible.premium?.formattedAmountPerMonth ?? "",
+                                            text: deductible.premium.formattedAmountPerMonth,
                                             color: .grey(translucent: false),
                                             colorLevel: .two
                                         )
@@ -116,7 +118,6 @@ extension EditDeductibleScreen: TitleView {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientOctopus() })
-    return EditDeductibleScreen(
-        vm: .init(changeTierInput: .init(source: .betterCoverage, contractId: "contractId"))
-    )
+    let input = ChangeTierInput.contractWithSource(data: .init(source: .betterCoverage, contractId: "contractId"))
+    return EditDeductibleScreen(vm: .init(changeTierInput: input))
 }

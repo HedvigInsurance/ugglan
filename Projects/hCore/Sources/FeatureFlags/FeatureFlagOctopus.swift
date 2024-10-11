@@ -14,7 +14,6 @@ public class FeatureFlagsUnleash: FeatureFlags {
     public var isDemoMode: Bool = false
     public var isConversationBasedMessagesEnabled: Bool = false
     public var loadingExperimentsSuccess: (Bool) -> Void = { _ in }
-    public var isMovingFlowEnabled: Bool = false
     public var isEditCoInsuredEnabled: Bool = false
     public var isTravelInsuranceEnabled: Bool = false
     public var isTerminationFlowEnabled: Bool = false
@@ -29,6 +28,9 @@ public class FeatureFlagsUnleash: FeatureFlags {
     public var osVersionTooLow: Bool = false
     public var emailPreferencesEnabled: Bool = false
     public var isTiersEnabled: Bool = false
+    public var movingFlowVersion: MovingFlowVersion?
+    public var isMovingFlowEnabled: Bool { movingFlowVersion != nil }
+
     public func setup(with context: [String: String], onComplete: @escaping (_ success: Bool) -> Void) {
         unleashClient?.unsubscribe(name: "ready")
         unleashClient?.unsubscribe(name: "update")
@@ -106,10 +108,6 @@ public class FeatureFlagsUnleash: FeatureFlags {
         }
         var featureFlags = [String: Bool]()
 
-        let movingFlowKey = "moving_flow"
-        isMovingFlowEnabled = unleashClient.isEnabled(name: movingFlowKey)
-        featureFlags[movingFlowKey] = isMovingFlowEnabled
-
         let editCoInsuredKey = "edit_coinsured"
         isEditCoInsuredEnabled = unleashClient.isEnabled(name: editCoInsuredKey)
         featureFlags[editCoInsuredKey] = isEditCoInsuredEnabled
@@ -152,6 +150,12 @@ public class FeatureFlagsUnleash: FeatureFlags {
             paymentType = .adyen
         } else {
             paymentType = .trustly
+        }
+        let movingFlowKey = "moving_flow_version"
+        let isMovingFlowEnabled = unleashClient.getVariant(name: movingFlowKey)
+        let movingFlowEnabledName = isMovingFlowEnabled.name
+        if let movingFlowVersion = MovingFlowVersion(rawValue: movingFlowEnabledName), isMovingFlowEnabled.enabled {
+            self.movingFlowVersion = movingFlowVersion
         }
 
         log.info(

@@ -62,7 +62,19 @@ struct MovingFlowHouseView: View {
 
         }
         .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
-        .hFormTitle(title: .init(.standard, .displayXSLong, L10n.changeAddressInformationAboutYourHouse))
+        .hFormTitle(
+            title: .init(
+                .small,
+                .heading2,
+                L10n.movingEmbarkTitle,
+                alignment: .leading
+            ),
+            subTitle: .init(
+                .standard,
+                .heading2,
+                L10n.changeAddressInformationAboutYourHouse
+            )
+        )
         .sectionContainerStyle(.transparent)
         .presentableStoreLensAnimation(.default)
     }
@@ -88,6 +100,7 @@ struct MovingFlowHouseView: View {
                 equals: $vm.type,
                 focusValue: .ancillaryArea,
                 placeholder: L10n.changeAddressAncillaryAreaLabel,
+                suffix: "m\u{00B2}",
                 error: $vm.ancillaryAreaError
             )
         }

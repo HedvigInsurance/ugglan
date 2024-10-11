@@ -11,16 +11,39 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     @Published public var isInsurableLimitPresented: InsurableLimits?
     @Published public var document: Document?
 
-    let router = Router()
-    var vm: ChangeTierViewModel
+    let router: Router
+
+    //make sure to set it!!!
+    var vm: ChangeTierViewModel!
+
+    let changeTierContractsInput: ChangeTierContractsInput?
 
     init(
+        router: Router,
         vm: ChangeTierViewModel
     ) {
+        self.router = router
         self.vm = vm
+        self.changeTierContractsInput = nil
     }
 
-    public static func getTiers(input: ChangeTierInput) async throws(ChangeTierError) -> ChangeTierIntentModel {
+    init(
+        changeTierContractsInput: ChangeTierContractsInput
+    ) {
+        if changeTierContractsInput.contracts.count == 1, let first = changeTierContractsInput.contracts.first {
+            self.vm = .init(
+                changeTierInput: .contractWithSource(
+                    data: .init(source: changeTierContractsInput.source, contractId: first.contractId)
+                )
+            )
+            self.changeTierContractsInput = nil
+        } else {
+            self.changeTierContractsInput = changeTierContractsInput
+        }
+        router = Router()
+    }
+
+    public static func getTiers(input: ChangeTierInputData) async throws -> ChangeTierIntentModel {
         let client: ChangeTierClient = Dependencies.shared.resolve()
         let data = try await client.getTier(input: input)
         return data
@@ -53,18 +76,69 @@ extension ChangeTierRouterActionsWithoutBackButton: TrackingViewNameProtocol {
     }
 }
 
-public struct ChangeTierInput: Equatable, Identifiable {
+public enum ChangeTierInput: Identifiable, Equatable {
+    public var id: String {
+        return UUID().uuidString
+    }
+    public static func == (lhs: ChangeTierInput, rhs: ChangeTierInput) -> Bool {
+        return lhs.id != rhs.id
+    }
+    case contractWithSource(data: ChangeTierInputData)
+    case existingIntent(intent: ChangeTierIntentModel, onSelect: ((Tier, Deductible)) -> Void)
+}
+public struct ChangeTierInputData: Equatable, Identifiable {
     public var id: String {
         contractId
     }
 
-    public init(source: ChangeTierSource, contractId: String) {
+    public init(
+        source: ChangeTierSource,
+        contractId: String
+    ) {
         self.source = source
         self.contractId = contractId
     }
 
     let source: ChangeTierSource
     let contractId: String
+}
+
+public struct ChangeTierContractsInput: Equatable, Identifiable {
+    public var id: String
+
+    public init(
+        source: ChangeTierSource,
+        contracts: [ChangeTierContract]
+    ) {
+        self.id = "\(Date().timeIntervalSince1970)"
+        self.source = source
+        self.contracts = contracts
+    }
+
+    let source: ChangeTierSource
+    let contracts: [ChangeTierContract]
+}
+
+public struct ChangeTierContract: Hashable {
+    public var contractId: String
+    public var contractDisplayName: String
+    public var contractExposureName: String
+
+    public init(
+        contractId: String,
+        contractDisplayName: String,
+        contractExposureName: String
+    ) {
+        self.contractId = contractId
+        self.contractDisplayName = contractDisplayName
+        self.contractExposureName = contractExposureName
+    }
+}
+
+extension ChangeTierContract: TrackingViewNameProtocol {
+    public var nameForTracking: String {
+        return .init(describing: ChangeTierContract.self)
+    }
 }
 
 public enum ChangeTierSource {
@@ -75,42 +149,38 @@ public enum ChangeTierSource {
 
 public struct ChangeTierNavigation: View {
     @ObservedObject var changeTierNavigationVm: ChangeTierNavigationViewModel
-
+    private let useOwnNavigation: Bool
     public init(
         input: ChangeTierInput,
-        existingModel: ChangeTierIntentModel? = nil
+        router: Router? = nil
     ) {
         self.changeTierNavigationVm = .init(
-            vm: .init(changeTierInput: input, changeTierIntentModel: existingModel)
+            router: router ?? Router(),
+            vm: .init(changeTierInput: input)
         )
+        useOwnNavigation = router == nil
+    }
+
+    public init(
+        input: ChangeTierContractsInput
+    ) {
+        self.changeTierNavigationVm = .init(changeTierContractsInput: input)
+        useOwnNavigation = true
     }
 
     public var body: some View {
-        RouterHost(
-            router: changeTierNavigationVm.router,
-            options: [],
-            tracking: ChangeTierTrackingType.changeTierLandingScreen
-        ) {
-            ChangeTierLandingScreen(vm: changeTierNavigationVm.vm)
-                .withDismissButton()
-                .routerDestination(for: ChangeTierRouterActions.self) { action in
-                    switch action {
-                    case .summary:
-                        ChangeTierSummaryScreen(
-                            changeTierVm: changeTierNavigationVm.vm,
-                            changeTierNavigationVm: changeTierNavigationVm
-                        )
-                        .configureTitle(L10n.offerUpdateSummaryTitle)
-                        .withDismissButton()
-                    }
+        Group {
+            if useOwnNavigation {
+                RouterHost(
+                    router: changeTierNavigationVm.router,
+                    options: [],
+                    tracking: ChangeTierTrackingType.changeTierLandingScreen
+                ) {
+                    wrapperHost
                 }
-                .routerDestination(for: ChangeTierRouterActionsWithoutBackButton.self, options: [.hidesBackButton]) {
-                    action in
-                    switch action {
-                    case .commitTier:
-                        ChangeTierProcessingView(vm: changeTierNavigationVm.vm)
-                    }
-                }
+            } else {
+                wrapperHost
+            }
         }
         .environmentObject(changeTierNavigationVm)
         .detent(
@@ -158,6 +228,42 @@ public struct ChangeTierNavigation: View {
         ) { document in
             PDFPreview(document: .init(url: document.url, title: document.title))
         }
+    }
+
+    private var wrapperHost: some View {
+        Group {
+            if let changeTierContracts = changeTierNavigationVm.changeTierContractsInput {
+                SelectInsuranceScreen(changeTierContractsInput: changeTierContracts)
+                    .routerDestination(for: ChangeTierContract.self) { changeTierContract in
+                        getScreen
+                    }
+            } else {
+                getScreen
+            }
+        }
+    }
+    var getScreen: some View {
+
+        ChangeTierLandingScreen(vm: changeTierNavigationVm.vm)
+            .withDismissButton()
+            .routerDestination(for: ChangeTierRouterActions.self) { action in
+                switch action {
+                case .summary:
+                    ChangeTierSummaryScreen(
+                        changeTierVm: changeTierNavigationVm.vm,
+                        changeTierNavigationVm: changeTierNavigationVm
+                    )
+                    .configureTitle(L10n.offerUpdateSummaryTitle)
+                    .withDismissButton()
+                }
+            }
+            .routerDestination(for: ChangeTierRouterActionsWithoutBackButton.self, options: [.hidesBackButton]) {
+                action in
+                switch action {
+                case .commitTier:
+                    ChangeTierProcessingView(vm: changeTierNavigationVm.vm)
+                }
+            }
     }
 }
 

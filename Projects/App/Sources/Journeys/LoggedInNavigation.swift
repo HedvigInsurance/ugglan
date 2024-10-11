@@ -647,11 +647,12 @@ class LoggedInNavigationViewModel: ObservableObject {
                 openUrl(url: url)
             case .changeTier:
                 let contractId = self.getContractId(from: url)
-
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
                 if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
-                        self?.isChangeTierPresented = .init(source: .changeTier, contractId: contractId)
+                        self?.isChangeTierPresented = .contractWithSource(
+                            data: .init(source: .changeTier, contractId: contractId)
+                        )
                     }
                 }
             }

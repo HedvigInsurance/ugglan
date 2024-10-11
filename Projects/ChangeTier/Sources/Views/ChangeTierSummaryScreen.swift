@@ -41,9 +41,7 @@ extension ChangeTierViewModel {
                     },
                     displayItems: displayItems,
                     insuranceLimits: self.selectedTier?.productVariant?.insurableLimits ?? [],
-                    onLimitTap: { [weak self] limit in
-                        changeTierNavigationVm.isInsurableLimitPresented = limit
-                    }
+                    typeOfContract: self.typeOfContract
                 )
             ],
             total: self.newPremium ?? .init(amount: "", currency: ""),
@@ -63,10 +61,12 @@ extension ChangeTierViewModel {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
-    let changeTierInput: ChangeTierInput = .init(source: .changeTier, contractId: "contractId")
-
+    let changeTierInput: ChangeTierInput = .contractWithSource(
+        data: .init(source: .betterCoverage, contractId: "contractId")
+    )
+    let changeTierVm = ChangeTierViewModel(changeTierInput: changeTierInput)
     return ChangeTierSummaryScreen(
-        changeTierVm: .init(changeTierInput: changeTierInput),
-        changeTierNavigationVm: .init(vm: .init(changeTierInput: changeTierInput))
+        changeTierVm: changeTierVm,
+        changeTierNavigationVm: .init(router: Router(), vm: changeTierVm)
     )
 }

@@ -4,14 +4,15 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-class ChangeTierViewModel: ObservableObject {
+public class ChangeTierViewModel: ObservableObject {
     @Inject private var service: ChangeTierClient
     @Published var viewState: ProcessingState = .loading
     @Published var displayName: String?
     @Published var exposureName: String?
     private(set) var tiers: [Tier] = []
-    private var changeTierInput: ChangeTierInput
+    private(set) var changeTierInput: ChangeTierInput
     var activationDate: Date?
+    var typeOfContract: TypeOfContract?
 
     @Published var currentPremium: MonetaryAmount?
     var currentTier: Tier?
@@ -36,12 +37,11 @@ class ChangeTierViewModel: ObservableObject {
         return !(selectedTier?.deductibles.isEmpty ?? true) && selectedTier != nil
     }
 
-    init(
-        changeTierInput: ChangeTierInput,
-        changeTierIntentModel: ChangeTierIntentModel? = nil
+    public init(
+        changeTierInput: ChangeTierInput
     ) {
         self.changeTierInput = changeTierInput
-        fetchTiers(changeTierIntentModel)
+        fetchTiers()
     }
 
     @MainActor
@@ -70,18 +70,13 @@ class ChangeTierViewModel: ObservableObject {
         }
     }
 
-    func fetchTiers(_ existingModel: ChangeTierIntentModel?) {
+    func fetchTiers() {
         withAnimation {
             self.viewState = .loading
         }
         Task { @MainActor in
             do {
-                var data: ChangeTierIntentModel!
-                if let existingModel = existingModel {
-                    data = existingModel
-                } else {
-                    data = try await service.getTier(input: changeTierInput)
-                }
+                var data = try await getData()
                 self.tiers = data.tiers
                 self.displayName = data.tiers.first?.productVariant?.displayName
                 self.exposureName = data.tiers.first?.exposureName
@@ -91,10 +86,12 @@ class ChangeTierViewModel: ObservableObject {
                 self.currentDeductible = data.currentDeductible
                 self.canEditTier = data.canEditTier
                 self.activationDate = data.activationDate
+                self.typeOfContract = data.typeOfContract
 
-                self.selectedTier = currentTier
-                self.selectedDeductible = currentDeductible
+                self.selectedTier = data.selectedTier ?? currentTier
+                self.selectedDeductible = data.selectedDeductible ?? currentDeductible
                 self.newPremium = selectedDeductible?.premium
+
                 withAnimation {
                     self.viewState = .success
                 }
@@ -103,6 +100,15 @@ class ChangeTierViewModel: ObservableObject {
                     self.viewState = .error(errorMessage: error.localizedDescription)
                 }
             }
+        }
+    }
+
+    private func getData() async throws -> ChangeTierIntentModel {
+        switch changeTierInput {
+        case let .contractWithSource(source):
+            return try await service.getTier(input: source)
+        case let .existingIntent(intent, _):
+            return intent
         }
     }
 

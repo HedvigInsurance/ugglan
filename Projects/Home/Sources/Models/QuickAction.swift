@@ -4,10 +4,12 @@ import hCore
 public enum QuickAction: Codable, Equatable, Hashable {
     case sickAbroad(partners: [SickAbroadPartner])
     case firstVet(partners: [FirstVetPartner])
+    case editInsurance(actions: EditInsuranceActionsWrapper)
     case travelInsurance
+    case connectPayments
     case changeAddress
     case editCoInsured
-    case connectPayments
+    case upgradeCoverage
     case cancellation
 
     public var displayTitle: String {
@@ -16,14 +18,18 @@ public enum QuickAction: Codable, Equatable, Hashable {
             return L10n.hcQuickActionsSickAbroadTitle
         case .firstVet:
             return L10n.hcQuickActionsFirstvetTitle
+        case .editInsurance:
+            return L10n.hcQuickActionsEditInsuranceTitle
         case .travelInsurance:
             return L10n.hcQuickActionsTravelCertificate
+        case .connectPayments:
+            return L10n.hcQuickActionsPaymentsTitle
         case .changeAddress:
             return L10n.hcQuickActionsChangeAddressTitle
         case .editCoInsured:
             return L10n.hcQuickActionsCoInsuredTitle
-        case .connectPayments:
-            return L10n.hcQuickActionsPaymentsTitle
+        case .upgradeCoverage:
+            return L10n.hcQuickActionsUpgradeCoverageTitle
         case .cancellation:
             return L10n.hcQuickActionsTerminationTitle
         }
@@ -35,14 +41,18 @@ public enum QuickAction: Codable, Equatable, Hashable {
             return L10n.hcQuickActionsSickAbroadSubtitle
         case .firstVet:
             return L10n.hcQuickActionsFirstvetSubtitle
+        case .editInsurance:
+            return L10n.hcQuickActionsEditInsuranceSubtitle
         case .travelInsurance:
             return L10n.hcQuickActionsTravelCertificateSubtitle
+        case .connectPayments:
+            return L10n.hcQuickActionsPaymentsSubtitle
         case .changeAddress:
             return L10n.hcQuickActionsChangeAddressSubtitle
         case .editCoInsured:
             return L10n.hcQuickActionsCoInsuredSubtitle
-        case .connectPayments:
-            return L10n.hcQuickActionsPaymentsSubtitle
+        case .upgradeCoverage:
+            return L10n.hcQuickActionsUpgradeCoverageSubtitle
         case .cancellation:
             return L10n.hcQuickActionsTerminationSubtitle
         }
@@ -52,6 +62,57 @@ public enum QuickAction: Codable, Equatable, Hashable {
         return displayTitle
     }
 }
+
+extension QuickAction {
+    var asEditType: EditType? {
+        switch self {
+        case .sickAbroad:
+            return nil
+        case .firstVet:
+            return nil
+        case .editInsurance:
+            return nil
+        case .travelInsurance:
+            return nil
+        case .connectPayments:
+            return nil
+        case .changeAddress:
+            return .changeAddress
+        case .editCoInsured:
+            return .coInsured
+        case .upgradeCoverage:
+            return .changeTier
+        case .cancellation:
+            return .cancellation
+        }
+    }
+}
+
+extension EditType {
+    var asQuickAction: QuickAction {
+        switch self {
+        case .changeAddress:
+            return .changeAddress
+        case .coInsured:
+            return .editCoInsured
+        case .changeTier:
+            return .upgradeCoverage
+        case .cancellation:
+            return .cancellation
+        }
+    }
+}
+
+public struct EditInsuranceActionsWrapper: Codable, Equatable, Hashable, Identifiable {
+    public let id: String
+    let quickActions: [QuickAction]
+
+    init(quickActions: [QuickAction]) {
+        self.id = quickActions.compactMap({ $0.id }).joined(separator: ",")
+        self.quickActions = quickActions
+    }
+}
+
 public struct SickAbroadPartner: Codable, Equatable, Hashable, Identifiable {
     public let id: String
     public let imageUrl: String?

@@ -11,7 +11,7 @@ struct EditTierScreen: View {
         vm: ChangeTierViewModel
     ) {
         self.vm = vm
-        self._selectedTier = State(initialValue: vm.selectedTier?.name)
+        self._selectedTier = State(initialValue: vm.selectedTier?.name ?? vm.tiers.first?.name)
     }
 
     var body: some View {
@@ -102,5 +102,6 @@ extension EditTierScreen: TitleView {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
-    return EditTierScreen(vm: .init(changeTierInput: .init(source: .betterCoverage, contractId: "contractId")))
+    let input = ChangeTierInput.contractWithSource(data: .init(source: .betterCoverage, contractId: "contractId"))
+    return EditTierScreen(vm: .init(changeTierInput: input))
 }

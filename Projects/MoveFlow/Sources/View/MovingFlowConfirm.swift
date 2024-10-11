@@ -18,27 +18,28 @@ struct MovingFlowConfirm: View {
             }
         ) { movingFlowModel in
             if let movingFlowModel {
-                let contractInfo = movingFlowModel.quotes.map({
-                    QuoteSummaryViewModel.ContractInfo(
-                        id: $0.id,
-                        displayName: $0.displayName,
-                        exposureName: $0.exposureName ?? "",
-                        newPremium: $0.premium,
-                        currentPremium: $0.premium,
-                        documents: $0.documents.map({ .init(displayName: $0.displayName, url: $0.url, type: .unknown) }
-                        ),
-                        onDocumentTap: { document in
-                            if let url = URL(string: document.url) {
-                                movingFlowNavigationVm.document = .init(url: url, title: document.displayName)
-                            }
-                        },
-                        displayItems: $0.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }),
-                        insuranceLimits: $0.insurableLimits,
-                        onLimitTap: { limit in
-
-                        }
-                    )
-                })
+                let contractInfo = getQuotes(from: movingFlowModel)
+                    .map({
+                        QuoteSummaryViewModel.ContractInfo(
+                            id: $0.id,
+                            displayName: $0.displayName,
+                            exposureName: $0.exposureName ?? "",
+                            newPremium: $0.premium,
+                            currentPremium: $0.premium,
+                            documents: $0.documents.map({
+                                .init(displayName: $0.displayName, url: $0.url, type: .unknown)
+                            }),
+                            onDocumentTap: { document in
+                                if let url = URL(string: document.url) {
+                                    movingFlowNavigationVm.document = .init(url: url, title: document.displayName)
+                                }
+                            },
+                            displayItems: $0.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }
+                            ),
+                            insuranceLimits: $0.insurableLimits,
+                            typeOfContract: $0.contractType
+                        )
+                    })
 
                 let vm = QuoteSummaryViewModel(
                     contract: contractInfo,
@@ -55,6 +56,14 @@ struct MovingFlowConfirm: View {
                 QuoteSummaryScreen(vm: vm)
             }
         }
+    }
+
+    private func getQuotes(from data: MovingFlowModel) -> [Quote] {
+        var allQuotes = data.quotes
+        if let homeQuote = data.homeQuote {
+            allQuotes.insert(homeQuote, at: 0)
+        }
+        return allQuotes
     }
 }
 
@@ -77,6 +86,7 @@ struct MovingFlowConfirm_Previews: PreviewProvider {
                     maxMovingDate: "2025-10-01",
                     suggestedNumberCoInsured: 3,
                     currentHomeAddresses: [],
+                    potentialHomeQuotes: [],
                     quotes: [],
                     faqs: [],
                     extraBuildingTypes: []

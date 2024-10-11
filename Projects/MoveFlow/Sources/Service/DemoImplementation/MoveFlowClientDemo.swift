@@ -13,6 +13,7 @@ public class MoveFlowClientDemo: MoveFlowClient {
             maxMovingDate: "2025-06-01",
             suggestedNumberCoInsured: 2,
             currentHomeAddresses: [],
+            potentialHomeQuotes: [],
             quotes: [],
             faqs: [],
             extraBuildingTypes: []
@@ -35,12 +36,13 @@ public class MoveFlowClientDemo: MoveFlowClient {
             maxMovingDate: "2025-06-01",
             suggestedNumberCoInsured: 2,
             currentHomeAddresses: [],
+            potentialHomeQuotes: [],
             quotes: [],
             faqs: [],
             extraBuildingTypes: []
         )
     }
 
-    public func confirmMoveIntent(intentId: String) async throws {
+    public func confirmMoveIntent(intentId: String, homeQuoteId: String?) async throws {
     }
 }

@@ -5,22 +5,25 @@ import hGraphQL
 public class ChangeTierClientDemo: ChangeTierClient {
     public init() {}
 
-    public func getTier(input: ChangeTierInput) async throws(ChangeTierError) -> ChangeTierIntentModel {
+    public func getTier(input: ChangeTierInputData) async throws -> ChangeTierIntentModel {
 
         let deductibles: [Deductible] = [
             .init(
+                id: "id1",
                 deductibleAmount: .init(amount: "1000", currency: "SEK"),
                 deductiblePercentage: 0,
                 subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
                 premium: .init(amount: "1167", currency: "SEK")
             ),
             .init(
+                id: "id2",
                 deductibleAmount: .init(amount: "2000", currency: "SEK"),
                 deductiblePercentage: 25,
                 subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
                 premium: .init(amount: "999", currency: "SEK")
             ),
             .init(
+                id: "id3",
                 deductibleAmount: .init(amount: "3000", currency: "SEK"),
                 deductiblePercentage: 15,
                 subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
@@ -80,11 +83,7 @@ public class ChangeTierClientDemo: ChangeTierClient {
                         displayNameTier: "Bas",
                         tierDescription: "Vårt mellanpaket med hög ersättning."
                     ),
-                    FAQs: [
-                        .init(title: "question 1", description: "..."),
-                        .init(title: "question 2", description: "..."),
-                        .init(title: "question 3", description: "..."),
-                    ]
+                    FAQs: nil
                 ),
                 .init(
                     id: "i2",
@@ -129,11 +128,7 @@ public class ChangeTierClientDemo: ChangeTierClient {
                         displayNameTier: "Standard",
                         tierDescription: "Vårt mellanpaket med hög ersättning."
                     ),
-                    FAQs: [
-                        .init(title: "question 1", description: "..."),
-                        .init(title: "question 2", description: "..."),
-                        .init(title: "question 3", description: "..."),
-                    ]
+                    FAQs: nil
                 ),
                 .init(
                     id: "id3",
@@ -178,11 +173,7 @@ public class ChangeTierClientDemo: ChangeTierClient {
                         displayNameTier: "Max",
                         tierDescription: "Vårt mellanpaket med hög ersättning."
                     ),
-                    FAQs: [
-                        .init(title: "question 1", description: "..."),
-                        .init(title: "question 2", description: "..."),
-                        .init(title: "question 3", description: "..."),
-                    ]
+                    FAQs: nil
                 ),
             ],
             currentPremium: .init(amount: "449", currency: "SEK"),
@@ -213,14 +204,18 @@ public class ChangeTierClientDemo: ChangeTierClient {
                 ]
             ),
             currentDeductible: .init(
+                id: "id1",
                 deductibleAmount: .init(amount: "449", currency: "SEK"),
                 deductiblePercentage: 25,
                 subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
                 premium: .init(amount: "999", currency: "SEK")
             ),
-            canEditTier: true
+            selectedTier: nil,
+            selectedDeductible: nil,
+            canEditTier: true,
+            typeOfContract: .seApartmentBrf
         )
     }
 
-    public func commitTier(quoteId: String) async throws(ChangeTierError) {}
+    public func commitTier(quoteId: String) async throws {}
 }

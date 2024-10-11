@@ -2,25 +2,28 @@ import SwiftUI
 import hCore
 import hGraphQL
 
-struct PriceField: View {
+public struct PriceField: View {
     let newPremium: MonetaryAmount?
     let currentPremium: MonetaryAmount?
 
-    var body: some View {
+    public init(
+        newPremium: MonetaryAmount?,
+        currentPremium: MonetaryAmount?
+    ) {
+        self.newPremium = newPremium
+        self.currentPremium = currentPremium
+    }
 
+    public var body: some View {
         HStack(alignment: .top) {
             hText(L10n.tierFlowTotal)
             Spacer()
             VStack(alignment: .trailing, spacing: 0) {
-                if let newPremium = newPremium {
-                    hText(newPremium.formattedAmountPerMonth)
-                } else {
-                    hText(currentPremium?.formattedAmountPerMonth ?? "")
-                }
+                hText(newPremium?.formattedAmountPerMonth ?? currentPremium?.formattedAmountPerMonth ?? "")
 
-                if newPremium != currentPremium {
+                if let currentPremium, let newPremium, newPremium != currentPremium {
                     hText(
-                        L10n.tierFlowPreviousPrice(currentPremium?.formattedAmountPerMonth ?? ""),
+                        L10n.tierFlowPreviousPrice(currentPremium.formattedAmountPerMonth),
                         style: .label
                     )
                     .foregroundColor(hTextColor.Opaque.secondary)
