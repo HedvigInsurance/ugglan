@@ -159,11 +159,9 @@ public class ChangeTierClientOctopus: ChangeTierClient {
             allTiers.append(
                 .init(
                     id: allQuotesWithNameX.first?.id ?? "",
-                    name: allQuotesWithNameX.first?.tierName ?? "",
+                    name: allQuotesWithNameX.first?.productVariant.displayNameTier ?? "",
                     level: allQuotesWithNameX.first?.tierLevel ?? 0,
                     deductibles: allDeductiblesForX,
-                    premium: .init(optionalFragment: allQuotesWithNameX.first?.premium.fragments.moneyFragment)
-                        ?? .init(amount: "0", currency: "SEK"),
                     displayItems: displayItems,
                     exposureName: currentContract.exposureDisplayName,
                     productVariant: .init(

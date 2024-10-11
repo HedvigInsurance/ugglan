@@ -285,7 +285,6 @@ extension ChangeTierIntentModel {
                     name: firstQuote.tierName,
                     level: firstQuote.tierLevel,
                     deductibles: deductibles,
-                    premium: .init(fragment: firstQuote.premium.fragments.moneyFragment),
                     displayItems: [],
                     exposureName: firstQuote.exposureName,
                     productVariant: ProductVariant(data: firstQuote.productVariant.fragments.productVariantFragment),
