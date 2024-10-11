@@ -103,7 +103,12 @@ public struct QuoteSummaryScreen: View {
                 }
             }
             .hFormAttachToBottom {
-                buttonComponent(proxy: proxy)
+                VStack {
+                    if vm.contracts.count > 1 {
+                        noticeComponent
+                    }
+                    buttonComponent(proxy: proxy)
+                }
             }
         }
         .background(
@@ -183,6 +188,17 @@ public struct QuoteSummaryScreen: View {
                 }
             )
             .hCardWithoutSpacing
+        }
+        .sectionContainerStyle(.transparent)
+    }
+
+    private var noticeComponent: some View {
+        hSection {
+            InfoCard(
+                text:
+                    L10n.changeAddressOtherInsurancesInfoText,
+                type: .info
+            )
         }
         .sectionContainerStyle(.transparent)
     }
