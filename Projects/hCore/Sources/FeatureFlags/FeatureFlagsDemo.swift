@@ -5,7 +5,6 @@ public class FeatureFlagsDemo: FeatureFlags {
 
     public var isDemoMode: Bool = true
     public var loadingExperimentsSuccess: (Bool) -> Void = { _ in }
-    public var isMovingFlowEnabled: Bool = false
     public var isEditCoInsuredEnabled: Bool = false
     public var isTravelInsuranceEnabled: Bool = false
     public var isTerminationFlowEnabled: Bool = false
@@ -20,7 +19,8 @@ public class FeatureFlagsDemo: FeatureFlags {
     public var osVersionTooLow: Bool = false
     public var emailPreferencesEnabled: Bool = false
     public var isTiersEnabled: Bool = false
-    public var isMovingFlowWithTiersEnabled: Bool = false
+    public var movingFlowVersion: MovingFlowVersion?
+    public var isMovingFlowEnabled: Bool { movingFlowVersion != nil }
 
     public func setup(with context: [String: String], onComplete: @escaping (_ success: Bool) -> Void) {
         loadingExperimentsSuccess = onComplete

@@ -17,7 +17,8 @@ public class MoveFlowClientOctopus: MoveFlowClient {
         let data = try await octopus.client.perform(mutation: mutation)
 
         if let moveIntentFragment = data.moveIntentCreate.moveIntent?.fragments.moveIntentFragment {
-            return MovingFlowModel(from: moveIntentFragment)
+            let apiVersion = Dependencies.featureFlags().movingFlowVersion?.graphQLVersion ?? .v1
+            return MovingFlowModel(from: moveIntentFragment, apiVersion: apiVersion)
         } else if let userError = data.moveIntentCreate.userError?.message {
             throw MovingFlowError.serverError(message: userError)
         }
@@ -29,10 +30,7 @@ public class MoveFlowClientOctopus: MoveFlowClient {
         addressInputModel: AddressInputModel,
         houseInformationInputModel: HouseInformationInputModel
     ) async throws -> MovingFlowModel {
-        let isMovingFlowWithTiersEnabled = Dependencies.featureFlags().isMovingFlowWithTiersEnabled
-        let apiVersion: OctopusGraphQL.MoveApiVersion =
-            isMovingFlowWithTiersEnabled
-            ? OctopusGraphQL.MoveApiVersion.v2TiersAndDeductibles : OctopusGraphQL.MoveApiVersion.v1
+        let apiVersion = Dependencies.featureFlags().movingFlowVersion?.graphQLVersion ?? .v1
         let moveIntentRequestInput = OctopusGraphQL.MoveIntentRequestInput(
             apiVersion: .init(apiVersion),
             moveToAddress: .init(
@@ -54,7 +52,7 @@ public class MoveFlowClientOctopus: MoveFlowClient {
 
         let data = try await octopus.client.perform(mutation: mutation)
         if let moveIntentFragment = data.moveIntentRequest.moveIntent?.fragments.moveIntentFragment {
-            return MovingFlowModel(from: moveIntentFragment)
+            return MovingFlowModel(from: moveIntentFragment, apiVersion: apiVersion)
         } else if let userError = data.moveIntentRequest.userError?.message {
             throw MovingFlowError.serverError(message: userError)
         }
@@ -111,7 +109,7 @@ public class MoveFlowClientOctopus: MoveFlowClient {
 }
 
 extension MovingFlowModel {
-    init(from data: OctopusGraphQL.MoveIntentFragment) {
+    init(from data: OctopusGraphQL.MoveIntentFragment, apiVersion: OctopusGraphQL.MoveApiVersion) {
         id = data.id
         let minMovingDate = data.minMovingDate
         let maxMovingDate = data.maxMovingDate
@@ -139,23 +137,22 @@ extension MovingFlowModel {
         currentHomeAddresses = data.currentHomeAddresses.compactMap({
             MoveAddress(from: $0.fragments.moveAddressFragment)
         })
-        let quotes = data.fragments.quoteFragment.quotes
 
-        self.potentialHomeQuotes = data.homeQuotes?.compactMap({ Quote(from: $0) }) ?? []
-
-        if !quotes.isEmpty {
-            self.quotes = data.fragments.quoteFragment.quotes.compactMap({ Quote(from: $0) })
-        } else if let homeQuotes = data.fragments.quoteFragment.mtaQuotes {
-            self.quotes = homeQuotes.compactMap({ Quote(from: $0) })
-        } else {
-            self.quotes = []
+        switch apiVersion {
+        case .v1:
+            quotes = data.fragments.quoteFragment.quotes.compactMap({ Quote(from: $0) })
+            changeTier = nil
+            potentialHomeQuotes = []
+        case .v2TiersAndDeductibles:
+            quotes = data.fragments.quoteFragment.mtaQuotes?.compactMap({ Quote(from: $0) }) ?? []
+            changeTier = {
+                if let data = data.fragments.quoteFragment.homeQuotes, !data.isEmpty {
+                    return ChangeTierIntentModel.initWith(data: data)
+                }
+                return nil
+            }()
+            potentialHomeQuotes = data.homeQuotes?.compactMap({ Quote(from: $0) }) ?? []
         }
-        changeTier = {
-            if let data = data.fragments.quoteFragment.homeQuotes, !data.isEmpty {
-                return ChangeTierIntentModel.initWith(data: data)
-            }
-            return nil
-        }()
 
         self.extraBuildingTypes = data.extraBuildingTypes.compactMap({ $0.rawValue })
 
@@ -322,4 +319,15 @@ extension ChangeTierIntentModel {
         return intentModel
     }
 
+}
+
+extension MovingFlowVersion {
+    var graphQLVersion: OctopusGraphQL.MoveApiVersion {
+        switch self {
+        case .v1:
+            return .v1
+        case .v2:
+            return .v2TiersAndDeductibles
+        }
+    }
 }
