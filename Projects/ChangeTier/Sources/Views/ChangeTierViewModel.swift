@@ -77,20 +77,31 @@ public class ChangeTierViewModel: ObservableObject {
         }
         Task { @MainActor in
             do {
-                var data = try await getData()
+                let data = try await getData()
                 self.tiers = data.tiers
+
                 self.displayName = data.tiers.first?.productVariant?.displayName
                 self.exposureName = data.tiers.first?.exposureName
                 self.currentPremium = data.currentPremium
-
                 self.currentTier = data.currentTier
                 self.currentDeductible = data.currentDeductible
-                self.canEditTier = data.canEditTier
                 self.activationDate = data.activationDate
                 self.typeOfContract = data.typeOfContract
 
-                self.selectedTier = data.selectedTier ?? currentTier
-                self.selectedDeductible = data.selectedDeductible ?? currentDeductible
+                if tiers.count == 1 {
+                    self.selectedTier = tiers.first
+                    self.canEditTier = false
+                } else {
+                    self.selectedTier = data.selectedTier ?? currentTier
+                    self.canEditTier = data.canEditTier
+                }
+
+                if selectedTier?.deductibles.count == 1 {
+                    self.selectedDeductible = selectedTier?.deductibles.first
+                } else {
+                    self.selectedDeductible = data.selectedDeductible ?? currentDeductible
+                }
+
                 self.newPremium = selectedDeductible?.premium
 
                 withAnimation {

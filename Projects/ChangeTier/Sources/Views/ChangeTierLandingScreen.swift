@@ -108,6 +108,8 @@ public struct ChangeTierLandingScreen: View {
                         placeholder: L10n.tierFlowCoverageLabel
                     ) {}
                     .hFieldLockedState
+                    .colorScheme(.light)
+                    .hWithTransparentColor
                     .hFieldTrailingView {
                         Image(uiImage: hCoreUIAssets.lock.image)
                             .foregroundColor(hTextColor.Opaque.secondary)
