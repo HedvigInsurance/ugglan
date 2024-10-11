@@ -57,7 +57,6 @@ public class ChangeTierClientDemo: ChangeTierClient {
                                 id: "id1",
                                 title: "title1",
                                 description: "description1",
-                                info: nil,
                                 color: nil,
                                 covered: []
                             ),
@@ -65,7 +64,6 @@ public class ChangeTierClientDemo: ChangeTierClient {
                                 id: "id2",
                                 title: "title2",
                                 description: "description2",
-                                info: nil,
                                 color: nil,
                                 covered: []
                             ),
@@ -73,7 +71,6 @@ public class ChangeTierClientDemo: ChangeTierClient {
                                 id: "id3",
                                 title: "title3",
                                 description: "description3",
-                                info: nil,
                                 color: nil,
                                 covered: []
                             ),
@@ -103,7 +100,6 @@ public class ChangeTierClientDemo: ChangeTierClient {
                                 id: "id1",
                                 title: "title1",
                                 description: "description1",
-                                info: nil,
                                 color: nil,
                                 covered: []
                             ),
@@ -111,7 +107,6 @@ public class ChangeTierClientDemo: ChangeTierClient {
                                 id: "id2",
                                 title: "title2",
                                 description: "description2",
-                                info: nil,
                                 color: nil,
                                 covered: []
                             ),
@@ -119,7 +114,6 @@ public class ChangeTierClientDemo: ChangeTierClient {
                                 id: "id3",
                                 title: "title3",
                                 description: "description3",
-                                info: nil,
                                 color: nil,
                                 covered: []
                             ),
@@ -149,7 +143,6 @@ public class ChangeTierClientDemo: ChangeTierClient {
                                 id: "id1",
                                 title: "title1",
                                 description: "description1",
-                                info: nil,
                                 color: nil,
                                 covered: []
                             ),
@@ -157,7 +150,6 @@ public class ChangeTierClientDemo: ChangeTierClient {
                                 id: "id2",
                                 title: "title2",
                                 description: "description2",
-                                info: nil,
                                 color: nil,
                                 covered: []
                             ),
@@ -165,7 +157,6 @@ public class ChangeTierClientDemo: ChangeTierClient {
                                 id: "id3",
                                 title: "title3",
                                 description: "description3",
-                                info: nil,
                                 color: nil,
                                 covered: []
                             ),
