@@ -32,19 +32,22 @@ public struct ScrollableSegmentedView<Content: View>: View {
         }
     }
 
+    @ViewBuilder
     var headerControl: some View {
-        hSection {
-            ZStack(alignment: .leading) {
-                selectedPageHeaderBackground
-                HStack(spacing: .padding4) {
-                    ForEach(vm.pageModels) { model in
-                        headerElement(for: model)
+        if vm.pageModels.count > 1 {
+            hSection {
+                ZStack(alignment: .leading) {
+                    selectedPageHeaderBackground
+                    HStack(spacing: .padding4) {
+                        ForEach(vm.pageModels) { model in
+                            headerElement(for: model)
+                        }
                     }
                 }
-            }
-            .padding(.padding4)
-            .background {
-                hSurfaceColor.Opaque.primary.clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
+                .padding(.padding4)
+                .background {
+                    hSurfaceColor.Opaque.primary.clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
+                }
             }
         }
     }
@@ -133,6 +136,9 @@ public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
             horizontalScrollCancellable = horizontalScrollView?.publisher(for: \.contentOffset).removeDuplicates()
                 .sink(receiveValue: { [weak self] value in
                     guard let self = self else { return }
+                    if pageModels.count < 2 {
+                        return
+                    }
                     let allOffsets = self.getPagesOffset()
                     let titlePositions = self.titlesPositions.values.sorted(by: { $0.origin.x < $1.origin.x })
                     let sortedTitlePositions =
