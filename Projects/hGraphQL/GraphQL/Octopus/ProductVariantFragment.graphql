@@ -42,7 +42,6 @@ fragment PerilFragment on Peril {
     id
     title
     description
-    info
     covered
     colorCode
 }

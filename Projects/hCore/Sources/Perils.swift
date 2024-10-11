@@ -4,7 +4,6 @@ public struct Perils: Codable, Equatable, Hashable {
     public let id: String?
     public let title: String
     public let description: String
-    public let info: String?
     public let color: String?
     public let covered: [String]
     public let isDisabled: Bool
@@ -13,7 +12,6 @@ public struct Perils: Codable, Equatable, Hashable {
         id: String?,
         title: String,
         description: String,
-        info: String?,
         color: String?,
         covered: [String],
         isDisabled: Bool? = false
@@ -21,7 +19,6 @@ public struct Perils: Codable, Equatable, Hashable {
         self.id = id
         self.title = title
         self.description = description
-        self.info = info
         self.color = color
         self.covered = covered
         self.isDisabled = isDisabled ?? false
@@ -35,7 +32,6 @@ public struct Perils: Codable, Equatable, Hashable {
         description = fragment.description
         covered = fragment.covered
         color = fragment.colorCode
-        info = fragment.info
         isDisabled = false
     }
 
@@ -44,7 +40,6 @@ public struct Perils: Codable, Equatable, Hashable {
             id: id,
             title: title,
             description: description,
-            info: info,
             color: color,
             covered: covered,
             isDisabled: true
