@@ -18,8 +18,11 @@ struct CompareTierScreen: View {
             uniqueKeysWithValues: vm.tiers.map({ ($0.id, $0.productVariant?.insurableLimits ?? []) })
         )
         self.perils = Dictionary(uniqueKeysWithValues: vm.tiers.map({ ($0.id, vm.getFilteredPerils(currentTier: $0)) }))
+        let pageModels: [PageModel] = vm.tiers.compactMap({ PageModel(id: $0.id, title: $0.name) })
+        let currentId = vm.tiers.first(where: { $0.id == vm.selectedTier?.name })?.id
         self.scrollableSegmentedViewModel = ScrollableSegmentedViewModel(
-            pageModels: vm.tiers.compactMap({ .init(id: $0.id, title: $0.name) })
+            pageModels: pageModels,
+            currentId: currentId
         )
     }
 

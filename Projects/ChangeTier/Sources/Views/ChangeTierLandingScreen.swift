@@ -148,7 +148,7 @@ public struct ChangeTierLandingScreen: View {
                 hButton.LargeButton(type: .ghost) {
                     changeTierNavigationVm.isCompareTiersPresented = true
                 } content: {
-                    hText(L10n.tierFlowCompareButton, style: .body1)
+                    hText(vm.tiers.count == 1 ? L10n.tierFlowShowCoverage : L10n.tierFlowCompareButton, style: .body1)
                 }
                 hButton.LargeButton(type: .primary) {
                     switch vm.changeTierInput {

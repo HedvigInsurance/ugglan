@@ -214,7 +214,10 @@ public struct ChangeTierNavigation: View {
         }
         .modally(presented: $changeTierNavigationVm.isCompareTiersPresented) {
             CompareTierScreen(vm: changeTierNavigationVm.vm)
-                .configureTitle(L10n.tierFlowCompareButton)
+                .configureTitle(
+                    changeTierNavigationVm.vm.tiers.count == 1
+                        ? L10n.tierFlowShowCoverageButton : L10n.tierFlowCompareButton
+                )
                 .withDismissButton()
                 .embededInNavigation(
                     options: .navigationType(type: .large),

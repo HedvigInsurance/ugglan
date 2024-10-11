@@ -30,22 +30,24 @@ public struct ScrollableSegmentedView<Content: View>: View {
                     }
             }
         }
-
     }
 
+    @ViewBuilder
     var headerControl: some View {
-        hSection {
-            ZStack(alignment: .leading) {
-                selectedPageHeaderBackground
-                HStack(spacing: .padding4) {
-                    ForEach(vm.pageModels) { model in
-                        headerElement(for: model)
+        if vm.pageModels.count > 1 {
+            hSection {
+                ZStack(alignment: .leading) {
+                    selectedPageHeaderBackground
+                    HStack(spacing: .padding4) {
+                        ForEach(vm.pageModels) { model in
+                            headerElement(for: model)
+                        }
                     }
                 }
-            }
-            .padding(.padding4)
-            .background {
-                hSurfaceColor.Opaque.primary.clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
+                .padding(.padding4)
+                .background {
+                    hSurfaceColor.Opaque.primary.clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
+                }
             }
         }
     }
@@ -130,9 +132,13 @@ public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
     weak var horizontalScrollView: UIScrollView? {
         didSet {
             horizontalScrollView?.delegate = self
+            setSelectedTab(with: currentId, withAnimation: false)
             horizontalScrollCancellable = horizontalScrollView?.publisher(for: \.contentOffset).removeDuplicates()
                 .sink(receiveValue: { [weak self] value in
                     guard let self = self else { return }
+                    if pageModels.count < 2 {
+                        return
+                    }
                     let allOffsets = self.getPagesOffset()
                     let titlePositions = self.titlesPositions.values.sorted(by: { $0.origin.x < $1.origin.x })
                     let sortedTitlePositions =
@@ -205,10 +211,10 @@ public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
         return offsetToScrollTo
     }
 
-    func setSelectedTab(with id: String) {
+    func setSelectedTab(with id: String, withAnimation animation: Bool = true) {
         if let index = pageModels.firstIndex(where: { $0.id == id }) {
             currentId = id
-            scrollTo(offset: CGFloat(index) * viewWidth + pageSpacing * CGFloat(index))
+            scrollTo(offset: CGFloat(index) * viewWidth + pageSpacing * CGFloat(index), withAnimation: animation)
             withAnimation {
                 currentHeight = (heights[id] ?? 0)
             }
@@ -219,11 +225,12 @@ public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
         return pageModels.enumerated().compactMap({ CGFloat($0.offset) * viewWidth + pageSpacing * CGFloat($0.offset) })
     }
 
-    func scrollTo(offset: CGFloat) {
-        horizontalScrollView?.scrollRectToVisible(.init(x: offset, y: 1, width: viewWidth, height: 1), animated: true)
+    func scrollTo(offset: CGFloat, withAnimation: Bool = true) {
+        horizontalScrollView?
+            .scrollRectToVisible(.init(x: offset, y: 1, width: viewWidth, height: 1), animated: withAnimation)
     }
-    public init(pageModels: [PageModel]) {
-        self.currentId = pageModels.first?.id ?? ""
+    public init(pageModels: [PageModel], currentId: String? = nil) {
+        self.currentId = currentId ?? pageModels.first?.id ?? ""
         self.pageModels = pageModels
     }
 }
