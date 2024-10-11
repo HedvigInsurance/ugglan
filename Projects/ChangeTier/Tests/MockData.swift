@@ -13,7 +13,10 @@ struct MockData {
                 currentPremium: .init(amount: "449", currency: "SEK"),
                 currentTier: nil,
                 currentDeductible: nil,
-                canEditTier: true
+                selectedTier: nil,
+                selectedDeductible: nil,
+                canEditTier: true,
+                typeOfContract: .seHouse
             )
         },
         commitTier: @escaping CommitTier = { quoteId in }
@@ -27,7 +30,7 @@ struct MockData {
     }
 }
 
-typealias GetTier = (ChangeTier.ChangeTierInput) async throws(ChangeTier.ChangeTierError) ->
+typealias GetTier = (ChangeTier.ChangeTierInputData) async throws(ChangeTier.ChangeTierError) ->
     ChangeTier.ChangeTierIntentModel
 typealias CommitTier = (String) async throws(ChangeTier.ChangeTierError) -> Void
 
@@ -50,15 +53,13 @@ class MockChangeTierService: ChangeTierClient {
         self.sendTier = sendTier
     }
 
-    func getTier(
-        input: ChangeTier.ChangeTierInput
-    ) async throws(ChangeTier.ChangeTierError) -> ChangeTier.ChangeTierIntentModel {
+    func getTier(input: ChangeTierInputData) async throws -> ChangeTierIntentModel {
         events.append(.getTier)
         let data = try await fetchTier(input)
         return data
     }
 
-    func commitTier(quoteId: String) async throws(ChangeTier.ChangeTierError) {
+    func commitTier(quoteId: String) async throws {
         try await sendTier(quoteId)
         events.append(.commitTier)
     }

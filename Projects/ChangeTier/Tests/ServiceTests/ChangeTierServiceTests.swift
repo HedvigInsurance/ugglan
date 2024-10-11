@@ -25,7 +25,6 @@ final class ChangeTierServiceTests: XCTestCase {
                 name: "standard",
                 level: 1,
                 deductibles: [],
-                premium: .init(amount: "229", currency: ""),
                 displayItems: [],
                 exposureName: "exposureName",
                 productVariant: .init(
@@ -47,13 +46,13 @@ final class ChangeTierServiceTests: XCTestCase {
                 level: 2,
                 deductibles: [
                     .init(
+                        id: "id1",
                         deductibleAmount: nil,
                         deductiblePercentage: nil,
                         subTitle: nil,
                         premium: .init(amount: "229", currency: "SEK")
                     )
                 ],
-                premium: .init(amount: "229", currency: ""),
                 displayItems: [],
                 exposureName: "exposureName",
                 productVariant: .init(
@@ -77,7 +76,10 @@ final class ChangeTierServiceTests: XCTestCase {
             currentPremium: .init(amount: "449", currency: "SEK"),
             currentTier: nil,
             currentDeductible: nil,
-            canEditTier: true
+            selectedTier: nil,
+            selectedDeductible: nil,
+            canEditTier: true,
+            typeOfContract: .seHouse
         )
 
         let mockService = MockData.createMockChangeTier(fetchTier: { _ in

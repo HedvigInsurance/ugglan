@@ -77,7 +77,7 @@ public class ChangeTierViewModel: ObservableObject {
         }
         Task { @MainActor in
             do {
-                var data = try await getData()
+                let data = try await getData()
                 self.tiers = data.tiers
                 self.displayName = data.tiers.first?.productVariant?.displayName
                 self.exposureName = data.tiers.first?.exposureName

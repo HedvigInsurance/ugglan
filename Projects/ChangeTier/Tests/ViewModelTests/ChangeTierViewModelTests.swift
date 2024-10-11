@@ -13,7 +13,6 @@ final class ChangeTierViewModelTests: XCTestCase {
         name: "current tier",
         level: 1,
         deductibles: [],
-        premium: .init(amount: "220", currency: "SEK"),
         displayItems: [],
         exposureName: nil,
         productVariant: nil,
@@ -25,7 +24,6 @@ final class ChangeTierViewModelTests: XCTestCase {
             name: "standard",
             level: 1,
             deductibles: [],
-            premium: .init(amount: "229", currency: ""),
             displayItems: [],
             exposureName: "exposureName",
             productVariant: .init(
@@ -47,13 +45,13 @@ final class ChangeTierViewModelTests: XCTestCase {
             level: 2,
             deductibles: [
                 .init(
+                    id: "id1",
                     deductibleAmount: nil,
                     deductiblePercentage: nil,
                     subTitle: nil,
                     premium: .init(amount: "229", currency: "SEK")
                 )
             ],
-            premium: .init(amount: "229", currency: ""),
             displayItems: [],
             exposureName: "exposureName",
             productVariant: .init(
@@ -63,7 +61,7 @@ final class ChangeTierViewModelTests: XCTestCase {
                 perils: [],
                 insurableLimits: [],
                 documents: [],
-                displayName: "",
+                displayName: "displayName",
                 displayNameTier: nil,
                 tierDescription: nil
             ),
@@ -92,7 +90,10 @@ final class ChangeTierViewModelTests: XCTestCase {
             currentPremium: .init(amount: "449", currency: "SEK"),
             currentTier: currentTier,
             currentDeductible: nil,
-            canEditTier: true
+            selectedTier: nil,
+            selectedDeductible: nil,
+            canEditTier: true,
+            typeOfContract: .seHouse
         )
 
         let mockService = MockData.createMockChangeTier(fetchTier: { _ in
@@ -101,9 +102,11 @@ final class ChangeTierViewModelTests: XCTestCase {
 
         self.sut = mockService
 
-        let model = ChangeTierViewModel(changeTierInput: .init(source: .changeTier, contractId: "contractId"))
+        let model = ChangeTierViewModel(
+            changeTierInput: .contractWithSource(data: .init(source: .changeTier, contractId: "contractId"))
+        )
         self.vm = model
-        model.fetchTiers(nil)
+        model.fetchTiers()
 
         try await Task.sleep(nanoseconds: 30_000_000)
         assert(model.tiers == tiers)
@@ -126,9 +129,11 @@ final class ChangeTierViewModelTests: XCTestCase {
 
         self.sut = mockService
 
-        let model = ChangeTierViewModel(changeTierInput: .init(source: .changeTier, contractId: "contractId"))
+        let model = ChangeTierViewModel(
+            changeTierInput: .contractWithSource(data: .init(source: .changeTier, contractId: "contractId"))
+        )
         self.vm = model
-        model.fetchTiers(nil)
+        model.fetchTiers()
         try await Task.sleep(nanoseconds: 30_000_000)
         assert(model.canEditTier == false)
         assert(model.tiers.isEmpty)
@@ -152,7 +157,10 @@ final class ChangeTierViewModelTests: XCTestCase {
             currentPremium: .init(amount: "449", currency: "SEK"),
             currentTier: currentTier,
             currentDeductible: nil,
-            canEditTier: true
+            selectedTier: nil,
+            selectedDeductible: nil,
+            canEditTier: true,
+            typeOfContract: .seHouse
         )
 
         let mockService = MockData.createMockChangeTier(fetchTier: { _ in
@@ -161,9 +169,11 @@ final class ChangeTierViewModelTests: XCTestCase {
 
         self.sut = mockService
 
-        let model = ChangeTierViewModel(changeTierInput: .init(source: .changeTier, contractId: "contractId"))
+        let model = ChangeTierViewModel(
+            changeTierInput: .contractWithSource(data: .init(source: .changeTier, contractId: "contractId"))
+        )
         self.vm = model
-        model.fetchTiers(nil)
+        model.fetchTiers()
         try await Task.sleep(nanoseconds: 30_000_000)
         await model.setTier(for: "max")
         assert(model.selectedTier?.name == "max")
@@ -187,9 +197,11 @@ final class ChangeTierViewModelTests: XCTestCase {
 
         self.sut = mockService
 
-        let model = ChangeTierViewModel(changeTierInput: .init(source: .changeTier, contractId: "contractId"))
+        let model = ChangeTierViewModel(
+            changeTierInput: .contractWithSource(data: .init(source: .changeTier, contractId: "contractId"))
+        )
         self.vm = model
-        model.fetchTiers(nil)
+        model.fetchTiers()
         try await Task.sleep(nanoseconds: 30_000_000)
         await model.setTier(for: "max")
         assert(model.selectedTier == nil)
@@ -214,7 +226,10 @@ final class ChangeTierViewModelTests: XCTestCase {
             currentPremium: .init(amount: "449", currency: "SEK"),
             currentTier: nil,
             currentDeductible: nil,
-            canEditTier: true
+            selectedTier: nil,
+            selectedDeductible: nil,
+            canEditTier: true,
+            typeOfContract: .seHouse
         )
 
         let mockService = MockData.createMockChangeTier(fetchTier: { _ in
@@ -223,7 +238,9 @@ final class ChangeTierViewModelTests: XCTestCase {
 
         self.sut = mockService
 
-        let model = ChangeTierViewModel(changeTierInput: .init(source: .changeTier, contractId: "contractId"))
+        let model = ChangeTierViewModel(
+            changeTierInput: .contractWithSource(data: .init(source: .changeTier, contractId: "contractId"))
+        )
         self.vm = model
         try await Task.sleep(nanoseconds: 30_000_000)
         await model.setTier(for: "max")
@@ -251,9 +268,11 @@ final class ChangeTierViewModelTests: XCTestCase {
 
         self.sut = mockService
 
-        let model = ChangeTierViewModel(changeTierInput: .init(source: .changeTier, contractId: "contractId"))
+        let model = ChangeTierViewModel(
+            changeTierInput: .contractWithSource(data: .init(source: .changeTier, contractId: "contractId"))
+        )
         self.vm = model
-        model.fetchTiers(nil)
+        model.fetchTiers()
         await model.setTier(for: "max")
         await model.setDeductible(for: model.selectedTier?.deductibles.first?.id ?? "")
         assert(model.selectedDeductible == nil)
