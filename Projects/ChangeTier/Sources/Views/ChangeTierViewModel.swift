@@ -19,6 +19,7 @@ public class ChangeTierViewModel: ObservableObject {
     private var currentDeductible: Deductible?
     var newPremium: MonetaryAmount?
     @Published var canEditTier: Bool = false
+    @Published var canEditDeductible: Bool = false
 
     @Published var selectedTier: Tier?
     @Published var selectedDeductible: Deductible?
@@ -51,8 +52,10 @@ public class ChangeTierViewModel: ObservableObject {
             if newSelectedTier != selectedTier {
                 if newSelectedTier?.deductibles.count ?? 0 == 1 {
                     self.selectedDeductible = newSelectedTier?.deductibles.first
+                    self.canEditDeductible = false
                 } else {
                     self.selectedDeductible = nil
+                    self.canEditDeductible = true
                 }
             }
             self.displayName = newSelectedTier?.productVariant?.displayName
@@ -79,7 +82,6 @@ public class ChangeTierViewModel: ObservableObject {
             do {
                 let data = try await getData()
                 self.tiers = data.tiers
-
                 self.displayName = data.tiers.first?.productVariant?.displayName
                 self.exposureName = data.tiers.first?.exposureName
                 self.currentPremium = data.currentPremium
@@ -98,8 +100,10 @@ public class ChangeTierViewModel: ObservableObject {
 
                 if selectedTier?.deductibles.count == 1 {
                     self.selectedDeductible = selectedTier?.deductibles.first
+                    self.canEditDeductible = false
                 } else {
                     self.selectedDeductible = data.selectedDeductible ?? currentDeductible
+                    self.canEditDeductible = true
                 }
 
                 self.newPremium = selectedDeductible?.premium
