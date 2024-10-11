@@ -30,7 +30,6 @@ public struct ScrollableSegmentedView<Content: View>: View {
                     }
             }
         }
-
     }
 
     var headerControl: some View {
@@ -130,6 +129,7 @@ public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
     weak var horizontalScrollView: UIScrollView? {
         didSet {
             horizontalScrollView?.delegate = self
+            setSelectedTab(with: currentId, withAnimation: false)
             horizontalScrollCancellable = horizontalScrollView?.publisher(for: \.contentOffset).removeDuplicates()
                 .sink(receiveValue: { [weak self] value in
                     guard let self = self else { return }
@@ -205,10 +205,10 @@ public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
         return offsetToScrollTo
     }
 
-    func setSelectedTab(with id: String) {
+    func setSelectedTab(with id: String, withAnimation animation: Bool = true) {
         if let index = pageModels.firstIndex(where: { $0.id == id }) {
             currentId = id
-            scrollTo(offset: CGFloat(index) * viewWidth + pageSpacing * CGFloat(index))
+            scrollTo(offset: CGFloat(index) * viewWidth + pageSpacing * CGFloat(index), withAnimation: animation)
             withAnimation {
                 currentHeight = (heights[id] ?? 0)
             }
@@ -219,11 +219,12 @@ public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
         return pageModels.enumerated().compactMap({ CGFloat($0.offset) * viewWidth + pageSpacing * CGFloat($0.offset) })
     }
 
-    func scrollTo(offset: CGFloat) {
-        horizontalScrollView?.scrollRectToVisible(.init(x: offset, y: 1, width: viewWidth, height: 1), animated: true)
+    func scrollTo(offset: CGFloat, withAnimation: Bool = true) {
+        horizontalScrollView?
+            .scrollRectToVisible(.init(x: offset, y: 1, width: viewWidth, height: 1), animated: withAnimation)
     }
-    public init(pageModels: [PageModel]) {
-        self.currentId = pageModels.first?.id ?? ""
+    public init(pageModels: [PageModel], currentId: String? = nil) {
+        self.currentId = currentId ?? pageModels.first?.id ?? ""
         self.pageModels = pageModels
     }
 }
