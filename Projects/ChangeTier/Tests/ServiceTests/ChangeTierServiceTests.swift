@@ -24,60 +24,47 @@ final class ChangeTierServiceTests: XCTestCase {
                 id: "id1",
                 name: "standard",
                 level: 1,
-                deductibles: [],
-                displayItems: [],
-                exposureName: "exposureName",
-                productVariant: .init(
-                    termsVersion: "",
-                    typeOfContract: "",
-                    partner: nil,
-                    perils: [],
-                    insurableLimits: [],
-                    documents: [],
-                    displayName: "",
-                    displayNameTier: nil,
-                    tierDescription: nil
-                ),
-                FAQs: []
+                quotes: [],
+                exposureName: "exposureName"
             ),
             .init(
                 id: "id2",
                 name: "max",
                 level: 2,
-                deductibles: [
+                quotes: [
                     .init(
                         id: "id1",
-                        deductibleAmount: nil,
-                        deductiblePercentage: nil,
+                        quoteAmount: nil,
+                        quotePercentage: nil,
                         subTitle: nil,
-                        premium: .init(amount: "229", currency: "SEK")
+                        premium: .init(amount: "229", currency: "SEK"),
+                        displayItems: [],
+                        productVariant: .init(
+                            termsVersion: "",
+                            typeOfContract: "",
+                            partner: nil,
+                            perils: [],
+                            insurableLimits: [],
+                            documents: [],
+                            displayName: "",
+                            displayNameTier: nil,
+                            tierDescription: nil
+                        )
                     )
                 ],
-                displayItems: [],
-                exposureName: "exposureName",
-                productVariant: .init(
-                    termsVersion: "",
-                    typeOfContract: "",
-                    partner: nil,
-                    perils: [],
-                    insurableLimits: [],
-                    documents: [],
-                    displayName: "",
-                    displayNameTier: nil,
-                    tierDescription: nil
-                ),
-                FAQs: []
+                exposureName: "exposureName"
             ),
         ]
 
         let changeTierIntentModel: ChangeTierIntentModel = .init(
+            displayName: "displayName",
             activationDate: Date(),
             tiers: tiers,
             currentPremium: .init(amount: "449", currency: "SEK"),
             currentTier: nil,
-            currentDeductible: nil,
+            currentQuote: nil,
             selectedTier: nil,
-            selectedDeductible: nil,
+            selectedQuote: nil,
             canEditTier: true,
             typeOfContract: .seHouse
         )
