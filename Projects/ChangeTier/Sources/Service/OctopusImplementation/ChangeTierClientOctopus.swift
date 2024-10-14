@@ -143,16 +143,14 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                 })
 
             var displayItems: [Tier.TierDisplayItem] = []
-            allQuotesWithNameX
+            allQuotesWithNameX.first?.displayItems
                 .forEach({
                     displayItems.append(
-                        contentsOf: $0.displayItems.map({
-                            Tier.TierDisplayItem(
-                                title: $0.displayTitle,
-                                subTitle: $0.displaySubtitle,
-                                value: $0.displayValue
-                            )
-                        })
+                        Tier.TierDisplayItem(
+                            title: $0.displayTitle,
+                            subTitle: $0.displaySubtitle,
+                            value: $0.displayValue
+                        )
                     )
                 })
 
