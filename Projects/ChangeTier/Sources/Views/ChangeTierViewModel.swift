@@ -16,12 +16,12 @@ public class ChangeTierViewModel: ObservableObject {
 
     @Published var currentPremium: MonetaryAmount?
     var currentTier: Tier?
-    private var currentDeductible: Deductible?
+    private var currentDeductible: Quote?
     var newPremium: MonetaryAmount?
     @Published var canEditTier: Bool = false
 
     @Published var selectedTier: Tier?
-    @Published var selectedDeductible: Deductible?
+    @Published var selectedDeductible: Quote?
 
     var isValid: Bool {
         let selectedTierIsSameAsCurrent = currentTier?.name == selectedTier?.name
@@ -55,7 +55,9 @@ public class ChangeTierViewModel: ObservableObject {
                     self.selectedDeductible = nil
                 }
             }
-            self.displayName = newSelectedTier?.productVariant?.displayName
+            self.displayName =
+                selectedDeductible?.productVariant?.displayName ?? newSelectedTier?.deductibles.first?.productVariant?
+                .displayName ?? displayName
             self.selectedTier = newSelectedTier
             self.newPremium = selectedDeductible?.premium
         }
@@ -79,7 +81,7 @@ public class ChangeTierViewModel: ObservableObject {
             do {
                 let data = try await getData()
                 self.tiers = data.tiers
-                self.displayName = data.tiers.first?.productVariant?.displayName
+                self.displayName = data.displayName
                 self.exposureName = data.tiers.first?.exposureName
                 self.currentPremium = data.currentPremium
 

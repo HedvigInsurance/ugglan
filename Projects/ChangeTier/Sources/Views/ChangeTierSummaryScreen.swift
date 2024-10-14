@@ -23,7 +23,7 @@ struct ChangeTierSummaryScreen: View {
 extension ChangeTierViewModel {
     func asQuoteSummaryViewModel(changeTierNavigationVm: ChangeTierNavigationViewModel) -> QuoteSummaryViewModel {
         let displayItems: [QuoteDisplayItem] =
-            self.selectedTier?.displayItems.map({ .init(title: $0.title, value: $0.value) }) ?? []
+            self.selectedDeductible?.displayItems.map({ .init(title: $0.title, value: $0.value) }) ?? []
 
         let vm = QuoteSummaryViewModel(
             contract: [
@@ -33,14 +33,14 @@ extension ChangeTierViewModel {
                     exposureName: self.exposureName ?? "",
                     newPremium: self.newPremium,
                     currentPremium: self.currentPremium,
-                    documents: self.selectedTier?.productVariant?.documents ?? [],
+                    documents: self.selectedDeductible?.productVariant?.documents ?? [],
                     onDocumentTap: { [weak self] document in
                         if let url = URL(string: document.url) {
                             changeTierNavigationVm.document = .init(url: url, title: document.displayName)
                         }
                     },
                     displayItems: displayItems,
-                    insuranceLimits: self.selectedTier?.productVariant?.insurableLimits ?? [],
+                    insuranceLimits: self.selectedDeductible?.productVariant?.insurableLimits ?? [],
                     typeOfContract: self.typeOfContract
                 )
             ],
@@ -48,13 +48,14 @@ extension ChangeTierViewModel {
             FAQModel: (
                 title: L10n.tierFlowQaTitle,
                 subtitle: L10n.tierFlowQaSubtitle,
-                questions: self.selectedTier?.FAQs ?? []
+                questions: []
             ),
             onConfirmClick: {
                 self.commitTier()
                 changeTierNavigationVm.router.push(ChangeTierRouterActionsWithoutBackButton.commitTier)
             }
         )
+
         return vm
     }
 }

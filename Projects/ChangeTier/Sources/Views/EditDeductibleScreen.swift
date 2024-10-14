@@ -5,7 +5,7 @@ import hCoreUI
 struct EditDeductibleScreen: View {
     @State var selectedDeductible: String?
     private let vm: ChangeTierViewModel
-    private let deductibles: [Deductible]
+    private let deductibles: [Quote]
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
 
     init(
@@ -85,7 +85,7 @@ struct EditDeductibleScreen: View {
         .configureTitleView(self)
     }
 
-    func displayTitle(deductible: Deductible) -> String {
+    func displayTitle(deductible: Quote) -> String {
         var displayTitle: String = (deductible.deductibleAmount?.formattedAmount ?? "")
 
         if let deductiblePercentage = deductible.deductiblePercentage {

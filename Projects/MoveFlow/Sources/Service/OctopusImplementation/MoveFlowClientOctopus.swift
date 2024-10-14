@@ -140,18 +140,18 @@ extension MovingFlowModel {
 
         switch apiVersion {
         case .v1:
-            quotes = data.fragments.quoteFragment.quotes.compactMap({ Quote(from: $0) })
+            quotes = data.fragments.quoteFragment.quotes.compactMap({ MovingFlowQuote(from: $0) })
             changeTier = nil
             potentialHomeQuotes = []
         case .v2TiersAndDeductibles:
-            quotes = data.fragments.quoteFragment.mtaQuotes?.compactMap({ Quote(from: $0) }) ?? []
+            quotes = data.fragments.quoteFragment.mtaQuotes?.compactMap({ MovingFlowQuote(from: $0) }) ?? []
             changeTier = {
                 if let data = data.fragments.quoteFragment.homeQuotes, !data.isEmpty {
                     return ChangeTierIntentModel.initWith(data: data)
                 }
                 return nil
             }()
-            potentialHomeQuotes = data.homeQuotes?.compactMap({ Quote(from: $0) }) ?? []
+            potentialHomeQuotes = data.homeQuotes?.compactMap({ MovingFlowQuote(from: $0) }) ?? []
         }
 
         self.extraBuildingTypes = data.extraBuildingTypes.compactMap({ $0.rawValue })
@@ -175,7 +175,7 @@ extension MoveAddress {
     }
 }
 
-extension Quote {
+extension MovingFlowQuote {
     init(from data: OctopusGraphQL.QuoteFragment.Quote) {
         id = UUID().uuidString
         premium = .init(fragment: data.premium.fragments.moneyFragment)
@@ -272,12 +272,14 @@ extension ChangeTierIntentModel {
         let tiers = groupedQuotes.compactMap { (_, quotes) in
             if let firstQuote = quotes.first {
                 let deductibles = quotes.compactMap { quote in
-                    return Deductible(
+                    return Quote(
                         id: quote.id,
                         deductibleAmount: .init(optionalFragment: quote.deductible?.amount.fragments.moneyFragment),
                         deductiblePercentage: (quote.deductible?.percentage == 0) ? nil : quote.deductible?.percentage,
                         subTitle: quote.deductible?.displayText,
-                        premium: .init(fragment: quote.premium.fragments.moneyFragment)
+                        premium: .init(fragment: quote.premium.fragments.moneyFragment),
+                        displayItems: [],
+                        productVariant: ProductVariant(data: firstQuote.productVariant.fragments.productVariantFragment)
                     )
                 }
                 let tier = Tier(
@@ -285,17 +287,14 @@ extension ChangeTierIntentModel {
                     name: firstQuote.tierName,
                     level: firstQuote.tierLevel,
                     deductibles: deductibles,
-                    displayItems: [],
-                    exposureName: firstQuote.exposureName,
-                    productVariant: ProductVariant(data: firstQuote.productVariant.fragments.productVariantFragment),
-                    FAQs: []
+                    exposureName: firstQuote.exposureName
                 )
                 return tier
             }
             return nil
         }
 
-        let currentTierAndDeductible: (tier: Tier?, deductible: Deductible?) = {
+        let currentTierAndDeductible: (tier: Tier?, deductible: Quote?) = {
             if let defaultChoise = data.first(where: { $0.defaultChoice }),
                 let currentTier = tiers.first(where: { $0.id == defaultChoise.tierName }),
                 let currentDeductible = currentTier.deductibles.first(where: { $0.id == defaultChoise.id })
@@ -305,6 +304,10 @@ extension ChangeTierIntentModel {
             return (nil, nil)
         }()
         let intentModel: ChangeTierIntentModel = .init(
+            displayName: currentTierAndDeductible.deductible?.productVariant?.displayName ?? tiers.first?.deductibles
+                .first?
+                .productVariant?
+                .displayName ?? "",
             activationDate: data.first?.startDate.localDateToDate ?? Date(),
             tiers: tiers,
             currentPremium: nil,
