@@ -78,10 +78,15 @@ extension ChangeTierRouterActionsWithoutBackButton: TrackingViewNameProtocol {
 
 public enum ChangeTierInput: Identifiable, Equatable {
     public var id: String {
-        return UUID().uuidString
+        switch self {
+        case .contractWithSource(let data):
+            return data.contractId
+        case .existingIntent(let intent, _):
+            return intent.displayName
+        }
     }
     public static func == (lhs: ChangeTierInput, rhs: ChangeTierInput) -> Bool {
-        return lhs.id != rhs.id
+        return lhs.id == rhs.id
     }
     case contractWithSource(data: ChangeTierInputData)
     case existingIntent(intent: ChangeTierIntentModel, onSelect: ((Tier, Quote)) -> Void)
