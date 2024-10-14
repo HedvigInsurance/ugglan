@@ -9,9 +9,9 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable {
     let tiers: [Tier]
     let currentPremium: MonetaryAmount?
     let currentTier: Tier?
-    let currentDeductible: Quote?
+    let currentQuote: Quote?
     let selectedTier: Tier?
-    let selectedDeductible: Quote?
+    let selectedQuote: Quote?
     let canEditTier: Bool
     let typeOfContract: TypeOfContract
 
@@ -21,9 +21,9 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable {
         tiers: [Tier],
         currentPremium: MonetaryAmount?,
         currentTier: Tier?,
-        currentDeductible: Quote?,
+        currentQuote: Quote?,
         selectedTier: Tier?,
-        selectedDeductible: Quote?,
+        selectedQuote: Quote?,
         canEditTier: Bool,
         typeOfContract: TypeOfContract
     ) {
@@ -32,9 +32,9 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable {
         self.tiers = tiers
         self.currentPremium = currentPremium
         self.currentTier = currentTier
-        self.currentDeductible = currentDeductible
+        self.currentQuote = currentQuote
         self.selectedTier = selectedTier
-        self.selectedDeductible = selectedDeductible
+        self.selectedQuote = selectedQuote
         self.canEditTier = canEditTier
         self.typeOfContract = typeOfContract
     }
@@ -44,26 +44,26 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable {
     public var id: String
     let name: String
     let level: Int
-    public let deductibles: [Quote]
+    public let quotes: [Quote]
     let exposureName: String?
 
     public init(
         id: String,
         name: String,
         level: Int,
-        deductibles: [Quote],
+        quotes: [Quote],
         exposureName: String?
     ) {
         self.id = id
         self.name = name
         self.level = level
-        self.deductibles = deductibles
+        self.quotes = quotes
         self.exposureName = exposureName
     }
 
     func getPremium() -> MonetaryAmount? {
-        if deductibles.count == 1 {
-            return deductibles.first?.premium
+        if quotes.count == 1 {
+            return quotes.first?.premium
         }
         return nil
     }
@@ -71,8 +71,8 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable {
 
 public struct Quote: Codable, Hashable, Identifiable {
     public var id: String
-    let deductibleAmount: MonetaryAmount?
-    let deductiblePercentage: Int?
+    let quoteAmount: MonetaryAmount?
+    let quotePercentage: Int?
     let subTitle: String?
     let premium: MonetaryAmount
 
@@ -81,16 +81,16 @@ public struct Quote: Codable, Hashable, Identifiable {
 
     public init(
         id: String,
-        deductibleAmount: MonetaryAmount?,
-        deductiblePercentage: Int?,
+        quoteAmount: MonetaryAmount?,
+        quotePercentage: Int?,
         subTitle: String?,
         premium: MonetaryAmount,
         displayItems: [DisplayItem],
         productVariant: ProductVariant?
     ) {
         self.id = id
-        self.deductibleAmount = deductibleAmount
-        self.deductiblePercentage = deductiblePercentage
+        self.quoteAmount = quoteAmount
+        self.quotePercentage = quotePercentage
         self.subTitle = subTitle
         self.premium = premium
         self.displayItems = displayItems
@@ -118,6 +118,6 @@ public struct Quote: Codable, Hashable, Identifiable {
 
 extension Quote: Equatable {
     static public func == (lhs: Quote, rhs: Quote) -> Bool {
-        return lhs.deductibleAmount == rhs.deductibleAmount && lhs.deductiblePercentage == rhs.deductiblePercentage
+        return lhs.quoteAmount == rhs.quoteAmount && lhs.quotePercentage == rhs.quotePercentage
     }
 }

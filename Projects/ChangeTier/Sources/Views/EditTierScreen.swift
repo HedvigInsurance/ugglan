@@ -24,7 +24,7 @@ struct EditTierScreen: View {
                             leftView: {
                                 VStack(alignment: .leading, spacing: 0) {
                                     HStack {
-                                        hText(tier.deductibles.first?.productVariant?.displayNameTier ?? tier.name)
+                                        hText(tier.quotes.first?.productVariant?.displayNameTier ?? tier.name)
                                         Spacer()
                                         if let premiumValue = tier.getPremium()?.formattedAmountPerMonth {
                                             hPill(
@@ -35,7 +35,7 @@ struct EditTierScreen: View {
                                             .hFieldSize(.small)
                                         }
                                     }
-                                    if let subTitle = tier.deductibles.first?.productVariant?.tierDescription {
+                                    if let subTitle = tier.quotes.first?.productVariant?.tierDescription {
                                         hText(subTitle)
                                             .foregroundColor(hTextColor.Opaque.secondary)
                                             .fixedSize()

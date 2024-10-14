@@ -26,7 +26,7 @@ public class ChangeTierViewModel: ObservableObject {
     var isValid: Bool {
         let selectedTierIsSameAsCurrent = currentTier?.name == selectedTier?.name
         let selectedDeductibleIsSameAsCurrent = currentDeductible == selectedDeductible
-        let isDeductibleValid = selectedDeductible != nil || selectedTier?.deductibles.isEmpty ?? false
+        let isDeductibleValid = selectedDeductible != nil || selectedTier?.quotes.isEmpty ?? false
         let isTierValid = selectedTier != nil
         let hasSelectedValues = isTierValid && isDeductibleValid
 
@@ -34,7 +34,7 @@ public class ChangeTierViewModel: ObservableObject {
     }
 
     var showDeductibleField: Bool {
-        return !(selectedTier?.deductibles.isEmpty ?? true) && selectedTier != nil
+        return !(selectedTier?.quotes.isEmpty ?? true) && selectedTier != nil
     }
 
     public init(
@@ -49,14 +49,14 @@ public class ChangeTierViewModel: ObservableObject {
         withAnimation {
             let newSelectedTier = tiers.first(where: { $0.name == tierName })
             if newSelectedTier != selectedTier {
-                if newSelectedTier?.deductibles.count ?? 0 == 1 {
-                    self.selectedDeductible = newSelectedTier?.deductibles.first
+                if newSelectedTier?.quotes.count ?? 0 == 1 {
+                    self.selectedDeductible = newSelectedTier?.quotes.first
                 } else {
                     self.selectedDeductible = nil
                 }
             }
             self.displayName =
-                selectedDeductible?.productVariant?.displayName ?? newSelectedTier?.deductibles.first?.productVariant?
+                selectedDeductible?.productVariant?.displayName ?? newSelectedTier?.quotes.first?.productVariant?
                 .displayName ?? displayName
             self.selectedTier = newSelectedTier
             self.newPremium = selectedDeductible?.premium
@@ -66,7 +66,7 @@ public class ChangeTierViewModel: ObservableObject {
     @MainActor
     func setDeductible(for deductibleId: String) {
         withAnimation {
-            if let deductible = selectedTier?.deductibles.first(where: { $0.id == deductibleId }) {
+            if let deductible = selectedTier?.quotes.first(where: { $0.id == deductibleId }) {
                 self.selectedDeductible = deductible
                 self.newPremium = deductible.premium
             }
@@ -86,13 +86,13 @@ public class ChangeTierViewModel: ObservableObject {
                 self.currentPremium = data.currentPremium
 
                 self.currentTier = data.currentTier
-                self.currentDeductible = data.currentDeductible
+                self.currentDeductible = data.currentQuote
                 self.canEditTier = data.canEditTier
                 self.activationDate = data.activationDate
                 self.typeOfContract = data.typeOfContract
 
                 self.selectedTier = data.selectedTier ?? currentTier
-                self.selectedDeductible = data.selectedDeductible ?? currentDeductible
+                self.selectedDeductible = data.selectedQuote ?? currentDeductible
                 self.newPremium = selectedDeductible?.premium
 
                 withAnimation {

@@ -59,12 +59,12 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                 if let deductible = deductible {
                     return Quote(
                         id: "current",
-                        deductibleAmount: .init(fragment: deductible.amount.fragments.moneyFragment),
-                        deductiblePercentage: (deductible.percentage == 0) ? nil : deductible.percentage,
+                        quoteAmount: .init(fragment: deductible.amount.fragments.moneyFragment),
+                        quotePercentage: (deductible.percentage == 0) ? nil : deductible.percentage,
                         subTitle: (deductible.displayText == "") ? nil : deductible.displayText,
                         premium: .init(fragment: currentContract.currentAgreement.premium.fragments.moneyFragment),
-                        displayItems: currentTier?.deductibles.first?.displayItems ?? [],
-                        productVariant: currentTier?.deductibles.first?.productVariant
+                        displayItems: currentTier?.quotes.first?.displayItems ?? [],
+                        productVariant: currentTier?.quotes.first?.productVariant
                     )
                 }
                 return nil
@@ -80,9 +80,9 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                     currency: currentContract.currentAgreement.premium.currencyCode.rawValue
                 ),
                 currentTier: currentTier,
-                currentDeductible: currentDeductible,
+                currentQuote: currentDeductible,
                 selectedTier: nil,
-                selectedDeductible: nil,
+                selectedQuote: nil,
                 canEditTier: currentContract.supportsChangeTier,
                 typeOfContract:
                     TypeOfContract.resolve(for: currentContract.currentAgreement.productVariant.typeOfContract)
@@ -137,8 +137,8 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                 .forEach({ quote in
                     let deductible = Quote(
                         id: quote.id,
-                        deductibleAmount: .init(optionalFragment: quote.deductible?.amount.fragments.moneyFragment),
-                        deductiblePercentage: (quote.deductible?.percentage == 0)
+                        quoteAmount: .init(optionalFragment: quote.deductible?.amount.fragments.moneyFragment),
+                        quotePercentage: (quote.deductible?.percentage == 0)
                             ? nil : quote.deductible?.percentage,
                         subTitle: (quote.deductible?.displayText == "") ? nil : quote.deductible?.displayText,
                         premium: .init(fragment: quote.premium.fragments.moneyFragment),
@@ -159,7 +159,7 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                     id: tierName,
                     name: allQuotesWithNameX.first?.productVariant.displayNameTier ?? "",
                     level: allQuotesWithNameX.first?.tierLevel ?? 0,
-                    deductibles: allDeductiblesForX,
+                    quotes: allDeductiblesForX,
                     exposureName: currentContract.exposureDisplayName
                 )
             )

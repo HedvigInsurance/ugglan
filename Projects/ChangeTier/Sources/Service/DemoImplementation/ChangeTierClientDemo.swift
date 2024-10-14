@@ -13,11 +13,11 @@ public class ChangeTierClientDemo: ChangeTierClient {
             .init(title: "Deductible", subTitle: nil, value: "1750 kr"),
         ]
 
-        let deductibles: [Quote] = [
+        let quotes: [Quote] = [
             .init(
                 id: "id1",
-                deductibleAmount: .init(amount: "1000", currency: "SEK"),
-                deductiblePercentage: 0,
+                quoteAmount: .init(amount: "1000", currency: "SEK"),
+                quotePercentage: 0,
                 subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
                 premium: .init(amount: "1167", currency: "SEK"),
                 displayItems: displayItems,
@@ -57,8 +57,8 @@ public class ChangeTierClientDemo: ChangeTierClient {
             ),
             .init(
                 id: "id2",
-                deductibleAmount: .init(amount: "2000", currency: "SEK"),
-                deductiblePercentage: 25,
+                quoteAmount: .init(amount: "2000", currency: "SEK"),
+                quotePercentage: 25,
                 subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
                 premium: .init(amount: "999", currency: "SEK"),
                 displayItems: displayItems,
@@ -98,8 +98,8 @@ public class ChangeTierClientDemo: ChangeTierClient {
             ),
             .init(
                 id: "id3",
-                deductibleAmount: .init(amount: "3000", currency: "SEK"),
-                deductiblePercentage: 15,
+                quoteAmount: .init(amount: "3000", currency: "SEK"),
+                quotePercentage: 15,
                 subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
                 premium: .init(amount: "569", currency: "SEK"),
                 displayItems: displayItems,
@@ -147,21 +147,21 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     id: "id",
                     name: "Bas",
                     level: 0,
-                    deductibles: deductibles,
+                    quotes: quotes,
                     exposureName: "Bellmansgatan 19A"
                 ),
                 .init(
                     id: "i2",
                     name: "Standard",
                     level: 0,
-                    deductibles: deductibles,
+                    quotes: quotes,
                     exposureName: "Bellmansgatan 19A"
                 ),
                 .init(
                     id: "id3",
                     name: "Max",
                     level: 0,
-                    deductibles: deductibles,
+                    quotes: quotes,
                     exposureName: "Bellmansgatan 19A"
                 ),
             ],
@@ -170,13 +170,13 @@ public class ChangeTierClientDemo: ChangeTierClient {
                 id: "id",
                 name: "Max",
                 level: 3,
-                deductibles: deductibles,
+                quotes: quotes,
                 exposureName: ""
             ),
-            currentDeductible: .init(
+            currentQuote: .init(
                 id: "id1",
-                deductibleAmount: .init(amount: "449", currency: "SEK"),
-                deductiblePercentage: 25,
+                quoteAmount: .init(amount: "449", currency: "SEK"),
+                quotePercentage: 25,
                 subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
                 premium: .init(amount: "999", currency: "SEK"),
                 displayItems: displayItems,
@@ -215,7 +215,7 @@ public class ChangeTierClientDemo: ChangeTierClient {
                 )
             ),
             selectedTier: nil,
-            selectedDeductible: nil,
+            selectedQuote: nil,
             canEditTier: true,
             typeOfContract: .seApartmentBrf
         )

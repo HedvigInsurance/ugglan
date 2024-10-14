@@ -132,7 +132,7 @@ public struct ChangeTierLandingScreen: View {
 
     private var deductibleView: some View {
         DropdownView(
-            value: vm.selectedDeductible?.deductibleAmount?.formattedAmount ?? "",
+            value: vm.selectedDeductible?.quoteAmount?.formattedAmount ?? "",
             placeHolder: vm.selectedDeductible != nil
                 ? L10n.tierFlowDeductibleLabel : L10n.tierFlowDeductiblePlaceholder
         ) {

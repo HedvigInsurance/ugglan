@@ -271,11 +271,11 @@ extension ChangeTierIntentModel {
 
         let tiers = groupedQuotes.compactMap { (_, quotes) in
             if let firstQuote = quotes.first {
-                let deductibles = quotes.compactMap { quote in
+                let quotes = quotes.compactMap { quote in
                     return Quote(
                         id: quote.id,
-                        deductibleAmount: .init(optionalFragment: quote.deductible?.amount.fragments.moneyFragment),
-                        deductiblePercentage: (quote.deductible?.percentage == 0) ? nil : quote.deductible?.percentage,
+                        quoteAmount: .init(optionalFragment: quote.deductible?.amount.fragments.moneyFragment),
+                        quotePercentage: (quote.deductible?.percentage == 0) ? nil : quote.deductible?.percentage,
                         subTitle: quote.deductible?.displayText,
                         premium: .init(fragment: quote.premium.fragments.moneyFragment),
                         displayItems: [],
@@ -286,7 +286,7 @@ extension ChangeTierIntentModel {
                     id: firstQuote.tierName,
                     name: firstQuote.tierName,
                     level: firstQuote.tierLevel,
-                    deductibles: deductibles,
+                    quotes: quotes,
                     exposureName: firstQuote.exposureName
                 )
                 return tier
@@ -294,17 +294,17 @@ extension ChangeTierIntentModel {
             return nil
         }
 
-        let currentTierAndDeductible: (tier: Tier?, deductible: Quote?) = {
+        let currentTierAndQuote: (tier: Tier?, deductible: Quote?) = {
             if let defaultChoise = data.first(where: { $0.defaultChoice }),
                 let currentTier = tiers.first(where: { $0.id == defaultChoise.tierName }),
-                let currentDeductible = currentTier.deductibles.first(where: { $0.id == defaultChoise.id })
+                let currentQuote = currentTier.quotes.first(where: { $0.id == defaultChoise.id })
             {
-                return (currentTier, currentDeductible)
+                return (currentTier, currentQuote)
             }
             return (nil, nil)
         }()
         let intentModel: ChangeTierIntentModel = .init(
-            displayName: currentTierAndDeductible.deductible?.productVariant?.displayName ?? tiers.first?.deductibles
+            displayName: currentTierAndQuote.deductible?.productVariant?.displayName ?? tiers.first?.quotes
                 .first?
                 .productVariant?
                 .displayName ?? "",
@@ -312,9 +312,9 @@ extension ChangeTierIntentModel {
             tiers: tiers,
             currentPremium: nil,
             currentTier: nil,
-            currentDeductible: nil,
-            selectedTier: currentTierAndDeductible.tier,
-            selectedDeductible: currentTierAndDeductible.deductible,
+            currentQuote: nil,
+            selectedTier: currentTierAndQuote.tier,
+            selectedQuote: currentTierAndQuote.deductible,
             canEditTier: true,
             typeOfContract: TypeOfContract.resolve(for: data.first?.productVariant.typeOfContract ?? "")
         )

@@ -13,14 +13,14 @@ struct EditDeductibleScreen: View {
     ) {
         self.vm = vm
 
-        if !(vm.selectedTier?.deductibles.isEmpty ?? true) {
-            self.deductibles = vm.selectedTier?.deductibles ?? []
+        if !(vm.selectedTier?.quotes.isEmpty ?? true) {
+            self.deductibles = vm.selectedTier?.quotes ?? []
         } else {
-            self.deductibles = vm.tiers.first(where: { $0.name == vm.selectedTier?.name })?.deductibles ?? []
+            self.deductibles = vm.tiers.first(where: { $0.name == vm.selectedTier?.name })?.quotes ?? []
         }
 
         self._selectedDeductible = State(
-            initialValue: vm.selectedDeductible?.id ?? vm.selectedTier?.deductibles.first?.id
+            initialValue: vm.selectedDeductible?.id ?? vm.selectedTier?.quotes.first?.id
         )
     }
 
@@ -86,9 +86,9 @@ struct EditDeductibleScreen: View {
     }
 
     func displayTitle(deductible: Quote) -> String {
-        var displayTitle: String = (deductible.deductibleAmount?.formattedAmount ?? "")
+        var displayTitle: String = (deductible.quoteAmount?.formattedAmount ?? "")
 
-        if let deductiblePercentage = deductible.deductiblePercentage {
+        if let deductiblePercentage = deductible.quotePercentage {
             displayTitle += " + \(deductiblePercentage)%"
         }
         return displayTitle
