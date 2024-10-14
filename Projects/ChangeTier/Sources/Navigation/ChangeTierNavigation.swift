@@ -52,9 +52,7 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     }
 
     func missingQuotesGoBackPressed() {
-        if changeTierContractsInput != nil {
-            router.pop()
-        } else if useOwnNavigation {
+        if useOwnNavigation && changeTierContractsInput == nil {
             router.dismiss()
         } else {
             router.pop()
