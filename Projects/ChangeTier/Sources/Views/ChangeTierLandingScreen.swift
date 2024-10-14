@@ -108,6 +108,8 @@ public struct ChangeTierLandingScreen: View {
                         placeholder: L10n.tierFlowCoverageLabel
                     ) {}
                     .hFieldLockedState
+                    .colorScheme(.light)
+                    .hWithTransparentColor
                     .hFieldTrailingView {
                         Image(uiImage: hCoreUIAssets.lock.image)
                             .foregroundColor(hTextColor.Opaque.secondary)
@@ -130,16 +132,34 @@ public struct ChangeTierLandingScreen: View {
         }
     }
 
+    @ViewBuilder
     private var deductibleView: some View {
-        DropdownView(
-            value: vm.selectedDeductible?.deductibleAmount?.formattedAmount ?? "",
-            placeHolder: vm.selectedDeductible != nil
-                ? L10n.tierFlowDeductibleLabel : L10n.tierFlowDeductiblePlaceholder
-        ) {
-            changeTierNavigationVm.isEditDeductiblePresented = true
+        if !vm.canEditDeductible {
+            hSection {
+                hFloatingField(
+                    value: vm.selectedDeductible?.deductibleAmount?.amount ?? "",
+                    placeholder: L10n.tierFlowDeductibleLabel
+                ) {}
+                .hFieldLockedState
+                .colorScheme(.light)
+                .hWithTransparentColor
+                .hFieldTrailingView {
+                    Image(uiImage: hCoreUIAssets.lock.image)
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                }
+            }
+            .padding(.bottom, 8)
+        } else {
+            DropdownView(
+                value: vm.selectedDeductible?.deductibleAmount?.formattedAmount ?? "",
+                placeHolder: vm.selectedDeductible != nil
+                    ? L10n.tierFlowDeductibleLabel : L10n.tierFlowDeductiblePlaceholder
+            ) {
+                changeTierNavigationVm.isEditDeductiblePresented = true
+            }
+            .disabled(vm.selectedTier == nil)
+            .colorScheme(.light)
         }
-        .disabled(vm.selectedTier == nil)
-        .colorScheme(.light)
     }
 
     private var buttons: some View {

@@ -19,6 +19,7 @@ public class ChangeTierViewModel: ObservableObject {
     private var currentDeductible: Deductible?
     var newPremium: MonetaryAmount?
     @Published var canEditTier: Bool = false
+    @Published var canEditDeductible: Bool = false
 
     @Published var selectedTier: Tier?
     @Published var selectedDeductible: Deductible?
@@ -51,8 +52,10 @@ public class ChangeTierViewModel: ObservableObject {
             if newSelectedTier != selectedTier {
                 if newSelectedTier?.deductibles.count ?? 0 == 1 {
                     self.selectedDeductible = newSelectedTier?.deductibles.first
+                    self.canEditDeductible = false
                 } else {
                     self.selectedDeductible = nil
+                    self.canEditDeductible = true
                 }
             }
             self.displayName = newSelectedTier?.productVariant?.displayName
@@ -82,15 +85,27 @@ public class ChangeTierViewModel: ObservableObject {
                 self.displayName = data.tiers.first?.productVariant?.displayName
                 self.exposureName = data.tiers.first?.exposureName
                 self.currentPremium = data.currentPremium
-
                 self.currentTier = data.currentTier
                 self.currentDeductible = data.currentDeductible
-                self.canEditTier = data.canEditTier
                 self.activationDate = data.activationDate
                 self.typeOfContract = data.typeOfContract
 
-                self.selectedTier = data.selectedTier ?? currentTier
-                self.selectedDeductible = data.selectedDeductible ?? currentDeductible
+                if tiers.count == 1 {
+                    self.selectedTier = tiers.first
+                    self.canEditTier = false
+                } else {
+                    self.selectedTier = data.selectedTier ?? currentTier
+                    self.canEditTier = data.canEditTier
+                }
+
+                if selectedTier?.deductibles.count == 1 {
+                    self.selectedDeductible = selectedTier?.deductibles.first
+                    self.canEditDeductible = false
+                } else {
+                    self.selectedDeductible = data.selectedDeductible ?? currentDeductible
+                    self.canEditDeductible = true
+                }
+
                 self.newPremium = selectedDeductible?.premium
 
                 withAnimation {
