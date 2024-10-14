@@ -268,7 +268,9 @@ public class AddressInputModel: ObservableObject {
                 }
             }()
             if let sizeToCompare {
-                squareAreaError = size < sizeToCompare ? nil : L10n.changeAddressLivingSpaceOverLimitError
+                squareAreaError =
+                    size < sizeToCompare
+                    ? nil : L10n.changeAddressLivingSpaceOverLimitWithInputError(sizeToCompare, "m\u{00B2}")
             }
         }
     }
