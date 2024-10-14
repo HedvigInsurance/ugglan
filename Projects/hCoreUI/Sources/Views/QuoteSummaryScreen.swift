@@ -158,15 +158,15 @@ public struct QuoteSummaryScreen: View {
                         let index = selectedContracts.firstIndex(of: contract.id)
                         let isExpanded = index != nil
 
-                        if isExpanded {
-                            detailsView(for: contract)
-                        }
+                        detailsView(for: contract)
+                            .frame(height: isExpanded ? nil : 0, alignment: .top)
+                            .clipped()
 
                         if contract.shouldShowDetails {
                             hButton.MediumButton(
                                 type: .secondary
                             ) {
-                                withAnimation(.snappy(duration: 0.5)) {
+                                withAnimation(.easeInOut(duration: 0.4)) {
                                     let index = selectedContracts.firstIndex(of: contract.id)
                                     if let index {
                                         selectedContracts.remove(at: index)
