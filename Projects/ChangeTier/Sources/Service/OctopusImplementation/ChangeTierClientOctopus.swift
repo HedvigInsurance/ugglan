@@ -135,30 +135,28 @@ public class ChangeTierClientOctopus: ChangeTierClient {
 
             allQuotesWithNameX
                 .forEach({ quote in
-                    if let deductableAmount = quote.deductible?.amount {
-                        let deductible = Quote(
-                            id: quote.id,
-                            deductibleAmount: .init(fragment: deductableAmount.fragments.moneyFragment),
-                            deductiblePercentage: (quote.deductible?.percentage == 0)
-                                ? nil : quote.deductible?.percentage,
-                            subTitle: (quote.deductible?.displayText == "") ? nil : quote.deductible?.displayText,
-                            premium: .init(fragment: quote.premium.fragments.moneyFragment),
-                            displayItems: quote.displayItems.map({
-                                .init(
-                                    title: $0.displayTitle,
-                                    subTitle: $0.displayValue == "" ? nil : $0.displaySubtitle,
-                                    value: $0.displayValue
-                                )
-                            }),
-                            productVariant: .init(data: quote.productVariant.fragments.productVariantFragment)
-                        )
-                        allDeductiblesForX.append(deductible)
-                    }
+                    let deductible = Quote(
+                        id: quote.id,
+                        deductibleAmount: .init(optionalFragment: quote.deductible?.amount.fragments.moneyFragment),
+                        deductiblePercentage: (quote.deductible?.percentage == 0)
+                            ? nil : quote.deductible?.percentage,
+                        subTitle: (quote.deductible?.displayText == "") ? nil : quote.deductible?.displayText,
+                        premium: .init(fragment: quote.premium.fragments.moneyFragment),
+                        displayItems: quote.displayItems.map({
+                            .init(
+                                title: $0.displayTitle,
+                                subTitle: $0.displayValue == "" ? nil : $0.displaySubtitle,
+                                value: $0.displayValue
+                            )
+                        }),
+                        productVariant: .init(data: quote.productVariant.fragments.productVariantFragment)
+                    )
+                    allDeductiblesForX.append(deductible)
                 })
 
             allTiers.append(
                 .init(
-                    id: allQuotesWithNameX.first?.id ?? "",
+                    id: tierName,
                     name: allQuotesWithNameX.first?.productVariant.displayNameTier ?? "",
                     level: allQuotesWithNameX.first?.tierLevel ?? 0,
                     deductibles: allDeductiblesForX,
