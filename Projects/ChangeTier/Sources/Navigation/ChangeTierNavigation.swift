@@ -13,7 +13,7 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     let useOwnNavigation: Bool
     let router: Router
 
-    //make sure to set it!!!
+    //NOTE: Make sure to set it before moving to the ChangeTierLandingScreen
     var vm: ChangeTierViewModel!
 
     let changeTierContractsInput: ChangeTierContractsInput?
