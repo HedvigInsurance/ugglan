@@ -14,10 +14,31 @@ struct CompareTierScreen: View {
         vm: ChangeTierViewModel
     ) {
         self.vm = vm
+
+        let selectedQuoteId = vm.selectedQuote?.id
+
         self.limits = Dictionary(
-            uniqueKeysWithValues: vm.tiers.map({ ($0.id, $0.quotes.first?.productVariant?.insurableLimits ?? []) })
+            uniqueKeysWithValues: vm.tiers.map({
+                (
+                    $0.id,
+                    $0.quotes.first(where: { quote in
+                        quote.id == selectedQuoteId
+                    })?
+                    .productVariant?
+                    .insurableLimits ?? $0.quotes.first(where: { quote in
+                        quote.deductableAmount == vm.selectedQuote?.deductableAmount
+                    })?
+                    .productVariant?
+                    .insurableLimits ?? []
+                )
+            })
         )
-        self.perils = Dictionary(uniqueKeysWithValues: vm.tiers.map({ ($0.id, vm.getFilteredPerils(currentTier: $0)) }))
+
+        self.perils = Dictionary(
+            uniqueKeysWithValues: vm.tiers.map({
+                ($0.id, vm.getFilteredPerils(currentTier: $0, selectedQuoteId: selectedQuoteId))
+            })
+        )
         let pageModels: [PageModel] = vm.tiers.compactMap({ PageModel(id: $0.id, title: $0.name) })
         let currentId = vm.tiers.first(where: { $0.id == vm.selectedTier?.name })?.id
         self.scrollableSegmentedViewModel = ScrollableSegmentedViewModel(
@@ -45,8 +66,14 @@ struct CompareTierScreen: View {
 }
 
 extension ChangeTierViewModel {
-    fileprivate func getFilteredPerils(currentTier: Tier) -> [Perils] {
-        var currentPerils = currentTier.quotes.first?.productVariant?.perils ?? []
+    fileprivate func getFilteredPerils(currentTier: Tier, selectedQuoteId: String?) -> [Perils] {
+        var currentPerils =
+            currentTier.quotes.first { quote in
+                quote.id == selectedQuoteId
+            }?
+            .productVariant?
+            .perils ?? currentTier.quotes.first?.productVariant?.perils ?? []
+
         let otherPerils = self.tiers.filter({ $0.id != currentTier.id })
             .reduce(into: [Perils]()) { partialResult, tier in
                 return partialResult.append(contentsOf: tier.quotes.first?.productVariant?.perils ?? [])
@@ -59,5 +86,4 @@ extension ChangeTierViewModel {
         }
         return currentPerils
     }
-
 }
