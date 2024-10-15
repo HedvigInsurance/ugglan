@@ -79,7 +79,7 @@ public struct InboxView: View {
                 .matchedGeometryEffect(id: "rightView_\(conversation.id)", in: animationNamespace)
         } else if conversation.isClosed {
             hText(L10n.chatConversationClosed, style: .label)
-                .foregroundColor(hTextColor.Opaque.accordion)
+                .foregroundColor(hTextColor.Opaque.secondary)
                 .padding(.horizontal, .padding6)
                 .padding(.vertical, 3)
                 .background(

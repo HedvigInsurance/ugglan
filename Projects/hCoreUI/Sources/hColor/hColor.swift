@@ -624,6 +624,13 @@ public struct hSurfaceColor {
                 dark: hGrayscaleTranslucentDark.greyScaleTranslucent800
             )
         }
+
+        public static var highLight: some hColor {
+            hColorScheme(
+                light: hGrayscaleTranslucent.greyScaleTranslucent50,
+                dark: hGrayscaleTranslucent.greyScaleTranslucent900
+            )
+        }
     }
 }
 
@@ -802,6 +809,15 @@ public struct hSignalColor {
             hColorScheme(
                 light: hBlueColor.blue800,
                 dark: hBlueColor.blue900
+            )
+        }
+    }
+
+    public struct Grey {
+        public static var element: some hColor {
+            hColorScheme(
+                light: hGrayscaleOpaqueColor.greyScale700,
+                dark: hGrayscaleOpaqueColor.greyScale750
             )
         }
     }
