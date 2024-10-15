@@ -47,7 +47,7 @@ struct ContractInformationView: View {
                                     .foregroundColor(hTextColor.Opaque.secondary)
                                 })
                             }
-                            .withoutHorizontalPadding
+                            .hSectionWithoutHorizontalPadding
                             if contract.supportsCoInsured {
                                 hRowDivider()
                                 addCoInsuredView(contract: contract)
@@ -138,7 +138,7 @@ struct ContractInformationView: View {
                     .padding(.top, .padding16)
                 }
             }
-            .withoutHorizontalPadding
+            .hSectionWithoutHorizontalPadding
 
             if Dependencies.featureFlags().isEditCoInsuredEnabled {
                 hSection(vm.getListToDisplay(contract: contract)) { coInsured in
@@ -155,7 +155,7 @@ struct ContractInformationView: View {
                         }
                     }
                 }
-                .withoutHorizontalPadding
+                .hSectionWithoutHorizontalPadding
 
                 if contract.nbOfMissingCoInsuredWithoutTermination != 0 && contract.showEditCoInsuredInfo {
                     hSection {

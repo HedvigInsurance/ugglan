@@ -18,7 +18,7 @@ public struct AppInfoView: View {
                 profileVersion
                 deviceId
             }
-            .withoutHorizontalPadding
+            .hSectionWithoutHorizontalPadding
             .padding(.top, .padding8)
         }
         .sectionContainerStyle(.transparent)
@@ -26,7 +26,7 @@ public struct AppInfoView: View {
             hSection {
                 submitBugButton
             }
-            .withoutHorizontalPadding
+            .hSectionWithoutHorizontalPadding
             .padding(.vertical, .padding16)
             .sectionContainerStyle(.transparent)
         }

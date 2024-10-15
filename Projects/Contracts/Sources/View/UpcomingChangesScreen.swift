@@ -30,7 +30,7 @@ struct UpcomingChangesScreen: View {
                         }
                     }
                 }
-                .withoutHorizontalPadding
+                .hSectionWithoutHorizontalPadding
             }
         }
         .sectionContainerStyle(.transparent)

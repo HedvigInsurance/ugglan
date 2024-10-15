@@ -97,8 +97,7 @@ struct QuestionsItems: View {
                     .hWithoutHorizontalPadding
                     .hWithoutDividerPadding
                 }
-                .withoutHorizontalPadding
-                .hSectionMinimumPadding
+                .hSectionWithoutHorizontalPadding
                 .sectionContainerStyle(.transparent)
                 .padding(.leading, 2)
             }
@@ -180,8 +179,7 @@ struct QuickActionView: View {
                 onQuickAction()
             }
         }
-        .withoutHorizontalPadding
-        .hSectionMinimumPadding
+        .hSectionWithoutHorizontalPadding
         .sectionContainerStyle(.opaque)
     }
 }

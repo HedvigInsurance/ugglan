@@ -45,7 +45,7 @@ public struct ListScreen: View {
                         travelCertificateNavigationVm.isDocumentPresented = travelCertificate
                     }
                 }
-                .withoutHorizontalPadding
+                .hSectionWithoutHorizontalPadding
             }
         }
         .hFormContentPosition(vm.list.isEmpty ? .center : .top)

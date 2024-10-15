@@ -25,7 +25,7 @@ struct RemoveCoInsuredScreen: View {
                     .verticalPadding(0)
                     .padding(.top, .padding16)
                 }
-                .withoutHorizontalPadding
+                .hSectionWithoutHorizontalPadding
                 .sectionContainerStyle(.transparent)
 
                 hSection {
@@ -42,7 +42,7 @@ struct RemoveCoInsuredScreen: View {
                         }
                     }
                 }
-                .withoutHorizontalPadding
+                .hSectionWithoutHorizontalPadding
                 .sectionContainerStyle(.transparent)
             }
         }

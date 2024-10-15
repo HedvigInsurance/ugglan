@@ -323,6 +323,23 @@ extension View {
     }
 }
 
+private struct EnvironmentHWithoutSectionHorizontalPadding: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    public var hWithoutSectionHorizontalPadding: Bool {
+        get { self[EnvironmentHWithoutSectionHorizontalPadding.self] }
+        set { self[EnvironmentHWithoutSectionHorizontalPadding.self] = newValue }
+    }
+}
+
+extension View {
+    public var hSectionWithoutHorizontalPadding: some View {
+        self.environment(\.hWithoutSectionHorizontalPadding, true)
+    }
+}
+
 private struct EnvironmentHWithoutHorizontalPadding: EnvironmentKey {
     static let defaultValue = false
 }
@@ -373,6 +390,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.minimumPadding) var minimumPadding
     @Environment(\.hEmbeddedHeader) var embeddedHeader
+    @Environment(\.hWithoutSectionHorizontalPadding) var hSectionWithoutHorizontalPadding
 
     var header: Header?
     var content: Content
@@ -429,13 +447,10 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .padding(.horizontal, minimumPadding ? 16 : (horizontalSizeClass == .regular ? 60 : 16))
-    }
-
-    /// removes hSection leading and trailing padding
-    public var withoutHorizontalPadding: some View {
-        self
-            .padding(.horizontal, horizontalSizeClass == .regular ? -60 : -16)
+        .padding(
+            .horizontal,
+            minimumPadding ? 16 : (hSectionWithoutHorizontalPadding ? 0 : (horizontalSizeClass == .regular ? 60 : 16))
+        )
     }
 
     public func withHeader<HeaderView: View>(
