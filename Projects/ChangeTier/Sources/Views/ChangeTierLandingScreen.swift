@@ -14,31 +14,37 @@ public struct ChangeTierLandingScreen: View {
     }
 
     public var body: some View {
-        ProcessingStateView(
-            loadingViewText: L10n.tierFlowProcessing,
-            successViewTitle: nil,
-            successViewBody: nil,
-            successViewButtonAction: nil,
-            onAppearLoadingView: nil,
-            errorViewButtons: .init(
-                actionButton: .init(
-                    buttonTitle: nil,
-                    buttonAction: {
-                        vm.fetchTiers()
-                    }
-                ),
-                dismissButton:
-                    .init(
-                        buttonTitle: L10n.generalCloseButton,
+        if vm.missingQuotes {
+            InfoScreen(text: L10n.terminationNoTierQuotesSubtitle, dismissButtonTitle: L10n.embarkGoBackButton) {
+                changeTierNavigationVm.missingQuotesGoBackPressed()
+            }
+        } else {
+            ProcessingStateView(
+                loadingViewText: L10n.tierFlowProcessing,
+                successViewTitle: nil,
+                successViewBody: nil,
+                successViewButtonAction: nil,
+                onAppearLoadingView: nil,
+                errorViewButtons: .init(
+                    actionButton: .init(
+                        buttonTitle: nil,
                         buttonAction: {
-                            changeTierNavigationVm.router.dismiss()
+                            vm.fetchTiers()
                         }
-                    )
-            ),
-            state: $vm.viewState
-        )
-        .hCustomSuccessView {
-            succesView
+                    ),
+                    dismissButton:
+                        .init(
+                            buttonTitle: L10n.generalCloseButton,
+                            buttonAction: {
+                                changeTierNavigationVm.router.dismiss()
+                            }
+                        )
+                ),
+                state: $vm.viewState
+            )
+            .hCustomSuccessView {
+                succesView
+            }
         }
     }
 

@@ -12,8 +12,9 @@ class TerminationFlowNavigationViewModel: ObservableObject {
     @Published var isProcessingPresented = false
     @Published var changeTierInput: ChangeTierInput?
     @Published var loadingActions: [FlowTerminationSurveyRedirectAction: LoadingState<String>] = [:]
-    var isFlowPresented: (DismissTerminationAction) -> Void = { _ in }
+    @Published var infoText: String?
 
+    var isFlowPresented: (DismissTerminationAction) -> Void = { _ in }
     var redirectAction: FlowTerminationSurveyRedirectAction? {
         didSet {
             switch redirectAction {
@@ -50,8 +51,21 @@ class TerminationFlowNavigationViewModel: ObservableObject {
                                 )
                                 self?.router.dismiss()
                             }
-                        } catch let ex {
-                            Toasts.shared.displayToastBar(toast: .init(type: .error, text: ex.localizedDescription))
+                        } catch let exception {
+                            if let exception = exception as? ChangeTierError {
+                                switch exception {
+                                case .emptyList:
+                                    self.infoText = L10n.terminationNoTierQuotesSubtitle
+                                default:
+                                    Toasts.shared.displayToastBar(
+                                        toast: .init(type: .error, text: exception.localizedDescription)
+                                    )
+                                }
+                            } else {
+                                Toasts.shared.displayToastBar(
+                                    toast: .init(type: .error, text: exception.localizedDescription)
+                                )
+                            }
                         }
                         loadingActions[redirectAction] = nil
                     }
@@ -177,6 +191,7 @@ struct TerminationFlowNavigation: View {
         .modally(presented: $vm.isProcessingPresented) {
             openProgressScreen()
         }
+        .showInfoScreen(text: $vm.infoText, dismissButtonTitle: L10n.embarkGoBackButton)
     }
 
     @ViewBuilder
