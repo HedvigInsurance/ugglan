@@ -97,7 +97,7 @@ final class ChangeTierViewModelTests: XCTestCase {
         assert(model.tiers.first == tiers.first)
         assert(model.tiers.count == tiers.count)
         assert(model.exposureName == "exposureName")
-        assert(model.displayName == "displayName")
+        assert(model.displayName == "display name")
         assert(model.activationDate == activationDate)
         assert(model.canEditTier)
         assert(model.viewState == .success)
