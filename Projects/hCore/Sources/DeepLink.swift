@@ -21,7 +21,7 @@ public enum DeepLink: String, Codable, CaseIterable {
     case contactInfo = "contact-info"
 
     public func wholeText(displayText: String) -> String {
-        return L10n.generalGoTo(displayText)
+        return L10n.generalGoTo(displayText.lowercased())
     }
 
     public var importantText: String {
