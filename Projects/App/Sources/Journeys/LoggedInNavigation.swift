@@ -455,7 +455,7 @@ class LoggedInNavigationViewModel: ObservableObject {
 
     @Published var isTravelInsurancePresented = false
     @Published var isMoveContractPresented = false
-    @Published var isChangeTierPresented: ChangeTierInput?
+    @Published var isChangeTierPresented: ChangeTierContractsInput?
     @Published var isEuroBonusPresented = false
     @Published var isUrlPresented: URL?
     private var openDeepLinkObserver: NSObjectProtocol?
@@ -643,18 +643,39 @@ class LoggedInNavigationViewModel: ObservableObject {
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 self.selectedTab = 4
                 self.profileNavigationVm.pushToProfile()
-            case nil:
-                openUrl(url: url)
             case .changeTier:
                 let contractId = self.getContractId(from: url)
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
                 if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
-                        self?.isChangeTierPresented = .contractWithSource(
-                            data: .init(source: .changeTier, contractId: contractId)
+                        self?.isChangeTierPresented = .init(
+                            source: .changeTier,
+                            contracts: [
+                                .init(
+                                    contractId: contractId,
+                                    contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
+                                    contractExposureName: contract.exposureDisplayName
+                                )
+                            ]
                         )
                     }
+                } else {
+                    let contractsSupportingChangingTier: [ChangeTierContract] = contractStore.state.activeContracts
+                        .filter({ $0.supportsChangeTier })
+                        .map({
+                            .init(
+                                contractId: $0.id,
+                                contractDisplayName: $0.currentAgreement?.productVariant.displayName ?? "",
+                                contractExposureName: $0.exposureDisplayName
+                            )
+                        })
+                    self.isChangeTierPresented = ChangeTierContractsInput(
+                        source: .changeTier,
+                        contracts: contractsSupportingChangingTier
+                    )
                 }
+            case nil:
+                openUrl(url: url)
             }
         }
     }
