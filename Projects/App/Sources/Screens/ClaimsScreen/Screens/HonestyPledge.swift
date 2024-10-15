@@ -17,11 +17,12 @@ struct SlideToConfirm: View {
     var body: some View {
         if #available(iOS 16.0, *) {
             slider
-                .onTapGesture(coordinateSpace: .global) { location in
+                .onTapGesture(coordinateSpace: .local) { location in
                     if didFinished {
                         return
                     }
-                    let progress = location.x
+                    let progress = location.x + 25
+                    print("PROGRESS IS \(progress) - \(width)")
                     withAnimation(animation) {
                         self.progress = progress
                     }
