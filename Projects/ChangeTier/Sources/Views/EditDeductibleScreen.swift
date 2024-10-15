@@ -86,9 +86,9 @@ struct EditDeductibleScreen: View {
     }
 
     func displayTitle(deductible: Quote) -> String {
-        var displayTitle: String = (deductible.quoteAmount?.formattedAmount ?? "")
+        var displayTitle: String = (deductible.deductableAmount?.formattedAmount ?? "")
 
-        if let deductiblePercentage = deductible.quotePercentage {
+        if let deductiblePercentage = deductible.deductablePercentage {
             displayTitle += " + \(deductiblePercentage)%"
         }
         return displayTitle

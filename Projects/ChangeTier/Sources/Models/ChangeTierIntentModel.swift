@@ -71,8 +71,8 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable {
 
 public struct Quote: Codable, Hashable, Identifiable {
     public var id: String
-    let quoteAmount: MonetaryAmount?
-    let quotePercentage: Int?
+    let deductableAmount: MonetaryAmount?
+    let deductablePercentage: Int?
     let subTitle: String?
     let premium: MonetaryAmount
 
@@ -89,8 +89,8 @@ public struct Quote: Codable, Hashable, Identifiable {
         productVariant: ProductVariant?
     ) {
         self.id = id
-        self.quoteAmount = quoteAmount
-        self.quotePercentage = quotePercentage
+        self.deductableAmount = quoteAmount
+        self.deductablePercentage = quotePercentage
         self.subTitle = subTitle
         self.premium = premium
         self.displayItems = displayItems
@@ -118,6 +118,6 @@ public struct Quote: Codable, Hashable, Identifiable {
 
 extension Quote: Equatable {
     static public func == (lhs: Quote, rhs: Quote) -> Bool {
-        return lhs.quoteAmount == rhs.quoteAmount && lhs.quotePercentage == rhs.quotePercentage
+        return lhs.deductableAmount == rhs.deductableAmount && lhs.deductablePercentage == rhs.deductablePercentage
     }
 }
