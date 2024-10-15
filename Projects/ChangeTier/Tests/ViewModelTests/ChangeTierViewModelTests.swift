@@ -12,60 +12,43 @@ final class ChangeTierViewModelTests: XCTestCase {
         id: "currentTier",
         name: "current tier",
         level: 1,
-        deductibles: [],
-        displayItems: [],
-        exposureName: nil,
-        productVariant: nil,
-        FAQs: []
+        quotes: [],
+        exposureName: nil
     )
     let tiers: [Tier] = [
         .init(
             id: "id1",
             name: "standard",
             level: 1,
-            deductibles: [],
-            displayItems: [],
-            exposureName: "exposureName",
-            productVariant: .init(
-                termsVersion: "",
-                typeOfContract: "",
-                partner: nil,
-                perils: [],
-                insurableLimits: [],
-                documents: [],
-                displayName: "displayName",
-                displayNameTier: nil,
-                tierDescription: nil
-            ),
-            FAQs: []
+            quotes: [],
+            exposureName: "exposureName"
         ),
         .init(
             id: "id2",
             name: "max",
             level: 2,
-            deductibles: [
+            quotes: [
                 .init(
                     id: "id1",
-                    deductibleAmount: nil,
-                    deductiblePercentage: nil,
+                    quoteAmount: nil,
+                    quotePercentage: nil,
                     subTitle: nil,
-                    premium: .init(amount: "229", currency: "SEK")
+                    premium: .init(amount: "229", currency: "SEK"),
+                    displayItems: [],
+                    productVariant: .init(
+                        termsVersion: "",
+                        typeOfContract: "",
+                        partner: nil,
+                        perils: [],
+                        insurableLimits: [],
+                        documents: [],
+                        displayName: "displayName",
+                        displayNameTier: nil,
+                        tierDescription: nil
+                    )
                 )
             ],
-            displayItems: [],
-            exposureName: "exposureName",
-            productVariant: .init(
-                termsVersion: "",
-                typeOfContract: "",
-                partner: nil,
-                perils: [],
-                insurableLimits: [],
-                documents: [],
-                displayName: "displayName",
-                displayNameTier: nil,
-                tierDescription: nil
-            ),
-            FAQs: []
+            exposureName: "exposureName"
         ),
     ]
 
@@ -85,13 +68,14 @@ final class ChangeTierViewModelTests: XCTestCase {
     func testFetchTiersSuccess() async throws {
         let activationDate = "2024-12-12".localDateToDate ?? Date()
         let changeTierIntentModel: ChangeTierIntentModel = .init(
+            displayName: "display name",
             activationDate: activationDate,
             tiers: tiers,
             currentPremium: .init(amount: "449", currency: "SEK"),
             currentTier: currentTier,
-            currentDeductible: nil,
+            currentQuote: nil,
             selectedTier: nil,
-            selectedDeductible: nil,
+            selectedQuote: nil,
             canEditTier: true,
             typeOfContract: .seHouse
         )
@@ -113,7 +97,7 @@ final class ChangeTierViewModelTests: XCTestCase {
         assert(model.tiers.first == tiers.first)
         assert(model.tiers.count == tiers.count)
         assert(model.exposureName == "exposureName")
-        assert(model.displayName == "displayName")
+        assert(model.displayName == "display name")
         assert(model.activationDate == activationDate)
         assert(model.canEditTier)
         assert(model.viewState == .success)
@@ -152,13 +136,14 @@ final class ChangeTierViewModelTests: XCTestCase {
     func testSetSelectedTierSuccess() async throws {
         let activationDate = "2024-12-12".localDateToDate ?? Date()
         let changeTierIntentModel: ChangeTierIntentModel = .init(
+            displayName: "display name",
             activationDate: activationDate,
             tiers: tiers,
             currentPremium: .init(amount: "449", currency: "SEK"),
             currentTier: currentTier,
-            currentDeductible: nil,
+            currentQuote: nil,
             selectedTier: nil,
-            selectedDeductible: nil,
+            selectedQuote: nil,
             canEditTier: true,
             typeOfContract: .seHouse
         )
@@ -221,13 +206,14 @@ final class ChangeTierViewModelTests: XCTestCase {
     func testSetSelectedDeductibleSuccess() async throws {
         let activationDate = "2024-12-12".localDateToDate ?? Date()
         let changeTierIntentModel: ChangeTierIntentModel = .init(
+            displayName: "display name",
             activationDate: activationDate,
             tiers: tiers,
             currentPremium: .init(amount: "449", currency: "SEK"),
             currentTier: nil,
-            currentDeductible: nil,
+            currentQuote: nil,
             selectedTier: nil,
-            selectedDeductible: nil,
+            selectedQuote: nil,
             canEditTier: true,
             typeOfContract: .seHouse
         )
@@ -244,11 +230,11 @@ final class ChangeTierViewModelTests: XCTestCase {
         self.vm = model
         try await Task.sleep(nanoseconds: 30_000_000)
         await model.setTier(for: "max")
-        await model.setDeductible(for: model.selectedTier?.deductibles.first?.id ?? "")
-        assert(model.selectedDeductible != nil)
-        assert(model.selectedDeductible?.id == model.selectedTier?.deductibles.first?.id)
+        await model.setDeductible(for: model.selectedTier?.quotes.first?.id ?? "")
+        assert(model.selectedQuote != nil)
+        assert(model.selectedQuote?.id == model.selectedTier?.quotes.first?.id)
         assert(model.selectedTier == tiers[1])
-        assert(model.selectedDeductible == tiers[1].deductibles[0])
+        assert(model.selectedQuote == tiers[1].quotes[0])
         assert(model.tiers == tiers)
         assert(model.tiers.first == tiers.first)
         assert(model.tiers.count == tiers.count)
@@ -274,8 +260,8 @@ final class ChangeTierViewModelTests: XCTestCase {
         self.vm = model
         model.fetchTiers()
         await model.setTier(for: "max")
-        await model.setDeductible(for: model.selectedTier?.deductibles.first?.id ?? "")
-        assert(model.selectedDeductible == nil)
+        await model.setDeductible(for: model.selectedTier?.quotes.first?.id ?? "")
+        assert(model.selectedQuote == nil)
         assert(model.selectedTier == nil)
         assert(model.canEditTier == false)
         assert(model.tiers.isEmpty)

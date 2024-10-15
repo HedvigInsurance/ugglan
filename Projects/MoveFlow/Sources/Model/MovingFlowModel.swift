@@ -16,9 +16,9 @@ public struct MovingFlowModel: Codable, Equatable, Hashable {
     let maxMovingDate: String
     let suggestedNumberCoInsured: Int
     let currentHomeAddresses: [MoveAddress]
-    let potentialHomeQuotes: [Quote]
-    var homeQuote: Quote?
-    let quotes: [Quote]
+    let potentialHomeQuotes: [MovingFlowQuote]
+    var homeQuote: MovingFlowQuote?
+    let quotes: [MovingFlowQuote]
     let faqs: [FAQ]
     let extraBuildingTypes: [ExtraBuildingType]
     let changeTier: ChangeTierIntentModel?
@@ -34,8 +34,8 @@ public struct MovingFlowModel: Codable, Equatable, Hashable {
         maxMovingDate: String,
         suggestedNumberCoInsured: Int,
         currentHomeAddresses: [MoveAddress],
-        potentialHomeQuotes: [Quote],
-        quotes: [Quote],
+        potentialHomeQuotes: [MovingFlowQuote],
+        quotes: [MovingFlowQuote],
         faqs: [FAQ],
         extraBuildingTypes: [ExtraBuildingType]
     ) {
@@ -100,7 +100,7 @@ struct MoveAddress: Codable, Equatable, Hashable {
     let city: String?
 }
 
-struct Quote: Codable, Equatable, Hashable {
+struct MovingFlowQuote: Codable, Equatable, Hashable {
     typealias KeyValue = (key: String, value: String)
     let premium: MonetaryAmount
     let startDate: String

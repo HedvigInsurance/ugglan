@@ -4,33 +4,37 @@ import hCoreUI
 import hGraphQL
 
 public struct ChangeTierIntentModel: Codable, Equatable, Hashable {
+    let displayName: String
     let activationDate: Date
     let tiers: [Tier]
     let currentPremium: MonetaryAmount?
     let currentTier: Tier?
-    let currentDeductible: Deductible?
+    let currentQuote: Quote?
     let selectedTier: Tier?
-    let selectedDeductible: Deductible?
+    let selectedQuote: Quote?
     let canEditTier: Bool
     let typeOfContract: TypeOfContract
+
     public init(
+        displayName: String,
         activationDate: Date,
         tiers: [Tier],
         currentPremium: MonetaryAmount?,
         currentTier: Tier?,
-        currentDeductible: Deductible?,
+        currentQuote: Quote?,
         selectedTier: Tier?,
-        selectedDeductible: Deductible?,
+        selectedQuote: Quote?,
         canEditTier: Bool,
         typeOfContract: TypeOfContract
     ) {
+        self.displayName = displayName
         self.activationDate = activationDate
         self.tiers = tiers
         self.currentPremium = currentPremium
         self.currentTier = currentTier
-        self.currentDeductible = currentDeductible
+        self.currentQuote = currentQuote
         self.selectedTier = selectedTier
-        self.selectedDeductible = selectedDeductible
+        self.selectedQuote = selectedQuote
         self.canEditTier = canEditTier
         self.typeOfContract = typeOfContract
     }
@@ -40,33 +44,60 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable {
     public var id: String
     let name: String
     let level: Int
-    public let deductibles: [Deductible]
-    let displayItems: [TierDisplayItem]
+    public let quotes: [Quote]
     let exposureName: String?
-    let productVariant: ProductVariant?
-    let FAQs: [FAQ]?
 
     public init(
         id: String,
         name: String,
         level: Int,
-        deductibles: [Deductible],
-        displayItems: [TierDisplayItem],
-        exposureName: String?,
-        productVariant: ProductVariant?,
-        FAQs: [FAQ]?
+        quotes: [Quote],
+        exposureName: String?
     ) {
         self.id = id
         self.name = name
         self.level = level
-        self.deductibles = deductibles
-        self.displayItems = displayItems
+        self.quotes = quotes
         self.exposureName = exposureName
-        self.productVariant = productVariant
-        self.FAQs = FAQs
     }
 
-    public struct TierDisplayItem: Codable, Equatable, Hashable {
+    func getPremium() -> MonetaryAmount? {
+        if quotes.count == 1 {
+            return quotes.first?.premium
+        }
+        return nil
+    }
+}
+
+public struct Quote: Codable, Hashable, Identifiable {
+    public var id: String
+    let deductableAmount: MonetaryAmount?
+    let deductablePercentage: Int?
+    let subTitle: String?
+    let premium: MonetaryAmount
+
+    let displayItems: [DisplayItem]
+    public let productVariant: ProductVariant?
+
+    public init(
+        id: String,
+        quoteAmount: MonetaryAmount?,
+        quotePercentage: Int?,
+        subTitle: String?,
+        premium: MonetaryAmount,
+        displayItems: [DisplayItem],
+        productVariant: ProductVariant?
+    ) {
+        self.id = id
+        self.deductableAmount = quoteAmount
+        self.deductablePercentage = quotePercentage
+        self.subTitle = subTitle
+        self.premium = premium
+        self.displayItems = displayItems
+        self.productVariant = productVariant
+    }
+
+    public struct DisplayItem: Codable, Equatable, Hashable {
         public var id = UUID()
 
         public init(
@@ -83,40 +114,10 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable {
         let subTitle: String?
         let value: String
     }
-
-    func getPremium() -> MonetaryAmount? {
-        if deductibles.count == 1 {
-            return deductibles.first?.premium
-        }
-        return nil
-    }
 }
 
-public struct Deductible: Codable, Hashable, Identifiable {
-    public var id: String
-
-    let deductibleAmount: MonetaryAmount?
-    let deductiblePercentage: Int?
-    let subTitle: String?
-    let premium: MonetaryAmount
-
-    public init(
-        id: String,
-        deductibleAmount: MonetaryAmount?,
-        deductiblePercentage: Int?,
-        subTitle: String?,
-        premium: MonetaryAmount
-    ) {
-        self.id = id
-        self.deductibleAmount = deductibleAmount
-        self.deductiblePercentage = deductiblePercentage
-        self.subTitle = subTitle
-        self.premium = premium
-    }
-}
-
-extension Deductible: Equatable {
-    static public func == (lhs: Deductible, rhs: Deductible) -> Bool {
-        return lhs.deductibleAmount == rhs.deductibleAmount && lhs.deductiblePercentage == rhs.deductiblePercentage
+extension Quote: Equatable {
+    static public func == (lhs: Quote, rhs: Quote) -> Bool {
+        return lhs.deductableAmount == rhs.deductableAmount && lhs.deductablePercentage == rhs.deductablePercentage
     }
 }

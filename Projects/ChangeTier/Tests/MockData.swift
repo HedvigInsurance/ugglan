@@ -8,13 +8,14 @@ struct MockData {
     static func createMockChangeTier(
         fetchTier: @escaping GetTier = { _ in
             .init(
+                displayName: "display name",
                 activationDate: Date(),
                 tiers: [],
                 currentPremium: .init(amount: "449", currency: "SEK"),
                 currentTier: nil,
-                currentDeductible: nil,
+                currentQuote: nil,
                 selectedTier: nil,
-                selectedDeductible: nil,
+                selectedQuote: nil,
                 canEditTier: true,
                 typeOfContract: .seHouse
             )

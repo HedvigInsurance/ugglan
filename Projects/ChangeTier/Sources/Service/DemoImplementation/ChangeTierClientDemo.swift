@@ -7,164 +7,162 @@ public class ChangeTierClientDemo: ChangeTierClient {
 
     public func getTier(input: ChangeTierInputData) async throws -> ChangeTierIntentModel {
 
-        let deductibles: [Deductible] = [
-            .init(
-                id: "id1",
-                deductibleAmount: .init(amount: "1000", currency: "SEK"),
-                deductiblePercentage: 0,
-                subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                premium: .init(amount: "1167", currency: "SEK")
-            ),
-            .init(
-                id: "id2",
-                deductibleAmount: .init(amount: "2000", currency: "SEK"),
-                deductiblePercentage: 25,
-                subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                premium: .init(amount: "999", currency: "SEK")
-            ),
-            .init(
-                id: "id3",
-                deductibleAmount: .init(amount: "3000", currency: "SEK"),
-                deductiblePercentage: 15,
-                subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                premium: .init(amount: "569", currency: "SEK")
-            ),
-        ]
-
-        let displayItems: [Tier.TierDisplayItem] = [
+        let displayItems: [Quote.DisplayItem] = [
             .init(title: "Activation date", subTitle: nil, value: "24 sep 2024"),
             .init(title: "Coverage level", subTitle: nil, value: "Standard"),
             .init(title: "Deductible", subTitle: nil, value: "1750 kr"),
         ]
 
+        let quotes: [Quote] = [
+            .init(
+                id: "id1",
+                quoteAmount: .init(amount: "1000", currency: "SEK"),
+                quotePercentage: 0,
+                subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                premium: .init(amount: "1167", currency: "SEK"),
+                displayItems: displayItems,
+                productVariant: .init(
+                    termsVersion: "",
+                    typeOfContract: "",
+                    partner: nil,
+                    perils: [
+                        .init(
+                            id: "id1",
+                            title: "title1",
+                            description: "description1",
+                            color: nil,
+                            covered: []
+                        ),
+                        .init(
+                            id: "id2",
+                            title: "title2",
+                            description: "description2",
+                            color: nil,
+                            covered: []
+                        ),
+                        .init(
+                            id: "id3",
+                            title: "title3",
+                            description: "description3",
+                            color: nil,
+                            covered: []
+                        ),
+                    ],
+                    insurableLimits: [],
+                    documents: [],
+                    displayName: "Homeowner",
+                    displayNameTier: "Standard",
+                    tierDescription: "Vårt mellanpaket med hög ersättning."
+                )
+            ),
+            .init(
+                id: "id2",
+                quoteAmount: .init(amount: "2000", currency: "SEK"),
+                quotePercentage: 25,
+                subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                premium: .init(amount: "999", currency: "SEK"),
+                displayItems: displayItems,
+                productVariant: .init(
+                    termsVersion: "",
+                    typeOfContract: "",
+                    partner: nil,
+                    perils: [
+                        .init(
+                            id: "id1",
+                            title: "title1",
+                            description: "description1",
+                            color: nil,
+                            covered: []
+                        ),
+                        .init(
+                            id: "id2",
+                            title: "title2",
+                            description: "description2",
+                            color: nil,
+                            covered: []
+                        ),
+                        .init(
+                            id: "id3",
+                            title: "title3",
+                            description: "description3",
+                            color: nil,
+                            covered: []
+                        ),
+                    ],
+                    insurableLimits: [],
+                    documents: [],
+                    displayName: "Homeowner",
+                    displayNameTier: "Standard",
+                    tierDescription: "Vårt mellanpaket med hög ersättning."
+                )
+            ),
+            .init(
+                id: "id3",
+                quoteAmount: .init(amount: "3000", currency: "SEK"),
+                quotePercentage: 15,
+                subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                premium: .init(amount: "569", currency: "SEK"),
+                displayItems: displayItems,
+                productVariant: .init(
+                    termsVersion: "",
+                    typeOfContract: "",
+                    partner: nil,
+                    perils: [
+                        .init(
+                            id: "id1",
+                            title: "title1",
+                            description: "description1",
+                            color: nil,
+                            covered: []
+                        ),
+                        .init(
+                            id: "id2",
+                            title: "title2",
+                            description: "description2",
+                            color: nil,
+                            covered: []
+                        ),
+                        .init(
+                            id: "id3",
+                            title: "title3",
+                            description: "description3",
+                            color: nil,
+                            covered: []
+                        ),
+                    ],
+                    insurableLimits: [],
+                    documents: [],
+                    displayName: "Homeowner",
+                    displayNameTier: "Standard",
+                    tierDescription: "Vårt mellanpaket med hög ersättning."
+                )
+            ),
+        ]
+
         return .init(
+            displayName: "display name",
             activationDate: Date(),
             tiers: [
                 .init(
                     id: "id",
                     name: "Bas",
                     level: 0,
-                    deductibles: deductibles,
-                    displayItems: displayItems,
-                    exposureName: "Bellmansgatan 19A",
-                    productVariant: .init(
-                        termsVersion: "",
-                        typeOfContract: "",
-                        partner: nil,
-                        perils: [
-                            .init(
-                                id: "id1",
-                                title: "title1",
-                                description: "description1",
-                                color: nil,
-                                covered: []
-                            ),
-                            .init(
-                                id: "id2",
-                                title: "title2",
-                                description: "description2",
-                                color: nil,
-                                covered: []
-                            ),
-                            .init(
-                                id: "id3",
-                                title: "title3",
-                                description: "description3",
-                                color: nil,
-                                covered: []
-                            ),
-                        ],
-                        insurableLimits: [],
-                        documents: [],
-                        displayName: "Homeowner",
-                        displayNameTier: "Bas",
-                        tierDescription: "Vårt mellanpaket med hög ersättning."
-                    ),
-                    FAQs: nil
+                    quotes: quotes,
+                    exposureName: "Bellmansgatan 19A"
                 ),
                 .init(
                     id: "i2",
                     name: "Standard",
                     level: 0,
-                    deductibles: deductibles,
-                    displayItems: displayItems,
-                    exposureName: "Bellmansgatan 19A",
-                    productVariant: .init(
-                        termsVersion: "",
-                        typeOfContract: "",
-                        partner: nil,
-                        perils: [
-                            .init(
-                                id: "id1",
-                                title: "title1",
-                                description: "description1",
-                                color: nil,
-                                covered: []
-                            ),
-                            .init(
-                                id: "id2",
-                                title: "title2",
-                                description: "description2",
-                                color: nil,
-                                covered: []
-                            ),
-                            .init(
-                                id: "id3",
-                                title: "title3",
-                                description: "description3",
-                                color: nil,
-                                covered: []
-                            ),
-                        ],
-                        insurableLimits: [],
-                        documents: [],
-                        displayName: "Homeowner",
-                        displayNameTier: "Standard",
-                        tierDescription: "Vårt mellanpaket med hög ersättning."
-                    ),
-                    FAQs: nil
+                    quotes: quotes,
+                    exposureName: "Bellmansgatan 19A"
                 ),
                 .init(
                     id: "id3",
                     name: "Max",
                     level: 0,
-                    deductibles: deductibles,
-                    displayItems: displayItems,
-                    exposureName: "Bellmansgatan 19A",
-                    productVariant: .init(
-                        termsVersion: "",
-                        typeOfContract: "",
-                        partner: nil,
-                        perils: [
-                            .init(
-                                id: "id1",
-                                title: "title1",
-                                description: "description1",
-                                color: nil,
-                                covered: []
-                            ),
-                            .init(
-                                id: "id2",
-                                title: "title2",
-                                description: "description2",
-                                color: nil,
-                                covered: []
-                            ),
-                            .init(
-                                id: "id3",
-                                title: "title3",
-                                description: "description3",
-                                color: nil,
-                                covered: []
-                            ),
-                        ],
-                        insurableLimits: [],
-                        documents: [],
-                        displayName: "Homeowner",
-                        displayNameTier: "Max",
-                        tierDescription: "Vårt mellanpaket med hög ersättning."
-                    ),
-                    FAQs: nil
+                    quotes: quotes,
+                    exposureName: "Bellmansgatan 19A"
                 ),
             ],
             currentPremium: .init(amount: "449", currency: "SEK"),
@@ -172,37 +170,52 @@ public class ChangeTierClientDemo: ChangeTierClient {
                 id: "id",
                 name: "Max",
                 level: 3,
-                deductibles: deductibles,
-                displayItems: [],
-                exposureName: "",
+                quotes: quotes,
+                exposureName: ""
+            ),
+            currentQuote: .init(
+                id: "id1",
+                quoteAmount: .init(amount: "449", currency: "SEK"),
+                quotePercentage: 25,
+                subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
+                premium: .init(amount: "999", currency: "SEK"),
+                displayItems: displayItems,
                 productVariant: .init(
                     termsVersion: "",
                     typeOfContract: "",
-                    partner: "",
-                    perils: [],
-                    insurableLimits: [
-                        .init(label: "label", limit: "limit", description: "description")
+                    partner: nil,
+                    perils: [
+                        .init(
+                            id: "id1",
+                            title: "title1",
+                            description: "description1",
+                            color: nil,
+                            covered: []
+                        ),
+                        .init(
+                            id: "id2",
+                            title: "title2",
+                            description: "description2",
+                            color: nil,
+                            covered: []
+                        ),
+                        .init(
+                            id: "id3",
+                            title: "title3",
+                            description: "description3",
+                            color: nil,
+                            covered: []
+                        ),
                     ],
+                    insurableLimits: [],
                     documents: [],
-                    displayName: "",
-                    displayNameTier: "",
-                    tierDescription: ""
-                ),
-                FAQs: [
-                    .init(title: "question 1", description: "..."),
-                    .init(title: "question 2", description: "..."),
-                    .init(title: "question 3", description: "..."),
-                ]
-            ),
-            currentDeductible: .init(
-                id: "id1",
-                deductibleAmount: .init(amount: "449", currency: "SEK"),
-                deductiblePercentage: 25,
-                subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                premium: .init(amount: "999", currency: "SEK")
+                    displayName: "Homeowner",
+                    displayNameTier: "Standard",
+                    tierDescription: "Vårt mellanpaket med hög ersättning."
+                )
             ),
             selectedTier: nil,
-            selectedDeductible: nil,
+            selectedQuote: nil,
             canEditTier: true,
             typeOfContract: .seApartmentBrf
         )
