@@ -80,7 +80,9 @@ struct MessageView: View {
                             NotificationCenter.default.post(name: .openDeepLink, object: url)
                         } label: {
                             hText(type.wholeText(displayText: url.contractName ?? type.importantText))
+                                .foregroundColor(hTextColor.Opaque.primary)
                                 .multilineTextAlignment(.leading)
+                                .environment(\.colorScheme, .light)
                         }
                     } else {
                         MarkdownView(
