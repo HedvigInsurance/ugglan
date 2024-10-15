@@ -618,13 +618,22 @@ class LoggedInNavigationViewModel: ObservableObject {
                 self.isMoveContractPresented = true
             case .terminateContract:
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                let contractId = self.getContractId(from: url)
+                var contractsConfig: [TerminationConfirmConfig] = []
 
-                let contractsConfig: [TerminationConfirmConfig] = contractStore.state.activeContracts
-                    .filter({ $0.canTerminate })
-                    .map({
-                        $0.asTerminationConfirmConfig
-                    })
-                self.terminateInsuranceVm.start(with: contractsConfig)
+                if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+                        contractsConfig = [contract.asTerminationConfirmConfig]
+                        self?.terminateInsuranceVm.start(with: contractsConfig)
+                    }
+                } else {
+                    contractsConfig = contractStore.state.activeContracts
+                        .filter({ $0.canTerminate })
+                        .map({
+                            $0.asTerminationConfirmConfig
+                        })
+                    self.terminateInsuranceVm.start(with: contractsConfig)
+                }
             case .conversation:
                 let conversationId = self.getConversationId(from: url)
 
