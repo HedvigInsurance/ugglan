@@ -17,18 +17,18 @@ public class ChangeTierViewModel: ObservableObject {
 
     @Published var currentPremium: MonetaryAmount?
     var currentTier: Tier?
-    private var currentDeductible: Deductible?
+    private var currentQuote: Quote?
     var newPremium: MonetaryAmount?
     @Published var canEditTier: Bool = false
     @Published var canEditDeductible: Bool = false
 
     @Published var selectedTier: Tier?
-    @Published var selectedDeductible: Deductible?
+    @Published var selectedQuote: Quote?
 
     var isValid: Bool {
         let selectedTierIsSameAsCurrent = currentTier?.name == selectedTier?.name
-        let selectedDeductibleIsSameAsCurrent = currentDeductible == selectedDeductible
-        let isDeductibleValid = selectedDeductible != nil || selectedTier?.deductibles.isEmpty ?? false
+        let selectedDeductibleIsSameAsCurrent = currentQuote == selectedQuote
+        let isDeductibleValid = selectedQuote != nil || selectedTier?.quotes.isEmpty ?? false
         let isTierValid = selectedTier != nil
         let hasSelectedValues = isTierValid && isDeductibleValid
 
@@ -36,7 +36,7 @@ public class ChangeTierViewModel: ObservableObject {
     }
 
     var showDeductibleField: Bool {
-        return !(selectedTier?.deductibles.isEmpty ?? true) && selectedTier != nil
+        return !(selectedTier?.quotes.isEmpty ?? true) && selectedTier != nil
     }
 
     public init(
@@ -51,25 +51,27 @@ public class ChangeTierViewModel: ObservableObject {
         withAnimation {
             let newSelectedTier = tiers.first(where: { $0.name == tierName })
             if newSelectedTier != selectedTier {
-                if newSelectedTier?.deductibles.count ?? 0 == 1 {
-                    self.selectedDeductible = newSelectedTier?.deductibles.first
+                if newSelectedTier?.quotes.count ?? 0 == 1 {
+                    self.selectedQuote = newSelectedTier?.quotes.first
                     self.canEditDeductible = false
                 } else {
-                    self.selectedDeductible = nil
+                    self.selectedQuote = nil
                     self.canEditDeductible = true
                 }
             }
-            self.displayName = newSelectedTier?.productVariant?.displayName
+            self.displayName =
+                selectedQuote?.productVariant?.displayName ?? newSelectedTier?.quotes.first?.productVariant?
+                .displayName ?? displayName
             self.selectedTier = newSelectedTier
-            self.newPremium = selectedDeductible?.premium
+            self.newPremium = selectedQuote?.premium
         }
     }
 
     @MainActor
     func setDeductible(for deductibleId: String) {
         withAnimation {
-            if let deductible = selectedTier?.deductibles.first(where: { $0.id == deductibleId }) {
-                self.selectedDeductible = deductible
+            if let deductible = selectedTier?.quotes.first(where: { $0.id == deductibleId }) {
+                self.selectedQuote = deductible
                 self.newPremium = deductible.premium
             }
         }
@@ -84,11 +86,11 @@ public class ChangeTierViewModel: ObservableObject {
             do {
                 let data = try await getData()
                 self.tiers = data.tiers
-                self.displayName = data.tiers.first?.productVariant?.displayName
+                self.displayName = data.displayName
                 self.exposureName = data.tiers.first?.exposureName
                 self.currentPremium = data.currentPremium
                 self.currentTier = data.currentTier
-                self.currentDeductible = data.currentDeductible
+                self.currentQuote = data.currentQuote
                 self.activationDate = data.activationDate
                 self.typeOfContract = data.typeOfContract
 
@@ -100,15 +102,15 @@ public class ChangeTierViewModel: ObservableObject {
                     self.canEditTier = data.canEditTier
                 }
 
-                if selectedTier?.deductibles.count == 1 {
-                    self.selectedDeductible = selectedTier?.deductibles.first
+                if selectedTier?.quotes.count == 1 {
+                    self.selectedQuote = selectedTier?.quotes.first
                     self.canEditDeductible = false
                 } else {
-                    self.selectedDeductible = data.selectedDeductible ?? currentDeductible
+                    self.selectedQuote = data.selectedQuote ?? currentQuote
                     self.canEditDeductible = true
                 }
 
-                self.newPremium = selectedDeductible?.premium
+                self.newPremium = selectedQuote?.premium
 
                 withAnimation {
                     self.viewState = .success
