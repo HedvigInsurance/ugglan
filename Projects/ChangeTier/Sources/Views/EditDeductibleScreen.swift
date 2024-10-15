@@ -20,7 +20,7 @@ struct EditDeductibleScreen: View {
         }
 
         self._selectedDeductible = State(
-            initialValue: vm.selectedDeductible?.id ?? vm.selectedTier?.quotes.first?.id
+            initialValue: vm.selectedQuote?.id ?? vm.selectedTier?.quotes.first?.id
         )
     }
 

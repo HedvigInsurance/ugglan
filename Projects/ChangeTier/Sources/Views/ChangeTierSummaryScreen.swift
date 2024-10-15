@@ -23,7 +23,7 @@ struct ChangeTierSummaryScreen: View {
 extension ChangeTierViewModel {
     func asQuoteSummaryViewModel(changeTierNavigationVm: ChangeTierNavigationViewModel) -> QuoteSummaryViewModel {
         let displayItems: [QuoteDisplayItem] =
-            self.selectedDeductible?.displayItems.map({ .init(title: $0.title, value: $0.value) }) ?? []
+            self.selectedQuote?.displayItems.map({ .init(title: $0.title, value: $0.value) }) ?? []
 
         let vm = QuoteSummaryViewModel(
             contract: [
@@ -33,14 +33,14 @@ extension ChangeTierViewModel {
                     exposureName: self.exposureName ?? "",
                     newPremium: self.newPremium,
                     currentPremium: self.currentPremium,
-                    documents: self.selectedDeductible?.productVariant?.documents ?? [],
+                    documents: self.selectedQuote?.productVariant?.documents ?? [],
                     onDocumentTap: { [weak self] document in
                         if let url = URL(string: document.url) {
                             changeTierNavigationVm.document = .init(url: url, title: document.displayName)
                         }
                     },
                     displayItems: displayItems,
-                    insuranceLimits: self.selectedDeductible?.productVariant?.insurableLimits ?? [],
+                    insuranceLimits: self.selectedQuote?.productVariant?.insurableLimits ?? [],
                     typeOfContract: self.typeOfContract
                 )
             ],

@@ -137,7 +137,7 @@ public struct ChangeTierLandingScreen: View {
         if !vm.canEditDeductible {
             hSection {
                 hFloatingField(
-                    value: vm.selectedDeductible?.quoteAmount?.formattedAmount ?? "",
+                    value: vm.selectedQuote?.quoteAmount?.formattedAmount ?? "",
                     placeholder: L10n.tierFlowDeductibleLabel
                 ) {}
                 .hFieldLockedState
@@ -151,8 +151,8 @@ public struct ChangeTierLandingScreen: View {
             .padding(.bottom, 8)
         } else {
             DropdownView(
-                value: vm.selectedDeductible?.quoteAmount?.formattedAmount ?? "",
-                placeHolder: vm.selectedDeductible != nil
+                value: vm.selectedQuote?.quoteAmount?.formattedAmount ?? "",
+                placeHolder: vm.selectedQuote != nil
                     ? L10n.tierFlowDeductibleLabel : L10n.tierFlowDeductiblePlaceholder
             ) {
                 changeTierNavigationVm.isEditDeductiblePresented = true
@@ -175,7 +175,7 @@ public struct ChangeTierLandingScreen: View {
                     case .contractWithSource:
                         changeTierNavigationVm.router.push(ChangeTierRouterActions.summary)
                     case let .existingIntent(_, onSelect):
-                        if let selectedTier = vm.selectedTier, let selectedDeductible = vm.selectedDeductible {
+                        if let selectedTier = vm.selectedTier, let selectedDeductible = vm.selectedQuote {
                             onSelect((selectedTier, selectedDeductible))
                         }
                     }
