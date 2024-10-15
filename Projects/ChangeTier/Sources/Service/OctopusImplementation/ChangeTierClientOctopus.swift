@@ -50,13 +50,13 @@ public class ChangeTierClientOctopus: ChangeTierClient {
 
             /* get current tier if any matching */
             let currentTier: Tier? = filteredTiers.first(where: {
-                $0.name == intent.currentTierName && $0.level == intent.currentTierLevel
+                $0.name.lowercased() == intent.currentTierName?.lowercased()
             })
 
             /* get current deductible if any matching */
             let deductible = currentContract.currentAgreement.deductible
             let currentDeductible: Quote? = {
-                if let deductible = deductible {
+                if let deductible = deductible, currentTier != nil {
                     return Quote(
                         id: "current",
                         quoteAmount: .init(fragment: deductible.amount.fragments.moneyFragment),
