@@ -22,7 +22,6 @@ struct SlideToConfirm: View {
                         return
                     }
                     let progress = location.x + 25
-                    print("PROGRESS IS \(progress) - \(width)")
                     withAnimation(animation) {
                         self.progress = progress
                     }
