@@ -455,7 +455,7 @@ class LoggedInNavigationViewModel: ObservableObject {
 
     @Published var isTravelInsurancePresented = false
     @Published var isMoveContractPresented = false
-    @Published var isChangeTierPresented: ChangeTierInput?
+    @Published var isChangeTierPresented: ChangeTierContractsInput?
     @Published var isEuroBonusPresented = false
     @Published var isUrlPresented: URL?
     private var openDeepLinkObserver: NSObjectProtocol?
@@ -562,6 +562,11 @@ class LoggedInNavigationViewModel: ObservableObject {
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 self.selectedTab = 4
                 self.profileNavigationVm.pushToProfile()
+            case .CHANGE_TIER:
+                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+                let userInfo = notification.userInfo
+                let contractId = userInfo?["contractId"] as? String
+                handleChangeTier(contractId: contractId)
             }
         }
     }
@@ -613,13 +618,22 @@ class LoggedInNavigationViewModel: ObservableObject {
                 self.isMoveContractPresented = true
             case .terminateContract:
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                let contractId = self.getContractId(from: url)
+                var contractsConfig: [TerminationConfirmConfig] = []
 
-                let contractsConfig: [TerminationConfirmConfig] = contractStore.state.activeContracts
-                    .filter({ $0.canTerminate })
-                    .map({
-                        $0.asTerminationConfirmConfig
-                    })
-                self.terminateInsuranceVm.start(with: contractsConfig)
+                if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+                        contractsConfig = [contract.asTerminationConfirmConfig]
+                        self?.terminateInsuranceVm.start(with: contractsConfig)
+                    }
+                } else {
+                    contractsConfig = contractStore.state.activeContracts
+                        .filter({ $0.canTerminate })
+                        .map({
+                            $0.asTerminationConfirmConfig
+                        })
+                    self.terminateInsuranceVm.start(with: contractsConfig)
+                }
             case .conversation:
                 let conversationId = self.getConversationId(from: url)
 
@@ -643,18 +657,11 @@ class LoggedInNavigationViewModel: ObservableObject {
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 self.selectedTab = 4
                 self.profileNavigationVm.pushToProfile()
-            case nil:
-                openUrl(url: url)
             case .changeTier:
                 let contractId = self.getContractId(from: url)
-                let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
-                        self?.isChangeTierPresented = .contractWithSource(
-                            data: .init(source: .changeTier, contractId: contractId)
-                        )
-                    }
-                }
+                handleChangeTier(contractId: contractId)
+            case nil:
+                openUrl(url: url)
             }
         }
     }
@@ -693,6 +700,38 @@ class LoggedInNavigationViewModel: ObservableObject {
                 }
                 UIApplication.shared.open(url)
             }
+        }
+    }
+
+    private func handleChangeTier(contractId: String?) {
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+                self?.isChangeTierPresented = .init(
+                    source: .changeTier,
+                    contracts: [
+                        .init(
+                            contractId: contractId,
+                            contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
+                            contractExposureName: contract.exposureDisplayName
+                        )
+                    ]
+                )
+            }
+        } else {
+            let contractsSupportingChangingTier: [ChangeTierContract] = contractStore.state.activeContracts
+                .filter({ $0.supportsChangeTier })
+                .map({
+                    .init(
+                        contractId: $0.id,
+                        contractDisplayName: $0.currentAgreement?.productVariant.displayName ?? "",
+                        contractExposureName: $0.exposureDisplayName
+                    )
+                })
+            self.isChangeTierPresented = ChangeTierContractsInput(
+                source: .changeTier,
+                contracts: contractsSupportingChangingTier
+            )
         }
     }
 
