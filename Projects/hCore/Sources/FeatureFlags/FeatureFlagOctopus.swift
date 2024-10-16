@@ -78,7 +78,6 @@ public class FeatureFlagsUnleash: FeatureFlags {
 
     private func startUnleash() {
         log.info("Started loading unleash experiments")
-        emailPreferencesEnabled = Localization.Locale.currentLocale.value.market == .se
         unleashClient?
             .start(
                 true,
