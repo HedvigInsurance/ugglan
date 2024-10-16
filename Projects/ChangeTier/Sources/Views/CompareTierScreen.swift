@@ -15,14 +15,14 @@ struct CompareTierScreen: View {
     ) {
         self.vm = vm
 
-        let selectedQuoteId = vm.selectedQuote?.id
+        let selectedQuote = vm.selectedQuote
 
         self.limits = Dictionary(
             uniqueKeysWithValues: vm.tiers.map({
                 (
                     $0.id,
                     $0.quotes.first(where: { quote in
-                        quote.id == selectedQuoteId
+                        quote.id == selectedQuote?.id
                     })?
                     .productVariant?
                     .insurableLimits ?? $0.quotes.first(where: { quote in
@@ -36,7 +36,7 @@ struct CompareTierScreen: View {
 
         self.perils = Dictionary(
             uniqueKeysWithValues: vm.tiers.map({
-                ($0.id, vm.getFilteredPerils(currentTier: $0, selectedQuoteId: selectedQuoteId))
+                ($0.id, vm.getFilteredPerils(currentTier: $0, selectedQuote: selectedQuote))
             })
         )
         let pageModels: [PageModel] = vm.tiers.compactMap({ PageModel(id: $0.id, title: $0.name) })
@@ -66,11 +66,15 @@ struct CompareTierScreen: View {
 }
 
 extension ChangeTierViewModel {
-    fileprivate func getFilteredPerils(currentTier: Tier, selectedQuoteId: String?) -> [Perils] {
+    fileprivate func getFilteredPerils(currentTier: Tier, selectedQuote: Quote?) -> [Perils] {
         var currentPerils =
             currentTier.quotes.first { quote in
-                quote.id == selectedQuoteId
+                quote.id == selectedQuote?.id
             }?
+            .productVariant?
+            .perils ?? currentTier.quotes.first(where: { quote in
+                quote.deductableAmount == selectedQuote?.deductableAmount
+            })?
             .productVariant?
             .perils ?? currentTier.quotes.first?.productVariant?.perils ?? []
 
