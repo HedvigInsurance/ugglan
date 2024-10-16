@@ -26,7 +26,7 @@ struct CompareTierScreen: View {
                     })?
                     .productVariant?
                     .insurableLimits ?? $0.quotes.first(where: { quote in
-                        quote.deductableAmount == vm.selectedQuote?.deductableAmount
+                        quote == selectedQuote
                     })?
                     .productVariant?
                     .insurableLimits ?? []
@@ -73,7 +73,7 @@ extension ChangeTierViewModel {
             }?
             .productVariant?
             .perils ?? currentTier.quotes.first(where: { quote in
-                quote.deductableAmount == selectedQuote?.deductableAmount
+                quote == selectedQuote
             })?
             .productVariant?
             .perils ?? currentTier.quotes.first?.productVariant?.perils ?? []
