@@ -30,7 +30,6 @@ struct UpcomingChangesScreen: View {
                         }
                     }
                 }
-                .hSectionWithoutHorizontalPadding
             }
         }
         .sectionContainerStyle(.transparent)
@@ -63,11 +62,12 @@ struct UpcomingChangesScreen: View {
 
 struct UpcomingChangesScreen_Previews: PreviewProvider {
     static var previews: some View {
-        UpcomingChangesScreen(
+        Localization.Locale.currentLocale = .init(.en_SE)
+        return UpcomingChangesScreen(
             updateDate: "DATE",
             upcomingAgreement: .init(
                 premium: MonetaryAmount(amount: 0, currency: ""),
-                displayItems: [],
+                displayItems: [.init(title: "display item 1", value: "display item value 1")],
                 productVariant:
                     ProductVariant(
                         termsVersion: "",

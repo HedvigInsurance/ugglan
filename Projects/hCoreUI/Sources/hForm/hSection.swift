@@ -289,23 +289,6 @@ extension View {
     }
 }
 
-private struct EnvironmentHSectionMinimumPadding: EnvironmentKey {
-    static let defaultValue = false
-}
-
-extension EnvironmentValues {
-    public var minimumPadding: Bool {
-        get { self[EnvironmentHSectionMinimumPadding.self] }
-        set { self[EnvironmentHSectionMinimumPadding.self] = newValue }
-    }
-}
-
-extension View {
-    public var hSectionMinimumPadding: some View {
-        self.environment(\.minimumPadding, true)
-    }
-}
-
 private struct EnvironmentHEmbeddedHeader: EnvironmentKey {
     static let defaultValue = false
 }
@@ -388,7 +371,6 @@ struct hSectionContainer<Content: View>: View {
 
 public struct hSection<Header: View, Content: View, Footer: View>: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
-    @Environment(\.minimumPadding) var minimumPadding
     @Environment(\.hEmbeddedHeader) var embeddedHeader
     @Environment(\.hWithoutSectionHorizontalPadding) var hSectionWithoutHorizontalPadding
 
@@ -449,7 +431,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
         .frame(maxWidth: .infinity)
         .padding(
             .horizontal,
-            minimumPadding ? 16 : (hSectionWithoutHorizontalPadding ? 0 : (horizontalSizeClass == .regular ? 60 : 16))
+            hSectionWithoutHorizontalPadding ? 0 : (horizontalSizeClass == .regular ? .padding60 : .padding16)
         )
     }
 

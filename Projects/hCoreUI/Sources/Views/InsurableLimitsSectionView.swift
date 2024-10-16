@@ -45,7 +45,6 @@ public struct InsurableLimitsSectionView: View {
                 didTap(limit)
             }
         }
-        .hSectionWithoutHorizontalPadding
         .sectionContainerStyle(.transparent)
     }
 }
