@@ -1,4 +1,5 @@
 import Apollo
+import Authentication
 import DatadogCore
 import DatadogCrashReporting
 import DatadogLogs
@@ -87,6 +88,14 @@ extension AppDelegate {
         }
         logStopView = { key in
             RUMMonitor.shared().stopView(key: key, attributes: [:])
+        }
+
+        AuthenticationService.logAuthResourceStart = { key, url in
+            RUMMonitor.shared().startResource(resourceKey: key, url: url, attributes: [:])
+        }
+
+        AuthenticationService.logAuthResourceStop = { key, url in
+            RUMMonitor.shared().stopResource(resourceKey: key, response: url, size: 0, attributes: [:])
         }
     }
 }
