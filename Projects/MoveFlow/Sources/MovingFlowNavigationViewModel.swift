@@ -1,3 +1,4 @@
+import ChangeTier
 import Combine
 import PresentableStore
 import SwiftUI
@@ -6,7 +7,6 @@ import hCoreUI
 
 public class MovingFlowNavigationViewModel: ObservableObject {
     public init() {}
-
     @Published var isAddExtraBuildingPresented = false
     @Published public var document: Document? = nil
 }
@@ -25,9 +25,10 @@ extension MovingFlowRouterWithHiddenBackButtonActions: TrackingViewNameProtocol 
 
 }
 
-enum MovingFlowRouterActions {
+enum MovingFlowRouterActions: Hashable {
     case confirm
     case houseFill
+    case selectTier(changeTierModel: ChangeTierIntentModel)
 }
 
 extension MovingFlowRouterActions: TrackingViewNameProtocol {
@@ -37,6 +38,8 @@ extension MovingFlowRouterActions: TrackingViewNameProtocol {
             return .init(describing: MovingFlowConfirm.self)
         case .houseFill:
             return .init(describing: MovingFlowHouseView.self)
+        case .selectTier:
+            return .init(describing: ChangeTierLandingScreen.self)
         }
     }
 
@@ -74,6 +77,8 @@ public struct MovingFlowNavigation: View {
                         openConfirmScreen()
                     case .houseFill:
                         openHouseFillScreen()
+                    case let .selectTier(model):
+                        openChangeTier(model: model)
                     }
                 }
         }
@@ -87,6 +92,8 @@ public struct MovingFlowNavigation: View {
                     switch action {
                     case .navigation(.openConfirmScreen):
                         router.push(MovingFlowRouterActions.confirm)
+                    case let .navigation(action: .openSelectTierScreen(changeTierModel)):
+                        router.push(MovingFlowRouterActions.selectTier(changeTierModel: changeTierModel))
                     default:
                         break
                     }
@@ -118,7 +125,6 @@ public struct MovingFlowNavigation: View {
     }
 
     func openApartmentFillScreen() -> some View {
-        let store: MoveFlowStore = globalPresentableStoreContainer.get()
         return MovingFlowAddressView().withDismissButton()
     }
 
@@ -142,6 +148,23 @@ public struct MovingFlowNavigation: View {
                 router.pop()
             }
         )
+    }
+
+    func openChangeTier(model: ChangeTierIntentModel) -> some View {
+        let model = ChangeTierInput.existingIntent(intent: model) { (tier, deductible) in
+            let store: MoveFlowStore = globalPresentableStoreContainer.get()
+            let state = store.state
+            var movingFlowModel = state.movingFlowModel
+            let id = deductible.id
+            if let homeQuote = state.movingFlowModel?.potentialHomeQuotes.first(where: { $0.id == id }) {
+                movingFlowModel?.homeQuote = homeQuote
+            }
+            if let movingFlowModel {
+                store.send(.setMoveIntent(with: movingFlowModel))
+            }
+            router.push(MovingFlowRouterActions.confirm)
+        }
+        return ChangeTierNavigation(input: model, router: router)
     }
 
     func openTypeOfBuildingPicker(for currentlySelected: ExtraBuildingType?) -> some View {

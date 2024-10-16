@@ -83,7 +83,19 @@ struct MovingFlowAddressView: View {
             .padding(.top, .padding16)
 
         }
-        .hFormTitle(title: .init(.standard, .displayXSLong, L10n.changeAddressEnterNewAddressTitle))
+        .hFormTitle(
+            title: .init(
+                .small,
+                .heading2,
+                L10n.movingEmbarkTitle,
+                alignment: .leading
+            ),
+            subTitle: .init(
+                .standard,
+                .heading2,
+                L10n.changeAddressEnterNewAddressTitle
+            )
+        )
         .sectionContainerStyle(.transparent)
         .presentableStoreLensAnimation(.default)
         .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
@@ -117,6 +129,7 @@ struct MovingFlowAddressView: View {
             equals: $vm.type,
             focusValue: .squareArea,
             placeholder: L10n.changeAddressNewLivingSpaceLabel,
+            suffix: "m\u{00B2}",
             error: $vm.squareAreaError
         )
     }
@@ -255,7 +268,9 @@ public class AddressInputModel: ObservableObject {
                 }
             }()
             if let sizeToCompare {
-                squareAreaError = size < sizeToCompare ? nil : L10n.changeAddressLivingSpaceOverLimitError
+                squareAreaError =
+                    size < sizeToCompare
+                    ? nil : L10n.changeAddressLivingSpaceOverLimitWithInputError(sizeToCompare, "m\u{00B2}")
             }
         }
     }

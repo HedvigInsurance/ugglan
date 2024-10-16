@@ -42,9 +42,12 @@ public struct hFieldTextContent<T>: View {
     public var body: some View {
         HStack(spacing: 8) {
             if leftAlign {
-                cellView?()
-                getTextField
-                Spacer()
+                HStack(alignment: .top) {
+                    cellView?()
+                        .frame(alignment: .top)
+                        .padding(.top, 2)
+                    getTextField
+                }
             } else {
                 getTextField
                 Spacer()

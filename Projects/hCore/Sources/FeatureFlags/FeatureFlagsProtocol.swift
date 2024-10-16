@@ -2,7 +2,6 @@ import Foundation
 
 public protocol FeatureFlags {
     var loadingExperimentsSuccess: (Bool) -> Void { get set }
-    var isMovingFlowEnabled: Bool { get set }
     var isEditCoInsuredEnabled: Bool { get set }
     var isTravelInsuranceEnabled: Bool { get set }
     var isTerminationFlowEnabled: Bool { get set }
@@ -19,11 +18,20 @@ public protocol FeatureFlags {
     var osVersionTooLow: Bool { get set }
     var emailPreferencesEnabled: Bool { get set }
     var isTiersEnabled: Bool { get set }
+    var isDemoMode: Bool { get set }
+    var movingFlowVersion: MovingFlowVersion? { get set }
+
+    var isMovingFlowEnabled: Bool { get }
 }
 
 public enum PaymentType {
     case trustly
     case adyen
+}
+
+public enum MovingFlowVersion: String {
+    case v1
+    case v2
 }
 
 extension Dependencies {

@@ -1,3 +1,4 @@
+import ChangeTier
 import EditCoInsuredShared
 import Foundation
 import PresentableStore
@@ -6,6 +7,7 @@ import SwiftUI
 import TerminateContracts
 import hCore
 import hCoreUI
+import hGraphQL
 
 public struct ContractsNavigation<Content: View>: View {
     @ObservedObject var contractsNavigationVm: ContractsNavigationViewModel
@@ -59,13 +61,36 @@ public struct ContractsNavigation<Content: View>: View {
             item: $contractsNavigationVm.changeYourInformationContract,
             style: [.height]
         ) { contract in
-            EditContract(id: contract.id)
-                .configureTitle(L10n.contractChangeInformationTitle)
-                .environmentObject(contractsNavigationVm)
-                .embededInNavigation(options: .navigationType(type: .large), tracking: ContractsDetentType.editContract)
+            EditContractScreen(
+                editTypes: EditType.getTypes(for: contract),
+                onSelectedType: { selectedType in
+                    contractsNavigationVm.changeYourInformationContract = nil
+                    switch selectedType {
+                    case .coInsured:
+                        let configContract: InsuredPeopleConfig = .init(
+                            contract: contract,
+                            fromInfoCard: false
+                        )
+                        contractsNavigationVm.editCoInsuredVm.start(fromContract: configContract)
+                    case .changeAddress:
+                        contractsNavigationVm.isChangeAddressPresented = true
+                    case .changeTier:
+                        contractsNavigationVm.changeTierInput = .contractWithSource(
+                            data: .init(source: .changeTier, contractId: contract.id)
+                        )
+                    case .cancellation:
+                        break
+                    }
+                }
+            )
+            .configureTitle(L10n.contractChangeInformationTitle)
+            .embededInNavigation(options: [.navigationType(type: .large)], tracking: ContractsDetentType.editContract)
         }
         .modally(presented: $contractsNavigationVm.isChangeAddressPresented) {
             redirect(.movingFlow)
+        }
+        .modally(item: $contractsNavigationVm.changeTierInput) { input in
+            redirect(.changeTier(input: input))
         }
         .detent(
             item: $contractsNavigationVm.insuranceUpdate,
@@ -79,7 +104,12 @@ public struct ContractsNavigation<Content: View>: View {
         }
         .handleTerminateInsurance(vm: contractsNavigationVm.terminateInsuranceVm) { dismissType in
             redirectAction(.termination(action: dismissType))
-            contractsNavigationVm.contractsRouter.popToRoot()
+            switch dismissType {
+            case .done, .chat, .openFeedback:
+                contractsNavigationVm.contractsRouter.popToRoot()
+            case .changeTierFoundBetterPriceStarted, .changeTierMissingCoverageAndTermsStarted:
+                break
+            }
         }
     }
 }
@@ -94,6 +124,7 @@ public class ContractsNavigationViewModel: ObservableObject {
     @Published public var changeYourInformationContract: Contract?
     @Published public var insuranceUpdate: Contract?
     @Published public var isChangeAddressPresented = false
+    @Published public var changeTierInput: ChangeTierInput?
 
     public var editCoInsuredVm = EditCoInsuredViewModel(
         existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
@@ -106,6 +137,7 @@ public enum RedirectType {
     case chat
     case movingFlow
     case pdf(document: Document)
+    case changeTier(input: ChangeTierInput)
 }
 
 public enum RedirectAction {
@@ -143,7 +175,7 @@ private enum ContractsDetentType: TrackingViewNameProtocol {
     public var nameForTracking: String {
         switch self {
         case .editContract:
-            return .init(describing: EditContract.self)
+            return .init(describing: EditContractScreen.self)
         }
     }
 

@@ -1,11 +1,13 @@
 import Foundation
+import hCore
+import hCoreUI
 
 public class FetchContractsClientDemo: FetchContractsClient {
     public init() {}
     public func getContracts() async throws -> ContractsStack {
         let variant = ProductVariant(
             termsVersion: "",
-            typeOfContract: Contract.TypeOfContract.seApartmentRent.rawValue,
+            typeOfContract: TypeOfContract.seApartmentRent.rawValue,
             partner: nil,
             perils: [],
             insurableLimits: [
@@ -28,7 +30,8 @@ public class FetchContractsClientDemo: FetchContractsClient {
             ],
             documents: [.init(displayName: "Display name", url: "https://www.hedvig.com", type: .generalTerms)],
             displayName: "Home Insurance Rent",
-            displayNameTier: "Standard"
+            displayNameTier: "Standard",
+            tierDescription: "Vårt mellanpaket med hög ersättning."
         )
         let agreement = Agreement(
             certificateUrl: nil,
@@ -54,12 +57,13 @@ public class FetchContractsClientDemo: FetchContractsClient {
             supportsAddressChange: false,
             supportsCoInsured: false,
             supportsTravelCertificate: false,
+            supportsChangeTier: false,
             upcomingChangedAgreement: nil,
             upcomingRenewal: nil,
             firstName: "",
             lastName: "",
             ssn: nil,
-            typeOfContract: Contract.TypeOfContract.seHouse,
+            typeOfContract: TypeOfContract.seHouse,
             coInsured: []
         )
         return .init(activeContracts: [contract], pendingContracts: [], terminatedContracts: [])

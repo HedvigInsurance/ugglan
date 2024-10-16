@@ -1,0 +1,7 @@
+mutation ChangeTierDeductibleCommitIntent($input: ChangeTierDeductibleCommitIntentInput!) {
+  changeTierDeductibleCommitIntent(input: $input) {
+    userError {
+      message
+    }
+  }
+}

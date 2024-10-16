@@ -4,24 +4,24 @@ public struct Perils: Codable, Equatable, Hashable {
     public let id: String?
     public let title: String
     public let description: String
-    public let info: String?
     public let color: String?
     public let covered: [String]
+    public let isDisabled: Bool
 
     public init(
         id: String?,
         title: String,
         description: String,
-        info: String?,
         color: String?,
-        covered: [String]
+        covered: [String],
+        isDisabled: Bool? = false
     ) {
         self.id = id
         self.title = title
         self.description = description
-        self.info = info
         self.color = color
         self.covered = covered
+        self.isDisabled = isDisabled ?? false
     }
 
     public init(
@@ -32,6 +32,17 @@ public struct Perils: Codable, Equatable, Hashable {
         description = fragment.description
         covered = fragment.covered
         color = fragment.colorCode
-        info = fragment.info
+        isDisabled = false
+    }
+
+    public func asDisabled() -> Perils {
+        return .init(
+            id: id,
+            title: title,
+            description: description,
+            color: color,
+            covered: covered,
+            isDisabled: true
+        )
     }
 }

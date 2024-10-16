@@ -6,57 +6,6 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct ProductVariant: Codable, Hashable {
-    let termsVersion: String
-    let typeOfContract: String
-    let partner: String?
-    let perils: [Perils]
-    let insurableLimits: [InsurableLimits]
-    public let documents: [InsuranceTerm]
-    public let displayName: String
-    let displayNameTier: String?
-
-    init(
-        termsVersion: String,
-        typeOfContract: String,
-        partner: String?,
-        perils: [Perils],
-        insurableLimits: [InsurableLimits],
-        documents: [InsuranceTerm],
-        displayName: String,
-        displayNameTier: String?
-    ) {
-        self.termsVersion = termsVersion
-        self.typeOfContract = typeOfContract
-        self.partner = partner
-        self.perils = perils
-        self.insurableLimits = insurableLimits
-        self.documents = documents
-        self.displayName = displayName
-        self.displayNameTier = displayNameTier
-    }
-
-    public init(
-        data: OctopusGraphQL.ProductVariantFragment
-    ) {
-        self.displayName = data.displayName
-        self.termsVersion = data.termsVersion
-        self.typeOfContract = data.typeOfContract
-        self.partner = data.partner ?? ""
-        self.perils = data.perils.map({ .init(fragment: $0) })
-        self.insurableLimits = data.insurableLimits.map({ .init($0) })
-        self.documents = data.documents.map({ .init($0) })
-        self.displayNameTier = data.displayNameTier
-    }
-
-    public init?(
-        data: OctopusGraphQL.ProductVariantFragment?
-    ) {
-        guard let data else { return nil }
-        self.init(data: data)
-    }
-}
-
 public struct Contract: Codable, Hashable, Equatable, Identifiable {
     public init(
         id: String,
@@ -68,6 +17,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable {
         supportsAddressChange: Bool,
         supportsCoInsured: Bool,
         supportsTravelCertificate: Bool,
+        supportsChangeTier: Bool,
         upcomingChangedAgreement: Agreement?,
         upcomingRenewal: ContractRenewal?,
         firstName: String,
@@ -85,6 +35,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable {
         self.supportsCoInsured = supportsCoInsured
         self.supportsAddressChange = supportsAddressChange
         self.supportsTravelCertificate = supportsTravelCertificate
+        self.supportsChangeTier = supportsChangeTier
         self.upcomingChangedAgreement = upcomingChangedAgreement
         self.upcomingRenewal = upcomingRenewal
         self.firstName = firstName
@@ -101,6 +52,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable {
     public let terminationDate: String?
     public let selfChangeBlockers: String?
     public let supportsAddressChange: Bool
+    public let supportsChangeTier: Bool
     public let supportsCoInsured: Bool
     public let supportsTravelCertificate: Bool
     public let upcomingChangedAgreement: Agreement?
@@ -126,7 +78,12 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable {
     }
 
     public var showEditInfo: Bool {
-        return (supportsCoInsured || supportsAddressChange) && self.terminationDate == nil
+        return EditType.getTypes(for: self).count > 0 && self.terminationDate == nil
+    }
+
+    func onlyCoInsured() -> Bool {
+        let editTypes: [EditType] = EditType.getTypes(for: self)
+        return editTypes.count == 1 && editTypes.first == .coInsured
     }
 
     public var canTerminate: Bool {
@@ -224,6 +181,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable {
         supportsAddressChange = false
         supportsCoInsured = false
         supportsTravelCertificate = false
+        supportsChangeTier = false
         upcomingChangedAgreement = nil
         upcomingRenewal = nil
         selfChangeBlockers = nil
@@ -250,6 +208,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable {
         supportsAddressChange = contract.supportsMoving
         supportsCoInsured = contract.supportsCoInsured
         supportsTravelCertificate = contract.supportsTravelCertificate
+        supportsChangeTier = contract.supportsChangeTier
         upcomingChangedAgreement = .init(agreement: contract.upcomingChangedAgreement?.fragments.agreementFragment)
         upcomingRenewal = .init(upcoming: contract.upcomingChangedAgreement?.fragments.agreementFragment)
         typeOfContract = TypeOfContract.resolve(for: contract.currentAgreement.productVariant.typeOfContract)
@@ -258,105 +217,15 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable {
         self.lastName = lastName
         self.ssn = ssn
     }
-
-    public enum TypeOfContract: String, Codable {
-        case seHouse = "SE_HOUSE"
-        case seApartmentBrf = "SE_APARTMENT_BRF"
-        case seApartmentRent = "SE_APARTMENT_RENT"
-        case seApartmentStudentBrf = "SE_APARTMENT_STUDENT_BRF"
-        case seApartmentStudentRent = "SE_APARTMENT_STUDENT_RENT"
-        case seAccident = "SE_ACCIDENT"
-        case seAccidentStudent = "SE_ACCIDENT_STUDENT"
-        case seCarTraffic = "SE_CAR_TRAFFIC"
-        case seCarHalf = "SE_CAR_HALF"
-        case seCarFull = "SE_CAR_FULL"
-        case seCarTrialFull = "SE_CAR_TRIAL_FULL"
-        case seCarTrialHalf = "SE_CAR_TRIAL_HALF"
-        case seGroupApartmentBrf = "SE_GROUP_APARTMENT_BRF"
-        case seGroupApartmentRent = "SE_GROUP_APARTMENT_RENT"
-        case seQasaShortTermRental = "SE_QASA_SHORT_TERM_RENTAL"
-        case seQasaLongTermRental = "SE_QASA_LONG_TERM_RENTAL"
-        case seDogBasic = "SE_DOG_BASIC"
-        case seDogStandard = "SE_DOG_STANDARD"
-        case seDogPremium = "SE_DOG_PREMIUM"
-        case seCatBasic = "SE_CAT_BASIC"
-        case seCatStandard = "SE_CAT_STANDARD"
-        case seCatPremium = "SE_CAT_PREMIUM"
-        case unknown = "UNKNOWN"
-
-        static func resolve(for typeOfContract: String) -> Self {
-            if let concreteTypeOfContract = Self(rawValue: typeOfContract) {
-                return concreteTypeOfContract
-            }
-
-            log.warn(
-                "Got an unknown type of contract \(typeOfContract) that couldn't be resolved.",
-                error: nil,
-                attributes: nil
-            )
-            return .unknown
-        }
-
-        public var showValidUntilInsteadOfTerminatedAt: Bool {
-            switch self {
-            case .seCarTrialFull, .seCarTrialHalf, .seGroupApartmentBrf, .seGroupApartmentRent:
-                return true
-            default:
-                return false
-            }
-        }
-    }
 }
 
-extension Contract.TypeOfContract {
-    public var pillowType: PillowType {
+extension TypeOfContract {
+    public var showValidUntilInsteadOfTerminatedAt: Bool {
         switch self {
-        case .seHouse:
-            return .villa
-        case .seApartmentBrf:
-            return .homeOwner
-        case .seGroupApartmentBrf:
-            return .homeOwner
-        case .seApartmentRent:
-            return .rental
-        case .seApartmentStudentBrf:
-            return .student
-        case .seApartmentStudentRent:
-            return .student
-        case .seAccident:
-            return .accident
-        case .seAccidentStudent:
-            return .accident
-        case .seCarTraffic:
-            return .car
-        case .seCarHalf:
-            return .car
-        case .seCarFull:
-            return .car
-        case .seCarTrialFull:
-            return .car
-        case .seCarTrialHalf:
-            return .car
-        case .seGroupApartmentRent:
-            return .rental
-        case .seQasaShortTermRental:
-            return .rental
-        case .seQasaLongTermRental:
-            return .rental
-        case .seDogBasic:
-            return .dog
-        case .seDogStandard:
-            return .dog
-        case .seDogPremium:
-            return .dog
-        case .seCatBasic:
-            return .cat
-        case .seCatStandard:
-            return .cat
-        case .seCatPremium:
-            return .cat
-        case .unknown:
-            return .unknown
+        case .seCarTrialFull, .seCarTrialHalf, .seGroupApartmentBrf, .seGroupApartmentRent:
+            return true
+        default:
+            return false
         }
     }
 }
@@ -378,7 +247,7 @@ extension PillowType {
     }
 }
 
-extension Contract.TypeOfContract {
+extension TypeOfContract {
     var isHomeInsurance: Bool {
         switch self {
         case .seHouse:
@@ -457,7 +326,7 @@ public struct Agreement: Codable, Hashable {
         activeTo: String?,
         premium: MonetaryAmount,
         displayItems: [AgreementDisplayItem],
-        productVariant: ProductVariant
+        productVariant: hCore.ProductVariant
     ) {
         self.certificateUrl = certificateUrl
         self.activeFrom = activeFrom
@@ -472,12 +341,12 @@ public struct Agreement: Codable, Hashable {
     public let activeTo: String?
     public let premium: MonetaryAmount
     public let displayItems: [AgreementDisplayItem]
-    public let productVariant: ProductVariant
+    public let productVariant: hCore.ProductVariant
 
     init(
         premium: MonetaryAmount,
         displayItems: [AgreementDisplayItem],
-        productVariant: ProductVariant
+        productVariant: hCore.ProductVariant
     ) {
         self.premium = premium
         self.displayItems = displayItems

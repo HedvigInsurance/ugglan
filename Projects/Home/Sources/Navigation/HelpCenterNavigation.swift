@@ -1,3 +1,4 @@
+import ChangeTier
 import Chat
 import Contracts
 import EditCoInsuredShared
@@ -19,11 +20,13 @@ public class HelpCenterNavigationViewModel: ObservableObject {
     let terminateInsuranceVm = TerminateInsuranceViewModel()
 
     struct QuickActions {
+        var editContractActions: EditInsuranceActionsWrapper?
         var isTravelCertificatePresented = false
         var isChangeAddressPresented = false
         var isCancellationPresented = false
         var isFirstVetPresented = false
         var isSickAbroadPresented = false
+        var isChangeTierPresented: ChangeTierContractsInput?
     }
 
     public init() {}
@@ -43,11 +46,14 @@ private enum HelpCenterDetentRouterType: TrackingViewNameProtocol {
             return .init(describing: HelpCenterStartView.self)
         case .firstVet:
             return .init(describing: FirstVetView.self)
+        case .editYourInsurance:
+            return .init(describing: EditContractScreen.self)
         }
     }
 
     case startView
     case firstVet
+    case editYourInsurance
 
 }
 
@@ -99,6 +105,11 @@ public struct HelpCenterNavigation<Content: View>: View {
                     tracking: HelpCenterDetentRouterType.firstVet
                 )
         }
+        .modally(
+            item: $helpCenterVm.quickActions.isChangeTierPresented
+        ) { input in
+            ChangeTierNavigation(input: input)
+        }
         .detent(
             presented: $helpCenterVm.quickActions.isSickAbroadPresented,
             style: [.large]
@@ -117,6 +128,24 @@ public struct HelpCenterNavigation<Content: View>: View {
             presented: $helpCenterVm.quickActions.isChangeAddressPresented,
             content: {
                 redirect(.moveFlow)
+            }
+        )
+
+        .detent(
+            item: $helpCenterVm.quickActions.editContractActions,
+            style: [.height],
+            content: { actionsWrapper in
+                EditContractScreen(
+                    editTypes: actionsWrapper.quickActions.compactMap({ $0.asEditType }),
+                    onSelectedType: { selectedType in
+                        self.handle(quickAction: selectedType.asQuickAction)
+                    }
+                )
+                .configureTitle(L10n.hcQuickActionsEditInsuranceTitle)
+                .embededInNavigation(
+                    options: [.navigationType(type: .large)],
+                    tracking: HelpCenterDetentRouterType.editYourInsurance
+                )
             }
         )
         .handleConnectPayment(with: helpCenterVm.connectPaymentsVm)
@@ -151,6 +180,8 @@ public struct HelpCenterNavigation<Content: View>: View {
                         UIApplication.shared.open(url)
                     }
                 }
+            case .changeTierFoundBetterPriceStarted, .changeTierMissingCoverageAndTermsStarted:
+                break
             }
         }
         .environmentObject(helpCenterVm)
@@ -162,23 +193,40 @@ public struct HelpCenterNavigation<Content: View>: View {
             helpCenterVm.connectPaymentsVm.set(for: nil)
         case .travelInsurance:
             helpCenterVm.quickActions.isTravelCertificatePresented = true
+        case let .editInsurance(insuranceQuickActions):
+            helpCenterVm.quickActions.editContractActions = insuranceQuickActions
         case .changeAddress:
             helpCenterVm.quickActions.isChangeAddressPresented = true
         case .cancellation:
             let contractStore: ContractStore = globalPresentableStoreContainer.get()
-
             let contractsConfig: [TerminationConfirmConfig] = contractStore.state.activeContracts
                 .filter({ $0.canTerminate })
                 .map({
                     $0.asTerminationConfirmConfig
                 })
             helpCenterVm.terminateInsuranceVm.start(with: contractsConfig)
+        case .editCoInsured:
+            helpCenterVm.editCoInsuredVm.start()
+        case .upgradeCoverage:
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+            let contractsSupportingChangingTier: [ChangeTierContract] = contractStore.state.activeContracts
+                .filter({ $0.supportsChangeTier })
+                .map({
+                    .init(
+                        contractId: $0.id,
+                        contractDisplayName: $0.currentAgreement?.productVariant.displayName ?? "",
+                        contractExposureName: $0.exposureDisplayName
+                    )
+                })
+            helpCenterVm.quickActions.isChangeTierPresented = .init(
+                source: .changeTier,
+                contracts: contractsSupportingChangingTier
+            )
         case .firstVet:
             helpCenterVm.quickActions.isFirstVetPresented = true
         case .sickAbroad:
             helpCenterVm.quickActions.isSickAbroadPresented = true
-        case .editCoInsured:
-            helpCenterVm.editCoInsuredVm.start()
+
         }
     }
 
@@ -193,6 +241,6 @@ public enum HelpCenterRedirectType {
     case deflect
 }
 
-#Preview{
+#Preview {
     HelpCenterNavigation(helpCenterVm: .init(), redirect: { _ in })
 }

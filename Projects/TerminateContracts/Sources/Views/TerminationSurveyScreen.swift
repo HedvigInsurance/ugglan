@@ -27,18 +27,21 @@ struct TerminationSurveyScreen: View {
                                     )
                                     .hFieldSize(.medium)
                                     .zIndex(1)
-                                    if let suggestion = option.suggestion, option.id == vm.selectedOption?.id {
-                                        buildInfo(for: suggestion)
-                                            .matchedGeometryEffect(id: "buildInfo", in: animationNamespace)
-                                    }
+                                    Group {
+                                        if let suggestion = option.suggestion, option.id == vm.selectedOption?.id {
+                                            buildInfo(for: suggestion)
+                                                .matchedGeometryEffect(id: "buildInfo", in: animationNamespace)
+                                        }
 
-                                    if let feedBack = vm.allFeedBackViewModels[option.id],
-                                        option.id == vm.selectedOption?.id
-                                    {
-                                        TerminationFlowSurveyStepFeedBackView(
-                                            vm: feedBack
-                                        )
+                                        if let feedBack = vm.allFeedBackViewModels[option.id],
+                                            option.id == vm.selectedOption?.id
+                                        {
+                                            TerminationFlowSurveyStepFeedBackView(
+                                                vm: feedBack
+                                            )
+                                        }
                                     }
+                                    .frame(minHeight: 120)
                                 }
                             }
 
@@ -93,7 +96,7 @@ struct TerminationSurveyScreen: View {
                         }
                     )
                 ])
-                .hButtonIsLoading(false)
+                .hButtonIsLoading(terminationFlowNavigationViewModel.loadingActions[action.action] == .loading)
         case .redirect(let redirect):
             InfoCard(text: redirect.description, type: .campaign)
                 .buttons([
@@ -192,7 +195,8 @@ class SurveyScreenViewModel: ObservableObject {
     }
 }
 
-#Preview{
+#Preview {
+    Dependencies.shared.add(module: Module { () -> TerminateContractsClient in TerminateContractsClientDemo() })
     Localization.Locale.currentLocale.send(.en_SE)
     let options = [
         TerminationFlowSurveyStepModelOption(
@@ -255,7 +259,8 @@ struct TerminationFlowSurveyStepFeedBackView: View {
             placeholder: L10n.terminationSurveyFeedbackHint,
             required: vm.required,
             maxCharacters: 2000
-        ) { [weak vm] text in guard let vm else { return }
+        ) { [weak vm] text in
+            guard let vm else { return }
             vm.error = vm.required && text.isEmpty ? L10n.terminationSurveyFeedbackInfo : nil
             vm.text = text
         }

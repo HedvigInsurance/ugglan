@@ -1,4 +1,5 @@
 import Apollo
+import ChangeTier
 import Foundation
 import PresentableStore
 import hCore
@@ -37,7 +38,11 @@ public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowActio
                     houseInformationInputModel: self.houseInformationInputModel
                 )
                 self.send(.setMoveIntent(with: movingFlowData))
-                self.send(.navigation(action: .openConfirmScreen))
+                if let changeTierModel = movingFlowData.changeTier {
+                    self.send(.navigation(action: .openSelectTierScreen(changeTierModel: changeTierModel)))
+                } else {
+                    self.send(.navigation(action: .openConfirmScreen))
+                }
                 self.removeLoading(for: .requestMoveIntent)
             } catch {
                 self.setError(error.localizedDescription, for: .requestMoveIntent)
@@ -46,7 +51,8 @@ public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowActio
             self.setLoading(for: .confirmMoveIntent)
             do {
                 let intentId = self.state.movingFlowModel?.id ?? ""
-                try await self.moveFlowService.confirmMoveIntent(intentId: intentId)
+                let homeQuoteId = self.state.movingFlowModel?.homeQuote?.id
+                try await self.moveFlowService.confirmMoveIntent(intentId: intentId, homeQuoteId: homeQuoteId)
                 self.removeLoading(for: .confirmMoveIntent)
                 AskForRating().askForReview()
             } catch {
@@ -92,6 +98,7 @@ public enum MoveFlowAction: ActionProtocol {
 
 public enum MoveFlowNavigationAction: ActionProtocol, Hashable {
     case openConfirmScreen
+    case openSelectTierScreen(changeTierModel: ChangeTierIntentModel)
 }
 
 public enum MoveFlowLoadingAction: LoadingProtocol {

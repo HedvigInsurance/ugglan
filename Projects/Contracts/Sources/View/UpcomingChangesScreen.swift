@@ -77,7 +77,8 @@ struct UpcomingChangesScreen_Previews: PreviewProvider {
                         insurableLimits: [],
                         documents: [],
                         displayName: "",
-                        displayNameTier: "display name tier"
+                        displayNameTier: "Standard",
+                        tierDescription: "Vårt mellanpaket med hög ersättning."
                     )
             )
         )

@@ -151,6 +151,37 @@ struct SupportView: View {
     }
 }
 
-#Preview{
+#Preview {
     HelpCenterPill(title: L10n.hcQuickActionsTitle, color: .green)
+}
+
+struct QuickActionView: View {
+    let quickAction: QuickAction
+    let onQuickAction: () -> Void
+    var body: some View {
+        hSection {
+            hRow {
+                VStack(alignment: .leading, spacing: 0) {
+                    hText(quickAction.displayTitle)
+                    hText(quickAction.displaySubtitle, style: .label)
+                        .foregroundColor(hTextColor.Opaque.secondary)
+
+                }
+                Spacer()
+            }
+            .withChevronAccessory
+            .verticalPadding(12)
+            .onTap {
+                log.addUserAction(
+                    type: .click,
+                    name: "help center quick action",
+                    attributes: ["action": quickAction.id]
+                )
+                onQuickAction()
+            }
+        }
+        .withoutHorizontalPadding
+        .hSectionMinimumPadding
+        .sectionContainerStyle(.opaque)
+    }
 }

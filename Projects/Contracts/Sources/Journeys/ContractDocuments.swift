@@ -21,25 +21,11 @@ struct ContractDocumentsView: View {
             }
         ) { contract in
             if let contract = contract {
-                VStack(spacing: 4) {
-                    ForEach(getDocumentsToDisplay(contract: contract), id: \.displayName) { document in
-                        if let url = URL(string: document.url) {
-                            hSection {
-                                hRow {
-                                    hAttributedTextView(
-                                        text: AttributedPDF().attributedPDFString(for: document.displayName)
-                                    )
-                                    .id("sds_\(document.displayName)")
-                                }
-                                .withCustomAccessory {
-                                    Image(uiImage: hCoreUIAssets.arrowNorthEast.image)
-                                }
-                                .onTap {
-                                    contractsNavigationViewModel.document = .init(url: url, title: document.displayName)
-                                }
-                            }
-                            .sectionContainerStyle(.opaque)
-                        }
+                InsuranceTermView(
+                    documents: getDocumentsToDisplay(contract: contract)
+                ) { document in
+                    if let url = URL(string: document.url) {
+                        contractsNavigationViewModel.document = .init(url: url, title: document.displayName)
                     }
                 }
             }

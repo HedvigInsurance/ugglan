@@ -63,28 +63,40 @@ struct AccordionButtonStyle: SwiftUI.ButtonStyle {
         VStack(alignment: .center, spacing: 11) {
             HStack(spacing: 8) {
                 if let color = peril?.color {
-                    Circle().fill(Color(hexString: color))
-                        .frame(width: fieldSize == .small ? 20 : 24, height: fieldSize == .small ? 20 : 24)
-                        .padding(.horizontal, .padding4)
+                    Group {
+                        if peril?.isDisabled ?? false {
+                            Circle()
+                                .fill(hFillColor.Opaque.disabled)
+                        } else {
+                            Circle()
+                                .fill(Color(hexString: color))
+                        }
+                    }
+                    .frame(width: fieldSize == .small ? 20 : 24, height: fieldSize == .small ? 20 : 24)
+                    .padding(.horizontal, .padding4)
                 }
                 hText(title, style: fieldSize == .large ? .heading2 : .heading1)
                     .lineLimit(1)
+                    .foregroundColor(getTextColor)
                 Spacer()
                 ZStack {
-                    Image(
-                        uiImage: hCoreUIAssets.minus.image
-                    )
-                    .resizable()
-                    .frame(width: 24, height: 24)
-                    .transition(.opacity.animation(.easeOut))
-                    .rotationEffect(extended ? Angle(degrees: 360) : Angle(degrees: 270))
-                    Image(
-                        uiImage: hCoreUIAssets.minus.image
-                    )
-                    .resizable()
-                    .frame(width: 24, height: 24)
-                    .transition(.opacity.animation(.easeOut))
-                    .rotationEffect(extended ? Angle(degrees: 360) : Angle(degrees: 180))
+                    Group {
+                        Image(
+                            uiImage: hCoreUIAssets.minus.image
+                        )
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .transition(.opacity.animation(.easeOut))
+                        .rotationEffect(extended ? Angle(degrees: 360) : Angle(degrees: 270))
+                        Image(
+                            uiImage: hCoreUIAssets.minus.image
+                        )
+                        .resizable()
+                        .frame(width: 24, height: 24)
+                        .transition(.opacity.animation(.easeOut))
+                        .rotationEffect(extended ? Angle(degrees: 360) : Angle(degrees: 180))
+                    }
+                    .foregroundColor(getTextColor)
                 }
             }
 
@@ -92,6 +104,7 @@ struct AccordionButtonStyle: SwiftUI.ButtonStyle {
                 VStack(alignment: .leading, spacing: 12) {
                     hText(description, style: peril != nil ? .label : .body1)
                         .padding(.bottom, .padding12)
+                        .foregroundColor(getTextColor)
                     if let perilCover = peril?.covered {
                         ForEach(Array(perilCover.enumerated()), id: \.offset) { index, item in
                             HStack(alignment: .top, spacing: 8) {
@@ -113,9 +126,18 @@ struct AccordionButtonStyle: SwiftUI.ButtonStyle {
         .contentShape(Rectangle())
 
     }
+
+    @hColorBuilder
+    var getTextColor: some hColor {
+        if peril?.isDisabled ?? false {
+            hTextColor.Opaque.disabled
+        } else {
+            hTextColor.Opaque.primary
+        }
+    }
 }
 
-#Preview{
+#Preview {
     hSection {
         AccordionView(
             title: "Label",

@@ -17,11 +17,11 @@ public class HomeClientDemo: HomeClient {
     }
 
     public func getQuickActions() async throws -> [QuickAction] {
-        return [.editCoInsured, .changeAddress]
+        return []
     }
 
     public func getMessagesState() async throws -> MessageState {
-        return .init(hasNewMessages: false, hasSentOrRecievedAtLeastOneMessage: false, lastMessageTimeStamp: nil)
+        return .init(hasNewMessages: false, hasSentOrRecievedAtLeastOneMessage: true, lastMessageTimeStamp: nil)
     }
 
     public func getNumberOfClaims() async throws -> Int {

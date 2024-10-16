@@ -1,8 +1,5 @@
-import Foundation
 import SwiftUI
 import hCore
-import hCoreUI
-import hGraphQL
 
 public struct PerilCollection: View {
     public var perils: [Perils]
@@ -31,10 +28,17 @@ struct PerilCollection_Previews: PreviewProvider {
                     id: "1",
                     title: "title",
                     description: "lkflihf uhreuidhf iwureahriur ekfshiuf erhfw iueherfuihgfeuihfgrui fruhfiuehf",
-                    info: nil,
-                    color: nil,
+                    color: "#C45F4F",
                     covered: []
-                )
+                ),
+                .init(
+                    id: "2",
+                    title: "disabled peril",
+                    description: "description for disabled peril",
+                    color: "#FFFFFF",
+                    covered: [],
+                    isDisabled: true
+                ),
             ]
         VStack {
             PerilCollection(

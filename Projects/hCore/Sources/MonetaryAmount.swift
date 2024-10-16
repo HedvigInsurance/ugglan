@@ -102,6 +102,17 @@ extension MonetaryAmount {
         formatter.locale = currencyLocale
         return formatter.string(from: NSNumber(value: floatAmount)) ?? ""
     }
+
+    public var formattedAmountPerMonth: String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        formatter.currencyCode = currency
+        formatter.minimumFractionDigits = (value.truncatingRemainder(dividingBy: 1) != 0) ? 2 : 0
+        formatter.maximumFractionDigits = 2
+        formatter.locale = currencyLocale
+        let formattedString = formatter.string(from: NSNumber(value: floatAmount)) ?? ""
+        return formattedString + L10n.perMonthShort
+    }
 }
 
 extension String {

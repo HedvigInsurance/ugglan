@@ -65,6 +65,7 @@ struct MovingFlowAddExtraBuildingView: View {
             equals: $vm.type,
             focusValue: .livingArea,
             placeholder: L10n.changeAddressExtraBuildingSizeLabel,
+            suffix: "m\u{00B2}",
             error: $vm.livingAreaError
         )
     }

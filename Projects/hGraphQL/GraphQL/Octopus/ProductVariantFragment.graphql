@@ -10,6 +10,7 @@ fragment ProductVariantFragment on ProductVariant {
     }
     displayName
     displayNameTier
+    tierDescription
     insurableLimits {
         label
         limit
@@ -41,7 +42,6 @@ fragment PerilFragment on Peril {
     id
     title
     description
-    info
     covered
     colorCode
 }

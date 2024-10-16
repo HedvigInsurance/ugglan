@@ -1,15 +1,15 @@
 import Foundation
 import SwiftUI
 import hCore
-import hCoreUI
 
-public struct ClaimStatusCard<MainContent, BottomContent>: View
+public struct StatusCard<MainContent, BottomContent>: View
 where MainContent: View, BottomContent: View {
     var onSelected: (() -> Void)?
     let mainContent: MainContent?
     let title: String?
     let subTitle: String?
     let bottomComponent: () -> BottomContent
+    @Environment(\.hCardWithoutSpacing) var cardWithoutSpacing
 
     public init(
         onSelected: (() -> Void)? = nil,
@@ -34,7 +34,7 @@ where MainContent: View, BottomContent: View {
                 }
             }
             .verticalPadding(0)
-            .padding(.bottom, .padding16)
+            .padding(.bottom, cardWithoutSpacing ? 0 : .padding16)
             VStack(alignment: .leading, spacing: 0) {
                 if let title = title {
                     hText(title)
@@ -45,7 +45,7 @@ where MainContent: View, BottomContent: View {
 
             }
             .padding(.horizontal, .padding16)
-            Spacer().frame(height: 16)
+            Spacer().frame(height: cardWithoutSpacing ? 0 : 16)
             bottomComponent()
                 .padding(.horizontal, .padding16)
         }
@@ -66,7 +66,7 @@ struct CardComponent_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
             Spacer()
-            ClaimStatusCard(
+            StatusCard(
                 onSelected: {
 
                 },
@@ -87,7 +87,7 @@ struct FCardComponent_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
             Spacer()
-            ClaimStatusCard(
+            StatusCard(
                 onSelected: {
 
                 },
@@ -101,5 +101,22 @@ struct FCardComponent_Previews: PreviewProvider {
             Spacer()
         }
         .background(Color.gray)
+    }
+}
+
+private struct EnvironmentHCardWithoutSpacing: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    public var hCardWithoutSpacing: Bool {
+        get { self[EnvironmentHCardWithoutSpacing.self] }
+        set { self[EnvironmentHCardWithoutSpacing.self] = newValue }
+    }
+}
+
+extension View {
+    public var hCardWithoutSpacing: some View {
+        self.environment(\.hCardWithoutSpacing, true)
     }
 }

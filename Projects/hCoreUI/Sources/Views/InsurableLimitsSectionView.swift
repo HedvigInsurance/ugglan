@@ -1,6 +1,5 @@
 import SwiftUI
 import hCore
-import hCoreUI
 import hGraphQL
 
 public struct InsurableLimitsSectionView: View {
@@ -24,9 +23,11 @@ public struct InsurableLimitsSectionView: View {
                 HStack(spacing: 0) {
                     Spacer()
                     HStack(alignment: .top) {
+                        Spacer()
                         hText(limit.limit)
-                            .fixedSize()
                             .foregroundColor(hTextColor.Opaque.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .multilineTextAlignment(.trailing)
                         Image(uiImage: hCoreUIAssets.infoFilled.image)
                             .resizable()
                             .foregroundColor(hTextColor.Opaque.secondary)
@@ -35,11 +36,10 @@ public struct InsurableLimitsSectionView: View {
                             .onTapGesture {
                                 didTap(limit)
                             }
-
                     }
-                    .frame(maxHeight: .infinity, alignment: .top)
-                    .fixedSize()
+                    .fixedSize(horizontal: false, vertical: true)
                 }
+
             }
             .onTap {
                 didTap(limit)
@@ -50,36 +50,16 @@ public struct InsurableLimitsSectionView: View {
     }
 }
 
-public struct InsurableLimits: Codable, Hashable, Identifiable {
-    public var id: String?
-    public let label: String
-    public let limit: String
-    public let description: String
-
-    public init(
-        label: String,
-        limit: String,
-        description: String
-    ) {
-        self.label = label
-        self.limit = limit
-        self.description = description
-    }
-
-    public init(
-        _ data: OctopusGraphQL.ProductVariantFragment.InsurableLimit
-    ) {
-        label = data.label
-        limit = data.limit
-        description = data.description
-    }
-}
-
 struct InsurableLimitsSectionView_Previews: PreviewProvider {
     static var previews: some View {
         let limits: [InsurableLimits] = [
             .init(label: "TITLE", limit: "LIMIT", description: "DESCRIPTION"),
             .init(label: "VERY LONG TITLE TITLE", limit: "VERY LONG LIMIT LIMIT LIMIT", description: "DESCRIPTION"),
+            .init(
+                label: "VERY VERY VERY VERY VERY LONG TITLE TITLE",
+                limit: "VERY LONG LIMIT LIMIT LIMIT",
+                description: "DESCRIPTION"
+            ),
         ]
 
         return VStack {

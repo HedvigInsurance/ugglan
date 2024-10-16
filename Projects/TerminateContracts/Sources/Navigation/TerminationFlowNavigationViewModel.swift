@@ -1,3 +1,4 @@
+import ChangeTier
 import Combine
 import PresentableStore
 import SwiftUI
@@ -9,6 +10,11 @@ class TerminationFlowNavigationViewModel: ObservableObject {
     @Published var isDatePickerPresented = false
     @Published var isConfirmTerminationPresented = false
     @Published var isProcessingPresented = false
+    @Published var changeTierInput: ChangeTierInput?
+    @Published var loadingActions: [FlowTerminationSurveyRedirectAction: LoadingState<String>] = [:]
+    @Published var infoText: String?
+
+    var isFlowPresented: (DismissTerminationAction) -> Void = { _ in }
     var redirectAction: FlowTerminationSurveyRedirectAction? {
         didSet {
             switch redirectAction {
@@ -19,15 +25,57 @@ class TerminationFlowNavigationViewModel: ObservableObject {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     NotificationCenter.default.post(name: .openDeepLink, object: url)
                 }
-            case .changeTierFoundBetterPrice:
-                break
-            case .changeTierMissingCoverageAndTerms:
-                break
+            case .changeTierFoundBetterPrice, .changeTierMissingCoverageAndTerms:
+                let store: TerminationContractStore = globalPresentableStoreContainer.get()
+                if let contractId = store.state.config?.contractId,
+                    let redirectAction,
+                    let source: ChangeTierSource = {
+                        if case .changeTierFoundBetterPrice = redirectAction {
+                            return .betterPrice
+                        } else if case .changeTierMissingCoverageAndTerms = redirectAction {
+                            return .betterCoverage
+                        }
+                        return nil
+                    }()
+                {
+                    let input = ChangeTierInputData(source: source, contractId: contractId)
+                    loadingActions[redirectAction] = .loading
+                    Task { @MainActor [weak self] in
+                        guard let self = self else { return }
+                        do {
+                            let newInput = try await ChangeTierNavigationViewModel.getTiers(input: input)
+                            DispatchQueue.main.async { [weak self] in
+                                self?.changeTierInput = .existingIntent(
+                                    intent: newInput,
+                                    onSelect: { _ in }
+                                )
+                                self?.router.dismiss()
+                            }
+                        } catch let exception {
+                            if let exception = exception as? ChangeTierError {
+                                switch exception {
+                                case .emptyList:
+                                    self.infoText = L10n.terminationNoTierQuotesSubtitle
+                                default:
+                                    Toasts.shared.displayToastBar(
+                                        toast: .init(type: .error, text: exception.localizedDescription)
+                                    )
+                                }
+                            } else {
+                                Toasts.shared.displayToastBar(
+                                    toast: .init(type: .error, text: exception.localizedDescription)
+                                )
+                            }
+                        }
+                        loadingActions[redirectAction] = nil
+                    }
+                }
             case .none:
                 break
             }
         }
     }
+
     var redirectUrl: URL? {
         didSet {
             if let redirectUrl {
@@ -40,25 +88,21 @@ class TerminationFlowNavigationViewModel: ObservableObject {
     }
     let router = Router()
     var cancellable: AnyCancellable?
-
-    init() {}
-
 }
 
 struct TerminationFlowNavigation: View {
-    @StateObject private var vm = TerminationFlowNavigationViewModel()
+    @ObservedObject private var vm: TerminationFlowNavigationViewModel
     let configs: [TerminationConfirmConfig]
     let initialStep: TerminationFlowActions
-    private var isFlowPresented: (DismissTerminationAction) -> Void
 
     public init(
         initialStep: TerminationFlowActions,
         configs: [TerminationConfirmConfig],
-        isFlowPresented: @escaping (DismissTerminationAction) -> Void
+        vm: TerminationFlowNavigationViewModel
     ) {
         self.initialStep = initialStep
         self.configs = configs
-        self.isFlowPresented = isFlowPresented
+        self.vm = vm
     }
 
     public var body: some View {
@@ -147,6 +191,7 @@ struct TerminationFlowNavigation: View {
         .modally(presented: $vm.isProcessingPresented) {
             openProgressScreen()
         }
+        .showInfoScreen(text: $vm.infoText, dismissButtonTitle: L10n.embarkGoBackButton)
     }
 
     @ViewBuilder
@@ -230,7 +275,6 @@ struct TerminationFlowNavigation: View {
                             contractExposureName: selectedContract.contractExposureName,
                             activeFrom: selectedContract.activeFrom
                         )
-                        //                    vm.router.push(config)
                         let store: TerminationContractStore = globalPresentableStoreContainer.get()
                         store.send(.startTermination(config: config))
                     }
@@ -333,22 +377,8 @@ struct TerminationFlowNavigation: View {
                 actionButton: nil,
                 primaryButton: .init(buttonAction: { [weak vm] in
                     vm?.router.dismiss()
-                    isFlowPresented(.done)
+                    vm?.isFlowPresented(.done)
                 })
-                //                ,
-                //                ghostButton: .init(
-                //                    buttonTitle: L10n.terminationFlowShareFeedback,
-                //                    buttonAction: { [weak router] in
-                //                        router?.dismiss()
-                //                        log.addUserAction(type: .click, name: "terminationSurvey")
-                //                        let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                //                        if let surveyToURL = URL(string: store.state.successStep?.surveyUrl) {
-                //                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                //                                isFlowPresented(.openFeedback(url: surveyToURL))
-                //                            }
-                //                        }
-                //                    }
-                //                )
             )
         )
     }
@@ -360,8 +390,8 @@ struct TerminationFlowNavigation: View {
             buttons: .init(
                 actionButton: .init(
                     buttonTitle: L10n.openChat,
-                    buttonAction: {
-                        isFlowPresented(.chat)
+                    buttonAction: { [weak vm] in
+                        vm?.isFlowPresented(.chat)
                     }
                 ),
                 dismissButton: .init(
@@ -396,6 +426,7 @@ extension View {
 
 struct TerminateInsurance: ViewModifier {
     @ObservedObject var vm: TerminateInsuranceViewModel
+    @StateObject var navigationVm = TerminationFlowNavigationViewModel()
     let onDismiss: (DismissTerminationAction) -> Void
     func body(content: Content) -> some View {
         content
@@ -407,10 +438,16 @@ struct TerminateInsurance: ViewModifier {
                 TerminationFlowNavigation(
                     initialStep: item.action,
                     configs: vm.configs,
-                    isFlowPresented: { dismissType in
+                    vm: navigationVm
+                )
+                .task {
+                    navigationVm.isFlowPresented = { dismissType in
                         onDismiss(dismissType)
                     }
-                )
+                }
+            }
+            .modally(item: $navigationVm.changeTierInput) { item in
+                ChangeTierNavigation(input: item)
             }
     }
 }
@@ -531,4 +568,6 @@ public enum DismissTerminationAction {
     case done
     case chat
     case openFeedback(url: URL)
+    case changeTierFoundBetterPriceStarted
+    case changeTierMissingCoverageAndTermsStarted
 }

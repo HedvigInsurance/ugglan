@@ -31,35 +31,17 @@ public enum ContractLoadingAction: LoadingProtocol {
     case fetchCrossSell
 }
 
-public enum EditType: String, Codable, Hashable, CaseIterable {
-    case changeAddress
-    case coInsured
-
-    var title: String {
-        switch self {
-        case .coInsured: return L10n.contractEditCoinsured
-        case .changeAddress: return L10n.InsuranceDetails.changeAddressButton
-        }
-    }
-
-    var buttonTitle: String {
-        switch self {
-        case .changeAddress: return L10n.generalContinueButton
-        case .coInsured:
-            if Dependencies.featureFlags().isEditCoInsuredEnabled {
-                return L10n.generalContinueButton
-            }
-            return L10n.openChat
-        }
-    }
-
+extension EditType {
     public static func getTypes(for contract: Contract) -> [EditType] {
         var editTypes: [EditType] = []
 
         if Dependencies.featureFlags().isMovingFlowEnabled && contract.supportsAddressChange {
             editTypes.append(.changeAddress)
         }
-        if contract.supportsCoInsured {
+        if Dependencies.featureFlags().isTiersEnabled && contract.supportsChangeTier {
+            editTypes.append(.changeTier)
+        }
+        if Dependencies.featureFlags().isEditCoInsuredEnabled && contract.supportsCoInsured {
             editTypes.append(.coInsured)
         }
         return editTypes

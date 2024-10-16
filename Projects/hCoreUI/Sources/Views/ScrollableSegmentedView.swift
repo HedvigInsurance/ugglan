@@ -3,19 +3,18 @@ import PresentableStore
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore
-import hCoreUI
 
-struct ScrollableSegmentedView<Content: View>: View {
+public struct ScrollableSegmentedView<Content: View>: View {
     @ObservedObject var vm: ScrollableSegmentedViewModel
     @ViewBuilder var contentFor: (_ id: String) -> Content
-    init(
+    public init(
         vm: ScrollableSegmentedViewModel,
         contentFor: @escaping (_ id: String) -> Content
     ) {
         self.vm = vm
         self.contentFor = contentFor
     }
-    var body: some View {
+    public var body: some View {
         VStack(spacing: .padding16) {
             headerControl
             scrollableContent
@@ -31,22 +30,24 @@ struct ScrollableSegmentedView<Content: View>: View {
                     }
             }
         }
-
     }
 
+    @ViewBuilder
     var headerControl: some View {
-        hSection {
-            ZStack(alignment: .leading) {
-                selectedPageHeaderBackground
-                HStack(spacing: .padding4) {
-                    ForEach(vm.pageModels) { model in
-                        headerElement(for: model)
+        if vm.pageModels.count > 1 {
+            hSection {
+                ZStack(alignment: .leading) {
+                    selectedPageHeaderBackground
+                    HStack(spacing: .padding4) {
+                        ForEach(vm.pageModels) { model in
+                            headerElement(for: model)
+                        }
                     }
                 }
-            }
-            .padding(.padding4)
-            .background {
-                hSurfaceColor.Opaque.primary.clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
+                .padding(.padding4)
+                .background {
+                    hSurfaceColor.Opaque.primary.clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
+                }
             }
         }
     }
@@ -115,7 +116,7 @@ struct ScrollableSegmentedView<Content: View>: View {
     }
 }
 
-class ScrollableSegmentedViewModel: NSObject, ObservableObject {
+public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
     let pageModels: [PageModel]
     var heights: [String: CGFloat] = [:]
     var titlesPositions: [String: CGRect] = [:]
@@ -131,8 +132,13 @@ class ScrollableSegmentedViewModel: NSObject, ObservableObject {
     weak var horizontalScrollView: UIScrollView? {
         didSet {
             horizontalScrollView?.delegate = self
+            setSelectedTab(with: currentId, withAnimation: false)
             horizontalScrollCancellable = horizontalScrollView?.publisher(for: \.contentOffset).removeDuplicates()
-                .sink(receiveValue: { [weak self] value in guard let self = self else { return }
+                .sink(receiveValue: { [weak self] value in
+                    guard let self = self else { return }
+                    if pageModels.count < 2 {
+                        return
+                    }
                     let allOffsets = self.getPagesOffset()
                     let titlePositions = self.titlesPositions.values.sorted(by: { $0.origin.x < $1.origin.x })
                     let sortedTitlePositions =
@@ -205,10 +211,10 @@ class ScrollableSegmentedViewModel: NSObject, ObservableObject {
         return offsetToScrollTo
     }
 
-    func setSelectedTab(with id: String) {
+    func setSelectedTab(with id: String, withAnimation animation: Bool = true) {
         if let index = pageModels.firstIndex(where: { $0.id == id }) {
             currentId = id
-            scrollTo(offset: CGFloat(index) * viewWidth + pageSpacing * CGFloat(index))
+            scrollTo(offset: CGFloat(index) * viewWidth + pageSpacing * CGFloat(index), withAnimation: animation)
             withAnimation {
                 currentHeight = (heights[id] ?? 0)
             }
@@ -219,23 +225,24 @@ class ScrollableSegmentedViewModel: NSObject, ObservableObject {
         return pageModels.enumerated().compactMap({ CGFloat($0.offset) * viewWidth + pageSpacing * CGFloat($0.offset) })
     }
 
-    func scrollTo(offset: CGFloat) {
-        horizontalScrollView?.scrollRectToVisible(.init(x: offset, y: 1, width: viewWidth, height: 1), animated: true)
+    func scrollTo(offset: CGFloat, withAnimation: Bool = true) {
+        horizontalScrollView?
+            .scrollRectToVisible(.init(x: offset, y: 1, width: viewWidth, height: 1), animated: withAnimation)
     }
-    init(pageModels: [PageModel]) {
-        self.currentId = pageModels.first?.id ?? ""
+    public init(pageModels: [PageModel], currentId: String? = nil) {
+        self.currentId = currentId ?? pageModels.first?.id ?? ""
         self.pageModels = pageModels
     }
 }
 
 extension ScrollableSegmentedViewModel: UIScrollViewDelegate {
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+    public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
             scrollToNearestWith(offset: scrollView.contentOffset.x)
         }
     }
 
-    func scrollViewWillEndDragging(
+    public func scrollViewWillEndDragging(
         _ scrollView: UIScrollView,
         withVelocity velocity: CGPoint,
         targetContentOffset: UnsafeMutablePointer<CGPoint>
@@ -265,58 +272,22 @@ extension ScrollableSegmentedViewModel: UIScrollViewDelegate {
         }
     }
 
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+    public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         currentHeight = heights.values.max(by: { $1 > $0 }) ?? 0
     }
 }
 
-struct PageModel: Identifiable {
-    let id: String
+public struct PageModel: Identifiable {
+    public let id: String
     let title: String
-}
 
-#Preview{
-    let store: ContractStore = globalPresentableStoreContainer.get()
-
-    let fetchContractsService = FetchContractsClientDemo()
-    Dependencies.shared.add(module: Module { () -> FetchContractsClient in fetchContractsService })
-
-    let featureFlags = FeatureFlagsDemo()
-    Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlags })
-
-    store.send(.fetchContracts)
-    return VStack {
-        ScrollableSegmentedView(
-            vm: .init(
-                pageModels: [
-                    .init(
-                        id: "id1",
-                        title: "title1"
-                    ),
-                    .init(
-                        id: "id2",
-                        title: "title2"
-                    ),
-                    .init(
-                        id: "id3",
-                        title: "title3"
-                    ),
-                ]
-            )
-        ) { id in
-            Group {
-                if id == "id1" {
-                    ContractInformationView(id: "contractId")
-                } else if id == "id2" {
-                    ContractCoverageView(id: "contractId")
-                } else {
-                    ContractDocumentsView(id: "contractId")
-                }
-
-            }
-        }
+    public init(
+        id: String,
+        title: String
+    ) {
+        self.id = id
+        self.title = title
     }
-    .padding(.horizontal, 10)
 }
 
 extension View {

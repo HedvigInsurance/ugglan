@@ -107,4 +107,5 @@ enum PushNotificationType: String {
     case OPEN_INSURANCE_TAB
     case CROSS_SELL
     case OPEN_CONTACT_INFO
+    case CHANGE_TIER
 }

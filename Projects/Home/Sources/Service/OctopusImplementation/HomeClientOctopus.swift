@@ -49,17 +49,25 @@ public class HomeClientOctopus: HomeClient {
 
         var quickActions = [QuickAction]()
         let actions = data.currentMember.memberActions
+        var contractAction = [QuickAction]()
         if actions?.isMovingEnabled == true && featureFlags.isMovingFlowEnabled {
-            quickActions.append(.changeAddress)
+            contractAction.append(.changeAddress)
+        }
+        if actions?.isEditCoInsuredEnabled == true && featureFlags.isEditCoInsuredEnabled {
+            contractAction.append(.editCoInsured)
+        }
+        if actions?.isCancelInsuranceEnabled == true && featureFlags.isTerminationFlowEnabled {
+            contractAction.append(.cancellation)
+        }
+
+        if actions?.isChangeTierEnabled == true && featureFlags.isTiersEnabled {
+            contractAction.append(.upgradeCoverage)
+        }
+        if !contractAction.isEmpty {
+            quickActions.append(.editInsurance(actions: .init(quickActions: contractAction)))
         }
         if actions?.isConnectPaymentEnabled == true {
             quickActions.append(.connectPayments)
-        }
-        if actions?.isEditCoInsuredEnabled == true && featureFlags.isEditCoInsuredEnabled {
-            quickActions.append(.editCoInsured)
-        }
-        if actions?.isCancelInsuranceEnabled == true && featureFlags.isTerminationFlowEnabled {
-            quickActions.append(.cancellation)
         }
         if actions?.isTravelCertificateEnabled == true && featureFlags.isTravelInsuranceEnabled {
             quickActions.append(.travelInsurance)

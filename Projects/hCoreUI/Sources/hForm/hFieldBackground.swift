@@ -4,6 +4,7 @@ struct hFieldBackgroundModifier: ViewModifier {
     @Binding var animate: Bool
     @Binding var error: String?
     @Environment(\.isEnabled) var enabled
+    @Environment(\.hWithTransparentColor) var useTransparentColor
 
     func body(content: Content) -> some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -24,7 +25,11 @@ struct hFieldBackgroundModifier: ViewModifier {
                 hSurfaceColor.Opaque.secondary
             }
         } else {
-            hSurfaceColor.Opaque.primary
+            if useTransparentColor {
+                hFillColor.Opaque.white
+            } else {
+                hSurfaceColor.Opaque.primary
+            }
         }
     }
 }
