@@ -19,6 +19,7 @@ public struct ProcessingView<S: Store & StoreLoading>: View {
 
     var errorViewButtons: ErrorViewButtonConfig?
     @Environment(\.hSuccessBottomAttachedView) var successBottomView
+
     public init(
         showSuccessScreen: Bool? = true,
         _ storeType: S.Type,
