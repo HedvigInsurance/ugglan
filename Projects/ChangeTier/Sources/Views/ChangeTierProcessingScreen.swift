@@ -16,7 +16,6 @@ struct ChangeTierProcessingView: View {
             successViewButtonAction: {
                 changeTierNavigationVm.router.dismiss()
             },
-            onAppearLoadingView: nil,
             errorViewButtons: .init(
                 actionButton: .init(
                     buttonTitle: nil,

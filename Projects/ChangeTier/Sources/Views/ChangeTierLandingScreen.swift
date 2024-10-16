@@ -24,7 +24,6 @@ public struct ChangeTierLandingScreen: View {
                 successViewTitle: nil,
                 successViewBody: nil,
                 successViewButtonAction: nil,
-                onAppearLoadingView: nil,
                 errorViewButtons: .init(
                     actionButton: .init(
                         buttonTitle: nil,
