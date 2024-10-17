@@ -91,8 +91,7 @@ struct SetTerminationDateLandingScreen: View {
                             hCoreUIAssets.lock.view
                                 .frame(width: 24, height: 24)
                         }
-                        .hFieldLockedState
-                        .hWithoutDisabledColor
+                        .hBackgroundColorType(type: [.locked, .withoutDisabled])
                         .disabled(true)
 
                         InfoCard(
@@ -252,6 +251,6 @@ class SetTerminationDateLandingScreenViewModel: ObservableObject {
     }
 }
 
-#Preview{
+#Preview {
     SetTerminationDateLandingScreen(onSelected: {})
 }

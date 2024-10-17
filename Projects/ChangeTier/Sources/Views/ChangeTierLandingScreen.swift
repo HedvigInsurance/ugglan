@@ -86,7 +86,7 @@ public struct ChangeTierLandingScreen: View {
                     }
                 }
                 .hFieldSize(.small)
-                .hWithTransparentColor
+                .hBackgroundColorType(type: [.negative])
                 .hWithoutHorizontalPadding
 
                 hRow {
@@ -108,9 +108,7 @@ public struct ChangeTierLandingScreen: View {
                         value: vm.selectedTier?.name ?? "",
                         placeholder: L10n.tierFlowCoverageLabel
                     ) {}
-                    .hFieldLockedState
-                    .colorScheme(.light)
-                    .hWithTransparentColor
+                    .hBackgroundColorType(type: [.locked, .translucent, .negative])
                     .hFieldTrailingView {
                         Image(uiImage: hCoreUIAssets.lock.image)
                             .foregroundColor(hTextColor.Opaque.secondary)
@@ -129,7 +127,6 @@ public struct ChangeTierLandingScreen: View {
             ) {
                 changeTierNavigationVm.isEditTierPresented = true
             }
-            .colorScheme(.light)
         }
     }
 
@@ -141,9 +138,7 @@ public struct ChangeTierLandingScreen: View {
                     value: vm.selectedQuote?.deductableAmount?.formattedAmount ?? "",
                     placeholder: L10n.tierFlowDeductibleLabel
                 ) {}
-                .hFieldLockedState
-                .colorScheme(.light)
-                .hWithTransparentColor
+                .hBackgroundColorType(type: [.locked, .translucent, .negative])
                 .hFieldTrailingView {
                     Image(uiImage: hCoreUIAssets.lock.image)
                         .foregroundColor(hTextColor.Opaque.secondary)
@@ -159,7 +154,6 @@ public struct ChangeTierLandingScreen: View {
                 changeTierNavigationVm.isEditDeductiblePresented = true
             }
             .disabled(vm.selectedTier == nil)
-            .colorScheme(.light)
         }
     }
 

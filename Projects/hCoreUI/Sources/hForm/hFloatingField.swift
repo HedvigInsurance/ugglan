@@ -12,9 +12,8 @@ public struct hFloatingField: View {
     @Environment(\.hFieldTrailingView) var fieldTrailingView
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hWithoutFixedHeight) var hWithoutFixedHeight
-    @Environment(\.hFieldLockedState) var isLocked
     @Environment(\.hFieldSize) var size
-    @Environment(\.hWithoutDisabledColor) var withoutDisabledColor
+    @Environment(\.hBackgroundOption) var backgroundOption
 
     public var shouldMoveLabel: Binding<Bool> {
         Binding(
@@ -80,7 +79,7 @@ public struct hFloatingField: View {
 
     @hColorBuilder
     private var foregroundColor: some hColor {
-        if (isEnabled && !isLocked) || withoutDisabledColor {
+        if (isEnabled && !backgroundOption.contains(.locked)) || backgroundOption.contains(.withoutDisabled) {
             hTextColor.Opaque.primary
         } else {
             hTextColor.Opaque.secondary
@@ -159,26 +158,5 @@ extension EnvironmentValues {
 extension View {
     public var hWithoutFixedHeight: some View {
         self.environment(\.hWithoutFixedHeight, true)
-    }
-}
-
-private struct EnvironmentHFieldLockedState: EnvironmentKey {
-    static let defaultValue = false
-}
-
-extension EnvironmentValues {
-    public var hFieldLockedState: Bool {
-        get { self[EnvironmentHFieldLockedState.self] }
-        set { self[EnvironmentHFieldLockedState.self] = newValue }
-    }
-}
-
-extension View {
-    public var hFieldLockedState: some View {
-        self.environment(\.hFieldLockedState, true)
-    }
-
-    public func hFieldSetLockedState(to value: Bool) -> some View {
-        self.environment(\.hFieldLockedState, value)
     }
 }
