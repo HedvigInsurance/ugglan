@@ -8,38 +8,21 @@ import hGraphQL
 
 public struct Claims {
     @StateObject var vm = ClaimsViewModel()
-
-    public init() {}
 }
 
 extension Claims: View {
     @ViewBuilder
-    func claimsSection(_ claims: [ClaimModel]) -> some View {
+    public var body: some View {
         VStack {
-            if claims.isEmpty {
+            if vm.claims.isEmpty {
                 Spacer().frame(height: 40)
-            } else if claims.count == 1, let claim = claims.first {
+            } else if vm.claims.count == 1, let claim = vm.claims.first {
                 ClaimStatus(claim: claim, enableTap: true)
                     .padding(.vertical)
             } else {
-                ClaimSection(claims: claims)
+                ClaimSection(claims: $vm.claims)
                     .padding(.vertical)
             }
-        }
-    }
-
-    @ViewBuilder
-    public var body: some View {
-        PresentableStoreLens(
-            ClaimsStore.self,
-            getter: { state in
-                state.claims ?? []
-            },
-            setter: { _ in
-                .fetchClaims
-            }
-        ) { claims, _ in
-            claimsSection(claims)
         }
         .onAppear {
             vm.fetch()
@@ -53,7 +36,20 @@ extension Claims: View {
 class ClaimsViewModel: ObservableObject {
     @PresentableStore private var store: ClaimsStore
     private var pollTimerCancellable: AnyCancellable?
+    private var stateObserver: AnyCancellable?
     private let refreshOn = 60
+    @Published var claims = [ClaimModel]()
+
+    init() {
+        stateObserver = store.stateSignal
+            .receive(on: RunLoop.main)
+            .map(\.claims)
+            .removeDuplicates()
+            .sink { state in
+                self.claims = state ?? []
+            }
+        claims = store.state.claims ?? []
+    }
 
     func stopTimer() {
         pollTimerCancellable?.cancel()

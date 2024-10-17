@@ -13,7 +13,7 @@ import hGraphQL
 
 public struct HomeView<Claims: View>: View {
     @PresentableStore var store: HomeStore
-    @StateObject var vm = HomeVM()
+    @StateObject var vm: HomeVM
     @Inject var featureFlags: FeatureFlags
 
     @EnvironmentObject var navigationVm: HomeNavigationViewModel
@@ -25,6 +25,7 @@ public struct HomeView<Claims: View>: View {
         claimsContent: Claims,
         memberId: @escaping () -> String
     ) {
+        self._vm = StateObject(wrappedValue: .init(memberId: memberId()))
         self.claimsContent = claimsContent
         self.memberId = memberId()
     }
@@ -87,7 +88,7 @@ extension HomeView {
                 switch vm.memberContractState {
                 case .active:
                     VStack(spacing: 16) {
-                        HomeBottomScrollView(memberId: memberId)
+                        HomeBottomScrollView(vm: vm.homeBottomScrollViewModel)
                         VStack(spacing: 8) {
                             startAClaimButton
                             openHelpCenter
@@ -95,7 +96,7 @@ extension HomeView {
                     }
                 case .future:
                     VStack(spacing: 16) {
-                        HomeBottomScrollView(memberId: memberId)
+                        HomeBottomScrollView(vm: vm.homeBottomScrollViewModel)
                         FutureSectionInfoView()
                             .slideUpFadeAppearAnimation()
                         VStack(spacing: 8) {
@@ -104,7 +105,7 @@ extension HomeView {
                     }
                 case .terminated:
                     VStack(spacing: 16) {
-                        HomeBottomScrollView(memberId: memberId)
+                        HomeBottomScrollView(vm: vm.homeBottomScrollViewModel)
                         VStack(spacing: 8) {
                             startAClaimButton
                             openHelpCenter
@@ -149,12 +150,14 @@ extension HomeView {
 
 class HomeVM: ObservableObject {
     @Published var memberContractState: MemberContractState = .loading
+    private(set) var homeBottomScrollViewModel: HomeBottomScrollViewModel
     private var cancellables = Set<AnyCancellable>()
     private var chatNotificationPullTimerCancellable: AnyCancellable?
     @Published var toolbarOptionTypes: [ToolbarOptionType] = []
     private var chatNotificationPullTimer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
 
-    init() {
+    init(memberId: String) {
+        homeBottomScrollViewModel = .init(memberId: memberId)
         let store: HomeStore = globalPresentableStoreContainer.get()
         memberContractState = store.state.memberContractState
         store.stateSignal
