@@ -2,22 +2,5 @@ query Contract($contractId: UUID!) {
   contract(id: $contractId) {
       exposureDisplayName
       supportsChangeTier
-      id
-      currentAgreement {
-        deductible {
-          amount {
-            ...MoneyFragment
-          }
-          percentage
-          displayText
-        }
-        premium {
-            ...MoneyFragment
-        }
-        productVariant {
-            typeOfContract
-            displayNameTier
-        }
-      }
   }
 }
