@@ -18,6 +18,7 @@ public struct ProductVariantComparison: Codable, Equatable, Hashable {
     public struct ProductVariantComparisonRow: Codable, Equatable, Hashable {
         let title: String
         let description: String
+        let colorCode: String?
         let cells: [ProductVariantComparisonCell]
 
         struct ProductVariantComparisonCell: Codable, Equatable, Hashable {

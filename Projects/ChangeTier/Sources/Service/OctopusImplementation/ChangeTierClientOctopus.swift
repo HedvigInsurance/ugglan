@@ -184,6 +184,7 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                 .init(
                     title: $0.title,
                     description: $0.description,
+                    colorCode: $0.colorCode,
                     cells: $0.cells.map({ .init(isCovered: $0.isCovered, coverageText: $0.coverageText) })
                 )
             })

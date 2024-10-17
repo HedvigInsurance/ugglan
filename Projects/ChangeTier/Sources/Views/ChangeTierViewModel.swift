@@ -165,49 +165,36 @@ public class ChangeTierViewModel: ObservableObject {
         }
     }
 
-    public func getProductVariantComparision() {
+    @MainActor
+    public func getProductVariantComparision() async throws {
         withAnimation {
             viewState = .loading
         }
-        Task { @MainActor in
-            do {
-                var termsVersionsToCompare: [String] = []
-                tiers.forEach({ tier in
-                    tier.quotes.forEach({ quote in
-                        if let termsVersion = quote.productVariant?.termsVersion,
-                            !termsVersionsToCompare.contains(termsVersion)
-                        {
-                            termsVersionsToCompare.append(termsVersion)
-                        }
-                    })
+        do {
+            var termsVersionsToCompare: [String] = []
+            tiers.forEach({ tier in
+                tier.quotes.forEach({ quote in
+                    if let termsVersion = quote.productVariant?.termsVersion,
+                        !termsVersionsToCompare.contains(termsVersion)
+                    {
+                        termsVersionsToCompare.append(termsVersion)
+                    }
                 })
+            })
 
-                /* TODO: REMOVE WHEN WORKS */
-                //                let termsVersionsToCompareMock = [
-                //                    "SE_DOG_BASIC-20230330-HEDVIG-null",
-                //                    "SE_DOG_STANDARD-20230330-HEDVIG-null",
-                //                    "SE_DOG_PREMIUM-20230410-HEDVIG-null"
-                //                ]
+            let productVariantComparisionData = try await service.compareProductVariants(
+                termsVersion: termsVersionsToCompare
+            )
+            self.productVariantComparision = productVariantComparisionData
 
-                let termsVersionsToCompareMock = [
-                    "SE_APARTMENT_BRF-20240201-HEDVIG-null",
-                    "SE_APARTMENT_STUDENT_BRF-20240201-HEDVIG-null",
-                ]
-
-                let productVariantComparisionData = try await service.compareProductVariants(
-                    termsVersion: termsVersionsToCompareMock
+            withAnimation {
+                viewState = .success
+            }
+        } catch let error {
+            withAnimation {
+                self.viewState = .error(
+                    errorMessage: error.localizedDescription
                 )
-                self.productVariantComparision = productVariantComparisionData
-
-                withAnimation {
-                    viewState = .success
-                }
-            } catch let error {
-                withAnimation {
-                    self.viewState = .error(
-                        errorMessage: error.localizedDescription
-                    )
-                }
             }
         }
     }
