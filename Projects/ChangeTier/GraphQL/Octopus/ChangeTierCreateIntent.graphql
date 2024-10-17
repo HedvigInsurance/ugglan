@@ -2,8 +2,9 @@ mutation ChangeTierDeductibleCreateIntent($input: ChangeTierDeductibleCreateInte
   changeTierDeductibleCreateIntent(input: $input) {
     intent {
       activationDate
-      currentTierLevel
-      currentTierName
+      agreementToChange {
+        ...ChangeTierDeductibleFromAgreementFragment
+      }
       quotes {
         id
         tierName
@@ -32,4 +33,28 @@ mutation ChangeTierDeductibleCreateIntent($input: ChangeTierDeductibleCreateInte
       message
     }
   }
+}
+
+
+fragment ChangeTierDeductibleFromAgreementFragment on ChangeTierDeductibleFromAgreement {
+        premium {
+            ...MoneyFragment
+        }
+        deductible {
+            amount {
+                ...MoneyFragment
+            }
+          percentage
+          displayText
+        }
+        tierName
+        tierLevel
+        displayItems {
+          displayTitle
+          displaySubtitle
+          displayValue
+        }
+        productVariant {
+            ...ProductVariantFragment
+        }
 }
