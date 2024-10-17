@@ -9,17 +9,17 @@ import hCore
 import hCoreUI
 
 struct HomeBottomScrollView: View {
-    @ObservedObject private var vm: HomeButtonScrollViewModel
-    @StateObject var scrollVM: InfoCardScrollViewModel = .init(spacing: 16, zoomFactor: 0.9, itemsCount: 0)
+    @ObservedObject private var vm: HomeBottomScrollViewModel
+    @StateObject var scrollVM: InfoCardScrollViewModel = .init(spacing: 16)
     @EnvironmentObject var navigationVm: HomeNavigationViewModel
 
-    init(memberId: String) {
-        self.vm = HomeButtonScrollViewModel(memberId: memberId)
+    init(vm: HomeBottomScrollViewModel) {
+        self.vm = vm
     }
 
     var body: some View {
         InfoCardScrollView(
-            items: vm.items.sorted(by: { $0.id < $1.id }),
+            items: $vm.items,
             vm: scrollVM,
             content: { content in
                 switch content.id {
@@ -47,14 +47,18 @@ struct HomeBottomScrollView: View {
                 }
             }
         )
-        .onChange(of: vm.items) { value in
-            scrollVM.updateItems(count: value.count)
-        }
     }
 }
 
-class HomeButtonScrollViewModel: ObservableObject {
-    @Published var items = Set<InfoCardView>()
+class HomeBottomScrollViewModel: ObservableObject {
+    @Published var items = [InfoCardView]()
+    private var localItems = Set<InfoCardView>() {
+        didSet {
+            withAnimation {
+                items = localItems.sorted(by: { $0.id < $1.id })
+            }
+        }
+    }
     private var showConnectPaymentCardView = false
     var cancellables = Set<AnyCancellable>()
     init(memberId: String) {
@@ -72,11 +76,11 @@ class HomeButtonScrollViewModel: ObservableObject {
         let item = InfoCardView(with: item)
         if addItem {
             _ = withAnimation {
-                self.items.insert(item)
+                self.localItems.insert(item)
             }
         } else {
             _ = withAnimation {
-                self.items.remove(item)
+                self.localItems.remove(item)
             }
         }
     }
@@ -98,7 +102,7 @@ class HomeButtonScrollViewModel: ObservableObject {
             })
             .store(in: &cancellables)
         switch homeStore.state.memberContractState {
-        case .active, .future:
+        case .terminated:
             handleItem(.terminated, with: true)
         default:
             handleItem(.terminated, with: false)
@@ -139,8 +143,9 @@ class HomeButtonScrollViewModel: ObservableObject {
             .map({ $0.getImportantMessageToShow() })
             .removeDuplicates()
             .receive(on: RunLoop.main)
-            .sink(receiveValue: { [weak self] importantMessages in guard let self = self else { return }
-                var oldItems = self.items
+            .sink(receiveValue: { [weak self] importantMessages in
+                guard let self = self else { return }
+                var oldItems = self.localItems
                 let itemsToRemove = oldItems.filter { view in
                     switch view.id {
                     case .importantMessage:
@@ -156,7 +161,7 @@ class HomeButtonScrollViewModel: ObservableObject {
                     oldItems.insert(.init(with: .importantMessage(message: importantMessage.id)))
                 }
                 withAnimation {
-                    self.items = oldItems
+                    self.localItems = oldItems
                 }
             })
             .store(in: &cancellables)
@@ -232,7 +237,7 @@ class HomeButtonScrollViewModel: ObservableObject {
 
 struct HomeBottomScrollView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeBottomScrollView(memberId: "")
+        HomeBottomScrollView(vm: .init(memberId: ""))
     }
 }
 

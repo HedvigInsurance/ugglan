@@ -16,7 +16,6 @@ public struct hForm<Content: View>: View, KeyboardReadable {
     @State var contentHeight: CGFloat = 0
     @State var titleHeight: CGFloat = 0
     @State var additionalSpaceFromTop: CGFloat = 0
-    @State var shouldIgnoreTitleMargins = false
     @State var mergeBottomViewWithContent = false
     @Environment(\.hFormBottomAttachedView) var bottomAttachedView
     @Environment(\.hFormTitle) var hFormTitle
@@ -29,6 +28,8 @@ public struct hForm<Content: View>: View, KeyboardReadable {
     @Environment(\.hIgnoreScrollOffsetChanges) var hIgnoreScrollOffsetChanges
     @Environment(\.hUseInitialAnimation) var hUseInitialAnimation
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+
     @State var lastTimeChangedMergeBottomViewWithContent = Date()
     @State var cancellable: AnyCancellable?
     @State var additionalContentOffset: CGFloat = 0
@@ -128,13 +129,12 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                         }
                         .frame(maxWidth: .infinity, alignment: hFormTitle.title.alignment)
                         .multilineTextAlignment(hFormTitle.title.alignment == .center ? .center : .leading)
-                        .padding(.top, shouldIgnoreTitleMargins ? 0 : hFormTitle.title.type.topMargin)
+                        .padding(.top, hFormTitle.title.type.topMargin)
                         .padding(
                             .bottom,
-                            shouldIgnoreTitleMargins
-                                ? 0 : hFormTitle.subTitle?.type.bottomMargin ?? hFormTitle.title.type.bottomMargin
+                            hFormTitle.subTitle?.type.bottomMargin ?? hFormTitle.title.type.bottomMargin
                         )
-                        .padding(.horizontal, .padding16)
+                        .padding(.horizontal, horizontalSizeClass == .regular ? .padding60 : .padding16)
                         .background {
                             GeometryReader { proxy in
                                 Color.clear

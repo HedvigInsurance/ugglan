@@ -100,6 +100,8 @@ public struct ContractsNavigation<Content: View>: View {
                 updateDate: insuranceUpdate.upcomingChangedAgreement?.activeFrom ?? "",
                 upcomingAgreement: insuranceUpdate.upcomingChangedAgreement
             )
+            .configureTitle(L10n.InsuranceDetails.updateDetailsSheetTitle)
+            .embededInNavigation(tracking: ContractsDetentType.upcomingChanges)
             .environmentObject(contractsNavigationVm)
         }
         .handleTerminateInsurance(vm: contractsNavigationVm.terminateInsuranceVm) { dismissType in
@@ -176,10 +178,13 @@ private enum ContractsDetentType: TrackingViewNameProtocol {
         switch self {
         case .editContract:
             return .init(describing: EditContractScreen.self)
+        case .upcomingChanges:
+            return .init(describing: UpcomingChangesScreen.self)
         }
     }
 
     case editContract
+    case upcomingChanges
 }
 
 extension ContractsNavigation: TrackingViewNameProtocol {

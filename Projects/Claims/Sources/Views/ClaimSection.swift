@@ -7,8 +7,8 @@ import hCoreUI
 import hGraphQL
 
 struct ClaimSection: View {
-    var claims: [ClaimModel]
-
+    @Binding var claims: [ClaimModel]
+    @StateObject var scrollVM: InfoCardScrollViewModel = .init(spacing: 16)
     @PresentableStore var store: ClaimsStore
     @EnvironmentObject var homeRouter: Router
 
@@ -19,14 +19,14 @@ struct ClaimSection: View {
     }
 
     var body: some View {
-        hCarousel(
-            spacing: 16,
-            items: claims,
-            tapAction: tapAction
-        ) { claim in
-            ClaimStatus(claim: claim, enableTap: true)
-                .padding(.top)
-                .padding(.bottom, 5)
-        }
+        InfoCardScrollView(
+            items: $claims,
+            vm: scrollVM,
+            content: { claim in
+                ClaimStatus(claim: claim, enableTap: true)
+                    .padding(.top)
+                    .padding(.bottom, 5)
+            }
+        )
     }
 }

@@ -265,9 +265,8 @@ struct LoggedInNavigation: View {
 struct HomeTab: View {
     @ObservedObject var homeNavigationVm: HomeNavigationViewModel
     @ObservedObject var loggedInVm: LoggedInNavigationViewModel
-
+    let claims = Claims()
     var body: some View {
-        let claims = Claims()
         return RouterHost(router: homeNavigationVm.router, tracking: self) {
             HomeView(
                 claimsContent: claims,

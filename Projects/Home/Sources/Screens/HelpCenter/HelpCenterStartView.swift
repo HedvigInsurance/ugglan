@@ -132,8 +132,7 @@ public struct HelpCenterStartView: View {
                         router?.push(item)
                     }
                 }
-                .withoutHorizontalPadding
-                .hSectionMinimumPadding
+                .hSectionWithoutHorizontalPadding
                 .sectionContainerStyle(.opaque)
             }
         }

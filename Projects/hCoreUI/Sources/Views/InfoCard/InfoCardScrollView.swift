@@ -2,121 +2,158 @@ import Combine
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 
-public struct InfoCardScrollView<Content: View, cardItem: Identifiable>: View {
+public struct InfoCardScrollView<Content: View, cardItem: Identifiable & Equatable>: View {
     private let content: (cardItem) -> Content
-    private let items: [cardItem]
+    @Binding var items: [cardItem]
     @ObservedObject private var vm: InfoCardScrollViewModel
 
     public init(
-        items: [cardItem],
+        items: Binding<[cardItem]>,
         vm: InfoCardScrollViewModel,
         @ViewBuilder content: @escaping (cardItem) -> Content
     ) {
         self.content = content
-        self.items = items
+        self._items = items
         self.vm = vm
     }
 
     public var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(alignment: .bottom, spacing: vm.spacing) {
-                ForEach(items) { item in
-                    PrioritizedCard(
-                        item,
-                        width: vm.cardWidth,
-                        updateHeight: { height in
-                            if height > vm.scrollViewHeight {
-                                DispatchQueue.main.async { [weak vm] in
-                                    vm?.scrollViewHeight = height
-                                }
+        HStack {
+            VStack {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    if vm.cardWidth > 0 {
+                        HStack(alignment: .bottom, spacing: vm.spacing) {
+                            ForEach(items) { item in
+                                PrioritizedCard(
+                                    item,
+                                    width: $vm.cardWidth,
+                                    content: content
+                                )
                             }
-                        },
-                        content: content
-                    )
+                        }
+                    }
+                }
+                .introspect(.scrollView, on: .iOS(.v13...)) { [weak vm] scrollView in
+                    vm?.scrollView = scrollView
+                    scrollView.delegate = vm
+                    scrollView.clipsToBounds = false
+                }
+                if vm.cardWidth > 0 {
+                    if items.count > 1 {
+                        hPagerDotsBinded(currentIndex: $vm.activeCard, totalCount: items.count)
+                    }
                 }
             }
         }
-        .transition(.offset(.zero))
-        .animation(.easeInOut(duration: 0.1), value: UUID())
-        .frame(width: vm.cardWidth, height: vm.scrollViewHeight)
-        .introspect(.scrollView, on: .iOS(.v13...)) { scrollView in
-            scrollView.delegate = vm
-            scrollView.clipsToBounds = false
+        .background {
+            GeometryReader { proxy in
+                Color.clear
+                    .onAppear {
+                        vm.updateWidth(with: proxy.size.width)
+                    }
+                    .onChange(of: proxy.size) { size in
+                        vm.updateWidth(with: size.width)
+                    }
+            }
         }
-        if items.count > 1 {
-            hPagerDotsBinded(currentIndex: $vm.activeCard, totalCount: items.count)
+        .onAppear {
+            vm.updateItems(count: items.count)
+        }
+        .onChange(of: items) { value in
+            vm.updateItems(count: value.count)
         }
     }
 }
 
 struct PrioritizedCard<Content: View, cardItem: Identifiable>: View {
     private let content: Content
-    private let width: CGFloat
-    private let updateHeight: (_ width: CGFloat) -> Void
+    @Binding var width: CGFloat
     init(
         _ item: cardItem,
-        width: CGFloat,
-        updateHeight: @escaping (_ width: CGFloat) -> Void,
+        width: Binding<CGFloat>,
         @ViewBuilder content: (_ item: cardItem) -> Content
     ) {
-        self.width = width
-        self.updateHeight = updateHeight
+        self._width = width
         self.content = content(item)
     }
 
     var body: some View {
         self.content
             .frame(width: width)
-            .background(
-                GeometryReader { geo in
-                    Color.clear.onReceive(Just(geo.size.height)) { height in
-                        updateHeight(height)
-                    }
-                }
-            )
     }
 }
 
-public class InfoCardScrollViewModel: NSObject, ObservableObject, UIScrollViewDelegate {
+public class InfoCardScrollViewModel: NSObject, ObservableObject {
     @Published var activeCard = 0
     @Published var calcOffset: CGFloat = 0
-    @Published var scrollViewHeight: CGFloat = 0
     @Published var itemsCount: CGFloat = 0
-
-    let spacing: CGFloat
-    let cardWidth: CGFloat
-    let cardWithSpacing: CGFloat
-
+    @Published var spacing: CGFloat = 0
+    @Published var cardWidth: CGFloat = 0
+    @Published var cardWithSpacing: CGFloat = 0
+    var scrollView: UIScrollView?
     public init(
-        spacing: CGFloat,
-        zoomFactor: CGFloat,
-        itemsCount: Int
+        spacing: CGFloat
     ) {
         self.spacing = spacing
-        self.cardWidth = min(UIScreen.main.bounds.width * zoomFactor, 700)
-        self.itemsCount = CGFloat(itemsCount)
+    }
+
+    public func updateWidth(with cardWidth: CGFloat) {
+        self.cardWidth = cardWidth
         self.cardWithSpacing = cardWidth + spacing
-        self.scrollViewHeight = 0
+        if let scrollView {
+            calculateOffset(scrollView: scrollView)
+        }
+
     }
 
     public func updateItems(count: Int) {
         withAnimation {
             itemsCount = CGFloat(count)
-            if itemsCount == 0 {
-                scrollViewHeight = 0
-            }
             if count == activeCard {
                 activeCard -= 1
             }
         }
     }
-    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        calculateOffset(scrollView: scrollView)
-    }
+}
 
+extension InfoCardScrollViewModel: UIScrollViewDelegate {
     public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
             calculateOffset(scrollView: scrollView)
+        }
+    }
+
+    public func scrollViewWillEndDragging(
+        _ scrollView: UIScrollView,
+        withVelocity velocity: CGPoint,
+        targetContentOffset: UnsafeMutablePointer<CGPoint>
+    ) {
+        if velocity.x != 0 {
+            if #available(iOS 17.4, *) {
+                scrollView.stopScrollingAndZooming()
+            }
+            let offset = targetContentOffset.pointee.x
+            var indexToScroll = Int(offset / cardWidth)
+            let valueOver = (offset - CGFloat(indexToScroll) * cardWithSpacing) / cardWithSpacing
+            if valueOver > 0.5 {
+                indexToScroll += 1
+            }
+            let offsetToScrollTo = CGFloat(indexToScroll) * cardWithSpacing
+            DispatchQueue.main.async { [weak scrollView] in
+                UIView.animate(
+                    withDuration: 0.3,
+                    delay: 0,
+                    options: UIView.AnimationOptions.curveEaseOut,
+                    animations: {
+                        scrollView?.contentOffset.x = offsetToScrollTo
+                    },
+                    completion: { [weak self] _ in
+                        withAnimation {
+                            self?.activeCard = indexToScroll
+                        }
+                    }
+                )
+            }
         }
     }
 
@@ -131,19 +168,5 @@ public class InfoCardScrollViewModel: NSObject, ObservableObject, UIScrollViewDe
             activeCard = indexToScroll
         }
         scrollView.setContentOffset(.init(x: CGFloat(indexToScroll) * cardWithSpacing, y: 0), animated: true)
-    }
-
-    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let offset = scrollView.contentOffset.x
-        var indexToScroll = Int(offset / cardWidth)
-        let valueOver = (offset - CGFloat(indexToScroll) * cardWithSpacing) / cardWithSpacing
-        if valueOver > 0.5 {
-            indexToScroll += 1
-        }
-        withAnimation {
-            DispatchQueue.main.async { [weak self] in
-                self?.activeCard = indexToScroll
-            }
-        }
     }
 }
