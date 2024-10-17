@@ -61,9 +61,15 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable {
         self.exposureName = exposureName
     }
 
-    func getPremium() -> MonetaryAmount? {
+    func getPremiumLabel() -> String? {
         if quotes.count == 1 {
-            return quotes.first?.premium
+            return quotes.first?.premium.formattedAmountPerMonth
+        } else {
+            if let smallestPremium = quotes.sorted(by: { $0.premium.amount < $1.premium.amount }).first?.premium
+                .formattedAmountWithoutSymbol
+            {
+                return L10n.tierFlowPriceLabel(smallestPremium)
+            }
         }
         return nil
     }

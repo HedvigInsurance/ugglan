@@ -26,9 +26,9 @@ struct EditTierScreen: View {
                                     HStack {
                                         hText(tier.quotes.first?.productVariant?.displayNameTier ?? tier.name)
                                         Spacer()
-                                        if let premiumValue = tier.getPremium()?.formattedAmountPerMonth {
+                                        if let premiumLabel = tier.getPremiumLabel() {
                                             hPill(
-                                                text: premiumValue,
+                                                text: premiumLabel,
                                                 color: .grey(translucent: false),
                                                 colorLevel: .one
                                             )
