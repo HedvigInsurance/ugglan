@@ -13,7 +13,7 @@ public struct hFloatingField: View {
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hWithoutFixedHeight) var hWithoutFixedHeight
     @Environment(\.hFieldSize) var size
-    @Environment(\.hBackgroundColorType) var backgroundType
+    @Environment(\.hBackgroundOption) var backgroundOption
 
     public var shouldMoveLabel: Binding<Bool> {
         Binding(
@@ -79,7 +79,7 @@ public struct hFloatingField: View {
 
     @hColorBuilder
     private var foregroundColor: some hColor {
-        if (isEnabled && !backgroundType.contains(.locked)) || backgroundType.contains(.withoutDisabled) {
+        if (isEnabled && !backgroundOption.contains(.locked)) || backgroundOption.contains(.withoutDisabled) {
             hTextColor.Opaque.primary
         } else {
             hTextColor.Opaque.secondary

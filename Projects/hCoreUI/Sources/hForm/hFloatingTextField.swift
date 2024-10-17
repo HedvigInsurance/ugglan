@@ -311,27 +311,27 @@ struct hFloatingTextField_Previews: PreviewProvider {
     }
 }
 
-public enum BackgroundColorType {
+public enum BackgroundOption {
     case translucent
     case negative
     case withoutDisabled
     case locked
 }
 
-private struct EnvironmentHBackgroundColorType: EnvironmentKey {
-    static let defaultValue: [BackgroundColorType] = []
+private struct EnvironmentHBackgroundOption: EnvironmentKey {
+    static let defaultValue: [BackgroundOption] = []
 }
 
 extension EnvironmentValues {
-    public var hBackgroundColorType: [BackgroundColorType] {
-        get { self[EnvironmentHBackgroundColorType.self] }
-        set { self[EnvironmentHBackgroundColorType.self] = newValue }
+    public var hBackgroundOption: [BackgroundOption] {
+        get { self[EnvironmentHBackgroundOption.self] }
+        set { self[EnvironmentHBackgroundOption.self] = newValue }
     }
 }
 
 extension View {
-    public func hBackgroundColorType(type: [BackgroundColorType]) -> some View {
-        self.environment(\.hBackgroundColorType, type)
+    public func hBackgroundOption(option: [BackgroundOption]) -> some View {
+        self.environment(\.hBackgroundOption, option)
     }
 }
 

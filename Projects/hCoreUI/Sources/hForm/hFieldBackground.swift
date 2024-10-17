@@ -4,7 +4,7 @@ struct hFieldBackgroundModifier: ViewModifier {
     @Binding var animate: Bool
     @Binding var error: String?
     @Environment(\.isEnabled) var enabled
-    @Environment(\.hBackgroundColorType) var backgroundType
+    @Environment(\.hBackgroundOption) var backgroundOption
 
     func body(content: Content) -> some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -25,14 +25,14 @@ struct hFieldBackgroundModifier: ViewModifier {
                 hSurfaceColor.Opaque.secondary
             }
         } else {
-            if backgroundType.contains(.translucent) {
-                if backgroundType.contains(.negative) {
+            if backgroundOption.contains(.translucent) {
+                if backgroundOption.contains(.negative) {
                     hFillColor.Translucent.negative
                 } else {
                     hFillColor.Translucent.primary
                 }
             } else {
-                if backgroundType.contains(.negative) {
+                if backgroundOption.contains(.negative) {
                     hFillColor.Opaque.negative
                 } else {
                     hSurfaceColor.Opaque.primary
@@ -82,8 +82,7 @@ struct hFieldLabel: View {
     @Binding var shouldMoveLabel: Bool
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hFieldSize) var size
-    @Environment(\.hBackgroundColorType) var backgroundType
-    //    @Environment(\.hFieldLockedState) var isLocked
+    @Environment(\.hBackgroundOption) var backgroundOption
 
     var body: some View {
         let sizeToScaleFrom = size.labelFont.fontSize
@@ -104,9 +103,9 @@ struct hFieldLabel: View {
             hSignalColor.Amber.text
         } else if animate {
             hTextColor.Translucent.secondary
-        } else if isEnabled || backgroundType.contains(.withoutDisabled) {
+        } else if isEnabled || backgroundOption.contains(.withoutDisabled) {
             hTextColor.Translucent.secondary
-        } else if backgroundType.contains(.locked) {
+        } else if backgroundOption.contains(.locked) {
             hTextColor.Translucent.disabled
         } else if shouldMoveLabel && !isEnabled {
             hTextColor.Translucent.secondary
