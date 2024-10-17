@@ -8,6 +8,8 @@ import hGraphQL
 
 public struct Claims {
     @StateObject var vm = ClaimsViewModel()
+
+    public init() {}
 }
 
 extension Claims: View {
