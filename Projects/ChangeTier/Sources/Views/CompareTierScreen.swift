@@ -6,7 +6,7 @@ import hGraphQL
 struct CompareTierScreen: View {
     private var vm: ChangeTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
-    private let perils: [String: [Perils]]
+    private var perils: [String: [Perils]]
     private let limits: [String: [InsurableLimits]]
     private let scrollableSegmentedViewModel: ScrollableSegmentedViewModel
 
@@ -15,32 +15,45 @@ struct CompareTierScreen: View {
     ) {
         self.vm = vm
 
-        let selectedQuote = vm.selectedQuote
+        let tiersNames = vm.productVariantComparision?.variantColumns.compactMap({ $0.displayNameTier })
 
         self.limits = Dictionary(
-            uniqueKeysWithValues: vm.tiers.map({
-                (
-                    $0.id,
-                    $0.quotes.first(where: { quote in
-                        quote.id == selectedQuote?.id
-                    })?
-                    .productVariant?
-                    .insurableLimits ?? $0.quotes.first(where: { quote in
-                        quote == selectedQuote
-                    })?
-                    .productVariant?
-                    .insurableLimits ?? []
-                )
-            })
+            uniqueKeysWithValues: vm.productVariantComparision?.variantColumns
+                .map({
+                    (
+                        $0.displayNameTier ?? "",
+                        $0.insurableLimits
+                    )
+                }) ?? []
         )
 
-        self.perils = Dictionary(
-            uniqueKeysWithValues: vm.tiers.map({
-                ($0.id, vm.getFilteredPerils(currentTier: $0, selectedQuote: selectedQuote))
+        var tempPerils: [String: [Perils]] = [:]
+        var index = 0
+        tiersNames?
+            .forEach({ tierName in
+                if let row = vm.productVariantComparision?.rows[index] {
+                    let rowPerils: [Perils] = [
+                        Perils(
+                            id: nil,
+                            title: row.title,
+                            description: row.description,
+                            color: row.colorCode,
+                            covered: row.cells.compactMap({ $0.coverageText ?? "" }),
+                            isDisabled: !(row.cells.first?.isCovered ?? true)
+                        )
+                    ]
+                    tempPerils[tierName] = rowPerils
+                    index = index + 1
+                }
             })
-        )
-        let pageModels: [PageModel] = vm.tiers.compactMap({ PageModel(id: $0.id, title: $0.name) })
-        let currentId = vm.tiers.first(where: { $0.id == vm.selectedTier?.name })?.id
+
+        self.perils = tempPerils
+
+        let pageModels: [PageModel] = tiersNames?.compactMap({ PageModel(id: "id", title: $0) }) ?? []
+        let currentId = vm.productVariantComparision?.variantColumns
+            .first(where: { $0.displayNameTier == vm.selectedTier?.name })?
+            .displayNameTier
+
         self.scrollableSegmentedViewModel = ScrollableSegmentedViewModel(
             pageModels: pageModels,
             currentId: currentId
@@ -62,32 +75,5 @@ struct CompareTierScreen: View {
                 }
             )
         }
-    }
-}
-
-extension ChangeTierViewModel {
-    fileprivate func getFilteredPerils(currentTier: Tier, selectedQuote: Quote?) -> [Perils] {
-        var currentPerils =
-            currentTier.quotes.first { quote in
-                quote.id == selectedQuote?.id
-            }?
-            .productVariant?
-            .perils ?? currentTier.quotes.first(where: { quote in
-                quote == selectedQuote
-            })?
-            .productVariant?
-            .perils ?? currentTier.quotes.first?.productVariant?.perils ?? []
-
-        let otherPerils = self.tiers.filter({ $0.id != currentTier.id })
-            .reduce(into: [Perils]()) { partialResult, tier in
-                return partialResult.append(contentsOf: tier.quotes.first?.productVariant?.perils ?? [])
-            }
-
-        for otherPeril in otherPerils {
-            if !currentPerils.compactMap({ $0.title }).contains(otherPeril.title) {
-                currentPerils.append(otherPeril.asDisabled())
-            }
-        }
-        return currentPerils
     }
 }
