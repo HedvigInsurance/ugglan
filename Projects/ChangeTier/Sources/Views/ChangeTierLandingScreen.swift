@@ -21,12 +21,8 @@ public struct ChangeTierLandingScreen: View {
         } else {
             ProcessingStateView(
                 loadingViewText: L10n.tierFlowProcessing,
-                successViewTitle: nil,
-                successViewBody: nil,
-                successViewButtonAction: nil,
                 errorViewButtons: .init(
                     actionButton: .init(
-                        buttonTitle: nil,
                         buttonAction: {
                             vm.fetchTiers()
                         }

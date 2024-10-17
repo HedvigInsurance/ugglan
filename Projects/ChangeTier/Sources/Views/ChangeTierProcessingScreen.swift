@@ -18,7 +18,6 @@ struct ChangeTierProcessingView: View {
             },
             errorViewButtons: .init(
                 actionButton: .init(
-                    buttonTitle: nil,
                     buttonAction: {
                         vm.commitTier()
                     }
@@ -40,7 +39,6 @@ struct ChangeTierProcessingView_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
         Localization.Locale.currentLocale.send(.sv_SE)
-        let input = ChangeTierInput.contractWithSource(data: .init(source: .betterCoverage, contractId: "contractId"))
         return ChangeTierProcessingView(
             vm: .init(changeTierInput: .contractWithSource(data: .init(source: .betterPrice, contractId: "contractId")))
         )
