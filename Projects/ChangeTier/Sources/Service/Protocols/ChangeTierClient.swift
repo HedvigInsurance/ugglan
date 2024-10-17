@@ -4,6 +4,7 @@ import hCore
 public protocol ChangeTierClient {
     func getTier(input: ChangeTierInputData) async throws -> ChangeTierIntentModel
     func commitTier(quoteId: String) async throws
+    func compareProductVariants(termsVersion: [String]) async throws -> ProductVariantComparison
 }
 
 public enum ChangeTierError: Error {

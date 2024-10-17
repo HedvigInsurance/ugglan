@@ -1,7 +1,7 @@
 import hGraphQL
 
 public struct ProductVariant: Codable, Hashable {
-    let termsVersion: String
+    public let termsVersion: String
     let typeOfContract: String
     let partner: String?
     public let perils: [Perils]

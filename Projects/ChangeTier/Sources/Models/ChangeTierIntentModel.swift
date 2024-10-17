@@ -3,6 +3,30 @@ import hCore
 import hCoreUI
 import hGraphQL
 
+public struct ProductVariantComparison: Codable, Equatable, Hashable {
+    let rows: [ProductVariantComparisonRow]
+    let variantColumns: [ProductVariant]
+
+    public init(
+        rows: [ProductVariantComparisonRow],
+        variantColumns: [ProductVariant]
+    ) {
+        self.rows = rows
+        self.variantColumns = variantColumns
+    }
+
+    public struct ProductVariantComparisonRow: Codable, Equatable, Hashable {
+        let title: String
+        let description: String
+        let cells: [ProductVariantComparisonCell]
+
+        struct ProductVariantComparisonCell: Codable, Equatable, Hashable {
+            let isCovered: Bool
+            let coverageText: String?
+        }
+    }
+}
+
 public struct ChangeTierIntentModel: Codable, Equatable, Hashable {
     let displayName: String
     let activationDate: Date
@@ -14,6 +38,7 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable {
     let selectedQuote: Quote?
     let canEditTier: Bool
     let typeOfContract: TypeOfContract
+    //    let productVariantComparision: ProductVariantComparison
 
     public init(
         displayName: String,
@@ -26,6 +51,7 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable {
         selectedQuote: Quote?,
         canEditTier: Bool,
         typeOfContract: TypeOfContract
+            //        productVariantComparision: ProductVariantComparison
     ) {
         self.displayName = displayName
         self.activationDate = activationDate
@@ -37,6 +63,7 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable {
         self.selectedQuote = selectedQuote
         self.canEditTier = canEditTier
         self.typeOfContract = typeOfContract
+        //        self.productVariantComparision = productVariantComparision
     }
 }
 

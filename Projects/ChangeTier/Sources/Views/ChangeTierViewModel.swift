@@ -24,6 +24,7 @@ public class ChangeTierViewModel: ObservableObject {
 
     @Published var selectedTier: Tier?
     @Published var selectedQuote: Quote?
+    @Published var productVariantComparision: ProductVariantComparison?
 
     var isValid: Bool {
         let selectedTierIsSameAsCurrent = currentTier?.name == selectedTier?.name
@@ -158,6 +159,53 @@ public class ChangeTierViewModel: ObservableObject {
                 withAnimation {
                     self.viewState = .error(
                         errorMessage: error.localizedDescription ?? L10n.tierFlowCommitProcessingErrorDescription
+                    )
+                }
+            }
+        }
+    }
+
+    public func getProductVariantComparision() {
+        withAnimation {
+            viewState = .loading
+        }
+        Task { @MainActor in
+            do {
+                var termsVersionsToCompare: [String] = []
+                tiers.forEach({ tier in
+                    tier.quotes.forEach({ quote in
+                        if let termsVersion = quote.productVariant?.termsVersion,
+                            !termsVersionsToCompare.contains(termsVersion)
+                        {
+                            termsVersionsToCompare.append(termsVersion)
+                        }
+                    })
+                })
+
+                /* TODO: REMOVE WHEN WORKS */
+                //                let termsVersionsToCompareMock = [
+                //                    "SE_DOG_BASIC-20230330-HEDVIG-null",
+                //                    "SE_DOG_STANDARD-20230330-HEDVIG-null",
+                //                    "SE_DOG_PREMIUM-20230410-HEDVIG-null"
+                //                ]
+
+                let termsVersionsToCompareMock = [
+                    "SE_APARTMENT_BRF-20240201-HEDVIG-null",
+                    "SE_APARTMENT_STUDENT_BRF-20240201-HEDVIG-null",
+                ]
+
+                let productVariantComparisionData = try await service.compareProductVariants(
+                    termsVersion: termsVersionsToCompareMock
+                )
+                self.productVariantComparision = productVariantComparisionData
+
+                withAnimation {
+                    viewState = .success
+                }
+            } catch let error {
+                withAnimation {
+                    self.viewState = .error(
+                        errorMessage: error.localizedDescription
                     )
                 }
             }

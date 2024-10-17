@@ -1,0 +1,15 @@
+query ProductVariantComparison($termsVersions: [ID!]!) {
+  productVariantComparison(termsVersions: $termsVersions) {
+    rows {
+      title
+      description
+      cells {
+        isCovered
+        coverageText
+      }
+    }
+    variantColumns {
+        ...ProductVariantFragment
+    }
+  }
+}

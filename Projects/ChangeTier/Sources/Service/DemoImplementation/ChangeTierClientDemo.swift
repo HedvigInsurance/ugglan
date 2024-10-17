@@ -222,4 +222,8 @@ public class ChangeTierClientDemo: ChangeTierClient {
     }
 
     public func commitTier(quoteId: String) async throws {}
+
+    public func compareProductVariants(termsVersion: [String]) async throws -> ProductVariantComparison {
+        return .init(rows: [], variantColumns: [])
+    }
 }
