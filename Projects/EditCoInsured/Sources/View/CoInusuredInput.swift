@@ -316,7 +316,7 @@ struct CoInusuredInputScreen: View {
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
             }
-            .hBackgroundColorType(type: [.locked])
+            .hBackgroundOption(option: [.locked])
             .disabled(true)
             .sectionContainerStyle(.transparent)
         }
@@ -382,7 +382,7 @@ struct CoInusuredInputScreen: View {
             }
         }
         .disabled(vm.nameFetchedFromSSN)
-        .hBackgroundColorType(type: [.withoutDisabled])
+        .hBackgroundOption(option: [.withoutDisabled])
         .sectionContainerStyle(.transparent)
     }
 

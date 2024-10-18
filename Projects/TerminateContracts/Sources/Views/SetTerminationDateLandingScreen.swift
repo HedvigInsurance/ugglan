@@ -91,7 +91,7 @@ struct SetTerminationDateLandingScreen: View {
                             hCoreUIAssets.lock.view
                                 .frame(width: 24, height: 24)
                         }
-                        .hBackgroundColorType(type: [.locked, .withoutDisabled])
+                        .hBackgroundOption(option: [.locked, .withoutDisabled])
                         .disabled(true)
 
                         InfoCard(
