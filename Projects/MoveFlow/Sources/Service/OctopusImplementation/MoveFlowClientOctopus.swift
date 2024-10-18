@@ -284,7 +284,7 @@ extension ChangeTierIntentModel {
                 }
                 let tier = Tier(
                     id: firstQuote.tierName,
-                    name: firstQuote.tierName,
+                    name: firstQuote.productVariant.displayNameTier ?? firstQuote.tierName,
                     level: firstQuote.tierLevel,
                     quotes: quotes,
                     exposureName: firstQuote.exposureName
