@@ -291,33 +291,32 @@ struct CoInusuredInputScreen: View {
     @ViewBuilder
     var deleteCoInsuredFields: some View {
         if vm.personalData.firstName != "" && vm.personalData.lastName != "" && (vm.SSN != "" || vm.birthday != "") {
-            hSection {
-                hFloatingField(
-                    value: vm.personalData.fullname,
-                    placeholder: L10n.fullNameText,
-                    onTap: {}
-                )
-            }
-            .hFieldLockedState
-            .hFieldTrailingView {
-                Image(uiImage: hCoreUIAssets.lock.image)
-                    .foregroundColor(hTextColor.Opaque.secondary)
-            }
-            .disabled(true)
-            .sectionContainerStyle(.transparent)
+            Group {
+                hSection {
+                    hFloatingField(
+                        value: vm.personalData.fullname,
+                        placeholder: L10n.fullNameText,
+                        onTap: {}
+                    )
+                }
+                .hFieldTrailingView {
+                    Image(uiImage: hCoreUIAssets.lock.image)
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                }
 
-            hSection {
-                hFloatingField(
-                    value: vm.SSN != "" ? vm.SSN.displayFormatSSN ?? "" : vm.birthday.birtDateDisplayFormat,
-                    placeholder: vm.SSN != "" ? L10n.TravelCertificate.personalNumber : L10n.contractBirthDate,
-                    onTap: {}
-                )
+                hSection {
+                    hFloatingField(
+                        value: vm.SSN != "" ? vm.SSN.displayFormatSSN ?? "" : vm.birthday.birtDateDisplayFormat,
+                        placeholder: vm.SSN != "" ? L10n.TravelCertificate.personalNumber : L10n.contractBirthDate,
+                        onTap: {}
+                    )
+                }
+                .hFieldTrailingView {
+                    Image(uiImage: hCoreUIAssets.lock.image)
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                }
             }
-            .hFieldLockedState
-            .hFieldTrailingView {
-                Image(uiImage: hCoreUIAssets.lock.image)
-                    .foregroundColor(hTextColor.Opaque.secondary)
-            }
+            .hBackgroundOption(option: [.locked])
             .disabled(true)
             .sectionContainerStyle(.transparent)
         }
@@ -383,7 +382,7 @@ struct CoInusuredInputScreen: View {
             }
         }
         .disabled(vm.nameFetchedFromSSN)
-        .hWithoutDisabledColor
+        .hBackgroundOption(option: [.withoutDisabled])
         .sectionContainerStyle(.transparent)
     }
 

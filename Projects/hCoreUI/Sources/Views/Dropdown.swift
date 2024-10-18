@@ -5,7 +5,7 @@ public struct DropdownView: View {
     private var placeHolder: String
     private var onTap: () -> Void
     @Environment(\.isEnabled) var isEnabled
-    @Environment(\.hFieldLockedState) var isLocked
+    @Environment(\.hBackgroundOption) var backgroundOption
 
     public init(
         value: String,
@@ -36,7 +36,7 @@ public struct DropdownView: View {
 
     @hColorBuilder
     var imageColor: some hColor {
-        if isEnabled && !isLocked {
+        if isEnabled && !backgroundOption.contains(.locked) {
             hFillColor.Opaque.primary
         } else {
             hFillColor.Opaque.disabled
