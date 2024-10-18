@@ -86,7 +86,7 @@ public struct ChangeTierLandingScreen: View {
                     }
                 }
                 .hFieldSize(.small)
-                .hBackgroundOption(option: [.negative])
+                .sectionContainerStyle(.opaque)
                 .hWithoutHorizontalPadding
 
                 hRow {
@@ -97,6 +97,7 @@ public struct ChangeTierLandingScreen: View {
                 }
             }
         }
+        .sectionContainerStyle(.primary)
     }
 
     @ViewBuilder
@@ -108,7 +109,7 @@ public struct ChangeTierLandingScreen: View {
                         value: vm.selectedTier?.name ?? "",
                         placeholder: L10n.tierFlowCoverageLabel
                     ) {}
-                    .hBackgroundOption(option: [.locked, .translucent, .negative])
+                    .hBackgroundOption(option: [.locked, .translucent])
                     .hFieldTrailingView {
                         Image(uiImage: hCoreUIAssets.lock.image)
                             .foregroundColor(hTextColor.Opaque.secondary)
@@ -138,7 +139,7 @@ public struct ChangeTierLandingScreen: View {
                     value: vm.selectedQuote?.deductableAmount?.formattedAmount ?? "",
                     placeholder: L10n.tierFlowDeductibleLabel
                 ) {}
-                .hBackgroundOption(option: [.locked, .translucent, .negative])
+                .hBackgroundOption(option: [.locked, .translucent])
                 .hFieldTrailingView {
                     Image(uiImage: hCoreUIAssets.lock.image)
                         .foregroundColor(hTextColor.Opaque.secondary)

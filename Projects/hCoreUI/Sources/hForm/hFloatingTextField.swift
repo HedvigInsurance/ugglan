@@ -313,7 +313,6 @@ struct hFloatingTextField_Previews: PreviewProvider {
 
 public enum BackgroundOption {
     case translucent
-    case negative
     case withoutDisabled
     case locked
 }

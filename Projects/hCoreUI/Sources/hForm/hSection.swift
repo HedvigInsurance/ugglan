@@ -211,6 +211,7 @@ public enum hSectionContainerStyle {
     case transparent
     case opaque
     case black
+    case primary
 }
 
 private struct EnvironmentHSectionContainerStyle: EnvironmentKey {
@@ -242,6 +243,14 @@ struct hSectionContainerStyleModifier: ViewModifier {
                     light: hFillColor.Opaque.black,
                     dark: hSurfaceColor.Opaque.primary
                 )
+            )
+        case .primary:
+            content.background(
+                hBackgroundColor.primary
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: .cornerRadiusL)
+                    .strokeBorder(hBorderColor.primary, lineWidth: 1)
             )
         }
     }
