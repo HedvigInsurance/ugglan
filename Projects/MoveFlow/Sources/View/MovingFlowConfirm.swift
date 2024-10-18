@@ -30,9 +30,7 @@ struct MovingFlowConfirm: View {
                                 .init(displayName: $0.displayName, url: $0.url, type: .unknown)
                             }),
                             onDocumentTap: { document in
-                                if let url = URL(string: document.url) {
-                                    movingFlowNavigationVm.document = .init(url: url, title: document.displayName)
-                                }
+                                movingFlowNavigationVm.document = document
                             },
                             displayItems: $0.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }
                             ),

@@ -120,7 +120,7 @@ public class ContractsNavigationViewModel: ObservableObject {
     public let contractsRouter = Router()
     let terminateInsuranceVm = TerminateInsuranceViewModel()
     @Published public var insurableLimit: InsurableLimits?
-    @Published public var document: Document?
+    @Published public var document: InsuranceTerm?
     @Published public var editCoInsuredConfig: InsuredPeopleConfig?
     @Published public var editCoInsuredMissingAlert: InsuredPeopleConfig?
     @Published public var changeYourInformationContract: Contract?
@@ -138,7 +138,7 @@ public class ContractsNavigationViewModel: ObservableObject {
 public enum RedirectType {
     case chat
     case movingFlow
-    case pdf(document: Document)
+    case pdf(document: InsuranceTerm)
     case changeTier(input: ChangeTierInput)
 }
 

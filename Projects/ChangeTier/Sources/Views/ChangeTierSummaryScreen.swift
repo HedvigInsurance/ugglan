@@ -35,9 +35,7 @@ extension ChangeTierViewModel {
                     currentPremium: self.currentPremium,
                     documents: self.selectedQuote?.productVariant?.documents ?? [],
                     onDocumentTap: { [weak self] document in
-                        if let url = URL(string: document.url) {
-                            changeTierNavigationVm.document = .init(url: url, title: document.displayName)
-                        }
+                        changeTierNavigationVm.document = document
                     },
                     displayItems: displayItems,
                     insuranceLimits: self.selectedQuote?.productVariant?.insurableLimits ?? [],

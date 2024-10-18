@@ -24,9 +24,7 @@ struct ContractDocumentsView: View {
                 InsuranceTermView(
                     documents: getDocumentsToDisplay(contract: contract)
                 ) { document in
-                    if let url = URL(string: document.url) {
-                        contractsNavigationViewModel.document = .init(url: url, title: document.displayName)
-                    }
+                    contractsNavigationViewModel.document = document
                 }
             }
         }
