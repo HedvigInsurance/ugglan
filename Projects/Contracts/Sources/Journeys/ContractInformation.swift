@@ -97,8 +97,11 @@ struct ContractInformationView: View {
             HStack {
                 hText(L10n.coinsuredEditTitle)
                 Spacer()
-                hText(L10n.changeAddressYouPlus(contract.coInsured.count))
-                    .foregroundColor(hTextColor.Opaque.secondary)
+                hText(
+                    contract.coInsured.count > 0
+                        ? L10n.changeAddressYouPlus(contract.coInsured.count) : L10n.changeAddressOnlyYou
+                )
+                .foregroundColor(hTextColor.Opaque.secondary)
             }
         }
     }
