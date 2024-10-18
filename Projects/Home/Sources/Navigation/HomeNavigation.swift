@@ -24,7 +24,6 @@ public struct ChatConversation: Equatable, Identifiable {
 public class HomeNavigationViewModel: ObservableObject {
     public static var isChatPresented = false
     private var cancellables = Set<AnyCancellable>()
-
     public init() {
 
         NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: OperationQueue.main) {

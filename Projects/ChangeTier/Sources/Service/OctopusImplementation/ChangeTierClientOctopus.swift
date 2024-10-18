@@ -44,17 +44,18 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                 throw ChangeTierError.somethingWentWrong
             }
             let currentContract = contractResponse.contract
+            let agreementToChange = intent.agreementToChange
 
             /* get filtered tiers  */
             let filteredTiers = getFilteredTiers(currentContract: currentContract, intent: intent)
 
             /* get current tier if any matching */
             let currentTier: Tier? = filteredTiers.first(where: {
-                $0.name.lowercased() == intent.currentTierName?.lowercased()
+                $0.name.lowercased() == intent.agreementToChange.tierName?.lowercased()
             })
 
             /* get current deductible if any matching */
-            let deductible = currentContract.currentAgreement.deductible
+            let deductible = agreementToChange.deductible
             let currentDeductible: Quote? = {
                 if let deductible = deductible, currentTier != nil {
                     return Quote(
@@ -62,7 +63,7 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                         quoteAmount: .init(fragment: deductible.amount.fragments.moneyFragment),
                         quotePercentage: (deductible.percentage == 0) ? nil : deductible.percentage,
                         subTitle: (deductible.displayText == "") ? nil : deductible.displayText,
-                        premium: .init(fragment: currentContract.currentAgreement.premium.fragments.moneyFragment),
+                        premium: .init(fragment: agreementToChange.premium.fragments.moneyFragment),
                         displayItems: currentTier?.quotes.first?.displayItems ?? [],
                         productVariant: currentTier?.quotes.first?.productVariant
                     )
@@ -76,8 +77,8 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                 activationDate: intent.activationDate.localDateToDate ?? Date(),
                 tiers: filteredTiers,
                 currentPremium: .init(
-                    amount: String(currentContract.currentAgreement.premium.amount),
-                    currency: currentContract.currentAgreement.premium.currencyCode.rawValue
+                    amount: String(agreementToChange.premium.amount),
+                    currency: agreementToChange.premium.currencyCode.rawValue
                 ),
                 currentTier: currentTier,
                 currentQuote: currentDeductible,
@@ -85,7 +86,7 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                 selectedQuote: nil,
                 canEditTier: currentContract.supportsChangeTier,
                 typeOfContract:
-                    TypeOfContract.resolve(for: currentContract.currentAgreement.productVariant.typeOfContract)
+                    TypeOfContract.resolve(for: agreementToChange.productVariant.typeOfContract)
             )
             if intentModel.tiers.isEmpty {
                 throw ChangeTierError.emptyList

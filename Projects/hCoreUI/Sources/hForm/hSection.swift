@@ -289,23 +289,6 @@ extension View {
     }
 }
 
-private struct EnvironmentHSectionMinimumPadding: EnvironmentKey {
-    static let defaultValue = false
-}
-
-extension EnvironmentValues {
-    public var minimumPadding: Bool {
-        get { self[EnvironmentHSectionMinimumPadding.self] }
-        set { self[EnvironmentHSectionMinimumPadding.self] = newValue }
-    }
-}
-
-extension View {
-    public var hSectionMinimumPadding: some View {
-        self.environment(\.minimumPadding, true)
-    }
-}
-
 private struct EnvironmentHEmbeddedHeader: EnvironmentKey {
     static let defaultValue = false
 }
@@ -320,6 +303,23 @@ extension EnvironmentValues {
 extension View {
     public var hEmbeddedHeader: some View {
         self.environment(\.hEmbeddedHeader, true)
+    }
+}
+
+private struct EnvironmentHWithoutSectionHorizontalPadding: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    public var hWithoutSectionHorizontalPadding: Bool {
+        get { self[EnvironmentHWithoutSectionHorizontalPadding.self] }
+        set { self[EnvironmentHWithoutSectionHorizontalPadding.self] = newValue }
+    }
+}
+
+extension View {
+    public var hSectionWithoutHorizontalPadding: some View {
+        self.environment(\.hWithoutSectionHorizontalPadding, true)
     }
 }
 
@@ -371,8 +371,8 @@ struct hSectionContainer<Content: View>: View {
 
 public struct hSection<Header: View, Content: View, Footer: View>: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
-    @Environment(\.minimumPadding) var minimumPadding
     @Environment(\.hEmbeddedHeader) var embeddedHeader
+    @Environment(\.hWithoutSectionHorizontalPadding) var hSectionWithoutHorizontalPadding
 
     var header: Header?
     var content: Content
@@ -429,13 +429,10 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
             }
         }
         .frame(maxWidth: .infinity)
-        .padding(.horizontal, minimumPadding ? 16 : (horizontalSizeClass == .regular ? 60 : 16))
-    }
-
-    /// removes hSection leading and trailing padding
-    public var withoutHorizontalPadding: some View {
-        self
-            .padding(.horizontal, horizontalSizeClass == .regular ? -60 : -16)
+        .padding(
+            .horizontal,
+            hSectionWithoutHorizontalPadding ? 0 : (horizontalSizeClass == .regular ? .padding60 : .padding16)
+        )
     }
 
     public func withHeader<HeaderView: View>(

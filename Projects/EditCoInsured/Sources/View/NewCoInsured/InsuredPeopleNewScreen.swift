@@ -25,7 +25,7 @@ struct InsuredPeopleNewScreen: View {
                     .verticalPadding(0)
                     .padding(.top, .padding16)
                 }
-                .withoutHorizontalPadding
+                .hSectionWithoutHorizontalPadding
                 .sectionContainerStyle(.transparent)
 
                 hSection {
@@ -45,7 +45,7 @@ struct InsuredPeopleNewScreen: View {
                         }
                     }
                 }
-                .withoutHorizontalPadding
+                .hSectionWithoutHorizontalPadding
                 .sectionContainerStyle(.transparent)
 
                 if vm.coInsuredAdded.count >= vm.config.numberOfMissingCoInsured {

@@ -147,7 +147,7 @@ public class ChangeTierViewModel: ObservableObject {
         }
         Task { @MainActor in
             do {
-                if let id = selectedTier?.id {
+                if let id = selectedQuote?.id {
                     try await service.commitTier(
                         quoteId: id
                     )
