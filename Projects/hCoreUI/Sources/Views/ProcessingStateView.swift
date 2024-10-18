@@ -107,7 +107,6 @@ public struct ProcessingStateView: View {
                     .onAppear {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                             animationTimings.forEach { item in
-                                print("DELAY FOR \(item.progress) \(item.delay) is \(item.duration)")
                                 withAnimation(
                                     .easeInOut(duration: TimeInterval(item.duration)).delay(TimeInterval(item.delay))
                                 ) {
