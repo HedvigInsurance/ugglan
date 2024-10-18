@@ -53,10 +53,13 @@ struct ExtraBuildingTypeNavigationModel: Identifiable, Equatable {
 public struct MovingFlowNavigation: View {
     @StateObject private var movingFlowVm = MovingFlowNavigationViewModel()
     @StateObject var router = Router()
+    private let onMoved: () -> Void
     @State var cancellable: AnyCancellable?
     @State var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
 
-    public init() {}
+    public init(onMoved: @escaping () -> Void) {
+        self.onMoved = onMoved
+    }
 
     public var body: some View {
         RouterHost(router: router, tracking: MovingFlowDetentType.selectHousingType) {
@@ -116,6 +119,9 @@ public struct MovingFlowNavigation: View {
             style: [.large]
         ) { document in
             PDFPreview(document: .init(url: document.url, title: document.title))
+        }
+        .onDisappear {
+            onMoved()
         }
     }
 
