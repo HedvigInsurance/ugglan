@@ -12,6 +12,7 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     @Published public var document: Document?
     let useOwnNavigation: Bool
     let router: Router
+    var onChangedTier: () -> Void = {}
 
     //NOTE: Make sure to set it before moving to the ChangeTierLandingScreen
     var vm: ChangeTierViewModel!
@@ -20,16 +21,19 @@ public class ChangeTierNavigationViewModel: ObservableObject {
 
     init(
         router: Router?,
-        vm: ChangeTierViewModel
+        vm: ChangeTierViewModel,
+        onChangedTier: @escaping () -> Void
     ) {
         self.router = router ?? Router()
         self.useOwnNavigation = router == nil
         self.vm = vm
         self.changeTierContractsInput = nil
+        self.onChangedTier = onChangedTier
     }
 
     init(
-        changeTierContractsInput: ChangeTierContractsInput
+        changeTierContractsInput: ChangeTierContractsInput,
+        onChangedTier: @escaping () -> Void
     ) {
         if changeTierContractsInput.contracts.count == 1, let first = changeTierContractsInput.contracts.first {
             self.vm = .init(
@@ -41,6 +45,7 @@ public class ChangeTierNavigationViewModel: ObservableObject {
         } else {
             self.changeTierContractsInput = changeTierContractsInput
         }
+        self.onChangedTier = onChangedTier
         router = Router()
         self.useOwnNavigation = true
     }
@@ -166,18 +171,24 @@ public struct ChangeTierNavigation: View {
     @ObservedObject var changeTierNavigationVm: ChangeTierNavigationViewModel
     public init(
         input: ChangeTierInput,
-        router: Router? = nil
+        router: Router? = nil,
+        onChangedTier: @escaping () -> Void = {}
     ) {
         self.changeTierNavigationVm = .init(
             router: router,
-            vm: .init(changeTierInput: input)
+            vm: .init(changeTierInput: input),
+            onChangedTier: onChangedTier
         )
     }
 
     public init(
-        input: ChangeTierContractsInput
+        input: ChangeTierContractsInput,
+        onChangedTier: @escaping () -> Void = {}
     ) {
-        self.changeTierNavigationVm = .init(changeTierContractsInput: input)
+        self.changeTierNavigationVm = .init(
+            changeTierContractsInput: input,
+            onChangedTier: onChangedTier
+        )
     }
 
     public var body: some View {
