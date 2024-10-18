@@ -113,7 +113,7 @@ public struct TravelCertificateNavigation: View {
             options: .constant(.withoutGrabber)
         ) { model in
             PDFPreview(
-                document: .init(url: model.url, title: model.title)
+                document: .init(displayName: model.title, url: model.url.absoluteString, type: .unknown)
             )
         }
         .modally(

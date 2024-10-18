@@ -114,7 +114,7 @@ struct LoggedInNavigation: View {
             case .movingFlow:
                 MovingFlowNavigation()
             case let .pdf(document):
-                PDFPreview(document: .init(url: document.url, title: document.title))
+                PDFPreview(document: document)
             case let .changeTier(input):
                 ChangeTierNavigation(input: input)
             }
@@ -300,9 +300,7 @@ struct HomeTab: View {
             item: $homeNavigationVm.document,
             style: [.large]
         ) { document in
-            if let url = URL(string: document.url) {
-                PDFPreview(document: .init(url: url, title: document.displayName))
-            }
+            PDFPreview(document: document)
         }
         .modally(
             presented: $homeNavigationVm.isHelpCenterPresented

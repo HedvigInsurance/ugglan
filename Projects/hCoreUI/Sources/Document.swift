@@ -4,27 +4,13 @@ import SafariServices
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore
-
-public struct Document: Equatable, Identifiable {
-    public var id: String?
-    public let url: URL
-    public let title: String
-
-    public init(
-        url: URL,
-        title: String
-    ) {
-        self.url = url
-        self.title = title
-    }
-
-}
+import hGraphQL
 
 public struct PDFPreview: View {
     @StateObject fileprivate var vm: PDFPreviewViewModel
 
     public init(
-        document: Document
+        document: InsuranceTerm
     ) {
         _vm = StateObject(wrappedValue: PDFPreviewViewModel(document: document))
     }
@@ -34,7 +20,7 @@ public struct PDFPreview: View {
             if vm.isLoading {
                 loadingIndicatorView
             } else if let data = vm.data {
-                DocumentRepresentable(data: data, name: vm.document.title)
+                DocumentRepresentable(data: data, name: vm.document.displayName)
                     .introspect(.viewController, on: .iOS(.v13...)) { vc in
                         let navBarItem = UIBarButtonItem(
                             image: UIImage(systemName: "square.and.arrow.up"),
@@ -49,7 +35,7 @@ public struct PDFPreview: View {
                 GenericErrorView(buttons: .init())
             }
         }
-        .navigationTitle(vm.document.title)
+        .navigationTitle(vm.document.displayName)
         .navigationBarTitleDisplayMode(.inline)
         .embededInNavigation(tracking: self)
         .withDismissButton()
@@ -67,11 +53,11 @@ public struct PDFPreview: View {
 }
 
 private class PDFPreviewViewModel: ObservableObject {
-    let document: Document
+    let document: InsuranceTerm
     @Published var isLoading = false
     @Published var data: Data?
     weak var navItem: UIBarButtonItem?
-    init(document: Document) {
+    init(document: InsuranceTerm) {
         self.document = document
         Task {
             await self.getData()
@@ -94,10 +80,13 @@ private class PDFPreviewViewModel: ObservableObject {
         }
     }
 
-    private func download() throws -> Data {
+    private func download() throws -> Data? {
         do {
-            let data = try Data(contentsOf: self.document.url)
-            return data
+            if let url = URL(string: self.document.url) {
+                let data = try Data(contentsOf: url)
+                return data
+            }
+            return nil
         } catch let ex {
             throw ex
         }
@@ -130,7 +119,7 @@ private class PDFPreviewViewModel: ObservableObject {
 
     private func getPathForFile() -> URL {
         let temporaryFolder = FileManager.default.temporaryDirectory
-        let fileName = "\(document.title).pdf"
+        let fileName = "\(document.displayName).pdf"
         let url = temporaryFolder.appendingPathComponent(fileName)
         return url
     }
