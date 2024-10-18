@@ -35,7 +35,8 @@ public struct ChangeTierLandingScreen: View {
                             }
                         )
                 ),
-                state: $vm.viewState
+                state: $vm.viewState,
+                duration: 6
             )
             .hCustomSuccessView {
                 succesView
