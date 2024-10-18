@@ -210,10 +210,7 @@ public enum ShadowType {
 public enum hSectionContainerStyle {
     case transparent
     case opaque
-    case caution
-    case alert
     case black
-    case animate
 }
 
 private struct EnvironmentHSectionContainerStyle: EnvironmentKey {
@@ -239,18 +236,6 @@ struct hSectionContainerStyleModifier: ViewModifier {
                 hSurfaceColor.Opaque.primary
             )
             .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-        case .caution:
-            content.background(
-                hSignalColor.Amber.element
-            )
-            .border(
-                Color(UIColor.brand(.primaryBorderColor))
-            )
-        case .alert:
-            content.background(
-                hSignalColor.Amber.fill
-            )
-            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
         case .black:
             content.background(
                 hColorScheme(
@@ -258,12 +243,6 @@ struct hSectionContainerStyleModifier: ViewModifier {
                     dark: hSurfaceColor.Opaque.primary
                 )
             )
-            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-        case .animate:
-            content.background(
-                hSignalColor.Green.fill
-            )
-            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
         }
     }
 }
