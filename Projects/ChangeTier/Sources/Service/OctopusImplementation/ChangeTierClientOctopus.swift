@@ -107,7 +107,12 @@ public class ChangeTierClientOctopus: ChangeTierClient {
         let mutation = OctopusGraphQL.ChangeTierDeductibleCommitIntentMutation(input: input)
 
         do {
-            let data = try await octopus.client.perform(mutation: mutation)
+
+            async let minimumTime: () = try Task.sleep(nanoseconds: 3_000_000_000)
+            async let request = try octopus.client.perform(mutation: mutation)
+            let response = try await [minimumTime, request] as [Any]
+            let data = response[1] as! OctopusGraphQL.ChangeTierDeductibleCommitIntentMutation.Data
+
             if let userError = data.changeTierDeductibleCommitIntent.userError?.message {
                 throw ChangeTierError.errorMessage(message: userError)
             }
