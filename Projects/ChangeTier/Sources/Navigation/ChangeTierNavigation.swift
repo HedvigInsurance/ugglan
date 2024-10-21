@@ -9,7 +9,7 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     @Published public var isEditDeductiblePresented = false
     @Published public var isCompareTiersPresented = false
     @Published public var isInsurableLimitPresented: InsurableLimits?
-    @Published public var document: InsuranceTerm?
+    @Published public var document: PDFDocument?
     let useOwnNavigation: Bool
     let router: Router
 

@@ -9,7 +9,7 @@ import hGraphQL
 public class MovingFlowNavigationViewModel: ObservableObject {
     public init() {}
     @Published var isAddExtraBuildingPresented = false
-    @Published public var document: InsuranceTerm? = nil
+    @Published public var document: PDFDocument? = nil
 }
 
 enum MovingFlowRouterWithHiddenBackButtonActions {
