@@ -316,6 +316,7 @@ public enum BackgroundOption {
     case negative
     case withoutDisabled
     case locked
+    case secondary
 }
 
 private struct EnvironmentHBackgroundOption: EnvironmentKey {

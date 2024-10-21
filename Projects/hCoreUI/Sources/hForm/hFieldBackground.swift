@@ -34,6 +34,8 @@ struct hFieldBackgroundModifier: ViewModifier {
             } else {
                 if backgroundOption.contains(.negative) {
                     hFillColor.Opaque.negative
+                } else if backgroundOption.contains(.secondary) {
+                    hSurfaceColor.Opaque.secondary
                 } else {
                     hSurfaceColor.Opaque.primary
                 }
