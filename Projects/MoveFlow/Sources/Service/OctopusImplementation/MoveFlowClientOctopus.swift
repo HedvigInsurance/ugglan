@@ -65,7 +65,11 @@ public class MoveFlowClientOctopus: MoveFlowClient {
             intentId: intentId,
             homeQuoteId: GraphQLNullable.init(optionalValue: homeQuoteId)
         )
-        let data = try await octopus.client.perform(mutation: mutation)
+
+        async let minimumTime: () = try Task.sleep(nanoseconds: 3_000_000_000)
+        async let request = try octopus.client.perform(mutation: mutation)
+        let response = try await [minimumTime, request] as [Any]
+        let data = response[1] as! OctopusGraphQL.MoveIntentCommitMutation.Data
 
         if let userError = data.moveIntentCommit.userError {
             throw MovingFlowError.serverError(message: userError.message ?? "")
