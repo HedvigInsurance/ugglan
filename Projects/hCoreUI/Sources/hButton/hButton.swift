@@ -163,15 +163,20 @@ struct ButtonFilledStandardBackground: View {
                 hButtonColor.SecondaryAlt.disabled
             }
         case .ghost:
-            if configuration.isPressed {
-                hButtonColor.Ghost.hover.background {
+            Group {
+                if configuration.isPressed {
+                    hButtonColor.Ghost.hover.background {
+                        hButtonColor.Ghost.resting
+                    }
+                } else if isEnabled || isLoading {
                     hButtonColor.Ghost.resting
+                } else {
+                    hButtonColor.Ghost.disabled
                 }
-            } else if isEnabled || isLoading {
-                hButtonColor.Ghost.resting
-            } else {
-                hButtonColor.Ghost.disabled
             }
+            RoundedRectangle(cornerRadius: .cornerRadiusM)
+                .strokeBorder(hBorderColor.primary, lineWidth: 1)
+
         case .alert:
             if configuration.isPressed {
                 hSignalColor.Red.element

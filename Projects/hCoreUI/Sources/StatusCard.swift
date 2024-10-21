@@ -2,6 +2,11 @@ import Foundation
 import SwiftUI
 import hCore
 
+public enum StatusCardStyle {
+    case `default`
+    case primary
+}
+
 public struct StatusCard<MainContent, BottomContent>: View
 where MainContent: View, BottomContent: View {
     var onSelected: (() -> Void)?
@@ -9,6 +14,7 @@ where MainContent: View, BottomContent: View {
     let title: String?
     let subTitle: String?
     let bottomComponent: () -> BottomContent
+    let style: StatusCardStyle
     @Environment(\.hCardWithoutSpacing) var cardWithoutSpacing
 
     public init(
@@ -16,13 +22,15 @@ where MainContent: View, BottomContent: View {
         mainContent: MainContent? = nil,
         title: String? = nil,
         subTitle: String? = nil,
-        bottomComponent: @escaping () -> BottomContent
+        bottomComponent: @escaping () -> BottomContent,
+        style: StatusCardStyle = .default
     ) {
         self.onSelected = onSelected
         self.mainContent = mainContent
         self.title = title
         self.subTitle = subTitle
         self.bottomComponent = bottomComponent
+        self.style = style
     }
 
     public var body: some View {
@@ -51,13 +59,29 @@ where MainContent: View, BottomContent: View {
         }
         .padding(.vertical, .padding16)
         .background(
-            RoundedRectangle(cornerRadius: .cornerRadiusXL)
-                .fill(hSurfaceColor.Opaque.primary)
+            background
         )
         .onTapGesture {
             if let onSelected = onSelected {
                 onSelected()
             }
+        }
+    }
+
+    @ViewBuilder
+    private var background: some View {
+        if style == .primary {
+            RoundedRectangle(cornerRadius: .cornerRadiusXL)
+                .fill(hBackgroundColor.primary)
+                .overlay(
+                    RoundedRectangle(cornerRadius: .cornerRadiusL)
+                        .strokeBorder(hBorderColor.primary, lineWidth: 1)
+                        .hShadow(type: .custom(opacity: 0.05, radius: 5, xOffset: 0, yOffset: 4))
+                        .hShadow(type: .custom(opacity: 0.1, radius: 1, xOffset: 0, yOffset: 2))
+                )
+        } else {
+            RoundedRectangle(cornerRadius: .cornerRadiusXL)
+                .fill(hSurfaceColor.Opaque.primary)
         }
     }
 }

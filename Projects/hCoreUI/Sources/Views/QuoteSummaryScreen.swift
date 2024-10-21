@@ -155,16 +155,9 @@ public struct QuoteSummaryScreen: View {
                             currentPremium: contract.currentPremium
                         )
 
-                        let index = selectedContracts.firstIndex(of: contract.id)
-                        let isExpanded = index != nil
-
-                        detailsView(for: contract)
-                            .frame(height: isExpanded ? nil : 0, alignment: .top)
-                            .clipped()
-
                         if contract.shouldShowDetails {
                             hButton.MediumButton(
-                                type: .secondary
+                                type: .ghost
                             ) {
                                 withAnimation(.easeInOut(duration: 0.4)) {
                                     let index = selectedContracts.firstIndex(of: contract.id)
@@ -184,8 +177,16 @@ public struct QuoteSummaryScreen: View {
                                 )
                             }
                         }
+
+                        let index = selectedContracts.firstIndex(of: contract.id)
+                        let isExpanded = index != nil
+
+                        detailsView(for: contract)
+                            .frame(height: isExpanded ? nil : 0, alignment: .top)
+                            .clipped()
                     }
-                }
+                },
+                style: .primary
             )
             .hCardWithoutSpacing
         }
@@ -205,9 +206,6 @@ public struct QuoteSummaryScreen: View {
 
     func detailsView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
         VStack(spacing: .padding16) {
-            hRowDivider()
-                .hWithoutDividerPadding
-
             if !contract.displayItems.isEmpty {
                 VStack(alignment: .leading, spacing: 0) {
                     hText(L10n.summaryScreenOverview)
@@ -235,7 +233,7 @@ public struct QuoteSummaryScreen: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     ForEach(contract.documents, id: \.displayName) { document in
                         documentItem(for: document)
-                            .background(hSurfaceColor.Opaque.primary)
+                            .background(hBackgroundColor.primary)
                             .onTapGesture {
                                 contract.onDocumentTap(document)
                             }
@@ -261,7 +259,6 @@ public struct QuoteSummaryScreen: View {
                 text: AttributedPDF().attributedPDFString(for: document.displayName),
                 useSecondaryColor: true
             )
-            .foregroundColor(hTextColor.Opaque.secondary)
             .padding(.horizontal, -6)
             Spacer()
             Image(uiImage: HCoreUIAsset.arrowNorthEast.image)
@@ -269,7 +266,6 @@ public struct QuoteSummaryScreen: View {
                 .frame(width: 16, height: 16)
                 .foregroundColor(hFillColor.Opaque.primary)
         }
-        .foregroundColor(hTextColor.Opaque.secondary)
     }
 
     private let whatIsCoveredBgColorScheme: some hColor = hColorScheme.init(
