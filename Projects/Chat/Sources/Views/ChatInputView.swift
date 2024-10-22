@@ -276,8 +276,9 @@ private class CustomTextView: UITextView, UITextViewDelegate {
 
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         if action == #selector(UIResponder.paste(_:)) {
-            if let imagesFileTypes = UIPasteboard.typeListImage as? [String]
-            if UIPasteboard.general.contains(pasteboardTypes: imagesFileTypes) {
+            if let imagesFileTypes = UIPasteboard.typeListImage as? [String],
+                UIPasteboard.general.contains(pasteboardTypes: imagesFileTypes)
+            {
                 return true
             }
         }
