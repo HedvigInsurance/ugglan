@@ -38,7 +38,6 @@ struct EditTierScreen: View {
                                     if let subTitle = tier.quotes.first?.productVariant?.tierDescription {
                                         hText(subTitle)
                                             .foregroundColor(hTextColor.Opaque.secondary)
-                                            .fixedSize()
                                     }
                                 }
                                 .asAnyView

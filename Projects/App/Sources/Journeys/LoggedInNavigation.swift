@@ -59,7 +59,10 @@ struct LoggedInNavigation: View {
             presented: $vm.isMoveContractPresented,
             options: .constant(.alwaysOpenOnTop)
         ) {
-            MovingFlowNavigation()
+            MovingFlowNavigation {
+                let store: ContractStore = globalPresentableStoreContainer.get()
+                store.send(.fetchContracts)
+            }
         }
         .modally(
             item: $vm.isChangeTierPresented,
@@ -112,11 +115,20 @@ struct LoggedInNavigation: View {
             case .chat:
                 ChatScreen(vm: .init(chatService: NewConversationService()))
             case .movingFlow:
-                MovingFlowNavigation()
+                MovingFlowNavigation {
+                    let store: ContractStore = globalPresentableStoreContainer.get()
+                    store.send(.fetchContracts)
+                }
             case let .pdf(document):
                 PDFPreview(document: document)
             case let .changeTier(input):
-                ChangeTierNavigation(input: input)
+                ChangeTierNavigation(input: input) {
+                    //added delay since we don't have a terms version at the place right after the insurance has been created
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        let store: ContractStore = globalPresentableStoreContainer.get()
+                        store.send(.fetchContracts)
+                    }
+                }
             }
         } redirectAction: { action in
             switch action {
@@ -310,7 +322,10 @@ struct HomeTab: View {
             ) { redirectType in
                 switch redirectType {
                 case .moveFlow:
-                    MovingFlowNavigation()
+                    MovingFlowNavigation {
+                        let store: ContractStore = globalPresentableStoreContainer.get()
+                        store.send(.fetchContracts)
+                    }
                 case .travelInsurance:
                     TravelCertificateNavigation(
                         vm: loggedInVm.travelCertificateNavigationVm,

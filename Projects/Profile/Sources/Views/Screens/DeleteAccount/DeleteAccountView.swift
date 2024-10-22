@@ -68,6 +68,7 @@ public struct DeleteAccountView: View {
                 }
                 .sectionContainerStyle(.transparent)
             }
+            .hDisableScroll
         }
     }
 }

@@ -14,6 +14,7 @@ struct ChangeTierProcessingView: View {
                 vm.activationDate?.displayDateDDMMMYYYYFormat ?? ""
             ),
             successViewButtonAction: {
+                changeTierNavigationVm.onChangedTier()
                 changeTierNavigationVm.router.dismiss()
             },
             errorViewButtons: .init(

@@ -66,6 +66,6 @@ extension ChangeTierViewModel {
     let changeTierVm = ChangeTierViewModel(changeTierInput: changeTierInput)
     return ChangeTierSummaryScreen(
         changeTierVm: changeTierVm,
-        changeTierNavigationVm: .init(router: Router(), vm: changeTierVm)
+        changeTierNavigationVm: .init(router: Router(), vm: changeTierVm) {}
     )
 }
