@@ -235,21 +235,22 @@ public class ChatScreenViewModel: ObservableObject {
         case let .file(file):
             if file.mimeType.isImage {
                 switch file.source {
-                case .localFile(let url, _):
-                    if let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
-                        switch remoteMessage.type {
-                        case let .file(file):
-                            let processor = DownsamplingImageProcessor(
-                                size: CGSize(width: 300, height: 300)
-                            )
-                            var options = KingfisherParsedOptionsInfo.init(nil)
-                            options.processor = processor
-                            ImageCache.default.store(image, forKey: file.id, options: options)
-                        default:
-                            break
-                        }
-
-                    }
+                case .localFile:
+                    //                    if let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
+                    //                        switch remoteMessage.type {
+                    //                        case let .file(file):
+                    //                            let processor = DownsamplingImageProcessor(
+                    //                                size: CGSize(width: 300, height: 300)
+                    //                            )
+                    //                            var options = KingfisherParsedOptionsInfo.init(nil)
+                    //                            options.processor = processor
+                    //                            ImageCache.default.store(image, forKey: file.id, options: options)
+                    //                        default:
+                    //                            break
+                    //                        }
+                    //
+                    //                    }
+                    break
                 case .url:
                     break
                 case .data:

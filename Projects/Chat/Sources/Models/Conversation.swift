@@ -2,7 +2,7 @@ import Foundation
 import hCore
 import hGraphQL
 
-public struct Conversation: Identifiable, Hashable, Codable {
+public struct Conversation: Codable, Identifiable, Hashable {
     public init(
         id: String,
         type: ConversationType,

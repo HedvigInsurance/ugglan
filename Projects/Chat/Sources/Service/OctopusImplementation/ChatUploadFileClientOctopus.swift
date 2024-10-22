@@ -2,6 +2,7 @@ import Apollo
 import Foundation
 import Kingfisher
 import SwiftUI
+import UniformTypeIdentifiers
 import hCore
 import hGraphQL
 
@@ -74,8 +75,24 @@ enum FileUploadRequest {
                     switch file.source {
                     case .data(let data):
                         return data
-                    case .localFile(let url, _):
-                        return try? Data(contentsOf: url)
+                    case .localFile(let url):
+                        var data: Data?
+                        if let url {
+                            let semaphore = DispatchSemaphore(value: 0)
+                            url.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.item.identifier) {
+                                imageUrl,
+                                error in
+                                if let imageUrl,
+                                    let pathData = FileManager.default.contents(atPath: imageUrl.relativePath)
+                                {
+                                    data = pathData
+                                }
+
+                                semaphore.signal()
+                            }
+                            semaphore.wait()
+                        }
+                        return data
                     case .url:
                         return nil
                     }

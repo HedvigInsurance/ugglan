@@ -77,9 +77,9 @@ public struct ClaimFilesView: View {
                 .sheet(isPresented: $showImagePicker) {
                     ImagePicker { images in
                         for image in images {
-                            if let file = image.asFile() {
-                                vm.add(file: file)
-                            }
+                            //                            if let file = image {
+                            vm.add(file: image)
+                            //                            }
                         }
                     }
                     .ignoresSafeArea()
@@ -87,9 +87,7 @@ public struct ClaimFilesView: View {
                 .sheet(isPresented: $showFilePicker) {
                     FileImporterView { files in
                         for file in files {
-                            if let file = file.asFile() {
-                                vm.add(file: file)
-                            }
+                            vm.add(file: file)
                         }
                     }
                     .ignoresSafeArea()
@@ -99,18 +97,14 @@ public struct ClaimFilesView: View {
                         guard let data = image.jpegData(compressionQuality: 0.9),
                             let thumbnailData = image.jpegData(compressionQuality: 0.1)
                         else { return }
-                        let file = FilePickerDto(
+                        let file = File(
                             id: UUID().uuidString,
                             size: Double(data.count),
                             mimeType: .JPEG,
                             name: "image_\(Date()).jpeg",
-                            data: data,
-                            thumbnailData: thumbnailData
+                            source: .data(data: data)
                         )
-                        if let file = file.asFile() {
-                            vm.add(file: file)
-                        }
-
+                        vm.add(file: file)
                     }
                     .ignoresSafeArea()
                 }
@@ -219,7 +213,7 @@ class ClaimFilesViewModel: ObservableObject {
         }
         do {
             let filteredFiles = fileGridViewModel.files.filter({
-                if case .localFile(_, _) = $0.source { return true } else { return false }
+                if case .localFile(_) = $0.source { return true } else { return false }
             })
             if !filteredFiles.isEmpty {
                 let files = try await claimFileUploadService.upload(endPoint: endPoint, files: filteredFiles) {
@@ -262,7 +256,7 @@ class ClaimFilesViewModel: ObservableObject {
     }
 }
 
-#Preview{
+#Preview {
     let files: [File] = [
         .init(
             id: "imageId1",

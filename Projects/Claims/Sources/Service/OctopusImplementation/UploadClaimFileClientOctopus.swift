@@ -4,6 +4,7 @@ import Kingfisher
 import SwiftUI
 import hCore
 import hGraphQL
+import UniformTypeIdentifiers
 
 public class hClaimFileUploadService {
     @Inject var client: hClaimFileUploadClient
@@ -36,16 +37,23 @@ extension NetworkClient: hClaimFileUploadClient {
                         for file in uploadedFiles.compactMap({ $0.file }).enumerated() {
                             let localFileSource = files[file.offset].source
                             switch localFileSource {
-                            case let .localFile(url, _):
-                                if MimeType.findBy(mimeType: file.element.mimeType).isImage,
-                                    let data = try? Data(contentsOf: url), let image = UIImage(data: data)
-                                {
-                                    let processor = DownsamplingImageProcessor(
-                                        size: CGSize(width: 300, height: 300)
-                                    )
-                                    var options = KingfisherParsedOptionsInfo.init(nil)
-                                    options.processor = processor
-                                    ImageCache.default.store(image, forKey: file.element.fileId, options: options)
+                            case let .localFile(results):
+                                if let results = results {
+                                    if MimeType.findBy(mimeType: file.element.mimeType).isImage {
+                                        results.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { imageUrl, error in
+                                            if let imageUrl,
+                                               let pathData = FileManager.default.contents(atPath: imageUrl.relativePath), let image = UIImage(data: pathData)
+                                            {
+                                                let processor = DownsamplingImageProcessor(
+                                                    size: CGSize(width: 300, height: 300)
+                                                )
+                                                var options = KingfisherParsedOptionsInfo.init(nil)
+                                                options.processor = processor
+                                                ImageCache.default.store(image, forKey: file.element.fileId, options: options)
+                                            }
+                                            
+                                        }
+                                    }
                                 }
                             case .url(_):
                                 break
@@ -114,9 +122,24 @@ enum ClaimsRequest {
             let url = URL(string: baseUrlString)!
             let multipartFormDataRequest = MultipartFormDataRequest(url: url)
             for file in files {
-                guard case let .localFile(url, _) = file.source,
-                    let data = try? Data(contentsOf: url) /*FileManager.default.contents(atPath: url.path)*/
+                guard case let .localFile(url) = file.source
                 else { throw NetworkError.badRequest(message: nil) }
+                
+                var data: Data?
+                if let url {
+                    let semaphore = DispatchSemaphore(value: 0)
+                    url.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.item.identifier) { imageUrl, error in
+                        if let imageUrl,
+                           let pathData = FileManager.default.contents(atPath: imageUrl.relativePath)
+                        {
+                            data = pathData
+                        }
+                        
+                        semaphore.signal()
+                    }
+                    semaphore.wait()
+                }
+                guard let data = data else {throw NetworkError.badRequest(message: nil) }
                 multipartFormDataRequest.addDataField(
                     fieldName: "files",
                     fileName: file.name,

@@ -1,9 +1,11 @@
 import Kingfisher
+import PhotosUI
 import SwiftUI
 import hCore
 
 public struct FileView: View {
     let file: File
+    let imageDataProvider: ImageDataProvider?
     let onTap: () -> Void
     let processor = DownsamplingImageProcessor(
         size: CGSize(width: 300, height: 300)
@@ -12,6 +14,14 @@ public struct FileView: View {
     public init(file: File, onTap: @escaping () -> Void) {
         self.file = file
         self.onTap = onTap
+        switch file.source {
+        case let .localFile(results):
+            self.imageDataProvider = hPHPickerResultImageDataProvider(cacheKey: file.id, pickerResult: results!)
+        case .url:
+            self.imageDataProvider = nil
+        case let .data(data):
+            self.imageDataProvider = nil
+        }
     }
 
     @ViewBuilder
@@ -19,8 +29,8 @@ public struct FileView: View {
         VStack {
             if file.mimeType.isImage {
                 switch file.source {
-                case let .localFile(imageUrl, thumbnailUrl):
-                    imageFromLocalFile(url: thumbnailUrl ?? imageUrl)
+                case let .localFile(url):
+                    imageFromLocalFile(results: url!)
                 case .url(let url):
                     imageFromRemote(url: url)
                 case let .data(data):
@@ -68,13 +78,13 @@ public struct FileView: View {
         }
     }
 
-    private func imageFromLocalFile(url: URL) -> some View {
+    private func imageFromLocalFile(results: PHPickerResult) -> some View {
         Rectangle().fill(.clear)
             .aspectRatio(1, contentMode: .fill)
             .background(
-                KFImage(source: Kingfisher.Source.provider(LocalFileImageDataProvider(fileURL: url, cacheKey: file.id)))
+                KFImage(source: Kingfisher.Source.provider(imageDataProvider!))
                     .fade(duration: 0.25)
-                    .setProcessor(processor)
+                    //                    .setProcessor(processor)
                     .resizable()
                     .aspectRatio(
                         contentMode: .fill
@@ -110,5 +120,55 @@ public struct FileView: View {
                 )
         }
 
+    }
+}
+
+public struct hPHPickerResultImageDataProvider: ImageDataProvider {
+
+    /// The possible error might be caused by the `PHPickerResultImageDataProvider`.
+    /// - invalidImage: The retrieved image is invalid.
+    public enum PHPickerResultImageDataProviderError: Error {
+        /// An error happens during picking up image through the item provider of `PHPickerResult`.
+        case pickerProviderError(any Error)
+        /// The retrieved image is invalid.
+        case invalidImage
+    }
+
+    /// The picker result bound to `self`.
+    public let pickerResult: PHPickerResult
+
+    /// The content type of the image.
+    public let contentType: UTType
+
+    private var internalKey: String {
+        pickerResult.assetIdentifier ?? UUID().uuidString
+    }
+
+    public var cacheKey: String
+
+    /// Creates an image data provider from a given `PHPickerResult`.
+    /// - Parameters:
+    ///  - pickerResult: The picker result to provide image data.
+    ///  - contentType: The content type of the image. Default is `UTType.image`.
+    public init(cacheKey: String, pickerResult: PHPickerResult, contentType: UTType = UTType.image) {
+        self.cacheKey = cacheKey
+        self.pickerResult = pickerResult
+        self.contentType = contentType
+    }
+
+    public func data(handler: @escaping @Sendable (Result<Data, any Error>) -> Void) {
+        pickerResult.itemProvider.loadDataRepresentation(forTypeIdentifier: contentType.identifier) { data, error in
+            if let error {
+                handler(.failure(PHPickerResultImageDataProviderError.pickerProviderError(error)))
+                return
+            }
+
+            guard let data else {
+                handler(.failure(PHPickerResultImageDataProviderError.invalidImage))
+                return
+            }
+
+            handler(.success(data))
+        }
     }
 }
