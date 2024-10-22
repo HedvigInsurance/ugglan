@@ -29,16 +29,13 @@ struct CompareTierScreen: View {
         )
 
         var tempPerils: [String: [Perils]] = [:]
-
         var index = 0
         tiersNames?
             .forEach({ tierName in
-                var cellsForIndexX: [Perils] = []
-
-                rows?
-                    .forEach({ row in
+                let cells = rows?
+                    .map({ row in
                         let cellForIndex = row.cells[index]
-                        let peril: Perils = .init(
+                        return Perils(
                             id: nil,
                             title: row.title,
                             description: row.description,
@@ -46,10 +43,9 @@ struct CompareTierScreen: View {
                             covered: [cellForIndex.coverageText ?? ""],
                             isDisabled: !cellForIndex.isCovered
                         )
-                        cellsForIndexX.append(peril)
                     })
 
-                tempPerils[tierName] = cellsForIndexX
+                tempPerils[tierName] = cells
                 index = index + 1
             })
 
