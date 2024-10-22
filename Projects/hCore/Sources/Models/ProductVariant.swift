@@ -6,7 +6,7 @@ public struct ProductVariant: Codable, Hashable {
     let partner: String?
     public let perils: [Perils]
     public let insurableLimits: [InsurableLimits]
-    public let documents: [PDFDocument]
+    public let documents: [hPDFDocument]
     public let displayName: String
     public let displayNameTier: String?
     public let tierDescription: String?
@@ -17,7 +17,7 @@ public struct ProductVariant: Codable, Hashable {
         partner: String?,
         perils: [Perils],
         insurableLimits: [InsurableLimits],
-        documents: [PDFDocument],
+        documents: [hPDFDocument],
         displayName: String,
         displayNameTier: String?,
         tierDescription: String?

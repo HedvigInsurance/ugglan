@@ -11,7 +11,7 @@ public struct RenewalCardView: View {
     @PresentableStore var store: HomeStore
     @State private var showMultipleAlert = false
     @State private var showFailedToOpenUrlAlert = false
-    @State private var document: PDFDocument?
+    @State private var document: hPDFDocument?
     let showCoInsured: Bool?
 
     public init(
@@ -34,7 +34,7 @@ public struct RenewalCardView: View {
         if let draftCertificateUrl = contract.upcomingRenewal?.draftCertificateUrl,
             URL(string: draftCertificateUrl) != nil
         {
-            self.document = PDFDocument(
+            self.document = hPDFDocument(
                 displayName: contract.displayName,
                 url: contract.upcomingRenewal?.draftCertificateUrl ?? "",
                 type: .unknown

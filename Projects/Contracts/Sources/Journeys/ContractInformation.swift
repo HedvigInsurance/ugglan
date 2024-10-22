@@ -234,7 +234,7 @@ struct ContractInformationView: View {
                     .init(
                         buttonTitle: L10n.dashboardRenewalPrompterBodyButton,
                         buttonAction: {
-                            contractsNavigationVm.document = PDFDocument(
+                            contractsNavigationVm.document = hPDFDocument(
                                 displayName: L10n.insuranceCertificateTitle,
                                 url: upcomingRenewal.certificateUrl ?? "",
                                 type: .unknown
@@ -264,7 +264,7 @@ struct ContractInformationView: View {
                             .init(
                                 buttonTitle: L10n.contractViewCertificateButton,
                                 buttonAction: {
-                                    contractsNavigationVm.document = PDFDocument(
+                                    contractsNavigationVm.document = hPDFDocument(
                                         displayName: L10n.myDocumentsInsuranceCertificate,
                                         url: upcomingChangedAgreement.certificateUrl ?? "",
                                         type: .unknown

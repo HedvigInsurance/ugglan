@@ -2,12 +2,12 @@ import SwiftUI
 import hGraphQL
 
 public struct InsuranceTermView: View {
-    let documents: [PDFDocument]
-    let onDocumentTap: (_ document: PDFDocument) -> Void
+    let documents: [hPDFDocument]
+    let onDocumentTap: (_ document: hPDFDocument) -> Void
 
     public init(
-        documents: [PDFDocument],
-        onDocumentTap: @escaping (_: PDFDocument) -> Void
+        documents: [hPDFDocument],
+        onDocumentTap: @escaping (_: hPDFDocument) -> Void
     ) {
         self.documents = documents
         self.onDocumentTap = onDocumentTap

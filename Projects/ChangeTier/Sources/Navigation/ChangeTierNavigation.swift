@@ -9,7 +9,7 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     @Published public var isEditDeductiblePresented = false
     @Published public var isCompareTiersPresented = false
     @Published public var isInsurableLimitPresented: InsurableLimits?
-    @Published public var document: PDFDocument?
+    @Published public var document: hPDFDocument?
     let useOwnNavigation: Bool
     let router: Router
     var onChangedTier: () -> Void = {}

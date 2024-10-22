@@ -10,7 +10,7 @@ public struct PDFPreview: View {
     @StateObject fileprivate var vm: PDFPreviewViewModel
 
     public init(
-        document: PDFDocument
+        document: hPDFDocument
     ) {
         _vm = StateObject(wrappedValue: PDFPreviewViewModel(document: document))
     }
@@ -53,11 +53,11 @@ public struct PDFPreview: View {
 }
 
 private class PDFPreviewViewModel: ObservableObject {
-    let document: PDFDocument
+    let document: hPDFDocument
     @Published var isLoading = false
     @Published var data: Data?
     weak var navItem: UIBarButtonItem?
-    init(document: PDFDocument) {
+    init(document: hPDFDocument) {
         self.document = document
         Task {
             await self.getData()

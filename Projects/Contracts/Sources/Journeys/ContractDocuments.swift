@@ -30,13 +30,13 @@ struct ContractDocumentsView: View {
         }
     }
 
-    func getDocumentsToDisplay(contract: Contract) -> [PDFDocument] {
-        var documents: [PDFDocument] = []
+    func getDocumentsToDisplay(contract: Contract) -> [hPDFDocument] {
+        var documents: [hPDFDocument] = []
         contract.currentAgreement?.productVariant.documents
             .forEach { document in
                 documents.append(document)
             }
-        let certficateUrl = PDFDocument(
+        let certficateUrl = hPDFDocument(
             displayName: L10n.myDocumentsInsuranceCertificate,
             url: contract.currentAgreement?.certificateUrl ?? "",
             type: .unknown

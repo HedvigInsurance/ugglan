@@ -1,4 +1,4 @@
-public struct PDFDocument: Codable, Equatable, Hashable, Identifiable {
+public struct hPDFDocument: Codable, Equatable, Hashable, Identifiable {
     public var id: String?
     public var displayName: String
     public var url: String
