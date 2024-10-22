@@ -16,7 +16,7 @@ struct CompareTierScreen: View {
         self.vm = vm
         let columns = vm.productVariantComparision?.variantColumns
         let rows = vm.productVariantComparision?.rows
-        let tiersNames = columns?.compactMap({ $0.displayNameTier })
+        let tierNames = columns?.compactMap({ $0.displayNameTier })
 
         self.limits = Dictionary(
             uniqueKeysWithValues: vm.productVariantComparision?.variantColumns
@@ -28,30 +28,9 @@ struct CompareTierScreen: View {
                 }) ?? []
         )
 
-        var tempPerils: [String: [Perils]] = [:]
-        var index = 0
-        tiersNames?
-            .forEach({ tierName in
-                let cells = rows?
-                    .map({ row in
-                        let cellForIndex = row.cells[index]
-                        return Perils(
-                            id: nil,
-                            title: row.title,
-                            description: row.description,
-                            color: row.colorCode,
-                            covered: [cellForIndex.coverageText ?? ""],
-                            isDisabled: !cellForIndex.isCovered
-                        )
-                    })
+        self.perils = vm.getPerils(tierNames: tierNames, rows: rows)
 
-                tempPerils[tierName] = cells
-                index = index + 1
-            })
-
-        self.perils = tempPerils
-
-        let pageModels: [PageModel] = tiersNames?.compactMap({ PageModel(id: $0, title: $0) }) ?? []
+        let pageModels: [PageModel] = tierNames?.compactMap({ PageModel(id: $0, title: $0) }) ?? []
         let currentId = vm.productVariantComparision?.variantColumns
             .first(where: { $0.displayNameTier == vm.selectedTier?.name })?
             .displayNameTier
@@ -77,5 +56,35 @@ struct CompareTierScreen: View {
                 }
             )
         }
+    }
+}
+
+extension ChangeTierViewModel {
+    fileprivate func getPerils(
+        tierNames: [String]?,
+        rows: [ProductVariantComparison.ProductVariantComparisonRow]?
+    ) -> [String: [Perils]] {
+        var tempPerils: [String: [Perils]] = [:]
+        var index = 0
+
+        tierNames?
+            .forEach({ tierName in
+                let cells = rows?
+                    .map({ row in
+                        let cellForIndex = row.cells[index]
+                        return Perils(
+                            id: nil,
+                            title: row.title,
+                            description: row.description,
+                            color: row.colorCode,
+                            covered: [cellForIndex.coverageText ?? ""],
+                            isDisabled: !cellForIndex.isCovered
+                        )
+                    })
+
+                tempPerils[tierName] = cells
+                index = index + 1
+            })
+        return tempPerils
     }
 }

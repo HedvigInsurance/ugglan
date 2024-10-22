@@ -184,18 +184,12 @@ public class ChangeTierClientOctopus: ChangeTierClient {
             cachePolicy: .fetchIgnoringCacheCompletely
         )
 
-        /* TODO: REWORK INITS */
         let productVariantRows: [ProductVariantComparison.ProductVariantComparisonRow] =
-            try await productVariantData.productVariantComparison.rows.map({
-                .init(
-                    title: $0.title,
-                    description: $0.description,
-                    colorCode: $0.colorCode,
-                    cells: $0.cells.map({ .init(isCovered: $0.isCovered, coverageText: $0.coverageText) })
-                )
+            productVariantData.productVariantComparison.rows.map({
+                .init(data: $0.fragments.productVariantComparisonRowFragment)
             })
 
-        let productVariantColumns: [ProductVariant] = try await productVariantData.productVariantComparison
+        let productVariantColumns: [ProductVariant] = productVariantData.productVariantComparison
             .variantColumns.map({ .init(data: $0.fragments.productVariantFragment) })
 
         let productVariantComparision = ProductVariantComparison(
@@ -204,5 +198,16 @@ public class ChangeTierClientOctopus: ChangeTierClient {
         )
 
         return productVariantComparision
+    }
+}
+
+extension ProductVariantComparison.ProductVariantComparisonRow {
+    init(
+        data: OctopusGraphQL.ProductVariantComparisonRowFragment
+    ) {
+        self.title = data.title
+        self.description = data.description
+        self.colorCode = data.colorCode
+        self.cells = data.cells.map({ .init(isCovered: $0.isCovered, coverageText: $0.coverageText) })
     }
 }
