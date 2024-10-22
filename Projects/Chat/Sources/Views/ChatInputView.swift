@@ -196,7 +196,6 @@ private class CustomTextView: UITextView, UITextViewDelegate {
     @Binding private var keyboardIsShown: Bool
     private var textCancellable: AnyCancellable?
     private var placeholderLabel = UILabel()
-
     init(placeholder: String, inputText: Binding<String>, height: Binding<CGFloat>, keyboardIsShown: Binding<Bool>) {
         self._inputText = inputText
         self._height = height
@@ -277,8 +276,8 @@ private class CustomTextView: UITextView, UITextViewDelegate {
 
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         if action == #selector(UIResponder.paste(_:)) {
-            let imageTypes = UIPasteboard.typeListImage as! [String]
-            if UIPasteboard.general.contains(pasteboardTypes: imageTypes) {
+            if let imagesFileTypes = UIPasteboard.typeListImage as? [String]
+            if UIPasteboard.general.contains(pasteboardTypes: imagesFileTypes) {
                 return true
             }
         }
