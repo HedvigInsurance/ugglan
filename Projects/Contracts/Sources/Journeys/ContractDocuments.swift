@@ -24,21 +24,19 @@ struct ContractDocumentsView: View {
                 InsuranceTermView(
                     documents: getDocumentsToDisplay(contract: contract)
                 ) { document in
-                    if let url = URL(string: document.url) {
-                        contractsNavigationViewModel.document = .init(url: url, title: document.displayName)
-                    }
+                    contractsNavigationViewModel.document = document
                 }
             }
         }
     }
 
-    func getDocumentsToDisplay(contract: Contract) -> [InsuranceTerm] {
-        var documents: [InsuranceTerm] = []
+    func getDocumentsToDisplay(contract: Contract) -> [hPDFDocument] {
+        var documents: [hPDFDocument] = []
         contract.currentAgreement?.productVariant.documents
             .forEach { document in
                 documents.append(document)
             }
-        let certficateUrl = InsuranceTerm(
+        let certficateUrl = hPDFDocument(
             displayName: L10n.myDocumentsInsuranceCertificate,
             url: contract.currentAgreement?.certificateUrl ?? "",
             type: .unknown
