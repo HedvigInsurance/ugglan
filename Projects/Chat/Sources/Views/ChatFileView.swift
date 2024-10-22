@@ -88,8 +88,9 @@ struct ChatFileView: View {
 
     func showFile() {
         switch file.source {
-        case let .localFile(url, _):
-            chatNavigationVm.isFilePresented = .init(url: url)
+        case let .localFile(url):
+            //            chatNavigationVm.isFilePresented = .init(url: url)
+            break
         case .url(let url):
             chatNavigationVm.isFilePresented = .init(url: url)
         case .data(let data):
@@ -99,8 +100,8 @@ struct ChatFileView: View {
 
     private func getSource() -> Kingfisher.Source {
         switch file.source {
-        case .localFile(let url, _):
-            return Kingfisher.Source.provider(LocalFileImageDataProvider(fileURL: url, cacheKey: file.id))
+        case .localFile(let results):
+            return Kingfisher.Source.provider(PHPickerResultImageDataProvider(pickerResult: results!))
         case .url(let url):
             return Kingfisher.Source.network(
                 Kingfisher.KF.ImageResource(downloadURL: url, cacheKey: file.id)
@@ -112,7 +113,7 @@ struct ChatFileView: View {
 
 }
 
-#Preview{
+#Preview {
     let file: File = .init(
         id: "imageId1",
         size: 22332,

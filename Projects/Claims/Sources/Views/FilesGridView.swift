@@ -69,10 +69,11 @@ struct FilesGridView: View {
     @MainActor
     func show(file: File) {
         switch file.source {
-        case let .localFile(url, _):
-            if let data = FileManager.default.contents(atPath: url.path) {
-                fileModel = .init(type: .data(data: data, mimeType: file.mimeType))
-            }
+        case let .localFile(url):
+            //            if let data = FileManager.default.contents(atPath: url.path) {
+            //                fileModel = .init(type: .data(data: data, mimeType: file.mimeType))
+            //            }
+            break
         case .url(let url):
             fileModel = .init(type: .url(url: url))
         case .data:
@@ -133,7 +134,7 @@ class FileGridViewModel: ObservableObject {
 
 }
 
-#Preview{
+#Preview {
     let files: [File] = [
         .init(
             id: "imageId1",

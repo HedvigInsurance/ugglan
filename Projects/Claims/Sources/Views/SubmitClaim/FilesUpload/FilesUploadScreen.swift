@@ -123,13 +123,12 @@ struct SubmitClaimFilesUploadScreen: View {
                 guard let data = image.jpegData(compressionQuality: 0.9),
                     let thumbnailData = image.jpegData(compressionQuality: 0.1)
                 else { return }
-                let file: FilePickerDto = .init(
+                let file: File = .init(
                     id: UUID().uuidString,
                     size: Double(data.count),
                     mimeType: .JPEG,
                     name: "image_\(Date()).jpeg",
-                    data: data,
-                    thumbnailData: thumbnailData
+                    source: .data(data: data)
                 )
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     vm.addFiles(with: [file])
@@ -239,14 +238,21 @@ public class FilesUploadViewModel: ObservableObject {
 
     }
 
-    func addFiles(with files: [FilePickerDto]) {
+    //    func addFiles(with files: [FilePickerDto]) {
+    //        if !files.isEmpty {
+    //            let filess = files.compactMap(
+    //                {
+    //                    return $0.asFile()
+    //                }
+    //            )
+    //            fileGridViewModel.files.append(contentsOf: filess)
+    //
+    //        }
+    //    }
+
+    func addFiles(with files: [File]) {
         if !files.isEmpty {
-            let filess = files.compactMap(
-                {
-                    return $0.asFile()
-                }
-            )
-            fileGridViewModel.files.append(contentsOf: filess)
+            fileGridViewModel.files.append(contentsOf: files)
 
         }
     }
@@ -268,7 +274,7 @@ public class FilesUploadViewModel: ObservableObject {
                 })
                 .compactMap({ $0.id })
             let filteredFiles = fileGridViewModel.files.filter({
-                if case .localFile(_, _) = $0.source { return true } else { return false }
+                if case .localFile(_) = $0.source { return true } else { return false }
             })
             hasFilesToUpload = !filteredFiles.isEmpty
             if !filteredFiles.isEmpty {
@@ -279,7 +285,8 @@ public class FilesUploadViewModel: ObservableObject {
                     endPoint: model.targetUploadUrl,
                     files: filteredFiles
                 ) { progress in
-                    DispatchQueue.main.async { [weak self] in guard let self = self else { return }
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self = self else { return }
                         self.uploadProgress = progress
                         withAnimation {
                             self.progress = min(self.uploadProgress, self.timerProgress)
@@ -327,7 +334,7 @@ public class FilesUploadViewModel: ObservableObject {
                     guard let self = self else { return }
                     withAnimation {
                         if let index = self.fileGridViewModel.files.firstIndex(where: {
-                            if case .localFile(_, _) = $0.source { return true } else { return false }
+                            if case .localFile(_) = $0.source { return true } else { return false }
                         }) {
                             self.fileGridViewModel.files.replaceSubrange(
                                 index...index + filteredFiles.count - 1,
@@ -355,7 +362,7 @@ public class FilesUploadViewModel: ObservableObject {
     }
 }
 
-#Preview{
+#Preview {
     Localization.Locale.currentLocale.send(.en_SE)
     return SubmitClaimFilesUploadScreen(model: .init(id: "id", title: "title", targetUploadUrl: "url", uploads: []))
 }

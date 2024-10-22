@@ -98,11 +98,11 @@ class ImagesViewModel: ObservableObject {
     }
 }
 
-#Preview{
+#Preview {
     ImagesView(vm: .init())
 }
 
-#Preview{
+#Preview {
     PHPAssetPreview(asset: .init()) { _ in
 
     }
@@ -213,7 +213,7 @@ extension PHAsset {
 
                                     let fileName = url.path
 
-                                    guard (try? Data(contentsOf: url)) != nil
+                                    guard let data = (try? Data(contentsOf: url))
                                     else {
                                         inCont.resume(throwing: GenerateFileUploadError.failedToGetVideoData)
                                         return
@@ -223,7 +223,7 @@ extension PHAsset {
                                         size: 0,
                                         mimeType: MimeType.MP4,
                                         name: fileName,
-                                        source: .localFile(url: url, thumbnailURL: nil)
+                                        source: .data(data: data)
                                     )
                                     inCont.resume(returning: file)
                                 })
@@ -254,34 +254,25 @@ extension PHAsset {
                                     inCont.resume(throwing: GenerateFileUploadError.failedToConvertHEIC)
                                     return
                                 }
-                                if let file = FilePickerDto(
+
+                                let file = File(
                                     id: id,
                                     size: 0,
                                     mimeType: .JPEG,
                                     name: fileName,
-                                    data: jpegData,
-                                    thumbnailData: nil
+                                    source: .data(data: jpegData)
                                 )
-                                .asFile() {
-                                    inCont.resume(returning: file)
-                                } else {
-                                    inCont.resume(throwing: GenerateFileUploadError.failedToConvertToFile)
-                                }
+                                inCont.resume(returning: file)
 
                             } else {
-                                if let file = FilePickerDto(
+                                let file = File(
                                     id: id,
                                     size: 0,
                                     mimeType: MimeType.findBy(mimeType: mimeType),
                                     name: fileName,
-                                    data: data,
-                                    thumbnailData: nil
+                                    source: .data(data: data)
                                 )
-                                .asFile() {
-                                    inCont.resume(returning: file)
-                                } else {
-                                    inCont.resume(throwing: GenerateFileUploadError.failedToConvertToFile)
-                                }
+                                inCont.resume(returning: file)
                             }
                         }
                 case .unknown: break
