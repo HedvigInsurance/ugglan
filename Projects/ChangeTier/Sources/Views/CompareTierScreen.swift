@@ -14,8 +14,9 @@ struct CompareTierScreen: View {
         vm: ChangeTierViewModel
     ) {
         self.vm = vm
-
-        let tiersNames = vm.productVariantComparision?.variantColumns.compactMap({ $0.displayNameTier })
+        let columns = vm.productVariantComparision?.variantColumns
+        let rows = vm.productVariantComparision?.rows
+        let tiersNames = columns?.compactMap({ $0.displayNameTier })
 
         self.limits = Dictionary(
             uniqueKeysWithValues: vm.productVariantComparision?.variantColumns
@@ -28,28 +29,33 @@ struct CompareTierScreen: View {
         )
 
         var tempPerils: [String: [Perils]] = [:]
+
         var index = 0
         tiersNames?
             .forEach({ tierName in
-                if let row = vm.productVariantComparision?.rows[index] {
-                    let rowPerils: [Perils] = [
-                        Perils(
+                var cellsForIndexX: [Perils] = []
+
+                rows?
+                    .forEach({ row in
+                        let cellForIndex = row.cells[index]
+                        let peril: Perils = .init(
                             id: nil,
                             title: row.title,
                             description: row.description,
                             color: row.colorCode,
-                            covered: row.cells.compactMap({ $0.coverageText ?? "" }),
-                            isDisabled: !(row.cells.first?.isCovered ?? true)
+                            covered: [cellForIndex.coverageText ?? ""],
+                            isDisabled: !cellForIndex.isCovered
                         )
-                    ]
-                    tempPerils[tierName] = rowPerils
-                    index = index + 1
-                }
+                        cellsForIndexX.append(peril)
+                    })
+
+                tempPerils[tierName] = cellsForIndexX
+                index = index + 1
             })
 
         self.perils = tempPerils
 
-        let pageModels: [PageModel] = tiersNames?.compactMap({ PageModel(id: "id", title: $0) }) ?? []
+        let pageModels: [PageModel] = tiersNames?.compactMap({ PageModel(id: $0, title: $0) }) ?? []
         let currentId = vm.productVariantComparision?.variantColumns
             .first(where: { $0.displayNameTier == vm.selectedTier?.name })?
             .displayNameTier
