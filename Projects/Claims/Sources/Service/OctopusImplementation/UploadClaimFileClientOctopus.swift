@@ -2,9 +2,9 @@ import Apollo
 import Foundation
 import Kingfisher
 import SwiftUI
+import UniformTypeIdentifiers
 import hCore
 import hGraphQL
-import UniformTypeIdentifiers
 
 public class hClaimFileUploadService {
     @Inject var client: hClaimFileUploadClient
@@ -40,18 +40,26 @@ extension NetworkClient: hClaimFileUploadClient {
                             case let .localFile(results):
                                 if let results = results {
                                     if MimeType.findBy(mimeType: file.element.mimeType).isImage {
-                                        results.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { imageUrl, error in
+                                        results.itemProvider.loadFileRepresentation(
+                                            forTypeIdentifier: UTType.image.identifier
+                                        ) { imageUrl, error in
                                             if let imageUrl,
-                                               let pathData = FileManager.default.contents(atPath: imageUrl.relativePath), let image = UIImage(data: pathData)
+                                                let pathData = FileManager.default.contents(
+                                                    atPath: imageUrl.relativePath
+                                                ), let image = UIImage(data: pathData)
                                             {
                                                 let processor = DownsamplingImageProcessor(
                                                     size: CGSize(width: 300, height: 300)
                                                 )
                                                 var options = KingfisherParsedOptionsInfo.init(nil)
                                                 options.processor = processor
-                                                ImageCache.default.store(image, forKey: file.element.fileId, options: options)
+                                                ImageCache.default.store(
+                                                    image,
+                                                    forKey: file.element.fileId,
+                                                    options: options
+                                                )
                                             }
-                                            
+
                                         }
                                     }
                                 }
@@ -124,22 +132,24 @@ enum ClaimsRequest {
             for file in files {
                 guard case let .localFile(url) = file.source
                 else { throw NetworkError.badRequest(message: nil) }
-                
+
                 var data: Data?
                 if let url {
                     let semaphore = DispatchSemaphore(value: 0)
-                    url.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.item.identifier) { imageUrl, error in
+                    url.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.item.identifier) {
+                        imageUrl,
+                        error in
                         if let imageUrl,
-                           let pathData = FileManager.default.contents(atPath: imageUrl.relativePath)
+                            let pathData = FileManager.default.contents(atPath: imageUrl.relativePath)
                         {
                             data = pathData
                         }
-                        
+
                         semaphore.signal()
                     }
                     semaphore.wait()
                 }
-                guard let data = data else {throw NetworkError.badRequest(message: nil) }
+                guard let data = data else { throw NetworkError.badRequest(message: nil) }
                 multipartFormDataRequest.addDataField(
                     fieldName: "files",
                     fileName: file.name,

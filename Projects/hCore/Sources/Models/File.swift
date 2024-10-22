@@ -1,7 +1,7 @@
 import Foundation
+import PhotosUI
 import SwiftUI
 import UniformTypeIdentifiers
-import PhotosUI
 
 public struct File: Codable, Equatable, Identifiable, Hashable {
     public let id: String
@@ -9,7 +9,7 @@ public struct File: Codable, Equatable, Identifiable, Hashable {
     public let mimeType: MimeType
     public let name: String
     public let source: FileSource
-    
+
     public init(id: String, size: Double, mimeType: MimeType, name: String, source: FileSource) {
         self.id = id
         self.size = size
@@ -17,7 +17,7 @@ public struct File: Codable, Equatable, Identifiable, Hashable {
         self.name = name
         self.source = source
     }
-    
+
     public var url: URL? {
         switch source {
         case .localFile:
@@ -28,7 +28,7 @@ public struct File: Codable, Equatable, Identifiable, Hashable {
             return nil
         }
     }
-    
+
     public func getAsDataFromUrl() -> File? {
         guard let url else {
             return nil
@@ -44,17 +44,17 @@ public enum FileSource: Codable, Equatable, Hashable {
     case data(data: Data)
     case url(url: URL)
     case localFile(results: PHPickerResult?)
-    
+
     enum Key: CodingKey {
         case rawValue
         case data
         case url
     }
-    
+
     enum CodingError: Error {
         case unknownValue
     }
-    
+
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: Key.self)
         switch self {
@@ -68,7 +68,7 @@ public enum FileSource: Codable, Equatable, Hashable {
             throw CodingError.unknownValue
         }
     }
-    
+
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: Key.self)
         let rawValue = try container.decode(Int.self, forKey: .rawValue)
@@ -79,13 +79,13 @@ public enum FileSource: Codable, Equatable, Hashable {
         case 1:
             let url = try container.decode(URL.self, forKey: .url)
             self = .url(url: url)
-       default:
+        default:
             throw CodingError.unknownValue
         }
-        
+
     }
-    
-}//
+
+}  //
 //
 //public struct FilePickerDto {
 //    public let id: String
