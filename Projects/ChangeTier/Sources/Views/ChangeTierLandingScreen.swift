@@ -80,6 +80,8 @@ public struct ChangeTierLandingScreen: View {
                     )
                 }
 
+                let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
+
                 VStack(spacing: .padding4) {
                     editTierView
                     if vm.showDeductibleField {
@@ -87,7 +89,7 @@ public struct ChangeTierLandingScreen: View {
                     }
                 }
                 .hFieldSize(.small)
-                .hBackgroundOption(option: [.negative])
+                .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary])
                 .hWithoutHorizontalPadding
 
                 hRow {

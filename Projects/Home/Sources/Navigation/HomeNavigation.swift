@@ -63,7 +63,7 @@ public class HomeNavigationViewModel: ObservableObject {
     @Published public var isHelpCenterPresented = false
 
     //claim details
-    @Published public var document: InsuranceTerm? = nil
+    @Published public var document: hPDFDocument? = nil
 
     @Published public var navBarItems = NavBarItems()
 

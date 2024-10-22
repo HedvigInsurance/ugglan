@@ -143,15 +143,18 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
         )
 
         Task { @MainActor [weak presentationController] in
-            try? await Task.sleep(nanoseconds: 50_000_000)
-
-            if let presentationController {
-                Detent.set(
-                    self.detents,
-                    on: presentationController,
-                    viewController: self.viewController,
-                    unanimated: false
-                )
+            for i in 0...2 {
+                let date = Date()
+                try? await Task.sleep(nanoseconds: 50_000_000)
+                let date2 = Date()
+                if let presentationController {
+                    Detent.set(
+                        self.detents,
+                        on: presentationController,
+                        viewController: self.viewController,
+                        unanimated: false
+                    )
+                }
             }
         }
 
@@ -329,7 +332,10 @@ public enum Detent: Equatable {
     }
 
     private static func findNavigationController(from vc: UIViewController?) -> UINavigationController? {
-        if let viewController = vc?.children.first as? UINavigationController {
+
+        if let viewController = vc?.children.first(where: { $0.isKind(of: UINavigationController.self) })
+            as? UINavigationController
+        {
             return viewController
         }
         return nil

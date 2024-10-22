@@ -9,7 +9,7 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     @Published public var isEditDeductiblePresented = false
     @Published public var isCompareTiersPresented = false
     @Published public var isInsurableLimitPresented: InsurableLimits?
-    @Published public var document: Document?
+    @Published public var document: hPDFDocument?
     let useOwnNavigation: Bool
     let router: Router
     var onChangedTier: () -> Void = {}
@@ -252,7 +252,7 @@ public struct ChangeTierNavigation: View {
             item: $changeTierNavigationVm.document,
             style: [.large]
         ) { document in
-            PDFPreview(document: .init(url: document.url, title: document.title))
+            PDFPreview(document: document)
         }
     }
 

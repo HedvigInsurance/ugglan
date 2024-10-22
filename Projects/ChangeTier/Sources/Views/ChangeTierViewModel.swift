@@ -158,7 +158,7 @@ public class ChangeTierViewModel: ObservableObject {
             } catch let error {
                 withAnimation {
                     self.viewState = .error(
-                        errorMessage: error.localizedDescription ?? L10n.tierFlowCommitProcessingErrorDescription
+                        errorMessage: error.localizedDescription
                     )
                 }
             }

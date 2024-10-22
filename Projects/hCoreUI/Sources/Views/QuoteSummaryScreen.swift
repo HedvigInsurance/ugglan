@@ -15,8 +15,8 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         let newPremium: MonetaryAmount?
         let currentPremium: MonetaryAmount?
         let displayItems: [QuoteDisplayItem]
-        let documents: [InsuranceTerm]
-        let onDocumentTap: (_ document: InsuranceTerm) -> Void
+        let documents: [hPDFDocument]
+        let onDocumentTap: (_ document: hPDFDocument) -> Void
         let insuranceLimits: [InsurableLimits]
         let typeOfContract: TypeOfContract?
         let shouldShowDetails: Bool
@@ -27,8 +27,8 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             exposureName: String,
             newPremium: MonetaryAmount?,
             currentPremium: MonetaryAmount?,
-            documents: [InsuranceTerm],
-            onDocumentTap: @escaping (_ document: InsuranceTerm) -> Void,
+            documents: [hPDFDocument],
+            onDocumentTap: @escaping (_ document: hPDFDocument) -> Void,
             displayItems: [QuoteDisplayItem],
             insuranceLimits: [InsurableLimits],
             typeOfContract: TypeOfContract?
@@ -255,7 +255,7 @@ public struct QuoteSummaryScreen: View {
         .foregroundColor(hTextColor.Opaque.secondary)
     }
 
-    func documentItem(for document: InsuranceTerm) -> some View {
+    func documentItem(for document: hPDFDocument) -> some View {
         HStack {
             hAttributedTextView(
                 text: AttributedPDF().attributedPDFString(for: document.displayName),
@@ -412,7 +412,7 @@ public struct FAQ: Codable, Equatable, Hashable {
 }
 
 #Preview(body: {
-    let documents: [InsuranceTerm] = [
+    let documents: [hPDFDocument] = [
         .init(displayName: "document 1", url: "https//hedvig.com", type: .generalTerms),
         .init(displayName: "document 2", url: "https//hedvig.com", type: .preSaleInfo),
     ]
