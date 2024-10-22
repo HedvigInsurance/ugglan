@@ -94,7 +94,7 @@ struct ChatInputView: View {
     }
 }
 
-#Preview{
+#Preview {
     VStack {
         Spacer()
         ChatInputView(vm: .init())
@@ -196,6 +196,7 @@ private class CustomTextView: UITextView, UITextViewDelegate {
     @Binding private var keyboardIsShown: Bool
     private var textCancellable: AnyCancellable?
     private var placeholderLabel = UILabel()
+
     init(placeholder: String, inputText: Binding<String>, height: Binding<CGFloat>, keyboardIsShown: Binding<Bool>) {
         self._inputText = inputText
         self._height = height
@@ -221,7 +222,8 @@ private class CustomTextView: UITextView, UITextViewDelegate {
     }
 
     func updateHeight() {
-        DispatchQueue.main.async { [weak self] in guard let self = self else { return }
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             withAnimation {
                 self.height = min(self.contentSize.height, 200)
             }
@@ -262,6 +264,25 @@ private class CustomTextView: UITextView, UITextViewDelegate {
     private var placeholderTextColor: UIColor {
         let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
         return hTextColor.Opaque.secondary.colorFor(colorScheme, .base).color.uiColor()
+    }
+
+    override func paste(_ sender: Any?) {
+        if let action = (sender as? UIKeyCommand)?.action, action == #selector(UIResponder.paste(_:)) {
+            if let image = UIPasteboard.general.image {
+                return
+            }
+        }
+        super.paste(sender)
+    }
+
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        if action == #selector(UIResponder.paste(_:)) {
+            let imageTypes = UIPasteboard.typeListImage as! [String]
+            if UIPasteboard.general.contains(pasteboardTypes: imageTypes) {
+                return true
+            }
+        }
+        return super.canPerformAction(action, withSender: sender)
     }
 }
 
