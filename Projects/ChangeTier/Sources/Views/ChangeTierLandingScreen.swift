@@ -164,10 +164,7 @@ public struct ChangeTierLandingScreen: View {
         hSection {
             VStack(spacing: .padding8) {
                 hButton.LargeButton(type: .ghost) {
-                    Task {
-                        try await vm.getProductVariantComparision()
-                        changeTierNavigationVm.isCompareTiersPresented = true
-                    }
+                    changeTierNavigationVm.isCompareTiersPresented = true
                 } content: {
                     hText(vm.tiers.count == 1 ? L10n.tierFlowShowCoverage : L10n.tierFlowCompareButton, style: .body1)
                 }

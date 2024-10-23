@@ -24,7 +24,6 @@ public class ChangeTierViewModel: ObservableObject {
 
     @Published var selectedTier: Tier?
     @Published var selectedQuote: Quote?
-    @Published var productVariantComparision: ProductVariantComparison?
 
     var isValid: Bool {
         let selectedTierIsSameAsCurrent = currentTier?.name == selectedTier?.name
@@ -161,40 +160,6 @@ public class ChangeTierViewModel: ObservableObject {
                         errorMessage: error.localizedDescription
                     )
                 }
-            }
-        }
-    }
-
-    @MainActor
-    public func getProductVariantComparision() async throws {
-        withAnimation {
-            viewState = .loading
-        }
-        do {
-            var termsVersionsToCompare: [String] = []
-            tiers.forEach({ tier in
-                tier.quotes.forEach({ quote in
-                    if let termsVersion = quote.productVariant?.termsVersion,
-                        !termsVersionsToCompare.contains(termsVersion)
-                    {
-                        termsVersionsToCompare.append(termsVersion)
-                    }
-                })
-            })
-
-            let productVariantComparisionData = try await service.compareProductVariants(
-                termsVersion: termsVersionsToCompare
-            )
-            self.productVariantComparision = productVariantComparisionData
-
-            withAnimation {
-                viewState = .success
-            }
-        } catch let error {
-            withAnimation {
-                self.viewState = .error(
-                    errorMessage: error.localizedDescription
-                )
             }
         }
     }
