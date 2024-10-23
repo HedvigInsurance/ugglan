@@ -3,14 +3,62 @@ import hCore
 import hCoreUI
 import hGraphQL
 
+struct CompareTierScreen: View {
+    @ObservedObject private var vm: CompareTierViewModel
+    @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
+
+    init(
+        vm: CompareTierViewModel
+    ) {
+        self.vm = vm
+    }
+
+    var body: some View {
+        succesView.loading($vm.viewState)
+            .hErrorViewButtonConfig(
+                .init(
+                    actionButton: .init(
+                        buttonAction: {
+                            vm.getProductVariantComparision()
+                        }
+                    ),
+                    dismissButton:
+                        .init(
+                            buttonTitle: L10n.generalCloseButton,
+                            buttonAction: {
+                                changeTierNavigationVm.router.dismiss()
+                            }
+                        )
+                )
+            )
+    }
+
+    var succesView: some View {
+        hForm {
+            ScrollableSegmentedView(
+                vm: vm.scrollableSegmentedViewModel,
+                contentFor: { id in
+                    return CoverageView(
+                        limits: vm.limits[id] ?? [],
+                        didTapInsurableLimit: { limit in
+                            changeTierNavigationVm.isInsurableLimitPresented = limit
+                        },
+                        perils: vm.perils[id] ?? []
+                    )
+                }
+            )
+        }
+    }
+}
+
 public class CompareTierViewModel: ObservableObject {
     @Inject private var service: ChangeTierClient
     @Published var viewState: ProcessingState = .loading
     @Published var selectedTier: Tier?
     @Published var tiers: [Tier]
 
-    var perils: [String: [Perils]] = [:]
-    var limits: [String: [InsurableLimits]] = [:]
+    @Published var perils: [String: [Perils]] = [:]
+    @Published var limits: [String: [InsurableLimits]] = [:]
     var scrollableSegmentedViewModel: ScrollableSegmentedViewModel = .init(pageModels: [])
 
     init(
@@ -19,35 +67,7 @@ public class CompareTierViewModel: ObservableObject {
     ) {
         self.selectedTier = selectedTier
         self.tiers = tiers
-
-        Task {
-            let productVariantComparision = try await self.getProductVariantComparision()
-            let columns = productVariantComparision?.variantColumns
-            let rows = productVariantComparision?.rows
-            let tierNames = columns?.compactMap({ $0.displayNameTier })
-
-            self.limits = Dictionary(
-                uniqueKeysWithValues: productVariantComparision?.variantColumns
-                    .map({
-                        (
-                            $0.displayNameTier ?? "",
-                            $0.insurableLimits
-                        )
-                    }) ?? []
-            )
-
-            self.perils = getPerils(tierNames: tierNames, rows: rows)
-
-            let pageModels: [PageModel] = tierNames?.compactMap({ PageModel(id: $0, title: $0) }) ?? []
-            let currentId = productVariantComparision?.variantColumns
-                .first(where: { $0.displayNameTier == selectedTier?.name })?
-                .displayNameTier
-
-            self.scrollableSegmentedViewModel = ScrollableSegmentedViewModel(
-                pageModels: pageModels,
-                currentId: currentId
-            )
-        }
+        self.getProductVariantComparision()
     }
 
     private func getPerils(
@@ -78,93 +98,72 @@ public class CompareTierViewModel: ObservableObject {
         return tempPerils
     }
 
-    @MainActor
-    public func getProductVariantComparision() async throws -> ProductVariantComparison? {
+    public func getProductVariantComparision() {
         withAnimation {
             viewState = .loading
         }
-        do {
-            var termsVersionsToCompare: [String] = []
-            tiers.forEach({ tier in
-                tier.quotes.forEach({ quote in
-                    if let termsVersion = quote.productVariant?.termsVersion,
-                        !termsVersionsToCompare.contains(termsVersion)
-                    {
-                        termsVersionsToCompare.append(termsVersion)
-                    }
+        Task { @MainActor in
+            do {
+                var termsVersionsToCompare: [String] = []
+                tiers.forEach({ tier in
+                    tier.quotes.forEach({ quote in
+                        if let termsVersion = quote.productVariant?.termsVersion,
+                            !termsVersionsToCompare.contains(termsVersion)
+                        {
+                            termsVersionsToCompare.append(termsVersion)
+                        }
+                    })
                 })
-            })
 
-            let productVariantComparisionData = try await service.compareProductVariants(
-                termsVersion: termsVersionsToCompare
-            )
+                //                let mockTermsVersionsToCompare =
+                //                [
+                //                    "SE_DOG_BASIC-20230330-HEDVIG-null",
+                //                    "SE_DOG_STANDARD-20230330-HEDVIG-null",
+                //                    "SE_DOG_PREMIUM-20230410-HEDVIG-null"
+                //                ]
 
-            withAnimation {
-                viewState = .success
-            }
-            return productVariantComparisionData
-        } catch let error {
-            withAnimation {
-                self.viewState = .error(
-                    errorMessage: error.localizedDescription
+                let productVariantComparisionData = try await service.compareProductVariants(
+                    termsVersion: termsVersionsToCompare
+                        //                    termsVersion: mockTermsVersionsToCompare
                 )
-            }
-        }
-        return nil
-    }
-}
 
-struct CompareTierScreen: View {
-    @ObservedObject private var vm: CompareTierViewModel
-    @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
+                let columns = productVariantComparisionData.variantColumns
+                let rows = productVariantComparisionData.rows
+                let tierNames = columns.compactMap({ $0.displayNameTier })
 
-    init(
-        vm: CompareTierViewModel
-    ) {
-        self.vm = vm
-    }
+                self.limits = Dictionary(
+                    uniqueKeysWithValues: productVariantComparisionData.variantColumns
+                        .map({
+                            (
+                                $0.displayNameTier ?? "",
+                                $0.insurableLimits
+                            )
+                        })
+                )
 
-    var body: some View {
-        ProcessingStateView(
-            loadingViewText: L10n.tierFlowProcessing,
-            errorViewButtons: .init(
-                actionButton: .init(
-                    buttonAction: {
-                        Task {
-                            try await vm.getProductVariantComparision()
-                        }
-                    }
-                ),
-                dismissButton:
-                    .init(
-                        buttonTitle: L10n.generalCloseButton,
-                        buttonAction: {
-                            changeTierNavigationVm.router.dismiss()
-                        }
-                    )
-            ),
-            state: $vm.viewState,
-            duration: 6
-        )
-        .hCustomSuccessView {
-            succesView
-        }
-    }
+                self.perils = getPerils(tierNames: tierNames, rows: rows)
 
-    var succesView: some View {
-        hForm {
-            ScrollableSegmentedView(
-                vm: vm.scrollableSegmentedViewModel,
-                contentFor: { id in
-                    return CoverageView(
-                        limits: vm.limits[id] ?? [],
-                        didTapInsurableLimit: { limit in
-                            changeTierNavigationVm.isInsurableLimitPresented = limit
-                        },
-                        perils: vm.perils[id] ?? []
+                let pageModels: [PageModel] = tierNames.compactMap({ PageModel(id: $0, title: $0) })
+                let currentId = productVariantComparisionData.variantColumns
+                    .first(where: { $0.displayNameTier == selectedTier?.name })?
+                    .displayNameTier
+
+                self.scrollableSegmentedViewModel = ScrollableSegmentedViewModel(
+                    pageModels: pageModels,
+                    currentId: currentId
+                )
+
+                withAnimation {
+                    viewState = .success
+                }
+                //            return productVariantComparisionData
+            } catch let error {
+                withAnimation {
+                    self.viewState = .error(
+                        errorMessage: error.localizedDescription
                     )
                 }
-            )
+            }
         }
     }
 }
