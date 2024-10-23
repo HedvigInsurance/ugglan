@@ -19,6 +19,7 @@ final class MovingFlowHousingTypeViewModelTests: XCTestCase {
         maxMovingDate: "2025-09-08",
         suggestedNumberCoInsured: 2,
         currentHomeAddresses: [],
+        potentialHomeQuotes: [],
         quotes: [],
         faqs: [],
         extraBuildingTypes: []
