@@ -182,8 +182,10 @@ public struct LoadingViewWithContent<Content: View, StoreType: StoreLoading & St
                 loadingIndicatorView.transition(.opacity.animation(animation ?? .easeInOut(duration: 0.2)))
             } else if presentError {
                 GenericErrorView(
-                    description: error,
-                    buttons: .init(
+                    description: error
+                )
+                .hErrorViewButtonConfig(
+                    .init(
                         actionButton: .init(buttonAction: {
                             for action in retryActions {
                                 store.send(action)
@@ -373,8 +375,10 @@ public struct LoadingViewWithGenericError<Content: View, StoreType: StoreLoading
             } else if presentError {
                 GenericErrorView(
                     title: L10n.somethingWentWrong,
-                    description: error,
-                    buttons: .init(
+                    description: error
+                )
+                .hErrorViewButtonConfig(
+                    .init(
                         actionButton: .init(buttonAction: {
                             for action in actions {
                                 store.removeLoading(for: action)
@@ -470,19 +474,19 @@ public struct LoadingViewWithGenericError<Content: View, StoreType: StoreLoading
     }
 }
 
-public struct LoadingViewWithContentt: ViewModifier {
+struct LoadingViewWithContentt: ViewModifier {
     @Binding var isLoading: Bool
     @Binding var error: String?
-    public func body(content: Content) -> some View {
+    func body(content: Content) -> some View {
         ZStack {
             BackgroundView().edgesIgnoringSafeArea(.all)
             if isLoading {
                 loadingIndicatorView.transition(.opacity.animation(.easeInOut(duration: 0.2)))
             } else if let error = error {
                 GenericErrorView(
-                    description: error,
-                    buttons: .init()
+                    description: error
                 )
+                .hErrorViewButtonConfig(.init())
                 .transition(.opacity.animation(.easeInOut(duration: 0.2)))
             } else {
                 content.transition(.opacity.animation(.easeInOut(duration: 0.2)))
@@ -501,8 +505,42 @@ public struct LoadingViewWithContentt: ViewModifier {
     }
 }
 
+struct LoadingViewWithContentForProcessingState: ViewModifier {
+    @Binding var state: ProcessingState
+    public func body(content: Content) -> some View {
+        ZStack {
+            BackgroundView().edgesIgnoringSafeArea(.all)
+            switch state {
+            case .loading:
+                loadingIndicatorView.transition(.opacity.animation(.easeInOut(duration: 0.2)))
+            case .success:
+                content.transition(.opacity.animation(.easeInOut(duration: 0.2)))
+            case .error(let errorMessage):
+                GenericErrorView(
+                    description: errorMessage
+                )
+                .transition(.opacity.animation(.easeInOut(duration: 0.2)))
+            }
+        }
+    }
+
+    private var loadingIndicatorView: some View {
+        HStack {
+            DotsActivityIndicator(.standard)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(hBackgroundColor.primary.opacity(0.01))
+        .edgesIgnoringSafeArea(.top)
+        .useDarkColor
+    }
+}
+
 extension View {
     public func loading(_ isLoading: Binding<Bool>, _ error: Binding<String?>) -> some View {
         modifier(LoadingViewWithContentt(isLoading: isLoading, error: error))
+    }
+
+    public func loading(_ state: Binding<ProcessingState>) -> some View {
+        modifier(LoadingViewWithContentForProcessingState(state: state))
     }
 }

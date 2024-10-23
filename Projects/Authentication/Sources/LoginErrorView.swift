@@ -12,8 +12,10 @@ public struct LoginErrorView: View {
 
     public var body: some View {
         GenericErrorView(
-            description: message,
-            buttons: .init(
+            description: message
+        )
+        .hErrorViewButtonConfig(
+            .init(
                 dismissButton: .init(
                     buttonTitle: L10n.generalCloseButton,
                     buttonAction: {
@@ -25,6 +27,6 @@ public struct LoginErrorView: View {
     }
 }
 
-#Preview{
+#Preview {
     LoginErrorView(message: "message")
 }

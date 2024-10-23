@@ -386,8 +386,10 @@ struct TerminationFlowNavigation: View {
     private func openTerminationFailScreen() -> some View {
         GenericErrorView(
             title: L10n.terminationNotSuccessfulTitle,
-            description: L10n.somethingWentWrong,
-            buttons: .init(
+            description: L10n.somethingWentWrong
+        )
+        .hErrorViewButtonConfig(
+            .init(
                 actionButton: .init(
                     buttonTitle: L10n.openChat,
                     buttonAction: { [weak vm] in

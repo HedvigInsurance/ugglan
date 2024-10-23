@@ -18,8 +18,10 @@ public struct MissingCoInsuredAlert: View {
     public var body: some View {
         GenericErrorView(
             title: config.contractDisplayName,
-            description: L10n.contractCoinsuredMissingInformationLabel,
-            buttons: .init(
+            description: L10n.contractCoinsuredMissingInformationLabel
+        )
+        .hErrorViewButtonConfig(
+            .init(
                 actionButtonAttachedToBottom:
                     .init(
                         buttonTitle: L10n.contractCoinsuredMissingAddInfo,
@@ -39,7 +41,7 @@ public struct MissingCoInsuredAlert: View {
     }
 }
 
-#Preview{
+#Preview {
     MissingCoInsuredAlert(
         config: .init(
             id: UUID().uuidString,

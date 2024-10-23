@@ -16,8 +16,10 @@ struct MovingFlowHouseView: View {
             form
         } onError: { [weak vm] error in
             GenericErrorView(
-                description: error,
-                buttons: .init(
+                description: error
+            )
+            .hErrorViewButtonConfig(
+                .init(
                     actionButton: .init(buttonAction: {
                         vm?.error = nil
                         let store: MoveFlowStore = globalPresentableStoreContainer.get()
