@@ -100,6 +100,8 @@ public struct ContractsNavigation<Content: View>: View {
                 updateDate: insuranceUpdate.upcomingChangedAgreement?.activeFrom ?? "",
                 upcomingAgreement: insuranceUpdate.upcomingChangedAgreement
             )
+            .configureTitle(L10n.InsuranceDetails.updateDetailsSheetTitle)
+            .embededInNavigation(tracking: ContractsDetentType.upcomingChanges)
             .environmentObject(contractsNavigationVm)
         }
         .handleTerminateInsurance(vm: contractsNavigationVm.terminateInsuranceVm) { dismissType in
@@ -118,7 +120,7 @@ public class ContractsNavigationViewModel: ObservableObject {
     public let contractsRouter = Router()
     let terminateInsuranceVm = TerminateInsuranceViewModel()
     @Published public var insurableLimit: InsurableLimits?
-    @Published public var document: Document?
+    @Published public var document: hPDFDocument?
     @Published public var editCoInsuredConfig: InsuredPeopleConfig?
     @Published public var editCoInsuredMissingAlert: InsuredPeopleConfig?
     @Published public var changeYourInformationContract: Contract?
@@ -136,7 +138,7 @@ public class ContractsNavigationViewModel: ObservableObject {
 public enum RedirectType {
     case chat
     case movingFlow
-    case pdf(document: Document)
+    case pdf(document: hPDFDocument)
     case changeTier(input: ChangeTierInput)
 }
 
@@ -176,10 +178,13 @@ private enum ContractsDetentType: TrackingViewNameProtocol {
         switch self {
         case .editContract:
             return .init(describing: EditContractScreen.self)
+        case .upcomingChanges:
+            return .init(describing: UpcomingChangesScreen.self)
         }
     }
 
     case editContract
+    case upcomingChanges
 }
 
 extension ContractsNavigation: TrackingViewNameProtocol {

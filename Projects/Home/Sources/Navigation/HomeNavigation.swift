@@ -24,7 +24,6 @@ public struct ChatConversation: Equatable, Identifiable {
 public class HomeNavigationViewModel: ObservableObject {
     public static var isChatPresented = false
     private var cancellables = Set<AnyCancellable>()
-
     public init() {
 
         NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: OperationQueue.main) {
@@ -64,7 +63,7 @@ public class HomeNavigationViewModel: ObservableObject {
     @Published public var isHelpCenterPresented = false
 
     //claim details
-    @Published public var document: InsuranceTerm? = nil
+    @Published public var document: hPDFDocument? = nil
 
     @Published public var navBarItems = NavBarItems()
 

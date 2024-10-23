@@ -311,37 +311,28 @@ struct hFloatingTextField_Previews: PreviewProvider {
     }
 }
 
-private struct EnvironmentHWithoutDisabledColor: EnvironmentKey {
-    static let defaultValue = false
+public enum BackgroundOption {
+    case translucent
+    case negative
+    case withoutDisabled
+    case locked
+    case secondary
+}
+
+private struct EnvironmentHBackgroundOption: EnvironmentKey {
+    static let defaultValue: [BackgroundOption] = []
 }
 
 extension EnvironmentValues {
-    public var hWithoutDisabledColor: Bool {
-        get { self[EnvironmentHWithoutDisabledColor.self] }
-        set { self[EnvironmentHWithoutDisabledColor.self] = newValue }
+    public var hBackgroundOption: [BackgroundOption] {
+        get { self[EnvironmentHBackgroundOption.self] }
+        set { self[EnvironmentHBackgroundOption.self] = newValue }
     }
 }
 
 extension View {
-    public var hWithoutDisabledColor: some View {
-        self.environment(\.hWithoutDisabledColor, true)
-    }
-}
-
-private struct EnvironmentHWithTransparentBackgroundColor: EnvironmentKey {
-    static let defaultValue = false
-}
-
-extension EnvironmentValues {
-    public var hWithTransparentColor: Bool {
-        get { self[EnvironmentHWithTransparentBackgroundColor.self] }
-        set { self[EnvironmentHWithTransparentBackgroundColor.self] = newValue }
-    }
-}
-
-extension View {
-    public var hWithTransparentColor: some View {
-        self.environment(\.hWithTransparentColor, true)
+    public func hBackgroundOption(option: [BackgroundOption]) -> some View {
+        self.environment(\.hBackgroundOption, option)
     }
 }
 

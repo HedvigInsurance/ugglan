@@ -4,11 +4,12 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 public class MovingFlowNavigationViewModel: ObservableObject {
     public init() {}
     @Published var isAddExtraBuildingPresented = false
-    @Published public var document: Document? = nil
+    @Published public var document: hPDFDocument? = nil
 }
 
 enum MovingFlowRouterWithHiddenBackButtonActions {
@@ -53,10 +54,13 @@ struct ExtraBuildingTypeNavigationModel: Identifiable, Equatable {
 public struct MovingFlowNavigation: View {
     @StateObject private var movingFlowVm = MovingFlowNavigationViewModel()
     @StateObject var router = Router()
+    private let onMoved: () -> Void
     @State var cancellable: AnyCancellable?
     @State var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
 
-    public init() {}
+    public init(onMoved: @escaping () -> Void) {
+        self.onMoved = onMoved
+    }
 
     public var body: some View {
         RouterHost(router: router, tracking: MovingFlowDetentType.selectHousingType) {
@@ -115,7 +119,10 @@ public struct MovingFlowNavigation: View {
             item: $movingFlowVm.document,
             style: [.large]
         ) { document in
-            PDFPreview(document: .init(url: document.url, title: document.title))
+            PDFPreview(document: document)
+        }
+        .onDisappear {
+            onMoved()
         }
     }
 

@@ -7,46 +7,56 @@ public enum ProcessingState: Equatable {
     case error(errorMessage: String)
 }
 
+private struct AnimationTiming {
+    let delay: Float
+    let duration: Float
+    let progress: Float
+}
+
 public struct ProcessingStateView: View {
     @StateObject var vm = ProcessingViewModel()
     @Binding var state: ProcessingState
-    var showSuccessScreen: Bool
-
+    fileprivate let animationTimings: [AnimationTiming]
     var loadingViewText: String
     var successViewTitle: String?
     var successViewBody: String?
     var successViewButtonAction: (() -> Void)?
-
-    var onAppearLoadingView: (() -> Void)?
-    var onErrorCancelAction: (() -> Void)?
-    var onLoadingDismiss: (() -> Void)?
-
-    var errorViewButtons: ErrorViewButtonConfig?
-    @Environment(\.hSuccessBottomAttachedView) var successBottomView
+    var errorViewButtons: ErrorViewButtonConfig
     @Environment(\.hCustomSuccessView) var customSuccessView
 
     public init(
-        showSuccessScreen: Bool? = true,
         loadingViewText: String,
         successViewTitle: String? = nil,
         successViewBody: String? = nil,
         successViewButtonAction: (() -> Void)? = nil,
-        onAppearLoadingView: (() -> Void)? = nil,
-        onErrorCancelAction: (() -> Void)? = nil,
-        onLoadingDismiss: (() -> Void)? = nil,
-        errorViewButtons: ErrorViewButtonConfig? = nil,
-        state: Binding<ProcessingState>
+        errorViewButtons: ErrorViewButtonConfig,
+        state: Binding<ProcessingState>,
+        duration: Float = 1.5
     ) {
-        self.showSuccessScreen = showSuccessScreen ?? true
         self.loadingViewText = loadingViewText
         self.successViewTitle = successViewTitle
         self.successViewBody = successViewBody
         self.successViewButtonAction = successViewButtonAction
-        self.onAppearLoadingView = onAppearLoadingView
-        self.onErrorCancelAction = onErrorCancelAction
-        self.onLoadingDismiss = onLoadingDismiss
         self.errorViewButtons = errorViewButtons
         self._state = state
+
+        let baseDurationFactor: Float = duration * (Float(1) / Float(24))
+        animationTimings = [
+            .init(delay: 0.5, duration: baseDurationFactor * 8, progress: 0.3),
+            .init(
+                delay: 0.5 + baseDurationFactor * 8,
+                duration: baseDurationFactor * 4,
+                progress: Float.random(in: 0.3...0.5)
+            ),
+            .init(delay: 0.5 + baseDurationFactor * 12, duration: baseDurationFactor * 3, progress: 0.6),
+            .init(delay: 0.5 + baseDurationFactor * 15, duration: baseDurationFactor, progress: 0.7),
+            .init(
+                delay: 0.5 + baseDurationFactor * 16,
+                duration: baseDurationFactor * 6,
+                progress: Float.random(in: 0.7...0.95)
+            ),
+            .init(delay: 0.5 + baseDurationFactor * 22, duration: baseDurationFactor * 2, progress: 1),
+        ]
     }
 
     public var body: some View {
@@ -65,26 +75,15 @@ public struct ProcessingStateView: View {
         if customSuccessView != nil {
             customSuccessView
         } else {
-            if showSuccessScreen {
-                if successBottomView != nil {
-                    SuccessScreen(title: successViewTitle ?? "", subtitle: successViewBody ?? "")
-                } else {
-                    SuccessScreen(
-                        successViewTitle: successViewTitle ?? "",
-                        successViewBody: successViewBody ?? "",
-                        buttons: .init(
-                            actionButton: nil,
-                            primaryButton: nil,
-                            ghostButton: .init(buttonAction: successViewButtonAction ?? {})
-                        )
-                    )
-                }
-            } else {
-                loadingView
-                    .onAppear {
-                        onAppearLoadingView?()
-                    }
-            }
+            SuccessScreen(
+                successViewTitle: successViewTitle ?? "",
+                successViewBody: successViewBody ?? "",
+                buttons: .init(
+                    actionButton: nil,
+                    primaryButton: nil,
+                    ghostButton: .init(buttonAction: successViewButtonAction ?? {})
+                )
+            )
         }
     }
 
@@ -94,14 +93,6 @@ public struct ProcessingStateView: View {
             title: L10n.somethingWentWrong,
             description: errorMessage,
             buttons: errorViewButtons
-                ?? .init(
-                    dismissButton: .init(
-                        buttonTitle: L10n.generalCancelButton,
-                        buttonAction: {
-                            onErrorCancelAction?()
-                        }
-                    )
-                )
         )
     }
 
@@ -115,24 +106,18 @@ public struct ProcessingStateView: View {
                     .frame(width: UIScreen.main.bounds.width * 0.53)
                     .onAppear {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            withAnimation(.easeInOut(duration: 1.5).delay(0.5)) {
-                                vm.progress = 1
+                            animationTimings.forEach { item in
+                                withAnimation(
+                                    .easeInOut(duration: TimeInterval(item.duration)).delay(TimeInterval(item.delay))
+                                ) {
+                                    vm.progress = item.progress
+                                }
                             }
                         }
                     }
                     .progressViewStyle(hProgressViewStyle())
                 Spacer()
                 Spacer()
-                if let onDismiss = onLoadingDismiss {
-                    hSection {
-                        hButton.LargeButton(type: .ghost) {
-                            onDismiss()
-                        } content: {
-                            hText(L10n.generalCancelButton)
-                        }
-                    }
-                    .sectionContainerStyle(.transparent)
-                }
             }
         }
         .sectionContainerStyle(.transparent)
@@ -140,5 +125,9 @@ public struct ProcessingStateView: View {
 }
 
 #Preview(body: {
-    ProcessingStateView(loadingViewText: "loading...", state: .constant(.error(errorMessage: "error message")))
+    ProcessingStateView(
+        loadingViewText: "loading...",
+        errorViewButtons: .init(),
+        state: .constant(.error(errorMessage: "error message"))
+    )
 })

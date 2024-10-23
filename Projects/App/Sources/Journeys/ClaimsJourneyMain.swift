@@ -31,10 +31,16 @@ public struct ClaimsJourneyMain: View {
                         AskForPushNotifications(
                             text: L10n.claimsActivateNotificationsBody,
                             onActionExecuted: {
-                                claimsNavigationVm?.isClaimsFlowPresented = true
+                                DispatchQueue.main.async {
+                                    claimsNavigationVm?.isClaimsFlowPresented = true
+                                }
                             },
                             wrapWithForm: true
                         )
+                        .onDisappear {
+                            let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+                            claimsStore.send(.fetchClaims)
+                        }
                     }
                 }
         }

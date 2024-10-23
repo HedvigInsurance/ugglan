@@ -75,7 +75,6 @@ public struct hTextView: View {
                         .id(UUID().uuidString)
                     }
                 }
-                .hSectionMinimumPadding
                 .padding(.top, .padding12)
                 .sectionContainerStyle(.transparent)
                 .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
@@ -157,7 +156,7 @@ public struct hTextView: View {
     }
 }
 
-#Preview{
+#Preview {
 
     struct PreviewWrapper: View {
         @State var valuee = ""
@@ -550,7 +549,8 @@ private class TextView: UITextView, UITextViewDelegate {
     }
 
     func updateHeight() {
-        DispatchQueue.main.async { [weak self] in guard let self = self else { return }
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             withAnimation {
 
                 if self.frame.width > 0 {

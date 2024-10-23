@@ -11,7 +11,7 @@ public struct RenewalCardView: View {
     @PresentableStore var store: HomeStore
     @State private var showMultipleAlert = false
     @State private var showFailedToOpenUrlAlert = false
-    @State private var document: InsuranceTerm?
+    @State private var document: hPDFDocument?
     let showCoInsured: Bool?
 
     public init(
@@ -34,7 +34,7 @@ public struct RenewalCardView: View {
         if let draftCertificateUrl = contract.upcomingRenewal?.draftCertificateUrl,
             URL(string: draftCertificateUrl) != nil
         {
-            self.document = InsuranceTerm(
+            self.document = hPDFDocument(
                 displayName: contract.displayName,
                 url: contract.upcomingRenewal?.draftCertificateUrl ?? "",
                 type: .unknown
@@ -143,9 +143,7 @@ public struct RenewalCardView: View {
             )
         }
         .detent(item: $document, style: [.large]) { document in
-            if let url = URL(string: document.url) {
-                PDFPreview(document: .init(url: url, title: document.displayName))
-            }
+            PDFPreview(document: document)
         }
     }
 }

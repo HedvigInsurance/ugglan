@@ -7,6 +7,7 @@ import TerminateContracts
 import UnleashProxyClientSwift
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct ContractInformationView: View {
     @PresentableStore var store: ContractStore
@@ -28,7 +29,7 @@ struct ContractInformationView: View {
                         .transition(.opacity.combined(with: .scale))
                     VStack(spacing: 0) {
                         if let displayItems = contract.currentAgreement?.displayItems {
-                            hSection(displayItems, id: \.displayValue) { item in
+                            hSection(displayItems, id: \.displayTitle) { item in
                                 hRow {
                                     hText(item.displayTitle)
                                         .fixedSize()
@@ -47,7 +48,6 @@ struct ContractInformationView: View {
                                     .foregroundColor(hTextColor.Opaque.secondary)
                                 })
                             }
-                            .withoutHorizontalPadding
                             if contract.supportsCoInsured {
                                 hRowDivider()
                                 addCoInsuredView(contract: contract)
@@ -98,8 +98,11 @@ struct ContractInformationView: View {
             HStack {
                 hText(L10n.coinsuredEditTitle)
                 Spacer()
-                hText(L10n.changeAddressYouPlus(contract.coInsured.count))
-                    .foregroundColor(hTextColor.Opaque.secondary)
+                hText(
+                    contract.coInsured.count > 0
+                        ? L10n.changeAddressYouPlus(contract.coInsured.count) : L10n.changeAddressOnlyYou
+                )
+                .foregroundColor(hTextColor.Opaque.secondary)
             }
         }
     }
@@ -138,7 +141,6 @@ struct ContractInformationView: View {
                     .padding(.top, .padding16)
                 }
             }
-            .withoutHorizontalPadding
 
             if Dependencies.featureFlags().isEditCoInsuredEnabled {
                 hSection(vm.getListToDisplay(contract: contract)) { coInsured in
@@ -155,7 +157,6 @@ struct ContractInformationView: View {
                         }
                     }
                 }
-                .withoutHorizontalPadding
 
                 if contract.nbOfMissingCoInsuredWithoutTermination != 0 && contract.showEditCoInsuredInfo {
                     hSection {
@@ -233,9 +234,10 @@ struct ContractInformationView: View {
                     .init(
                         buttonTitle: L10n.dashboardRenewalPrompterBodyButton,
                         buttonAction: {
-                            contractsNavigationVm.document = Document(
-                                url: url,
-                                title: L10n.insuranceCertificateTitle
+                            contractsNavigationVm.document = hPDFDocument(
+                                displayName: L10n.insuranceCertificateTitle,
+                                url: upcomingRenewal.certificateUrl ?? "",
+                                type: .unknown
                             )
                         }
                     )
@@ -262,9 +264,10 @@ struct ContractInformationView: View {
                             .init(
                                 buttonTitle: L10n.contractViewCertificateButton,
                                 buttonAction: {
-                                    contractsNavigationVm.document = Document(
-                                        url: url,
-                                        title: L10n.myDocumentsInsuranceCertificate
+                                    contractsNavigationVm.document = hPDFDocument(
+                                        displayName: L10n.myDocumentsInsuranceCertificate,
+                                        url: upcomingChangedAgreement.certificateUrl ?? "",
+                                        type: .unknown
                                     )
                                 }
                             )

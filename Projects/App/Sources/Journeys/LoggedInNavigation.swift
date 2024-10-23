@@ -59,7 +59,10 @@ struct LoggedInNavigation: View {
             presented: $vm.isMoveContractPresented,
             options: .constant(.alwaysOpenOnTop)
         ) {
-            MovingFlowNavigation()
+            MovingFlowNavigation {
+                let store: ContractStore = globalPresentableStoreContainer.get()
+                store.send(.fetchContracts)
+            }
         }
         .modally(
             item: $vm.isChangeTierPresented,
@@ -112,11 +115,20 @@ struct LoggedInNavigation: View {
             case .chat:
                 ChatScreen(vm: .init(chatService: NewConversationService()))
             case .movingFlow:
-                MovingFlowNavigation()
+                MovingFlowNavigation {
+                    let store: ContractStore = globalPresentableStoreContainer.get()
+                    store.send(.fetchContracts)
+                }
             case let .pdf(document):
-                PDFPreview(document: .init(url: document.url, title: document.title))
+                PDFPreview(document: document)
             case let .changeTier(input):
-                ChangeTierNavigation(input: input)
+                ChangeTierNavigation(input: input) {
+                    //added delay since we don't have a terms version at the place right after the insurance has been created
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        let store: ContractStore = globalPresentableStoreContainer.get()
+                        store.send(.fetchContracts)
+                    }
+                }
             }
         } redirectAction: { action in
             switch action {
@@ -251,9 +263,8 @@ struct LoggedInNavigation: View {
 struct HomeTab: View {
     @ObservedObject var homeNavigationVm: HomeNavigationViewModel
     @ObservedObject var loggedInVm: LoggedInNavigationViewModel
-
+    let claims = Claims()
     var body: some View {
-        let claims = Claims()
         return RouterHost(router: homeNavigationVm.router, tracking: self) {
             HomeView(
                 claimsContent: claims,
@@ -287,9 +298,7 @@ struct HomeTab: View {
             item: $homeNavigationVm.document,
             style: [.large]
         ) { document in
-            if let url = URL(string: document.url) {
-                PDFPreview(document: .init(url: url, title: document.displayName))
-            }
+            PDFPreview(document: document)
         }
         .modally(
             presented: $homeNavigationVm.isHelpCenterPresented
@@ -299,7 +308,10 @@ struct HomeTab: View {
             ) { redirectType in
                 switch redirectType {
                 case .moveFlow:
-                    MovingFlowNavigation()
+                    MovingFlowNavigation {
+                        let store: ContractStore = globalPresentableStoreContainer.get()
+                        store.send(.fetchContracts)
+                    }
                 case .travelInsurance:
                     TravelCertificateNavigation(
                         vm: loggedInVm.travelCertificateNavigationVm,

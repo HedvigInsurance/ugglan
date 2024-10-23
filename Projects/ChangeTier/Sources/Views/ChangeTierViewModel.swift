@@ -146,7 +146,7 @@ public class ChangeTierViewModel: ObservableObject {
         }
         Task { @MainActor in
             do {
-                if let id = selectedTier?.id {
+                if let id = selectedQuote?.id {
                     try await service.commitTier(
                         quoteId: id
                     )
@@ -157,7 +157,7 @@ public class ChangeTierViewModel: ObservableObject {
             } catch let error {
                 withAnimation {
                     self.viewState = .error(
-                        errorMessage: error.localizedDescription ?? L10n.tierFlowCommitProcessingErrorDescription
+                        errorMessage: error.localizedDescription
                     )
                 }
             }

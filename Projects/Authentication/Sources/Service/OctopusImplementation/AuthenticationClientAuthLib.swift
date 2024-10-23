@@ -43,6 +43,9 @@ public class AuthenticationService {
         log.info("AuthenticationService: exchange refresh token", error: nil, attributes: nil)
         try await client.exchange(refreshToken: refreshToken)
     }
+
+    public static var logAuthResourceStart: ((_ key: String, _ URL: URL) -> Void) = { _, _ in }
+    public static var logAuthResourceStop: ((_ key: String, _ response: URLResponse) -> Void) = { _, _ in }
 }
 
 final public class AuthenticationClientAuthLib: AuthenticationClient {
@@ -116,11 +119,17 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
 
     public func startSeBankId(updateStatusTo: @escaping (_: ObserveStatusResponseType) -> Void) async throws {
         do {
+            let authUrl = Environment.current.authUrl
+            AuthenticationService.logAuthResourceStart(authUrl.absoluteString, authUrl)
             let data = try await self.networkAuthRepository.startLoginAttempt(
                 loginMethod: .seBankid,
                 market: .se,
                 personalNumber: nil,
                 email: nil
+            )
+            AuthenticationService.logAuthResourceStop(
+                authUrl.absoluteString,
+                HTTPURLResponse(url: authUrl, statusCode: 200, httpVersion: nil, headerFields: [:])!
             )
 
             switch onEnum(of: data) {

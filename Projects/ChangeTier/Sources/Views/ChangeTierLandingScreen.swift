@@ -21,13 +21,8 @@ public struct ChangeTierLandingScreen: View {
         } else {
             ProcessingStateView(
                 loadingViewText: L10n.tierFlowProcessing,
-                successViewTitle: nil,
-                successViewBody: nil,
-                successViewButtonAction: nil,
-                onAppearLoadingView: nil,
                 errorViewButtons: .init(
                     actionButton: .init(
-                        buttonTitle: nil,
                         buttonAction: {
                             vm.fetchTiers()
                         }
@@ -40,7 +35,8 @@ public struct ChangeTierLandingScreen: View {
                             }
                         )
                 ),
-                state: $vm.viewState
+                state: $vm.viewState,
+                duration: 6
             )
             .hCustomSuccessView {
                 succesView
@@ -84,6 +80,8 @@ public struct ChangeTierLandingScreen: View {
                     )
                 }
 
+                let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
+
                 VStack(spacing: .padding4) {
                     editTierView
                     if vm.showDeductibleField {
@@ -91,7 +89,7 @@ public struct ChangeTierLandingScreen: View {
                     }
                 }
                 .hFieldSize(.small)
-                .hWithTransparentColor
+                .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary])
                 .hWithoutHorizontalPadding
 
                 hRow {
@@ -113,9 +111,7 @@ public struct ChangeTierLandingScreen: View {
                         value: vm.selectedTier?.name ?? "",
                         placeholder: L10n.tierFlowCoverageLabel
                     ) {}
-                    .hFieldLockedState
-                    .colorScheme(.light)
-                    .hWithTransparentColor
+                    .hBackgroundOption(option: [.locked, .translucent, .negative])
                     .hFieldTrailingView {
                         Image(uiImage: hCoreUIAssets.lock.image)
                             .foregroundColor(hTextColor.Opaque.secondary)
@@ -134,7 +130,6 @@ public struct ChangeTierLandingScreen: View {
             ) {
                 changeTierNavigationVm.isEditTierPresented = true
             }
-            .colorScheme(.light)
         }
     }
 
@@ -146,9 +141,7 @@ public struct ChangeTierLandingScreen: View {
                     value: vm.selectedQuote?.deductableAmount?.formattedAmount ?? "",
                     placeholder: L10n.tierFlowDeductibleLabel
                 ) {}
-                .hFieldLockedState
-                .colorScheme(.light)
-                .hWithTransparentColor
+                .hBackgroundOption(option: [.locked, .translucent, .negative])
                 .hFieldTrailingView {
                     Image(uiImage: hCoreUIAssets.lock.image)
                         .foregroundColor(hTextColor.Opaque.secondary)
@@ -164,7 +157,6 @@ public struct ChangeTierLandingScreen: View {
                 changeTierNavigationVm.isEditDeductiblePresented = true
             }
             .disabled(vm.selectedTier == nil)
-            .colorScheme(.light)
         }
     }
 
