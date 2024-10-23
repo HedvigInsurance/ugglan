@@ -519,7 +519,6 @@ struct LoadingViewWithContentForProcessingState: ViewModifier {
                 GenericErrorView(
                     description: errorMessage
                 )
-                .hErrorViewButtonConfig(.init())
                 .transition(.opacity.animation(.easeInOut(duration: 0.2)))
             }
         }
