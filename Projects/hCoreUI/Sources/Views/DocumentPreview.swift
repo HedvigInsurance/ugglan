@@ -41,7 +41,16 @@ public class DocumentPreviewModel: NSObject, ObservableObject {
 
     }
 
-    public enum DocumentPreviewType {
+    public enum DocumentPreviewType: Equatable, Identifiable {
+        public var id: String {
+            switch self {
+            case .url(let url):
+                return url.absoluteString
+            case .data(let data, let mimeType):
+                return "\(data.count)"
+            }
+        }
+
         case url(url: URL)
         case data(data: Data, mimeType: MimeType)
     }

@@ -54,27 +54,6 @@ struct ImagePicker: UIViewControllerRepresentable {
                             source: .localFile(results: selectedItem)
                         )
                     files.append(file)
-                    //                    selectedItem.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { imageUrl, error in
-                    //                        if let imageUrl,
-                    //                            let pathData = FileManager.default.contents(atPath: imageUrl.relativePath),
-                    //                            let image = UIImage(data: pathData),
-                    //                            let data = image.jpegData(compressionQuality: 0.9),
-                    //                            let thumbnailData = image.jpegData(compressionQuality: 0.1)
-                    //                        {
-                    //                            let id = UUID().uuidString
-                    //                            let file: File =
-                    //                                .init(
-                    //                                    id: id,
-                    //                                    size: Double(data.count),
-                    //                                    mimeType: .JPEG,
-                    //                                    name: "\(Date().currentTimeMillis).jpeg",
-                    //                                    source: .localFile(url: imageUrl, thumbnailURL: nil
-                    //                                                      )
-                    //                                )
-                    //                            files.append(file)
-                    //                        }
-                    //                        dispatchGroup.leave()
-                    //                    }
                 } else if selectedItem.itemProvider.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
                     let id = UUID().uuidString
                     let file: File =

@@ -1,4 +1,5 @@
 import Foundation
+import UniformTypeIdentifiers
 import Home
 import Kingfisher
 import PresentableStore
@@ -10,7 +11,6 @@ import hCoreUI
 struct FilesGridView: View {
     @ObservedObject var vm: FileGridViewModel
     @PresentableStore private var store: ClaimsStore
-    @State private var fileModel: HomeNavigationViewModel.FileUrlModel?
 
     private let adaptiveColumn = [
         GridItem(.flexible(), spacing: 8),
@@ -23,7 +23,7 @@ struct FilesGridView: View {
             ForEach(vm.files, id: \.id) { file in
                 ZStack(alignment: Alignment(horizontal: .trailing, vertical: .top)) {
                     FileView(file: file) {
-                        show(file: file)
+                        vm.show(file: file)
                     }
                     .aspectRatio(1, contentMode: .fit)
                     .cornerRadius(12)
@@ -59,25 +59,10 @@ struct FilesGridView: View {
             }
         }
         .detent(
-            item: $fileModel,
+            item: $vm.fileModel,
             style: [.large]
         ) { model in
             DocumentPreview(vm: .init(type: model.type.asDocumentPreviewModelType))
-        }
-    }
-
-    @MainActor
-    func show(file: File) {
-        switch file.source {
-        case let .localFile(url):
-            //            if let data = FileManager.default.contents(atPath: url.path) {
-            //                fileModel = .init(type: .data(data: data, mimeType: file.mimeType))
-            //            }
-            break
-        case .url(let url):
-            fileModel = .init(type: .url(url: url))
-        case .data:
-            break
         }
     }
 }
@@ -85,6 +70,7 @@ struct FilesGridView: View {
 class FileGridViewModel: ObservableObject {
     @Published var files: [File]
     @Published private(set) var options: ClaimFilesViewModel.ClaimFilesViewOptions
+    @Published var fileModel: HomeNavigationViewModel.FileUrlModel?
     var onDelete: ((_ file: File) -> Void)?
 
     init(
@@ -129,6 +115,31 @@ class FileGridViewModel: ObservableObject {
     func update(options: ClaimFilesViewModel.ClaimFilesViewOptions) {
         withAnimation {
             self.options = options
+        }
+    }
+    
+    @MainActor
+    func show(file: File) {
+        switch file.source {
+        case let .localFile(results):
+//            if #available(iOS 16.0, *) {
+//                _ = results?.itemProvider.loadDataRepresentation(for: UTType.item, completionHandler: {[weak self] data, error in
+//                    if let data {
+//                        self?.fileModel = .init(type: .data(data: data, mimeType: file.mimeType))
+//                    }
+//                })
+//                
+//            } else {
+                results?.itemProvider.loadDataRepresentation(forTypeIdentifier: UTType.item.identifier, completionHandler: {[weak self] data, error in
+                    if let data {
+                        self?.fileModel = .init(type: .data(data: data, mimeType: file.mimeType))
+                    }
+                })
+//            }
+        case .url(let url):
+            fileModel = .init(type: .url(url: url))
+        case .data(let data):
+            fileModel = .init(type: .data(data: data, mimeType: file.mimeType))
         }
     }
 

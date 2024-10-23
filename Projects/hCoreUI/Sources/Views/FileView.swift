@@ -5,7 +5,6 @@ import hCore
 
 public struct FileView: View {
     let file: File
-    let imageDataProvider: ImageDataProvider?
     let onTap: () -> Void
     let processor = DownsamplingImageProcessor(
         size: CGSize(width: 300, height: 300)
@@ -14,14 +13,6 @@ public struct FileView: View {
     public init(file: File, onTap: @escaping () -> Void) {
         self.file = file
         self.onTap = onTap
-        switch file.source {
-        case let .localFile(results):
-            self.imageDataProvider = hPHPickerResultImageDataProvider(cacheKey: file.id, pickerResult: results!)
-        case .url:
-            self.imageDataProvider = nil
-        case let .data(data):
-            self.imageDataProvider = nil
-        }
     }
 
     @ViewBuilder
@@ -34,13 +25,21 @@ public struct FileView: View {
                 case .url(let url):
                     imageFromRemote(url: url)
                 case let .data(data):
-                    if let image = UIImage(data: data) {
-                        Image(uiImage: image)
+                    Rectangle().fill(.clear)
+                        .aspectRatio(1, contentMode: .fill)
+                        .background(
+                            KFImage(
+                                source: Kingfisher.Source.provider(
+                                    InMemoryImageDataProvider(cacheKey: file.id, data: data)
+                                )
+                            )
+                            .fade(duration: 0.25)
+                            .setProcessor(processor)
                             .resizable()
                             .aspectRatio(
                                 contentMode: .fill
                             )
-                    }
+                        )
                 }
             } else {
                 GeometryReader { geometry in
@@ -82,13 +81,17 @@ public struct FileView: View {
         Rectangle().fill(.clear)
             .aspectRatio(1, contentMode: .fill)
             .background(
-                KFImage(source: Kingfisher.Source.provider(imageDataProvider!))
-                    .fade(duration: 0.25)
-                    //                    .setProcessor(processor)
-                    .resizable()
-                    .aspectRatio(
-                        contentMode: .fill
+                KFImage(
+                    source: Kingfisher.Source.provider(
+                        hPHPickerResultImageDataProvider(cacheKey: file.id, pickerResult: results)
                     )
+                )
+                .fade(duration: 0.25)
+                .setProcessor(processor)
+                .resizable()
+                .aspectRatio(
+                    contentMode: .fill
+                )
             )
     }
 
@@ -168,7 +171,45 @@ public struct hPHPickerResultImageDataProvider: ImageDataProvider {
                 return
             }
 
-            handler(.success(data))
+            if contentType == UTType.image, let image = UIImage(data: data),
+                let compresedImage = image.jpegData(compressionQuality: 0.05)
+            {
+                handler(.success(compresedImage))
+            } else {
+                handler(.success(data))
+            }
         }
     }
+}
+
+public struct InMemoryImageDataProvider: ImageDataProvider {
+
+    public var cacheKey: String
+    let data: Data
+    /// Provides the data which represents image. Kingfisher uses the data you pass in the
+    /// handler to process images and caches it for later use.
+    ///
+    /// - Parameter handler: The handler you should call when you prepared your data.
+    ///                      If the data is loaded successfully, call the handler with
+    ///                      a `.success` with the data associated. Otherwise, call it
+    ///                      with a `.failure` and pass the error.
+    ///
+    /// - Note:
+    /// If the `handler` is called with a `.failure` with error, a `dataProviderError` of
+    /// `ImageSettingErrorReason` will be finally thrown out to you as the `KingfisherError`
+    /// from the framework.
+    ///
+    public init(cacheKey: String, data: Data, contentURL: URL? = nil) {
+        self.cacheKey = cacheKey
+        self.data = data
+        self.contentURL = contentURL
+    }
+
+    public func data(handler: @escaping (Result<Data, Error>) -> Void) {
+        handler(.success(data))
+    }
+
+    /// The content URL represents this provider, if exists.
+    public var contentURL: URL?
+
 }

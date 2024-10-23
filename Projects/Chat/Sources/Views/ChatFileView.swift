@@ -92,16 +92,18 @@ struct ChatFileView: View {
             //            chatNavigationVm.isFilePresented = .init(url: url)
             break
         case .url(let url):
-            chatNavigationVm.isFilePresented = .init(url: url)
+            chatNavigationVm.isFilePresented = .url(url: url)
         case .data(let data):
-            break
+            chatNavigationVm.isFilePresented = .data(data: data, mimeType: file.mimeType)
         }
     }
 
     private func getSource() -> Kingfisher.Source {
         switch file.source {
         case .localFile(let results):
-            return Kingfisher.Source.provider(PHPickerResultImageDataProvider(pickerResult: results!))
+            return Kingfisher.Source.provider(
+                hPHPickerResultImageDataProvider(cacheKey: file.id, pickerResult: results!)
+            )
         case .url(let url):
             return Kingfisher.Source.network(
                 Kingfisher.KF.ImageResource(downloadURL: url, cacheKey: file.id)
@@ -150,29 +152,4 @@ struct ChatFileView: View {
             ChatFileView(file: file3)
             Spacer()
         }
-}
-
-public struct InMemoryImageDataProvider: ImageDataProvider {
-
-    public var cacheKey: String
-    let data: Data
-    /// Provides the data which represents image. Kingfisher uses the data you pass in the
-    /// handler to process images and caches it for later use.
-    ///
-    /// - Parameter handler: The handler you should call when you prepared your data.
-    ///                      If the data is loaded successfully, call the handler with
-    ///                      a `.success` with the data associated. Otherwise, call it
-    ///                      with a `.failure` and pass the error.
-    ///
-    /// - Note:
-    /// If the `handler` is called with a `.failure` with error, a `dataProviderError` of
-    /// `ImageSettingErrorReason` will be finally thrown out to you as the `KingfisherError`
-    /// from the framework.
-    public func data(handler: @escaping (Result<Data, Error>) -> Void) {
-        handler(.success(data))
-    }
-
-    /// The content URL represents this provider, if exists.
-    public var contentURL: URL?
-
 }

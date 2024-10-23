@@ -120,8 +120,7 @@ struct SubmitClaimFilesUploadScreen: View {
         }
         .sheet(isPresented: $showCamera) {
             CameraPickerView { image in
-                guard let data = image.jpegData(compressionQuality: 0.9),
-                    let thumbnailData = image.jpegData(compressionQuality: 0.1)
+                guard let data = image.jpegData(compressionQuality: 0.9)
                 else { return }
                 let file: File = .init(
                     id: UUID().uuidString,
@@ -270,11 +269,21 @@ public class FilesUploadViewModel: ObservableObject {
         do {
             let alreadyUploadedFiles = fileGridViewModel.files
                 .filter({
-                    if case .url(_) = $0.source { return true } else { return false }
+                    switch $0.source {
+                    case .url:
+                        return true
+                    case .data, .localFile:
+                        return false
+                    }
                 })
                 .compactMap({ $0.id })
             let filteredFiles = fileGridViewModel.files.filter({
-                if case .localFile(_) = $0.source { return true } else { return false }
+                switch $0.source {
+                case .data, .localFile:
+                    return true
+                case .url:
+                    return false
+                }
             })
             hasFilesToUpload = !filteredFiles.isEmpty
             if !filteredFiles.isEmpty {

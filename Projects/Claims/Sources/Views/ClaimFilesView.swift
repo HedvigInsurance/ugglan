@@ -213,7 +213,12 @@ class ClaimFilesViewModel: ObservableObject {
         }
         do {
             let filteredFiles = fileGridViewModel.files.filter({
-                if case .localFile(_) = $0.source { return true } else { return false }
+                switch $0.source {
+                case .data, .localFile:
+                    return true
+                case .url:
+                    return false
+                }
             })
             if !filteredFiles.isEmpty {
                 let files = try await claimFileUploadService.upload(endPoint: endPoint, files: filteredFiles) {

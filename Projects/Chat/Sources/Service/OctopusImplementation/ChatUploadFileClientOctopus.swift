@@ -71,28 +71,29 @@ enum FileUploadRequest {
             let url = URL(string: baseUrlString)!
             let multipartFormDataRequest = MultipartFormDataRequest(url: url)
             for file in files {
-                let data: Data? = {
+                let data: Data? = await {
                     switch file.source {
                     case .data(let data):
                         return data
-                    case .localFile(let url):
-                        var data: Data?
-                        if let url {
-                            let semaphore = DispatchSemaphore(value: 0)
-                            url.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.item.identifier) {
-                                imageUrl,
-                                error in
-                                if let imageUrl,
-                                    let pathData = FileManager.default.contents(atPath: imageUrl.relativePath)
-                                {
-                                    data = pathData
+                    case .localFile(let results):
+                        if let results {
+                            return try? await withCheckedThrowingContinuation {
+                                (inCont: CheckedContinuation<Data?, Error>) -> Void in
+                                results.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.item.identifier) {
+                                    fileUrl,
+                                    error in
+                                    if let fileUrl,
+                                        let pathData = FileManager.default.contents(atPath: fileUrl.relativePath)
+                                    {
+                                        inCont.resume(returning: pathData)
+                                    } else {
+                                        inCont.resume(returning: nil)
+                                    }
                                 }
 
-                                semaphore.signal()
                             }
-                            semaphore.wait()
                         }
-                        return data
+                        return nil
                     case .url:
                         return nil
                     }
