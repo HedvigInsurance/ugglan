@@ -28,36 +28,37 @@ public struct CoInsuredInputErrorView: View {
 
         GenericErrorView(
             description: vm.SSNError ?? intentVm.errorMessageForInput ?? intentVm.errorMessageForCoinsuredList,
-            useForm: true,
-            buttons:
-                .init(
-                    actionButtonAttachedToBottom: .init(
-                        buttonTitle: actionButtonTitle,
-                        buttonAction: {
-                            if vm.enterManually {
-                                vm.SSNError = nil
-                                vm.noSSN = true
-                            } else {
-                                vm.SSNError = nil
-                                intentVm.errorMessageForInput = nil
-                                intentVm.errorMessageForCoinsuredList = nil
-                            }
-                        }
-                    ),
-                    dismissButton: .init(
-                        buttonTitle: L10n.generalCancelButton,
-                        buttonAction: {
+            useForm: true
+        )
+        .hErrorViewButtonConfig(
+            .init(
+                actionButtonAttachedToBottom: .init(
+                    buttonTitle: actionButtonTitle,
+                    buttonAction: {
+                        if vm.enterManually {
+                            vm.SSNError = nil
+                            vm.noSSN = true
+                        } else {
                             vm.SSNError = nil
                             intentVm.errorMessageForInput = nil
                             intentVm.errorMessageForCoinsuredList = nil
                         }
-                    )
+                    }
+                ),
+                dismissButton: .init(
+                    buttonTitle: L10n.generalCancelButton,
+                    buttonAction: {
+                        vm.SSNError = nil
+                        intentVm.errorMessageForInput = nil
+                        intentVm.errorMessageForCoinsuredList = nil
+                    }
                 )
+            )
         )
     }
 }
 
-#Preview{
+#Preview {
     CoInsuredInputErrorView(
         vm: CoInusuredInputViewModel(
             coInsuredModel: CoInsuredModel(),
