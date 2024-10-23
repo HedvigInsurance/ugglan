@@ -9,7 +9,7 @@ public class CompareTierViewModel: ObservableObject {
     @Published var selectedTier: Tier?
     @Published var tiers: [Tier]
 
-    @Published var perils: [String: [Perils]] = [:]
+    @State var perils: [String: [Perils]] = [:]
     @State var limits: [String: [InsurableLimits]] = [:]
     var scrollableSegmentedViewModel: ScrollableSegmentedViewModel = .init(pageModels: [])
 
