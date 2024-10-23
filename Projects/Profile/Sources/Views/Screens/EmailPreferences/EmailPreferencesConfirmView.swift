@@ -20,7 +20,7 @@ struct EmailPreferencesConfirmView: View {
                             ? L10n.SettingsScreen.subscribeButton : L10n.SettingsScreen.confirmUnsubscribe,
                         buttonAction: {
                             Task {
-                                await vm.toogleSubscription()
+                                await vm.toggleSubscription()
                                 profileNavigationVm.isConfirmEmailPreferencesPresented = false
                             }
                         }
@@ -40,6 +40,6 @@ struct EmailPreferencesConfirmView: View {
     }
 }
 
-#Preview{
+#Preview {
     EmailPreferencesConfirmView(vm: .init())
 }
