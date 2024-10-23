@@ -23,7 +23,7 @@ extension ChangeTierError: LocalizedError {
         case let .errorMessage(message):
             return message
         default:
-            return L10n.somethingWentWrong
+            return L10n.General.errorBody
         }
     }
 }
