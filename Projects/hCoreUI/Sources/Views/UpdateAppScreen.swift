@@ -17,9 +17,9 @@ public struct UpdateAppScreen: View {
     public var body: some View {
         GenericErrorView(
             title: L10n.embarkUpdateAppTitle,
-            description: L10n.embarkUpdateAppBody,
-            buttons: buttonsInit
+            description: L10n.embarkUpdateAppBody
         )
+        .hErrorViewButtonConfig(buttonsInit)
     }
 
     private var buttonsInit: ErrorViewButtonConfig {
@@ -50,6 +50,6 @@ public struct UpdateAppScreen: View {
     }
 }
 
-#Preview{
+#Preview {
     UpdateAppScreen(onSelected: {})
 }

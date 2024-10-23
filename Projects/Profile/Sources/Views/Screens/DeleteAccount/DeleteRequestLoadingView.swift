@@ -64,8 +64,10 @@ public struct DeleteRequestLoadingView: View {
 
     @ViewBuilder private func errorState(errorMessage: String) -> some View {
         GenericErrorView(
-            description: errorMessage,
-            buttons: .init(
+            description: errorMessage
+        )
+        .hErrorViewButtonConfig(
+            .init(
                 actionButton: .init(
                     buttonTitle: L10n.generalCloseButton,
                     buttonAction: {
@@ -81,8 +83,10 @@ public struct DeleteRequestLoadingView: View {
             VStack {
                 Spacer()
                 GenericErrorView(
-                    description: L10n.DeleteAccount.deleteNotAvailable,
-                    buttons: .init(
+                    description: L10n.DeleteAccount.deleteNotAvailable
+                )
+                .hErrorViewButtonConfig(
+                    .init(
                         actionButton: .init(
                             buttonTitle: L10n.openChat,
                             buttonAction: {
