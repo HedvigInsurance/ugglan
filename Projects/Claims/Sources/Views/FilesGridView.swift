@@ -1,10 +1,10 @@
 import Foundation
-import UniformTypeIdentifiers
 import Home
 import Kingfisher
 import PresentableStore
 import SafariServices
 import SwiftUI
+import UniformTypeIdentifiers
 import hCore
 import hCoreUI
 
@@ -117,25 +117,29 @@ class FileGridViewModel: ObservableObject {
             self.options = options
         }
     }
-    
+
     @MainActor
     func show(file: File) {
         switch file.source {
         case let .localFile(results):
-//            if #available(iOS 16.0, *) {
-//                _ = results?.itemProvider.loadDataRepresentation(for: UTType.item, completionHandler: {[weak self] data, error in
-//                    if let data {
-//                        self?.fileModel = .init(type: .data(data: data, mimeType: file.mimeType))
-//                    }
-//                })
-//                
-//            } else {
-                results?.itemProvider.loadDataRepresentation(forTypeIdentifier: UTType.item.identifier, completionHandler: {[weak self] data, error in
-                    if let data {
-                        self?.fileModel = .init(type: .data(data: data, mimeType: file.mimeType))
+            //            if #available(iOS 16.0, *) {
+            //                _ = results?.itemProvider.loadDataRepresentation(for: UTType.item, completionHandler: {[weak self] data, error in
+            //                    if let data {
+            //                        self?.fileModel = .init(type: .data(data: data, mimeType: file.mimeType))
+            //                    }
+            //                })
+            //
+            //            } else {
+            results?.itemProvider
+                .loadDataRepresentation(
+                    forTypeIdentifier: UTType.item.identifier,
+                    completionHandler: { [weak self] data, error in
+                        if let data {
+                            self?.fileModel = .init(type: .data(data: data, mimeType: file.mimeType))
+                        }
                     }
-                })
-//            }
+                )
+        //            }
         case .url(let url):
             fileModel = .init(type: .url(url: url))
         case .data(let data):
