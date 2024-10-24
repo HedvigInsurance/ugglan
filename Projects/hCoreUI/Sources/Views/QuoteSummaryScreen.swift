@@ -96,7 +96,7 @@ public struct QuoteSummaryScreen: View {
                                 }
                         }
                     )
-                    .padding(.bottom, vm.FAQModel?.questions.isEmpty ?? true ? 0 : spacingCoverage)
+                    .padding(.bottom, (vm.FAQModel?.questions.isEmpty ?? true) ? 0 : (spacingCoverage + .padding8))
                 }
                 if !isEmptyFaq {
                     scrollSection
@@ -106,6 +106,7 @@ public struct QuoteSummaryScreen: View {
                 VStack {
                     if vm.contracts.count > 1 {
                         noticeComponent
+                            .padding(.top, .padding16)
                     }
                     buttonComponent(proxy: proxy)
                 }
@@ -488,6 +489,18 @@ public struct FAQ: Codable, Equatable, Hashable {
                 displayItems: [],
                 insuranceLimits: [],
                 typeOfContract: .seAccident
+            ),
+            .init(
+                id: "id5",
+                displayName: "Dog",
+                exposureName: "Bellmansgtan 19A",
+                newPremium: .init(amount: 999, currency: "SEK"),
+                currentPremium: .init(amount: 599, currency: "SEK"),
+                documents: [],
+                onDocumentTap: { document in },
+                displayItems: [],
+                insuranceLimits: [],
+                typeOfContract: .seDogStandard
             ),
         ],
         total: .init(amount: 999, currency: "SEK"),
