@@ -44,7 +44,7 @@ struct EditDeductibleScreen: View {
                                         .hFieldSize(.small)
                                     }
                                     if let subTitle = deductible.subTitle, subTitle != "" {
-                                        hText(subTitle)
+                                        hText(subTitle, style: .label)
                                             .foregroundColor(hTextColor.Opaque.secondary)
                                     }
                                 }

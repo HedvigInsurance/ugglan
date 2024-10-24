@@ -36,8 +36,9 @@ struct EditTierScreen: View {
                                         }
                                     }
                                     if let subTitle = tier.quotes.first?.productVariant?.tierDescription {
-                                        hText(subTitle)
+                                        hText(subTitle, style: .label)
                                             .foregroundColor(hTextColor.Opaque.secondary)
+
                                     }
                                 }
                                 .asAnyView
