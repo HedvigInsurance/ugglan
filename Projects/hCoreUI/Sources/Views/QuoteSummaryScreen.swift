@@ -163,6 +163,7 @@ public struct QuoteSummaryScreen: View {
                             .clipped()
 
                         if contract.shouldShowDetails {
+
                             hButton.MediumButton(
                                 type: .secondary
                             ) {
@@ -176,12 +177,12 @@ public struct QuoteSummaryScreen: View {
                                 }
 
                             } content: {
-                                let index = selectedContracts.firstIndex(of: contract.id)
                                 hText(
-                                    index != nil
+                                    selectedContracts.firstIndex(of: contract.id) != nil
                                         ? L10n.ClaimStatus.ClaimHideDetails.button
                                         : L10n.ClaimStatus.ClaimDetails.button
                                 )
+                                .transition(.scale)
                             }
                         }
                     }
