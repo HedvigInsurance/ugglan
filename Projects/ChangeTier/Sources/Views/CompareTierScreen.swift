@@ -40,7 +40,7 @@ struct CompareTierScreen: View {
                 vm: vm.scrollableSegmentedViewModel,
                 contentFor: { id in
                     VStack(spacing: 4) {
-                        ForEach(vm.perils[id] ?? [], id: \.self) { peril in
+                        ForEach(vm.perils[id] ?? [], id: \.id) { peril in
                             hSection {
                                 SwiftUI.Button {
                                     withAnimation {
