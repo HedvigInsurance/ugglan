@@ -130,6 +130,7 @@ public struct ChangeTierLandingScreen: View {
             ) {
                 changeTierNavigationVm.isEditTierPresented = true
             }
+            .hAnimateField(false)
         }
     }
 
@@ -157,6 +158,7 @@ public struct ChangeTierLandingScreen: View {
                 changeTierNavigationVm.isEditDeductiblePresented = true
             }
             .disabled(vm.selectedTier == nil)
+            .hAnimateField(false)
         }
     }
 

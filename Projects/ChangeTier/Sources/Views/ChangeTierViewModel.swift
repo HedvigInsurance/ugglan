@@ -67,11 +67,9 @@ public class ChangeTierViewModel: ObservableObject {
 
     @MainActor
     func setDeductible(for deductibleId: String) {
-        withAnimation {
-            if let deductible = selectedTier?.quotes.first(where: { $0.id == deductibleId }) {
-                self.selectedQuote = deductible
-                self.newPremium = deductible.premium
-            }
+        if let deductible = selectedTier?.quotes.first(where: { $0.id == deductibleId }) {
+            self.selectedQuote = deductible
+            self.newPremium = deductible.premium
         }
     }
 

@@ -14,6 +14,7 @@ public struct hFloatingField: View {
     @Environment(\.hWithoutFixedHeight) var hWithoutFixedHeight
     @Environment(\.hFieldSize) var size
     @Environment(\.hBackgroundOption) var backgroundOption
+    @Environment(\.hAnimateField) var animateField
 
     public var shouldMoveLabel: Binding<Bool> {
         Binding(
@@ -87,11 +88,13 @@ public struct hFloatingField: View {
     }
 
     private func startAnimation() {
-        withAnimation {
-            self.animate = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-                withAnimation {
-                    self.animate = false
+        if animateField {
+            withAnimation {
+                self.animate = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                    withAnimation {
+                        self.animate = false
+                    }
                 }
             }
         }

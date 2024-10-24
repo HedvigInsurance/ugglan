@@ -451,3 +451,20 @@ extension hFieldSize {
         }
     }
 }
+
+private struct EnvironmentHAnimateField: EnvironmentKey {
+    static let defaultValue = true
+}
+
+extension EnvironmentValues {
+    public var hAnimateField: Bool {
+        get { self[EnvironmentHAnimateField.self] }
+        set { self[EnvironmentHAnimateField.self] = newValue }
+    }
+}
+
+extension View {
+    public func hAnimateField(_ animate: Bool) -> some View {
+        self.environment(\.hAnimateField, animate)
+    }
+}
