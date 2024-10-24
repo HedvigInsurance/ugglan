@@ -154,21 +154,10 @@ class MainNavigationViewModel: ObservableObject {
     }
 
     func fetchFeatureFlag() async {
-        var returned = false
-        await withCheckedContinuation { @MainActor [weak self] data in
-            if let self = self {
-                self.appDelegate.setupFeatureFlags { _ in
-                    if !returned {
-                        returned = true
-                        data.resume()
-                    }
-                }
-            } else {
-                if !returned {
-                    returned = true
-                    data.resume()
-                }
-            }
+        do {
+            try await self.appDelegate.setupFeatureFlags()
+        } catch _ {
+            //we just ignore error since we should let the member in
         }
     }
 }
