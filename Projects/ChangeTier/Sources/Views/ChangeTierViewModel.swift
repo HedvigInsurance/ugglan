@@ -48,23 +48,21 @@ public class ChangeTierViewModel: ObservableObject {
 
     @MainActor
     func setTier(for tierName: String) {
-        withAnimation {
-            let newSelectedTier = tiers.first(where: { $0.name == tierName })
-            if newSelectedTier != selectedTier {
-                if newSelectedTier?.quotes.count ?? 0 == 1 {
-                    self.selectedQuote = newSelectedTier?.quotes.first
-                    self.canEditDeductible = false
-                } else {
-                    self.selectedQuote = nil
-                    self.canEditDeductible = true
-                }
+        let newSelectedTier = tiers.first(where: { $0.name == tierName })
+        if newSelectedTier != selectedTier {
+            if newSelectedTier?.quotes.count ?? 0 == 1 {
+                self.selectedQuote = newSelectedTier?.quotes.first
+                self.canEditDeductible = false
+            } else {
+                self.selectedQuote = nil
+                self.canEditDeductible = true
             }
-            self.displayName =
-                selectedQuote?.productVariant?.displayName ?? newSelectedTier?.quotes.first?.productVariant?
-                .displayName ?? displayName
-            self.selectedTier = newSelectedTier
-            self.newPremium = selectedQuote?.premium
         }
+        self.displayName =
+            selectedQuote?.productVariant?.displayName ?? newSelectedTier?.quotes.first?.productVariant?
+            .displayName ?? displayName
+        self.selectedTier = newSelectedTier
+        self.newPremium = selectedQuote?.premium
     }
 
     @MainActor
