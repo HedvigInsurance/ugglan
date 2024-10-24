@@ -156,7 +156,6 @@ public class CompareTierViewModel: ObservableObject {
                 withAnimation {
                     viewState = .success
                 }
-                //            return productVariantComparisionData
             } catch let error {
                 withAnimation {
                     self.viewState = .error(
