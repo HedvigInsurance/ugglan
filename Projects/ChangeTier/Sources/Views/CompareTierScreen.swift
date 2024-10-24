@@ -33,20 +33,116 @@ struct CompareTierScreen: View {
             )
     }
 
+    @ViewBuilder
     var succesView: some View {
         hForm {
             ScrollableSegmentedView(
                 vm: vm.scrollableSegmentedViewModel,
                 contentFor: { id in
-                    return CoverageView(
-                        limits: vm.limits[id] ?? [],
-                        didTapInsurableLimit: { limit in
-                            changeTierNavigationVm.isInsurableLimitPresented = limit
-                        },
-                        perils: vm.perils[id] ?? []
-                    )
+                    VStack(spacing: 4) {
+                        ForEach(vm.perils[id] ?? [], id: \.self) { peril in
+                            hSection {
+                                SwiftUI.Button {
+                                    withAnimation {
+                                        vm.extended.toggle()
+                                    }
+                                } label: {
+                                    EmptyView()
+                                }
+                                .buttonStyle(
+                                    CompareTierButtonStyle(
+                                        peril: peril,
+                                        title: peril.title,
+                                        description: peril.description,
+                                        extended: $vm.extended
+                                    )
+                                )
+                                .modifier(
+                                    BackgorundColorAnimation(
+                                        animationTrigger: .constant(false),
+                                        color: hSurfaceColor.Opaque.primary,
+                                        animationColor: hSurfaceColor.Opaque.secondary
+                                    )
+                                )
+                                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+                            }
+                        }
+                        .hFieldSize(.small)
+                    }
                 }
             )
+        }
+    }
+}
+
+struct CompareTierButtonStyle: SwiftUI.ButtonStyle {
+    var peril: Perils?
+    let title: String
+    let description: String
+
+    @Binding var extended: Bool
+
+    func makeBody(configuration: Configuration) -> some View {
+        VStack(alignment: .center, spacing: 11) {
+            HStack(spacing: 8) {
+                if let color = peril?.color {
+                    Group {
+                        if peril?.isDisabled ?? false {
+                            Circle()
+                                .fill(hFillColor.Opaque.disabled)
+                        } else {
+                            Circle()
+                                .fill(Color(hexString: color))
+                        }
+                    }
+                    .frame(width: 20, height: 20)
+                    .padding(.horizontal, .padding4)
+                }
+                hText(title, style: .heading1)
+                    .lineLimit(1)
+                    .foregroundColor(getTextColor)
+                Spacer()
+
+                if let covered = peril?.covered.first, covered != "" {
+                    hPill(text: covered, color: .blue, colorLevel: .two)
+                } else if !(peril?.isDisabled ?? true) {
+                    Image(
+                        uiImage: hCoreUIAssets.checkmark.image
+                    )
+                    .resizable()
+                    .frame(width: 24, height: 24)
+                    .foregroundColor(getTextColor)
+                } else {
+                    Image(
+                        uiImage: hCoreUIAssets.minus.image
+                    )
+                    .resizable()
+                    .frame(width: 24, height: 24)
+                    .foregroundColor(getTextColor)
+                }
+            }
+
+            if extended {
+                hText(description, style: peril != nil ? .label : .body1)
+                    .padding(.bottom, .padding12)
+                    .foregroundColor(getTextColor)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal, .padding32)
+            }
+        }
+        .padding(.horizontal, .padding16)
+        .padding(.top, 15)
+        .padding(.bottom, 17)
+        .contentShape(Rectangle())
+
+    }
+
+    @hColorBuilder
+    var getTextColor: some hColor {
+        if peril?.isDisabled ?? false {
+            hTextColor.Opaque.disabled
+        } else {
+            hTextColor.Opaque.primary
         }
     }
 }
@@ -56,6 +152,7 @@ public class CompareTierViewModel: ObservableObject {
     @Published var viewState: ProcessingState = .loading
     @Published var selectedTier: Tier?
     @Published var tiers: [Tier]
+    @Published var extended = false
 
     @Published var perils: [String: [Perils]] = [:]
     @Published var limits: [String: [InsurableLimits]] = [:]
@@ -83,7 +180,7 @@ public class CompareTierViewModel: ObservableObject {
                     .map({ row in
                         let cellForIndex = row.cells[index]
                         return Perils(
-                            id: nil,
+                            id: row.title,
                             title: row.title,
                             description: row.description,
                             color: row.colorCode,
@@ -115,16 +212,16 @@ public class CompareTierViewModel: ObservableObject {
                     })
                 })
 
-                //                let mockTermsVersionsToCompare =
-                //                [
-                //                    "SE_DOG_BASIC-20230330-HEDVIG-null",
-                //                    "SE_DOG_STANDARD-20230330-HEDVIG-null",
-                //                    "SE_DOG_PREMIUM-20230410-HEDVIG-null"
-                //                ]
+                let mockTermsVersionsToCompare =
+                    [
+                        "SE_DOG_BASIC-20230330-HEDVIG-null",
+                        "SE_DOG_STANDARD-20230330-HEDVIG-null",
+                        "SE_DOG_PREMIUM-20230410-HEDVIG-null",
+                    ]
 
                 let productVariantComparisionData = try await service.compareProductVariants(
-                    termsVersion: termsVersionsToCompare
-                        //                    termsVersion: mockTermsVersionsToCompare
+                    //                    termsVersion: termsVersionsToCompare
+                    termsVersion: mockTermsVersionsToCompare
                 )
 
                 let columns = productVariantComparisionData.variantColumns
@@ -165,4 +262,44 @@ public class CompareTierViewModel: ObservableObject {
             }
         }
     }
+}
+
+#Preview {
+    Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
+
+    let vm: CompareTierViewModel = .init(
+        tiers: [
+            .init(
+                id: "tier1",
+                name: "Bas",
+                level: 0,
+                quotes: [
+                    .init(
+                        id: "quote1",
+                        quoteAmount: .init(amount: "220", currency: "SEK"),
+                        quotePercentage: 0,
+                        subTitle: nil,
+                        premium: .init(amount: "220", currency: "SEK"),
+                        displayItems: [],
+                        productVariant: nil
+                    )
+                ],
+                exposureName: "exposure name"
+            )
+        ],
+        selectedTier: nil
+    )
+
+    vm.perils["Bas"] = [
+        Perils(
+            id: "peril1",
+            title: "peril1",
+            description: "description",
+            color: nil,
+            covered: ["30 000 kr"],
+            isDisabled: false
+        )
+    ]
+
+    return CompareTierScreen(vm: vm)
 }
