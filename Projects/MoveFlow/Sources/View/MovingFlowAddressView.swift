@@ -46,61 +46,62 @@ struct MovingFlowAddressView: View {
     }
 
     var form: some View {
-        hForm {
-            VStack(spacing: 16) {
-                VStack(spacing: 4) {
-                    hSection {
-                        addressField()
-                    }
-                    hSection {
-                        postalField()
-                    }
-                    hSection {
-                        squareField()
-                    }
-                    hSection {
-                        numberOfCoinsuredField()
-                    }
-                    hSection {
-                        accessDateField()
-                    }
-                    if vm.isStudentEnabled {
-                        isStudentField()
-                    }
-                }
-                .disableOn(MoveFlowStore.self, [.requestMoveIntent])
-                hSection {
-                    InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
-                }
-                hSection {
-                    hButton.LargeButton(type: .primary) {
-                        continuePressed()
-                    } content: {
-                        hText(vm.continueButtonTitle, style: .body1)
-                    }
-                }
-
-            }
-            .padding(.bottom, .padding8)
-            .padding(.top, .padding16)
-
-        }
-        .hFormTitle(
-            title: .init(
-                .small,
-                .heading2,
-                L10n.movingEmbarkTitle,
-                alignment: .leading
-            ),
-            subTitle: .init(
-                .standard,
-                .heading2,
-                L10n.changeAddressEnterNewAddressTitle
+        hForm {}
+            .hDisableScroll
+            .hFormTitle(
+                title: .init(
+                    .small,
+                    .heading2,
+                    L10n.movingEmbarkTitle,
+                    alignment: .leading
+                ),
+                subTitle: .init(
+                    .standard,
+                    .heading2,
+                    L10n.changeAddressEnterNewAddressTitle
+                )
             )
-        )
-        .sectionContainerStyle(.transparent)
-        .presentableStoreLensAnimation(.default)
-        .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
+            .hFormAttachToBottom {
+                VStack(spacing: 16) {
+                    VStack(spacing: 4) {
+                        hSection {
+                            addressField()
+                        }
+                        hSection {
+                            postalField()
+                        }
+                        hSection {
+                            squareField()
+                        }
+                        hSection {
+                            numberOfCoinsuredField()
+                        }
+                        hSection {
+                            accessDateField()
+                        }
+                        if vm.isStudentEnabled {
+                            isStudentField()
+                        }
+                    }
+                    .disableOn(MoveFlowStore.self, [.requestMoveIntent])
+                    hSection {
+                        InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
+                    }
+                    hSection {
+                        hButton.LargeButton(type: .primary) {
+                            continuePressed()
+                        } content: {
+                            hText(vm.continueButtonTitle, style: .body1)
+                        }
+                    }
+
+                }
+                .padding(.bottom, .padding8)
+                .padding(.top, .padding16)
+            }
+            .sectionContainerStyle(.transparent)
+            .presentableStoreLensAnimation(.default)
+            .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
     }
 
     func addressField() -> some View {
