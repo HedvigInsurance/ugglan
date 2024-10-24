@@ -101,7 +101,10 @@ public struct ContractsNavigation<Content: View>: View {
                 upcomingAgreement: insuranceUpdate.upcomingChangedAgreement
             )
             .configureTitle(L10n.InsuranceDetails.updateDetailsSheetTitle)
-            .embededInNavigation(tracking: ContractsDetentType.upcomingChanges)
+            .embededInNavigation(
+                options: [.navigationType(type: .large)],
+                tracking: ContractsDetentType.upcomingChanges
+            )
             .environmentObject(contractsNavigationVm)
         }
         .handleTerminateInsurance(vm: contractsNavigationVm.terminateInsuranceVm) { dismissType in

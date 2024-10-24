@@ -34,7 +34,7 @@ struct UpcomingChangesScreen: View {
         }
         .sectionContainerStyle(.transparent)
         .hFormAttachToBottom {
-            VStack(spacing: 16) {
+            VStack(spacing: .padding16) {
                 hSection {
                     InfoCard(text: L10n.InsurancesTab.yourInsuranceWillBeUpdatedWithInfo(updateDate), type: .info)
                 }
@@ -56,7 +56,10 @@ struct UpcomingChangesScreen: View {
                     }
                 }
             }
+            .padding(.top, .padding16)
         }
+        .hWithoutHorizontalPadding
+        .hWithoutDividerPadding
     }
 }
 
