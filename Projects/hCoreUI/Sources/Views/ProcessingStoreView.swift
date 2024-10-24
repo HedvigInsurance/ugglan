@@ -91,17 +91,18 @@ public struct hProcessingView<S: Store & StoreLoading>: View {
     private var errorView: some View {
         ZStack(alignment: .bottom) {
             BackgroundView().ignoresSafeArea()
-            GenericErrorView(
-                buttons: errorViewButtons
-                    ?? .init(
-                        dismissButton: .init(
-                            buttonTitle: L10n.generalCancelButton,
-                            buttonAction: {
-                                onErrorCancelAction?()
-                            }
+            GenericErrorView()
+                .hErrorViewButtonConfig(
+                    errorViewButtons
+                        ?? .init(
+                            dismissButton: .init(
+                                buttonTitle: L10n.generalCancelButton,
+                                buttonAction: {
+                                    onErrorCancelAction?()
+                                }
+                            )
                         )
-                    )
-            )
+                )
         }
     }
 

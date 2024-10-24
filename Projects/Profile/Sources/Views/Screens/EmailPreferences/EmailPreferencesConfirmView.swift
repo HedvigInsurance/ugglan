@@ -13,7 +13,10 @@ struct EmailPreferencesConfirmView: View {
             title: vm.isUnsubscribed ? L10n.SettingsScreen.subscribeTitle : L10n.General.areYouSure,
             description: vm.isUnsubscribed
                 ? L10n.SettingsScreen.subscribeDescription : L10n.SettingsScreen.unsubscribeDescription,
-            buttons: .init(
+            attachContentToTheBottom: true
+        )
+        .hErrorViewButtonConfig(
+            .init(
                 actionButtonAttachedToBottom:
                     .init(
                         buttonTitle: vm.isUnsubscribed
@@ -31,8 +34,7 @@ struct EmailPreferencesConfirmView: View {
                         profileNavigationVm.isConfirmEmailPreferencesPresented = false
                     }
                 )
-            ),
-            attachContentToTheBottom: true
+            )
         )
         .hExtraTopPadding
         .hDisableScroll

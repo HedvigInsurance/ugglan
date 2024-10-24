@@ -172,7 +172,46 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                     exposureName: currentContract.exposureDisplayName
                 )
             )
+
         })
         return allTiers
+    }
+
+    public func compareProductVariants(termsVersion: [String]) async throws -> ProductVariantComparison {
+        do {
+            let productVariantQuery = OctopusGraphQL.ProductVariantComparisonQuery(termsVersions: termsVersion)
+            let productVariantData = try await octopus.client.fetch(
+                query: productVariantQuery,
+                cachePolicy: .fetchIgnoringCacheCompletely
+            )
+
+            let productVariantRows: [ProductVariantComparison.ProductVariantComparisonRow] =
+                productVariantData.productVariantComparison.rows.map({
+                    .init(data: $0.fragments.productVariantComparisonRowFragment)
+                })
+
+            let productVariantColumns: [ProductVariant] = productVariantData.productVariantComparison
+                .variantColumns.map({ .init(data: $0.fragments.productVariantFragment) })
+
+            let productVariantComparision = ProductVariantComparison(
+                rows: productVariantRows,
+                variantColumns: productVariantColumns
+            )
+
+            return productVariantComparision
+        } catch let ex {
+            throw ChangeTierError.somethingWentWrong
+        }
+    }
+}
+
+extension ProductVariantComparison.ProductVariantComparisonRow {
+    init(
+        data: OctopusGraphQL.ProductVariantComparisonRowFragment
+    ) {
+        self.title = data.title
+        self.description = data.description
+        self.colorCode = data.colorCode
+        self.cells = data.cells.map({ .init(isCovered: $0.isCovered, coverageText: $0.coverageText) })
     }
 }

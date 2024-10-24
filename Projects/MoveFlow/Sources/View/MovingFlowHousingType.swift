@@ -61,8 +61,10 @@ public struct MovingFlowHousingTypeView: View {
             ZStack {
                 BackgroundView().ignoresSafeArea()
                 GenericErrorView(
-                    description: error,
-                    buttons: .init(
+                    description: error
+                )
+                .hErrorViewButtonConfig(
+                    .init(
                         actionButton: .init(
                             buttonTitle: L10n.openChat,
                             buttonAction: {

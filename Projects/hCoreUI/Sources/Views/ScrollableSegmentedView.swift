@@ -109,8 +109,10 @@ public struct ScrollableSegmentedView<Content: View>: View {
                 }
             }
         }
-        .findScrollView { scrollView in
-            vm.horizontalScrollView = scrollView
+        .introspect(.scrollView, on: .iOS(.v13...)) { scrollView in
+            if vm.horizontalScrollView != scrollView {
+                vm.horizontalScrollView = scrollView
+            }
         }
         .frame(height: vm.currentHeight == 0 ? nil : vm.currentHeight)
     }

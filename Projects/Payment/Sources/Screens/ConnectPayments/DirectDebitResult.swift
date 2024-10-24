@@ -52,8 +52,10 @@ struct DirectDebitResult: View {
             GenericErrorView(
                 title: type.headingText,
                 description: type.messageText,
-                useForm: true,
-                buttons: .init(
+                useForm: true
+            )
+            .hErrorViewButtonConfig(
+                .init(
                     actionButton: .init(
                         buttonTitle: type.mainButtonText,
                         buttonAction: {
@@ -67,6 +69,6 @@ struct DirectDebitResult: View {
     }
 }
 
-#Preview{
+#Preview {
     DirectDebitResult(type: .success, retry: {})
 }
