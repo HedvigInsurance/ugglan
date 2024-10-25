@@ -344,7 +344,7 @@ public enum hFieldSize: Hashable {
     case small
     case large
     case medium
-    
+
     var horizontalPadding: CGFloat {
         switch self {
         case .small:
