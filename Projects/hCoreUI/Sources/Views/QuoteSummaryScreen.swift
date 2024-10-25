@@ -270,8 +270,7 @@ public struct QuoteSummaryScreen: View {
             Spacer()
             Image(uiImage: HCoreUIAsset.arrowNorthEast.image)
                 .resizable()
-                .frame(width: 16, height: 16)
-                .foregroundColor(hFillColor.Opaque.primary)
+                .frame(width: 24, height: 24)
         }
         .foregroundColor(hTextColor.Opaque.secondary)
     }
