@@ -53,6 +53,7 @@ struct EditTierScreen: View {
             }
             .padding(.top, 16)
             .sectionContainerStyle(.transparent)
+            .hFieldSize(.medium)
         }
         .hFormAttachToBottom {
             hSection {
