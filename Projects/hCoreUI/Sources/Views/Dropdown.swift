@@ -32,6 +32,7 @@ public struct DropdownView: View {
                     .frame(width: 24, height: 24)
             }
         }
+        .hAnimateField(false)
     }
 
     @hColorBuilder

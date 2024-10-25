@@ -57,7 +57,7 @@ public struct hRadioOptionSelectedView: View {
                     isSelected: selectedValue == value,
                     enabled: enabled
                 ),
-                lineWidth: selectedValue == value ? 0 : 1.5
+                lineWidth: selectedValue == value ? 0 : 2
             )
             .background(
                 ZStack {
