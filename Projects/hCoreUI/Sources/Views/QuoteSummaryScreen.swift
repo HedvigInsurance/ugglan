@@ -96,7 +96,7 @@ public struct QuoteSummaryScreen: View {
                                 }
                         }
                     )
-                    .padding(.bottom, vm.FAQModel?.questions.isEmpty ?? true ? 0 : spacingCoverage)
+                    .padding(.bottom, (vm.FAQModel?.questions.isEmpty ?? true) ? 0 : (spacingCoverage + .padding8))
                 }
                 if !isEmptyFaq {
                     scrollSection
@@ -106,6 +106,7 @@ public struct QuoteSummaryScreen: View {
                 VStack {
                     if vm.contracts.count > 1 {
                         noticeComponent
+                            .padding(.top, .padding16)
                     }
                     buttonComponent(proxy: proxy)
                 }
@@ -157,31 +158,33 @@ public struct QuoteSummaryScreen: View {
 
                         let index = selectedContracts.firstIndex(of: contract.id)
                         let isExpanded = index != nil
+                        VStack(spacing: 0) {
+                            detailsView(for: contract, isExpanded: isExpanded)
+                                .frame(height: isExpanded ? nil : 0, alignment: .top)
+                                .clipped()
 
-                        detailsView(for: contract)
-                            .frame(height: isExpanded ? nil : 0, alignment: .top)
-                            .clipped()
+                            if contract.shouldShowDetails {
 
-                        if contract.shouldShowDetails {
-                            hButton.MediumButton(
-                                type: .secondary
-                            ) {
-                                withAnimation(.easeInOut(duration: 0.4)) {
-                                    let index = selectedContracts.firstIndex(of: contract.id)
-                                    if let index {
-                                        selectedContracts.remove(at: index)
-                                    } else {
-                                        selectedContracts.append(contract.id)
+                                hButton.MediumButton(
+                                    type: .secondary
+                                ) {
+                                    withAnimation(.easeInOut(duration: 0.4)) {
+                                        let index = selectedContracts.firstIndex(of: contract.id)
+                                        if let index {
+                                            selectedContracts.remove(at: index)
+                                        } else {
+                                            selectedContracts.append(contract.id)
+                                        }
                                     }
-                                }
 
-                            } content: {
-                                let index = selectedContracts.firstIndex(of: contract.id)
-                                hText(
-                                    index != nil
-                                        ? L10n.ClaimStatus.ClaimHideDetails.button
-                                        : L10n.ClaimStatus.ClaimDetails.button
-                                )
+                                } content: {
+                                    hText(
+                                        selectedContracts.firstIndex(of: contract.id) != nil
+                                            ? L10n.ClaimStatus.ClaimHideDetails.button
+                                            : L10n.ClaimStatus.ClaimDetails.button
+                                    )
+                                    .transition(.scale)
+                                }
                             }
                         }
                     }
@@ -203,7 +206,7 @@ public struct QuoteSummaryScreen: View {
         .sectionContainerStyle(.transparent)
     }
 
-    func detailsView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
+    func detailsView(for contract: QuoteSummaryViewModel.ContractInfo, isExpanded: Bool) -> some View {
         VStack(spacing: .padding16) {
             hRowDivider()
                 .hWithoutDividerPadding
@@ -243,6 +246,7 @@ public struct QuoteSummaryScreen: View {
                 }
             }
         }
+        .padding(.bottom, isExpanded ? .padding16 : 0)
     }
 
     func rowItem(for displayItem: QuoteDisplayItem) -> some View {
@@ -266,8 +270,7 @@ public struct QuoteSummaryScreen: View {
             Spacer()
             Image(uiImage: HCoreUIAsset.arrowNorthEast.image)
                 .resizable()
-                .frame(width: 16, height: 16)
-                .foregroundColor(hFillColor.Opaque.primary)
+                .frame(width: 24, height: 24)
         }
         .foregroundColor(hTextColor.Opaque.secondary)
     }
@@ -488,6 +491,18 @@ public struct FAQ: Codable, Equatable, Hashable {
                 displayItems: [],
                 insuranceLimits: [],
                 typeOfContract: .seAccident
+            ),
+            .init(
+                id: "id5",
+                displayName: "Dog",
+                exposureName: "Bellmansgtan 19A",
+                newPremium: .init(amount: 999, currency: "SEK"),
+                currentPremium: .init(amount: 599, currency: "SEK"),
+                documents: [],
+                onDocumentTap: { document in },
+                displayItems: [],
+                insuranceLimits: [],
+                typeOfContract: .seDogStandard
             ),
         ],
         total: .init(amount: 999, currency: "SEK"),

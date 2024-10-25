@@ -157,6 +157,7 @@ public struct ChangeTierLandingScreen: View {
                 changeTierNavigationVm.isEditDeductiblePresented = true
             }
             .disabled(vm.selectedTier == nil)
+            .hFieldSize(.small)
         }
     }
 

@@ -29,6 +29,7 @@ struct MemberSubscriptionPreferenceView: View {
                 content: {
                     EmailPreferencesConfirmView(vm: vm)
                         .environmentObject(profileNavigationVm)
+                        .embededInNavigation(tracking: ProfileDetentType.emailPreferences)
                 }
             )
         }
