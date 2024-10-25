@@ -29,12 +29,17 @@ public class TokenRefresher {
 
         if self.isRefreshing.value {
             log.debug("Already refreshing waiting until that is complete")
+            var returnedValue = false
             try await withCheckedThrowingContinuation {
-                [weak self] (inCont: CheckedContinuation<Void, Error>) -> Void in guard let self = self else { return }
+                [weak self] (inCont: CheckedContinuation<Void, Error>) -> Void in
+                guard let self = self else { return }
                 self.isRefreshing.first(where: { !$0 })
                     .sink { value in
                         log.debug("Refresh completed")
-                        inCont.resume()
+                        if !returnedValue {
+                            returnedValue = true
+                            inCont.resume()
+                        }
                     }
                     .store(in: &self.cancellables)
             }

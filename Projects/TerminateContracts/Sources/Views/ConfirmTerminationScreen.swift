@@ -23,7 +23,10 @@ struct ConfirmTerminationScreen: View {
             GenericErrorView(
                 title: L10n.General.areYouSure,
                 description: terminationText(state: state),
-                buttons: .init(
+                attachContentToTheBottom: true
+            )
+            .hErrorViewButtonConfig(
+                .init(
                     actionButtonAttachedToBottom:
                         .init(
                             buttonTitle: L10n.terminationFlowConfirmButton,
@@ -40,8 +43,7 @@ struct ConfirmTerminationScreen: View {
                             terminationNavigationVm.isConfirmTerminationPresented = false
                         }
                     )
-                ),
-                attachContentToTheBottom: true
+                )
             )
             .hExtraTopPadding
         }

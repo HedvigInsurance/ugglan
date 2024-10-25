@@ -4,60 +4,46 @@ import hCoreUI
 import hGraphQL
 
 struct CompareTierScreen: View {
-    private var vm: ChangeTierViewModel
+    @ObservedObject private var vm: CompareTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
-    private let perils: [String: [Perils]]
-    private let limits: [String: [InsurableLimits]]
-    private let scrollableSegmentedViewModel: ScrollableSegmentedViewModel
 
     init(
-        vm: ChangeTierViewModel
+        vm: CompareTierViewModel
     ) {
         self.vm = vm
-
-        let selectedQuote = vm.selectedQuote
-
-        self.limits = Dictionary(
-            uniqueKeysWithValues: vm.tiers.map({
-                (
-                    $0.id,
-                    $0.quotes.first(where: { quote in
-                        quote.id == selectedQuote?.id
-                    })?
-                    .productVariant?
-                    .insurableLimits ?? $0.quotes.first(where: { quote in
-                        quote == selectedQuote
-                    })?
-                    .productVariant?
-                    .insurableLimits ?? []
-                )
-            })
-        )
-
-        self.perils = Dictionary(
-            uniqueKeysWithValues: vm.tiers.map({
-                ($0.id, vm.getFilteredPerils(currentTier: $0, selectedQuote: selectedQuote))
-            })
-        )
-        let pageModels: [PageModel] = vm.tiers.compactMap({ PageModel(id: $0.id, title: $0.name) })
-        let currentId = vm.tiers.first(where: { $0.id == vm.selectedTier?.name })?.id
-        self.scrollableSegmentedViewModel = ScrollableSegmentedViewModel(
-            pageModels: pageModels,
-            currentId: currentId
-        )
     }
 
     var body: some View {
+        succesView.loading($vm.viewState)
+            .hErrorViewButtonConfig(
+                .init(
+                    actionButton: .init(
+                        buttonAction: {
+                            vm.getProductVariantComparision()
+                        }
+                    ),
+                    dismissButton:
+                        .init(
+                            buttonTitle: L10n.generalCloseButton,
+                            buttonAction: {
+                                changeTierNavigationVm.router.dismiss()
+                            }
+                        )
+                )
+            )
+    }
+
+    var succesView: some View {
         hForm {
             ScrollableSegmentedView(
-                vm: scrollableSegmentedViewModel,
+                vm: vm.scrollableSegmentedViewModel,
                 contentFor: { id in
                     return CoverageView(
-                        limits: limits[id] ?? [],
+                        limits: vm.limits[id] ?? [],
                         didTapInsurableLimit: { limit in
                             changeTierNavigationVm.isInsurableLimitPresented = limit
                         },
-                        perils: perils[id] ?? []
+                        perils: vm.perils[id] ?? []
                     )
                 }
             )
@@ -65,29 +51,118 @@ struct CompareTierScreen: View {
     }
 }
 
-extension ChangeTierViewModel {
-    fileprivate func getFilteredPerils(currentTier: Tier, selectedQuote: Quote?) -> [Perils] {
-        var currentPerils =
-            currentTier.quotes.first { quote in
-                quote.id == selectedQuote?.id
-            }?
-            .productVariant?
-            .perils ?? currentTier.quotes.first(where: { quote in
-                quote == selectedQuote
-            })?
-            .productVariant?
-            .perils ?? currentTier.quotes.first?.productVariant?.perils ?? []
+public class CompareTierViewModel: ObservableObject {
+    @Inject private var service: ChangeTierClient
+    @Published var viewState: ProcessingState = .loading
+    @Published var selectedTier: Tier?
+    @Published var tiers: [Tier]
 
-        let otherPerils = self.tiers.filter({ $0.id != currentTier.id })
-            .reduce(into: [Perils]()) { partialResult, tier in
-                return partialResult.append(contentsOf: tier.quotes.first?.productVariant?.perils ?? [])
-            }
+    @Published var perils: [String: [Perils]] = [:]
+    @Published var limits: [String: [InsurableLimits]] = [:]
+    var scrollableSegmentedViewModel: ScrollableSegmentedViewModel = .init(pageModels: [])
 
-        for otherPeril in otherPerils {
-            if !currentPerils.compactMap({ $0.title }).contains(otherPeril.title) {
-                currentPerils.append(otherPeril.asDisabled())
+    init(
+        tiers: [Tier],
+        selectedTier: Tier? = nil
+    ) {
+        self.selectedTier = selectedTier
+        self.tiers = tiers
+        self.getProductVariantComparision()
+    }
+
+    private func getPerils(
+        tierNames: [String]?,
+        rows: [ProductVariantComparison.ProductVariantComparisonRow]?
+    ) -> [String: [Perils]] {
+        var tempPerils: [String: [Perils]] = [:]
+        var index = 0
+
+        tierNames?
+            .forEach({ tierName in
+                let cells = rows?
+                    .map({ row in
+                        let cellForIndex = row.cells[index]
+                        return Perils(
+                            id: nil,
+                            title: row.title,
+                            description: row.description,
+                            color: row.colorCode,
+                            covered: [cellForIndex.coverageText ?? ""],
+                            isDisabled: !cellForIndex.isCovered
+                        )
+                    })
+
+                tempPerils[tierName] = cells
+                index = index + 1
+            })
+        return tempPerils
+    }
+
+    public func getProductVariantComparision() {
+        withAnimation {
+            viewState = .loading
+        }
+        Task { @MainActor in
+            do {
+                var termsVersionsToCompare: [String] = []
+                tiers.forEach({ tier in
+                    tier.quotes.forEach({ quote in
+                        if let termsVersion = quote.productVariant?.termsVersion,
+                            !termsVersionsToCompare.contains(termsVersion)
+                        {
+                            termsVersionsToCompare.append(termsVersion)
+                        }
+                    })
+                })
+
+                //                let mockTermsVersionsToCompare =
+                //                [
+                //                    "SE_DOG_BASIC-20230330-HEDVIG-null",
+                //                    "SE_DOG_STANDARD-20230330-HEDVIG-null",
+                //                    "SE_DOG_PREMIUM-20230410-HEDVIG-null"
+                //                ]
+
+                let productVariantComparisionData = try await service.compareProductVariants(
+                    termsVersion: termsVersionsToCompare
+                        //                    termsVersion: mockTermsVersionsToCompare
+                )
+
+                let columns = productVariantComparisionData.variantColumns
+                let rows = productVariantComparisionData.rows
+                let tierNames = columns.compactMap({ $0.displayNameTier })
+
+                self.limits = Dictionary(
+                    uniqueKeysWithValues: productVariantComparisionData.variantColumns
+                        .map({
+                            (
+                                $0.displayNameTier ?? "",
+                                $0.insurableLimits
+                            )
+                        })
+                )
+
+                self.perils = getPerils(tierNames: tierNames, rows: rows)
+
+                let pageModels: [PageModel] = tierNames.compactMap({ PageModel(id: $0, title: $0) })
+                let currentId = productVariantComparisionData.variantColumns
+                    .first(where: { $0.displayNameTier == selectedTier?.name })?
+                    .displayNameTier
+
+                self.scrollableSegmentedViewModel = ScrollableSegmentedViewModel(
+                    pageModels: pageModels,
+                    currentId: currentId
+                )
+
+                withAnimation {
+                    viewState = .success
+                }
+            } catch let error {
+                withAnimation {
+                    self.viewState = .error(
+                        errorMessage: error.localizedDescription
+                    )
+                }
             }
         }
-        return currentPerils
     }
 }

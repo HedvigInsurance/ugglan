@@ -61,7 +61,7 @@ class MemberSubscriptionPreferenceViewModel: ObservableObject {
     }
 
     @MainActor
-    func toogleSubscription() async {
+    func toggleSubscription() async {
         withAnimation {
             isLoading = true
         }
