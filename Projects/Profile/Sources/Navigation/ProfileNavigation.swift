@@ -105,18 +105,22 @@ public enum ProfileRouterType: Hashable {
     case settings
     case euroBonus
 }
-private enum ProfileDetentType: TrackingViewNameProtocol {
+
+enum ProfileDetentType: TrackingViewNameProtocol {
     var nameForTracking: String {
         switch self {
         case .profile:
             return .init(describing: ProfileView.self)
         case .languagePicker:
             return .init(describing: PickLanguage.self)
+        case .emailPreferences:
+            return .init(describing: EmailPreferencesConfirmView.self)
         }
     }
 
     case profile
     case languagePicker
+    case emailPreferences
 }
 
 extension ProfileRouterType: TrackingViewNameProtocol {
