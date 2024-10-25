@@ -344,6 +344,17 @@ public enum hFieldSize: Hashable {
     case small
     case large
     case medium
+    
+    var horizontalPadding: CGFloat {
+        switch self {
+        case .small:
+            return .padding14
+        case .large:
+            return .padding16
+        case .medium:
+            return .padding16
+        }
+    }
 }
 
 extension EnvironmentValues {

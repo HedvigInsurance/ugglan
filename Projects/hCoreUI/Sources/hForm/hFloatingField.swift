@@ -39,24 +39,25 @@ public struct hFloatingField: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                ZStack(alignment: .leading) {
+                VStack(alignment: .leading, spacing: -2) {
                     hFieldLabel(
                         placeholder: placeholder,
+                        useScaleEffect: false,
                         animate: $animate,
                         error: $error,
                         shouldMoveLabel: shouldMoveLabel
                     )
-                    .offset(y: !value.isEmpty ? size.labelOffset : 0)
-                    getTextLabel
-                        .offset(y: !value.isEmpty ? size.fieldOffset : 0)
+                    if !value.isEmpty {
+                        getTextLabel
+                    }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 Spacer()
                 fieldTrailingView
 
             }
-            .padding(.top, size.topPadding)
-            .padding(.bottom, size.bottomPadding)
+            .padding(.top, !value.isEmpty ? size.topPaddingWithSubtitle : size.topPadding)
+            .padding(.bottom, !value.isEmpty ? size.bottomPaddingWithSubtitle : size.bottomPadding)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .addFieldBackground(animate: $animate, error: $error)
@@ -105,11 +106,12 @@ public struct hFloatingField: View {
 struct hFloatingField_Previews: PreviewProvider {
     static var previews: some View {
 
-        @State var value: String = "Value"
+        @State var value: String = "S"
 
         VStack {
             hFloatingField(value: value, placeholder: "ni", error: nil) {
             }
+            .hFieldSize(.large)
             .hFieldTrailingView {
                 Image(uiImage: hCoreUIAssets.copy.image)
             }
