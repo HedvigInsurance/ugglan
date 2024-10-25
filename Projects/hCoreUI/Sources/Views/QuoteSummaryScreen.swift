@@ -158,32 +158,33 @@ public struct QuoteSummaryScreen: View {
 
                         let index = selectedContracts.firstIndex(of: contract.id)
                         let isExpanded = index != nil
+                        VStack(spacing: 0) {
+                            detailsView(for: contract, isExpanded: isExpanded)
+                                .frame(height: isExpanded ? nil : 0, alignment: .top)
+                                .clipped()
 
-                        detailsView(for: contract)
-                            .frame(height: isExpanded ? nil : 0, alignment: .top)
-                            .clipped()
+                            if contract.shouldShowDetails {
 
-                        if contract.shouldShowDetails {
-
-                            hButton.MediumButton(
-                                type: .secondary
-                            ) {
-                                withAnimation(.easeInOut(duration: 0.4)) {
-                                    let index = selectedContracts.firstIndex(of: contract.id)
-                                    if let index {
-                                        selectedContracts.remove(at: index)
-                                    } else {
-                                        selectedContracts.append(contract.id)
+                                hButton.MediumButton(
+                                    type: .secondary
+                                ) {
+                                    withAnimation(.easeInOut(duration: 0.4)) {
+                                        let index = selectedContracts.firstIndex(of: contract.id)
+                                        if let index {
+                                            selectedContracts.remove(at: index)
+                                        } else {
+                                            selectedContracts.append(contract.id)
+                                        }
                                     }
-                                }
 
-                            } content: {
-                                hText(
-                                    selectedContracts.firstIndex(of: contract.id) != nil
-                                        ? L10n.ClaimStatus.ClaimHideDetails.button
-                                        : L10n.ClaimStatus.ClaimDetails.button
-                                )
-                                .transition(.scale)
+                                } content: {
+                                    hText(
+                                        selectedContracts.firstIndex(of: contract.id) != nil
+                                            ? L10n.ClaimStatus.ClaimHideDetails.button
+                                            : L10n.ClaimStatus.ClaimDetails.button
+                                    )
+                                    .transition(.scale)
+                                }
                             }
                         }
                     }
@@ -205,7 +206,7 @@ public struct QuoteSummaryScreen: View {
         .sectionContainerStyle(.transparent)
     }
 
-    func detailsView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
+    func detailsView(for contract: QuoteSummaryViewModel.ContractInfo, isExpanded: Bool) -> some View {
         VStack(spacing: .padding16) {
             hRowDivider()
                 .hWithoutDividerPadding
@@ -245,6 +246,7 @@ public struct QuoteSummaryScreen: View {
                 }
             }
         }
+        .padding(.bottom, isExpanded ? .padding16 : 0)
     }
 
     func rowItem(for displayItem: QuoteDisplayItem) -> some View {
