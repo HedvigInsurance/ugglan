@@ -39,55 +39,55 @@ struct CompareTierScreen: View {
             ScrollableSegmentedView(
                 vm: vm.scrollableSegmentedViewModel,
                 contentFor: { id in
-                    VStack(spacing: 4) {
-                        ForEach(vm.perils[id] ?? [], id: \.id) { peril in
-                            hSection {
-                                SwiftUI.Button {
-                                    withAnimation {
-                                        vm.extended.toggle()
-                                    }
-                                } label: {
-                                    EmptyView()
-                                }
-                                .buttonStyle(
-                                    CompareTierButtonStyle(
-                                        peril: peril,
-                                        title: peril.title,
-                                        description: peril.description,
-                                        extended: $vm.extended
-                                    )
-                                )
-                                .modifier(
-                                    BackgorundColorAnimation(
-                                        animationTrigger: .constant(false),
-                                        color: hSurfaceColor.Opaque.primary,
-                                        animationColor: hSurfaceColor.Opaque.secondary
-                                    )
-                                )
-                                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-                            }
-                        }
-                        .hFieldSize(.small)
-                    }
+                    mainContent(for: id)
                 }
             )
         }
     }
+
+    func mainContent(for tierId: String) -> some View {
+        VStack(spacing: 4) {
+            ForEach(vm.perils[tierId] ?? [], id: \.id) { peril in
+                hSection {
+                    SwiftUI.Button {
+                        withAnimation {
+                            vm.extended.toggle()
+                        }
+                    } label: {
+                        EmptyView()
+                    }
+                    .buttonStyle(
+                        CompareTierButtonStyle(
+                            peril: peril,
+                            extended: $vm.extended
+                        )
+                    )
+                    .modifier(
+                        BackgorundColorAnimation(
+                            animationTrigger: .constant(false),
+                            color: hSurfaceColor.Opaque.primary,
+                            animationColor: hSurfaceColor.Opaque.secondary
+                        )
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+                }
+            }
+            .hFieldSize(.small)
+        }
+    }
 }
 
-struct CompareTierButtonStyle: SwiftUI.ButtonStyle {
-    var peril: Perils?
-    let title: String
-    let description: String
+struct CompareTierButtonStyle: ButtonStyle {
+    var peril: Perils
 
     @Binding var extended: Bool
 
     func makeBody(configuration: Configuration) -> some View {
         VStack(alignment: .center, spacing: 11) {
             HStack(spacing: 8) {
-                if let color = peril?.color {
+                if let color = peril.color {
                     Group {
-                        if peril?.isDisabled ?? false {
+                        if peril.isDisabled {
                             Circle()
                                 .fill(hFillColor.Opaque.disabled)
                         } else {
@@ -98,14 +98,14 @@ struct CompareTierButtonStyle: SwiftUI.ButtonStyle {
                     .frame(width: 20, height: 20)
                     .padding(.horizontal, .padding4)
                 }
-                hText(title, style: .heading1)
+                hText(peril.title, style: .heading1)
                     .lineLimit(1)
                     .foregroundColor(getTextColor)
                 Spacer()
 
-                if let covered = peril?.covered.first, covered != "" {
+                if let covered = peril.covered.first, covered != "" {
                     hPill(text: covered, color: .blue, colorLevel: .two)
-                } else if !(peril?.isDisabled ?? true) {
+                } else if !(peril.isDisabled) {
                     Image(
                         uiImage: hCoreUIAssets.checkmark.image
                     )
@@ -123,7 +123,7 @@ struct CompareTierButtonStyle: SwiftUI.ButtonStyle {
             }
 
             if extended {
-                hText(description, style: peril != nil ? .label : .body1)
+                hText(peril.description, style: .label)
                     .padding(.bottom, .padding12)
                     .foregroundColor(getTextColor)
                     .fixedSize(horizontal: false, vertical: true)
@@ -139,7 +139,7 @@ struct CompareTierButtonStyle: SwiftUI.ButtonStyle {
 
     @hColorBuilder
     var getTextColor: some hColor {
-        if peril?.isDisabled ?? false {
+        if peril.isDisabled {
             hTextColor.Opaque.disabled
         } else {
             hTextColor.Opaque.primary
@@ -155,7 +155,6 @@ public class CompareTierViewModel: ObservableObject {
     @Published var extended = false
 
     @Published var perils: [String: [Perils]] = [:]
-    @Published var limits: [String: [InsurableLimits]] = [:]
     var scrollableSegmentedViewModel: ScrollableSegmentedViewModel = .init(pageModels: [])
 
     init(
@@ -227,16 +226,6 @@ public class CompareTierViewModel: ObservableObject {
                 let columns = productVariantComparisionData.variantColumns
                 let rows = productVariantComparisionData.rows
                 let tierNames = columns.compactMap({ $0.displayNameTier })
-
-                self.limits = Dictionary(
-                    uniqueKeysWithValues: productVariantComparisionData.variantColumns
-                        .map({
-                            (
-                                $0.displayNameTier ?? "",
-                                $0.insurableLimits
-                            )
-                        })
-                )
 
                 self.perils = getPerils(tierNames: tierNames, rows: rows)
 
