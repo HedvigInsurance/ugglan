@@ -241,7 +241,7 @@ public struct Masking {
     }
     public var spellCheckingType: UITextSpellCheckingType {
         switch type {
-        case .none, .disabledSuggestion:
+        case .none, .disabledSuggestion, .address:
             return .no
         default: return .yes
         }
