@@ -213,6 +213,7 @@ struct ActionView: View {
         VStack(spacing: .padding16) {
             if let text = action.text {
                 hText(text, style: .body1)
+                    .foregroundColor(hTextColor.Opaque.black)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             hButton.MediumButton(type: .secondary) {
@@ -221,6 +222,7 @@ struct ActionView: View {
                 hText(action.buttonTitle)
             }
         }
+        .environment(\.colorScheme, .light)
     }
 }
 
