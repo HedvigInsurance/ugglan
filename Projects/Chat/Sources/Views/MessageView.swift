@@ -213,13 +213,13 @@ struct ActionView: View {
         VStack(spacing: .padding16) {
             if let text = action.text {
                 hText(text, style: .body1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
             hButton.MediumButton(type: .secondary) {
                 NotificationCenter.default.post(name: .openDeepLink, object: action.url)
             } content: {
                 hText(action.buttonTitle)
             }
-
         }
     }
 }
