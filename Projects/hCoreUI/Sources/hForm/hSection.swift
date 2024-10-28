@@ -352,7 +352,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.hEmbeddedHeader) var embeddedHeader
     @Environment(\.hWithoutSectionHorizontalPadding) var hSectionWithoutHorizontalPadding
-
+    @Environment(\.hFieldSize) var fieldSize
     var header: Header?
     var content: Content
     var footer: Footer?
@@ -410,7 +410,8 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
         .frame(maxWidth: .infinity)
         .padding(
             .horizontal,
-            hSectionWithoutHorizontalPadding ? 0 : (horizontalSizeClass == .regular ? .padding60 : .padding16)
+            hSectionWithoutHorizontalPadding
+                ? 0 : (horizontalSizeClass == .regular ? .padding60 : fieldSize.horizontalPadding)
         )
     }
 

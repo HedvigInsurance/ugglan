@@ -209,12 +209,34 @@ extension hFieldSize {
         case .large:
             return 16
         case .medium:
-            return 16
+            return 19
+        }
+    }
+
+    var topPaddingWithSubtitle: CGFloat {
+        switch self {
+        case .small:
+            return 8.5
+        case .large:
+            return 10
+        case .medium:
+            return 11.5
         }
     }
 
     var bottomPadding: CGFloat {
         topPadding + 2
+    }
+
+    var bottomPaddingWithSubtitle: CGFloat {
+        switch self {
+        case .small:
+            return 7.5
+        case .large:
+            return 9
+        case .medium:
+            return 12.5
+        }
     }
 
     var topOffset: CGFloat {
