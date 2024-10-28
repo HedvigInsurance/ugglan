@@ -104,6 +104,9 @@ struct MessageView: View {
                     LinkView(
                         vm: .init(url: url)
                     )
+                case let .action(action):
+                    /* TODO: FILL UI */
+                    hText(action.buttonTitle)
                 case .unknown: Text("")
                 }
             }

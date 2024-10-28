@@ -41,6 +41,7 @@ public class ConversationsClientOctopus: ConversationsClient {
         return .init(fragment: conversationsFragment, type: .service)
     }
 }
+
 public class ConversationClientOctopus: ConversationClient {
     @Inject var octopus: hOctopus
     var chatFileUploaderService = ChatFileUploaderService()
@@ -144,7 +145,13 @@ extension OctopusGraphQL.MessageFragment {
     }
 
     private var messageType: MessageType {
-        if let text = self.asChatMessageText?.text {
+        if let action = self.asChatMessageAction {
+            let urlText = action.actionUrl.trimmingCharacters(in: .whitespacesAndNewlines)
+            if let url = URL(string: urlText), urlText.isUrl {
+                let data = ActionMessage(url: url, text: action.actionText, buttonTitle: action.actionTitle)
+                return .action(action: data)
+            }
+        } else if let text = self.asChatMessageText?.text {
             let urlText = text.trimmingCharacters(in: .whitespacesAndNewlines)
             if let url = URL(string: urlText), urlText.isUrl {
                 if urlText.isGIFURL {
@@ -166,8 +173,7 @@ extension OctopusGraphQL.MessageFragment {
             } else {
                 return .unknown
             }
-        } else {
-            return .unknown
         }
+        return .unknown
     }
 }
