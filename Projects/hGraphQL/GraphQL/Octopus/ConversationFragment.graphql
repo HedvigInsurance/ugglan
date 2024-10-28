@@ -25,11 +25,8 @@ fragment MessageFragment on ChatMessage {
 }
 
 fragment ChatMessageActionFragment on ChatMessageAction {
-    id
     actionTitle
     actionUrl
-    sender
-    sentAt
     actionText: text
 }
 
