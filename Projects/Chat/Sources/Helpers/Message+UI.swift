@@ -32,7 +32,7 @@ extension Message {
 
     var horizontalPadding: CGFloat {
         switch type {
-        case .text, .deepLink:
+        case .text, .deepLink, .action:
             return .padding16
         default:
             return 0
@@ -40,7 +40,7 @@ extension Message {
     }
     var verticalPadding: CGFloat {
         switch type {
-        case .text, .deepLink:
+        case .text, .deepLink, .action:
             return .padding12
         default:
             return 0

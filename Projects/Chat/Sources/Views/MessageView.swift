@@ -105,8 +105,7 @@ struct MessageView: View {
                         vm: .init(url: url)
                     )
                 case let .action(action):
-                    /* TODO: FILL UI */
-                    hText(action.buttonTitle)
+                    ActionView(action: action)
                 case .unknown: Text("")
                 }
             }
@@ -205,8 +204,26 @@ class LinkViewModel: ObservableObject {
             }
         }
     }
-
 }
+
+struct ActionView: View {
+    let action: ActionMessage
+
+    var body: some View {
+        VStack(spacing: .padding16) {
+            if let text = action.text {
+                hText(text, style: .body1)
+            }
+            hButton.MediumButton(type: .secondary) {
+                NotificationCenter.default.post(name: .openDeepLink, object: action.url)
+            } content: {
+                hText(action.buttonTitle)
+            }
+
+        }
+    }
+}
+
 extension URL {
     public var contractName: String? {
         guard let urlComponents = URLComponents(url: self, resolvingAgainstBaseURL: false) else { return nil }
@@ -216,3 +233,30 @@ extension URL {
         return contractStore.state.contractForId(contractIdString ?? "")?.currentAgreement?.productVariant.displayName
     }
 }
+
+#Preview(body: {
+    Dependencies.shared.add(module: Module { () -> ConversationClient in ConversationsDemoClient() })
+    let service = ConversationService(conversationId: "conversationId")
+
+    return MessageView(
+        message: .init(
+            localId: nil,
+            remoteId: nil,
+            sender: .hedvig,
+            sentAt: Date(),
+            type: .action(
+                action: .init(
+                    url: URL("")!,
+                    text: "A new conversation has been created by Hedvig.",
+                    buttonTitle: "Go to conversation"
+                )
+            ),
+            status: .sent
+        ),
+        conversationStatus: .open,
+        vm: .init(chatService: service),
+        height: 300,
+        width: 300,
+        showRetryOptions: true
+    )
+})
