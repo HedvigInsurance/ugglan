@@ -32,6 +32,7 @@ public final class MoveFlowStore: LoadingStateStore<MoveFlowState, MoveFlowActio
         case .requestMoveIntent:
             self.setLoading(for: .requestMoveIntent)
             do {
+                self.setLoading(for: .requestMoveIntent)
                 let movingFlowData = try await self.moveFlowService.requestMoveIntent(
                     intentId: self.state.movingFlowModel?.id ?? "",
                     addressInputModel: self.addressInputModel,
