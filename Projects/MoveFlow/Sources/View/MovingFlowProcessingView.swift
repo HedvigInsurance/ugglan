@@ -6,16 +6,15 @@ import hGraphQL
 
 struct MovingFlowProcessingView: View {
     @StateObject var vm = ProcessingViewModel()
+    @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
     var onSuccessButtonAction: () -> Void
     var onErrorButtonAction: () -> Void
 
     var body: some View {
-        hProcessingView<MoveFlowStore>(
-            MoveFlowStore.self,
-            loading: .confirmMoveIntent,
+        ProcessingStateView(
             loadingViewText: L10n.changeAddressMakingChanges,
             successViewTitle: L10n.changeAddressSuccessTitle,
-            successViewBody: L10n.changeAddressSuccessSubtitle(vm.store.state.movingFlowModel?.movingDate ?? ""),
+            successViewBody: L10n.changeAddressSuccessSubtitle(movingFlowNavigationVm.movingFlowVm?.movingDate ?? ""),
             successViewButtonAction: {
                 onSuccessButtonAction()
             },
@@ -25,14 +24,15 @@ struct MovingFlowProcessingView: View {
                         onErrorButtonAction()
                     }),
                     dismissButton: nil
-                )
+                ),
+            state: $vm.viewState,
+            duration: 6
         )
     }
 }
 
 class ProcessingViewModel: ObservableObject {
-    @PresentableStore var store: MoveFlowStore
-
+    @Published var viewState: ProcessingState = .loading
 }
 
 struct SuccessScreen_Previews: PreviewProvider {

@@ -5,6 +5,7 @@ import hCoreUI
 struct TypeOfBuildingPickerView: View {
     var currentlySelected: ExtraBuildingType?
     @Binding var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
+    @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
 
     public init(
         currentlySelected: ExtraBuildingType?,
@@ -18,8 +19,7 @@ struct TypeOfBuildingPickerView: View {
         ItemPickerScreen<ExtraBuildingType>(
             config: .init(
                 items: {
-                    let store: MoveFlowStore = globalPresentableStoreContainer.get()
-                    return store.state.movingFlowModel?.extraBuildingTypes
+                    return movingFlowNavigationVm.movingFlowVm?.extraBuildingTypes
                         .compactMap({ (object: $0, displayName: .init(title: $0.translatedValue)) }) ?? []
                 }(),
                 preSelectedItems: {
@@ -29,11 +29,12 @@ struct TypeOfBuildingPickerView: View {
                     return []
                 },
                 onSelected: { selected in
-                    let store: MoveFlowStore = globalPresentableStoreContainer.get()
                     if let selected = selected.first {
                         isBuildingTypePickerPresented = nil
                         if let object = selected.0 {
-                            store.send(.setExtraBuildingType(with: object))
+                            var movingFlowVm = movingFlowNavigationVm.movingFlowVm
+                            movingFlowVm?.extraBuildingTypes.append(object)
+                            movingFlowNavigationVm.movingFlowVm = movingFlowVm
                         }
                     }
                 },
@@ -46,6 +47,6 @@ struct TypeOfBuildingPickerView: View {
     }
 }
 
-#Preview{
+#Preview {
     TypeOfBuildingPickerView(currentlySelected: nil, isBuildingTypePickerPresented: .constant(nil))
 }

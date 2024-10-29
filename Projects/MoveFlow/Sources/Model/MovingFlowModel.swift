@@ -20,7 +20,7 @@ public struct MovingFlowModel: Codable, Equatable, Hashable {
     var homeQuote: MovingFlowQuote?
     let quotes: [MovingFlowQuote]
     let faqs: [FAQ]
-    let extraBuildingTypes: [ExtraBuildingType]
+    var extraBuildingTypes: [ExtraBuildingType]
     let changeTier: ChangeTierIntentModel?
 
     init(

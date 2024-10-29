@@ -9,29 +9,18 @@ struct MovingFlowHouseView: View {
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
 
     var body: some View {
-        LoadingViewWithErrorState(
-            MoveFlowStore.self,
-            .requestMoveIntent
-        ) {
-            form
-        } onError: { [weak vm] error in
-            GenericErrorView(
-                description: error
-            )
+        form.loading($vm.viewState)
             .hErrorViewButtonConfig(
                 .init(
                     actionButton: .init(buttonAction: {
-                        vm?.error = nil
-                        let store: MoveFlowStore = globalPresentableStoreContainer.get()
-                        store.removeLoading(for: .requestMoveIntent)
+                        vm.error = nil
                     }),
                     dismissButton: nil
                 )
             )
-        }
-        .onDisappear {
-            vm.clearErrors()
-        }
+            .onDisappear {
+                vm.clearErrors()
+            }
     }
 
     var form: some View {
@@ -45,13 +34,13 @@ struct MovingFlowHouseView: View {
                         isSubleted
                         extraBuildingTypes
                     }
-                    .disableOn(MoveFlowStore.self, [.requestMoveIntent])
+                    .disabled(vm.viewState == .loading)
                     hSection {
                         InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
                     }
                     hSection {
                         hButton.LargeButton(type: .primary) {
-                            vm.continuePressed()
+                            continuePressed()
                         } content: {
                             hText(L10n.saveAndContinueButtonLabel, style: .body1)
                         }
@@ -63,7 +52,6 @@ struct MovingFlowHouseView: View {
             .padding(.top, .padding16)
 
         }
-        .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
         .hFormTitle(
             title: .init(
                 .small,
@@ -174,7 +162,6 @@ struct MovingFlowHouseView: View {
                         }
                     }
                     .hButtonDontShowLoadingWhenDisabled(true)
-                    .disableOn(MoveFlowStore.self, [.requestMoveIntent])
                     .fixedSize(horizontal: true, vertical: false)
                     .hUseLightMode
                     .padding(.top, .padding8)
@@ -209,6 +196,17 @@ struct MovingFlowHouseView: View {
             movingFlowNavigationVm.isAddExtraBuildingPresented = true
         }
     }
+
+    func continuePressed() {
+        if vm.isInputValid() {
+            Task {
+                try await vm.requestMoveIntent(
+                    intentId: movingFlowNavigationVm.movingFlowVm?.id ?? "",
+                    addressInputModel: movingFlowNavigationVm.addressInputModel ?? .init()
+                )
+            }
+        }
+    }
 }
 
 struct MovingFlowHouseView_Previews: PreviewProvider {
@@ -238,7 +236,7 @@ enum MovingFlowHouseFieldType: hTextFieldFocusStateCompliant {
 
 public typealias ExtraBuildingType = String
 public class HouseInformationInputModel: ObservableObject {
-
+    @Inject private var service: MoveFlowClient
     @Published var type: MovingFlowHouseFieldType?
     @Published var yearOfConstruction: String = ""
     @Published var ancillaryArea: String = ""
@@ -248,18 +246,36 @@ public class HouseInformationInputModel: ObservableObject {
     @Published var ancillaryAreaError: String?
     @Published var bathroomsError: String?
     @Published var extraBuildings: [ExtraBuilding] = []
-
-    @PresentableStore var store: MoveFlowStore
     @Published var error: String?
+    @Published var viewState: ProcessingState = .success
+
     init() {}
 
-    func continuePressed() {
-        if isInputValid() {
-            store.send(.requestMoveIntent)
+    @MainActor
+    func requestMoveIntent(intentId: String, addressInputModel: AddressInputModel) async throws -> MovingFlowModel? {
+        withAnimation {
+            self.viewState = .loading
         }
+
+        do {
+            let movingFlowData = try await service.requestMoveIntent(
+                intentId: intentId,
+                addressInputModel: addressInputModel,
+                houseInformationInputModel: .init()
+            )
+
+            withAnimation {
+                self.viewState = .success
+            }
+
+            return movingFlowData
+        } catch {
+            self.viewState = .error(errorMessage: error.localizedDescription)
+        }
+        return nil
     }
 
-    private func isInputValid() -> Bool {
+    func isInputValid() -> Bool {
         func validate() -> Bool {
             withAnimation {
                 yearOfConstructionError = !yearOfConstruction.isEmpty ? nil : L10n.changeAddressYearOfConstructionError
@@ -281,8 +297,6 @@ public class HouseInformationInputModel: ObservableObject {
         yearOfConstructionError = nil
         ancillaryAreaError = nil
         bathroomsError = nil
-        let store: MoveFlowStore = globalPresentableStoreContainer.get()
-        store.removeLoading(for: .requestMoveIntent)
     }
 }
 

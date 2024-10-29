@@ -7,9 +7,14 @@ import hCoreUI
 import hGraphQL
 
 public class MovingFlowNavigationViewModel: ObservableObject {
-    public init() {}
     @Published var isAddExtraBuildingPresented = false
     @Published public var document: hPDFDocument? = nil
+
+    @Published public var addressInputModel: AddressInputModel?
+    @Published public var movingFlowVm: MovingFlowModel?
+    @Published public var houseInformationInputVm: HouseInformationInputModel?
+
+    init() {}
 }
 
 enum MovingFlowRouterWithHiddenBackButtonActions {
@@ -52,13 +57,15 @@ struct ExtraBuildingTypeNavigationModel: Identifiable, Equatable {
 }
 
 public struct MovingFlowNavigation: View {
-    @StateObject private var movingFlowVm = MovingFlowNavigationViewModel()
+    @StateObject private var movingFlowNavigationVm = MovingFlowNavigationViewModel()
     @StateObject var router = Router()
     private let onMoved: () -> Void
     @State var cancellable: AnyCancellable?
     @State var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
 
-    public init(onMoved: @escaping () -> Void) {
+    public init(
+        onMoved: @escaping () -> Void
+    ) {
         self.onMoved = onMoved
     }
 
@@ -86,29 +93,13 @@ public struct MovingFlowNavigation: View {
                     }
                 }
         }
-        .environmentObject(movingFlowVm)
-        .onAppear {
-            let store: MoveFlowStore = globalPresentableStoreContainer.get()
-            cancellable = store.actionSignal
-                .receive(on: RunLoop.main)
-                .sink { _ in
-                } receiveValue: { action in
-                    switch action {
-                    case .navigation(.openConfirmScreen):
-                        router.push(MovingFlowRouterActions.confirm)
-                    case let .navigation(action: .openSelectTierScreen(changeTierModel)):
-                        router.push(MovingFlowRouterActions.selectTier(changeTierModel: changeTierModel))
-                    default:
-                        break
-                    }
-                }
-        }
-        .detent(presented: $movingFlowVm.isAddExtraBuildingPresented, style: [.height]) {
+        .environmentObject(movingFlowNavigationVm)
+        .detent(presented: $movingFlowNavigationVm.isAddExtraBuildingPresented, style: [.height]) {
             MovingFlowAddExtraBuildingView(isBuildingTypePickerPresented: $isBuildingTypePickerPresented)
                 .detent(item: $isBuildingTypePickerPresented, style: [.height]) { extraBuildingType in
                     openTypeOfBuildingPicker(for: extraBuildingType.extraBuildingType)
                 }
-                .environmentObject(movingFlowVm)
+                .environmentObject(movingFlowNavigationVm)
                 .navigationTitle(L10n.changeAddressAddBuilding)
                 .embededInNavigation(
                     options: [.navigationType(type: .large)],
@@ -116,7 +107,7 @@ public struct MovingFlowNavigation: View {
                 )
         }
         .detent(
-            item: $movingFlowVm.document,
+            item: $movingFlowNavigationVm.document,
             style: [.large]
         ) { document in
             PDFPreview(document: document)
@@ -127,17 +118,18 @@ public struct MovingFlowNavigation: View {
     }
 
     func openSelectHousingScreen() -> some View {
-        MovingFlowHousingTypeView()
+        MovingFlowHousingTypeView(movingFlowNavigationVm: movingFlowNavigationVm)
             .withDismissButton()
     }
 
     func openApartmentFillScreen() -> some View {
-        return MovingFlowAddressView().withDismissButton()
+        return MovingFlowAddressView(vm: movingFlowNavigationVm.addressInputModel ?? .init())
+            .withDismissButton()
     }
 
     func openHouseFillScreen() -> some View {
-        let store: MoveFlowStore = globalPresentableStoreContainer.get()
-        return MovingFlowHouseView(vm: store.houseInformationInputModel).withDismissButton()
+        return MovingFlowHouseView(vm: movingFlowNavigationVm.houseInformationInputVm ?? .init())
+            .withDismissButton()
     }
 
     func openConfirmScreen() -> some View {
@@ -159,15 +151,13 @@ public struct MovingFlowNavigation: View {
 
     func openChangeTier(model: ChangeTierIntentModel) -> some View {
         let model = ChangeTierInput.existingIntent(intent: model) { (tier, deductible) in
-            let store: MoveFlowStore = globalPresentableStoreContainer.get()
-            let state = store.state
-            var movingFlowModel = state.movingFlowModel
+            var movingFlowModel = movingFlowNavigationVm.movingFlowVm
             let id = deductible.id
-            if let homeQuote = state.movingFlowModel?.potentialHomeQuotes.first(where: { $0.id == id }) {
+            if let homeQuote = movingFlowNavigationVm.movingFlowVm?.potentialHomeQuotes.first(where: { $0.id == id }) {
                 movingFlowModel?.homeQuote = homeQuote
             }
             if let movingFlowModel {
-                store.send(.setMoveIntent(with: movingFlowModel))
+                movingFlowNavigationVm.movingFlowVm = movingFlowModel
             }
             router.push(MovingFlowRouterActions.confirm)
         }

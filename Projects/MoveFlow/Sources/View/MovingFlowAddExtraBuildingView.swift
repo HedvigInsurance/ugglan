@@ -85,14 +85,15 @@ struct MovingFlowAddExtraBuildingView: View {
 
     func addExtraBuilding() {
         if vm.isValid() {
-            vm.store.houseInformationInputModel.extraBuildings.append(
-                ExtraBuilding(
-                    id: UUID().uuidString,
-                    type: vm.buildingType!,
-                    livingArea: Int(vm.livingArea) ?? 0,
-                    connectedToWater: vm.connectedToWater
+            movingFlowNavigationVm.houseInformationInputVm?.extraBuildings
+                .append(
+                    ExtraBuilding(
+                        id: UUID().uuidString,
+                        type: vm.buildingType!,
+                        livingArea: Int(vm.livingArea) ?? 0,
+                        connectedToWater: vm.connectedToWater
+                    )
                 )
-            )
             movingFlowNavigationVm.isAddExtraBuildingPresented = false
         }
     }
@@ -112,7 +113,6 @@ enum AddExtraBuildingType: hTextFieldFocusStateCompliant {
 }
 
 class MovingFlowAddExtraBuildingViewModel: ObservableObject {
-    @PresentableStore var store: MoveFlowStore
     @Published var type: AddExtraBuildingType?
 
     @Published var buildingType: ExtraBuildingType?
@@ -128,14 +128,15 @@ class MovingFlowAddExtraBuildingViewModel: ObservableObject {
     }
 
     func trackBuildingTypeAction() {
-        store.actionSignal
-            .receive(on: RunLoop.main)
-            .sink { [weak self] action in
-                if case let .setExtraBuildingType(type) = action {
-                    self?.buildingType = type
-                }
-            }
-            .store(in: &cancellables)
+        /* TODO: CHECK */
+        //        store.actionSignal
+        //            .receive(on: RunLoop.main)
+        //            .sink { [weak self] action in
+        //                if case let .setExtraBuildingType(type) = action {
+        //                    self?.buildingType = type
+        //                }
+        //            }
+        //            .store(in: &cancellables)
     }
 
     func isValid() -> Bool {
