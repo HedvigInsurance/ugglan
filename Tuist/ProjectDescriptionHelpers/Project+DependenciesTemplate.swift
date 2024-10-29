@@ -95,7 +95,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .presentableStore:
             return [
-                .package(path: .relativeToRoot("PresentableStore"))
+                .package(path: .relativeToRoot("LocalModules/PresentableStore"))
             ]
         }
     }
