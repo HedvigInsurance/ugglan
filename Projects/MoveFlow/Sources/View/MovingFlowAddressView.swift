@@ -46,12 +46,41 @@ struct MovingFlowAddressView: View {
     }
 
     var form: some View {
-        hForm {
-            VStack(spacing: 16) {
+        hBottomForm {
+            VStack {
+                Spacer()
                 VStack(spacing: 4) {
                     hSection {
                         addressField()
                     }
+
+                    //                    hSection {
+                    //                        hFloatingTextField(
+                    //                            masking: Masking(type: .address),
+                    //                            value: $vm.address,
+                    //                            equals: $vm.type,
+                    //                            focusValue: .address,
+                    //                            error: $vm.addressError
+                    //                        )
+                    //                    }
+                    //                    hSection {
+                    //                        hFloatingTextField(
+                    //                            masking: Masking(type: .address),
+                    //                            value: $vm.address,
+                    //                            equals: $vm.type,
+                    //                            focusValue: .address,
+                    //                            error: $vm.addressError
+                    //                        )
+                    //                    }
+                    //                    hSection {
+                    //                        hFloatingTextField(
+                    //                            masking: Masking(type: .address),
+                    //                            value: $vm.address,
+                    //                            equals: $vm.type,
+                    //                            focusValue: .address,
+                    //                            error: $vm.addressError
+                    //                        )
+                    //                    }
                     hSection {
                         postalField()
                     }
@@ -68,7 +97,10 @@ struct MovingFlowAddressView: View {
                         isStudentField()
                     }
                 }
-                .disableOn(MoveFlowStore.self, [.requestMoveIntent])
+            }
+        }
+        .hFormAttachToBottom {
+            VStack(spacing: .padding16) {
                 hSection {
                     InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
                 }
@@ -79,28 +111,98 @@ struct MovingFlowAddressView: View {
                         hText(vm.continueButtonTitle, style: .body1)
                     }
                 }
-
             }
-            .padding(.bottom, .padding8)
-            .padding(.top, .padding16)
-
+            .padding(.vertical, .padding16)
         }
-        .hFormTitle(
-            title: .init(
-                .small,
-                .heading2,
-                L10n.movingEmbarkTitle,
-                alignment: .leading
-            ),
-            subTitle: .init(
-                .standard,
-                .heading2,
-                L10n.changeAddressEnterNewAddressTitle
-            )
-        )
-        .sectionContainerStyle(.transparent)
-        .presentableStoreLensAnimation(.default)
-        .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
+        //        ZStack(alignment: .bottom) {
+        //            ScrollView {
+        //                VStack {
+        //                    Spacer()
+        //                    VStack(spacing: 4) {
+        //                        hSection {
+        //                            addressField()
+        //                        }
+        //                        hSection {
+        //                            postalField()
+        //                        }
+        //                        hSection {
+        //                            squareField()
+        //                        }
+        //                        hSection {
+        //                            numberOfCoinsuredField()
+        //                        }
+        //                        hSection {
+        //                            accessDateField()
+        //                        }
+        //                        if vm.isStudentEnabled {
+        //                            isStudentField()
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        hForm {
+        //            VStack(spacing: 16) {
+        //                VStack(spacing: 4) {
+        //                    hSection {
+        //                        addressField()
+        //                    }
+        //                    hSection {
+        //                        postalField()
+        //                    }
+        //                    hSection {
+        //                        squareField()
+        //                    }
+        //                    hSection {
+        //                        numberOfCoinsuredField()
+        //                    }
+        //                    hSection {
+        //                        accessDateField()
+        //                    }
+        //                    if vm.isStudentEnabled {
+        //                        isStudentField()
+        //                    }
+        //                }
+        //                .disableOn(MoveFlowStore.self, [.requestMoveIntent])
+        //
+        //            }
+        //            .padding(.bottom, .padding8)
+        //            .padding(.top, .padding16)
+        //
+        //        }
+        //        .hFormAttachToBottom {
+        //            VStack(spacing: .padding16) {
+        //                hSection {
+        //                    InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
+        //                }
+        //                hSection {
+        //                    hButton.LargeButton(type: .primary) {
+        //                        continuePressed()
+        //                    } content: {
+        //                        hText(vm.continueButtonTitle, style: .body1)
+        //                    }
+        //                }
+        //            }
+        //            .padding(.vertical, .padding16)
+        //        }
+        //        .hFormTitle(
+        //            title: .init(
+        //                .small,
+        //                .heading2,
+        //                L10n.movingEmbarkTitle,
+        //                alignment: .leading
+        //            ),
+        //            subTitle: .init(
+        //                .standard,
+        //                .heading2,
+        //                L10n.changeAddressEnterNewAddressTitle
+        //            )
+        //        )
+        //        .hFormContentPosition(.bottom)
+        //        .sectionContainerStyle(.transparent)
+        //        .presentableStoreLensAnimation(.default)
+        //        .hFormObserveKeyboard
+        //        .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
     }
 
     func addressField() -> some View {

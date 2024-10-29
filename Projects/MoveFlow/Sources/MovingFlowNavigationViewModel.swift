@@ -132,7 +132,8 @@ public struct MovingFlowNavigation: View {
     }
 
     func openApartmentFillScreen() -> some View {
-        return MovingFlowAddressView().withDismissButton()
+        return MovingFlowAddressView()
+            .withDismissButton()
     }
 
     func openHouseFillScreen() -> some View {

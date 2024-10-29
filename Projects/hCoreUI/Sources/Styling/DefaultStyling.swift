@@ -168,9 +168,9 @@ public struct DefaultStyling {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
         appearance.backgroundColor = .clear
-        appearance.shadowColor = hBorderColor.primary.colorFor(.light, .base).color.uiColor()
+        appearance.shadowColor = nil  //hBorderColor.primary.colorFor(.light, .base).color.uiColor()
         appearance.backgroundImage = nil
-        appearance.backgroundEffect = UIBlurEffect(style: style == .dark ? .dark : .light)
+        appearance.backgroundEffect = nil  //UIBlurEffect(style: style == .dark ? .dark : .light)
         applyCommonNavigationBarStyling(appearance)
 
         return appearance
@@ -180,8 +180,8 @@ public struct DefaultStyling {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
         appearance.backgroundColor = UIColor.clear
-        appearance.shadowColor = hBorderColor.primary.colorFor(.light, .base).color.uiColor()
-        appearance.backgroundEffect = UIBlurEffect(style: .light)
+        appearance.shadowColor = nil  //hBorderColor.primary.colorFor(.light, .base).color.uiColor()
+        appearance.backgroundEffect = nil  //UIBlurEffect(style: .light)
         applyCommonNavigationBarStyling(appearance)
 
         return appearance

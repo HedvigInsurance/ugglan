@@ -236,41 +236,8 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                 vm?.vc = vc
             }
         )
-        .introspect(.scrollView, on: .iOS(.v13...)) { [weak vm] scrollView in
-            if vm?.scrollView != scrollView {
-                vm?.scrollView = scrollView
-                if hDisableScroll || additionalSpaceFromTop > 0 {
-                    scrollView.bounces = false
-                } else {
-                    scrollView.bounces = true
-                }
-                if hObserveKeyboard {
-                    cancellable = keyboardPublisher.sink { _ in
-                    } receiveValue: { [weak scrollView] keyboardHeight in
-                        if let keyboardHeight {
-                            if let view = UIResponder.currentFirstResponder as? UIView {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak scrollView] in
-                                    guard let scrollView = scrollView else { return }
-                                    let pointToCheck = CGPoint(x: 0, y: view.frame.size.height)
-                                    let positionToMove = view.convert(pointToCheck, to: scrollView).y
-
-                                    let moveTo = positionToMove + bottomAttachedViewHeight + keyboardHeight
-                                    scrollView.scrollRectToVisible(
-                                        .init(
-                                            x: 0,
-                                            y: moveTo,
-                                            width: view.frame.width,
-                                            height: view.frame.height
-                                        ),
-                                        animated: true
-                                    )
-                                }
-                            }
-
-                        }
-                    }
-                }
-            }
+        .introspect(.scrollView, on: .iOS(.v13...)) { scrollView in
+            handle(scrollView: scrollView)
         }
         .background(
             GeometryReader { proxy in
@@ -304,6 +271,51 @@ public struct hForm<Content: View>: View, KeyboardReadable {
         )
         .onChange(of: additionalContentOffset) { newValue in
             recalculateHeight()
+        }
+    }
+
+    func handle(scrollView: UIScrollView) {
+        if vm.scrollView != scrollView {
+            vm.scrollView = scrollView
+            if hDisableScroll || additionalSpaceFromTop > 0 {
+                scrollView.bounces = false
+            } else {
+                scrollView.bounces = true
+            }
+            if hObserveKeyboard {
+                cancellable = keyboardPublisher.sink { _ in
+                } receiveValue: { [weak scrollView] keyboardHeight in
+                    if let keyboardHeight {
+                        if let view = UIResponder.currentFirstResponder as? UIView {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak scrollView] in
+                                guard let scrollView = scrollView else { return }
+                                let pointToCheck = CGPoint(x: 0, y: view.frame.size.height)
+                                let positionToMove = view.convert(pointToCheck, to: scrollView).y
+                                let navigationHeight =
+                                    (scrollView.viewController as? UINavigationController)?.navigationBar.frame.height
+                                    ?? 0
+                                let moveTo = positionToMove /*+ bottomAttachedViewHeight*/ + keyboardHeight
+                                //                                if moveTo < navigationHeight {
+                                //                                    moveTo = moveTo - navigationHeight
+                                //                                }
+                                print(
+                                    "MOVE TO \(moveTo) from \(positionToMove) + \(keyboardHeight) \(navigationHeight)"
+                                )
+                                scrollView.scrollRectToVisible(
+                                    .init(
+                                        x: 0,
+                                        y: moveTo,
+                                        width: view.frame.width,
+                                        height: view.frame.height
+                                    ),
+                                    animated: true
+                                )
+                            }
+                        }
+
+                    }
+                }
+            }
         }
     }
 

@@ -136,29 +136,6 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
         }
         .introspect(.textField, on: .iOS(.v13...)) { [weak vm] textField in
             vm?.textField = textField
-            if masking.keyboardType == .numberPad {
-                let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 200, height: 44))
-                let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-                if (equals?.next) != nil {
-                    let button = UIButton(type: .custom)
-                    button.setTitle(L10n.generalDoneButton, for: .normal)
-                    button.backgroundColor = .clear
-
-                    let color = UIColor.BrandColorNew.primaryText().color
-                    button.setTitleColor(color, for: .normal)
-                    let nextButton = UIBarButtonItem(customView: button)
-                    button.addTarget(vm, action: #selector(vm?.goToTheNextField(_:)), for: .touchUpInside)
-                    toolbar.setItems([space, nextButton], animated: false)
-                } else {
-                    let doneButton = UIBarButtonItem(
-                        barButtonSystemItem: .done,
-                        target: self,
-                        action: #selector(textField.dismissKeyboad)
-                    )
-                    toolbar.setItems([space, doneButton], animated: false)
-                }
-                vm?.textField?.inputAccessoryView = toolbar
-            }
         }
         .onAppear {
             updateMoveLabel(false)
@@ -233,7 +210,25 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                     }
                 }
             }
-
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    if masking.keyboardType == .numberPad && equals == focusValue {
+                        if (equals?.next) != nil {
+                            Spacer()
+                            Button("Done") {
+                                vm.goToTheNextField()
+                            }
+                            .foregroundColor(hTextColor.Opaque.primary)
+                        } else {
+                            Spacer()
+                            Button("Done") {
+                                vm.textField?.dismissKeyboad()
+                            }
+                            .foregroundColor(hTextColor.Opaque.primary)
+                        }
+                    }
+                }
+            }
     }
 
     @hColorBuilder
@@ -259,35 +254,37 @@ class TextFieldVM: ObservableObject {
     @Published var onDidEndEditing: Date?
     @Published var onReturnTap: Date?
 
-    @objc func goToTheNextField(_ sender: UIButton) {
+    func goToTheNextField() {
         goToNext = Date()
     }
 }
 
 struct hFloatingTextField_Previews: PreviewProvider {
     @State static var value: String = "Text Input"
+    @State static var numberInput: String = ""
+
     @State static var error: String?
     @State static var previewType: PreviewType?
     static var previews: some View {
         VStack {
             hFloatingTextField<PreviewType>(
-                masking: .init(type: .none),
-                value: $value,
+                masking: .init(type: .digits),
+                value: $numberInput,
                 equals: $previewType,
                 focusValue: .first,
                 placeholder: "Label",
                 suffix: "SEK",
                 error: $error
             )
-            hFloatingTextField<PreviewType>(
-                masking: .init(type: .none),
-                value: $value,
-                equals: $previewType,
-                focusValue: .second,
-                placeholder: "Label",
-                error: $error
-            )
-            .disabled(true)
+            //            hFloatingTextField<PreviewType>(
+            //                masking: .init(type: .digits),
+            //                value: $numberInput,
+            //                equals: $previewType,
+            //                focusValue: .second,
+            //                placeholder: "Label2",
+            //                error: $error
+            //            )
+            //            .disabled(true)
         }
         .hFieldSize(.large)
 

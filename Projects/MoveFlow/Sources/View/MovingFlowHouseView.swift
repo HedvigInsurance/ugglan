@@ -35,7 +35,7 @@ struct MovingFlowHouseView: View {
     }
 
     var form: some View {
-        hForm {
+        hBottomForm {
             VStack {
                 VStack(spacing: 16) {
                     VStack(spacing: 8) {
@@ -46,22 +46,25 @@ struct MovingFlowHouseView: View {
                         extraBuildingTypes
                     }
                     .disableOn(MoveFlowStore.self, [.requestMoveIntent])
-                    hSection {
-                        InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
-                    }
-                    hSection {
-                        hButton.LargeButton(type: .primary) {
-                            vm.continuePressed()
-                        } content: {
-                            hText(L10n.saveAndContinueButtonLabel, style: .body1)
-                        }
-                    }
-
                 }
             }
             .padding(.bottom, .padding8)
             .padding(.top, .padding16)
 
+        }
+        .hFormAttachToBottom {
+            VStack(spacing: .padding16) {
+                hSection {
+                    InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
+                }
+                hSection {
+                    hButton.LargeButton(type: .primary) {
+                        vm.continuePressed()
+                    } content: {
+                        hText(L10n.saveAndContinueButtonLabel, style: .body1)
+                    }
+                }
+            }
         }
         .trackLoading(MoveFlowStore.self, action: .requestMoveIntent)
         .hFormTitle(
