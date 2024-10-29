@@ -106,6 +106,7 @@ struct MessageView: View {
                     )
                 case let .action(action):
                     ActionView(action: action)
+                        .environment(\.colorScheme, .light)
                 case .unknown: Text("")
                 }
             }
@@ -213,7 +214,7 @@ struct ActionView: View {
         VStack(spacing: .padding16) {
             if let text = action.text {
                 hText(text, style: .body1)
-                    .foregroundColor(hTextColor.Opaque.black)
+                    .foregroundColor(hTextColor.Opaque.primary)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             hButton.MediumButton(type: .secondary) {
