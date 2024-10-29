@@ -19,6 +19,7 @@ extension Project {
         sdks: [String] = [],
         includesGraphQL: Bool = false
     ) -> Project {
+
         let frameworkConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
@@ -101,13 +102,12 @@ extension Project {
 
         if targets.contains(.framework) {
             let sources: SourceFilesList = "Sources/**/*.swift"
-
-            let frameworkTarget = Target(
+            let frameworkTarget = Target.target(
                 name: name,
-                platform: .iOS,
+                destinations: .iOS,
                 product: .framework,
                 bundleId: "com.hedvig.\(name)",
-                deploymentTarget: .iOS(targetVersion: "15.0", devices: [.iphone, .ipad]),
+                deploymentTargets: .iOS("15.0"),
                 infoPlist: .default,
                 sources: sources,
                 resources: targets.contains(.frameworkResources) ? ["Resources/**"] : [],
@@ -119,12 +119,12 @@ extension Project {
         }
 
         if targets.contains(.testing) {
-            let testingTarget = Target(
+            let testingTarget = Target.target(
                 name: "\(name)Testing",
-                platform: .iOS,
+                destinations: .iOS,
                 product: .framework,
                 bundleId: "com.hedvig.\(name)Testing",
-                deploymentTarget: .iOS(targetVersion: "15.0", devices: [.iphone, .ipad]),
+                deploymentTargets: .iOS("15.0"),
                 infoPlist: .default,
                 sources: "Testing/**/*.swift",
                 dependencies: [
@@ -148,12 +148,12 @@ extension Project {
         }
 
         if targets.contains(.tests) {
-            let testTarget = Target(
+            let testTarget = Target.target(
                 name: "\(name)Tests",
-                platform: .iOS,
+                destinations: .iOS,
                 product: .unitTests,
                 bundleId: "com.hedvig.\(name)Tests",
-                deploymentTarget: .iOS(targetVersion: "15.0", devices: [.iphone, .ipad]),
+                deploymentTargets: .iOS("15.0"),
                 infoPlist: .default,
                 sources: "Tests/**/*.swift",
                 dependencies: [
@@ -181,12 +181,12 @@ extension Project {
         }
 
         if targets.contains(.example) {
-            let exampleTarget = Target(
+            let exampleTarget = Target.target(
                 name: "\(name)Example",
-                platform: .iOS,
+                destinations: .iOS,
                 product: .app,
                 bundleId: "com.hedvig.example.\(name)Example",
-                deploymentTarget: .iOS(targetVersion: "15.0", devices: [.iphone, .ipad]),
+                deploymentTargets: .iOS("15.0"),
                 infoPlist: .extendingDefault(with: [
                     "UIMainStoryboardFile": "",
                     "NSMicrophoneUsageDescription": "Hedvig uses the microphone to let you record messages and videos.",
@@ -248,16 +248,18 @@ extension Project {
         func getTestAction() -> TestAction {
             TestAction.targets(
                 [
-                    TestableTarget(
+                    TestableTarget.testableTarget(
                         target: TargetReference(stringLiteral: "\(name)Tests"),
-                        parallelizable: false
+                        isParallelizable: false
                     )
                 ],
-                arguments: Arguments(
-                    environment: [
-                        "SNAPSHOT_ARTIFACTS": "/tmp/\(UUID().uuidString)/__SnapshotFailures__"
-                    ],
-                    launchArguments: []
+                arguments: Arguments.arguments(
+                    environmentVariables: [
+                        "SNAPSHOT_ARTIFACTS": .environmentVariable(
+                            value: "/tmp/\(UUID().uuidString)/__SnapshotFailures__",
+                            isEnabled: true
+                        )
+                    ]
                 ),
                 options: .options(coverage: true, codeCoverageTargets: ["\(name)"])
             )
@@ -274,18 +276,18 @@ extension Project {
             settings: .settings(configurations: projectConfigurations),
             targets: projectTargets,
             schemes: [
-                Scheme(
+                Scheme.scheme(
                     name: name,
                     shared: true,
-                    buildAction: BuildAction(targets: [TargetReference(stringLiteral: name)]),
+                    buildAction: BuildAction.buildAction(targets: [TargetReference(stringLiteral: name)]),
                     testAction: targets.contains(.tests) ? getTestAction() : nil,
                     runAction: nil
                 ),
                 targets.contains(.example)
-                    ? Scheme(
+                    ? Scheme.scheme(
                         name: "\(name)Example",
                         shared: true,
-                        buildAction: BuildAction(targets: [
+                        buildAction: BuildAction.buildAction(targets: [
                             TargetReference(stringLiteral: "\(name)Example")
                         ]),
                         testAction: getTestAction(),

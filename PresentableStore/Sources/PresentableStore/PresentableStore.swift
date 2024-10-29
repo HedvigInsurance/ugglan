@@ -49,11 +49,13 @@ open class StateStore<State: StateProtocol, Action: ActionProtocol>: Store {
     /// Sends an action to the store, which is then reduced to produce a new state
     public func send(_ action: Action) {
         logger("🦄 \(String(describing: Self.self)): sending \(action)")
-        serialQueue.async { [weak self] in guard let self = self else { return }
+        serialQueue.async { [weak self] in
+            guard let self = self else { return }
             let previousState = stateWriteSignal.value
             let semaphore = DispatchSemaphore(value: 0)
             let newValue = reduce(stateWriteSignal.value, action)
-            DispatchQueue.main.async { [weak self] in guard let self = self else { return }
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
                 self.stateWriteSignal.value = newValue
                 semaphore.signal()
             }
@@ -63,11 +65,13 @@ open class StateStore<State: StateProtocol, Action: ActionProtocol>: Store {
             if newValue != previousState {
                 logger("🦄 \(String(describing: Self.self)): new state \n \(newValue)")
                 DispatchQueue.global(qos: .background)
-                    .async { [weak self] in guard let self = self else { return }
+                    .async { [weak self] in
+                        guard let self = self else { return }
                         Self.persist(self.stateWriteSignal.value)
                     }
             }
-            Task { [weak self] in guard let self = self else { return }
+            Task { [weak self] in
+                guard let self = self else { return }
                 await effects(
                     {
                         self.stateWriteSignal.value
@@ -92,7 +96,8 @@ open class StateStore<State: StateProtocol, Action: ActionProtocol>: Store {
         if newState != previousState {
             logger("🦄 \(String(describing: Self.self)): new state \n \(newState)")
             DispatchQueue.global(qos: .background)
-                .async { [weak self] in guard let self = self else { return }
+                .async { [weak self] in
+                    guard let self = self else { return }
                     Self.persist(self.stateWriteSignal.value)
                 }
         }
@@ -292,26 +297,30 @@ open class LoadingStateStore<State: StateProtocol, Action: ActionProtocol, Loadi
     }
 
     public func removeLoading(for action: Loading) {
-        DispatchQueue.main.async { [weak self] in guard let self = self else { return }
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             self.loadingStates.removeValue(forKey: action)
             self.loadingWriteSignal.value = self.loadingStates
         }
     }
 
     public func setLoading(for action: Loading) {
-        DispatchQueue.main.async { [weak self] in guard let self = self else { return }
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             self.loadingStates[action] = .loading
         }
     }
 
     public func setError(_ error: String, for action: Loading) {
-        DispatchQueue.main.async { [weak self] in guard let self = self else { return }
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             self.loadingStates[action] = .error(error: error)
         }
     }
 
     public func reset() {
-        DispatchQueue.main.async { [weak self] in guard let self = self else { return }
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             loadingStates.removeAll()
         }
     }

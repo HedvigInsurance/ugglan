@@ -20,7 +20,6 @@ public enum ExternalDependencies: CaseIterable {
     case argumentParser
     case hero
     case presentableStore
-
     public var isTestDependency: Bool { self == .snapshottesting }
 
     public var isDevDependency: Bool { false }
@@ -96,7 +95,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .presentableStore:
             return [
-                .package(path: .relativeToRoot("Projects/PresentableStore"))
+                .package(path: .relativeToRoot("PresentableStore"))
             ]
         }
     }
@@ -204,7 +203,6 @@ extension Project {
                 .flatMap { $0 }, sdks.map { sdk in .sdk(name: sdk, type: .framework) },
         ]
         .flatMap { $0 }
-
         let packages = externalDependencies.map { externalDependency in externalDependency.swiftPackages() }
             .flatMap { $0 }
 
@@ -218,12 +216,12 @@ extension Project {
             packages: packages,
             settings: .settings(configurations: projectConfigurations),
             targets: [
-                Target(
+                Target.target(
                     name: name,
-                    platform: .iOS,
+                    destinations: .iOS,
                     product: .framework,
                     bundleId: "com.hedvig.\(name)",
-                    deploymentTarget: .iOS(targetVersion: "15.0", devices: [.iphone, .ipad]),
+                    deploymentTargets: .iOS("15.0"),
                     infoPlist: .default,
                     sources: ["Sources/**/*.swift"],
                     resources: [],
@@ -232,10 +230,10 @@ extension Project {
                 )
             ],
             schemes: [
-                Scheme(
+                Scheme.scheme(
                     name: name,
                     shared: true,
-                    buildAction: BuildAction(targets: [TargetReference(stringLiteral: name)]),
+                    buildAction: BuildAction.buildAction(targets: [TargetReference(stringLiteral: name)]),
                     testAction: nil,
                     runAction: nil
                 )

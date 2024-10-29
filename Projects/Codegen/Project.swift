@@ -7,12 +7,12 @@ let project = Project(
     packages: ExternalDependencies.apollo.swiftPackages() + ExternalDependencies.apolloIosCodegen.swiftPackages()
         + ExternalDependencies.argumentParser.swiftPackages(),
     targets: [
-        Target(
+        Target.target(
             name: "Codegen",
-            platform: .macOS,
+            destinations: .macOS,
             product: .app,
             bundleId: "com.hedvig.codegen",
-            deploymentTarget: .macOS(targetVersion: "13.0"),
+            deploymentTargets: .macOS("13.0"),
             infoPlist: "Info.plist",
             sources: ["Sources/**"],
             resources: [],
@@ -23,10 +23,10 @@ let project = Project(
         )
     ],
     schemes: [
-        Scheme(
+        Scheme.scheme(
             name: "Apollo Codegen",
             shared: true,
-            buildAction: BuildAction(targets: ["Codegen"]),
+            buildAction: BuildAction.buildAction(targets: ["Codegen"]),
             runAction: .runAction(executable: .init(stringLiteral: "Codegen"))
         )
     ]
