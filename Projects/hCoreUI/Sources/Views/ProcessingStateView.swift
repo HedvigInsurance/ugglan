@@ -91,9 +91,9 @@ public struct ProcessingStateView: View {
     private func errorView(errorMessage: String?) -> some View {
         GenericErrorView(
             title: L10n.somethingWentWrong,
-            description: errorMessage,
-            buttons: errorViewButtons
+            description: errorMessage
         )
+        .hErrorViewButtonConfig(errorViewButtons)
     }
 
     @ViewBuilder

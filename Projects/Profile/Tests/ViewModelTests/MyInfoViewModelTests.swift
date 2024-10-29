@@ -18,12 +18,12 @@ final class MyInfoViewModelTests: XCTestCase {
         Dependencies.shared.remove(for: ProfileClient.self)
         try await Task.sleep(nanoseconds: 100)
         XCTAssertNil(sut)
-        await waitUntil(description: "Store deinited successfully") {
+        try await waitUntil(description: "Store deinited successfully") {
             self.store == nil
         }
     }
 
-    func testPhoneUpdateSuccess() async {
+    func testPhoneUpdateSuccess() async throws {
         let mockPhoneNumber = "111111"
 
         let mockService = MockData.createMockProfileService(
@@ -34,7 +34,7 @@ final class MyInfoViewModelTests: XCTestCase {
 
         self.sut = mockService
 
-        let store: ProfileStore = globalPresentableStoreContainer.get()
+        let store = ProfileStore()
         self.store = store
 
         await store.sendAsync(
@@ -50,24 +50,29 @@ final class MyInfoViewModelTests: XCTestCase {
             )
         )
 
+        await store.sendAsync(.setMemberPhone(phone: mockPhoneNumber))
+
         let model = MyInfoViewModel()
-        model.phone = "213123"
+        model.phone = mockPhoneNumber
         await model.save()
-        await waitUntil(description: "Check phone number") {
-            store.state.memberDetails?.phone == "213123"
+
+        try await waitUntil(description: "Check phone number") {
+            model.phone == mockPhoneNumber
         }
     }
 
-    func testPhoneUpdateFailure() async {
+    func testPhoneUpdateFailure() async throws {
+        let mockPhoneNumber = "111111"
+
         let mockService = MockData.createMockProfileService(
             phoneUpdate: { phoneNumber in
-                throw MyInfoSaveError.phoneNumberEmpty
+                throw MyInfoSaveError.phoneNumberMalformed
             }
         )
 
         self.sut = mockService
 
-        let store: ProfileStore = globalPresentableStoreContainer.get()
+        let store = ProfileStore()
         self.store = store
         await store.sendAsync(
             .setMemberDetails(
@@ -75,19 +80,25 @@ final class MyInfoViewModelTests: XCTestCase {
                     id: "memberId",
                     firstName: "first name",
                     lastName: "last name",
-                    phone: "12312321",
+                    phone: mockPhoneNumber,
                     email: "",
                     hasTravelCertificate: true
                 )
             )
         )
+
+        await store.sendAsync(.setMemberPhone(phone: mockPhoneNumber))
+
         let model = MyInfoViewModel()
-        model.phone = ""
+        model.phone = mockPhoneNumber
         await model.save()
-        assert(model.phoneError == MyInfoSaveError.phoneNumberEmpty.localizedDescription)
+
+        try await waitUntil(description: "Check phone number") {
+            model.phoneError == MyInfoSaveError.phoneNumberMalformed.localizedDescription
+        }
     }
 
-    func testEmailUpdateSuccess() async {
+    func testEmailUpdateSuccess() async throws {
         let mockEmail = "email@email.com"
 
         let mockService = MockData.createMockProfileService(
@@ -116,13 +127,15 @@ final class MyInfoViewModelTests: XCTestCase {
         await store.sendAsync(.setMemberEmail(email: mockEmail))
 
         let model = MyInfoViewModel()
+        model.email = mockEmail
         await model.save()
-        await waitUntil(description: "check email") {
+
+        try await waitUntil(description: "check email") {
             model.email == mockEmail
         }
     }
 
-    func testEmailUpdateFailure() async {
+    func testEmailUpdateFailure() async throws {
         let mockEmail = "email@email.com"
         let mockService = MockData.createMockProfileService(
             emailUpdate: { email in
@@ -132,7 +145,7 @@ final class MyInfoViewModelTests: XCTestCase {
 
         self.sut = mockService
 
-        let store: ProfileStore = globalPresentableStoreContainer.get()
+        let store = ProfileStore()
         self.store = store
         await store.sendAsync(
             .setMemberDetails(
@@ -146,13 +159,15 @@ final class MyInfoViewModelTests: XCTestCase {
                 )
             )
         )
-        await waitUntil(description: "check email") {
+        try await waitUntil(description: "check email") {
             store.state.memberDetails?.email == mockEmail
         }
         let model = MyInfoViewModel()
-        model.email = "newemail@email.com"
+        model.email = mockEmail
         await model.save()
-        assert(model.emailError! == MyInfoSaveError.emailMalformed.localizedDescription)
 
+        try await waitUntil(description: "check email") {
+            model.emailError == MyInfoSaveError.emailMalformed.localizedDescription
+        }
     }
 }

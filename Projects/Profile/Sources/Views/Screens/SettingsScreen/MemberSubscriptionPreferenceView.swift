@@ -29,6 +29,7 @@ struct MemberSubscriptionPreferenceView: View {
                 content: {
                     EmailPreferencesConfirmView(vm: vm)
                         .environmentObject(profileNavigationVm)
+                        .embededInNavigation(tracking: ProfileDetentType.emailPreferences)
                 }
             )
         }
@@ -61,7 +62,7 @@ class MemberSubscriptionPreferenceViewModel: ObservableObject {
     }
 
     @MainActor
-    func toogleSubscription() async {
+    func toggleSubscription() async {
         withAnimation {
             isLoading = true
         }

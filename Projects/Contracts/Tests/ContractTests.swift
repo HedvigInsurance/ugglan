@@ -33,7 +33,9 @@ final class ContractsTests: XCTestCase {
                             perils: [],
                             insurableLimits: [],
                             documents: [],
-                            displayName: "display name"
+                            displayName: "display name",
+                            displayNameTier: "standard",
+                            tierDescription: "tier description"
                         )
                     ),
                     exposureDisplayName: "exposure display name",
@@ -42,6 +44,7 @@ final class ContractsTests: XCTestCase {
                     supportsAddressChange: true,
                     supportsCoInsured: true,
                     supportsTravelCertificate: true,
+                    supportsChangeTier: true,
                     upcomingChangedAgreement: nil,
                     upcomingRenewal: nil,
                     firstName: "first",

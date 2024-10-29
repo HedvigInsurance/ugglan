@@ -30,8 +30,10 @@ public struct ClaimFilesView: View {
                 .presentableStoreLensAnimation(.default)
             } else if let error = vm.error {
                 GenericErrorView(
-                    description: error,
-                    buttons: .init(
+                    description: error
+                )
+                .hErrorViewButtonConfig(
+                    .init(
                         actionButton: .init(
                             buttonAction: {
                                 withAnimation {

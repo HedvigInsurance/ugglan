@@ -19,7 +19,7 @@ final class MemberSubscriptionPreferenceViewModelTests: XCTestCase {
         XCTAssertNil(sut)
     }
 
-    func testToggleSubscriptionSuccess() async {
+    func testToggleSubscriptionSuccess() async throws {
         let mockService = MockData.createMockProfileService(
             subscriptionPreferenceUpdate: { _ in }
         )
@@ -27,8 +27,12 @@ final class MemberSubscriptionPreferenceViewModelTests: XCTestCase {
         self.sut = mockService
 
         let model = MemberSubscriptionPreferenceViewModel()
-        await model.toogleSubscription()
-        await waitUntil(description: "check isUnsubscribed") {
+        model.isUnsubscribed = false
+        await model.toggleSubscription()
+
+        try await Task.sleep(nanoseconds: 30_000_000)
+
+        try await waitUntil(description: "check isUnsubscribed") {
             model.isLoading == false && model.isUnsubscribed == false
         }
     }
@@ -43,7 +47,7 @@ final class MemberSubscriptionPreferenceViewModelTests: XCTestCase {
         self.sut = mockService
 
         let model = MemberSubscriptionPreferenceViewModel()
-        await model.toogleSubscription()
+        await model.toggleSubscription()
 
         assert(model.isLoading == false)
         assert(model.isUnsubscribed == false)

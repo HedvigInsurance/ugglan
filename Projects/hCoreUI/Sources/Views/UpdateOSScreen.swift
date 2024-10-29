@@ -9,12 +9,12 @@ public struct UpdateOSScreen: View {
     public var body: some View {
         GenericErrorView(
             title: L10n.osVersionTooLowTitle,
-            description: L10n.osVersionTooLowBody(UIDevice.current.systemVersion),
-            buttons: .init()
+            description: L10n.osVersionTooLowBody(UIDevice.current.systemVersion)
         )
+        .hErrorViewButtonConfig(.init())
     }
 }
 
-#Preview{
+#Preview {
     UpdateOSScreen()
 }

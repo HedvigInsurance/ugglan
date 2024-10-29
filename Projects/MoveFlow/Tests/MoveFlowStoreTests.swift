@@ -29,6 +29,7 @@ final class MoveFlowStoreTests: XCTestCase {
             maxMovingDate: "2025-09-08",
             suggestedNumberCoInsured: 2,
             currentHomeAddresses: [],
+            potentialHomeQuotes: [],
             quotes: [],
             faqs: [],
             extraBuildingTypes: []
@@ -71,7 +72,7 @@ final class MoveFlowStoreTests: XCTestCase {
         assert(mockService.events.first == .sendMoveIntent)
     }
 
-    func testRequestMoveIntentSuccess() async {
+    func testRequestMoveIntentSuccess() async throws {
         let moveFlowModel = MovingFlowModel(
             id: "id",
             isApartmentAvailableforStudent: true,
@@ -83,6 +84,7 @@ final class MoveFlowStoreTests: XCTestCase {
             maxMovingDate: "2025-09-08",
             suggestedNumberCoInsured: 2,
             currentHomeAddresses: [],
+            potentialHomeQuotes: [],
             quotes: [],
             faqs: [],
             extraBuildingTypes: []
@@ -95,6 +97,7 @@ final class MoveFlowStoreTests: XCTestCase {
         let store = MoveFlowStore()
         self.store = store
         await store.sendAsync(.requestMoveIntent)
+        try await Task.sleep(nanoseconds: 30_000_000)
 
         await waitUntil(description: "loading state") {
             store.loadingState[.requestMoveIntent] == nil
@@ -127,7 +130,7 @@ final class MoveFlowStoreTests: XCTestCase {
 
     func testConfirmMoveIntentSuccess() async {
         let mockService = MockData.createMockMoveFlowService(
-            moveIntentConfirm: { intentId in })
+            moveIntentConfirm: { intentId, homeQuoteId in })
 
         let store = MoveFlowStore()
         self.store = store
@@ -143,7 +146,7 @@ final class MoveFlowStoreTests: XCTestCase {
 
     func testConfirmMoveIntentFailure() async {
         let mockService = MockData.createMockMoveFlowService(
-            moveIntentConfirm: { _ in throw MovingFlowError.missingDataError(message: "error") }
+            moveIntentConfirm: { _, _ in throw MovingFlowError.missingDataError(message: "error") }
         )
 
         let store = MoveFlowStore()

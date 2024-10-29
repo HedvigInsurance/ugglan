@@ -107,11 +107,14 @@ public class ChangeTierClientOctopus: ChangeTierClient {
         let mutation = OctopusGraphQL.ChangeTierDeductibleCommitIntentMutation(input: input)
 
         do {
-
-            async let minimumTime: () = try Task.sleep(nanoseconds: 3_000_000_000)
-            async let request = try octopus.client.perform(mutation: mutation)
-            let response = try await [minimumTime, request] as [Any]
-            let data = response[1] as! OctopusGraphQL.ChangeTierDeductibleCommitIntentMutation.Data
+            let delayTask = Task {
+                try await Task.sleep(nanoseconds: 3_000_000_000)
+            }
+            let clientTask = Task {
+                try await octopus.client.perform(mutation: mutation)
+            }
+            try await delayTask.value
+            let data = try await clientTask.value
 
             if let userError = data.changeTierDeductibleCommitIntent.userError?.message {
                 throw ChangeTierError.errorMessage(message: userError)
@@ -178,26 +181,30 @@ public class ChangeTierClientOctopus: ChangeTierClient {
     }
 
     public func compareProductVariants(termsVersion: [String]) async throws -> ProductVariantComparison {
-        let productVariantQuery = OctopusGraphQL.ProductVariantComparisonQuery(termsVersions: termsVersion)
-        let productVariantData = try await octopus.client.fetch(
-            query: productVariantQuery,
-            cachePolicy: .fetchIgnoringCacheCompletely
-        )
+        do {
+            let productVariantQuery = OctopusGraphQL.ProductVariantComparisonQuery(termsVersions: termsVersion)
+            let productVariantData = try await octopus.client.fetch(
+                query: productVariantQuery,
+                cachePolicy: .fetchIgnoringCacheCompletely
+            )
 
-        let productVariantRows: [ProductVariantComparison.ProductVariantComparisonRow] =
-            productVariantData.productVariantComparison.rows.map({
-                .init(data: $0.fragments.productVariantComparisonRowFragment)
-            })
+            let productVariantRows: [ProductVariantComparison.ProductVariantComparisonRow] =
+                productVariantData.productVariantComparison.rows.map({
+                    .init(data: $0.fragments.productVariantComparisonRowFragment)
+                })
 
-        let productVariantColumns: [ProductVariant] = productVariantData.productVariantComparison
-            .variantColumns.map({ .init(data: $0.fragments.productVariantFragment) })
+            let productVariantColumns: [ProductVariant] = productVariantData.productVariantComparison
+                .variantColumns.map({ .init(data: $0.fragments.productVariantFragment) })
 
-        let productVariantComparision = ProductVariantComparison(
-            rows: productVariantRows,
-            variantColumns: productVariantColumns
-        )
+            let productVariantComparision = ProductVariantComparison(
+                rows: productVariantRows,
+                variantColumns: productVariantColumns
+            )
 
-        return productVariantComparision
+            return productVariantComparision
+        } catch let ex {
+            throw ChangeTierError.somethingWentWrong
+        }
     }
 }
 

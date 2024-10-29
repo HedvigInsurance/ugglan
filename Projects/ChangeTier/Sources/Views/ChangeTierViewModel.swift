@@ -24,7 +24,6 @@ public class ChangeTierViewModel: ObservableObject {
 
     @Published var selectedTier: Tier?
     @Published var selectedQuote: Quote?
-    @Published var productVariantComparision: ProductVariantComparison?
 
     var isValid: Bool {
         let selectedTierIsSameAsCurrent = currentTier?.name == selectedTier?.name
@@ -49,32 +48,28 @@ public class ChangeTierViewModel: ObservableObject {
 
     @MainActor
     func setTier(for tierName: String) {
-        withAnimation {
-            let newSelectedTier = tiers.first(where: { $0.name == tierName })
-            if newSelectedTier != selectedTier {
-                if newSelectedTier?.quotes.count ?? 0 == 1 {
-                    self.selectedQuote = newSelectedTier?.quotes.first
-                    self.canEditDeductible = false
-                } else {
-                    self.selectedQuote = nil
-                    self.canEditDeductible = true
-                }
+        let newSelectedTier = tiers.first(where: { $0.name == tierName })
+        if newSelectedTier != selectedTier {
+            if newSelectedTier?.quotes.count ?? 0 == 1 {
+                self.selectedQuote = newSelectedTier?.quotes.first
+                self.canEditDeductible = false
+            } else {
+                self.selectedQuote = nil
+                self.canEditDeductible = true
             }
-            self.displayName =
-                selectedQuote?.productVariant?.displayName ?? newSelectedTier?.quotes.first?.productVariant?
-                .displayName ?? displayName
-            self.selectedTier = newSelectedTier
-            self.newPremium = selectedQuote?.premium
         }
+        self.displayName =
+            selectedQuote?.productVariant?.displayName ?? newSelectedTier?.quotes.first?.productVariant?
+            .displayName ?? displayName
+        self.selectedTier = newSelectedTier
+        self.newPremium = selectedQuote?.premium
     }
 
     @MainActor
     func setDeductible(for deductibleId: String) {
-        withAnimation {
-            if let deductible = selectedTier?.quotes.first(where: { $0.id == deductibleId }) {
-                self.selectedQuote = deductible
-                self.newPremium = deductible.premium
-            }
+        if let deductible = selectedTier?.quotes.first(where: { $0.id == deductibleId }) {
+            self.selectedQuote = deductible
+            self.newPremium = deductible.premium
         }
     }
 
@@ -161,40 +156,6 @@ public class ChangeTierViewModel: ObservableObject {
                         errorMessage: error.localizedDescription
                     )
                 }
-            }
-        }
-    }
-
-    @MainActor
-    public func getProductVariantComparision() async throws {
-        withAnimation {
-            viewState = .loading
-        }
-        do {
-            var termsVersionsToCompare: [String] = []
-            tiers.forEach({ tier in
-                tier.quotes.forEach({ quote in
-                    if let termsVersion = quote.productVariant?.termsVersion,
-                        !termsVersionsToCompare.contains(termsVersion)
-                    {
-                        termsVersionsToCompare.append(termsVersion)
-                    }
-                })
-            })
-
-            let productVariantComparisionData = try await service.compareProductVariants(
-                termsVersion: termsVersionsToCompare
-            )
-            self.productVariantComparision = productVariantComparisionData
-
-            withAnimation {
-                viewState = .success
-            }
-        } catch let error {
-            withAnimation {
-                self.viewState = .error(
-                    errorMessage: error.localizedDescription
-                )
             }
         }
     }

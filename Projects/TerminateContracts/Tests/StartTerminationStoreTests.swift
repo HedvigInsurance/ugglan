@@ -62,14 +62,14 @@ final class StartTerminationStoreTests: XCTestCase {
 
         await store.sendAsync(.startTermination(config: config))
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.getInitialStep] == nil
+            store.loadingState[.getInitialStep] == nil
         }
 
         assert(store.state.successStep == nil)
         assert(store.state.failedStep != nil)
     }
 
-    func testStartTerminationThrowFailure() async {
+    func testStartTerminationThrowFailure() async throws {
         let config: TerminationConfirmConfig = .init(
             contractId: "contractId",
             contractDisplayName: "contract display name",
@@ -87,8 +87,10 @@ final class StartTerminationStoreTests: XCTestCase {
         self.store = store
 
         await store.sendAsync(.startTermination(config: config))
+        try await Task.sleep(nanoseconds: 30_000_000)
+
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.getInitialStep] != nil
+            store.loadingState[.getInitialStep] != nil
         }
 
         assert(store.state.successStep == nil)

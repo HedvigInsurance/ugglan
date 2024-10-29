@@ -79,6 +79,7 @@ extension View {
 
 struct hFieldLabel: View {
     let placeholder: String
+    let useScaleEffect: Bool
     @Binding var animate: Bool
     @Binding var error: String?
     @Binding var shouldMoveLabel: Bool
@@ -86,17 +87,31 @@ struct hFieldLabel: View {
     @Environment(\.hFieldSize) var size
     @Environment(\.hBackgroundOption) var backgroundOption
 
+    init(
+        placeholder: String,
+        useScaleEffect: Bool = true,
+        animate: Binding<Bool>,
+        error: Binding<String?>,
+        shouldMoveLabel: Binding<Bool>
+    ) {
+        self.placeholder = placeholder
+        self.useScaleEffect = useScaleEffect
+        self._animate = animate
+        self._error = error
+        self._shouldMoveLabel = shouldMoveLabel
+    }
+
     var body: some View {
         let sizeToScaleFrom = size.labelFont.fontSize
         let sizeToScaleTo = HFontTextStyle.label.fontSize
         let ratio = sizeToScaleTo / sizeToScaleFrom
         return hText(
-            placeholder,
-            style: size.labelFont
+            placeholder
         )
+        .hTextStyle(useScaleEffect ? .body2 : (shouldMoveLabel ? .label : .body2))
         .padding(.leading, 1)
         .foregroundColor(getTextColor())
-        .scaleEffect(shouldMoveLabel ? ratio : 1, anchor: .leading)
+        .scaleEffect(useScaleEffect ? (shouldMoveLabel ? ratio : 1) : 1, anchor: .leading)
     }
 
     @hColorBuilder

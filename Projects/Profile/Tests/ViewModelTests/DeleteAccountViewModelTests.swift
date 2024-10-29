@@ -76,7 +76,9 @@ final class DeleteAccountViewModelTests: XCTestCase {
                             perils: [],
                             insurableLimits: [],
                             documents: [],
-                            displayName: ""
+                            displayName: "",
+                            displayNameTier: "standard",
+                            tierDescription: "tier description"
                         )
                     ),
                     exposureDisplayName: "display name",
@@ -85,6 +87,7 @@ final class DeleteAccountViewModelTests: XCTestCase {
                     supportsAddressChange: true,
                     supportsCoInsured: true,
                     supportsTravelCertificate: true,
+                    supportsChangeTier: true,
                     upcomingChangedAgreement: nil,
                     upcomingRenewal: nil,
                     firstName: "first name",
