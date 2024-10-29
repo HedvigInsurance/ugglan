@@ -174,6 +174,7 @@ public struct MovingFlowNavigation: View {
             options: [.navigationType(type: .large)],
             tracking: MovingFlowDetentType.typeOfBuildingPicker
         )
+        .environmentObject(movingFlowNavigationVm)
     }
 }
 
