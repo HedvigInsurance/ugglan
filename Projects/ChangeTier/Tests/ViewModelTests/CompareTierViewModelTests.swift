@@ -119,4 +119,23 @@ final class CompareTierVireModelTests: XCTestCase {
         assert(model.perils == ["Standard": [peril1]])
         assert(model.viewState == .success)
     }
+
+    func testCompareTiersFailure() async throws {
+        let mockService = MockData.createMockChangeTier(compareProductVariants: { _ in
+            throw ChangeTierError.somethingWentWrong
+        })
+
+        self.sut = mockService
+
+        let model = CompareTierViewModel(tiers: tiers, selectedTier: currentTier)
+        self.vm = model
+        model.getProductVariantComparision()
+
+        try await Task.sleep(nanoseconds: 30_000_000)
+        assert(model.tiers == tiers)
+        assert(model.tiers.first == tiers.first)
+        assert(model.tiers.count == tiers.count)
+        assert(model.perils == [:])
+        assert(model.viewState == .error(errorMessage: ChangeTierError.somethingWentWrong.localizedDescription))
+    }
 }
