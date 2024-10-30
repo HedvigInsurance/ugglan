@@ -33,9 +33,7 @@ struct TypeOfBuildingPickerView: View {
                     if let selected = selected.first {
                         isBuildingTypePickerPresented = nil
                         if let object = selected.0 {
-                            /* TODO: CHECK */
                             addExtraBuidlingViewModel.buildingType = object
-                            //                            store.send(.setExtraBuildingType(with: object))
                         }
                     }
                 },

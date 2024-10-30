@@ -12,8 +12,8 @@ public class MovingFlowNavigationViewModel: ObservableObject {
 
     @Published public var addressInputModel: AddressInputModel?
     @Published public var movingFlowVm: MovingFlowModel?
-    @Published public var houseInformationInputVm: HouseInformationInputModel?
-    @Published public var movingFlowAddExtraBuildingVm: MovingFlowAddExtraBuildingViewModel?
+    @Published public var houseInformationInputVm = HouseInformationInputModel()
+    @Published public var movingFlowAddExtraBuildingVm = MovingFlowAddExtraBuildingViewModel()
     @Published public var movingFlowConfirmVm = MovingFlowConfirmViewModel()
 
     init() {}
@@ -97,17 +97,19 @@ public struct MovingFlowNavigation: View {
         }
         .environmentObject(movingFlowNavigationVm)
         .detent(presented: $movingFlowNavigationVm.isAddExtraBuildingPresented, style: [.height]) {
-            MovingFlowAddExtraBuildingView(isBuildingTypePickerPresented: $isBuildingTypePickerPresented)
-                .environmentObject(movingFlowNavigationVm.movingFlowAddExtraBuildingVm ?? .init())
-                .detent(item: $isBuildingTypePickerPresented, style: [.height]) { extraBuildingType in
-                    openTypeOfBuildingPicker(for: extraBuildingType.extraBuildingType)
-                }
-                .environmentObject(movingFlowNavigationVm)
-                .navigationTitle(L10n.changeAddressAddBuilding)
-                .embededInNavigation(
-                    options: [.navigationType(type: .large)],
-                    tracking: MovingFlowDetentType.addExtraBuilding
-                )
+            MovingFlowAddExtraBuildingView(
+                isBuildingTypePickerPresented: $isBuildingTypePickerPresented,
+                vm: movingFlowNavigationVm.movingFlowAddExtraBuildingVm
+            )
+            .detent(item: $isBuildingTypePickerPresented, style: [.height]) { extraBuildingType in
+                openTypeOfBuildingPicker(for: extraBuildingType.extraBuildingType)
+            }
+            .environmentObject(movingFlowNavigationVm)
+            .navigationTitle(L10n.changeAddressAddBuilding)
+            .embededInNavigation(
+                options: [.navigationType(type: .large)],
+                tracking: MovingFlowDetentType.addExtraBuilding
+            )
         }
         .detent(
             item: $movingFlowNavigationVm.document,
@@ -131,7 +133,7 @@ public struct MovingFlowNavigation: View {
     }
 
     func openHouseFillScreen() -> some View {
-        return MovingFlowHouseView(vm: movingFlowNavigationVm.houseInformationInputVm ?? .init())
+        return MovingFlowHouseView(vm: movingFlowNavigationVm.houseInformationInputVm)
             .withDismissButton()
     }
 
@@ -179,7 +181,7 @@ public struct MovingFlowNavigation: View {
             tracking: MovingFlowDetentType.typeOfBuildingPicker
         )
         .environmentObject(movingFlowNavigationVm)
-        .environmentObject(movingFlowNavigationVm.movingFlowAddExtraBuildingVm ?? .init())
+        .environmentObject(movingFlowNavigationVm.movingFlowAddExtraBuildingVm)
     }
 }
 

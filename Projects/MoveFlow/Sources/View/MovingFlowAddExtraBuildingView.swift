@@ -6,10 +6,18 @@ import hCoreUI
 import hGraphQL
 
 struct MovingFlowAddExtraBuildingView: View {
-    //    @StateObject var vm = MovingFlowAddExtraBuildingViewModel()
-    @EnvironmentObject var vm: MovingFlowAddExtraBuildingViewModel
+    @ObservedObject var vm: MovingFlowAddExtraBuildingViewModel
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
     @Binding var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
+
+    init(
+        isBuildingTypePickerPresented: Binding<ExtraBuildingTypeNavigationModel?>,
+        vm: MovingFlowAddExtraBuildingViewModel
+    ) {
+        self._isBuildingTypePickerPresented = isBuildingTypePickerPresented
+        self.vm = vm
+        vm.clean()
+    }
 
     var body: some View {
         hForm {
@@ -86,7 +94,7 @@ struct MovingFlowAddExtraBuildingView: View {
 
     func addExtraBuilding() {
         if vm.isValid() {
-            movingFlowNavigationVm.houseInformationInputVm?.extraBuildings
+            movingFlowNavigationVm.houseInformationInputVm.extraBuildings
                 .append(
                     ExtraBuilding(
                         id: UUID().uuidString,
@@ -119,26 +127,17 @@ public class MovingFlowAddExtraBuildingViewModel: ObservableObject {
     @Published var buildingType: ExtraBuildingType?
     @Published var livingArea: String = ""
     @Published var connectedToWater = false
-
     @Published var livingAreaError: String?
     @Published var buildingTypeError: String?
-    private var cancellables = Set<AnyCancellable>()
 
-    init() {
-        //        trackBuildingTypeAction()
+    func clean() {
+        self.type = nil
+        self.buildingType = nil
+        self.livingArea = ""
+        self.connectedToWater = false
+        self.livingAreaError = nil
+        self.buildingTypeError = nil
     }
-
-    //    func trackBuildingTypeAction() {
-    /* TODO: CHECK */
-    //        store.actionSignal
-    //            .receive(on: RunLoop.main)
-    //            .sink { [weak self] action in
-    //                if case let .setExtraBuildingType(type) = action {
-    //                    self?.buildingType = type
-    //                }
-    //            }
-    //            .store(in: &cancellables)
-    //    }
 
     func isValid() -> Bool {
         livingAreaError = (Int(livingArea) ?? 0) > 0 ? nil : L10n.changeAddressExtraBuildingSizeError
@@ -151,6 +150,6 @@ struct MovingFlowAddExtraBuildingView_Previews: PreviewProvider {
     @State static var isOn: ExtraBuildingTypeNavigationModel? = .init()
 
     static var previews: some View {
-        MovingFlowAddExtraBuildingView(isBuildingTypePickerPresented: $isOn)
+        MovingFlowAddExtraBuildingView(isBuildingTypePickerPresented: $isOn, vm: .init())
     }
 }
