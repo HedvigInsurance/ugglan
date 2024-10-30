@@ -36,6 +36,10 @@ typealias GetTier = (ChangeTier.ChangeTierInputData) async throws(ChangeTier.Cha
 typealias CommitTier = (String) async throws(ChangeTier.ChangeTierError) -> Void
 
 class MockChangeTierService: ChangeTierClient {
+    func compareProductVariants(termsVersion: [String]) async throws -> ChangeTier.ProductVariantComparison {
+        throw ChangeTierError.somethingWentWrong
+    }
+
     var events = [Event]()
 
     var fetchTier: GetTier
