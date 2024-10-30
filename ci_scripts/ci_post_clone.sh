@@ -15,7 +15,7 @@ if [[ $CI_WORKFLOW == "Tests" ]]; then
     echo "" > ~/buildForTests
 fi
 
-if test -f /buildForTests; then
+if test -f ~/buildForTests; then
     echo "BUILDFORTESTS"
 fi
 
