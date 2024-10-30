@@ -12,9 +12,12 @@ brew tap tuist/tuist
 brew install --formula tuist
 brew install --formula tuist@4.31.0
 if [[ $CI_WORKFLOW == "Tests" ]]; then
-    export BUILD_FOR_TESTS="1"
+    echo "" > ~/buildForTests
 fi
-echo "BUILD FOR TESTS = ${BUILD_FOR_TESTS}"
+
+if test -f /buildForTests; then
+    echo "BUILDFORTESTS"
+fi
 
 cd $CI_PRIMARY_REPOSITORY_PATH;
 

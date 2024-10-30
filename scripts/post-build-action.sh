@@ -2,7 +2,7 @@
 #rm -rf "${TARGET_BUILD_DIR}/${TARGET_NAME}.app/Frameworks/"*".framework"/Frameworks/GoogleAppMeasurement.framework
 #cp -rf "${CONFIGURATION_BUILD_DIR}/"Adyen3DS2.framework "${TARGET_BUILD_DIR}/${TARGET_NAME}.app/Frameworks/"Adyen3DS2.framework
 #
-if [[ $BUILD_FOR_TESTS == "1" ]]; then
+if test -f /buildForTests; then
     echo "BUILD FOR TESTS"
 else
     function copyFramework() {
