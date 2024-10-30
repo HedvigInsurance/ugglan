@@ -8,6 +8,7 @@ final class MemberSubscriptionPreferenceViewModelTests: XCTestCase {
     weak var sut: MockProfileService?
 
     override func setUp() {
+        UserDefaults.standard.removeObject(forKey: MemberSubscriptionPreferenceViewModel.userDefaultsKey)
         super.setUp()
         globalPresentableStoreContainer.deletePersistanceContainer()
         sut = nil
@@ -27,13 +28,12 @@ final class MemberSubscriptionPreferenceViewModelTests: XCTestCase {
         self.sut = mockService
 
         let model = MemberSubscriptionPreferenceViewModel()
-        model.isUnsubscribed = false
+        try await Task.sleep(nanoseconds: 300_000_000)
+        let currentValue = model.isUnsubscribed
         await model.toggleSubscription()
-
-        try await Task.sleep(nanoseconds: 30_000_000)
-
+        try await Task.sleep(nanoseconds: 300_000_000)
         try await waitUntil(description: "check isUnsubscribed") {
-            model.isLoading == false && model.isUnsubscribed == false
+            model.isLoading == false && model.isUnsubscribed == !currentValue
         }
     }
 
