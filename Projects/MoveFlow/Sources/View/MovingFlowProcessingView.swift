@@ -5,7 +5,6 @@ import hCoreUI
 import hGraphQL
 
 struct MovingFlowProcessingView: View {
-    @StateObject var vm = ProcessingViewModel()
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
     var onSuccessButtonAction: () -> Void
     var onErrorButtonAction: () -> Void
@@ -25,14 +24,10 @@ struct MovingFlowProcessingView: View {
                     }),
                     dismissButton: nil
                 ),
-            state: $vm.viewState,
+            state: $movingFlowNavigationVm.movingFlowConfirmVm.viewState,
             duration: 6
         )
     }
-}
-
-class ProcessingViewModel: ObservableObject {
-    @Published var viewState: ProcessingState = .loading
 }
 
 struct SuccessScreen_Previews: PreviewProvider {

@@ -14,6 +14,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
     @Published public var movingFlowVm: MovingFlowModel?
     @Published public var houseInformationInputVm: HouseInformationInputModel?
     @Published public var movingFlowAddExtraBuildingVm: MovingFlowAddExtraBuildingViewModel?
+    @Published public var movingFlowConfirmVm = MovingFlowConfirmViewModel()
 
     init() {}
 }
@@ -138,6 +139,7 @@ public struct MovingFlowNavigation: View {
         MovingFlowConfirm()
             .navigationTitle(L10n.changeAddressSummaryTitle)
             .withDismissButton()
+            .environmentObject(movingFlowNavigationVm.movingFlowConfirmVm)
     }
 
     func openProcessingView() -> some View {

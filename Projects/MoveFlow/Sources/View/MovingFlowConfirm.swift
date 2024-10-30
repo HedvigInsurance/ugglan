@@ -6,7 +6,7 @@ import hCoreUI
 import hGraphQL
 
 struct MovingFlowConfirm: View {
-    @StateObject var movingFlowConfirmVm = MovingFlowConfirmViewModel()
+    @EnvironmentObject var movingFlowConfirmVm: MovingFlowConfirmViewModel
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
     @EnvironmentObject var router: Router
 
@@ -46,8 +46,8 @@ struct MovingFlowConfirm: View {
                             intentId: movingFlowNavigationVm.movingFlowVm?.id ?? "",
                             homeQuoteId: movingFlowNavigationVm.movingFlowVm?.homeQuote?.id ?? ""
                         )
-                        router.push(MovingFlowRouterWithHiddenBackButtonActions.processing)
                     }
+                    router.push(MovingFlowRouterWithHiddenBackButtonActions.processing)
                 }
             )
             QuoteSummaryScreen(vm: vm)
@@ -63,14 +63,27 @@ struct MovingFlowConfirm: View {
     }
 }
 
-class MovingFlowConfirmViewModel: ObservableObject {
+public class MovingFlowConfirmViewModel: ObservableObject {
     @Inject private var service: MoveFlowClient
+    @Published var viewState: ProcessingState = .loading
 
     @MainActor
     func confirmMoveIntent(intentId: String, homeQuoteId: String) async {
+        withAnimation {
+            viewState = .loading
+        }
+
         do {
             try await service.confirmMoveIntent(intentId: intentId, homeQuoteId: homeQuoteId)
-        } catch {}
+
+            withAnimation {
+                viewState = .success
+            }
+        } catch let exception {
+            withAnimation {
+                self.viewState = .error(errorMessage: exception.localizedDescription)
+            }
+        }
     }
 }
 
@@ -80,26 +93,6 @@ struct MovingFlowConfirm_Previews: PreviewProvider {
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         Localization.Locale.currentLocale.send(.en_SE)
         return MovingFlowConfirm()
-            .onAppear {
-                //                let store: MoveFlowStore = globalPresentableStoreContainer.get()
-                //                let MovingFlowModel = MovingFlowModel(
-                //                    id: "id",
-                //                    isApartmentAvailableforStudent: true,
-                //                    maxApartmentNumberCoInsured: 5,
-                //                    maxApartmentSquareMeters: 300,
-                //                    maxHouseNumberCoInsured: 5,
-                //                    maxHouseSquareMeters: 1000,
-                //                    minMovingDate: "2024-10-01",
-                //                    maxMovingDate: "2025-10-01",
-                //                    suggestedNumberCoInsured: 3,
-                //                    currentHomeAddresses: [],
-                //                    potentialHomeQuotes: [],
-                //                    quotes: [],
-                //                    faqs: [],
-                //                    extraBuildingTypes: []
-                //                )
-                //                store.send(.setMoveIntent(with: MovingFlowModel))
-            }
             .environmentObject(Router())
             .environmentObject(MovingFlowNavigationViewModel())
     }
