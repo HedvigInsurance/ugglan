@@ -71,7 +71,7 @@ final class ContractSelectStoreTests: XCTestCase {
         assert(store.state.failedStep != nil)
     }
 
-    func testContractSelectThrowFailure() async {
+    func testContractSelectThrowFailure() async throws {
         MockData.createMockSubmitClaimService(contractSelect: { contractId, context in
             throw ClaimsError.error
         })
@@ -83,11 +83,12 @@ final class ContractSelectStoreTests: XCTestCase {
         )
 
         await store.sendAsync(.contractSelectRequest(contractId: "contract id"))
-
-        await waitUntil(description: "loading state") {
-            if case .error = store.loadingState[.postContractSelect] { return true } else { return false }
+        try await Task.sleep(nanoseconds: 5 * 100_000_000)
+        var isError: Bool = false
+        if case .error = store.loadingState[.postContractSelect] {
+            isError = true
         }
-
+        assert(isError)
         assert(store.state.successStep == nil)
         assert(store.state.failedStep == nil)
     }
