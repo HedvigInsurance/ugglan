@@ -13,7 +13,6 @@ public class MovingFlowNavigationViewModel: ObservableObject {
     @Published public var addressInputModel: AddressInputModel?
     @Published public var movingFlowVm: MovingFlowModel?
     @Published public var houseInformationInputVm: HouseInformationInputModel?
-
     @Published public var movingFlowAddExtraBuildingVm: MovingFlowAddExtraBuildingViewModel?
 
     init() {}

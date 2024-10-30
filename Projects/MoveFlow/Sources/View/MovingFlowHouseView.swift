@@ -7,6 +7,7 @@ import hGraphQL
 struct MovingFlowHouseView: View {
     @ObservedObject var vm: HouseInformationInputModel
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
+    @EnvironmentObject var router: Router
 
     var body: some View {
         form.loading($vm.viewState)
@@ -200,10 +201,17 @@ struct MovingFlowHouseView: View {
     func continuePressed() {
         if vm.isInputValid() {
             Task {
-                try await vm.requestMoveIntent(
+                let movingFlowData = try await vm.requestMoveIntent(
                     intentId: movingFlowNavigationVm.movingFlowVm?.id ?? "",
                     addressInputModel: movingFlowNavigationVm.addressInputModel ?? .init()
                 )
+                movingFlowNavigationVm.movingFlowVm = movingFlowData
+
+                if let changeTierModel = movingFlowData?.changeTier {
+                    router.push(MovingFlowRouterActions.selectTier(changeTierModel: changeTierModel))
+                } else {
+                    router.push(MovingFlowRouterActions.confirm)
+                }
             }
         }
     }
@@ -261,7 +269,7 @@ public class HouseInformationInputModel: ObservableObject {
             let movingFlowData = try await service.requestMoveIntent(
                 intentId: intentId,
                 addressInputModel: addressInputModel,
-                houseInformationInputModel: .init()
+                houseInformationInputModel: self
             )
 
             withAnimation {
