@@ -35,39 +35,9 @@ final class MovingFlowHousingTypeViewModelTests: XCTestCase {
         XCTAssertNil(sut)
     }
 
-    func testHousingTypeApartmentSuccess() async {
-        let mockService = MockData.createMockMoveFlowService(moveIntentRequest: {
-            intentId,
-            addressInputModel,
-            houseInformationInputModel in
-            self.movingFlowModel
-        })
+    func testHousingTypeSuccess() async {
+        let extraBuildings = [ExtraBuilding(id: "", type: "building tyoe", livingArea: 20, connectedToWater: false)]
 
-        self.sut = mockService
-
-        //        let store = MoveFlowStore()
-        //        self.store = store
-        //        await store.sendAsync(.setHousingType(with: .apartment))
-        //        assert(store.state.selectedHousingType == .apartment)
-    }
-
-    func testHousingTypeHouseSuccess() async {
-        let mockService = MockData.createMockMoveFlowService(moveIntentRequest: {
-            intentId,
-            addressInputModel,
-            houseInformationInputModel in
-            self.movingFlowModel
-        })
-
-        self.sut = mockService
-
-        //        let store = MoveFlowStore()
-        //        self.store = store
-        //        await store.sendAsync(.setHousingType(with: .house))
-        //        assert(store.state.selectedHousingType == .house)
-    }
-
-    func testHousingTypeRentalSuccess() async {
         let mockService = MockData.createMockMoveFlowService(moveIntentRequest: {
             intentId,
             addressInputModel,
@@ -76,9 +46,10 @@ final class MovingFlowHousingTypeViewModelTests: XCTestCase {
         })
         self.sut = mockService
 
-        //        let store = MoveFlowStore()
-        //        self.store = store
-        //        await store.sendAsync(.setHousingType(with: .rental))
-        //        assert(store.state.selectedHousingType == .rental)
+        let houseModel = HouseInformationInputModel()
+        houseModel.extraBuildings = extraBuildings
+
+        assert(houseModel.extraBuildings.count == extraBuildings.count)
+        assert(houseModel.extraBuildings.first?.type == extraBuildings.first?.type)
     }
 }
