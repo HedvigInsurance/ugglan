@@ -7,15 +7,19 @@ import hGraphQL
 
 struct MovingFlowAddExtraBuildingView: View {
     @ObservedObject var vm: MovingFlowAddExtraBuildingViewModel
+    @ObservedObject var houseInformationInputVm: HouseInformationInputModel
+
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
     @Binding var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
 
     init(
         isBuildingTypePickerPresented: Binding<ExtraBuildingTypeNavigationModel?>,
-        vm: MovingFlowAddExtraBuildingViewModel
+        vm: MovingFlowAddExtraBuildingViewModel,
+        houseInformationInputVm: HouseInformationInputModel
     ) {
         self._isBuildingTypePickerPresented = isBuildingTypePickerPresented
         self.vm = vm
+        self.houseInformationInputVm = houseInformationInputVm
         vm.clean()
     }
 
@@ -41,7 +45,7 @@ struct MovingFlowAddExtraBuildingView: View {
                             hText(L10n.generalSaveButton)
                         }
                         hButton.LargeButton(type: .ghost) {
-                            movingFlowNavigationVm.isAddExtraBuildingPresented = false
+                            movingFlowNavigationVm.isAddExtraBuildingPresented = nil
                         } content: {
                             hText(L10n.generalCancelButton)
                         }
@@ -94,7 +98,7 @@ struct MovingFlowAddExtraBuildingView: View {
 
     func addExtraBuilding() {
         if vm.isValid() {
-            movingFlowNavigationVm.houseInformationInputVm.extraBuildings
+            houseInformationInputVm.extraBuildings
                 .append(
                     ExtraBuilding(
                         id: UUID().uuidString,
@@ -103,7 +107,7 @@ struct MovingFlowAddExtraBuildingView: View {
                         connectedToWater: vm.connectedToWater
                     )
                 )
-            movingFlowNavigationVm.isAddExtraBuildingPresented = false
+            movingFlowNavigationVm.isAddExtraBuildingPresented = nil
         }
     }
 }
@@ -150,6 +154,10 @@ struct MovingFlowAddExtraBuildingView_Previews: PreviewProvider {
     @State static var isOn: ExtraBuildingTypeNavigationModel? = .init()
 
     static var previews: some View {
-        MovingFlowAddExtraBuildingView(isBuildingTypePickerPresented: $isOn, vm: .init())
+        MovingFlowAddExtraBuildingView(
+            isBuildingTypePickerPresented: $isOn,
+            vm: .init(),
+            houseInformationInputVm: .init()
+        )
     }
 }

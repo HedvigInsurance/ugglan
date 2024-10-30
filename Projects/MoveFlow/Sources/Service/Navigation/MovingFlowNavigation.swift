@@ -7,20 +7,25 @@ import hCoreUI
 import hGraphQL
 
 public class MovingFlowNavigationViewModel: ObservableObject {
-    @Published var isAddExtraBuildingPresented = false
+    @Published var isAddExtraBuildingPresented: HouseInformationInputModel?
     @Published public var document: hPDFDocument? = nil
 
     @Published public var addressInputModel = AddressInputModel()
     @Published public var movingFlowVm: MovingFlowModel?
-    @Published public var houseInformationInputVm = HouseInformationInputModel()
     @Published public var movingFlowAddExtraBuildingVm = MovingFlowAddExtraBuildingViewModel()
-    @Published public var movingFlowConfirmVm = MovingFlowConfirmViewModel()
 
     init() {}
 }
 
-enum MovingFlowRouterWithHiddenBackButtonActions {
-    case processing
+enum MovingFlowRouterWithHiddenBackButtonActions: Hashable {
+    static func == (
+        lhs: MovingFlowRouterWithHiddenBackButtonActions,
+        rhs: MovingFlowRouterWithHiddenBackButtonActions
+    ) -> Bool {
+        return false
+    }
+
+    case processing(vm: MovingFlowConfirmViewModel)
 }
 
 extension MovingFlowRouterWithHiddenBackButtonActions: TrackingViewNameProtocol {
@@ -80,8 +85,8 @@ public struct MovingFlowNavigation: View {
                 .routerDestination(for: MovingFlowRouterWithHiddenBackButtonActions.self, options: .hidesBackButton) {
                     action in
                     switch action {
-                    case .processing:
-                        openProcessingView()
+                    case let .processing(confirmVm):
+                        openProcessingView(confirmVm: confirmVm)
                     }
                 }
                 .routerDestination(for: MovingFlowRouterActions.self) { action in
@@ -96,10 +101,14 @@ public struct MovingFlowNavigation: View {
                 }
         }
         .environmentObject(movingFlowNavigationVm)
-        .detent(presented: $movingFlowNavigationVm.isAddExtraBuildingPresented, style: [.height]) {
+        .detent(
+            item: $movingFlowNavigationVm.isAddExtraBuildingPresented,
+            style: [.height]
+        ) { houseInformationInputModel in
             MovingFlowAddExtraBuildingView(
                 isBuildingTypePickerPresented: $isBuildingTypePickerPresented,
-                vm: movingFlowNavigationVm.movingFlowAddExtraBuildingVm
+                vm: movingFlowNavigationVm.movingFlowAddExtraBuildingVm,
+                houseInformationInputVm: houseInformationInputModel
             )
             .detent(item: $isBuildingTypePickerPresented, style: [.height]) { extraBuildingType in
                 openTypeOfBuildingPicker(for: extraBuildingType.extraBuildingType)
@@ -133,7 +142,7 @@ public struct MovingFlowNavigation: View {
     }
 
     func openHouseFillScreen() -> some View {
-        return MovingFlowHouseView(vm: movingFlowNavigationVm.houseInformationInputVm)
+        return MovingFlowHouseView()
             .withDismissButton()
     }
 
@@ -141,17 +150,17 @@ public struct MovingFlowNavigation: View {
         MovingFlowConfirm()
             .navigationTitle(L10n.changeAddressSummaryTitle)
             .withDismissButton()
-            .environmentObject(movingFlowNavigationVm.movingFlowConfirmVm)
     }
 
-    func openProcessingView() -> some View {
+    func openProcessingView(confirmVm: MovingFlowConfirmViewModel) -> some View {
         MovingFlowProcessingView(
             onSuccessButtonAction: {
                 router.dismiss()
             },
             onErrorButtonAction: {
                 router.pop()
-            }
+            },
+            movingFlowConfirmVm: confirmVm
         )
     }
 

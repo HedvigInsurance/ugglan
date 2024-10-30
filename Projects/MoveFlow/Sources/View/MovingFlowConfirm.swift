@@ -6,7 +6,7 @@ import hCoreUI
 import hGraphQL
 
 struct MovingFlowConfirm: View {
-    @EnvironmentObject var movingFlowConfirmVm: MovingFlowConfirmViewModel
+    @StateObject var movingFlowConfirmVm = MovingFlowConfirmViewModel()
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
     @EnvironmentObject var router: Router
 
@@ -47,7 +47,7 @@ struct MovingFlowConfirm: View {
                             homeQuoteId: movingFlowNavigationVm.movingFlowVm?.homeQuote?.id ?? ""
                         )
                     }
-                    router.push(MovingFlowRouterWithHiddenBackButtonActions.processing)
+                    router.push(MovingFlowRouterWithHiddenBackButtonActions.processing(vm: movingFlowConfirmVm))
                 }
             )
             QuoteSummaryScreen(vm: vm)
@@ -63,7 +63,15 @@ struct MovingFlowConfirm: View {
     }
 }
 
-public class MovingFlowConfirmViewModel: ObservableObject {
+public class MovingFlowConfirmViewModel: ObservableObject, Hashable {
+    public static func == (lhs: MovingFlowConfirmViewModel, rhs: MovingFlowConfirmViewModel) -> Bool {
+        return true
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(ObjectIdentifier(self))
+    }
+
     @Inject private var service: MoveFlowClient
     @Published var viewState: ProcessingState = .loading
 

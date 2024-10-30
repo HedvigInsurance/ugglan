@@ -5,22 +5,22 @@ import hCoreUI
 import hGraphQL
 
 struct MovingFlowHouseView: View {
-    @ObservedObject var vm: HouseInformationInputModel
+    @StateObject var houseInformationInputvm = HouseInformationInputModel()
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
     @EnvironmentObject var router: Router
 
     var body: some View {
-        form.loading($vm.viewState)
+        form.loading($houseInformationInputvm.viewState)
             .hErrorViewButtonConfig(
                 .init(
                     actionButton: .init(buttonAction: {
-                        vm.error = nil
+                        houseInformationInputvm.error = nil
                     }),
                     dismissButton: nil
                 )
             )
             .onDisappear {
-                vm.clearErrors()
+                houseInformationInputvm.clearErrors()
             }
     }
 
@@ -35,7 +35,7 @@ struct MovingFlowHouseView: View {
                         isSubleted
                         extraBuildingTypes
                     }
-                    .disabled(vm.viewState == .loading)
+                    .disabled(houseInformationInputvm.viewState == .loading)
                     hSection {
                         InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
                     }
@@ -74,11 +74,11 @@ struct MovingFlowHouseView: View {
         hSection {
             hFloatingTextField(
                 masking: Masking(type: .digits),
-                value: $vm.yearOfConstruction,
-                equals: $vm.type,
+                value: $houseInformationInputvm.yearOfConstruction,
+                equals: $houseInformationInputvm.type,
                 focusValue: .yearOfConstruction,
                 placeholder: L10n.changeAddressYearOfConstructionLabel,
-                error: $vm.yearOfConstructionError
+                error: $houseInformationInputvm.yearOfConstructionError
             )
         }
     }
@@ -87,12 +87,12 @@ struct MovingFlowHouseView: View {
         hSection {
             hFloatingTextField(
                 masking: Masking(type: .digits),
-                value: $vm.ancillaryArea,
-                equals: $vm.type,
+                value: $houseInformationInputvm.ancillaryArea,
+                equals: $houseInformationInputvm.type,
                 focusValue: .ancillaryArea,
                 placeholder: L10n.changeAddressAncillaryAreaLabel,
                 suffix: "m\u{00B2}",
-                error: $vm.ancillaryAreaError
+                error: $houseInformationInputvm.ancillaryAreaError
             )
         }
     }
@@ -100,13 +100,13 @@ struct MovingFlowHouseView: View {
     private var bathroomsField: some View {
         hSection {
             hCounterField(
-                value: $vm.bathrooms,
+                value: $houseInformationInputvm.bathrooms,
                 placeholder: L10n.changeAddressBathroomsLabel,
                 minValue: 1,
                 maxValue: 10,
-                error: $vm.bathroomsError
+                error: $houseInformationInputvm.bathroomsError
             ) { value in
-                vm.type = nil
+                houseInformationInputvm.type = nil
                 if value == 0 {
                     return nil
                 } else {
@@ -126,7 +126,9 @@ struct MovingFlowHouseView: View {
                         hText(L10n.changeAddressExtraBuildingsLabel, style: .label)
                         Spacer()
                     }
-                    ForEach(Array(vm.extraBuildings.enumerated()), id: \.element.id) { offset, extraBuilding in
+                    ForEach(Array(houseInformationInputvm.extraBuildings.enumerated()), id: \.element.id) {
+                        offset,
+                        extraBuilding in
                         HStack {
                             VStack(alignment: .leading, spacing: 0) {
                                 hText(extraBuilding.type.translatedValue, style: .body1)
@@ -138,7 +140,7 @@ struct MovingFlowHouseView: View {
                             Spacer()
                             Button {
                                 withAnimation {
-                                    vm.remove(extraBuilding: extraBuilding)
+                                    houseInformationInputvm.remove(extraBuilding: extraBuilding)
                                 }
                             } label: {
                                 Image(uiImage: hCoreUIAssets.closeSmall.image)
@@ -148,7 +150,7 @@ struct MovingFlowHouseView: View {
                             }
                         }
                         .padding(.vertical, .padding12)
-                        if offset + 1 < vm.extraBuildings.count {
+                        if offset + 1 < houseInformationInputvm.extraBuildings.count {
                             Divider()
                         }
                     }
@@ -180,13 +182,13 @@ struct MovingFlowHouseView: View {
     private var isSubleted: some View {
         CheckboxToggleView(
             title: L10n.changeAddressSubletLabel,
-            isOn: $vm.isSubleted.animation(.default)
+            isOn: $houseInformationInputvm.isSubleted.animation(.default)
         )
         .hFieldSize(.large)
         .onTapGesture {
             withAnimation {
-                vm.type = nil
-                vm.isSubleted.toggle()
+                houseInformationInputvm.type = nil
+                houseInformationInputvm.isSubleted.toggle()
             }
         }
     }
@@ -194,16 +196,16 @@ struct MovingFlowHouseView: View {
     func addExtraBuilding() {
         UIApplication.dismissKeyboard()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            movingFlowNavigationVm.isAddExtraBuildingPresented = true
+            movingFlowNavigationVm.isAddExtraBuildingPresented = houseInformationInputvm
         }
     }
 
     func continuePressed() {
-        if vm.isInputValid() {
+        if houseInformationInputvm.isInputValid() {
             Task {
-                let movingFlowData = try await vm.requestMoveIntent(
+                let movingFlowData = try await houseInformationInputvm.requestMoveIntent(
                     intentId: movingFlowNavigationVm.movingFlowVm?.id ?? "",
-                    addressInputModel: movingFlowNavigationVm.addressInputModel ?? .init()
+                    addressInputModel: movingFlowNavigationVm.addressInputModel
                 )
                 movingFlowNavigationVm.movingFlowVm = movingFlowData
 
@@ -220,7 +222,7 @@ struct MovingFlowHouseView: View {
 struct MovingFlowHouseView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.nb_NO)
-        return MovingFlowHouseView(vm: HouseInformationInputModel())
+        return MovingFlowHouseView(houseInformationInputvm: HouseInformationInputModel())
     }
 }
 
@@ -243,7 +245,11 @@ enum MovingFlowHouseFieldType: hTextFieldFocusStateCompliant {
 }
 
 public typealias ExtraBuildingType = String
-public class HouseInformationInputModel: ObservableObject {
+public class HouseInformationInputModel: ObservableObject, Equatable, Identifiable {
+    public static func == (lhs: HouseInformationInputModel, rhs: HouseInformationInputModel) -> Bool {
+        return true
+    }
+
     @Inject private var service: MoveFlowClient
     @Published var type: MovingFlowHouseFieldType?
     @Published var yearOfConstruction: String = ""

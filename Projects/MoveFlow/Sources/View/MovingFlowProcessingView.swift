@@ -9,6 +9,8 @@ struct MovingFlowProcessingView: View {
     var onSuccessButtonAction: () -> Void
     var onErrorButtonAction: () -> Void
 
+    @ObservedObject var movingFlowConfirmVm: MovingFlowConfirmViewModel
+
     var body: some View {
         ProcessingStateView(
             loadingViewText: L10n.changeAddressMakingChanges,
@@ -24,7 +26,7 @@ struct MovingFlowProcessingView: View {
                     }),
                     dismissButton: nil
                 ),
-            state: $movingFlowNavigationVm.movingFlowConfirmVm.viewState,
+            state: $movingFlowConfirmVm.viewState,
             duration: 6
         )
     }
@@ -33,6 +35,10 @@ struct MovingFlowProcessingView: View {
 struct SuccessScreen_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.sv_SE)
-        return MovingFlowProcessingView(onSuccessButtonAction: {}, onErrorButtonAction: {})
+        return MovingFlowProcessingView(
+            onSuccessButtonAction: {},
+            onErrorButtonAction: {},
+            movingFlowConfirmVm: .init()
+        )
     }
 }
