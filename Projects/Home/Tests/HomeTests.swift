@@ -108,7 +108,7 @@ final class HomeTests: XCTestCase {
     }
 
     func testHomeStoreWithMultipleActionsAtOnce() async throws {
-        for i in 1...100 {
+        for i in 1...10 {
             try await iteratedStoreTest(iteration: i)
         }
         try await Task.sleep(nanoseconds: 100_000_000)

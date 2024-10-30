@@ -17,7 +17,7 @@ final class MoveFlowStoreTests: XCTestCase {
         }
     }
 
-    func testGetMoveIntentSuccess() async {
+    func testGetMoveIntentSuccess() async throws {
         let moveFlowModel = MovingFlowModel(
             id: "id",
             isApartmentAvailableforStudent: true,
@@ -42,11 +42,8 @@ final class MoveFlowStoreTests: XCTestCase {
         let store = MoveFlowStore()
         self.store = store
         await store.sendAsync(.getMoveIntent)
-
-        await waitUntil(description: "loading state") {
-            store.loadingState[.fetchMoveIntent] == nil
-        }
-
+        try await Task.sleep(nanoseconds: 300_000_000)
+        assert(store.loadingState[.fetchMoveIntent] == nil)
         assert(store.state.movingFlowModel == moveFlowModel)
 
         assert(mockService.events.count == 1)
@@ -97,12 +94,8 @@ final class MoveFlowStoreTests: XCTestCase {
         let store = MoveFlowStore()
         self.store = store
         await store.sendAsync(.requestMoveIntent)
-        try await Task.sleep(nanoseconds: 30_000_000)
-
-        await waitUntil(description: "loading state") {
-            store.loadingState[.requestMoveIntent] == nil
-        }
-
+        try await Task.sleep(nanoseconds: 300_000_000)
+        assert(store.loadingState[.requestMoveIntent] == nil)
         assert(store.state.movingFlowModel == moveFlowModel)
 
         assert(mockService.events.count == 1)
