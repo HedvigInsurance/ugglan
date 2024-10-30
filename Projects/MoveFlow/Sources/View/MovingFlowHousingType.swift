@@ -98,7 +98,7 @@ public struct MovingFlowHousingTypeView: View {
 
     func continuePressed() {
         let housingType = HousingType(rawValue: vm.selectedHousingType ?? "")
-        movingFlowNavigationVm.addressInputModel?.selectedHousingType = housingType ?? .apartment
+        movingFlowNavigationVm.addressInputModel.selectedHousingType = housingType ?? .apartment
 
         if let housingType {
             router.push(housingType)

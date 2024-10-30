@@ -10,7 +10,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
     @Published var isAddExtraBuildingPresented = false
     @Published public var document: hPDFDocument? = nil
 
-    @Published public var addressInputModel: AddressInputModel?
+    @Published public var addressInputModel = AddressInputModel()
     @Published public var movingFlowVm: MovingFlowModel?
     @Published public var houseInformationInputVm = HouseInformationInputModel()
     @Published public var movingFlowAddExtraBuildingVm = MovingFlowAddExtraBuildingViewModel()
@@ -128,7 +128,7 @@ public struct MovingFlowNavigation: View {
     }
 
     func openApartmentFillScreen() -> some View {
-        return MovingFlowAddressView(vm: movingFlowNavigationVm.addressInputModel ?? .init())
+        return MovingFlowAddressView(vm: movingFlowNavigationVm.addressInputModel)
             .withDismissButton()
     }
 
