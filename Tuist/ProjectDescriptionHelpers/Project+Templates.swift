@@ -71,8 +71,8 @@ extension Project {
         ]
 
         var testsDependencies: [TargetDependency] = [
-            .target(name: "\(name)"),
-            .project(target: "Testing", path: .relativeToRoot("Projects/Testing")),
+            .target(name: "\(name)")
+            //            .project(target: "Testing", path: .relativeToRoot("Projects/Testing")),
         ]
         projects.forEach {
             testsDependencies.append(.project(target: $0, path: .relativeToRoot("Projects/\($0)")))

@@ -165,7 +165,6 @@ let project = Project(
                         target: "TestDependencies",
                         path: .relativeToRoot("Dependencies/TestDependencies")
                     ),
-                    .project(target: "Testing", path: .relativeToRoot("Projects/Testing")),
                 ]
             ]
             .flatMap { $0 },

@@ -9,7 +9,6 @@ public enum ExternalDependencies: CaseIterable {
     case disk
     case snapkit
     case markdownkit
-    case snapshottesting
     case reveal
     case datadog
     case authlib
@@ -20,7 +19,7 @@ public enum ExternalDependencies: CaseIterable {
     case argumentParser
     case hero
     case presentableStore
-    public var isTestDependency: Bool { self == .snapshottesting }
+    public var isTestDependency: Bool { false }
 
     public var isDevDependency: Bool { false }
 
@@ -53,13 +52,6 @@ public enum ExternalDependencies: CaseIterable {
                 .package(
                     url: "https://github.com/bmoliveira/MarkdownKit",
                     .upToNextMajor(from: "1.7.1")
-                )
-            ]
-        case .snapshottesting:
-            return [
-                .package(
-                    url: "https://github.com/pointfreeco/swift-snapshot-testing",
-                    .upToNextMajor(from: "1.17.4")
                 )
             ]
         case .reveal: return []
@@ -109,7 +101,6 @@ public enum ExternalDependencies: CaseIterable {
         case .disk: return [.package(product: "Disk")]
         case .snapkit: return [.package(product: "SnapKit")]
         case .markdownkit: return [.package(product: "MarkdownKit")]
-        case .snapshottesting: return [.package(product: "SnapshotTesting")]
         case .reveal:
             let path = Path(
                 "\(FileManager.default.homeDirectoryForCurrentUser.path)/Library/Application Support/Reveal/RevealServer/RevealServer.xcframework"
