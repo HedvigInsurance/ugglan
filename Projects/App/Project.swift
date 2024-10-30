@@ -104,13 +104,13 @@ let appDependencies: [TargetDependency] = [
 ]
 .flatMap { $0 }
 
-var devAppDependencies: [TargetDependency] = {
+let devAppDependencies: [TargetDependency] = {
     var dependencies = appDependencies
     dependencies.append(.target(name: "NotificationService"))
     return dependencies
 }()
 
-var prodAppDependencies: [TargetDependency] = {
+let prodAppDependencies: [TargetDependency] = {
     var dependencies = appDependencies
     dependencies.append(.target(name: "NotificationServiceProd"))
     return dependencies
@@ -134,7 +134,7 @@ let project = Project(
     ),
     packages: [],
     targets: [
-        Target(
+        Target.target(
             name: "Ugglan",
             destinations: .iOS,
             product: .app,
@@ -148,7 +148,7 @@ let project = Project(
             dependencies: devAppDependencies,
             settings: .settings(configurations: ugglanConfigurations)
         ),
-        Target(
+        Target.target(
             name: "AppTests",
             destinations: .iOS,
             product: .unitTests,
@@ -165,13 +165,12 @@ let project = Project(
                         target: "TestDependencies",
                         path: .relativeToRoot("Dependencies/TestDependencies")
                     ),
-                    .project(target: "Testing", path: .relativeToRoot("Projects/Testing")),
                 ]
             ]
             .flatMap { $0 },
             settings: .settings(configurations: testsConfigurations)
         ),
-        Target(
+        Target.target(
             name: "Hedvig",
             destinations: .iOS,
             product: .app,
@@ -185,7 +184,7 @@ let project = Project(
             dependencies: prodAppDependencies,
             settings: .settings(configurations: hedvigConfigurations)
         ),
-        Target(
+        Target.target(
             name: "NotificationService",
             destinations: .iOS,
             product: .appExtension,
@@ -198,7 +197,7 @@ let project = Project(
             dependencies: [],
             settings: .settings(configurations: notificationConfiguration)
         ),
-        Target(
+        Target.target(
             name: "NotificationServiceProd",
             destinations: .iOS,
             product: .appExtension,
@@ -213,35 +212,39 @@ let project = Project(
         ),
     ],
     schemes: [
-        Scheme(
+        Scheme.scheme(
             name: "Ugglan",
             shared: true,
-            buildAction: BuildAction(
+            buildAction: BuildAction.buildAction(
                 targets: ["Ugglan"]
             ),
             testAction: .targets(
                 [
-                    TestableTarget(
+                    //                    TestableTarget.test
+                    TestableTarget.testableTarget(
                         target: TargetReference(stringLiteral: "AppTests"),
-                        parallelizable: true
+                        isParallelizable: true
                     )
                 ],
-                arguments: Arguments(
-                    environment: [
-                        "SNAPSHOT_ARTIFACTS": "/tmp/__SnapshotFailures__"
+                arguments: Arguments.arguments(
+                    environmentVariables: [
+                        "SNAPSHOT_ARTIFACTS": EnvironmentVariable.environmentVariable(
+                            value: "/tmp/__SnapshotFailures__",
+                            isEnabled: true
+                        )
                     ],
                     launchArguments: [
-                        .init(name: "-UIPreferredContentSizeCategoryName", isEnabled: true),
-                        .init(name: "-UICTContentSizeCategoryM", isEnabled: true),
+                        .launchArgument(name: "-UIPreferredContentSizeCategoryName", isEnabled: true),
+                        .launchArgument(name: "-UICTContentSizeCategoryM", isEnabled: true),
                     ]
                 )
             ),
             runAction: .runAction(executable: "Ugglan")
         ),
-        Scheme(
+        Scheme.scheme(
             name: "Hedvig",
             shared: true,
-            buildAction: BuildAction(
+            buildAction: BuildAction.buildAction(
                 targets: ["Hedvig"]
             ),
             runAction: .runAction(executable: "Hedvig")
