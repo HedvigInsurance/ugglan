@@ -183,6 +183,7 @@ struct MovingFlowAddressView: View {
                     let movingFlowData = try await vm.requestMoveIntent(
                         intentId: movingFlowNavigationVm.movingFlowVm?.id ?? ""
                     )
+                    movingFlowNavigationVm.movingFlowVm = movingFlowData
 
                     if let changeTierModel = movingFlowData?.changeTier {
                         router.push(MovingFlowRouterActions.selectTier(changeTierModel: changeTierModel))

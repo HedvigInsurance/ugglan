@@ -6,6 +6,7 @@ struct TypeOfBuildingPickerView: View {
     var currentlySelected: ExtraBuildingType?
     @Binding var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
+    @EnvironmentObject var addExtraBuidlingViewModel: MovingFlowAddExtraBuildingViewModel
 
     public init(
         currentlySelected: ExtraBuildingType?,
@@ -32,9 +33,9 @@ struct TypeOfBuildingPickerView: View {
                     if let selected = selected.first {
                         isBuildingTypePickerPresented = nil
                         if let object = selected.0 {
-                            var movingFlowVm = movingFlowNavigationVm.movingFlowVm
-                            movingFlowVm?.extraBuildingTypes.append(object)
-                            movingFlowNavigationVm.movingFlowVm = movingFlowVm
+                            /* TODO: CHECK */
+                            addExtraBuidlingViewModel.buildingType = object
+                            //                            store.send(.setExtraBuildingType(with: object))
                         }
                     }
                 },

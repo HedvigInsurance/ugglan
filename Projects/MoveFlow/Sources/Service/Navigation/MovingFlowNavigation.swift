@@ -14,6 +14,8 @@ public class MovingFlowNavigationViewModel: ObservableObject {
     @Published public var movingFlowVm: MovingFlowModel?
     @Published public var houseInformationInputVm: HouseInformationInputModel?
 
+    @Published public var movingFlowAddExtraBuildingVm: MovingFlowAddExtraBuildingViewModel?
+
     init() {}
 }
 
@@ -96,6 +98,7 @@ public struct MovingFlowNavigation: View {
         .environmentObject(movingFlowNavigationVm)
         .detent(presented: $movingFlowNavigationVm.isAddExtraBuildingPresented, style: [.height]) {
             MovingFlowAddExtraBuildingView(isBuildingTypePickerPresented: $isBuildingTypePickerPresented)
+                .environmentObject(movingFlowNavigationVm.movingFlowAddExtraBuildingVm ?? .init())
                 .detent(item: $isBuildingTypePickerPresented, style: [.height]) { extraBuildingType in
                     openTypeOfBuildingPicker(for: extraBuildingType.extraBuildingType)
                 }
@@ -175,6 +178,7 @@ public struct MovingFlowNavigation: View {
             tracking: MovingFlowDetentType.typeOfBuildingPicker
         )
         .environmentObject(movingFlowNavigationVm)
+        .environmentObject(movingFlowNavigationVm.movingFlowAddExtraBuildingVm ?? .init())
     }
 }
 

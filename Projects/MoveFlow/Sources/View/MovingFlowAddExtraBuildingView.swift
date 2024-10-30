@@ -6,7 +6,8 @@ import hCoreUI
 import hGraphQL
 
 struct MovingFlowAddExtraBuildingView: View {
-    @StateObject var vm = MovingFlowAddExtraBuildingViewModel()
+    //    @StateObject var vm = MovingFlowAddExtraBuildingViewModel()
+    @EnvironmentObject var vm: MovingFlowAddExtraBuildingViewModel
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
     @Binding var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
 
@@ -112,7 +113,7 @@ enum AddExtraBuildingType: hTextFieldFocusStateCompliant {
 
 }
 
-class MovingFlowAddExtraBuildingViewModel: ObservableObject {
+public class MovingFlowAddExtraBuildingViewModel: ObservableObject {
     @Published var type: AddExtraBuildingType?
 
     @Published var buildingType: ExtraBuildingType?
@@ -124,20 +125,20 @@ class MovingFlowAddExtraBuildingViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
 
     init() {
-        trackBuildingTypeAction()
+        //        trackBuildingTypeAction()
     }
 
-    func trackBuildingTypeAction() {
-        /* TODO: CHECK */
-        //        store.actionSignal
-        //            .receive(on: RunLoop.main)
-        //            .sink { [weak self] action in
-        //                if case let .setExtraBuildingType(type) = action {
-        //                    self?.buildingType = type
-        //                }
-        //            }
-        //            .store(in: &cancellables)
-    }
+    //    func trackBuildingTypeAction() {
+    /* TODO: CHECK */
+    //        store.actionSignal
+    //            .receive(on: RunLoop.main)
+    //            .sink { [weak self] action in
+    //                if case let .setExtraBuildingType(type) = action {
+    //                    self?.buildingType = type
+    //                }
+    //            }
+    //            .store(in: &cancellables)
+    //    }
 
     func isValid() -> Bool {
         livingAreaError = (Int(livingArea) ?? 0) > 0 ? nil : L10n.changeAddressExtraBuildingSizeError
