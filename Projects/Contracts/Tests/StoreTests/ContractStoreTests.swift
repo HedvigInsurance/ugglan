@@ -41,8 +41,9 @@ final class ContractStoreTests: XCTestCase {
         let store = ContractStore()
         self.store = store
         await store.sendAsync(.fetchCrossSale)
-        await waitUntil(description: "loading state") {
-            store.loadingState[.fetchCrossSell] != nil
+        await waitUntil(description: "loading state") { [weak store] in
+            guard let store else { return false }
+            return store.loadingState[.fetchCrossSell] != nil
         }
 
         assert(store.state.crossSells.isEmpty)
