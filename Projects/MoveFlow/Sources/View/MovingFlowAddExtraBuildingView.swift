@@ -6,7 +6,7 @@ import hCoreUI
 import hGraphQL
 
 struct MovingFlowAddExtraBuildingView: View {
-    @ObservedObject var vm: MovingFlowAddExtraBuildingViewModel
+    @StateObject var vm = MovingFlowAddExtraBuildingViewModel()
     @ObservedObject var houseInformationInputVm: HouseInformationInputModel
 
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
@@ -14,13 +14,10 @@ struct MovingFlowAddExtraBuildingView: View {
 
     init(
         isBuildingTypePickerPresented: Binding<ExtraBuildingTypeNavigationModel?>,
-        vm: MovingFlowAddExtraBuildingViewModel,
         houseInformationInputVm: HouseInformationInputModel
     ) {
         self._isBuildingTypePickerPresented = isBuildingTypePickerPresented
-        self.vm = vm
         self.houseInformationInputVm = houseInformationInputVm
-        vm.clean()
     }
 
     var body: some View {
@@ -66,7 +63,8 @@ struct MovingFlowAddExtraBuildingView: View {
             error: $vm.buildingTypeError
         ) {
             isBuildingTypePickerPresented = ExtraBuildingTypeNavigationModel(
-                extraBuildingType: vm.buildingType
+                extraBuildingType: vm.buildingType,
+                addExtraBuildingVm: vm
             )
         }
     }
@@ -134,15 +132,6 @@ public class MovingFlowAddExtraBuildingViewModel: ObservableObject {
     @Published var livingAreaError: String?
     @Published var buildingTypeError: String?
 
-    func clean() {
-        self.type = nil
-        self.buildingType = nil
-        self.livingArea = ""
-        self.connectedToWater = false
-        self.livingAreaError = nil
-        self.buildingTypeError = nil
-    }
-
     func isValid() -> Bool {
         livingAreaError = (Int(livingArea) ?? 0) > 0 ? nil : L10n.changeAddressExtraBuildingSizeError
         buildingTypeError = buildingType == nil ? L10n.changeAddressExtraBuildingTypeError : nil
@@ -151,12 +140,11 @@ public class MovingFlowAddExtraBuildingViewModel: ObservableObject {
 }
 
 struct MovingFlowAddExtraBuildingView_Previews: PreviewProvider {
-    @State static var isOn: ExtraBuildingTypeNavigationModel? = .init()
+    @State static var isOn: ExtraBuildingTypeNavigationModel? = .init(addExtraBuildingVm: .init())
 
     static var previews: some View {
         MovingFlowAddExtraBuildingView(
             isBuildingTypePickerPresented: $isOn,
-            vm: .init(),
             houseInformationInputVm: .init()
         )
     }

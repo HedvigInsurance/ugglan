@@ -12,7 +12,6 @@ public class MovingFlowNavigationViewModel: ObservableObject {
 
     @Published public var addressInputModel = AddressInputModel()
     @Published public var movingFlowVm: MovingFlowModel?
-    @Published public var movingFlowAddExtraBuildingVm = MovingFlowAddExtraBuildingViewModel()
 
     init() {}
 }
@@ -59,8 +58,14 @@ extension MovingFlowRouterActions: TrackingViewNameProtocol {
 }
 
 struct ExtraBuildingTypeNavigationModel: Identifiable, Equatable {
+    static func == (lhs: ExtraBuildingTypeNavigationModel, rhs: ExtraBuildingTypeNavigationModel) -> Bool {
+        return true
+    }
+
     public var id: String?
     var extraBuildingType: ExtraBuildingType?
+
+    var addExtraBuildingVm: MovingFlowAddExtraBuildingViewModel
 }
 
 public struct MovingFlowNavigation: View {
@@ -107,11 +112,13 @@ public struct MovingFlowNavigation: View {
         ) { houseInformationInputModel in
             MovingFlowAddExtraBuildingView(
                 isBuildingTypePickerPresented: $isBuildingTypePickerPresented,
-                vm: movingFlowNavigationVm.movingFlowAddExtraBuildingVm,
                 houseInformationInputVm: houseInformationInputModel
             )
-            .detent(item: $isBuildingTypePickerPresented, style: [.height]) { extraBuildingType in
-                openTypeOfBuildingPicker(for: extraBuildingType.extraBuildingType)
+            .detent(item: $isBuildingTypePickerPresented, style: [.height]) { model in
+                openTypeOfBuildingPicker(
+                    for: model.extraBuildingType,
+                    addExtraBuilingViewModel: model.addExtraBuildingVm
+                )
             }
             .environmentObject(movingFlowNavigationVm)
             .navigationTitle(L10n.changeAddressAddBuilding)
@@ -179,10 +186,14 @@ public struct MovingFlowNavigation: View {
         return ChangeTierNavigation(input: model, router: router)
     }
 
-    func openTypeOfBuildingPicker(for currentlySelected: ExtraBuildingType?) -> some View {
+    func openTypeOfBuildingPicker(
+        for currentlySelected: ExtraBuildingType?,
+        addExtraBuilingViewModel: MovingFlowAddExtraBuildingViewModel
+    ) -> some View {
         TypeOfBuildingPickerView(
             currentlySelected: currentlySelected,
-            isBuildingTypePickerPresented: $isBuildingTypePickerPresented
+            isBuildingTypePickerPresented: $isBuildingTypePickerPresented,
+            addExtraBuidlingViewModel: addExtraBuilingViewModel
         )
         .navigationTitle(L10n.changeAddressExtraBuildingContainerTitle)
         .embededInNavigation(
@@ -190,7 +201,6 @@ public struct MovingFlowNavigation: View {
             tracking: MovingFlowDetentType.typeOfBuildingPicker
         )
         .environmentObject(movingFlowNavigationVm)
-        .environmentObject(movingFlowNavigationVm.movingFlowAddExtraBuildingVm)
     }
 }
 

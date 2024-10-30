@@ -6,14 +6,16 @@ struct TypeOfBuildingPickerView: View {
     var currentlySelected: ExtraBuildingType?
     @Binding var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
-    @EnvironmentObject var addExtraBuidlingViewModel: MovingFlowAddExtraBuildingViewModel
+    @ObservedObject var addExtraBuidlingViewModel: MovingFlowAddExtraBuildingViewModel
 
     public init(
         currentlySelected: ExtraBuildingType?,
-        isBuildingTypePickerPresented: Binding<ExtraBuildingTypeNavigationModel?>
+        isBuildingTypePickerPresented: Binding<ExtraBuildingTypeNavigationModel?>,
+        addExtraBuidlingViewModel: MovingFlowAddExtraBuildingViewModel
     ) {
         self.currentlySelected = currentlySelected
         self._isBuildingTypePickerPresented = isBuildingTypePickerPresented
+        self.addExtraBuidlingViewModel = addExtraBuidlingViewModel
     }
 
     var body: some View {
@@ -47,5 +49,9 @@ struct TypeOfBuildingPickerView: View {
 }
 
 #Preview {
-    TypeOfBuildingPickerView(currentlySelected: nil, isBuildingTypePickerPresented: .constant(nil))
+    TypeOfBuildingPickerView(
+        currentlySelected: nil,
+        isBuildingTypePickerPresented: .constant(nil),
+        addExtraBuidlingViewModel: .init()
+    )
 }
