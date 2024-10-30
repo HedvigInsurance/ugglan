@@ -160,7 +160,7 @@ final class HomeTests: XCTestCase {
         store.send(.fetchImportantMessages)
         store.send(.fetchQuickActions)
         store.send(.fetchChatNotifications)
-        try await Task.sleep(nanoseconds: 100_000_000)
+        try await Task.sleep(nanoseconds: 300_000_000)
 
         assert(store.state.memberContractState == memberState.contractState)
         assert(store.state.futureStatus == memberState.futureState)
