@@ -5,12 +5,16 @@ import hCoreUI
 import hGraphQL
 
 struct MovingFlowHouseView: View {
-    @StateObject var houseInformationInputvm = HouseInformationInputModel()
+    @ObservedObject var houseInformationInputvm: HouseInformationInputModel
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
     @EnvironmentObject var router: Router
 
+    init(houseInformationInputvm: HouseInformationInputModel) {
+        self.houseInformationInputvm = houseInformationInputvm
+    }
+
     var body: some View {
-        form.loading($houseInformationInputvm.viewState)
+        form.loadingButtonWithErrorHandling($houseInformationInputvm.viewState)
             .hErrorViewButtonConfig(
                 .init(
                     actionButton: .init(buttonAction: {
