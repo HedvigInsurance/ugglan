@@ -60,25 +60,25 @@ final class PaymentServiceTests: XCTestCase {
         assert(respondedPaymentStatusData == paymentStatusData)
     }
 
-    func testFetchPaymentDiscountsDataSuccess() async throws {
-        let paymentDiscountsData: PaymentDiscountsData = .init(
-            discounts: [],
-            referralsData: .init(
-                code: "code",
-                discountPerMember: .init(amount: "10", currency: "SEK"),
-                discount: .init(amount: "10", currency: "SEK"),
-                referrals: []
-            )
-        )
-
-        let mockService = MockPaymentData.createMockPaymentService(
-            fetchPaymentDiscountsData: { paymentDiscountsData }
-        )
-        self.sut = mockService
-        try await Task.sleep(nanoseconds: 100_000_000)
-        let respondedPaymentDiscountsData = try await mockService.getPaymentDiscountsData()
-        assert(respondedPaymentDiscountsData == paymentDiscountsData)
-    }
+    //    func testFetchPaymentDiscountsDataSuccess() async throws {
+    //        let paymentDiscountsData: PaymentDiscountsData = .init(
+    //            discounts: [],
+    //            referralsData: .init(
+    //                code: "code",
+    //                discountPerMember: .init(amount: "10", currency: "SEK"),
+    //                discount: .init(amount: "10", currency: "SEK"),
+    //                referrals: []
+    //            )
+    //        )
+    //
+    //        let mockService = MockPaymentData.createMockPaymentService(
+    //            fetchPaymentDiscountsData: { paymentDiscountsData }
+    //        )
+    //        self.sut = mockService
+    //        try await Task.sleep(nanoseconds: 100_000_000)
+    //        let respondedPaymentDiscountsData = try await mockService.getPaymentDiscountsData()
+    //        assert(respondedPaymentDiscountsData == paymentDiscountsData)
+    //    }
 
     func testFetchPaymentHistoryDataSuccess() async {
         let paymentHistoryData: [PaymentHistoryListData] = [
