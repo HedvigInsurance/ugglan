@@ -38,6 +38,39 @@ public struct File: Codable, Equatable, Identifiable, Hashable {
         }
         return nil
     }
+
+    public func getAsData() async throws -> File? {
+        switch self.source {
+        case .data(let data):
+            return self
+        case .url(let url):
+            return nil
+        case .localFile(let results):
+            if let results {
+                let data = try? await withCheckedThrowingContinuation {
+                    (inCont: CheckedContinuation<Data?, Error>) -> Void in
+                    results.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.item.identifier) {
+                        fileUrl,
+                        error in
+                        if let fileUrl,
+                            let pathData = FileManager.default.contents(atPath: fileUrl.relativePath)
+                        {
+                            inCont.resume(returning: pathData)
+                        } else {
+                            inCont.resume(returning: nil)
+                        }
+                    }
+
+                }
+                if let data {
+                    return .init(id: id, size: size, mimeType: mimeType, name: name, source: .data(data: data))
+                }
+                return nil
+
+            }
+            return nil
+        }
+    }
 }
 
 public enum FileSource: Codable, Equatable, Hashable {

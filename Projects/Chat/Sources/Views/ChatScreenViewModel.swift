@@ -302,7 +302,7 @@ public class ChatScreenViewModel: ObservableObject {
     }
 
     @MainActor
-    private func handleSendFail(for message: Message, with error: String) {
+    private func handleSendFail(for message: Message, with error: String) async {
         if let index = messages.firstIndex(where: { $0.id == message.id }) {
             let newMessage = message.asFailed(with: error)
             let oldMessage = messages[index]
@@ -314,7 +314,7 @@ public class ChatScreenViewModel: ObservableObject {
                 let store: ChatStore = globalPresentableStoreContainer.get()
                 switch newMessage.type {
                 case .file(let file):
-                    if let newFile = file.getAsDataFromUrl() {
+                    if let newFile = try? await file.getAsData() {
                         let fileMessage = newMessage.copyWith(type: .file(file: newFile))
                         store.send(.setFailedMessage(conversationId: conversationId ?? "", message: fileMessage))
                     }
