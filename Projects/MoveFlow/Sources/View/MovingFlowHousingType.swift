@@ -5,13 +5,14 @@ import hCoreUI
 import hGraphQL
 
 public struct MovingFlowHousingTypeView: View {
-    @StateObject var vm = MovingFlowHousingTypeViewModel()
+    @ObservedObject var vm: MovingFlowHousingTypeViewModel
     @EnvironmentObject var router: Router
     @ObservedObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
 
     init(
         movingFlowNavigationVm: MovingFlowNavigationViewModel
     ) {
+        self.vm = .init(movingFlowNavigationVm: movingFlowNavigationVm)
         self.movingFlowNavigationVm = movingFlowNavigationVm
     }
 
@@ -83,17 +84,6 @@ public struct MovingFlowHousingTypeView: View {
                 )
                 .hDisableScroll
         }
-        .onAppear {
-            Task {
-                let movingFlowModel = try await vm.getMoveIntent()
-                movingFlowNavigationVm.movingFlowVm = movingFlowModel
-
-                let addressModel = AddressInputModel()
-                addressModel.moveFromAddressId = movingFlowModel?.currentHomeAddresses.first?.id
-                addressModel.nbOfCoInsured = movingFlowModel?.suggestedNumberCoInsured ?? 5
-                movingFlowNavigationVm.addressInputModel = addressModel
-            }
-        }
     }
 
     func continuePressed() {
@@ -117,6 +107,24 @@ class MovingFlowHousingTypeViewModel: ObservableObject {
     @Inject private var service: MoveFlowClient
     @Published var selectedHousingType: String? = HousingType.apartment.rawValue
     @Published var viewState: ProcessingState = .loading
+    let movingFlowNavigationVm: MovingFlowNavigationViewModel
+
+    init(movingFlowNavigationVm: MovingFlowNavigationViewModel) {
+        self.movingFlowNavigationVm = movingFlowNavigationVm
+        self.initializeData()
+    }
+
+    private func initializeData() {
+        Task {
+            let movingFlowModel = try await getMoveIntent()
+            movingFlowNavigationVm.movingFlowVm = movingFlowModel
+
+            let addressModel = AddressInputModel()
+            addressModel.moveFromAddressId = movingFlowModel?.currentHomeAddresses.first?.id
+            addressModel.nbOfCoInsured = movingFlowModel?.suggestedNumberCoInsured ?? 5
+            movingFlowNavigationVm.addressInputModel = addressModel
+        }
+    }
 
     @MainActor
     func getMoveIntent() async throws -> MovingFlowModel? {
