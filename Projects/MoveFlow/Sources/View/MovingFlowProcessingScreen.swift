@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct MovingFlowProcessingView: View {
+struct MovingFlowProcessingScreen: View {
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
     var onSuccessButtonAction: () -> Void
     var onErrorButtonAction: () -> Void
@@ -35,7 +35,7 @@ struct MovingFlowProcessingView: View {
 struct SuccessScreen_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.sv_SE)
-        return MovingFlowProcessingView(
+        return MovingFlowProcessingScreen(
             onSuccessButtonAction: {},
             onErrorButtonAction: {},
             movingFlowConfirmVm: .init()

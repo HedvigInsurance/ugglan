@@ -32,7 +32,7 @@ extension MovingFlowRouterWithHiddenBackButtonActions: TrackingViewNameProtocol 
     var nameForTracking: String {
         switch self {
         case .processing:
-            return .init(describing: MovingFlowProcessingView.self)
+            return .init(describing: MovingFlowProcessingScreen.self)
         }
     }
 
@@ -48,9 +48,9 @@ extension MovingFlowRouterActions: TrackingViewNameProtocol {
     var nameForTracking: String {
         switch self {
         case .confirm:
-            return .init(describing: MovingFlowConfirm.self)
+            return .init(describing: MovingFlowConfirmScreen.self)
         case .houseFill:
-            return .init(describing: MovingFlowHouseView.self)
+            return .init(describing: MovingFlowHouseScreen.self)
         case .selectTier:
             return .init(describing: ChangeTierLandingScreen.self)
         }
@@ -111,7 +111,7 @@ public struct MovingFlowNavigation: View {
             item: $movingFlowNavigationVm.isAddExtraBuildingPresented,
             style: [.height]
         ) { houseInformationInputModel in
-            MovingFlowAddExtraBuildingView(
+            MovingFlowAddExtraBuildingScreen(
                 isBuildingTypePickerPresented: $isBuildingTypePickerPresented,
                 houseInformationInputVm: houseInformationInputModel
             )
@@ -140,28 +140,28 @@ public struct MovingFlowNavigation: View {
     }
 
     func openSelectHousingScreen() -> some View {
-        MovingFlowHousingTypeView(movingFlowNavigationVm: movingFlowNavigationVm)
+        MovingFlowHousingTypeScreen(movingFlowNavigationVm: movingFlowNavigationVm)
             .withDismissButton()
     }
 
     func openApartmentFillScreen() -> some View {
-        return MovingFlowAddressView(vm: movingFlowNavigationVm.addressInputModel)
+        return MovingFlowAddressScreen(vm: movingFlowNavigationVm.addressInputModel)
             .withDismissButton()
     }
 
     func openHouseFillScreen() -> some View {
-        return MovingFlowHouseView(houseInformationInputvm: movingFlowNavigationVm.houseInformationInputvm)
+        return MovingFlowHouseScreen(houseInformationInputvm: movingFlowNavigationVm.houseInformationInputvm)
             .withDismissButton()
     }
 
     func openConfirmScreen() -> some View {
-        MovingFlowConfirm()
+        MovingFlowConfirmScreen()
             .navigationTitle(L10n.changeAddressSummaryTitle)
             .withDismissButton()
     }
 
     func openProcessingView(confirmVm: MovingFlowConfirmViewModel) -> some View {
-        MovingFlowProcessingView(
+        MovingFlowProcessingScreen(
             onSuccessButtonAction: {
                 router.dismiss()
             },
@@ -191,7 +191,7 @@ public struct MovingFlowNavigation: View {
         for currentlySelected: ExtraBuildingType?,
         addExtraBuilingViewModel: MovingFlowAddExtraBuildingViewModel
     ) -> some View {
-        TypeOfBuildingPickerView(
+        TypeOfBuildingPickerScreen(
             currentlySelected: currentlySelected,
             isBuildingTypePickerPresented: $isBuildingTypePickerPresented,
             addExtraBuidlingViewModel: addExtraBuilingViewModel
@@ -209,11 +209,11 @@ private enum MovingFlowDetentType: TrackingViewNameProtocol {
     var nameForTracking: String {
         switch self {
         case .selectHousingType:
-            return .init(describing: MovingFlowHousingTypeView.self)
+            return .init(describing: MovingFlowHousingTypeScreen.self)
         case .addExtraBuilding:
-            return .init(describing: MovingFlowAddExtraBuildingView.self)
+            return .init(describing: MovingFlowAddExtraBuildingScreen.self)
         case .typeOfBuildingPicker:
-            return .init(describing: TypeOfBuildingPickerView.self)
+            return .init(describing: TypeOfBuildingPickerScreen.self)
         }
     }
 

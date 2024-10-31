@@ -5,7 +5,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct MovingFlowAddExtraBuildingView: View {
+struct MovingFlowAddExtraBuildingScreen: View {
     @StateObject var vm = MovingFlowAddExtraBuildingViewModel()
     @ObservedObject var houseInformationInputVm: HouseInformationInputModel
 
@@ -143,7 +143,7 @@ struct MovingFlowAddExtraBuildingView_Previews: PreviewProvider {
     @State static var isOn: ExtraBuildingTypeNavigationModel? = .init(addExtraBuildingVm: .init())
 
     static var previews: some View {
-        MovingFlowAddExtraBuildingView(
+        MovingFlowAddExtraBuildingScreen(
             isBuildingTypePickerPresented: $isOn,
             houseInformationInputVm: .init()
         )

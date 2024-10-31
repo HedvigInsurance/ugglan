@@ -5,7 +5,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct MovingFlowConfirm: View {
+struct MovingFlowConfirmScreen: View {
     @StateObject var movingFlowConfirmVm = MovingFlowConfirmViewModel()
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
     @EnvironmentObject var router: Router
@@ -100,7 +100,7 @@ struct MovingFlowConfirm_Previews: PreviewProvider {
         Dependencies.shared.add(module: Module { () -> MoveFlowClient in MoveFlowClientDemo() })
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         Localization.Locale.currentLocale.send(.en_SE)
-        return MovingFlowConfirm()
+        return MovingFlowConfirmScreen()
             .environmentObject(Router())
             .environmentObject(MovingFlowNavigationViewModel())
     }

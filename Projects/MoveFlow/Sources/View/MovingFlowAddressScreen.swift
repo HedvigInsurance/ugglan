@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct MovingFlowAddressView: View {
+struct MovingFlowAddressScreen: View {
     @ObservedObject var vm: AddressInputModel
     @EnvironmentObject var router: Router
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
@@ -245,7 +245,7 @@ struct SelectAddress_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> MoveFlowClient in MoveFlowClientDemo() })
         Localization.Locale.currentLocale.send(.en_SE)
-        return VStack { MovingFlowAddressView(vm: .init()) }
+        return VStack { MovingFlowAddressScreen(vm: .init()) }
     }
 }
 

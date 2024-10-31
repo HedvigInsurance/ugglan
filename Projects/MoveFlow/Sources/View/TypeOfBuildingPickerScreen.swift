@@ -2,7 +2,7 @@ import PresentableStore
 import SwiftUI
 import hCoreUI
 
-struct TypeOfBuildingPickerView: View {
+struct TypeOfBuildingPickerScreen: View {
     var currentlySelected: ExtraBuildingType?
     @Binding var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
@@ -49,7 +49,7 @@ struct TypeOfBuildingPickerView: View {
 }
 
 #Preview {
-    TypeOfBuildingPickerView(
+    TypeOfBuildingPickerScreen(
         currentlySelected: nil,
         isBuildingTypePickerPresented: .constant(nil),
         addExtraBuidlingViewModel: .init()

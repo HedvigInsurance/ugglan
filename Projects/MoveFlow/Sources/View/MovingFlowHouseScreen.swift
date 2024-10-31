@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct MovingFlowHouseView: View {
+struct MovingFlowHouseScreen: View {
     @ObservedObject var houseInformationInputvm: HouseInformationInputModel
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
     @EnvironmentObject var router: Router
@@ -222,7 +222,7 @@ struct MovingFlowHouseView: View {
 struct MovingFlowHouseView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.nb_NO)
-        return MovingFlowHouseView(houseInformationInputvm: HouseInformationInputModel())
+        return MovingFlowHouseScreen(houseInformationInputvm: HouseInformationInputModel())
     }
 }
 

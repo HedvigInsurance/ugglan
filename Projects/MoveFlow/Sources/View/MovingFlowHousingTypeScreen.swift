@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct MovingFlowHousingTypeView: View {
+public struct MovingFlowHousingTypeScreen: View {
     @ObservedObject var vm: MovingFlowHousingTypeViewModel
     @EnvironmentObject var router: Router
     @ObservedObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
@@ -99,7 +99,7 @@ public struct MovingFlowHousingTypeView: View {
 struct MovingFlowTypeOfHome_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.nb_NO)
-        return MovingFlowHousingTypeView(movingFlowNavigationVm: .init())
+        return MovingFlowHousingTypeScreen(movingFlowNavigationVm: .init())
     }
 }
 
@@ -183,11 +183,11 @@ extension HousingType: TrackingViewNameProtocol {
     public var nameForTracking: String {
         switch self {
         case .apartment:
-            return .init(describing: MovingFlowAddressView.self)
+            return .init(describing: MovingFlowAddressScreen.self)
         case .rental:
-            return .init(describing: MovingFlowAddressView.self)
+            return .init(describing: MovingFlowAddressScreen.self)
         case .house:
-            return .init(describing: MovingFlowAddressView.self)
+            return .init(describing: MovingFlowAddressScreen.self)
         }
     }
 
