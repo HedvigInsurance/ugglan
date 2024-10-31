@@ -12,8 +12,8 @@ final class StartTerminationStoreTests: XCTestCase {
     }
 
     override func tearDown() async throws {
-        await waitUntil(description: "Store deinited successfully") {
-            self.store == nil
+        await waitUntil(description: "Store deinited successfully") { [weak self] in
+            self?.store == nil
         }
     }
 
