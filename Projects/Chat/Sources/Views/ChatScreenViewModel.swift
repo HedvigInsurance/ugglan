@@ -68,9 +68,6 @@ public class ChatScreenViewModel: ObservableObject {
                     }
                 }
             }
-
-        let fileUploadManager = FileUploadManager()
-        fileUploadManager.resetuploadFilesPath()
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             AskForRating().askAccordingToTheNumberOfSessions()
         }
@@ -92,8 +89,6 @@ public class ChatScreenViewModel: ObservableObject {
     }
 
     deinit {
-        let fileUploadManager = FileUploadManager()
-        fileUploadManager.resetuploadFilesPath()
         if let openDeepLinkObserver {
             NotificationCenter.default.removeObserver(openDeepLinkObserver)
         }

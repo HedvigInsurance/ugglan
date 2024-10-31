@@ -159,7 +159,7 @@ struct DocumentPreviewWebView: UIViewRepresentable {
     func makeUIView(context: Context) -> WKWebView {
         vm.webView.scrollView.backgroundColor = .clear
         vm.contentSizeCancellable = vm.webView.scrollView.publisher(for: \.contentSize)
-            .sink(receiveValue: { [weak vm] value in
+            .sink(receiveValue: { @MainActor [weak vm] value in
                 withAnimation {
                     vm?.contentHeight = value.height
                 }

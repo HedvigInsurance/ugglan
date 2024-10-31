@@ -183,8 +183,12 @@ struct PHPAssetPreview: View {
 
 extension PHAsset {
     enum GenerateFileUploadError: Error {
-        case failedToGenerateFileName, failedToGenerateMimeType, failedToGetVideoURL, failedToGetVideoData,
-            failedToConvertHEIC, failedToConvertToFile
+        case failedToGenerateFileName,
+            failedToGenerateMimeType,
+            failedToGetVideoURL,
+            failedToGetVideoData,
+            failedToConvertHEIC,
+            failedToConvertToFile
     }
 
     // generates a fileUpload for current PHAsset

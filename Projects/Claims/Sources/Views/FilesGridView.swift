@@ -122,24 +122,17 @@ class FileGridViewModel: ObservableObject {
     func show(file: File) {
         switch file.source {
         case let .localFile(results):
-            //            if #available(iOS 16.0, *) {
-            //                _ = results?.itemProvider.loadDataRepresentation(for: UTType.item, completionHandler: {[weak self] data, error in
-            //                    if let data {
-            //                        self?.fileModel = .init(type: .data(data: data, mimeType: file.mimeType))
-            //                    }
-            //                })
-            //
-            //            } else {
             results?.itemProvider
                 .loadDataRepresentation(
                     forTypeIdentifier: UTType.item.identifier,
                     completionHandler: { [weak self] data, error in
                         if let data {
-                            self?.fileModel = .init(type: .data(data: data, mimeType: file.mimeType))
+                            Task { @MainActor in
+                                self?.fileModel = .init(type: .data(data: data, mimeType: file.mimeType))
+                            }
                         }
                     }
                 )
-        //            }
         case .url(let url):
             fileModel = .init(type: .url(url: url))
         case .data(let data):

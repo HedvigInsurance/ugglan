@@ -164,7 +164,6 @@ public class FilesUploadViewModel: ObservableObject {
     var timerProgress: Double = 0
     let uploadDelayDuration: UInt64 = 1_500_000_000
 
-    private let fileUploadManager = FileUploadManager()
     private let model: FlowClaimFileUploadStepModel
     var claimFileUploadService = hClaimFileUploadService()
     @ObservedObject var fileGridViewModel: FileGridViewModel
@@ -186,7 +185,6 @@ public class FilesUploadViewModel: ObservableObject {
             files: files,
             options: [.delete, .add]
         )
-        fileUploadManager.resetuploadFilesPath()
         fileGridViewModel.$files
             .receive(on: RunLoop.main)
             .sink { _ in

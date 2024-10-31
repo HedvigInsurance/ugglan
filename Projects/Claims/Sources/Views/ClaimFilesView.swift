@@ -168,7 +168,6 @@ class ClaimFilesViewModel: ObservableObject {
     @Published var error: String?
     @Published var progress: Double = 0
     private let endPoint: String
-    let fileUploadManager = FileUploadManager()
     var fileGridViewModel: FileGridViewModel
     private var onSuccess: (_ data: [ClaimFileUploadResponse]) -> Void
     var claimFileUploadService = hClaimFileUploadService()
@@ -232,7 +231,6 @@ class ClaimFilesViewModel: ObservableObject {
                     }
                 }
                 success = true
-                self.fileUploadManager.resetuploadFilesPath()
                 self.onSuccess(files)
             }
         } catch let ex {

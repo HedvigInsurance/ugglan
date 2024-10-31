@@ -310,7 +310,6 @@ public struct ClaimDetailView: View {
     }
 
     private func showFilePickerAlert() {
-        vm.fileUploadManager.resetuploadFilesPath()
         FilePicker.showAlert { selected in
             switch selected {
             case .camera:
@@ -399,7 +398,6 @@ public class ClaimDetailViewModel: ObservableObject {
     @Published var hasFiles = false
     @Published var showFilesView: FilesDto?
     @Published var toolbarOptionType: [ToolbarOptionType] = [.chat]
-    let fileUploadManager = FileUploadManager()
     var fileGridViewModel: FileGridViewModel
 
     private var cancellables = Set<AnyCancellable>()
