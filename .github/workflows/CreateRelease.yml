@@ -16,14 +16,21 @@ jobs:
         run: |
           echo -e "machine maven.pkg.github.com\n  login ${{ secrets.HEDVIG_GITHUB_PACKAGES_USER }}\n  password ${{ secrets.HEDVIG_GITHUB_PACKAGES_TOKEN }}" > ~/.netrc
       - name: Post checkout pre
-        run: PATH=$PATH":$GITHUB_WORKSPACE/.tuist-bin" scripts/post-checkout-git-actions-pre.sh
+        run: scripts/post-checkout-git-actions-pre.sh
+      - name: Codegen
+        uses: tuist/tuist-action@0.13.0
+        with:
+          command: 'generate'
+          arguments: '--path $GITHUB_WORKSPACE/Projects/Codegen --no-open'
+      - name: Post checkout middle
+        run: scripts/post-checkout-git-actions-middle.sh
       - name: Tuist generate
         uses: tuist/tuist-action@0.13.0
         with:
           command: 'generate'
           arguments: ''
       - name: Post checkout post
-        run: PATH=$PATH":$GITHUB_WORKSPACE/.tuist-bin" scripts/post-checkout-git-actions-post.sh
+        run: scripts/post-checkout-git-actions-post.sh
       - name: Get Version
         id: get-version
         run: cd Projects/App && echo version=$(agvtool what-marketing-version -terse1) >> "$GITHUB_OUTPUT"
