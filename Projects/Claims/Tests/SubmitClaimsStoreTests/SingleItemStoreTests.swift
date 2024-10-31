@@ -90,7 +90,8 @@ final class SingleItemStoreTests: XCTestCase {
 
         await store.sendAsync(.singleItemRequest(purchasePrice: 6000))
 
-        await waitUntil(description: "loading state") {
+        await waitUntil(description: "loading state") { [weak store] in
+            guard let store else { return false }
             if case .error = store.loadingState[.postSingleItem] { return true } else { return false }
         }
 
