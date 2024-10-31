@@ -18,7 +18,7 @@ public struct MovingFlowHousingTypeScreen: View {
 
     public var body: some View {
         ProcessingStateView(
-            loadingViewText: "loading...",
+            loadingViewText: L10n.embarkLoading,
             errorViewButtons: .init(
                 actionButton: .init(
                     buttonTitle: L10n.openChat,
