@@ -5,7 +5,7 @@ import hCoreUI
 import hGraphQL
 
 struct MovingFlowHouseView: View {
-    @StateObject var houseInformationInputvm = HouseInformationInputModel()
+    @ObservedObject var houseInformationInputvm: HouseInformationInputModel
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
     @EnvironmentObject var router: Router
 

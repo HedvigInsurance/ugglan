@@ -12,6 +12,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
 
     @Published public var addressInputModel = AddressInputModel()
     @Published public var movingFlowVm: MovingFlowModel?
+    @Published public var houseInformationInputvm = HouseInformationInputModel()
 
     init() {}
 }
@@ -149,7 +150,7 @@ public struct MovingFlowNavigation: View {
     }
 
     func openHouseFillScreen() -> some View {
-        return MovingFlowHouseView()
+        return MovingFlowHouseView(houseInformationInputvm: movingFlowNavigationVm.houseInformationInputvm)
             .withDismissButton()
     }
 
