@@ -17,7 +17,7 @@ final class StoreDiscountsTests: XCTestCase {
         }
     }
 
-    func testFetchDiscountsSuccess() async {
+    func testFetchDiscountsSuccess() async throws {
         let discountsData: PaymentDiscountsData = .init(
             discounts: [
                 .init(
@@ -46,25 +46,22 @@ final class StoreDiscountsTests: XCTestCase {
         let store = PaymentStore()
         self.store = store
         await store.sendAsync(.fetchDiscountsData)
-        await waitUntil(description: "loading state") {
-            store.loadingState[.getDiscountsData] == nil
-        }
+        try await Task.sleep(nanoseconds: 100_000_000)
+        assert(store.loadingState[.getDiscountsData] == nil)
         assert(store.state.paymentDiscountsData == discountsData)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getPaymentDiscountsData)
     }
 
-    func testFetchDiscountsFailure() async {
+    func testFetchDiscountsFailure() async throws {
         let mockService = MockPaymentData.createMockPaymentService(
             fetchPaymentDiscountsData: { throw PaymentError.missingDataError(message: "error") }
         )
         let store = PaymentStore()
         self.store = store
         await store.sendAsync(.fetchDiscountsData)
-
-        await waitUntil(description: "loading state") {
-            store.loadingState[.getDiscountsData] != nil
-        }
+        try await Task.sleep(nanoseconds: 100_000_000)
+        assert(store.loadingState[.getDiscountsData] != nil)
         assert(store.state.paymentDiscountsData == nil)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getPaymentDiscountsData)
