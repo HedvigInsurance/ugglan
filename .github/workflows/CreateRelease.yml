@@ -15,8 +15,15 @@ jobs:
       - name: Setup .netrc file
         run: |
           echo -e "machine maven.pkg.github.com\n  login ${{ secrets.HEDVIG_GITHUB_PACKAGES_USER }}\n  password ${{ secrets.HEDVIG_GITHUB_PACKAGES_TOKEN }}" > ~/.netrc
-      - name: Post checkout
-        run: PATH=$PATH":$GITHUB_WORKSPACE/.tuist-bin" scripts/post-checkout.sh
+      - name: Post checkout pre
+        run: PATH=$PATH":$GITHUB_WORKSPACE/.tuist-bin" scripts/post-checkout-git-actions-pre.sh
+      - name: Tuist generate
+        uses: tuist/tuist-action@0.13.0
+        with:
+          command: 'generate'
+          arguments: ''
+      - name: Post checkout post
+        run: PATH=$PATH":$GITHUB_WORKSPACE/.tuist-bin" scripts/post-checkout-git-actions-post.sh
       - name: Get Version
         id: get-version
         run: cd Projects/App && echo version=$(agvtool what-marketing-version -terse1) >> "$GITHUB_OUTPUT"
