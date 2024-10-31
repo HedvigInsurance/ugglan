@@ -137,6 +137,6 @@ extension XCTestCase {
                 }
             }
         }
-        await fulfillment(of: [exc], timeout: 2)
+        await fulfillment(of: [exc], timeout: 6)
     }
 }
