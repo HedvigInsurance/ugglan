@@ -18,7 +18,7 @@ struct MovingFlowAddressView: View {
     var body: some View {
         switch vm.selectedHousingType {
         case .apartment, .rental:
-            form.loading($vm.viewState)
+            form.loadingButtonWithErrorHandling($vm.viewState)
                 .hErrorViewButtonConfig(
                     .init(
                         actionButton: .init(buttonAction: {
