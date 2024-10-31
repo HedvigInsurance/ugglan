@@ -336,7 +336,6 @@ private struct LargeButtonModifier: ViewModifier {
             .padding(.top, 15)
             .padding(.bottom, 17)
             .frame(minHeight: .padding56)
-            //            .frame(minWidth: 300)
             .frame(maxWidth: .infinity)
     }
 }
