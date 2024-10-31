@@ -145,44 +145,34 @@ extension OctopusGraphQL.MessageFragment {
     }
 
     private var messageType: MessageType {
-        //        if let action = self.asChatMessageAction {
-        //            let urlText = action.actionUrl.trimmingCharacters(in: .whitespacesAndNewlines)
-        //            if let url = URL(string: urlText), urlText.isUrl {
-        //                let data = ActionMessage(url: url, text: action.actionText, buttonTitle: action.actionTitle)
-        //                return .action(action: data)
-        //            }
-        //        } else if let text = self.asChatMessageText?.text {
-        //            let urlText = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        //            if let url = URL(string: urlText), urlText.isUrl {
-        //                if urlText.isGIFURL {
-        //                    return .file(file: .init(id: self.id, size: 0, mimeType: .GIF, name: "", source: .url(url: url)))
-        //                } else if urlText.isCrossSell {
-        //                    return .crossSell(url: url)
-        //                } else if urlText.isDeepLink {
-        //                    return .deepLink(url: url)
-        //                } else {
-        //                    return .otherLink(url: url)
-        //                }
-        //            } else {
-        //                return .text(text: text)
-        //            }
-        //        } else if let file = self.asChatMessageFile {
-        //            if let url = URL(string: file.signedUrl) {
-        //                let mimeType = MimeType.findBy(mimeType: file.mimeType)
-        //                return .file(file: .init(id: id, size: 0, mimeType: mimeType, name: "", source: .url(url: url)))
-        //            } else {
-        //                return .unknown
-        //            }
-        //        }
-        //        return .unknown
-
-        let url = URL(string: "https://hedvigtest.page.link/change-tier")
-        let text = "A new conversation has been created by Hedvig."
-        let buttonTitle = "Go to conversation"
-
-        if let url {
-            let actionMessage: ActionMessage = .init(url: url, text: text, buttonTitle: buttonTitle)
-            return .action(action: actionMessage)
+        if let action = self.asChatMessageAction {
+            let urlText = action.actionUrl.trimmingCharacters(in: .whitespacesAndNewlines)
+            if let url = URL(string: urlText), urlText.isUrl {
+                let data = ActionMessage(url: url, text: action.actionText, buttonTitle: action.actionTitle)
+                return .action(action: data)
+            }
+        } else if let text = self.asChatMessageText?.text {
+            let urlText = text.trimmingCharacters(in: .whitespacesAndNewlines)
+            if let url = URL(string: urlText), urlText.isUrl {
+                if urlText.isGIFURL {
+                    return .file(file: .init(id: self.id, size: 0, mimeType: .GIF, name: "", source: .url(url: url)))
+                } else if urlText.isCrossSell {
+                    return .crossSell(url: url)
+                } else if urlText.isDeepLink {
+                    return .deepLink(url: url)
+                } else {
+                    return .otherLink(url: url)
+                }
+            } else {
+                return .text(text: text)
+            }
+        } else if let file = self.asChatMessageFile {
+            if let url = URL(string: file.signedUrl) {
+                let mimeType = MimeType.findBy(mimeType: file.mimeType)
+                return .file(file: .init(id: id, size: 0, mimeType: mimeType, name: "", source: .url(url: url)))
+            } else {
+                return .unknown
+            }
         }
         return .unknown
     }
