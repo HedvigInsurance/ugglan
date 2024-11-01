@@ -207,6 +207,7 @@ struct LoaderOrContent<Content: View>: View {
                 if hButtonConfigurationType.shouldUseDark(for: colorScheme) {
                     DotsActivityIndicator(.standard)
                         .useDarkColor
+                        .colorScheme(.light)
                 } else {
                     DotsActivityIndicator(.standard)
                 }
