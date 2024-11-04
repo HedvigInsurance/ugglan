@@ -104,7 +104,7 @@ public enum ChangeTierInput: Identifiable, Equatable {
         return lhs.id == rhs.id
     }
     case contractWithSource(data: ChangeTierInputData)
-    case existingIntent(intent: ChangeTierIntentModel, onSelect: ((Tier, Quote)) -> Void)
+    case existingIntent(intent: ChangeTierIntentModel, onSelect: (((Tier, Quote)) -> Void)?)
 }
 public struct ChangeTierInputData: Equatable, Identifiable {
     public var id: String {
