@@ -35,110 +35,149 @@ struct CompareTierScreen: View {
 
     @ViewBuilder
     var succesView: some View {
+        let tiers: [String] = ["Bas", "Standard", "Premium"]
+
+        let mockPerils: [String: [Perils]] = [
+            "Bas":
+                [
+                    Perils(
+                        id: "peril1",
+                        title: "Veterinary care",
+                        description: "description",
+                        color: nil,
+                        covered: [""],
+                        isDisabled: false
+                    ),
+                    Perils(
+                        id: "peril2",
+                        title: "Hidden defects",
+                        description: "description",
+                        color: nil,
+                        covered: [""],
+                        isDisabled: true
+                    ),
+                    Perils(
+                        id: "peril3",
+                        title: "Giving birth",
+                        description: "description",
+                        color: nil,
+                        covered: [""],
+                        isDisabled: true
+                    ),
+                ],
+            "Standard":
+                [
+                    Perils(
+                        id: "peril1",
+                        title: "Veterinary care",
+                        description: "description",
+                        color: nil,
+                        covered: [""],
+                        isDisabled: false
+                    ),
+                    Perils(
+                        id: "peril2",
+                        title: "Hidden defects",
+                        description: "description",
+                        color: nil,
+                        covered: [""],
+                        isDisabled: false
+                    ),
+                    Perils(
+                        id: "peril3",
+                        title: "Giving birth",
+                        description: "description",
+                        color: nil,
+                        covered: [""],
+                        isDisabled: true
+                    ),
+                ],
+            "Premium":
+                [
+                    Perils(
+                        id: "peril1",
+                        title: "Veterinary care",
+                        description: "description",
+                        color: nil,
+                        covered: [""],
+                        isDisabled: false
+                    ),
+                    Perils(
+                        id: "peril2",
+                        title: "Hidden defects",
+                        description: "description",
+                        color: nil,
+                        covered: [""],
+                        isDisabled: false
+                    ),
+                    Perils(
+                        id: "peril3",
+                        title: "Giving birth",
+                        description: "description",
+                        color: nil,
+                        covered: [""],
+                        isDisabled: false
+                    ),
+                ],
+        ]
+
         hForm {
-            ScrollableSegmentedView(
-                vm: vm.scrollableSegmentedViewModel,
-                contentFor: { id in
-                    mainContent(for: id)
+            hSection {
+                HStack {
+                    VStack(alignment: .leading) {
+                        Spacer()
+                        ForEach(mockPerils[tiers.first ?? ""] ?? [], id: \.self) { peril in
+                            hText(peril.title)
+                        }
+                    }
+                    .padding(.trailing, 16)
+
+                    ForEach(tiers, id: \.self) { tier in
+                        getRow(tier: tier, allPerils: mockPerils[tier] ?? [])
+                    }
                 }
+            }
+            .sectionContainerStyle(.transparent)
+        }
+    }
+
+    /** TODO: WILL BE STORED IN VM  **/
+    @ViewBuilder
+    private func getRow(tier: String, allPerils: [Perils]) -> some View {
+
+        VStack {
+            hPill(text: tier, color: .blue, colorLevel: .one)
+                .hFieldSize(.small)
+
+            ForEach(allPerils, id: \.self) { peril in
+                getRowIcon(for: peril)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func getRowIcon(for peril: Perils) -> some View {
+        if let covered = peril.covered.first, covered != "" {
+            hPill(text: covered, color: .blue, colorLevel: .two)
+        } else if !(peril.isDisabled) {
+            Image(
+                uiImage: hCoreUIAssets.checkmark.image
             )
+            .resizable()
+            .frame(width: 24, height: 24)
+            .foregroundColor(getTextColor(for: peril))
+        } else {
+            Image(
+                uiImage: hCoreUIAssets.minus.image
+            )
+            .resizable()
+            .frame(width: 24, height: 24)
+            .foregroundColor(getTextColor(for: peril))
         }
-    }
-
-    func mainContent(for tierId: String) -> some View {
-        VStack(spacing: 4) {
-            ForEach(vm.perils[tierId] ?? [], id: \.id) { peril in
-                hSection {
-                    SwiftUI.Button {
-                        withAnimation {
-                            vm.extended.toggle()
-                        }
-                    } label: {
-                        EmptyView()
-                    }
-                    .buttonStyle(
-                        CompareTierButtonStyle(
-                            peril: peril,
-                            extended: $vm.extended
-                        )
-                    )
-                    .modifier(
-                        BackgorundColorAnimation(
-                            animationTrigger: .constant(false),
-                            color: hSurfaceColor.Opaque.primary,
-                            animationColor: hSurfaceColor.Opaque.secondary
-                        )
-                    )
-                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-                }
-            }
-            .hFieldSize(.small)
-        }
-    }
-}
-
-struct CompareTierButtonStyle: ButtonStyle {
-    var peril: Perils
-
-    @Binding var extended: Bool
-
-    func makeBody(configuration: Configuration) -> some View {
-        VStack(alignment: .center, spacing: 11) {
-            HStack(spacing: 8) {
-                if let color = peril.color {
-                    Group {
-                        if peril.isDisabled {
-                            Circle()
-                                .fill(hFillColor.Opaque.disabled)
-                        } else {
-                            Circle()
-                                .fill(Color(hexString: color))
-                        }
-                    }
-                    .frame(width: 20, height: 20)
-                    .padding(.horizontal, .padding4)
-                }
-                hText(peril.title, style: .heading1)
-                    .lineLimit(1)
-                    .foregroundColor(getTextColor)
-                Spacer()
-
-                if let covered = peril.covered.first, covered != "" {
-                    hPill(text: covered, color: .blue, colorLevel: .two)
-                } else if !(peril.isDisabled) {
-                    Image(
-                        uiImage: hCoreUIAssets.checkmark.image
-                    )
-                    .resizable()
-                    .frame(width: 24, height: 24)
-                    .foregroundColor(getTextColor)
-                } else {
-                    Image(
-                        uiImage: hCoreUIAssets.minus.image
-                    )
-                    .resizable()
-                    .frame(width: 24, height: 24)
-                    .foregroundColor(getTextColor)
-                }
-            }
-
-            if extended {
-                hText(peril.description, style: .label)
-                    .padding(.bottom, .padding12)
-                    .foregroundColor(getTextColor)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.horizontal, .padding32)
-            }
-        }
-        .padding(.horizontal, .padding16)
-        .padding(.top, 15)
-        .padding(.bottom, 17)
-        .contentShape(Rectangle())
-
     }
 
     @hColorBuilder
-    var getTextColor: some hColor {
+    func getTextColor(for peril: Perils) -> some hColor {
         if peril.isDisabled {
             hTextColor.Opaque.disabled
         } else {
@@ -277,6 +316,14 @@ public class CompareTierViewModel: ObservableObject {
             )
         ],
         selectedTier: nil
+    )
+
+    vm.scrollableSegmentedViewModel = .init(
+        pageModels: [
+            .init(id: "Bas", title: "Bas"),
+            .init(id: "Standard", title: "Standard"),
+        ],
+        currentId: "Bas"
     )
 
     vm.perils["Bas"] = [
