@@ -235,18 +235,6 @@ public class FilesUploadViewModel: ObservableObject {
 
     }
 
-    //    func addFiles(with files: [FilePickerDto]) {
-    //        if !files.isEmpty {
-    //            let filess = files.compactMap(
-    //                {
-    //                    return $0.asFile()
-    //                }
-    //            )
-    //            fileGridViewModel.files.append(contentsOf: filess)
-    //
-    //        }
-    //    }
-
     func addFiles(with files: [File]) {
         if !files.isEmpty {
             fileGridViewModel.files.append(contentsOf: files)

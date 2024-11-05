@@ -79,9 +79,7 @@ public struct ClaimFilesView: View {
                 .sheet(isPresented: $showImagePicker) {
                     ImagePicker { images in
                         for image in images {
-                            //                            if let file = image {
                             vm.add(file: image)
-                            //                            }
                         }
                     }
                     .ignoresSafeArea()
@@ -96,8 +94,7 @@ public struct ClaimFilesView: View {
                 }
                 .sheet(isPresented: $showCamera) {
                     CameraPickerView { image in
-                        guard let data = image.jpegData(compressionQuality: 0.9),
-                            let thumbnailData = image.jpegData(compressionQuality: 0.1)
+                        guard let data = image.jpegData(compressionQuality: 0.9)
                         else { return }
                         let file = File(
                             id: UUID().uuidString,
@@ -168,7 +165,7 @@ class ClaimFilesViewModel: ObservableObject {
     @Published var error: String?
     @Published var progress: Double = 0
     private let endPoint: String
-    var fileGridViewModel: FileGridViewModel
+    let fileGridViewModel: FileGridViewModel
     private var onSuccess: (_ data: [ClaimFileUploadResponse]) -> Void
     var claimFileUploadService = hClaimFileUploadService()
     var fetchClaimService = hFetchClaimService()
@@ -183,8 +180,8 @@ class ClaimFilesViewModel: ObservableObject {
         self.endPoint = endPoint
         self.onSuccess = onSuccess
         self.fileGridViewModel = .init(files: files, options: options)
-        self.fileGridViewModel.onDelete = { file in
-            Task { [weak self] in
+        self.fileGridViewModel.onDelete = { [weak self] file in
+            Task {
                 await self?.removeFile(id: file.id)
             }
         }
@@ -192,10 +189,8 @@ class ClaimFilesViewModel: ObservableObject {
 
     @MainActor
     func add(file: File) {
-        DispatchQueue.main.async { [weak self] in
-            withAnimation {
-                self?.fileGridViewModel.files.append(file)
-            }
+        withAnimation {
+            self.fileGridViewModel.files.append(file)
         }
     }
 

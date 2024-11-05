@@ -398,7 +398,7 @@ public class ClaimDetailViewModel: ObservableObject {
     @Published var hasFiles = false
     @Published var showFilesView: FilesDto?
     @Published var toolbarOptionType: [ToolbarOptionType] = [.chat]
-    var fileGridViewModel: FileGridViewModel
+    let fileGridViewModel: FileGridViewModel
 
     private var cancellables = Set<AnyCancellable>()
     public init(
@@ -485,17 +485,6 @@ public class ClaimDetailViewModel: ObservableObject {
             }
         }
     }
-
-    //    func showAddFiles(with files: [FilePickerDto]) {
-    //        if !files.isEmpty {
-    //            let filess = files.compactMap(
-    //                {
-    //                    return $0.asFile()
-    //                }
-    //            )
-    //            showFilesView = .init(id: claim.id, endPoint: claim.targetFileUploadUri, files: filess)
-    //        }
-    //    }
 
     func showAddFiles(with files: [File]) {
         if !files.isEmpty {

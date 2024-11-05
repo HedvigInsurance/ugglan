@@ -10,7 +10,6 @@ import hCoreUI
 
 struct FilesGridView: View {
     @ObservedObject var vm: FileGridViewModel
-    @PresentableStore private var store: ClaimsStore
 
     private let adaptiveColumn = [
         GridItem(.flexible(), spacing: 8),
@@ -139,7 +138,6 @@ class FileGridViewModel: ObservableObject {
             fileModel = .init(type: .data(data: data, mimeType: file.mimeType))
         }
     }
-
 }
 
 #Preview {
