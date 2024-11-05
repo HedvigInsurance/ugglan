@@ -47,7 +47,10 @@ struct HideViewController: ViewModifier {
                     return vc
                 } else if let superviewVc = vc.view.superview?.viewController {
                     return findProperVC(from: superviewVc)
+                } else if let parent = vc.parent {
+                    return findProperVC(from: parent)
                 }
+
             }
         }
         return nil
