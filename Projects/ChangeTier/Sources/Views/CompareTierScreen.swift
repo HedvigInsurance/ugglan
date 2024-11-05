@@ -126,26 +126,18 @@ struct CompareTierScreen: View {
     @ViewBuilder
     var succesView: some View {
         hForm {
+            hSection {
+                HStack(spacing: 0) {
+                    getPerilNameColumn()
 
-            HStack {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack {
-                        hSection {
-                            HStack(spacing: 0) {
-                                getPerilNameColumn()
-                                ForEach(mockTiers, id: \.self) { tier in
-                                    //                    ForEach(vm.tiers, id: \.self) { tier in
-                                    getColumn(for: tier)
-                                }
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 0) {
+                            ForEach(mockTiers, id: \.self) { tier in
+                                //                    ForEach(vm.tiers, id: \.self) { tier in
+                                getColumn(for: tier)
                             }
                         }
-
                     }
-                }
-            }
-            .background {
-                GeometryReader { proxy in
-                    Color.clear
                 }
             }
             .sectionContainerStyle(.transparent)
@@ -170,6 +162,7 @@ struct CompareTierScreen: View {
     private func getColumn(for tier: Tier) -> some View {
         VStack {
             hText(tier.name, style: .label)
+                .foregroundColor(hTextColor.Opaque.black)
                 .padding(.top, 7)
             //            ForEach(vm.perils[tier.name] ?? [], id: \.self) { peril in
             ForEach(mockPerils[tier.name] ?? [], id: \.self) { peril in
@@ -180,9 +173,6 @@ struct CompareTierScreen: View {
         .frame(width: 100, alignment: .center)
         .background(getColumnColor(for: tier))
         .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXS))
-        .overlay(
-            RoundedRectangle(cornerRadius: .cornerRadiusXS).stroke(hBorderColor.primary, lineWidth: 0.5)
-        )
     }
 
     @hColorBuilder
@@ -234,9 +224,9 @@ struct CompareTierScreen: View {
     @hColorBuilder
     func getTextColor(for peril: Perils) -> some hColor {
         if peril.isDisabled {
-            hTextColor.Opaque.secondary
+            hFillColor.Opaque.secondary
         } else {
-            hTextColor.Opaque.primary
+            hTextColor.Opaque.black
         }
     }
 }
