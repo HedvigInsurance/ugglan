@@ -8,7 +8,6 @@ import hGraphQL
 
 public class MoveFlowClientOctopus: MoveFlowClient {
     @Inject var octopus: hOctopus
-    @PresentableStore var store: MoveFlowStore
 
     public init() {}
 
@@ -31,18 +30,24 @@ public class MoveFlowClientOctopus: MoveFlowClient {
         houseInformationInputModel: HouseInformationInputModel
     ) async throws -> MovingFlowModel {
         let apiVersion = Dependencies.featureFlags().movingFlowVersion?.graphQLVersion ?? .v1
+
         let moveIntentRequestInput = OctopusGraphQL.MoveIntentRequestInput(
             apiVersion: .init(apiVersion),
             moveToAddress: .init(
                 street: addressInputModel.address,
                 postalCode: addressInputModel.postalCode.replacingOccurrences(of: " ", with: "")
             ),
-            moveFromAddressId: store.state.movingFromAddressModel?.id ?? "",
+            moveFromAddressId: addressInputModel.moveFromAddressId ?? "",
             movingDate: addressInputModel.accessDate?.localDateString ?? "",
             numberCoInsured: addressInputModel.nbOfCoInsured,
             squareMeters: Int(addressInputModel.squareArea) ?? 0,
             apartment: GraphQLNullable(optionalValue: apartmentInput(addressInputModel: addressInputModel)),
-            house: GraphQLNullable(optionalValue: houseInput(houseInformationInputModel: houseInformationInputModel))
+            house: GraphQLNullable(
+                optionalValue: houseInput(
+                    selectedHousingType: addressInputModel.selectedHousingType,
+                    houseInformationInputModel: houseInformationInputModel
+                )
+            )
         )
 
         let mutation = OctopusGraphQL.MoveIntentRequestMutation(
@@ -77,10 +82,10 @@ public class MoveFlowClientOctopus: MoveFlowClient {
     }
 
     private func apartmentInput(addressInputModel: AddressInputModel) -> OctopusGraphQL.MoveToApartmentInput? {
-        switch store.state.selectedHousingType {
+        switch addressInputModel.selectedHousingType {
         case .apartment, .rental:
             return OctopusGraphQL.MoveToApartmentInput(
-                subType: store.state.selectedHousingType.asMoveApartmentSubType,
+                subType: addressInputModel.selectedHousingType.asMoveApartmentSubType,
                 isStudent: addressInputModel.isStudent
             )
         case .house:
@@ -88,9 +93,11 @@ public class MoveFlowClientOctopus: MoveFlowClient {
         }
     }
 
-    private func houseInput(houseInformationInputModel: HouseInformationInputModel) -> OctopusGraphQL.MoveToHouseInput?
-    {
-        switch store.state.selectedHousingType {
+    private func houseInput(
+        selectedHousingType: HousingType,
+        houseInformationInputModel: HouseInformationInputModel
+    ) -> OctopusGraphQL.MoveToHouseInput? {
+        switch selectedHousingType {
         case .apartment, .rental:
             return nil
         case .house:
