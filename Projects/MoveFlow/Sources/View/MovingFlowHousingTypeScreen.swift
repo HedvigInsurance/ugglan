@@ -4,16 +4,33 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct MovingFlowHousingTypeView: View {
-    @StateObject var vm = MovingFlowHousingTypeViewModel()
+public struct MovingFlowHousingTypeScreen: View {
+    @ObservedObject var vm: MovingFlowHousingTypeViewModel
     @EnvironmentObject var router: Router
-    @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
+    @ObservedObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
+
+    init(
+        movingFlowNavigationVm: MovingFlowNavigationViewModel
+    ) {
+        self.vm = .init(movingFlowNavigationVm: movingFlowNavigationVm)
+        self.movingFlowNavigationVm = movingFlowNavigationVm
+    }
 
     public var body: some View {
-        LoadingViewWithState(
-            MoveFlowStore.self,
-            .fetchMoveIntent
-        ) {
+        ProcessingStateView(
+            loadingViewText: L10n.embarkLoading,
+            errorViewButtons: .init(
+                actionButton: .init(
+                    buttonTitle: L10n.openChat,
+                    buttonAction: {
+                        NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
+                    }
+                ),
+                dismissButton: nil
+            ),
+            state: $vm.viewState
+        )
+        .hCustomSuccessView {
             hForm {}
                 .hFormTitle(
                     title: .init(
@@ -54,15 +71,6 @@ public struct MovingFlowHousingTypeView: View {
                     }
                     .sectionContainerStyle(.transparent)
                 }
-                .hDisableScroll
-        } onLoading: {
-            DotsActivityIndicator(.standard).useDarkColor
-        } onError: { error in
-            ZStack {
-                BackgroundView().ignoresSafeArea()
-                GenericErrorView(
-                    description: error
-                )
                 .hErrorViewButtonConfig(
                     .init(
                         actionButton: .init(
@@ -74,21 +82,13 @@ public struct MovingFlowHousingTypeView: View {
                         dismissButton: nil
                     )
                 )
-                VStack {
-                    Spacer()
-                    hButton.LargeButton(type: .ghost) {
-                        router.dismiss()
-                    } content: {
-                        hText(L10n.generalCancelButton)
-                    }
-                }
-            }
+                .hDisableScroll
         }
     }
 
     func continuePressed() {
         let housingType = HousingType(rawValue: vm.selectedHousingType ?? "")
-        vm.store.send(.setHousingType(with: housingType ?? .apartment))
+        movingFlowNavigationVm.addressInputModel.selectedHousingType = housingType ?? .apartment
 
         if let housingType {
             router.push(housingType)
@@ -99,16 +99,55 @@ public struct MovingFlowHousingTypeView: View {
 struct MovingFlowTypeOfHome_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.nb_NO)
-        return MovingFlowHousingTypeView()
+        return MovingFlowHousingTypeScreen(movingFlowNavigationVm: .init())
     }
 }
 
 class MovingFlowHousingTypeViewModel: ObservableObject {
-    @PresentableStore var store: MoveFlowStore
+    @Inject private var service: MoveFlowClient
     @Published var selectedHousingType: String? = HousingType.apartment.rawValue
+    @Published var viewState: ProcessingState = .loading
+    let movingFlowNavigationVm: MovingFlowNavigationViewModel
 
-    init() {
-        store.send(.getMoveIntent)
+    init(movingFlowNavigationVm: MovingFlowNavigationViewModel) {
+        self.movingFlowNavigationVm = movingFlowNavigationVm
+        self.initializeData()
+    }
+
+    private func initializeData() {
+        Task {
+            let movingFlowModel = try await getMoveIntent()
+            movingFlowNavigationVm.movingFlowVm = movingFlowModel
+
+            let addressModel = AddressInputModel()
+            addressModel.moveFromAddressId = movingFlowModel?.currentHomeAddresses.first?.id
+            addressModel.nbOfCoInsured = movingFlowModel?.suggestedNumberCoInsured ?? 5
+            movingFlowNavigationVm.addressInputModel = addressModel
+        }
+    }
+
+    @MainActor
+    func getMoveIntent() async throws -> MovingFlowModel? {
+        withAnimation {
+            self.viewState = .loading
+        }
+
+        do {
+            let movingFlowData = try await service.sendMoveIntent()
+
+            withAnimation {
+                self.viewState = .success
+            }
+
+            return movingFlowData
+        } catch {
+            if let error = error as? MovingFlowError {
+                self.viewState = .error(errorMessage: error.localizedDescription)
+            } else {
+                self.viewState = .error(errorMessage: L10n.General.errorBody)
+            }
+            return nil
+        }
     }
 }
 
@@ -144,11 +183,11 @@ extension HousingType: TrackingViewNameProtocol {
     public var nameForTracking: String {
         switch self {
         case .apartment:
-            return .init(describing: MovingFlowAddressView.self)
+            return .init(describing: MovingFlowAddressScreen.self)
         case .rental:
-            return .init(describing: MovingFlowAddressView.self)
+            return .init(describing: MovingFlowAddressScreen.self)
         case .house:
-            return .init(describing: MovingFlowAddressView.self)
+            return .init(describing: MovingFlowAddressScreen.self)
         }
     }
 
