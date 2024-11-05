@@ -7,96 +7,6 @@ struct CompareTierScreen: View {
     @ObservedObject private var vm: CompareTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
 
-    let mockPerils: [String: [Perils]] = [
-        "Bas":
-            [
-                Perils(
-                    id: "peril1",
-                    title: "Veterinary care",
-                    description: "description",
-                    color: nil,
-                    covered: [""],
-                    isDisabled: false
-                ),
-                Perils(
-                    id: "peril2",
-                    title: "Hidden defects",
-                    description: "description",
-                    color: nil,
-                    covered: [""],
-                    isDisabled: true
-                ),
-                Perils(
-                    id: "peril3",
-                    title: "Giving birth",
-                    description: "description",
-                    color: nil,
-                    covered: [""],
-                    isDisabled: true
-                ),
-            ],
-        "Standard":
-            [
-                Perils(
-                    id: "peril1",
-                    title: "Veterinary care",
-                    description: "description",
-                    color: nil,
-                    covered: [""],
-                    isDisabled: false
-                ),
-                Perils(
-                    id: "peril2",
-                    title: "Hidden defects",
-                    description: "description",
-                    color: nil,
-                    covered: [""],
-                    isDisabled: false
-                ),
-                Perils(
-                    id: "peril3",
-                    title: "Giving birth",
-                    description: "description",
-                    color: nil,
-                    covered: [""],
-                    isDisabled: true
-                ),
-            ],
-        "Premium":
-            [
-                Perils(
-                    id: "peril1",
-                    title: "Veterinary care",
-                    description: "description",
-                    color: nil,
-                    covered: [""],
-                    isDisabled: false
-                ),
-                Perils(
-                    id: "peril2",
-                    title: "Hidden defects",
-                    description: "description",
-                    color: nil,
-                    covered: [""],
-                    isDisabled: false
-                ),
-                Perils(
-                    id: "peril3",
-                    title: "Giving birth",
-                    description: "description",
-                    color: nil,
-                    covered: [""],
-                    isDisabled: false
-                ),
-            ],
-    ]
-
-    let mockTiers: [Tier] = [
-        .init(id: "BAS", name: "Bas", level: 1, quotes: [], exposureName: "Bas"),
-        .init(id: "STANDARD", name: "Standard", level: 2, quotes: [], exposureName: "Standard"),
-        .init(id: "PREMIUM", name: "Premium", level: 3, quotes: [], exposureName: "Premium"),
-    ]
-
     init(
         vm: CompareTierViewModel
     ) {
@@ -134,7 +44,7 @@ struct CompareTierScreen: View {
 
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 0) {
-                        ForEach(mockTiers, id: \.self) { tier in
+                        ForEach(vm.tiers, id: \.self) { tier in
                             getColumn(for: tier)
                         }
                     }
@@ -153,8 +63,7 @@ struct CompareTierScreen: View {
                 .padding(.top, 11)
             let firstTier = vm.tiers.first?.name ?? ""
 
-            //        hSection(vm.perils[tier] ?? [], id: \.self) { peril in
-            hSection(mockPerils[firstTier] ?? [], id: \.id) { peril in
+            hSection(vm.perils[firstTier] ?? [], id: \.self) { peril in
                 hRow {
                     hText(peril.title, style: .label)
                         .frame(height: 40, alignment: .center)
@@ -182,13 +91,12 @@ struct CompareTierScreen: View {
 
             VStack(alignment: .center) {
                 hText(tier.name, style: .label)
-                    .foregroundColor(hTextColor.Opaque.black)
+                    .foregroundColor(getTierNameColor(for: tier))
                     .padding(.top, 7)
 
-                //                hSection(vm.perils[tier.name] ?? [], id: \.self) { peril
-                hSection(mockPerils[tier.name] ?? [], id: \.self) { peril in
+                hSection(vm.perils[tier.name] ?? [], id: \.self) { peril in
                     hRow {
-                        getRowIcon(for: peril)
+                        getRowIcon(for: peril, tier: tier)
                             .frame(height: 40, alignment: .center)
                             .frame(maxWidth: .infinity, alignment: .center)
                     }
@@ -201,39 +109,50 @@ struct CompareTierScreen: View {
 
     @hColorBuilder
     private func getColumnColor(for tier: Tier) -> some hColor {
-        //                if tier == vm.selectedTier {
-        if tier.name == "Standard" {
+        if tier == vm.selectedTier {
             hHighlightColor.Green.fillOne
         } else {
             hBackgroundColor.clear
         }
     }
 
+    @hColorBuilder
+    private func getTierNameColor(for tier: Tier) -> some hColor {
+        if tier == vm.selectedTier {
+            hTextColor.Opaque.black
+        } else {
+            hTextColor.Opaque.primary
+        }
+    }
+
     @ViewBuilder
-    private func getRowIcon(for peril: Perils) -> some View {
+    private func getRowIcon(for peril: Perils, tier: Tier) -> some View {
         if !(peril.isDisabled) {
             Image(
                 uiImage: hCoreUIAssets.checkmark.image
             )
             .resizable()
             .frame(width: 24, height: 24)
-            .foregroundColor(getTextColor(for: peril))
+            .foregroundColor(getIconColor(for: peril, tier: tier))
         } else {
             Image(
                 uiImage: hCoreUIAssets.minus.image
             )
             .resizable()
             .frame(width: 24, height: 24)
-            .foregroundColor(getTextColor(for: peril))
+            .foregroundColor(getIconColor(for: peril, tier: tier))
         }
     }
 
     @hColorBuilder
-    func getTextColor(for peril: Perils) -> some hColor {
+    func getIconColor(for peril: Perils, tier: Tier) -> some hColor {
+
         if peril.isDisabled {
-            hFillColor.Opaque.secondary
+            hFillColor.Opaque.disabled
+        } else if tier == vm.selectedTier {
+            hFillColor.Opaque.black
         } else {
-            hTextColor.Opaque.black
+            hFillColor.Opaque.secondary
         }
     }
 }
@@ -347,10 +266,28 @@ public class CompareTierViewModel: ObservableObject {
 #Preview {
     Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
 
+    let standardTier = Tier(
+        id: "STANDARD",
+        name: "Standard",
+        level: 2,
+        quotes: [
+            .init(
+                id: "quote1",
+                quoteAmount: .init(amount: "220", currency: "SEK"),
+                quotePercentage: 0,
+                subTitle: nil,
+                premium: .init(amount: "220", currency: "SEK"),
+                displayItems: [],
+                productVariant: nil
+            )
+        ],
+        exposureName: "Standard"
+    )
+
     let vm: CompareTierViewModel = .init(
         tiers: [
             .init(
-                id: "tier1",
+                id: "BAS",
                 name: "Bas",
                 level: 0,
                 quotes: [
@@ -365,29 +302,28 @@ public class CompareTierViewModel: ObservableObject {
                     )
                 ],
                 exposureName: "exposure name"
-            )
+            ),
+            standardTier,
+            .init(
+                id: "PREMIUM",
+                name: "Premium",
+                level: 0,
+                quotes: [
+                    .init(
+                        id: "quote1",
+                        quoteAmount: .init(amount: "220", currency: "SEK"),
+                        quotePercentage: 0,
+                        subTitle: nil,
+                        premium: .init(amount: "220", currency: "SEK"),
+                        displayItems: [],
+                        productVariant: nil
+                    )
+                ],
+                exposureName: "exposure name"
+            ),
         ],
-        selectedTier: nil
+        selectedTier: standardTier
     )
-
-    vm.scrollableSegmentedViewModel = .init(
-        pageModels: [
-            .init(id: "Bas", title: "Bas"),
-            .init(id: "Standard", title: "Standard"),
-        ],
-        currentId: "Bas"
-    )
-
-    vm.perils["Bas"] = [
-        Perils(
-            id: "peril1",
-            title: "peril1",
-            description: "description",
-            color: nil,
-            covered: ["30 000 kr"],
-            isDisabled: false
-        )
-    ]
 
     return CompareTierScreen(vm: vm)
 }

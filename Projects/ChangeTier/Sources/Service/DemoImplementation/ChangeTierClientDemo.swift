@@ -139,6 +139,24 @@ public class ChangeTierClientDemo: ChangeTierClient {
             ),
         ]
 
+        let selectedTier = Tier(
+            id: "STANDARD",
+            name: "Standard",
+            level: 2,
+            quotes: [
+                .init(
+                    id: "quote1",
+                    quoteAmount: .init(amount: "220", currency: "SEK"),
+                    quotePercentage: 0,
+                    subTitle: nil,
+                    premium: .init(amount: "220", currency: "SEK"),
+                    displayItems: [],
+                    productVariant: nil
+                )
+            ],
+            exposureName: "Standard"
+        )
+
         return .init(
             displayName: "display name",
             activationDate: Date(),
@@ -150,16 +168,10 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     quotes: quotes,
                     exposureName: "Bellmansgatan 19A"
                 ),
-                .init(
-                    id: "i2",
-                    name: "Standard",
-                    level: 0,
-                    quotes: quotes,
-                    exposureName: "Bellmansgatan 19A"
-                ),
+                selectedTier,
                 .init(
                     id: "id3",
-                    name: "Max",
+                    name: "Premium",
                     level: 0,
                     quotes: quotes,
                     exposureName: "Bellmansgatan 19A"
@@ -214,7 +226,7 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     tierDescription: "Vårt mellanpaket med hög ersättning."
                 )
             ),
-            selectedTier: nil,
+            selectedTier: selectedTier,
             selectedQuote: nil,
             canEditTier: true,
             typeOfContract: .seApartmentBrf
@@ -224,6 +236,77 @@ public class ChangeTierClientDemo: ChangeTierClient {
     public func commitTier(quoteId: String) async throws {}
 
     public func compareProductVariants(termsVersion: [String]) async throws -> ProductVariantComparison {
-        return .init(rows: [], variantColumns: [])
+        return .init(
+            rows: [
+                .init(
+                    title: "Veterinary care",
+                    description: "description",
+                    colorCode: nil,
+                    cells: [
+                        .init(isCovered: true, coverageText: ""),
+                        .init(isCovered: true, coverageText: ""),
+                        .init(isCovered: true, coverageText: ""),
+                    ]
+                ),
+
+                .init(
+                    title: "Hidden defects",
+                    description: "description",
+                    colorCode: nil,
+                    cells: [
+                        .init(isCovered: false, coverageText: ""),
+                        .init(isCovered: true, coverageText: ""),
+                        .init(isCovered: true, coverageText: ""),
+                    ]
+                ),
+
+                .init(
+                    title: "Giving birth",
+                    description: "description",
+                    colorCode: nil,
+                    cells: [
+                        .init(isCovered: false, coverageText: ""),
+                        .init(isCovered: false, coverageText: ""),
+                        .init(isCovered: true, coverageText: ""),
+                    ]
+                ),
+
+            ],
+            variantColumns: [
+                .init(
+                    termsVersion: "",
+                    typeOfContract: "",
+                    partner: nil,
+                    perils: [],
+                    insurableLimits: [],
+                    documents: [],
+                    displayName: "Bas",
+                    displayNameTier: "Bas",
+                    tierDescription: nil
+                ),
+                .init(
+                    termsVersion: "",
+                    typeOfContract: "",
+                    partner: nil,
+                    perils: [],
+                    insurableLimits: [],
+                    documents: [],
+                    displayName: "Standard",
+                    displayNameTier: "Standard",
+                    tierDescription: nil
+                ),
+                .init(
+                    termsVersion: "",
+                    typeOfContract: "",
+                    partner: nil,
+                    perils: [],
+                    insurableLimits: [],
+                    documents: [],
+                    displayName: "Premium",
+                    displayNameTier: "Premium",
+                    tierDescription: nil
+                ),
+            ]
+        )
     }
 }
