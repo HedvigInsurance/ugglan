@@ -81,12 +81,14 @@ struct CompareTierScreen: View {
                 hRow {
                     hText(peril.title, style: .label)
                         .frame(height: .padding40, alignment: .center)
-                        .fixedSize()
                         .onTapGesture {
+
+                            let descriptionText = getDescriptionText(for: peril)
+
                             changeTierNavigationVm.isInsurableLimitPresented = .init(
                                 label: peril.title,
                                 limit: "",
-                                description: peril.description
+                                description: descriptionText
                             )
                         }
                 }
@@ -94,6 +96,13 @@ struct CompareTierScreen: View {
                 .frame(width: 124)
             }
         }
+    }
+
+    private func getDescriptionText(for peril: Perils) -> String {
+        if let coverageText = peril.covered.first, coverageText != "" {
+            return peril.description + "\n\n" + coverageText
+        }
+        return peril.description
     }
 
     @ViewBuilder
@@ -235,16 +244,8 @@ public class CompareTierViewModel: ObservableObject {
                     })
                 })
 
-                let mockTermsVersionsToCompare =
-                    [
-                        "SE_DOG_BASIC-20230330-HEDVIG-null",
-                        "SE_DOG_STANDARD-20230330-HEDVIG-null",
-                        "SE_DOG_PREMIUM-20230410-HEDVIG-null",
-                    ]
-
                 let productVariantComparisionData = try await service.compareProductVariants(
-                    //                    termsVersion: termsVersionsToCompare
-                    termsVersion: mockTermsVersionsToCompare
+                    termsVersion: termsVersionsToCompare
                 )
 
                 let columns = productVariantComparisionData.variantColumns

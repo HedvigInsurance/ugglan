@@ -290,6 +290,16 @@ public class ChangeTierClientDemo: ChangeTierClient {
                         .init(isCovered: true, coverageText: ""),
                     ]
                 ),
+                .init(
+                    title: "Long long long long long title",
+                    description: "description",
+                    colorCode: nil,
+                    cells: [
+                        .init(isCovered: false, coverageText: ""),
+                        .init(isCovered: false, coverageText: ""),
+                        .init(isCovered: true, coverageText: ""),
+                    ]
+                ),
 
             ],
             variantColumns: [
