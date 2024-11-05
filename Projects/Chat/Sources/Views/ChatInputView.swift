@@ -32,7 +32,9 @@ struct ChatInputView: View {
                             text: $vm.inputText,
                             height: $height,
                             keyboardIsShown: $vm.keyboardIsShown
-                        )
+                        ) { file in
+                            vm.sendMessage(.init(type: .file(file: file)))
+                        }
                         .frame(height: height)
                         .frame(minHeight: 40)
 
@@ -170,12 +172,14 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
     @Binding var height: CGFloat
     @Binding var keyboardIsShown: Bool
     @Environment(\.colorScheme) var schema
+    let onPaste: ((File) -> Void)?
     func makeUIView(context: Context) -> some UIView {
         CustomTextView(
             placeholder: placeholder,
             inputText: $text,
             height: $height,
-            keyboardIsShown: $keyboardIsShown
+            keyboardIsShown: $keyboardIsShown,
+            onPaste: onPaste
         )
     }
 
@@ -196,8 +200,16 @@ private class CustomTextView: UITextView, UITextViewDelegate {
     @Binding private var keyboardIsShown: Bool
     private var textCancellable: AnyCancellable?
     private var placeholderLabel = UILabel()
-    init(placeholder: String, inputText: Binding<String>, height: Binding<CGFloat>, keyboardIsShown: Binding<Bool>) {
+    let onPaste: ((File) -> Void)?
+    init(
+        placeholder: String,
+        inputText: Binding<String>,
+        height: Binding<CGFloat>,
+        keyboardIsShown: Binding<Bool>,
+        onPaste: ((File) -> Void)?
+    ) {
         self._inputText = inputText
+        self.onPaste = onPaste
         self._height = height
         self._keyboardIsShown = keyboardIsShown
         super.init(frame: .zero, textContainer: nil)
@@ -267,9 +279,18 @@ private class CustomTextView: UITextView, UITextViewDelegate {
 
     override func paste(_ sender: Any?) {
         if let action = (sender as? UIKeyCommand)?.action, action == #selector(UIResponder.paste(_:)) {
-            if let image = UIPasteboard.general.image {
+            if let urls = UIPasteboard.general.urls {
+                for url in urls {
+                    if let contentProvider = NSItemProvider(contentsOf: url) {
+                        contentProvider.getFile { [weak self] file in
+                            self?.onPaste?(file)
+                        }
+                    }
+                }
                 return
             }
+            //            if let image = UIPasteboard.general.image {
+            //            }
         }
         super.paste(sender)
     }

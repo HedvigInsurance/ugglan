@@ -46,6 +46,12 @@ public struct ChatScreen: View {
                 await vm.startFetchingNewMessages()
             }
         }
+        .fileDrop(isTargetedForDropdown: $isTargetedForDropdown) { file in
+            Task {
+                let message = Message(type: .file(file: file))
+                await vm.send(message: message)
+            }
+        }
     }
 
     @ViewBuilder
