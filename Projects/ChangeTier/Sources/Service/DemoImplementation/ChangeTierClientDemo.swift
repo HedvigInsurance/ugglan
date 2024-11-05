@@ -270,6 +270,26 @@ public class ChangeTierClientDemo: ChangeTierClient {
                         .init(isCovered: true, coverageText: ""),
                     ]
                 ),
+                .init(
+                    title: "Food",
+                    description: "description",
+                    colorCode: nil,
+                    cells: [
+                        .init(isCovered: false, coverageText: ""),
+                        .init(isCovered: false, coverageText: ""),
+                        .init(isCovered: true, coverageText: ""),
+                    ]
+                ),
+                .init(
+                    title: "Dental care",
+                    description: "description",
+                    colorCode: nil,
+                    cells: [
+                        .init(isCovered: false, coverageText: ""),
+                        .init(isCovered: false, coverageText: ""),
+                        .init(isCovered: true, coverageText: ""),
+                    ]
+                ),
 
             ],
             variantColumns: [

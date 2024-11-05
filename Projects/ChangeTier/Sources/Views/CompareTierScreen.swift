@@ -53,7 +53,21 @@ struct CompareTierScreen: View {
             .sectionContainerStyle(.transparent)
             .hWithoutDividerPadding
             .hWithoutHorizontalPadding
+            .padding(.top, .padding16)
         }
+        .hFormTitle(
+            title: .init(
+                .small,
+                .body2,
+                L10n.tierComparisonTitle,
+                alignment: .leading
+            ),
+            subTitle: .init(
+                .small,
+                .body2,
+                L10n.tierComparisonSubtitle
+            )
+        )
     }
 
     @ViewBuilder
@@ -66,7 +80,7 @@ struct CompareTierScreen: View {
             hSection(vm.perils[firstTier] ?? [], id: \.self) { peril in
                 hRow {
                     hText(peril.title, style: .label)
-                        .frame(height: 40, alignment: .center)
+                        .frame(height: .padding40, alignment: .center)
                         .fixedSize()
                         .onTapGesture {
                             changeTierNavigationVm.isInsurableLimitPresented = .init(
@@ -97,7 +111,7 @@ struct CompareTierScreen: View {
                 hSection(vm.perils[tier.name] ?? [], id: \.self) { peril in
                     hRow {
                         getRowIcon(for: peril, tier: tier)
-                            .frame(height: 40, alignment: .center)
+                            .frame(height: .padding40, alignment: .center)
                             .frame(maxWidth: .infinity, alignment: .center)
                     }
                     .verticalPadding(0)
