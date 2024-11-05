@@ -13,14 +13,17 @@ struct EmailPreferencesConfirmView: View {
             title: vm.isUnsubscribed ? L10n.SettingsScreen.subscribeTitle : L10n.General.areYouSure,
             description: vm.isUnsubscribed
                 ? L10n.SettingsScreen.subscribeDescription : L10n.SettingsScreen.unsubscribeDescription,
-            buttons: .init(
+            attachContentToTheBottom: true
+        )
+        .hErrorViewButtonConfig(
+            .init(
                 actionButtonAttachedToBottom:
                     .init(
                         buttonTitle: vm.isUnsubscribed
                             ? L10n.SettingsScreen.subscribeButton : L10n.SettingsScreen.confirmUnsubscribe,
                         buttonAction: {
                             Task {
-                                await vm.toogleSubscription()
+                                await vm.toggleSubscription()
                                 profileNavigationVm.isConfirmEmailPreferencesPresented = false
                             }
                         }
@@ -31,15 +34,13 @@ struct EmailPreferencesConfirmView: View {
                         profileNavigationVm.isConfirmEmailPreferencesPresented = false
                     }
                 )
-            ),
-            attachContentToTheBottom: true
+            )
         )
-        .hExtraTopPadding
         .hDisableScroll
         .hButtonIsLoading(vm.isLoading)
     }
 }
 
-#Preview{
+#Preview {
     EmailPreferencesConfirmView(vm: .init())
 }

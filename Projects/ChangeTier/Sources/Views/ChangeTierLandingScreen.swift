@@ -80,6 +80,8 @@ public struct ChangeTierLandingScreen: View {
                     )
                 }
 
+                let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
+
                 VStack(spacing: .padding4) {
                     editTierView
                     if vm.showDeductibleField {
@@ -87,7 +89,7 @@ public struct ChangeTierLandingScreen: View {
                     }
                 }
                 .hFieldSize(.small)
-                .hBackgroundOption(option: [.negative])
+                .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary])
                 .hWithoutHorizontalPadding
 
                 hRow {
@@ -155,6 +157,7 @@ public struct ChangeTierLandingScreen: View {
                 changeTierNavigationVm.isEditDeductiblePresented = true
             }
             .disabled(vm.selectedTier == nil)
+            .hFieldSize(.small)
         }
     }
 
@@ -171,8 +174,10 @@ public struct ChangeTierLandingScreen: View {
                     case .contractWithSource:
                         changeTierNavigationVm.router.push(ChangeTierRouterActions.summary)
                     case let .existingIntent(_, onSelect):
-                        if let selectedTier = vm.selectedTier, let selectedDeductible = vm.selectedQuote {
+                        if let selectedTier = vm.selectedTier, let selectedDeductible = vm.selectedQuote, let onSelect {
                             onSelect((selectedTier, selectedDeductible))
+                        } else {
+                            changeTierNavigationVm.router.push(ChangeTierRouterActions.summary)
                         }
                     }
                 } content: {

@@ -17,8 +17,10 @@ struct ImagesView: View {
                 GenericErrorView(
                     title: L10n.chatMissingImagesPermissionSubtitle,
                     description: nil,
-                    useForm: false,
-                    buttons: .init(
+                    useForm: false
+                )
+                .hErrorViewButtonConfig(
+                    .init(
                         actionButton: .init(
                             buttonTitle: L10n.chatOpenAppSettingsButton,
                             buttonAction: {
@@ -98,11 +100,11 @@ class ImagesViewModel: ObservableObject {
     }
 }
 
-#Preview{
+#Preview {
     ImagesView(vm: .init())
 }
 
-#Preview{
+#Preview {
     PHPAssetPreview(asset: .init()) { _ in
 
     }

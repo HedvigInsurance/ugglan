@@ -17,7 +17,7 @@ final class FetchEntrypointGroupsStoreTests: XCTestCase {
         }
     }
 
-    func testFetchEntrypointGroupsSuccess() async {
+    func testFetchEntrypointGroupsSuccess() async throws {
         let entrypointsGroupModel: [ClaimEntryPointGroupResponseModel] = [
             .init(
                 id: "id",
@@ -44,7 +44,7 @@ final class FetchEntrypointGroupsStoreTests: XCTestCase {
         let store = SubmitClaimStore()
         self.store = store
         await store.sendAsync(.fetchEntrypointGroups)
-
+        try await Task.sleep(nanoseconds: 30_000_000)
         assert(store.state.claimEntrypointGroups == entrypointsGroupModel)
     }
 

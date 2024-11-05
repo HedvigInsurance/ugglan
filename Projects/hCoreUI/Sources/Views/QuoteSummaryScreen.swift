@@ -15,8 +15,8 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         let newPremium: MonetaryAmount?
         let currentPremium: MonetaryAmount?
         let displayItems: [QuoteDisplayItem]
-        let documents: [InsuranceTerm]
-        let onDocumentTap: (_ document: InsuranceTerm) -> Void
+        let documents: [hPDFDocument]
+        let onDocumentTap: (_ document: hPDFDocument) -> Void
         let insuranceLimits: [InsurableLimits]
         let typeOfContract: TypeOfContract?
         let shouldShowDetails: Bool
@@ -27,8 +27,8 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             exposureName: String,
             newPremium: MonetaryAmount?,
             currentPremium: MonetaryAmount?,
-            documents: [InsuranceTerm],
-            onDocumentTap: @escaping (_ document: InsuranceTerm) -> Void,
+            documents: [hPDFDocument],
+            onDocumentTap: @escaping (_ document: hPDFDocument) -> Void,
             displayItems: [QuoteDisplayItem],
             insuranceLimits: [InsurableLimits],
             typeOfContract: TypeOfContract?
@@ -96,7 +96,7 @@ public struct QuoteSummaryScreen: View {
                                 }
                         }
                     )
-                    .padding(.bottom, vm.FAQModel?.questions.isEmpty ?? true ? 0 : spacingCoverage)
+                    .padding(.bottom, (vm.FAQModel?.questions.isEmpty ?? true) ? 0 : (spacingCoverage + .padding8))
                 }
                 if !isEmptyFaq {
                     scrollSection
@@ -106,6 +106,7 @@ public struct QuoteSummaryScreen: View {
                 VStack {
                     if vm.contracts.count > 1 {
                         noticeComponent
+                            .padding(.top, .padding16)
                     }
                     buttonComponent(proxy: proxy)
                 }
@@ -157,31 +158,33 @@ public struct QuoteSummaryScreen: View {
 
                         let index = selectedContracts.firstIndex(of: contract.id)
                         let isExpanded = index != nil
+                        VStack(spacing: 0) {
+                            detailsView(for: contract, isExpanded: isExpanded)
+                                .frame(height: isExpanded ? nil : 0, alignment: .top)
+                                .clipped()
 
-                        detailsView(for: contract)
-                            .frame(height: isExpanded ? nil : 0, alignment: .top)
-                            .clipped()
+                            if contract.shouldShowDetails {
 
-                        if contract.shouldShowDetails {
-                            hButton.MediumButton(
-                                type: .secondary
-                            ) {
-                                withAnimation(.easeInOut(duration: 0.4)) {
-                                    let index = selectedContracts.firstIndex(of: contract.id)
-                                    if let index {
-                                        selectedContracts.remove(at: index)
-                                    } else {
-                                        selectedContracts.append(contract.id)
+                                hButton.MediumButton(
+                                    type: .secondary
+                                ) {
+                                    withAnimation(.easeInOut(duration: 0.4)) {
+                                        let index = selectedContracts.firstIndex(of: contract.id)
+                                        if let index {
+                                            selectedContracts.remove(at: index)
+                                        } else {
+                                            selectedContracts.append(contract.id)
+                                        }
                                     }
-                                }
 
-                            } content: {
-                                let index = selectedContracts.firstIndex(of: contract.id)
-                                hText(
-                                    index != nil
-                                        ? L10n.ClaimStatus.ClaimHideDetails.button
-                                        : L10n.ClaimStatus.ClaimDetails.button
-                                )
+                                } content: {
+                                    hText(
+                                        selectedContracts.firstIndex(of: contract.id) != nil
+                                            ? L10n.ClaimStatus.ClaimHideDetails.button
+                                            : L10n.ClaimStatus.ClaimDetails.button
+                                    )
+                                    .transition(.scale)
+                                }
                             }
                         }
                     }
@@ -203,7 +206,7 @@ public struct QuoteSummaryScreen: View {
         .sectionContainerStyle(.transparent)
     }
 
-    func detailsView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
+    func detailsView(for contract: QuoteSummaryViewModel.ContractInfo, isExpanded: Bool) -> some View {
         VStack(spacing: .padding16) {
             hRowDivider()
                 .hWithoutDividerPadding
@@ -243,6 +246,7 @@ public struct QuoteSummaryScreen: View {
                 }
             }
         }
+        .padding(.bottom, isExpanded ? .padding16 : 0)
     }
 
     func rowItem(for displayItem: QuoteDisplayItem) -> some View {
@@ -255,7 +259,7 @@ public struct QuoteSummaryScreen: View {
         .foregroundColor(hTextColor.Opaque.secondary)
     }
 
-    func documentItem(for document: InsuranceTerm) -> some View {
+    func documentItem(for document: hPDFDocument) -> some View {
         HStack {
             hAttributedTextView(
                 text: AttributedPDF().attributedPDFString(for: document.displayName),
@@ -266,8 +270,7 @@ public struct QuoteSummaryScreen: View {
             Spacer()
             Image(uiImage: HCoreUIAsset.arrowNorthEast.image)
                 .resizable()
-                .frame(width: 16, height: 16)
-                .foregroundColor(hFillColor.Opaque.primary)
+                .frame(width: 24, height: 24)
         }
         .foregroundColor(hTextColor.Opaque.secondary)
     }
@@ -412,7 +415,7 @@ public struct FAQ: Codable, Equatable, Hashable {
 }
 
 #Preview(body: {
-    let documents: [InsuranceTerm] = [
+    let documents: [hPDFDocument] = [
         .init(displayName: "document 1", url: "https//hedvig.com", type: .generalTerms),
         .init(displayName: "document 2", url: "https//hedvig.com", type: .preSaleInfo),
     ]
@@ -488,6 +491,18 @@ public struct FAQ: Codable, Equatable, Hashable {
                 displayItems: [],
                 insuranceLimits: [],
                 typeOfContract: .seAccident
+            ),
+            .init(
+                id: "id5",
+                displayName: "Dog",
+                exposureName: "Bellmansgtan 19A",
+                newPremium: .init(amount: 999, currency: "SEK"),
+                currentPremium: .init(amount: 599, currency: "SEK"),
+                documents: [],
+                onDocumentTap: { document in },
+                displayItems: [],
+                insuranceLimits: [],
+                typeOfContract: .seDogStandard
             ),
         ],
         total: .init(amount: 999, currency: "SEK"),

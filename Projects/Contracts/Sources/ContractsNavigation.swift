@@ -101,7 +101,10 @@ public struct ContractsNavigation<Content: View>: View {
                 upcomingAgreement: insuranceUpdate.upcomingChangedAgreement
             )
             .configureTitle(L10n.InsuranceDetails.updateDetailsSheetTitle)
-            .embededInNavigation(tracking: ContractsDetentType.upcomingChanges)
+            .embededInNavigation(
+                options: [.navigationType(type: .large)],
+                tracking: ContractsDetentType.upcomingChanges
+            )
             .environmentObject(contractsNavigationVm)
         }
         .handleTerminateInsurance(vm: contractsNavigationVm.terminateInsuranceVm) { dismissType in
@@ -120,7 +123,7 @@ public class ContractsNavigationViewModel: ObservableObject {
     public let contractsRouter = Router()
     let terminateInsuranceVm = TerminateInsuranceViewModel()
     @Published public var insurableLimit: InsurableLimits?
-    @Published public var document: Document?
+    @Published public var document: hPDFDocument?
     @Published public var editCoInsuredConfig: InsuredPeopleConfig?
     @Published public var editCoInsuredMissingAlert: InsuredPeopleConfig?
     @Published public var changeYourInformationContract: Contract?
@@ -138,7 +141,7 @@ public class ContractsNavigationViewModel: ObservableObject {
 public enum RedirectType {
     case chat
     case movingFlow
-    case pdf(document: Document)
+    case pdf(document: hPDFDocument)
     case changeTier(input: ChangeTierInput)
 }
 

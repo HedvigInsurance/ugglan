@@ -5,22 +5,21 @@ public struct GenericErrorView: View {
     private let title: String?
     private let description: String?
     private let useForm: Bool
-    private let buttons: ErrorViewButtonConfig
+
     private let attachContentToTheBottom: Bool
 
     @Environment(\.hExtraTopPadding) var extraTopPadding
+    @Environment(\.hErrorViewButtonConfig) var errorViewButtonConfig
 
     public init(
         title: String? = nil,
         description: String? = L10n.General.errorBody,
         useForm: Bool = true,
-        buttons: ErrorViewButtonConfig,
         attachContentToTheBottom: Bool = false
     ) {
         self.title = title
         self.description = description
         self.useForm = useForm
-        self.buttons = buttons
         self.attachContentToTheBottom = attachContentToTheBottom
     }
 
@@ -43,14 +42,14 @@ public struct GenericErrorView: View {
                                 .padding(.bottom, .padding40)
                                 .padding(.top, extraTopPadding ? 32 : 0)
                         }
-                        if let actionButton = buttons.actionButtonAttachedToBottom {
+                        if let actionButton = errorViewButtonConfig?.actionButtonAttachedToBottom {
                             hButton.LargeButton(type: .primary) {
                                 actionButton.buttonAction()
                             } content: {
                                 hText(actionButton.buttonTitle ?? "")
                             }
                         }
-                        if let dismissButton = buttons.dismissButton {
+                        if let dismissButton = errorViewButtonConfig?.dismissButton {
                             hButton.LargeButton(type: .ghost) {
                                 dismissButton.buttonAction()
                             } content: {
@@ -78,10 +77,10 @@ public struct GenericErrorView: View {
             type: .error,
             title: title ?? L10n.somethingWentWrong,
             bodyText: description,
-            button: buttons.actionButton != nil
+            button: errorViewButtonConfig?.actionButton != nil
                 ? .init(
-                    buttonTitle: buttons.actionButton?.buttonTitle,
-                    buttonAction: buttons.actionButton?.buttonAction ?? {}
+                    buttonTitle: errorViewButtonConfig?.actionButton?.buttonTitle,
+                    buttonAction: errorViewButtonConfig?.actionButton?.buttonAction ?? {}
                 ) : nil
         )
     }
@@ -113,10 +112,27 @@ public struct ErrorViewButtonConfig {
     }
 }
 
+private struct ErrorViewButtonConfigKey: EnvironmentKey {
+    static let defaultValue: ErrorViewButtonConfig? = nil
+}
+
+extension EnvironmentValues {
+    public var hErrorViewButtonConfig: ErrorViewButtonConfig? {
+        get { self[ErrorViewButtonConfigKey.self] }
+        set { self[ErrorViewButtonConfigKey.self] = newValue }
+    }
+}
+
+extension View {
+    public func hErrorViewButtonConfig(_ errorViewButtonConfigKey: ErrorViewButtonConfig?) -> some View {
+        self.environment(\.hErrorViewButtonConfig, errorViewButtonConfigKey)
+    }
+}
+
 struct Error_Previews: PreviewProvider {
     static var previews: some View {
-        GenericErrorView(
-            buttons:
+        GenericErrorView()
+            .hErrorViewButtonConfig(
                 .init(
                     actionButton: .init(buttonTitle: nil, buttonAction: {}),
                     actionButtonAttachedToBottom:
@@ -130,28 +146,30 @@ struct Error_Previews: PreviewProvider {
                             buttonAction: {}
                         )
                 )
-        )
+            )
+
     }
 }
 
 struct ErrorAttachToBottom_Previews: PreviewProvider {
     static var previews: some View {
         GenericErrorView(
-            buttons:
-                .init(
-                    actionButton: .init(buttonTitle: nil, buttonAction: {}),
-                    actionButtonAttachedToBottom:
-                        .init(
-                            buttonTitle: "Extra button",
-                            buttonAction: {}
-                        ),
-                    dismissButton:
-                        .init(
-                            buttonTitle: "Close",
-                            buttonAction: {}
-                        )
-                ),
             attachContentToTheBottom: true
+        )
+        .hErrorViewButtonConfig(
+            .init(
+                actionButton: .init(buttonTitle: nil, buttonAction: {}),
+                actionButtonAttachedToBottom:
+                    .init(
+                        buttonTitle: "Extra button",
+                        buttonAction: {}
+                    ),
+                dismissButton:
+                    .init(
+                        buttonTitle: "Close",
+                        buttonAction: {}
+                    )
+            )
         )
     }
 }

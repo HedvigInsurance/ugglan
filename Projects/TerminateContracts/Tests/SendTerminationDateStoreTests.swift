@@ -82,7 +82,7 @@ final class SendTerminationDateStoreTests: XCTestCase {
         await store.sendAsync(.sendTerminationDate)
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.sendTerminationDate] == nil
+            store.loadingState[.sendTerminationDate] == nil
         }
 
         assert(store.state.successStep == nil)
@@ -117,7 +117,7 @@ final class SendTerminationDateStoreTests: XCTestCase {
         await store.sendAsync(.sendTerminationDate)
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.sendTerminationDate] != nil
+            store.loadingState[.sendTerminationDate] != nil
         }
         assert(store.state.successStep == nil)
         assert(store.state.failedStep == nil)

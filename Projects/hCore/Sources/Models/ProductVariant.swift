@@ -1,12 +1,12 @@
 import hGraphQL
 
 public struct ProductVariant: Codable, Hashable {
-    let termsVersion: String
+    public let termsVersion: String
     let typeOfContract: String
     let partner: String?
     public let perils: [Perils]
     public let insurableLimits: [InsurableLimits]
-    public let documents: [InsuranceTerm]
+    public let documents: [hPDFDocument]
     public let displayName: String
     public let displayNameTier: String?
     public let tierDescription: String?
@@ -17,7 +17,7 @@ public struct ProductVariant: Codable, Hashable {
         partner: String?,
         perils: [Perils],
         insurableLimits: [InsurableLimits],
-        documents: [InsuranceTerm],
+        documents: [hPDFDocument],
         displayName: String,
         displayNameTier: String?,
         tierDescription: String?

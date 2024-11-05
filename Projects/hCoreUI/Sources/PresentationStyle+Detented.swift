@@ -143,10 +143,8 @@ class DetentedTransitioningDelegate: NSObject, UIViewControllerTransitioningDele
         )
 
         Task { @MainActor [weak presentationController] in
-            for i in 0...2 {
-                let date = Date()
+            for _ in 0...2 {
                 try? await Task.sleep(nanoseconds: 50_000_000)
-                let date2 = Date()
                 if let presentationController {
                     Detent.set(
                         self.detents,

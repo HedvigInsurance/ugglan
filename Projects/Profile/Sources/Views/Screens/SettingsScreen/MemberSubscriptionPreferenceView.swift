@@ -29,6 +29,7 @@ struct MemberSubscriptionPreferenceView: View {
                 content: {
                     EmailPreferencesConfirmView(vm: vm)
                         .environmentObject(profileNavigationVm)
+                        .embededInNavigation(tracking: ProfileDetentType.emailPreferences)
                 }
             )
         }
@@ -39,7 +40,7 @@ class MemberSubscriptionPreferenceViewModel: ObservableObject {
     @Published var memberId: String = ""
     @Published var isLoading = false
     @Published var isUnsubscribed = false
-    private static let userDefaultsKey = "unsubscribedMembers"
+    static let userDefaultsKey = "unsubscribedMembers"
     @Published var unsubscribedMembers = UserDefaults.standard.array(forKey: userDefaultsKey) as? [String]
     var profileService = ProfileService()
     var profileNavigationViewModel: ProfileNavigationViewModel?
@@ -49,7 +50,6 @@ class MemberSubscriptionPreferenceViewModel: ObservableObject {
         let store: ProfileStore = globalPresentableStoreContainer.get()
         memberId = store.state.memberDetails?.id ?? ""
         updateUnsubscibed()
-
     }
 
     func onEmailPreferencesButtonTap() {
@@ -61,7 +61,7 @@ class MemberSubscriptionPreferenceViewModel: ObservableObject {
     }
 
     @MainActor
-    func toogleSubscription() async {
+    func toggleSubscription() async {
         withAnimation {
             isLoading = true
         }

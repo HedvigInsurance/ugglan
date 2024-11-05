@@ -9,7 +9,7 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     @Published public var isEditDeductiblePresented = false
     @Published public var isCompareTiersPresented = false
     @Published public var isInsurableLimitPresented: InsurableLimits?
-    @Published public var document: Document?
+    @Published public var document: hPDFDocument?
     let useOwnNavigation: Bool
     let router: Router
     var onChangedTier: () -> Void = {}
@@ -104,7 +104,7 @@ public enum ChangeTierInput: Identifiable, Equatable {
         return lhs.id == rhs.id
     }
     case contractWithSource(data: ChangeTierInputData)
-    case existingIntent(intent: ChangeTierIntentModel, onSelect: ((Tier, Quote)) -> Void)
+    case existingIntent(intent: ChangeTierIntentModel, onSelect: (((Tier, Quote)) -> Void)?)
 }
 public struct ChangeTierInputData: Equatable, Identifiable {
     public var id: String {
@@ -236,23 +236,25 @@ public struct ChangeTierNavigation: View {
             )
         }
         .modally(presented: $changeTierNavigationVm.isCompareTiersPresented) {
-            CompareTierScreen(vm: changeTierNavigationVm.vm)
-                .configureTitle(
-                    changeTierNavigationVm.vm.tiers.count == 1
-                        ? L10n.tierFlowShowCoverageButton : L10n.tierFlowCompareButton
-                )
-                .withDismissButton()
-                .embededInNavigation(
-                    options: .navigationType(type: .large),
-                    tracking: ChangeTierTrackingType.compareTier
-                )
-                .environmentObject(changeTierNavigationVm)
+            CompareTierScreen(
+                vm: .init(tiers: changeTierNavigationVm.vm.tiers, selectedTier: changeTierNavigationVm.vm.selectedTier)
+            )
+            .configureTitle(
+                changeTierNavigationVm.vm.tiers.count == 1
+                    ? L10n.tierFlowShowCoverageButton : L10n.tierFlowCompareButton
+            )
+            .withDismissButton()
+            .embededInNavigation(
+                options: .navigationType(type: .large),
+                tracking: ChangeTierTrackingType.compareTier
+            )
+            .environmentObject(changeTierNavigationVm)
         }
         .detent(
             item: $changeTierNavigationVm.document,
             style: [.large]
         ) { document in
-            PDFPreview(document: .init(url: document.url, title: document.title))
+            PDFPreview(document: document)
         }
     }
 

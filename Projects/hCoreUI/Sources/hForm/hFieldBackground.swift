@@ -34,6 +34,8 @@ struct hFieldBackgroundModifier: ViewModifier {
             } else {
                 if backgroundOption.contains(.negative) {
                     hFillColor.Opaque.negative
+                } else if backgroundOption.contains(.secondary) {
+                    hSurfaceColor.Opaque.secondary
                 } else {
                     hSurfaceColor.Opaque.primary
                 }
@@ -77,6 +79,7 @@ extension View {
 
 struct hFieldLabel: View {
     let placeholder: String
+    let useScaleEffect: Bool
     @Binding var animate: Bool
     @Binding var error: String?
     @Binding var shouldMoveLabel: Bool
@@ -84,17 +87,40 @@ struct hFieldLabel: View {
     @Environment(\.hFieldSize) var size
     @Environment(\.hBackgroundOption) var backgroundOption
 
+    init(
+        placeholder: String,
+        useScaleEffect: Bool = true,
+        animate: Binding<Bool>,
+        error: Binding<String?>,
+        shouldMoveLabel: Binding<Bool>
+    ) {
+        self.placeholder = placeholder
+        self.useScaleEffect = useScaleEffect
+        self._animate = animate
+        self._error = error
+        self._shouldMoveLabel = shouldMoveLabel
+    }
+
     var body: some View {
         let sizeToScaleFrom = size.labelFont.fontSize
         let sizeToScaleTo = HFontTextStyle.label.fontSize
         let ratio = sizeToScaleTo / sizeToScaleFrom
         return hText(
-            placeholder,
-            style: size.labelFont
+            placeholder
         )
+        .hTextStyle(useScaleEffect ? font : (shouldMoveLabel ? .label : font))
         .padding(.leading, 1)
         .foregroundColor(getTextColor())
-        .scaleEffect(shouldMoveLabel ? ratio : 1, anchor: .leading)
+        .scaleEffect(useScaleEffect ? (shouldMoveLabel ? ratio : 1) : 1, anchor: .leading)
+    }
+
+    private var font: HFontTextStyle {
+        switch size {
+        case .small, .medium:
+            return .body1
+        case .large:
+            return .body2
+        }
     }
 
     @hColorBuilder

@@ -316,6 +316,7 @@ public enum BackgroundOption {
     case negative
     case withoutDisabled
     case locked
+    case secondary
 }
 
 private struct EnvironmentHBackgroundOption: EnvironmentKey {
@@ -343,6 +344,17 @@ public enum hFieldSize: Hashable {
     case small
     case large
     case medium
+
+    var horizontalPadding: CGFloat {
+        switch self {
+        case .small:
+            return .padding14
+        case .large:
+            return .padding16
+        case .medium:
+            return .padding16
+        }
+    }
 }
 
 extension EnvironmentValues {
@@ -448,5 +460,22 @@ extension hFieldSize {
         case .medium: return .body1
         case .large: return .body2
         }
+    }
+}
+
+private struct EnvironmentHAnimateField: EnvironmentKey {
+    static let defaultValue = true
+}
+
+extension EnvironmentValues {
+    public var hAnimateField: Bool {
+        get { self[EnvironmentHAnimateField.self] }
+        set { self[EnvironmentHAnimateField.self] = newValue }
+    }
+}
+
+extension View {
+    public func hAnimateField(_ animate: Bool) -> some View {
+        self.environment(\.hAnimateField, animate)
     }
 }

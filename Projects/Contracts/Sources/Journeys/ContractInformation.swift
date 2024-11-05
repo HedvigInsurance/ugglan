@@ -7,6 +7,7 @@ import TerminateContracts
 import UnleashProxyClientSwift
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct ContractInformationView: View {
     @PresentableStore var store: ContractStore
@@ -33,7 +34,6 @@ struct ContractInformationView: View {
                                     hText(item.displayTitle)
                                         .fixedSize()
                                 }
-                                .noSpacing()
                                 .withCustomAccessory({
                                     Spacer()
                                     Group {
@@ -87,6 +87,7 @@ struct ContractInformationView: View {
                         }
                     }
                 }
+                .hWithoutHorizontalPadding
             }
         }
         .sectionContainerStyle(.transparent)
@@ -233,9 +234,10 @@ struct ContractInformationView: View {
                     .init(
                         buttonTitle: L10n.dashboardRenewalPrompterBodyButton,
                         buttonAction: {
-                            contractsNavigationVm.document = Document(
-                                url: url,
-                                title: L10n.insuranceCertificateTitle
+                            contractsNavigationVm.document = hPDFDocument(
+                                displayName: L10n.insuranceCertificateTitle,
+                                url: upcomingRenewal.certificateUrl ?? "",
+                                type: .unknown
                             )
                         }
                     )
@@ -262,9 +264,10 @@ struct ContractInformationView: View {
                             .init(
                                 buttonTitle: L10n.contractViewCertificateButton,
                                 buttonAction: {
-                                    contractsNavigationVm.document = Document(
-                                        url: url,
-                                        title: L10n.myDocumentsInsuranceCertificate
+                                    contractsNavigationVm.document = hPDFDocument(
+                                        displayName: L10n.myDocumentsInsuranceCertificate,
+                                        url: upcomingChangedAgreement.certificateUrl ?? "",
+                                        type: .unknown
                                     )
                                 }
                             )

@@ -78,7 +78,7 @@ class NavBar: UINavigationBar {
                 subview.frame = CGRect(
                     x: 0,
                     y: 0,
-                    width: self.frame.width + 8,
+                    width: self.frame.width + 4,
                     height: subview.frame.size.height
                 )
             }
@@ -141,7 +141,7 @@ public struct DefaultStyling {
         ]
 
         let backImage = hCoreUIAssets.chevronLeft.image.withAlignmentRectInsets(
-            UIEdgeInsets(top: 0, left: -4, bottom: 0, right: 0)
+            UIEdgeInsets(top: 0, left: -5, bottom: 0, right: 0)
         )
         appearance.setBackIndicatorImage(
             backImage,
@@ -420,6 +420,7 @@ extension CGFloat {
     public static let padding8: CGFloat = 8
     public static let padding10: CGFloat = 10
     public static let padding12: CGFloat = 12
+    public static let padding14: CGFloat = 14
     public static let padding16: CGFloat = 16
     public static let padding24: CGFloat = 24
     public static let padding32: CGFloat = 32

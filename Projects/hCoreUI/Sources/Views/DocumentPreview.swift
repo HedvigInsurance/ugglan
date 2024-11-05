@@ -84,8 +84,10 @@ public struct DocumentPreview: View {
             if vm.error != nil {
                 GenericErrorView(
                     title: L10n.somethingWentWrong,
-                    description: L10n.General.errorBody,
-                    buttons: .init(
+                    description: L10n.General.errorBody
+                )
+                .hErrorViewButtonConfig(
+                    .init(
                         actionButton:
                             .init(
                                 buttonTitle: L10n.generalRetry,

@@ -24,6 +24,7 @@ struct ContractCoverageView: View {
                     },
                     perils: contract.currentAgreement?.productVariant.perils ?? []
                 )
+                .hWithoutHorizontalPadding
             }
         }
     }

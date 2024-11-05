@@ -1,7 +1,6 @@
 import Foundation
 
 public protocol FeatureFlags {
-    var loadingExperimentsSuccess: (Bool) -> Void { get set }
     var isEditCoInsuredEnabled: Bool { get set }
     var isTravelInsuranceEnabled: Bool { get set }
     var isTerminationFlowEnabled: Bool { get set }
@@ -13,7 +12,7 @@ public protocol FeatureFlags {
     var paymentType: PaymentType { get set }
     var isHelpCenterEnabled: Bool { get set }
     var isSubmitClaimEnabled: Bool { get set }
-    func setup(with context: [String: String], onComplete: @escaping (_ success: Bool) -> Void)
+    func setup(with context: [String: String]) async throws
     func updateContext(context: [String: String])
     var osVersionTooLow: Bool { get set }
     var emailPreferencesEnabled: Bool { get set }

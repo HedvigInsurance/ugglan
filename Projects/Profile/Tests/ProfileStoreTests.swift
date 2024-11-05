@@ -13,12 +13,12 @@ final class ProfileStoreTests: XCTestCase {
     }
 
     override func tearDown() async throws {
-        await waitUntil(description: "Store deinited successfully") {
+        try await waitUntil(description: "Store deinited successfully") {
             self.store == nil
         }
     }
 
-    func testFetchProfileSuccess() async {
+    func testFetchProfileSuccess() async throws {
         let memberData: MemberDetails = .init(
             id: "id",
             firstName: "first name",
@@ -36,9 +36,11 @@ final class ProfileStoreTests: XCTestCase {
         let store = ProfileStore()
         self.store = store
         await store.sendAsync(.fetchProfileState)
-        await waitUntil(description: "loading state") {
+        try await waitUntil(description: "loading state") {
             store.loadingState[.fetchProfileState] == nil
         }
+        try await Task.sleep(nanoseconds: 30_000_000)
+
         assert(store.state.memberDetails == memberData)
         assert(store.state.partnerData == partnerData)
         assert(store.state.hasTravelCertificates == memberData.isTravelCertificateEnabled)
@@ -47,7 +49,7 @@ final class ProfileStoreTests: XCTestCase {
         assert(mockService.events.first == .getProfileState)
     }
 
-    func testFetchProfileFailure() async {
+    func testFetchProfileFailure() async throws {
         let mockService = MockData.createMockProfileService(
             fetchProfileState: { throw ProfileError.error(message: "error") }
         )
@@ -55,7 +57,7 @@ final class ProfileStoreTests: XCTestCase {
         let store = ProfileStore()
         self.store = store
         await store.sendAsync(.fetchProfileState)
-        await waitUntil(description: "loading state") {
+        try await waitUntil(description: "loading state") {
             store.loadingState[.fetchProfileState] != nil
         }
         assert(store.state.memberDetails == nil)
@@ -66,7 +68,7 @@ final class ProfileStoreTests: XCTestCase {
         assert(mockService.events.first == .getProfileState)
     }
 
-    func testFetchMemberDetailsSuccess() async {
+    func testFetchMemberDetailsSuccess() async throws {
         let memberData: MemberDetails = .init(
             id: "id",
             firstName: "first name",
@@ -83,7 +85,7 @@ final class ProfileStoreTests: XCTestCase {
         let store = ProfileStore()
         self.store = store
         await store.sendAsync(.fetchMemberDetails)
-        await waitUntil(description: "loading state") {
+        try await waitUntil(description: "loading state") {
             store.loadingState[.fetchMemberDetails] == nil
         }
         assert(store.state.memberDetails == memberData)
@@ -93,7 +95,7 @@ final class ProfileStoreTests: XCTestCase {
         assert(mockService.events.first == .getMemberDetails)
     }
 
-    func testFetchMemberDetailsFailure() async {
+    func testFetchMemberDetailsFailure() async throws {
         let mockService = MockData.createMockProfileService(
             fetchMemberDetails: { throw ProfileError.error(message: "error") }
         )
@@ -101,7 +103,8 @@ final class ProfileStoreTests: XCTestCase {
         let store = ProfileStore()
         self.store = store
         await store.sendAsync(.fetchMemberDetails)
-        await waitUntil(description: "loading state") {
+        try await Task.sleep(nanoseconds: 30_000_000)
+        try await waitUntil(description: "loading state") {
             store.loadingState[.fetchMemberDetails] != nil
         }
         assert(store.state.memberDetails == nil)
@@ -111,9 +114,9 @@ final class ProfileStoreTests: XCTestCase {
         assert(mockService.events.first == .getMemberDetails)
     }
 
-    func testUpdateLanguageSuccess() async {
+    func testUpdateLanguageSuccess() async throws {
         let locale: Localization.Locale = .sv_SE
-        Localization.Locale.currentLocale = locale
+        Localization.Locale.currentLocale = .init(locale)
 
         let mockService = MockData.createMockProfileService(
             languageUpdate: {}
@@ -122,18 +125,21 @@ final class ProfileStoreTests: XCTestCase {
         let store = ProfileStore()
         self.store = store
         await store.sendAsync(.updateLanguage)
-        await waitUntil(description: "loading state") {
+        try await Task.sleep(nanoseconds: 30_000_000)
+
+        try await waitUntil(description: "loading state") {
             store.loadingState[.updateLanguage] == nil
         }
-        assert(Localization.Locale.currentLocale == locale)
+
+        assert(Localization.Locale.currentLocale.value == .init(locale))
 
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .updateLanguage)
     }
 
-    func testUpdateLanguageFailure() async {
+    func testUpdateLanguageFailure() async throws {
         let locale: Localization.Locale = .sv_SE
-        Localization.Locale.currentLocale = locale
+        Localization.Locale.currentLocale = .init(locale)
 
         let mockService = MockData.createMockProfileService(
             languageUpdate: { throw ProfileError.error(message: "error") }
@@ -142,10 +148,10 @@ final class ProfileStoreTests: XCTestCase {
         let store = ProfileStore()
         self.store = store
         await store.sendAsync(.updateLanguage)
-        await waitUntil(description: "loading state") {
+        try await waitUntil(description: "loading state") {
             store.loadingState[.updateLanguage] != nil
         }
-        assert(Localization.Locale.currentLocale == locale)
+        assert(Localization.Locale.currentLocale.value == .init(locale))
 
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .updateLanguage)
@@ -153,14 +159,14 @@ final class ProfileStoreTests: XCTestCase {
 }
 
 extension XCTestCase {
-    public func waitUntil(description: String, closure: @escaping () -> Bool) async {
+    public func waitUntil(description: String, closure: @escaping () -> Bool) async throws {
         let exc = expectation(description: description)
         if closure() {
             exc.fulfill()
         } else {
             try! await Task.sleep(nanoseconds: 100_000_000)
             Task {
-                await self.waitUntil(description: description, closure: closure)
+                try await self.waitUntil(description: description, closure: closure)
                 if closure() {
                     exc.fulfill()
                 }
