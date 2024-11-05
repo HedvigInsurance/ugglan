@@ -150,7 +150,7 @@ struct CompareTierScreen: View {
     private func getPerilNameColumn() -> some View {
         VStack(alignment: .leading) {
             hText("", style: .label)
-                .padding(.top, 4)
+                .padding(.top, 11)
             let firstTier = vm.tiers.first?.name ?? ""
 
             //        hSection(vm.perils[tier] ?? [], id: \.self) { peril in
@@ -183,6 +183,7 @@ struct CompareTierScreen: View {
             VStack(alignment: .center) {
                 hText(tier.name, style: .label)
                     .foregroundColor(hTextColor.Opaque.black)
+                    .padding(.top, 7)
 
                 //                hSection(vm.perils[tier.name] ?? [], id: \.self) { peril
                 hSection(mockPerils[tier.name] ?? [], id: \.self) { peril in
