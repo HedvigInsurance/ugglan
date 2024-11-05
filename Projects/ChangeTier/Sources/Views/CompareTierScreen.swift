@@ -132,8 +132,8 @@ struct CompareTierScreen: View {
 
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 0) {
-                            ForEach(mockTiers, id: \.self) { tier in
-                                //                    ForEach(vm.tiers, id: \.self) { tier in
+                            //                            ForEach(mockTiers, id: \.self) { tier in
+                            ForEach(vm.tiers, id: \.self) { tier in
                                 getColumn(for: tier)
                             }
                         }
@@ -148,11 +148,20 @@ struct CompareTierScreen: View {
     private func getPerilNameColumn() -> some View {
         VStack(alignment: .leading) {
             hText("")
-            //            ForEach(vm.perils[tier.name] ?? [], id: \.self) { peril in
-            ForEach(mockPerils[mockTiers.first?.name ?? ""] ?? [], id: \.self) { peril in
+            let firstTier = vm.tiers.first?.name ?? ""
+
+            //            ForEach(vm.perils[tier] ?? [], id: \.self) { peril in
+            ForEach(mockPerils[firstTier] ?? [], id: \.self) { peril in
                 hText(peril.title, style: .label)
                     .fixedSize()
                     .frame(height: 32)
+                    .onTapGesture {
+                        changeTierNavigationVm.isInsurableLimitPresented = .init(
+                            label: peril.title,
+                            limit: "",
+                            description: peril.description
+                        )
+                    }
             }
         }
         .frame(width: 172, alignment: .leading)
@@ -177,7 +186,7 @@ struct CompareTierScreen: View {
 
     @hColorBuilder
     private func getColumnColor(for tier: Tier) -> some hColor {
-        //        if tier == vm.selectedTier {
+        //                if tier == vm.selectedTier {
         if tier.name == "Bas" {
             hHighlightColor.Green.fillOne
         } else {
@@ -186,7 +195,7 @@ struct CompareTierScreen: View {
     }
 
     private func getPillColor(for tier: Tier) -> PillColor {
-        //            if tier == vm.selectedTier {
+        //        if tier == vm.selectedTier {
         if tier.name == "Bas" {
             return .green
         } else {
