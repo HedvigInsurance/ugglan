@@ -22,7 +22,7 @@ struct MovingFlowAddressScreen: View {
                 .hErrorViewButtonConfig(
                     .init(
                         actionButton: .init(buttonAction: {
-                            vm.error = nil
+                            vm.viewState = .success
                         }),
                         dismissButton: nil
                     )
@@ -179,16 +179,17 @@ struct MovingFlowAddressScreen: View {
         if isInputValid() {
             switch vm.selectedHousingType {
             case .apartment, .rental:
-                Task {
-                    let movingFlowData = try await vm.requestMoveIntent(
+                Task { @MainActor in
+                    if let movingFlowData = await vm.requestMoveIntent(
                         intentId: movingFlowNavigationVm.movingFlowVm?.id ?? ""
-                    )
-                    movingFlowNavigationVm.movingFlowVm = movingFlowData
+                    ) {
+                        movingFlowNavigationVm.movingFlowVm = movingFlowData
 
-                    if let changeTierModel = movingFlowData?.changeTier {
-                        router.push(MovingFlowRouterActions.selectTier(changeTierModel: changeTierModel))
-                    } else {
-                        router.push(MovingFlowRouterActions.confirm)
+                        if let changeTierModel = movingFlowData.changeTier {
+                            router.push(MovingFlowRouterActions.selectTier(changeTierModel: changeTierModel))
+                        } else {
+                            router.push(MovingFlowRouterActions.confirm)
+                        }
                     }
                 }
             case .house:
@@ -285,12 +286,11 @@ public class AddressInputModel: ObservableObject {
     @Published var squareAreaError: String?
     @Published var accessDateError: String?
     @Published var type: MovingFlowNewAddressViewFieldType?
-    @Published var error: String?
     @Published var selectedHousingType: HousingType = .apartment
     @Published var viewState: ProcessingState = .success
 
     @MainActor
-    func requestMoveIntent(intentId: String) async throws -> MovingFlowModel? {
+    func requestMoveIntent(intentId: String) async -> MovingFlowModel? {
         withAnimation {
             self.viewState = .loading
         }
@@ -314,7 +314,7 @@ public class AddressInputModel: ObservableObject {
     }
 
     func clearErrors() {
-        error = nil
+        viewState = .success
         addressError = nil
         postalCodeError = nil
         squareAreaError = nil

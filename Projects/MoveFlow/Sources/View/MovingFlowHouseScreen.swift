@@ -14,7 +14,7 @@ struct MovingFlowHouseScreen: View {
             .hErrorViewButtonConfig(
                 .init(
                     actionButton: .init(buttonAction: {
-                        houseInformationInputvm.error = nil
+                        houseInformationInputvm.viewState = .success
                     }),
                     dismissButton: nil
                 )
@@ -203,16 +203,17 @@ struct MovingFlowHouseScreen: View {
     func continuePressed() {
         if houseInformationInputvm.isInputValid() {
             Task {
-                let movingFlowData = try await houseInformationInputvm.requestMoveIntent(
+                if let movingFlowData = await houseInformationInputvm.requestMoveIntent(
                     intentId: movingFlowNavigationVm.movingFlowVm?.id ?? "",
                     addressInputModel: movingFlowNavigationVm.addressInputModel
-                )
-                movingFlowNavigationVm.movingFlowVm = movingFlowData
+                ) {
+                    movingFlowNavigationVm.movingFlowVm = movingFlowData
 
-                if let changeTierModel = movingFlowData?.changeTier {
-                    router.push(MovingFlowRouterActions.selectTier(changeTierModel: changeTierModel))
-                } else {
-                    router.push(MovingFlowRouterActions.confirm)
+                    if let changeTierModel = movingFlowData.changeTier {
+                        router.push(MovingFlowRouterActions.selectTier(changeTierModel: changeTierModel))
+                    } else {
+                        router.push(MovingFlowRouterActions.confirm)
+                    }
                 }
             }
         }
@@ -260,13 +261,12 @@ public class HouseInformationInputModel: ObservableObject, Equatable, Identifiab
     @Published var ancillaryAreaError: String?
     @Published var bathroomsError: String?
     @Published var extraBuildings: [ExtraBuilding] = []
-    @Published var error: String?
     @Published var viewState: ProcessingState = .success
 
     init() {}
 
     @MainActor
-    func requestMoveIntent(intentId: String, addressInputModel: AddressInputModel) async throws -> MovingFlowModel? {
+    func requestMoveIntent(intentId: String, addressInputModel: AddressInputModel) async -> MovingFlowModel? {
         withAnimation {
             self.viewState = .loading
         }
@@ -307,7 +307,7 @@ public class HouseInformationInputModel: ObservableObject, Equatable, Identifiab
     }
 
     func clearErrors() {
-        error = nil
+        viewState = .success
         yearOfConstructionError = nil
         ancillaryAreaError = nil
         bathroomsError = nil
