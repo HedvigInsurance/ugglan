@@ -150,26 +150,25 @@ struct CompareTierScreen: View {
 
     @ViewBuilder
     private func getRowIcon(for peril: Perils, tier: Tier) -> some View {
-        if !(peril.isDisabled) {
-            Image(
-                uiImage: hCoreUIAssets.checkmark.image
-            )
-            .resizable()
-            .frame(width: 24, height: 24)
-            .foregroundColor(getIconColor(for: peril, tier: tier))
-        } else {
-            Image(
-                uiImage: hCoreUIAssets.minus.image
-            )
-            .resizable()
-            .frame(width: 24, height: 24)
-            .foregroundColor(getIconColor(for: peril, tier: tier))
+        Group {
+            if !(peril.isDisabled) {
+                Image(
+                    uiImage: hCoreUIAssets.checkmark.image
+                )
+                .resizable()
+            } else {
+                Image(
+                    uiImage: hCoreUIAssets.minus.image
+                )
+                .resizable()
+            }
         }
+        .frame(width: 24, height: 24)
+        .foregroundColor(getIconColor(for: peril, tier: tier))
     }
 
     @hColorBuilder
     func getIconColor(for peril: Perils, tier: Tier) -> some hColor {
-
         if peril.isDisabled {
             hFillColor.Opaque.disabled
         } else if tier == vm.selectedTier {
