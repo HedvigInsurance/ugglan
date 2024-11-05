@@ -126,94 +126,91 @@ struct CompareTierScreen: View {
     @ViewBuilder
     var succesView: some View {
         hForm {
-            hSection {
-                HStack(spacing: 0) {
-                    getPerilNameColumn()
+            HStack(spacing: 0) {
+                getPerilNameColumn()
+                    .frame(width: 140, alignment: .leading)
 
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 0) {
-                            //                            ForEach(mockTiers, id: \.self) { tier in
-                            ForEach(vm.tiers, id: \.self) { tier in
-                                getColumn(for: tier)
-                            }
+                Divider()
+
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 0) {
+                        ForEach(mockTiers, id: \.self) { tier in
+                            getColumn(for: tier)
                         }
                     }
                 }
             }
             .sectionContainerStyle(.transparent)
+            .hWithoutDividerPadding
+            .hWithoutHorizontalPadding
         }
     }
 
     @ViewBuilder
     private func getPerilNameColumn() -> some View {
         VStack(alignment: .leading) {
-            hText("")
+            hText("", style: .label)
+                .padding(.top, 4)
             let firstTier = vm.tiers.first?.name ?? ""
 
-            //            ForEach(vm.perils[tier] ?? [], id: \.self) { peril in
-            ForEach(mockPerils[firstTier] ?? [], id: \.self) { peril in
-                hText(peril.title, style: .label)
-                    .fixedSize()
-                    .frame(height: 32)
-                    .onTapGesture {
-                        changeTierNavigationVm.isInsurableLimitPresented = .init(
-                            label: peril.title,
-                            limit: "",
-                            description: peril.description
-                        )
-                    }
+            //        hSection(vm.perils[tier] ?? [], id: \.self) { peril in
+            hSection(mockPerils[firstTier] ?? [], id: \.id) { peril in
+                hRow {
+                    hText(peril.title, style: .label)
+                        .frame(height: 40, alignment: .center)
+                        .fixedSize()
+                        .onTapGesture {
+                            changeTierNavigationVm.isInsurableLimitPresented = .init(
+                                label: peril.title,
+                                limit: "",
+                                description: peril.description
+                            )
+                        }
+                }
+                .verticalPadding(0)
+                .frame(width: 124)
             }
         }
-        .frame(width: 172, alignment: .leading)
     }
 
     @ViewBuilder
     private func getColumn(for tier: Tier) -> some View {
-        VStack {
-            hText(tier.name, style: .label)
-                .foregroundColor(hTextColor.Opaque.black)
-                .padding(.top, 7)
-            //            ForEach(vm.perils[tier.name] ?? [], id: \.self) { peril in
-            ForEach(mockPerils[tier.name] ?? [], id: \.self) { peril in
-                getRowIcon(for: peril)
-                    .frame(height: 32)
+        ZStack {
+            RoundedRectangle(cornerRadius: .cornerRadiusXS)
+                .fill(getColumnColor(for: tier))
+                .frame(width: 100, alignment: .center)
+
+            VStack(alignment: .center) {
+                hText(tier.name, style: .label)
+                    .foregroundColor(hTextColor.Opaque.black)
+
+                //                hSection(vm.perils[tier.name] ?? [], id: \.self) { peril
+                hSection(mockPerils[tier.name] ?? [], id: \.self) { peril in
+                    hRow {
+                        getRowIcon(for: peril)
+                            .frame(height: 40, alignment: .center)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                    }
+                    .verticalPadding(0)
+                }
+                .hSectionWithoutHorizontalPadding
             }
         }
-        .frame(width: 100, alignment: .center)
-        .background(getColumnColor(for: tier))
-        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusXS))
     }
 
     @hColorBuilder
     private func getColumnColor(for tier: Tier) -> some hColor {
         //                if tier == vm.selectedTier {
-        if tier.name == "Bas" {
+        if tier.name == "Standard" {
             hHighlightColor.Green.fillOne
         } else {
             hBackgroundColor.clear
         }
     }
 
-    private func getPillColor(for tier: Tier) -> PillColor {
-        //        if tier == vm.selectedTier {
-        if tier.name == "Bas" {
-            return .green
-        } else {
-            return .grey(translucent: false)
-        }
-    }
-
     @ViewBuilder
     private func getRowIcon(for peril: Perils) -> some View {
-        if let covered = peril.covered.first, covered != "" {
-            //            hPill(text: covered, color: .blue, colorLevel: .two)
-            Image(
-                uiImage: hCoreUIAssets.checkmark.image
-            )
-            .resizable()
-            .frame(width: 24, height: 24)
-            .foregroundColor(getTextColor(for: peril))
-        } else if !(peril.isDisabled) {
+        if !(peril.isDisabled) {
             Image(
                 uiImage: hCoreUIAssets.checkmark.image
             )
