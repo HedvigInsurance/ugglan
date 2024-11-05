@@ -108,10 +108,19 @@ struct hFieldLabel: View {
         return hText(
             placeholder
         )
-        .hTextStyle(useScaleEffect ? .body2 : (shouldMoveLabel ? .label : .body2))
+        .hTextStyle(useScaleEffect ? font : (shouldMoveLabel ? .label : font))
         .padding(.leading, 1)
         .foregroundColor(getTextColor())
         .scaleEffect(useScaleEffect ? (shouldMoveLabel ? ratio : 1) : 1, anchor: .leading)
+    }
+
+    private var font: HFontTextStyle {
+        switch size {
+        case .small, .medium:
+            return .body1
+        case .large:
+            return .body2
+        }
     }
 
     @hColorBuilder

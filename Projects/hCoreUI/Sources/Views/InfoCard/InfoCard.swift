@@ -42,6 +42,7 @@ public struct InfoCard: View {
                                         hText(config.buttonTitle, style: .label)
                                             .frame(maxWidth: .infinity)
                                     }
+                                    .hUseLightMode
                                 }
                             }
                         } else {
@@ -52,6 +53,7 @@ public struct InfoCard: View {
                                     hText(config.buttonTitle, style: .label)
                                         .frame(maxWidth: .infinity)
                                 }
+                                .hUseLightMode
                             }
                         }
                     }
