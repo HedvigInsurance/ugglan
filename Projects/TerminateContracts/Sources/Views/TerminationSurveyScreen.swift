@@ -186,9 +186,13 @@ class SurveyScreenViewModel: ObservableObject {
 
     func continueClicked() {
         if let subOptions = selectedOption?.subOptions, !subOptions.isEmpty {
-            store.send(
-                .navigationAction(action: .openTerminationSurveyStep(options: subOptions, subtitleType: .generic))
-            )
+            let currentProgress = store.state.progress ?? 0
+            Task { @MainActor in
+                await store.sendAsync(.setProgress(progress: currentProgress + 0.2))
+                await store.sendAsync(
+                    .navigationAction(action: .openTerminationSurveyStep(options: subOptions, subtitleType: .generic))
+                )
+            }
         } else if let selectedOption {
             store.send(.submitSurvey(option: selectedOption.id, feedback: selectedFeedBackViewModel?.text))
         }
