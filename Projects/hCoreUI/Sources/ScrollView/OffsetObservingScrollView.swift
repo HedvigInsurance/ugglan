@@ -58,10 +58,12 @@ public struct OffsetObservingScrollView<Content: View>: View {
                 position: Binding(
                     get: { offset },
                     set: { newOffset in
-                        offset = CGPoint(
-                            x: -newOffset.x,
-                            y: -newOffset.y
-                        )
+                        withAnimation {
+                            offset = CGPoint(
+                                x: -newOffset.x,
+                                y: -newOffset.y
+                            )
+                        }
                     }
                 ),
                 content: content

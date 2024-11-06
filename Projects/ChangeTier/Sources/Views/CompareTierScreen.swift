@@ -49,22 +49,21 @@ struct CompareTierScreen: View {
         hForm {
             HStack(spacing: 0) {
                 ZStack {
-                    if offset.x > .zero {
-                        Rectangle()
-                            .fill(hBackgroundColor.primary)
-                            .padding(.top, 32)
-                            .frame(width: 140, alignment: .leading)
-                            .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 4)
-                            .shadow(color: Color.black.opacity(0.1), radius: 1, x: 0, y: 2)
-                            .mask {
-                                Rectangle()
-                                    .offset(x: 70)
-                                    .frame(width: 20)
-                            }
-                    }
+                    Rectangle()
+                        .fill(hBackgroundColor.black)
+                        .padding(.top, 32)
+                        .frame(width: 140, alignment: .leading)
+                        .shadow(color: Color.black.opacity(0.05), radius: offset.x > .zero ? 5 : 0, x: 0, y: 4)
+                        .shadow(color: Color.black.opacity(0.1), radius: offset.x > .zero ? 1 : 0, x: 0, y: 2)
+                        .mask {
+                            Rectangle()
+                                .offset(x: 80, y: 10)
+                                .frame(width: 20)
+                        }
                     getPerilNameColumn()
                         .frame(width: 140, alignment: .leading)
                 }
+                .zIndex(2)
 
                 if offset.x <= .zero {
                     Divider()
@@ -96,6 +95,7 @@ struct CompareTierScreen: View {
                         }
                     }
                 }
+                .zIndex(1)
             }
             .sectionContainerStyle(.transparent)
             .hWithoutHorizontalPadding
