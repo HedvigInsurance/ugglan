@@ -1,4 +1,5 @@
 import SwiftUI
+@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 import hCoreUI
 import hGraphQL
@@ -38,7 +39,7 @@ struct CompareTierScreen: View {
     private var scrollContent: some View {
         HStack(spacing: 0) {
             ForEach(vm.tiers, id: \.self) { tier in
-                getColumn(for: tier)
+                getColumn(for: tier).id("column " + tier.id)
             }
         }
     }
@@ -72,14 +73,29 @@ struct CompareTierScreen: View {
                         .padding(.top, 32)
                 }
 
-                OffsetObservingScrollView(
-                    axes: [.horizontal],
-                    showsIndicators: false,
-                    offset: $offset,
-                    content: {
-                        scrollContent
+                ScrollViewReader { scrollView in
+                    OffsetObservingScrollView(
+                        axes: [.horizontal],
+                        showsIndicators: false,
+                        offset: $offset,
+                        content: {
+                            scrollContent
+                        }
+                    )
+                    .onAppear {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                            withAnimation(.spring(duration: 2)) {
+                                scrollView.scrollTo("column " + vm.tiers[1].id, anchor: .leading)
+                            }
+
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                withAnimation(.spring(duration: 2)) {
+                                    scrollView.scrollTo("column " + vm.tiers[0].id, anchor: .leading)
+                                }
+                            }
+                        }
                     }
-                )
+                }
             }
             .sectionContainerStyle(.transparent)
             .hWithoutHorizontalPadding
