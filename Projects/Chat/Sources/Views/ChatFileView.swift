@@ -1,5 +1,6 @@
 import Kingfisher
 import SwiftUI
+import UniformTypeIdentifiers
 import hCore
 import hCoreUI
 
@@ -88,8 +89,21 @@ struct ChatFileView: View {
 
     func showFile() {
         switch file.source {
-        case let .localFile(url):
-            //            chatNavigationVm.isFilePresented = .init(url: url)
+        case let .localFile(results):
+            if let results {
+                results.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.item.identifier) {
+                    fileUrl,
+                    error in
+                    if let fileUrl,
+                        let pathData = FileManager.default.contents(atPath: fileUrl.relativePath),
+                        let utType = UTType(filenameExtension: fileUrl.pathExtension)?.identifier
+                    {
+                        let mimeType = MimeType.findBy(mimeType: utType)
+                        chatNavigationVm.isFilePresented = .data(data: pathData, mimeType: mimeType)
+
+                    }
+                }
+            }
             break
         case .url(let url):
             chatNavigationVm.isFilePresented = .url(url: url)

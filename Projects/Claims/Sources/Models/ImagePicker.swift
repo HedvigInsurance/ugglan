@@ -38,8 +38,6 @@ struct ImagePicker: UIViewControllerRepresentable {
             picker.isEditing = false
             guard !didFinishAdding else { return }
             didFinishAdding = true
-
-            //            let dispatchGroup = DispatchGroup()
             var files = [File]()
 
             for selectedItem in results {
