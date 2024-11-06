@@ -2,6 +2,7 @@ import Apollo
 import Foundation
 import Kingfisher
 import SwiftUI
+import UniformTypeIdentifiers
 import hCore
 import hGraphQL
 
@@ -70,12 +71,29 @@ enum FileUploadRequest {
             let url = URL(string: baseUrlString)!
             let multipartFormDataRequest = MultipartFormDataRequest(url: url)
             for file in files {
-                let data: Data? = {
+                let data: Data? = await {
                     switch file.source {
                     case .data(let data):
                         return data
-                    case .localFile(let url, _):
-                        return try? Data(contentsOf: url)
+                    case .localFile(let results):
+                        if let results {
+                            return try? await withCheckedThrowingContinuation {
+                                (inCont: CheckedContinuation<Data?, Error>) -> Void in
+                                results.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.item.identifier) {
+                                    fileUrl,
+                                    error in
+                                    if let fileUrl,
+                                        let pathData = FileManager.default.contents(atPath: fileUrl.relativePath)
+                                    {
+                                        inCont.resume(returning: pathData)
+                                    } else {
+                                        inCont.resume(returning: nil)
+                                    }
+                                }
+
+                            }
+                        }
+                        return nil
                     case .url:
                         return nil
                     }

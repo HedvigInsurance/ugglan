@@ -105,6 +105,7 @@ public struct ChatScreen: View {
                             }
                         }
                     }
+                    .id("MessageView_\(message.id)")
                 HStack(spacing: 0) {
                     if vm.lastDeliveredMessage?.id == message.id {
                         hText(message.timeStampString)
