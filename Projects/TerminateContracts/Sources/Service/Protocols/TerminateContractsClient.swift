@@ -15,4 +15,5 @@ public protocol TerminateContractsClient {
 public struct TerminateStepResponse {
     let context: String
     let action: TerminationContractAction
+    let progress: Float?
 }

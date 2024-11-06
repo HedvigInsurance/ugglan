@@ -18,6 +18,8 @@ public enum TerminationContractAction: ActionProtocol, Hashable {
     case sendTerminationDate
     case sendConfirmDelete
     case setTerminationContext(context: String)
+    case setProgress(progress: Float?)
+    case sethaveSelectInsuranceStep(to: Bool)
 }
 
 public enum TerminationNavigationAction: ActionProtocol, Hashable {
