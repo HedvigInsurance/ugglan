@@ -7,6 +7,8 @@ struct CompareTierScreen: View {
     @ObservedObject private var vm: CompareTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
 
+    @State var offset: CGPoint = .zero
+
     init(
         vm: CompareTierViewModel
     ) {
@@ -33,25 +35,53 @@ struct CompareTierScreen: View {
             )
     }
 
+    private var scrollContent: some View {
+        HStack(spacing: 0) {
+            ForEach(vm.tiers, id: \.self) { tier in
+                getColumn(for: tier)
+            }
+        }
+    }
+
     @ViewBuilder
     var succesView: some View {
         hForm {
             HStack(spacing: 0) {
-                getPerilNameColumn()
-                    .frame(width: 140, alignment: .leading)
-
-                Divider()
-
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 0) {
-                        ForEach(vm.tiers, id: \.self) { tier in
-                            getColumn(for: tier)
-                        }
+                ZStack {
+                    if offset.x > .zero {
+                        Rectangle()
+                            .fill(hBackgroundColor.primary)
+                            .padding(.top, 32)
+                            .frame(width: 140, alignment: .leading)
+                            .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 4)
+                            .shadow(color: Color.black.opacity(0.1), radius: 1, x: 0, y: 2)
+                            .mask {
+                                Rectangle()
+                                    .offset(x: 70)
+                                    .frame(width: 20)
+                            }
                     }
+                    getPerilNameColumn()
+                        .frame(width: 140, alignment: .leading)
                 }
+
+                if offset.x <= .zero {
+                    Divider()
+                        .frame(minHeight: 1)
+                        .overlay(hBorderColor.secondary)
+                        .padding(.top, 32)
+                }
+
+                OffsetObservingScrollView(
+                    axes: [.horizontal],
+                    showsIndicators: false,
+                    offset: $offset,
+                    content: {
+                        scrollContent
+                    }
+                )
             }
             .sectionContainerStyle(.transparent)
-            .hWithoutDividerPadding
             .hWithoutHorizontalPadding
             .padding(.top, .padding16)
         }
@@ -95,9 +125,11 @@ struct CompareTierScreen: View {
                 .verticalPadding(0)
                 .frame(width: 124)
             }
+            .hWithoutDividerPadding
         }
     }
 
+    /* TODO: UPDATE */
     private func getDescriptionText(for peril: Perils) -> String {
         if let coverageText = peril.covered.first, coverageText != "" {
             return peril.description + "\n\n" + coverageText
@@ -124,6 +156,7 @@ struct CompareTierScreen: View {
                             .frame(maxWidth: .infinity, alignment: .center)
                     }
                     .verticalPadding(0)
+                    .dividerInsets(.leading, tier == vm.tiers.first ? -100 : 0)
                 }
                 .hSectionWithoutHorizontalPadding
             }
