@@ -2,7 +2,7 @@ import Foundation
 import hCore
 import hGraphQL
 
-public struct Message: Identifiable, Codable, Hashable {
+public struct Message: Codable, Identifiable, Hashable {
     public static func == (lhs: Message, rhs: Message) -> Bool {
         return lhs.localId == rhs.localId || lhs.remoteId == rhs.remoteId
     }

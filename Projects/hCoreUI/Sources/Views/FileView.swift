@@ -1,4 +1,5 @@
 import Kingfisher
+import PhotosUI
 import SwiftUI
 import hCore
 
@@ -19,18 +20,26 @@ public struct FileView: View {
         VStack {
             if file.mimeType.isImage {
                 switch file.source {
-                case let .localFile(imageUrl, thumbnailUrl):
-                    imageFromLocalFile(url: thumbnailUrl ?? imageUrl)
+                case let .localFile(url):
+                    imageFromLocalFile(results: url!)
                 case .url(let url):
                     imageFromRemote(url: url)
                 case let .data(data):
-                    if let image = UIImage(data: data) {
-                        Image(uiImage: image)
+                    Rectangle().fill(.clear)
+                        .aspectRatio(1, contentMode: .fill)
+                        .background(
+                            KFImage(
+                                source: Kingfisher.Source.provider(
+                                    InMemoryImageDataProvider(cacheKey: file.id, data: data)
+                                )
+                            )
+                            .fade(duration: 0.25)
+                            .setProcessor(processor)
                             .resizable()
                             .aspectRatio(
                                 contentMode: .fill
                             )
-                    }
+                        )
                 }
             } else {
                 GeometryReader { geometry in
@@ -68,17 +77,21 @@ public struct FileView: View {
         }
     }
 
-    private func imageFromLocalFile(url: URL) -> some View {
+    private func imageFromLocalFile(results: PHPickerResult) -> some View {
         Rectangle().fill(.clear)
             .aspectRatio(1, contentMode: .fill)
             .background(
-                KFImage(source: Kingfisher.Source.provider(LocalFileImageDataProvider(fileURL: url, cacheKey: file.id)))
-                    .fade(duration: 0.25)
-                    .setProcessor(processor)
-                    .resizable()
-                    .aspectRatio(
-                        contentMode: .fill
+                KFImage(
+                    source: Kingfisher.Source.provider(
+                        hPHPickerResultImageDataProvider(cacheKey: file.id, pickerResult: results)
                     )
+                )
+                .fade(duration: 0.25)
+                .setProcessor(processor)
+                .resizable()
+                .aspectRatio(
+                    contentMode: .fill
+                )
             )
     }
 
@@ -111,4 +124,92 @@ public struct FileView: View {
         }
 
     }
+}
+
+public struct hPHPickerResultImageDataProvider: ImageDataProvider {
+
+    /// The possible error might be caused by the `PHPickerResultImageDataProvider`.
+    /// - invalidImage: The retrieved image is invalid.
+    public enum PHPickerResultImageDataProviderError: Error {
+        /// An error happens during picking up image through the item provider of `PHPickerResult`.
+        case pickerProviderError(any Error)
+        /// The retrieved image is invalid.
+        case invalidImage
+    }
+
+    /// The picker result bound to `self`.
+    public let pickerResult: PHPickerResult
+
+    /// The content type of the image.
+    public let contentType: UTType
+
+    private var internalKey: String {
+        pickerResult.assetIdentifier ?? UUID().uuidString
+    }
+
+    public var cacheKey: String
+
+    /// Creates an image data provider from a given `PHPickerResult`.
+    /// - Parameters:
+    ///  - pickerResult: The picker result to provide image data.
+    ///  - contentType: The content type of the image. Default is `UTType.image`.
+    public init(cacheKey: String, pickerResult: PHPickerResult, contentType: UTType = UTType.image) {
+        self.cacheKey = cacheKey
+        self.pickerResult = pickerResult
+        self.contentType = contentType
+    }
+
+    public func data(handler: @escaping @Sendable (Result<Data, any Error>) -> Void) {
+        pickerResult.itemProvider.loadDataRepresentation(forTypeIdentifier: contentType.identifier) { data, error in
+            if let error {
+                handler(.failure(PHPickerResultImageDataProviderError.pickerProviderError(error)))
+                return
+            }
+
+            guard let data else {
+                handler(.failure(PHPickerResultImageDataProviderError.invalidImage))
+                return
+            }
+
+            if contentType == UTType.image, let image = UIImage(data: data),
+                let compresedImage = image.jpegData(compressionQuality: 0.05)
+            {
+                handler(.success(compresedImage))
+            } else {
+                handler(.success(data))
+            }
+        }
+    }
+}
+
+public struct InMemoryImageDataProvider: ImageDataProvider {
+
+    public var cacheKey: String
+    let data: Data
+    /// Provides the data which represents image. Kingfisher uses the data you pass in the
+    /// handler to process images and caches it for later use.
+    ///
+    /// - Parameter handler: The handler you should call when you prepared your data.
+    ///                      If the data is loaded successfully, call the handler with
+    ///                      a `.success` with the data associated. Otherwise, call it
+    ///                      with a `.failure` and pass the error.
+    ///
+    /// - Note:
+    /// If the `handler` is called with a `.failure` with error, a `dataProviderError` of
+    /// `ImageSettingErrorReason` will be finally thrown out to you as the `KingfisherError`
+    /// from the framework.
+    ///
+    public init(cacheKey: String, data: Data, contentURL: URL? = nil) {
+        self.cacheKey = cacheKey
+        self.data = data
+        self.contentURL = contentURL
+    }
+
+    public func data(handler: @escaping (Result<Data, Error>) -> Void) {
+        handler(.success(data))
+    }
+
+    /// The content URL represents this provider, if exists.
+    public var contentURL: URL?
+
 }
