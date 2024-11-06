@@ -279,7 +279,8 @@ private class CustomTextView: UITextView, UITextViewDelegate {
 
     override func paste(_ sender: Any?) {
         if let action = (sender as? UIKeyCommand)?.action, action == #selector(UIResponder.paste(_:)) {
-            if let urls = UIPasteboard.general.urls {
+
+            if let urls = UIPasteboard.general.urls, urls.count > 0 {
                 for url in urls {
                     if let contentProvider = NSItemProvider(contentsOf: url) {
                         contentProvider.getFile { [weak self] file in
@@ -287,12 +288,12 @@ private class CustomTextView: UITextView, UITextViewDelegate {
                         }
                     }
                 }
-                return
+            } else {
+                super.paste(sender)
             }
-            //            if let image = UIPasteboard.general.image {
-            //            }
+        } else {
+            super.paste(sender)
         }
-        super.paste(sender)
     }
 
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
