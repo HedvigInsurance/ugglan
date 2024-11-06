@@ -79,9 +79,7 @@ public struct ClaimFilesView: View {
                 .sheet(isPresented: $showImagePicker) {
                     ImagePicker { images in
                         for image in images {
-                            if let file = image.asFile() {
-                                vm.add(file: file)
-                            }
+                            vm.add(file: image)
                         }
                     }
                     .ignoresSafeArea()
@@ -89,30 +87,23 @@ public struct ClaimFilesView: View {
                 .sheet(isPresented: $showFilePicker) {
                     FileImporterView { files in
                         for file in files {
-                            if let file = file.asFile() {
-                                vm.add(file: file)
-                            }
+                            vm.add(file: file)
                         }
                     }
                     .ignoresSafeArea()
                 }
                 .sheet(isPresented: $showCamera) {
                     CameraPickerView { image in
-                        guard let data = image.jpegData(compressionQuality: 0.9),
-                            let thumbnailData = image.jpegData(compressionQuality: 0.1)
+                        guard let data = image.jpegData(compressionQuality: 0.9)
                         else { return }
-                        let file = FilePickerDto(
+                        let file = File(
                             id: UUID().uuidString,
                             size: Double(data.count),
                             mimeType: .JPEG,
                             name: "image_\(Date()).jpeg",
-                            data: data,
-                            thumbnailData: thumbnailData
+                            source: .data(data: data)
                         )
-                        if let file = file.asFile() {
-                            vm.add(file: file)
-                        }
-
+                        vm.add(file: file)
                     }
                     .ignoresSafeArea()
                 }
@@ -174,8 +165,7 @@ class ClaimFilesViewModel: ObservableObject {
     @Published var error: String?
     @Published var progress: Double = 0
     private let endPoint: String
-    let fileUploadManager = FileUploadManager()
-    var fileGridViewModel: FileGridViewModel
+    let fileGridViewModel: FileGridViewModel
     private var onSuccess: (_ data: [ClaimFileUploadResponse]) -> Void
     var claimFileUploadService = hClaimFileUploadService()
     var fetchClaimService = hFetchClaimService()
@@ -190,8 +180,8 @@ class ClaimFilesViewModel: ObservableObject {
         self.endPoint = endPoint
         self.onSuccess = onSuccess
         self.fileGridViewModel = .init(files: files, options: options)
-        self.fileGridViewModel.onDelete = { file in
-            Task { [weak self] in
+        self.fileGridViewModel.onDelete = { [weak self] file in
+            Task {
                 await self?.removeFile(id: file.id)
             }
         }
@@ -199,10 +189,8 @@ class ClaimFilesViewModel: ObservableObject {
 
     @MainActor
     func add(file: File) {
-        DispatchQueue.main.async { [weak self] in
-            withAnimation {
-                self?.fileGridViewModel.files.append(file)
-            }
+        withAnimation {
+            self.fileGridViewModel.files.append(file)
         }
     }
 
@@ -221,7 +209,12 @@ class ClaimFilesViewModel: ObservableObject {
         }
         do {
             let filteredFiles = fileGridViewModel.files.filter({
-                if case .localFile(_, _) = $0.source { return true } else { return false }
+                switch $0.source {
+                case .data, .localFile:
+                    return true
+                case .url:
+                    return false
+                }
             })
             if !filteredFiles.isEmpty {
                 let files = try await claimFileUploadService.upload(endPoint: endPoint, files: filteredFiles) {
@@ -233,7 +226,6 @@ class ClaimFilesViewModel: ObservableObject {
                     }
                 }
                 success = true
-                self.fileUploadManager.resetuploadFilesPath()
                 self.onSuccess(files)
             }
         } catch let ex {

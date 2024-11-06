@@ -314,17 +314,14 @@ extension ChatInputViewModel: UIImagePickerControllerDelegate, UINavigationContr
         didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
     ) {
         if let image = info[.originalImage] as? UIImage {
-            let data = FilePickerDto(
+            let file = File(
                 id: UUID().uuidString,
                 size: 0,
                 mimeType: .JPEG,
                 name: "Camera shoot",
-                data: image.jpegData(compressionQuality: 0.9)!,
-                thumbnailData: image.jpegData(compressionQuality: 0.1)!
+                source: .data(data: image.jpegData(compressionQuality: 0.9)!)
             )
-            if let file = data.asFile() {
-                sendMessage(.init(type: .file(file: file)))
-            }
+            sendMessage(.init(type: .file(file: file)))
         }
         picker.dismiss(animated: true)
     }
@@ -333,84 +330,50 @@ extension ChatInputViewModel: UIImagePickerControllerDelegate, UINavigationContr
 
 extension ChatInputViewModel: PHPickerViewControllerDelegate {
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-        let selectedItems =
-            results
-            .map { $0.itemProvider }
         picker.isEditing = false
-        let dispatchGroup = DispatchGroup()
-        var files = [FilePickerDto]()
+        var files = [File]()
 
-        for selectedItem in selectedItems {
-            dispatchGroup.enter()  // signal IN
-            if selectedItem.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
-                selectedItem.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { imageUrl, error in
-                    if let imageUrl,
-                        let pathData = FileManager.default.contents(atPath: imageUrl.relativePath),
-                        let image = UIImage(data: pathData),
-                        let data = image.jpegData(compressionQuality: 0.9),
-                        let thumbnailData = image.jpegData(compressionQuality: 0.1)
-                    {
-                        let id = UUID().uuidString
-                        let file: FilePickerDto =
-                            .init(
-                                id: id,
-                                size: Double(data.count),
-                                mimeType: .JPEG,
-                                name: "\(Date().currentTimeMillis).jpeg",
-                                data: data,
-                                thumbnailData: thumbnailData
-                            )
-                        files.append(file)
-                    }
-                    dispatchGroup.leave()
-                }
-            } else if selectedItem.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
-                selectedItem.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { videoUrl, error in
-                    if let videoUrl, let data = FileManager.default.contents(atPath: videoUrl.relativePath) {
-                        let file: FilePickerDto =
-                            .init(
-                                id: UUID().uuidString,
-                                size: Double(data.count),
-                                mimeType: .MOV,
-                                name: "\(Date().currentTimeMillis).mov",
-                                data: data,
-                                thumbnailData: nil
-                            )
-                        files.append(file)
-                    }
-                    dispatchGroup.leave()
-                }
-            } else {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    dispatchGroup.leave()
-                }
+        for selectedItem in results {
+            if selectedItem.itemProvider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
+                let file = File(
+                    id: UUID().uuidString,
+                    size: 0,
+                    mimeType: .JPEG,
+                    name: "\(Date().currentTimeMillis).jpeg",
+                    source: .localFile(results: selectedItem)
+                )
+                files.append(file)
+            } else if selectedItem.itemProvider.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
+                let file = File(
+                    id: UUID().uuidString,
+                    size: 0,
+                    mimeType: .MOV,
+                    name: "\(Date().currentTimeMillis).mov",
+                    source: .localFile(results: selectedItem)
+                )
+                files.append(file)
+
             }
         }
-        dispatchGroup.notify(queue: .main) { [weak self] in
-            picker.dismiss(animated: true)
-            for fileDTO in files {
-                if let file = fileDTO.asFile() {
-                    self?.sendMessage(.init(type: .file(file: file)))
-                }
-            }
+        picker.dismiss(animated: true)
+        for file in files {
+            self.sendMessage(.init(type: .file(file: file)))
         }
     }
 }
 
 extension ChatInputViewModel: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        var files: [FilePickerDto] = []
+        var files: [File] = []
         for url in urls {
             _ = url.startAccessingSecurityScopedResource()
-            if let file = FilePickerDto(from: url) {
+            if let file = File(from: url) {
                 files.append(file)
             }
             url.stopAccessingSecurityScopedResource()
         }
-        for fileDTO in files {
-            if let file = fileDTO.asFile() {
-                self.sendMessage(.init(type: .file(file: file)))
-            }
+        for file in files {
+            self.sendMessage(.init(type: .file(file: file)))
         }
         controller.dismiss(animated: true)
 
