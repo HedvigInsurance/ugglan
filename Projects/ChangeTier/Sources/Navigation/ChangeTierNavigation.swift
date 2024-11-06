@@ -231,7 +231,7 @@ public struct ChangeTierNavigation: View {
             options: .constant(.alwaysOpenOnTop)
         ) { insurableLimit in
             InfoView(
-                title: L10n.contractCoverageMoreInfo,
+                title: insurableLimit.label,
                 description: insurableLimit.description
             )
         }

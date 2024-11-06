@@ -127,30 +127,13 @@ struct CompareTierScreen: View {
                 hRow {
                     hText(peril.title, style: .label)
                         .frame(height: .padding40, alignment: .center)
-                        .onTapGesture {
-
-                            let descriptionText = getDescriptionText(for: peril)
-
-                            changeTierNavigationVm.isInsurableLimitPresented = .init(
-                                label: peril.title,
-                                limit: "",
-                                description: descriptionText
-                            )
-                        }
                 }
                 .verticalPadding(0)
                 .frame(width: 124)
+                .modifier(CompareOnRowTap(currentPeril: peril, allPeril: vm.perils, tiers: vm.tiers))
             }
             .hWithoutDividerPadding
         }
-    }
-
-    /* TODO: UPDATE */
-    private func getDescriptionText(for peril: Perils) -> String {
-        if let coverageText = peril.covered.first, coverageText != "" {
-            return peril.description + "\n\n" + coverageText
-        }
-        return peril.description
     }
 
     @ViewBuilder
@@ -173,6 +156,7 @@ struct CompareTierScreen: View {
                     }
                     .verticalPadding(0)
                     .dividerInsets(.leading, tier == vm.tiers.first ? -100 : 0)
+                    .modifier(CompareOnRowTap(currentPeril: peril, allPeril: vm.perils, tiers: vm.tiers))
                 }
                 .hSectionWithoutHorizontalPadding
             }
@@ -225,6 +209,54 @@ struct CompareTierScreen: View {
         } else {
             hFillColor.Opaque.secondary
         }
+    }
+}
+
+struct CompareOnRowTap: ViewModifier {
+    let currentPeril: Perils
+    let allPeril: [String: [Perils]]
+    let tiers: [Tier]
+    @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
+
+    func body(content: Content) -> some View {
+        content
+            .onTapGesture {
+                let descriptionText = getDescriptionText
+
+                changeTierNavigationVm.isInsurableLimitPresented = .init(
+                    label: currentPeril.title,
+                    limit: "",
+                    description: descriptionText
+                )
+            }
+    }
+
+    private var getDescriptionText: String {
+        var allMatchingPerils: [String: Perils] = [:]
+        allPeril.forEach { tierName, allTierNamePerils in
+            allTierNamePerils.forEach { peril in
+                if currentPeril.title == peril.title {
+                    allMatchingPerils[tierName] = peril
+                }
+            }
+        }
+
+        var coverageTexts: [String] = []
+        allMatchingPerils.forEach { tierName, peril in
+            if let coverageText = peril.covered.first, coverageText != "" {
+                coverageTexts.append(tierName + ": " + coverageText)
+            }
+        }
+
+        var coverageTextDisplayString: String = ""
+        coverageTexts.forEach { text in
+            coverageTextDisplayString += "\n" + text
+        }
+
+        if coverageTextDisplayString != "" {
+            return currentPeril.description + "\n" + coverageTextDisplayString
+        }
+        return currentPeril.description
     }
 }
 
