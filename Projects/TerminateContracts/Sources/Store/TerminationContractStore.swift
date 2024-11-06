@@ -1,4 +1,5 @@
 import Apollo
+import Combine
 import Foundation
 import PresentableStore
 import hCore
@@ -9,7 +10,7 @@ public final class TerminationContractStore: LoadingStateStore<
 >
 {
     @Inject var terminateContractsService: TerminateContractsClient
-
+    var terminateProgressCancellable: AnyCancellable?
     public override func effects(
         _ getState: @escaping () -> TerminationContractState,
         _ action: TerminationContractAction
@@ -104,6 +105,19 @@ public final class TerminationContractStore: LoadingStateStore<
             }
         case let .setTerminationDate(terminationDate):
             newState.terminationDateStep?.date = terminationDate
+        case let .setProgress(progress):
+            newState.previousProgress = newState.progress
+            if let progress {
+                newState.progress =
+                    (progress / 1) * (newState.hasSelectInsuranceStep ? 0.75 : 1)
+                    + (newState.hasSelectInsuranceStep ? 0.25 : 0)
+            } else {
+                newState.progress = nil
+            }
+        case let .sethaveSelectInsuranceStep(to):
+            newState.hasSelectInsuranceStep = to
+            newState.previousProgress = 0
+            newState.progress = 0
         default:
             break
         }
@@ -121,6 +135,7 @@ public final class TerminationContractStore: LoadingStateStore<
             if let action = action {
                 let data = try await action()
                 if let data = data {
+                    await sendAsync(.setProgress(progress: data.progress))
                     await sendAsync(.setTerminationContext(context: data.context))
                     await sendAsync(data.action)
                 }
