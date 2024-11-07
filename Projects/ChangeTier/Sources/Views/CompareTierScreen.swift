@@ -240,7 +240,7 @@ struct CompareOnRowTap: ViewModifier {
                     description: descriptionText(currentPeril)
                 )
             }
-            .onLongPressGesture {
+            .onLongPressGesture(minimumDuration: 0.1) {
                 withAnimation {
                     vm.selectedPeril = currentPeril
                 }
