@@ -241,7 +241,6 @@ public struct ChangeTierNavigation: View {
             )
             .withDismissButton()
             .embededInNavigation(
-                options: .navigationType(type: .large),
                 tracking: ChangeTierTrackingType.compareTier
             )
             .environmentObject(changeTierNavigationVm)

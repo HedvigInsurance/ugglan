@@ -1,5 +1,4 @@
 import SwiftUI
-@_spi(Advanced) import SwiftUIIntrospect
 import hCore
 import hCoreUI
 import hGraphQL
@@ -71,14 +70,14 @@ struct CompareTierScreen: View {
                     .padding(.top, 32)
                     .opacity(offset.x <= .zero ? 1 : 0)
                 ScrollViewReader { scrollView in
-                    OffsetObservingScrollView(
-                        axes: [.horizontal],
+                    ScrollView(
+                        [.horizontal],
                         showsIndicators: false,
-                        offset: $offset,
                         content: {
                             scrollContent
                         }
                     )
+                    .modifier(TrackingOffsetModifier(offset: $offset))
                     .onAppear {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                             withAnimation(.spring(duration: 2)) {
