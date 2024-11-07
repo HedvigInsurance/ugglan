@@ -110,7 +110,7 @@ final class CompareTierVireModelTests: XCTestCase {
 
         let model = CompareTierViewModel(tiers: tiers, selectedTier: currentTier)
         self.vm = model
-        model.getProductVariantComparision()
+        model.productVariantComparision()
 
         try await Task.sleep(nanoseconds: 30_000_000)
         assert(model.tiers == tiers)
@@ -129,7 +129,7 @@ final class CompareTierVireModelTests: XCTestCase {
 
         let model = CompareTierViewModel(tiers: tiers, selectedTier: currentTier)
         self.vm = model
-        model.getProductVariantComparision()
+        model.productVariantComparision()
 
         try await Task.sleep(nanoseconds: 30_000_000)
         assert(model.tiers == tiers)

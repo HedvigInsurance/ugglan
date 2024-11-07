@@ -22,7 +22,7 @@ struct CompareTierScreen: View {
                 .init(
                     actionButton: .init(
                         buttonAction: {
-                            vm.getProductVariantComparision()
+                            vm.productVariantComparision()
                         }
                     ),
                     dismissButton:
@@ -269,12 +269,8 @@ public class CompareTierViewModel: ObservableObject {
     @Published var viewState: ProcessingState = .loading
     @Published var selectedTier: Tier?
     @Published var tiers: [Tier]
-    @Published var extended = false
-
     @Published var selectedPeril: Perils?
-
     @Published var perils: [String: [Perils]] = [:]
-    var scrollableSegmentedViewModel: ScrollableSegmentedViewModel = .init(pageModels: [])
 
     init(
         tiers: [Tier],
@@ -282,7 +278,7 @@ public class CompareTierViewModel: ObservableObject {
     ) {
         self.selectedTier = selectedTier
         self.tiers = tiers
-        self.getProductVariantComparision()
+        self.productVariantComparision()
     }
 
     private func getPerils(
@@ -313,7 +309,7 @@ public class CompareTierViewModel: ObservableObject {
         return tempPerils
     }
 
-    public func getProductVariantComparision() {
+    public func productVariantComparision() {
         withAnimation {
             viewState = .loading
         }
@@ -345,11 +341,6 @@ public class CompareTierViewModel: ObservableObject {
                     .first(where: { $0.displayNameTier == selectedTier?.name })?
                     .displayNameTier
 
-                self.scrollableSegmentedViewModel = ScrollableSegmentedViewModel(
-                    pageModels: pageModels,
-                    currentId: currentId
-                )
-
                 withAnimation {
                     viewState = .success
                 }
@@ -363,7 +354,7 @@ public class CompareTierViewModel: ObservableObject {
         }
     }
 
-    func getDescriptionText(currentPeril: Perils) -> String {
+    func getDescriptionText(for currentPeril: Perils) -> String {
         var allMatchingPerils: [String: Perils] = [:]
         perils.forEach { tierName, allTierNamePerils in
             allTierNamePerils.forEach { peril in
