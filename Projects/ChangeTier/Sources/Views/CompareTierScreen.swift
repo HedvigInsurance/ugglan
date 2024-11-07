@@ -128,7 +128,7 @@ struct CompareTierScreen: View {
                 }
                 .verticalPadding(0)
                 .frame(width: 124)
-                .modifier(CompareOnRowTap(currentPeril: peril, allPeril: vm.perils, tiers: vm.tiers))
+                .modifier(CompareOnRowTap(currentPeril: peril, vm: vm))
             }
             .hWithoutDividerPadding
         }
@@ -154,7 +154,7 @@ struct CompareTierScreen: View {
                     }
                     .verticalPadding(0)
                     .dividerInsets(.leading, tier == vm.tiers.first ? -100 : 0)
-                    .modifier(CompareOnRowTap(currentPeril: peril, allPeril: vm.perils, tiers: vm.tiers))
+                    .modifier(CompareOnRowTap(currentPeril: peril, vm: vm))
                 }
                 .hSectionWithoutHorizontalPadding
             }
@@ -212,49 +212,28 @@ struct CompareTierScreen: View {
 
 struct CompareOnRowTap: ViewModifier {
     let currentPeril: Perils
-    let allPeril: [String: [Perils]]
-    let tiers: [Tier]
+    @ObservedObject private var vm: CompareTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
+
+    init(
+        currentPeril: Perils,
+        vm: CompareTierViewModel
+    ) {
+        self.currentPeril = currentPeril
+        self.vm = vm
+    }
 
     func body(content: Content) -> some View {
         content
             .onTapGesture {
-                let descriptionText = getDescriptionText
+                let descriptionText = vm.getDescriptionText
 
                 changeTierNavigationVm.isInsurableLimitPresented = .init(
                     label: currentPeril.title,
                     limit: "",
-                    description: descriptionText
+                    description: descriptionText(currentPeril)
                 )
             }
-    }
-
-    private var getDescriptionText: String {
-        var allMatchingPerils: [String: Perils] = [:]
-        allPeril.forEach { tierName, allTierNamePerils in
-            allTierNamePerils.forEach { peril in
-                if currentPeril.title == peril.title {
-                    allMatchingPerils[tierName] = peril
-                }
-            }
-        }
-
-        var coverageTexts: [String] = []
-        allMatchingPerils.forEach { tierName, peril in
-            if let coverageText = peril.covered.first, coverageText != "" {
-                coverageTexts.append(tierName + ": " + coverageText)
-            }
-        }
-
-        var coverageTextDisplayString: String = ""
-        coverageTexts.forEach { text in
-            coverageTextDisplayString += "\n" + text
-        }
-
-        if coverageTextDisplayString != "" {
-            return currentPeril.description + "\n" + coverageTextDisplayString
-        }
-        return currentPeril.description
     }
 }
 
@@ -353,6 +332,34 @@ public class CompareTierViewModel: ObservableObject {
                 }
             }
         }
+    }
+
+    func getDescriptionText(currentPeril: Perils) -> String {
+        var allMatchingPerils: [String: Perils] = [:]
+        perils.forEach { tierName, allTierNamePerils in
+            allTierNamePerils.forEach { peril in
+                if currentPeril.title == peril.title {
+                    allMatchingPerils[tierName] = peril
+                }
+            }
+        }
+
+        var coverageTexts: [String] = []
+        allMatchingPerils.forEach { tierName, peril in
+            if let coverageText = peril.covered.first, coverageText != "" {
+                coverageTexts.append(tierName + ": " + coverageText)
+            }
+        }
+
+        var coverageTextDisplayString: String = ""
+        coverageTexts.forEach { text in
+            coverageTextDisplayString += "\n" + text
+        }
+
+        if coverageTextDisplayString != "" {
+            return currentPeril.description + "\n" + coverageTextDisplayString
+        }
+        return currentPeril.description
     }
 }
 
