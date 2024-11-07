@@ -279,8 +279,21 @@ private class CustomTextView: UITextView, UITextViewDelegate {
 
     override func paste(_ sender: Any?) {
         if let action = (sender as? UIKeyCommand)?.action, action == #selector(UIResponder.paste(_:)) {
-
-            if let urls = UIPasteboard.general.urls, urls.count > 0 {
+            if let images = UIPasteboard.general.images {
+                for image in images {
+                    if let data = image.jpegData(compressionQuality: 0.9) {
+                        let file = File(
+                            id: UUID().uuidString,
+                            size: Double(data.count),
+                            mimeType: .JPEG,
+                            name: "image_\(Date())",
+                            source: .data(data: data)
+                        )
+                        self.onPaste?(file)
+                    }
+                }
+                return
+            } else if let urls = UIPasteboard.general.urls, urls.count > 0 {
                 for url in urls {
                     if let contentProvider = NSItemProvider(contentsOf: url) {
                         contentProvider.getFile { [weak self] file in
