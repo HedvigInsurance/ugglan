@@ -233,6 +233,27 @@ struct CompareOnRowTap: ViewModifier {
                     description: descriptionText(currentPeril)
                 )
             }
+            .onLongPressGesture {
+                withAnimation {
+                    vm.selectedPeril = currentPeril
+                }
+            } onPressingChanged: { isPressing in
+                if !isPressing {
+                    withAnimation {
+                        vm.selectedPeril = nil
+                    }
+                }
+            }
+            .background(getRowColor(for: currentPeril))
+    }
+
+    @hColorBuilder
+    private func getRowColor(for peril: Perils) -> some hColor {
+        if peril.title == vm.selectedPeril?.title {
+            hButtonColor.Ghost.hover
+        } else {
+            hBackgroundColor.clear
+        }
     }
 }
 
@@ -242,6 +263,8 @@ public class CompareTierViewModel: ObservableObject {
     @Published var selectedTier: Tier?
     @Published var tiers: [Tier]
     @Published var extended = false
+
+    @Published var selectedPeril: Perils?
 
     @Published var perils: [String: [Perils]] = [:]
     var scrollableSegmentedViewModel: ScrollableSegmentedViewModel = .init(pageModels: [])
