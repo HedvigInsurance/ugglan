@@ -6,6 +6,7 @@ import hGraphQL
 struct CompareTierScreen: View {
     @ObservedObject private var vm: CompareTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
+    @SwiftUI.Environment(\.horizontalSizeClass) var horizontalSizeClass
 
     @State var offset: CGPoint = .zero
 
@@ -48,19 +49,9 @@ struct CompareTierScreen: View {
         hForm {
             HStack(spacing: 0) {
                 ZStack {
-                    Rectangle()
-                        .fill(hBackgroundColor.black)
-                        .padding(.top, 32)
-                        .frame(width: 140, alignment: .leading)
-                        .shadow(color: Color.black.opacity(0.05), radius: offset.x > .zero ? 5 : 0, x: 0, y: 4)
-                        .shadow(color: Color.black.opacity(0.1), radius: offset.x > .zero ? 1 : 0, x: 0, y: 2)
-                        .mask {
-                            Rectangle()
-                                .offset(x: 80, y: 10)
-                                .frame(width: 20)
-                        }
-                    getPerilNameColumn()
-                        .frame(width: 140, alignment: .leading)
+                    shadowDividerView
+                    perilTitleColumn
+                        .frame(width: horizontalSizeClass == .regular ? 190 : 140, alignment: .leading)
                 }
                 .zIndex(2)
 
@@ -114,7 +105,22 @@ struct CompareTierScreen: View {
     }
 
     @ViewBuilder
-    private func getPerilNameColumn() -> some View {
+    private var shadowDividerView: some View {
+        Rectangle()
+            .fill(hBackgroundColor.black)
+            .padding(.top, 32)
+            .frame(width: horizontalSizeClass == .regular ? 200 : 140, alignment: .leading)
+            .shadow(color: Color.black.opacity(0.05), radius: offset.x > .zero ? 5 : 0, x: 0, y: 4)
+            .shadow(color: Color.black.opacity(0.1), radius: offset.x > .zero ? 1 : 0, x: 0, y: 2)
+            .mask {
+                Rectangle()
+                    .offset(x: horizontalSizeClass == .regular ? 110 : 80, y: 10)
+                    .frame(width: 20)
+            }
+    }
+
+    @ViewBuilder
+    private var perilTitleColumn: some View {
         VStack(alignment: .leading) {
             hText("", style: .label)
                 .padding(.top, 11)
@@ -124,9 +130,10 @@ struct CompareTierScreen: View {
                 hRow {
                     hText(peril.title, style: .label)
                         .frame(height: .padding40, alignment: .center)
+                        .frame(maxWidth: 124, alignment: .leading)
                 }
                 .verticalPadding(0)
-                .frame(width: 124)
+                .frame(width: horizontalSizeClass == .regular ? 135 : 124)
                 .modifier(CompareOnRowTap(currentPeril: peril, vm: vm))
             }
             .hWithoutDividerPadding
