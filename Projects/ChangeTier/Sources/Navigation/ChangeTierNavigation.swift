@@ -231,7 +231,7 @@ public struct ChangeTierNavigation: View {
             options: .constant(.alwaysOpenOnTop)
         ) { insurableLimit in
             InfoView(
-                title: L10n.contractCoverageMoreInfo,
+                title: insurableLimit.label,
                 description: insurableLimit.description
             )
         }
@@ -239,13 +239,8 @@ public struct ChangeTierNavigation: View {
             CompareTierScreen(
                 vm: .init(tiers: changeTierNavigationVm.vm.tiers, selectedTier: changeTierNavigationVm.vm.selectedTier)
             )
-            .configureTitle(
-                changeTierNavigationVm.vm.tiers.count == 1
-                    ? L10n.tierFlowShowCoverageButton : L10n.tierFlowCompareButton
-            )
             .withDismissButton()
             .embededInNavigation(
-                options: .navigationType(type: .large),
                 tracking: ChangeTierTrackingType.compareTier
             )
             .environmentObject(changeTierNavigationVm)
