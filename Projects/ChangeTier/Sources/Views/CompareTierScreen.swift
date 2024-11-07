@@ -100,7 +100,7 @@ struct CompareTierScreen: View {
         }
         .hFormTitle(
             title: .init(
-                .small,
+                .none,
                 .body2,
                 L10n.tierComparisonTitle,
                 alignment: .leading
