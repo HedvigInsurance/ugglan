@@ -131,13 +131,7 @@ public class FeatureFlagsUnleash: FeatureFlags {
         isTiersEnabled = unleashClient.isEnabled(name: enableTiersKey)
         featureFlags[enableTiersKey] = isTiersEnabled
 
-        let paymentTypeKey = "payment_type"
-        let paymentTypeName = unleashClient.getVariant(name: paymentTypeKey).name
-        if paymentTypeName == "adyen" {
-            paymentType = .adyen
-        } else {
-            paymentType = .trustly
-        }
+        paymentType = .trustly
         let movingFlowKey = "moving_flow_version"
         let isMovingFlowEnabled = unleashClient.getVariant(name: movingFlowKey)
         let movingFlowEnabledName = isMovingFlowEnabled.name

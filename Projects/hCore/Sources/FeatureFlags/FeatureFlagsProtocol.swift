@@ -25,7 +25,6 @@ public protocol FeatureFlags {
 
 public enum PaymentType {
     case trustly
-    case adyen
 }
 
 public enum MovingFlowVersion: String {
