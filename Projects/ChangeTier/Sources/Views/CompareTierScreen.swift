@@ -65,13 +65,11 @@ struct CompareTierScreen: View {
                 }
                 .zIndex(2)
 
-                if offset.x <= .zero {
-                    Divider()
-                        .frame(minHeight: 1)
-                        .overlay(hBorderColor.secondary)
-                        .padding(.top, 32)
-                }
-
+                Divider()
+                    .frame(minHeight: 1)
+                    .overlay(hBorderColor.secondary)
+                    .padding(.top, 32)
+                    .opacity(offset.x <= .zero ? 1 : 0)
                 ScrollViewReader { scrollView in
                     OffsetObservingScrollView(
                         axes: [.horizontal],
