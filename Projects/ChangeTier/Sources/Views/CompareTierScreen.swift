@@ -41,6 +41,7 @@ struct CompareTierScreen: View {
             ForEach(vm.tiers, id: \.self) { tier in
                 getColumn(for: tier).id("column " + tier.id)
             }
+            Spacing(height: Float(horizontalSizeClass == .regular ? CGFloat.padding64 : CGFloat.padding16))
         }
     }
 
@@ -196,7 +197,7 @@ struct CompareTierScreen: View {
                             .frame(maxWidth: .infinity, alignment: .center)
                     }
                     .verticalPadding(0)
-                    .dividerInsets(.leading, tier == vm.tiers.first ? -100 : 0)
+                    .dividerInsets(.leading, tier == vm.tiers.first ? -200 : 0)
                     .modifier(CompareOnRowTap(currentPeril: peril, vm: vm))
                 }
                 .hSectionWithoutHorizontalPadding
