@@ -12,6 +12,13 @@ public class ClaimsNavigationViewModel: ObservableObject {
     @Published public var isCheckoutTransferringPresented = false
     @Published public var isInfoViewPresented: InfoViewModel?
     @Published public var isClaimFilesPresented: ClaimsFileModel?
+
+    @Published var selectClaimEntrypointVm = SelectClaimEntrypointViewModel()
+    @Published var claimEntrypoints: [ClaimEntryPointResponseModel] = []
+    @Published var entrypoints: EntrypointState = .init()
+
+    @Published var progress: Float?
+    @Published var previousProgress: Float?
 }
 
 enum ClaimsRouterActions: Hashable {
@@ -162,10 +169,6 @@ public struct ClaimsNavigation: View {
                         router.dismiss()
                     case let .navigationAction(navigationAction):
                         switch navigationAction {
-                        case .openTriagingEntrypointScreen:
-                            router.push(ClaimsRouterActions.triagingEntrypoint)
-                        case .openTriagingOptionScreen:
-                            router.push(ClaimsRouterActions.triagingOption)
                         case let .openDateOfOccurrencePlusLocationScreen(option):
                             router.push(ClaimsRouterActions.dateOfOccurrancePlusLocation(option: option))
                         case .openSelectContractScreen:
@@ -252,27 +255,16 @@ public struct ClaimsNavigation: View {
     }
 
     private func showClaimEntrypointGroup(origin: ClaimsOrigin) -> some View {
-        SelectClaimEntrypointGroup(
-            selectedEntrypoints: { entrypoints in
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                store.send(.setSelectedEntrypoints(entrypoints: entrypoints))
-            })
-            .onAppear {
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                store.send(.fetchEntrypointGroups)
-            }
+        SelectClaimEntrypointGroup(vm: claimsNavigationVm.selectClaimEntrypointVm)
             .resetProgressToPreviousValueOnDismiss
             .addClaimsProgressBar
             .addDismissClaimsFlow()
     }
 
     private func showClaimEntrypointType() -> some View {
-        SelectClaimEntrypointType(selectedEntrypointOptions: { options, selectedEntrypointId in
-            let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-            store.send(.setSelectedEntrypointOptions(entrypoints: options, entrypointId: selectedEntrypointId))
-        })
-        .resetProgressToPreviousValueOnDismiss
-        .addDismissClaimsFlow()
+        SelectClaimEntrypointType()
+            .resetProgressToPreviousValueOnDismiss
+            .addDismissClaimsFlow()
     }
 
     private func showClaimEntrypointOption() -> some View {

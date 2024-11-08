@@ -63,14 +63,6 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
                     context: newClaimContext
                 )
             }
-
-        case .fetchEntrypointGroups:
-            do {
-                let data = try await self.fetchEntrypointsClient.get()
-                send(.setClaimEntrypointGroupsForSelection(data))
-            } catch {
-                setError(L10n.General.errorBody, for: .fetchClaimEntrypointGroups)
-            }
         case let .emergencyConfirmRequest(isEmergency):
             await executeAsync(loadingType: .postConfirmEmergency) {
                 try await self.submitClaimClient.emergencyConfirmRequest(
@@ -117,10 +109,6 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             newState.singleItemStep?.purchaseDate = purchaseDate?.localDateString
         case let .setNewClaimContext(context):
             newState.currentClaimContext = context
-        case let .setClaimEntrypointsForSelection(commonClaims):
-            newState.claimEntrypoints = commonClaims
-        case let .setClaimEntrypointGroupsForSelection(entrypointGroups):
-            newState.claimEntrypointGroups = entrypointGroups
             removeLoading(for: .fetchClaimEntrypointGroups)
         case .submitAudioRecording:
             setLoading(for: .postAudioRecording)
@@ -215,51 +203,13 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             newState.progress = nil
         case .emergencyConfirmRequest:
             setLoading(for: .postConfirmEmergency)
-        case .fetchEntrypointGroups:
-            setLoading(for: .fetchClaimEntrypointGroups)
-            newState.progress = 0
-            newState.previousProgress = 0
-        case let .setSelectedEntrypoints(entrypoints):
-            newState.previousProgress = 0
-            if entrypoints.isEmpty {
-                newState.entrypoints.selectedEntrypoints = entrypoints
-                send(
-                    .startClaimRequest(
-                        entrypointId: nil,
-                        entrypointOptionId: nil
-                    )
-                )
-            } else {
-                if entrypoints.first?.options == [] {
-                    newState.progress = 0.2
-                } else {
-                    newState.progress = 0.1
-                }
-                newState.entrypoints.selectedEntrypoints = entrypoints
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
-                    self?.send(.navigationAction(action: .openTriagingEntrypointScreen))
-                }
-            }
-        case let .setSelectedEntrypointOptions(entrypointOptions, selectedEntrypointId):
-            newState.previousProgress = newState.progress
-            newState.progress = 0.2
-            newState.entrypoints.selectedEntrypointOptions = entrypointOptions
-            newState.entrypoints.selectedEntrypointId = selectedEntrypointId
-            if entrypointOptions.isEmpty {
-                send(
-                    .startClaimRequest(
-                        entrypointId: selectedEntrypointId,
-                        entrypointOptionId: nil
-                    )
-                )
-            } else {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
-                    self?.send(.navigationAction(action: .openTriagingOptionScreen))
-                }
-            }
         case let .setProgress(progress):
             newState.previousProgress = newState.progress
             newState.progress = progress
+        case let .setOnlyProgress(progress):
+            newState.progress = progress
+        case let .setOnlyPreviousProgress(progress):
+            newState.previousProgress = progress
         default:
             break
         }

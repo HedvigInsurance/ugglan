@@ -6,11 +6,6 @@ public indirect enum SubmitClaimsAction: ActionProtocol, Hashable {
     case dismissNewClaimFlow
     case popClaimFlow
     case submitClaimOpenFreeTextChat
-
-    case fetchEntrypointGroups
-    case setClaimEntrypointsForSelection([ClaimEntryPointResponseModel])
-    case setClaimEntrypointGroupsForSelection([ClaimEntryPointGroupResponseModel])
-
     case submitAudioRecording(type: SubmitAudioRecordingType)
     case resetAudioRecording
 
@@ -36,12 +31,13 @@ public indirect enum SubmitClaimsAction: ActionProtocol, Hashable {
     case setItemModel(model: SelectedModel)
     case setPayoutMethod(method: AvailableCheckoutMethod)
     case setLocation(location: String?)
+
     case setProgress(progress: Float?)
+    case setOnlyProgress(progress: Float?)
+    case setOnlyPreviousProgress(progress: Float?)
 
     case navigationAction(action: SubmitClaimsNavigationAction)
     case stepModelAction(action: ClaimsStepModelAction)
-    case setSelectedEntrypoints(entrypoints: [ClaimEntryPointResponseModel])
-    case setSelectedEntrypointOptions(entrypoints: [ClaimEntryPointOptionResponseModel], entrypointId: String?)
 }
 
 public enum SubmitAudioRecordingType: ActionProtocol, Hashable {
@@ -60,8 +56,6 @@ public enum SubmitClaimsNavigationAction: ActionProtocol, Hashable {
     case openFailureSceen
     case openUpdateAppScreen
     case openSelectContractScreen
-    case openTriagingEntrypointScreen
-    case openTriagingOptionScreen
     case openDeflectScreen(type: FlowClaimDeflectStepType)
     case openConfirmEmergencyScreen
     case openFileUploadScreen
