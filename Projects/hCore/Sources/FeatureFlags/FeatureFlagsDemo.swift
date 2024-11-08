@@ -12,7 +12,7 @@ public class FeatureFlagsDemo: FeatureFlags {
     public var isPaymentScreenEnabled: Bool = false
     public var isCommonClaimEnabled: Bool = false
     public var isForeverEnabled: Bool = false
-    public var paymentType: PaymentType?
+    public var isConnectPaymentEnabled: Bool = false
     public var isHelpCenterEnabled: Bool = false
     public var isSubmitClaimEnabled: Bool = false
     public var osVersionTooLow: Bool = false

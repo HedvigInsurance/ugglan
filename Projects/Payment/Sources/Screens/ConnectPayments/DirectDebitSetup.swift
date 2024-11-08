@@ -270,12 +270,7 @@ public struct DirectDebitSetup: View {
             return hasAlreadyConnected ? .replacement : .initial
         }()
         showNotSupported = {
-            switch Dependencies.featureFlags().paymentType {
-            case .trustly:
-                return false
-            case nil:
-                return true
-            }
+            !Dependencies.featureFlags().isConnectPaymentEnabled
         }()
         self.setupType = finalSetupType
     }
@@ -306,6 +301,7 @@ public struct DirectDebitSetup: View {
                             )
                         )
                     )
+                    .hFormDontUseInitialAnimation
             } else if showCancelAlert {
                 DirectDebitSetupRepresentable(setupType: setupType, showErrorAlert: $showErrorAlert, router: router)
                     .alert(isPresented: $showCancelAlert) {
