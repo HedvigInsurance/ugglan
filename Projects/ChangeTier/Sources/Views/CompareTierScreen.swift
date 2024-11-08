@@ -7,6 +7,8 @@ struct CompareTierScreen: View {
     @ObservedObject private var vm: CompareTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
     @StateObject private var tracingOffsetVm = TracingOffsetViewModel()
+    @StateObject private var setOffsetVm = SetOffsetViewModel()
+
     @SwiftUI.Environment(\.horizontalSizeClass) var horizontalSizeClass
     @SwiftUI.Environment(\.colorScheme) private var colorScheme
     @State private var leftColumnWidth: CGFloat = 0
@@ -72,18 +74,23 @@ struct CompareTierScreen: View {
                             }
                         )
                         .modifier(TrackingOffsetModifier(vm: tracingOffsetVm))
+                        .modifier(SetOffsetModifier(vm: setOffsetVm))
                         .onAppear {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak vm] in
-                                guard let vm = vm else { return }
-                                if vm.tiers.count > 1 {
-                                    withAnimation(.spring(duration: 2)) {
-                                        scrollView.scrollTo("column " + vm.tiers[1].id, anchor: .leading)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak setOffsetVm, weak vm] in
+                                guard let setOffsetVm = setOffsetVm, let vm = vm else { return }
+                                if vm.tiers.first == vm.selectedTier {
+                                    setOffsetVm.animate(
+                                        with: .init(duration: 1, damping: 0.6, offset: .init(x: 60, y: 0))
+                                    )
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
+                                        setOffsetVm.animate(with: .init(duration: 1, damping: 0.6, offset: .zero))
                                     }
-
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                        withAnimation(.spring(duration: 2)) {
-                                            scrollView.scrollTo("column " + vm.tiers[0].id, anchor: .leading)
-                                        }
+                                } else {
+                                    if let selectedTierIndex = vm.tiers.firstIndex(where: { $0 == vm.selectedTier }) {
+                                        let offset = selectedTierIndex * 100 - 50
+                                        setOffsetVm.animate(
+                                            with: .init(duration: 1, damping: 0.6, offset: .init(x: offset, y: 0))
+                                        )
                                     }
                                 }
                             }
@@ -443,6 +450,24 @@ public class CompareTierViewModel: ObservableObject {
         exposureName: "Standard"
     )
 
+    let premiumTier = Tier(
+        id: "PREMIUM",
+        name: "Premium",
+        level: 0,
+        quotes: [
+            .init(
+                id: "quote1",
+                quoteAmount: .init(amount: "220", currency: "SEK"),
+                quotePercentage: 0,
+                subTitle: nil,
+                premium: .init(amount: "220", currency: "SEK"),
+                displayItems: [],
+                productVariant: nil
+            )
+        ],
+        exposureName: "exposure name"
+    )
+
     let vm: CompareTierViewModel = .init(
         tiers: [
             .init(
@@ -463,23 +488,7 @@ public class CompareTierViewModel: ObservableObject {
                 exposureName: "exposure name"
             ),
             standardTier,
-            .init(
-                id: "PREMIUM",
-                name: "Premium",
-                level: 0,
-                quotes: [
-                    .init(
-                        id: "quote1",
-                        quoteAmount: .init(amount: "220", currency: "SEK"),
-                        quotePercentage: 0,
-                        subTitle: nil,
-                        premium: .init(amount: "220", currency: "SEK"),
-                        displayItems: [],
-                        productVariant: nil
-                    )
-                ],
-                exposureName: "exposure name"
-            ),
+            premiumTier,
         ],
         selectedTier: standardTier
     )
