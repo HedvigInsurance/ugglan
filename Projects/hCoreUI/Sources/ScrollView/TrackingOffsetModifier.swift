@@ -3,13 +3,12 @@ import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 
 public struct TrackingOffsetModifier: ViewModifier {
-    @StateObject var vm = TracingOffsetViewModel()
-    @Binding var offset: CGPoint
+    @ObservedObject var vm: TracingOffsetViewModel
 
     public init(
-        offset: Binding<CGPoint>
+        vm: TracingOffsetViewModel
     ) {
-        self._offset = offset
+        self.vm = vm
     }
 
     public func body(content: Content) -> some View {
@@ -19,24 +18,23 @@ public struct TrackingOffsetModifier: ViewModifier {
                     vm.scrollView = scrollView
                 }
             }
-            .onChange(of: vm.currentOffset) { newOffset in
-                offset = newOffset
-            }
     }
 }
 
-class TracingOffsetViewModel: ObservableObject {
+public class TracingOffsetViewModel: ObservableObject {
     var scrollOffsetCancellable: AnyCancellable?
-    @Published var currentOffset: CGPoint = .zero
+    @Published public var currentOffset: CGPoint = .zero
 
     weak var scrollView: UIScrollView? {
         didSet {
-            scrollOffsetCancellable = scrollView?.publisher(for: \.contentOffset).receive(on: RunLoop.main)
+            scrollOffsetCancellable = scrollView?.publisher(for: \.contentOffset)
                 .sink(receiveValue: { [weak self] offset in
-                    self?.currentOffset = offset
+                    withAnimation {
+                        self?.currentOffset = offset
+                    }
                 })
         }
     }
 
-    init() {}
+    public init() {}
 }
