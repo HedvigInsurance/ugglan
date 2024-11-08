@@ -32,7 +32,9 @@ struct ChatInputView: View {
                             text: $vm.inputText,
                             height: $height,
                             keyboardIsShown: $vm.keyboardIsShown
-                        )
+                        ) { file in
+                            vm.sendMessage(.init(type: .file(file: file)))
+                        }
                         .frame(height: height)
                         .frame(minHeight: 40)
 
@@ -170,12 +172,14 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
     @Binding var height: CGFloat
     @Binding var keyboardIsShown: Bool
     @Environment(\.colorScheme) var schema
+    let onPaste: ((File) -> Void)?
     func makeUIView(context: Context) -> some UIView {
         CustomTextView(
             placeholder: placeholder,
             inputText: $text,
             height: $height,
-            keyboardIsShown: $keyboardIsShown
+            keyboardIsShown: $keyboardIsShown,
+            onPaste: onPaste
         )
     }
 
@@ -196,8 +200,16 @@ private class CustomTextView: UITextView, UITextViewDelegate {
     @Binding private var keyboardIsShown: Bool
     private var textCancellable: AnyCancellable?
     private var placeholderLabel = UILabel()
-    init(placeholder: String, inputText: Binding<String>, height: Binding<CGFloat>, keyboardIsShown: Binding<Bool>) {
+    let onPaste: ((File) -> Void)?
+    init(
+        placeholder: String,
+        inputText: Binding<String>,
+        height: Binding<CGFloat>,
+        keyboardIsShown: Binding<Bool>,
+        onPaste: ((File) -> Void)?
+    ) {
         self._inputText = inputText
+        self.onPaste = onPaste
         self._height = height
         self._keyboardIsShown = keyboardIsShown
         super.init(frame: .zero, textContainer: nil)
@@ -263,6 +275,49 @@ private class CustomTextView: UITextView, UITextViewDelegate {
     private var placeholderTextColor: UIColor {
         let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
         return hTextColor.Opaque.secondary.colorFor(colorScheme, .base).color.uiColor()
+    }
+
+    override func paste(_ sender: Any?) {
+        if let action = (sender as? UIKeyCommand)?.action, action == #selector(UIResponder.paste(_:)) {
+            if let images = UIPasteboard.general.images {
+                for image in images {
+                    if let data = image.jpegData(compressionQuality: 0.9) {
+                        let file = File(
+                            id: UUID().uuidString,
+                            size: Double(data.count),
+                            mimeType: .JPEG,
+                            name: "image_\(Date())",
+                            source: .data(data: data)
+                        )
+                        self.onPaste?(file)
+                    }
+                }
+                return
+            } else if let urls = UIPasteboard.general.urls, urls.count > 0 {
+                for url in urls {
+                    if let contentProvider = NSItemProvider(contentsOf: url) {
+                        contentProvider.getFile { [weak self] file in
+                            self?.onPaste?(file)
+                        }
+                    }
+                }
+            } else {
+                super.paste(sender)
+            }
+        } else {
+            super.paste(sender)
+        }
+    }
+
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        if action == #selector(UIResponder.paste(_:)) {
+            if let imagesFileTypes = UIPasteboard.typeListImage as? [String],
+                UIPasteboard.general.contains(pasteboardTypes: imagesFileTypes)
+            {
+                return true
+            }
+        }
+        return super.canPerformAction(action, withSender: sender)
     }
 }
 

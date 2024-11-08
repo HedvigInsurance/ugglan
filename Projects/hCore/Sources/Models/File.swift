@@ -41,32 +41,13 @@ public struct File: Codable, Equatable, Identifiable, Hashable {
 
     public func getAsData() async throws -> File? {
         switch self.source {
-        case .data(let data):
+        case .data:
             return self
-        case .url(let url):
+        case .url:
             return nil
         case .localFile(let results):
-            if let results {
-                let data = try? await withCheckedThrowingContinuation {
-                    (inCont: CheckedContinuation<Data?, Error>) -> Void in
-                    results.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.item.identifier) {
-                        fileUrl,
-                        error in
-                        if let fileUrl,
-                            let pathData = FileManager.default.contents(atPath: fileUrl.relativePath)
-                        {
-                            inCont.resume(returning: pathData)
-                        } else {
-                            inCont.resume(returning: nil)
-                        }
-                    }
-
-                }
-                if let data {
-                    return .init(id: id, size: size, mimeType: mimeType, name: name, source: .data(data: data))
-                }
-                return nil
-
+            if let results, let data = try? await results.itemProvider.getData().data {
+                return .init(id: id, size: size, mimeType: mimeType, name: name, source: .data(data: data))
             }
             return nil
         }
@@ -141,6 +122,117 @@ extension File {
             self.mimeType = mimeType
             self.name = url.lastPathComponent
             self.source = .data(data: data)
+        }
+    }
+}
+
+extension NSItemProvider {
+    public func getData() async throws -> (data: Data, mimeType: MimeType) {
+        return try await withCheckedThrowingContinuation {
+            (inCont: CheckedContinuation<(Data, mimeType: MimeType), Error>) -> Void in
+            if self.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
+                self.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { url, error in
+                    if let url, let data = FileManager.default.contents(atPath: url.relativePath),
+                        let image = UIImage(data: data),
+                        let data = image.jpegData(compressionQuality: 0.9)
+                    {
+                        inCont.resume(returning: (data, MimeType.JPEG))
+                    } else if let error {
+                        inCont.resume(throwing: error)
+                    } else {
+                        inCont.resume(throwing: DataProviderError.invalidData)
+                    }
+                }
+            } else if self.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
+                self.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { videoUrl, error in
+                    if let videoUrl, let data = FileManager.default.contents(atPath: videoUrl.relativePath),
+                        let mimeType = UTType(filenameExtension: videoUrl.pathExtension)?.preferredMIMEType
+                    {
+                        inCont.resume(returning: (data, MimeType.findBy(mimeType: mimeType)))
+                    } else if let error {
+                        inCont.resume(throwing: error)
+                    } else {
+                        inCont.resume(throwing: DataProviderError.invalidData)
+                    }
+                }
+            } else if self.hasItemConformingToTypeIdentifier(UTType.item.identifier) {
+                self.loadFileRepresentation(forTypeIdentifier: UTType.item.identifier) { itemUrl, error in
+                    if let itemUrl, let data = FileManager.default.contents(atPath: itemUrl.relativePath),
+                        let mimeType = UTType(filenameExtension: itemUrl.pathExtension)?.preferredMIMEType
+                    {
+                        inCont.resume(returning: (data, MimeType.findBy(mimeType: mimeType)))
+                    } else if let error {
+                        inCont.resume(throwing: error)
+                    } else {
+                        inCont.resume(throwing: DataProviderError.invalidData)
+                    }
+                }
+            } else {
+                inCont.resume(throwing: DataProviderError.invalidData)
+            }
+        }
+    }
+
+    public enum DataProviderError: Error {
+        case invalidData
+    }
+}
+
+extension NSItemProvider {
+    public func getFile(onFileResolved: @escaping (File) -> Void) {
+        let name = self.suggestedName ?? ""
+        if self.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
+            self.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { url, error in
+                if let url, let data = FileManager.default.contents(atPath: url.relativePath),
+                    let image = UIImage(data: data),
+                    let data = image.jpegData(compressionQuality: 0.9)
+                {
+                    let file = File(
+                        id: UUID().uuidString,
+                        size: Double(data.count),
+                        mimeType: .JPEG,
+                        name: name,
+                        source: .data(data: data)
+                    )
+                    onFileResolved(file)
+                }
+            }
+        } else if self.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
+            self.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { videoUrl, error in
+                if let videoUrl, let data = FileManager.default.contents(atPath: videoUrl.relativePath),
+                    let mimeType = UTType(filenameExtension: videoUrl.pathExtension)?.preferredMIMEType
+                {
+                    Task {
+                        let mimeType = MimeType.findBy(mimeType: mimeType)
+                        let file = File(
+                            id: UUID().uuidString,
+                            size: Double(data.count),
+                            mimeType: mimeType,
+                            name: name,
+                            source: .data(data: data)
+                        )
+                        onFileResolved(file)
+                    }
+                }
+            }
+        } else if self.hasItemConformingToTypeIdentifier(UTType.item.identifier) {
+            self.loadFileRepresentation(forTypeIdentifier: UTType.item.identifier) { itemUrl, error in
+                if let itemUrl, let data = FileManager.default.contents(atPath: itemUrl.relativePath),
+                    let mimeType = UTType(filenameExtension: itemUrl.pathExtension)?.preferredMIMEType
+                {
+                    Task {
+                        let mimeType = MimeType.findBy(mimeType: mimeType)
+                        let file = File(
+                            id: UUID().uuidString,
+                            size: Double(data.count),
+                            mimeType: mimeType,
+                            name: name,
+                            source: .data(data: data)
+                        )
+                        onFileResolved(file)
+                    }
+                }
+            }
         }
     }
 }

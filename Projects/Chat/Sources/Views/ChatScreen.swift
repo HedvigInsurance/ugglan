@@ -10,6 +10,7 @@ public struct ChatScreen: View {
     @State var infoViewWidth: CGFloat = 0
     @StateObject var chatScrollViewDelegate = ChatScrollViewDelegate()
     @EnvironmentObject var chatNavigationVm: ChatNavigationViewModel
+    @State private var isTargetedForDropdown = false
     public init(
         vm: ChatScreenViewModel
     ) {
@@ -43,6 +44,12 @@ public struct ChatScreen: View {
                 }
             Task {
                 await vm.startFetchingNewMessages()
+            }
+        }
+        .fileDrop(isTargetedForDropdown: $isTargetedForDropdown) { file in
+            Task {
+                let message = Message(type: .file(file: file))
+                await vm.send(message: message)
             }
         }
     }

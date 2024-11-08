@@ -3,7 +3,6 @@ import Kingfisher
 import MobileCoreServices
 import PhotosUI
 import SwiftUI
-import UniformTypeIdentifiers
 import hCore
 
 struct ImagePicker: UIViewControllerRepresentable {
