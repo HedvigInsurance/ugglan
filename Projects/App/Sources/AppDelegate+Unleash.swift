@@ -5,8 +5,8 @@ import SwiftUI
 import hCore
 
 extension AppDelegate {
-    func setupFeatureFlags(onComplete: @escaping (_ success: Bool) -> Void) {
-        Dependencies.featureFlags().setup(with: getContext, onComplete: onComplete)
+    func setupFeatureFlags() async throws {
+        try await Dependencies.featureFlags().setup(with: getContext)
         observeUpdate()
     }
 

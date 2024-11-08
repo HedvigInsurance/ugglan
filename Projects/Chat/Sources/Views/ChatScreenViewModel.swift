@@ -2,6 +2,7 @@ import Combine
 import Kingfisher
 import PresentableStore
 import SwiftUI
+import UniformTypeIdentifiers
 import hCore
 import hCoreUI
 import hGraphQL
@@ -67,9 +68,6 @@ public class ChatScreenViewModel: ObservableObject {
                     }
                 }
             }
-
-        let fileUploadManager = FileUploadManager()
-        fileUploadManager.resetuploadFilesPath()
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             AskForRating().askAccordingToTheNumberOfSessions()
         }
@@ -91,8 +89,6 @@ public class ChatScreenViewModel: ObservableObject {
     }
 
     deinit {
-        let fileUploadManager = FileUploadManager()
-        fileUploadManager.resetuploadFilesPath()
         if let openDeepLinkObserver {
             NotificationCenter.default.removeObserver(openDeepLinkObserver)
         }
@@ -224,7 +220,7 @@ public class ChatScreenViewModel: ObservableObject {
     }
 
     @MainActor
-    private func handleSuccessAdding(for remoteMessage: Message, to localMessage: Message) {
+    private func handleSuccessAdding(for remoteMessage: Message, to localMessage: Message) async {
         let newMessage = Message(
             localId: localMessage.id,
             remoteId: remoteMessage.id,
@@ -235,25 +231,40 @@ public class ChatScreenViewModel: ObservableObject {
         case let .file(file):
             if file.mimeType.isImage {
                 switch file.source {
-                case .localFile(let url, _):
-                    if let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
-                        switch remoteMessage.type {
-                        case let .file(file):
-                            let processor = DownsamplingImageProcessor(
-                                size: CGSize(width: 300, height: 300)
-                            )
-                            var options = KingfisherParsedOptionsInfo.init(nil)
-                            options.processor = processor
-                            ImageCache.default.store(image, forKey: file.id, options: options)
-                        default:
-                            break
+                case .localFile(let results):
+                    if let results {
+                        try? await withCheckedThrowingContinuation {
+                            (inCont: CheckedContinuation<Void, Error>) -> Void in
+                            results.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.item.identifier) {
+                                fileUrl,
+                                error in
+                                if let fileUrl,
+                                    let pathData = FileManager.default.contents(atPath: fileUrl.relativePath),
+                                    let image = UIImage(data: pathData)
+                                {
+                                    let processor = DownsamplingImageProcessor(
+                                        size: CGSize(width: 300, height: 300)
+                                    )
+                                    var options = KingfisherParsedOptionsInfo.init(nil)
+                                    options.processor = processor
+                                    ImageCache.default.store(image, forKey: remoteMessage.id, options: options)
+                                }
+                                inCont.resume()
+                            }
                         }
-
                     }
+                    break
                 case .url:
                     break
-                case .data:
-                    break
+                case .data(let data):
+                    if let image = UIImage(data: data) {
+                        let processor = DownsamplingImageProcessor(
+                            size: CGSize(width: 300, height: 300)
+                        )
+                        var options = KingfisherParsedOptionsInfo.init(nil)
+                        options.processor = processor
+                        try? await ImageCache.default.store(image, forKey: remoteMessage.id, options: options)
+                    }
                 }
             }
         default:
@@ -286,7 +297,7 @@ public class ChatScreenViewModel: ObservableObject {
     }
 
     @MainActor
-    private func handleSendFail(for message: Message, with error: String) {
+    private func handleSendFail(for message: Message, with error: String) async {
         if let index = messages.firstIndex(where: { $0.id == message.id }) {
             let newMessage = message.asFailed(with: error)
             let oldMessage = messages[index]
@@ -298,7 +309,7 @@ public class ChatScreenViewModel: ObservableObject {
                 let store: ChatStore = globalPresentableStoreContainer.get()
                 switch newMessage.type {
                 case .file(let file):
-                    if let newFile = file.getAsDataFromUrl() {
+                    if let newFile = try? await file.getAsData() {
                         let fileMessage = newMessage.copyWith(type: .file(file: newFile))
                         store.send(.setFailedMessage(conversationId: conversationId ?? "", message: fileMessage))
                     }

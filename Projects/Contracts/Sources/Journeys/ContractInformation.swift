@@ -34,7 +34,6 @@ struct ContractInformationView: View {
                                     hText(item.displayTitle)
                                         .fixedSize()
                                 }
-                                .noSpacing()
                                 .withCustomAccessory({
                                     Spacer()
                                     Group {
@@ -88,6 +87,7 @@ struct ContractInformationView: View {
                         }
                     }
                 }
+                .hWithoutHorizontalPadding
             }
         }
         .sectionContainerStyle(.transparent)

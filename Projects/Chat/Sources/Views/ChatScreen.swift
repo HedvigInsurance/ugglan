@@ -105,6 +105,7 @@ public struct ChatScreen: View {
                             }
                         }
                     }
+                    .id("MessageView_\(message.id)")
                 HStack(spacing: 0) {
                     if vm.lastDeliveredMessage?.id == message.id {
                         hText(message.timeStampString)
@@ -204,6 +205,8 @@ class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
                         return vc
                     } else if let superviewVc = vc.view.superview?.viewController {
                         return findProverVC(from: superviewVc)
+                    } else if let parent = vc.parent {
+                        return findProverVC(from: parent)
                     }
                 }
             }

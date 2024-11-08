@@ -389,27 +389,28 @@ public struct ClaimsNavigation: View {
     }
 
     private func showClaimFailureScreen() -> some View {
-        GenericErrorView(
-            buttons: .init(
-                actionButton: .init(
-                    buttonAction: {
-                        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                        store.send(.popClaimFlow)
-                    }
-                ),
-                dismissButton: .init(
-                    buttonTitle: L10n.openChat,
-                    buttonAction: {
-                        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                        store.send(.dismissNewClaimFlow)
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                            store.send(.submitClaimOpenFreeTextChat)
+        GenericErrorView()
+            .hErrorViewButtonConfig(
+                .init(
+                    actionButton: .init(
+                        buttonAction: {
+                            let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                            store.send(.popClaimFlow)
                         }
-                    }
+                    ),
+                    dismissButton: .init(
+                        buttonTitle: L10n.openChat,
+                        buttonAction: {
+                            let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                            store.send(.dismissNewClaimFlow)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                                store.send(.submitClaimOpenFreeTextChat)
+                            }
+                        }
+                    )
                 )
             )
-        )
-        .withDismissButton()
+            .withDismissButton()
     }
 
     private func openLocationScreen() -> some View {
@@ -561,30 +562,6 @@ extension View {
     }
 }
 
-#Preview{
+#Preview {
     ClaimsNavigation(origin: .generic)
-}
-
-extension View {
-    func onDeinit(_ execute: @escaping () -> Void) -> some View {
-        modifier(OnDeinit(execute: execute))
-    }
-}
-
-struct OnDeinit: ViewModifier {
-    @StateObject var vm = OnDeinitViewModel()
-    let execute: () -> Void
-    func body(content: Content) -> some View {
-        content.onAppear { [weak vm] in
-            vm?.execute = execute
-        }
-    }
-}
-
-class OnDeinitViewModel: ObservableObject {
-    var execute: (() -> Void)?
-
-    deinit {
-        execute?()
-    }
 }

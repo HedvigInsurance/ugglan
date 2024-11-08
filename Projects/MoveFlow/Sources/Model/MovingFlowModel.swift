@@ -63,7 +63,7 @@ public struct MovingFlowModel: Codable, Equatable, Hashable {
     }
 
     var movingDate: String {
-        return quotes.first?.startDate ?? ""
+        return homeQuote?.startDate ?? quotes.first?.startDate ?? ""
     }
 
     func maxNumberOfCoinsuredFor(_ type: HousingType) -> Int {

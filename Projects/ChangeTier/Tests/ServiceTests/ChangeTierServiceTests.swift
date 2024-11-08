@@ -80,4 +80,43 @@ final class ChangeTierServiceTests: XCTestCase {
         )
         assert(respondedTiersData == changeTierIntentModel)
     }
+
+    func testCompareProductVariantDataSuccess() async {
+        let rows: [ProductVariantComparison.ProductVariantComparisonRow] = [
+            .init(
+                title: "rowTitle",
+                description: "description",
+                colorCode: nil,
+                cells: [
+                    .init(isCovered: true, coverageText: nil)
+                ]
+            )
+        ]
+
+        let columns: [ProductVariant] = [
+            .init(
+                termsVersion: "",
+                typeOfContract: "",
+                partner: "",
+                perils: [],
+                insurableLimits: [],
+                documents: [],
+                displayName: "",
+                displayNameTier: "Standard",
+                tierDescription: "tier description"
+            )
+        ]
+
+        let comparisonData = ProductVariantComparison(rows: rows, variantColumns: columns)
+
+        let mockService = MockData.createMockChangeTier(compareProductVariants: { _ in
+            comparisonData
+        })
+
+        self.sut = mockService
+
+        let responedComparisonData = try! await mockService.compareProductVariants(termsVersion: [])
+
+        assert(responedComparisonData == comparisonData)
+    }
 }

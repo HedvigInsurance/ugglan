@@ -32,7 +32,8 @@ public struct PDFPreview: View {
                         vc.navigationItem.leftBarButtonItem = navBarItem
                     }
             } else {
-                GenericErrorView(buttons: .init())
+                GenericErrorView()
+                    .hErrorViewButtonConfig(.init())
             }
         }
         .navigationTitle(vm.document.displayName)

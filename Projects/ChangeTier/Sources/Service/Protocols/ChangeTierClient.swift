@@ -4,6 +4,7 @@ import hCore
 public protocol ChangeTierClient {
     func getTier(input: ChangeTierInputData) async throws -> ChangeTierIntentModel
     func commitTier(quoteId: String) async throws
+    func compareProductVariants(termsVersion: [String]) async throws -> ProductVariantComparison
 }
 
 public enum ChangeTierError: Error {
@@ -22,7 +23,7 @@ extension ChangeTierError: LocalizedError {
         case let .errorMessage(message):
             return message
         default:
-            return L10n.somethingWentWrong
+            return L10n.General.errorBody
         }
     }
 }

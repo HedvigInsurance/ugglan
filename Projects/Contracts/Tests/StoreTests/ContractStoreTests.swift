@@ -33,7 +33,7 @@ final class ContractStoreTests: XCTestCase {
         assert(mockService.events.first == .getCrossSell)
     }
 
-    func testFetchCrossSalesFailure() async {
+    func testFetchCrossSalesFailure() async throws {
         let mockService = MockData.createMockContractsService(
             fetchCrossSell: { throw MockContractError.fetchCrossSells }
         )
@@ -41,10 +41,8 @@ final class ContractStoreTests: XCTestCase {
         let store = ContractStore()
         self.store = store
         await store.sendAsync(.fetchCrossSale)
-        await waitUntil(description: "loading state") {
-            store.loadingState[.fetchCrossSell] != nil
-        }
-
+        try await Task.sleep(nanoseconds: 5 * 100_000_000)
+        assert(store.loadingState[.fetchCrossSell] != nil)
         assert(store.state.crossSells.isEmpty)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getCrossSell)
@@ -96,7 +94,7 @@ final class ContractStoreTests: XCTestCase {
         self.store = store
         await store.sendAsync(.fetch)
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.fetchContracts] == nil && store.loadingSignal.value[.fetchCrossSell] == nil
+            store.loadingState[.fetchContracts] == nil && store.loadingState[.fetchCrossSell] == nil
         }
 
         assert(store.state.activeContracts == ContractsStack.getDefault.activeContracts)
@@ -143,7 +141,9 @@ extension ContractsStack {
                         perils: [],
                         insurableLimits: [],
                         documents: [],
-                        displayName: "display name"
+                        displayName: "display name",
+                        displayNameTier: "standard",
+                        tierDescription: "tier description"
                     )
                 ),
                 exposureDisplayName: "exposure display name",
@@ -152,6 +152,7 @@ extension ContractsStack {
                 supportsAddressChange: true,
                 supportsCoInsured: true,
                 supportsTravelCertificate: true,
+                supportsChangeTier: true,
                 upcomingChangedAgreement: nil,
                 upcomingRenewal: nil,
                 firstName: "first",

@@ -104,7 +104,7 @@ public enum ChangeTierInput: Identifiable, Equatable {
         return lhs.id == rhs.id
     }
     case contractWithSource(data: ChangeTierInputData)
-    case existingIntent(intent: ChangeTierIntentModel, onSelect: ((Tier, Quote)) -> Void)
+    case existingIntent(intent: ChangeTierIntentModel, onSelect: (((Tier, Quote)) -> Void)?)
 }
 public struct ChangeTierInputData: Equatable, Identifiable {
     public var id: String {
@@ -231,22 +231,19 @@ public struct ChangeTierNavigation: View {
             options: .constant(.alwaysOpenOnTop)
         ) { insurableLimit in
             InfoView(
-                title: L10n.contractCoverageMoreInfo,
+                title: insurableLimit.label,
                 description: insurableLimit.description
             )
         }
         .modally(presented: $changeTierNavigationVm.isCompareTiersPresented) {
-            CompareTierScreen(vm: changeTierNavigationVm.vm)
-                .configureTitle(
-                    changeTierNavigationVm.vm.tiers.count == 1
-                        ? L10n.tierFlowShowCoverageButton : L10n.tierFlowCompareButton
-                )
-                .withDismissButton()
-                .embededInNavigation(
-                    options: .navigationType(type: .large),
-                    tracking: ChangeTierTrackingType.compareTier
-                )
-                .environmentObject(changeTierNavigationVm)
+            CompareTierScreen(
+                vm: .init(tiers: changeTierNavigationVm.vm.tiers, selectedTier: changeTierNavigationVm.vm.selectedTier)
+            )
+            .withDismissButton()
+            .embededInNavigation(
+                tracking: ChangeTierTrackingType.compareTier
+            )
+            .environmentObject(changeTierNavigationVm)
         }
         .detent(
             item: $changeTierNavigationVm.document,

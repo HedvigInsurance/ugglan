@@ -503,6 +503,7 @@ private struct EnvironmentHFormTitle: EnvironmentKey {
 public enum HFormTitleSpacingType {
     case standard
     case small
+    case none
 
     var topMargin: CGFloat {
         switch self {
@@ -510,6 +511,8 @@ public enum HFormTitleSpacingType {
             return 56
         case .small:
             return 16
+        case .none:
+            return 0
         }
     }
 
@@ -517,7 +520,7 @@ public enum HFormTitleSpacingType {
         switch self {
         case .standard:
             return 64
-        case .small:
+        case .small, .none:
             return 0
         }
     }

@@ -64,7 +64,7 @@ final class SubmitSurveyStoreTests: XCTestCase {
         await store.sendAsync(.stepModelAction(action: .setTerminationSurveyStep(model: terminationSurveyStep)))
         await store.sendAsync(.submitSurvey(option: "option", feedback: "feedback"))
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.sendSurvey] == nil
+            store.loadingState[.sendSurvey] == nil
         }
 
         assert(store.state.successStep == nil)
@@ -85,7 +85,7 @@ final class SubmitSurveyStoreTests: XCTestCase {
         await store.sendAsync(.submitSurvey(option: "option", feedback: "feedback"))
 
         await waitUntil(description: "loading state") {
-            store.loadingSignal.value[.sendSurvey] != nil
+            store.loadingState[.sendSurvey] != nil
         }
 
         assert(store.state.successStep == nil)

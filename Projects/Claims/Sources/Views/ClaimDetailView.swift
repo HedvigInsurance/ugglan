@@ -97,13 +97,12 @@ public struct ClaimDetailView: View {
                 guard let data = image.jpegData(compressionQuality: 0.9),
                     let thumbnailData = image.jpegData(compressionQuality: 0.1)
                 else { return }
-                let file: FilePickerDto = .init(
+                let file = File(
                     id: UUID().uuidString,
                     size: Double(data.count),
                     mimeType: .JPEG,
                     name: "image_\(Date()).jpeg",
-                    data: data,
-                    thumbnailData: thumbnailData
+                    source: .data(data: data)
                 )
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     vm.showAddFiles(with: [file])
@@ -264,8 +263,10 @@ public struct ClaimDetailView: View {
                 if let fetchError = vm.fetchFilesError {
                     hSection {
                         GenericErrorView(
-                            description: fetchError,
-                            buttons: .init(
+                            description: fetchError
+                        )
+                        .hErrorViewButtonConfig(
+                            .init(
                                 actionButton: .init(
                                     buttonAction: {
                                         Task {
@@ -309,7 +310,6 @@ public struct ClaimDetailView: View {
     }
 
     private func showFilePickerAlert() {
-        vm.fileUploadManager.resetuploadFilesPath()
         FilePicker.showAlert { selected in
             switch selected {
             case .camera:
@@ -398,8 +398,7 @@ public class ClaimDetailViewModel: ObservableObject {
     @Published var hasFiles = false
     @Published var showFilesView: FilesDto?
     @Published var toolbarOptionType: [ToolbarOptionType] = [.chat]
-    let fileUploadManager = FileUploadManager()
-    var fileGridViewModel: FileGridViewModel
+    let fileGridViewModel: FileGridViewModel
 
     private var cancellables = Set<AnyCancellable>()
     public init(
@@ -487,14 +486,9 @@ public class ClaimDetailViewModel: ObservableObject {
         }
     }
 
-    func showAddFiles(with files: [FilePickerDto]) {
+    func showAddFiles(with files: [File]) {
         if !files.isEmpty {
-            let filess = files.compactMap(
-                {
-                    return $0.asFile()
-                }
-            )
-            showFilesView = .init(id: claim.id, endPoint: claim.targetFileUploadUri, files: filess)
+            showFilesView = .init(id: claim.id, endPoint: claim.targetFileUploadUri, files: files)
         }
     }
 

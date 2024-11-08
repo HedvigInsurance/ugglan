@@ -13,7 +13,6 @@ public class FeatureFlagsUnleash: FeatureFlags {
     }
     public var isDemoMode: Bool = false
     public var isConversationBasedMessagesEnabled: Bool = false
-    public var loadingExperimentsSuccess: (Bool) -> Void = { _ in }
     public var isEditCoInsuredEnabled: Bool = false
     public var isTravelInsuranceEnabled: Bool = false
     public var isTerminationFlowEnabled: Bool = false
@@ -31,7 +30,7 @@ public class FeatureFlagsUnleash: FeatureFlags {
     public var movingFlowVersion: MovingFlowVersion?
     public var isMovingFlowEnabled: Bool { movingFlowVersion != nil }
 
-    public func setup(with context: [String: String], onComplete: @escaping (_ success: Bool) -> Void) {
+    public func setup(with context: [String: String]) async throws {
         unleashClient?.unsubscribe(name: "ready")
         unleashClient?.unsubscribe(name: "update")
         unleashClient?.stop()
@@ -45,7 +44,6 @@ public class FeatureFlagsUnleash: FeatureFlags {
         }
 
         let environmentContext = clientKey.replacingOccurrences(of: "*:", with: "").components(separatedBy: ".")[0]
-        loadingExperimentsSuccess = onComplete
         unleashClient = UnleashProxyClientSwift.UnleashClient(
             unleashUrl: "https://eu.app.unleash-hosted.com/eubb1047/api/frontend",
             clientKey: clientKey,
@@ -62,7 +60,14 @@ public class FeatureFlagsUnleash: FeatureFlags {
             .subscribe(name: "update") { [weak self] in
                 self?.handleUpdate()
             }
-        startUnleash()
+        log.info("Started loading unleash experiments")
+
+        do {
+            try await unleashClient?.start(printToConsole: true)
+            log.info("Successfully loaded unleash experiments")
+        } catch let exception {
+            log.info("Failed loading unleash experiments \(exception)")
+        }
     }
 
     public func updateContext(context: [String: String]) {
@@ -76,25 +81,8 @@ public class FeatureFlagsUnleash: FeatureFlags {
         }
     }
 
-    private func startUnleash() {
-        log.info("Started loading unleash experiments")
-        unleashClient?
-            .start(
-                true,
-                completionHandler: { [weak self] errorResponse in
-                    guard errorResponse != nil else {
-                        return
-                    }
-                    self?.loadingExperimentsSuccess(false)
-                    log.info("Failed loading unleash experiments")
-                }
-            )
-    }
-
     private func handleReady() {
         setFeatureFlags()
-        loadingExperimentsSuccess(true)
-        log.info("Successfully loaded unleash experiments")
     }
 
     private func handleUpdate() {

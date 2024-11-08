@@ -2,7 +2,7 @@ import Foundation
 import hCore
 import hGraphQL
 
-public struct Message: Identifiable, Codable, Hashable {
+public struct Message: Codable, Identifiable, Hashable {
     public static func == (lhs: Message, rhs: Message) -> Bool {
         return lhs.localId == rhs.localId || lhs.remoteId == rhs.remoteId
     }
@@ -105,7 +105,14 @@ enum MessageType: Codable, Hashable {
     case crossSell(url: URL)
     case deepLink(url: URL)
     case otherLink(url: URL)
+    case action(action: ActionMessage)
     case unknown
+}
+
+struct ActionMessage: Codable, Hashable {
+    let url: URL
+    let text: String?
+    let buttonTitle: String
 }
 
 extension Sequence where Iterator.Element == Message {
@@ -139,6 +146,8 @@ extension Message {
                 return L10n.chatSentALink
             case .unknown:
                 return L10n.chatSentAMessage
+            case .action:
+                return L10n.chatSentALink
             }
         }()
         return "\(senderText): \(message)"
