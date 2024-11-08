@@ -53,12 +53,6 @@ struct CompareTierScreen: View {
                         .frame(width: horizontalSizeClass == .regular ? 190 : 140, alignment: .leading)
                 }
                 .zIndex(2)
-
-                Divider()
-                    .frame(minHeight: 1)
-                    .overlay(hBorderColor.secondary)
-                    .padding(.top, 32)
-                    .opacity(tracingOffsetVm.currentOffset.x <= .zero ? 1 : 0)
                 ScrollViewReader { scrollView in
                     ScrollView(
                         [.horizontal],
