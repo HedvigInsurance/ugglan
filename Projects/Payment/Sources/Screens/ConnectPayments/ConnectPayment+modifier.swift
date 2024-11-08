@@ -29,11 +29,7 @@ public class ConnectPaymentViewModel: ObservableObject {
 
     public func set(for setupType: SetupType?) {
         Task { @MainActor [weak self] in
-            let featureFlags: FeatureFlags = Dependencies.shared.resolve()
-            switch featureFlags.paymentType {
-            case .trustly:
-                self?.setupTypeNavigationModel = .init(setUpType: setupType)
-            }
+            self?.setupTypeNavigationModel = .init(setUpType: setupType)
         }
     }
 }

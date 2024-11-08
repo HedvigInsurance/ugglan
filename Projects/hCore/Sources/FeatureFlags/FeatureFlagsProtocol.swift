@@ -9,7 +9,7 @@ public protocol FeatureFlags {
     var isPaymentScreenEnabled: Bool { get set }
     var isCommonClaimEnabled: Bool { get set }
     var isForeverEnabled: Bool { get set }
-    var paymentType: PaymentType { get set }
+    var paymentType: PaymentType? { get set }
     var isHelpCenterEnabled: Bool { get set }
     var isSubmitClaimEnabled: Bool { get set }
     func setup(with context: [String: String]) async throws
