@@ -6,17 +6,18 @@ import hCoreUI
 struct LocationView: View {
     @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
     @EnvironmentObject var router: Router
+
     var body: some View {
         ItemPickerScreen<ClaimFlowLocationOptionModel>(
             config: .init(
                 items: {
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    return store.state.locationStep?.options
+                    return claimsNavigationVm.flowClaimOccurrencePlusLocationStepModel.locationModel?.options
                         .compactMap({ (object: $0, displayName: .init(title: $0.displayName)) }) ?? []
                 }(),
                 preSelectedItems: {
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    if let value = store.state.locationStep?.getSelectedOption() {
+                    if let value = claimsNavigationVm.flowClaimOccurrencePlusLocationStepModel.locationModel?
+                        .getSelectedOption()
+                    {
                         return [value]
                     }
                     return []
@@ -24,8 +25,8 @@ struct LocationView: View {
                 onSelected: { selectedLocation in
                     if let object = selectedLocation.first?.0 {
                         claimsNavigationVm.isLocationPickerPresented = false
-                        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                        store.send(.setNewLocation(location: object))
+                        claimsNavigationVm.flowClaimOccurrencePlusLocationStepModel.locationModel?.location =
+                            object.value
                     }
                 },
                 onCancel: {
@@ -37,6 +38,6 @@ struct LocationView: View {
     }
 }
 
-#Preview{
+#Preview {
     LocationView()
 }

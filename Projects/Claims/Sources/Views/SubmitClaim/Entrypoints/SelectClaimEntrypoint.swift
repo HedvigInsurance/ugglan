@@ -189,7 +189,6 @@ struct SelectClaimEntrypointOption: View {
                 },
                 onButtonClick: {
                     if selectedClaimOption != nil {
-
                         Task {
                             await claimsNavigationVm.startClaimRequest(
                                 entrypointId: claimsNavigationVm.entrypoints.selectedEntrypointId ?? "",

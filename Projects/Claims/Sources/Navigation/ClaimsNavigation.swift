@@ -19,13 +19,18 @@ public class ClaimsNavigationViewModel: ObservableObject {
 
     @Published var progress: Float?
     @Published var previousProgress: Float?
+    @Published var flowClaimOccurrencePlusLocationStepModel = SubmitClaimStep.DateOfOccurrencePlusLocationStepModels(
+        dateOfOccurencePlusLocationModel: nil,
+        dateOfOccurenceModel: nil,
+        locationModel: nil
+    )
 
     var router = Router()
 
     @Inject private var submitClaimService: SubmitClaimClient
 
     func startClaimRequest(entrypointId: String?, entrypointOptionId: String?) async {
-        //reset all steps
+        // TODO: reset all steps
         Task { @MainActor in
             do {
                 let data = try await submitClaimService.startClaim(
@@ -34,18 +39,12 @@ public class ClaimsNavigationViewModel: ObservableObject {
                 )
 
                 switch data.step {
-                case let .setDateOfOccurence(model):
-                    router.push(
-                        ClaimsRouterActions.dateOfOccurrancePlusLocation(
-                            model: .init(
-                                dateOfOccurencePlusLocationModel: nil,
-                                dateOfOccurenceModel: model,
-                                locationModel: nil
-                            )
-                        )
-                    )
                 case let .setDateOfOccurrencePlusLocation(model):
-                    router.push(ClaimsRouterActions.dateOfOccurrancePlusLocation(model: model))
+                    flowClaimOccurrencePlusLocationStepModel = model
+                    router.push(ClaimsRouterActions.dateOfOccurrancePlusLocation)
+                case let .setDateOfOccurence(model):
+                    flowClaimOccurrencePlusLocationStepModel.dateOfOccurenceModel = model
+                    router.push(ClaimsRouterActions.dateOfOccurrancePlusLocation)
                 case let .setPhoneNumber(model):
                     router.push(ClaimsRouterActions.phoneNumber(model: model))
                 case let .setAudioStep(model):
@@ -53,15 +52,8 @@ public class ClaimsNavigationViewModel: ObservableObject {
                 case let .setSingleItem(model):
                     router.push(ClaimsRouterActions.singleItem(model: model))
                 case let .setLocation(model):
-                    router.push(
-                        ClaimsRouterActions.dateOfOccurrancePlusLocation(
-                            model: .init(
-                                dateOfOccurencePlusLocationModel: nil,
-                                dateOfOccurenceModel: nil,
-                                locationModel: model
-                            )
-                        )
-                    )
+                    flowClaimOccurrencePlusLocationStepModel.locationModel = model
+                    router.push(ClaimsRouterActions.dateOfOccurrancePlusLocation)
                 case let .setSummaryStep(model):
                     router.push(ClaimsRouterActions.summary(model: model))
                 case let .setSingleItemCheckoutStep(model):
@@ -89,7 +81,7 @@ public class ClaimsNavigationViewModel: ObservableObject {
 enum ClaimsRouterActions: Hashable {
     case triagingEntrypoint
     case triagingOption
-    case dateOfOccurrancePlusLocation(model: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels)
+    case dateOfOccurrancePlusLocation
     case selectContract(model: FlowClaimContractSelectStepModel)
     case phoneNumber(model: FlowClaimPhoneNumberStepModel)
     case audioRecording(model: FlowClaimAudioRecordingStepModel?)
@@ -183,8 +175,8 @@ public struct ClaimsNavigation: View {
                         showClaimEntrypointType()
                     case .triagingOption:
                         showClaimEntrypointOption()
-                    case let .dateOfOccurrancePlusLocation(model: model):
-                        submitClaimOccurrancePlusLocationScreen(model: model)
+                    case .dateOfOccurrancePlusLocation:
+                        submitClaimOccurrancePlusLocationScreen()
                     case .selectContract:
                         openSelectContractScreen()
                     case let .phoneNumber(model):
@@ -222,51 +214,6 @@ public struct ClaimsNavigation: View {
                 }
         }
         .environmentObject(claimsNavigationVm)
-        //        .onAppear {
-        //            let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-        //            cancellable = store.actionSignal
-        //                .receive(on: RunLoop.main)
-        //                .sink { _ in
-        //                } receiveValue: { action in
-        //                    switch action {
-        //                    case .dismissNewClaimFlow:
-        //                        claimsNavigationVm.router.dismiss()
-        //                    case let .navigationAction(navigationAction):
-        //                        switch navigationAction {
-        //                        case let .openDateOfOccurrencePlusLocationScreen(option):
-        //                            claimsNavigationVm.router.push(ClaimsRouterActions.dateOfOccurrancePlusLocation(option: option))
-        //                        case .openSelectContractScreen:
-        //                            claimsNavigationVm.router.push(ClaimsRouterActions.selectContract)
-        //                        case let .openPhoneNumberScreen(model):
-        //                            claimsNavigationVm.router.push(ClaimsRouterActions.phoneNumber(model: model))
-        //                        case .openAudioRecordingScreen:
-        //                            claimsNavigationVm.router.push(ClaimsRouterActions.audioRecording)
-        //                        case .openSingleItemScreen:
-        //                            claimsNavigationVm.router.push(ClaimsRouterActions.singleItem)
-        //                        case .openSummaryScreen:
-        //                            claimsNavigationVm.router.push(ClaimsRouterActions.summary)
-        //                        case let .openDeflectScreen(type):
-        //                            claimsNavigationVm.router.push(ClaimsRouterActions.deflect(type: type))
-        //                        case .openConfirmEmergencyScreen:
-        //                            claimsNavigationVm.router.push(ClaimsRouterActions.emergencySelect)
-        //                        case .openFileUploadScreen:
-        //                            claimsNavigationVm.router.push(ClaimsRouterActions.uploadFiles)
-        //                        case .openClaimCheckoutScreen:
-        //                            claimsNavigationVm.router.push(ClaimsRouterActions.checkOutNoRepair)
-        //                        case .openSuccessScreen:
-        //                            claimsNavigationVm.router.push(ClaimsRouterActionsWithoutBackButton.success)
-        //                        case .openFailureSceen:
-        //                            claimsNavigationVm.router.push(ClaimsRouterActionsWithoutBackButton.failure)
-        //                        case .openUpdateAppScreen:
-        //                            claimsNavigationVm.router.push(ClaimsRouterActionsWithoutBackButton.updateApp)
-        //                        default:
-        //                            break
-        //                        }
-        //                    default:
-        //                        break
-        //                    }
-        //                }
-        //        }
         .detent(
             presented: $claimsNavigationVm.isLocationPickerPresented,
             style: [.height]
@@ -337,10 +284,8 @@ public struct ClaimsNavigation: View {
             .addDismissClaimsFlow()
     }
 
-    private func submitClaimOccurrancePlusLocationScreen(
-        model: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels
-    ) -> some View {
-        SubmitClaimOccurrencePlusLocationScreen(model: model)
+    private func submitClaimOccurrancePlusLocationScreen() -> some View {
+        SubmitClaimOccurrencePlusLocationScreen(claimsNavigationVm: claimsNavigationVm)
             .resetProgressToPreviousValueOnDismiss
             .addDismissClaimsFlow()
     }

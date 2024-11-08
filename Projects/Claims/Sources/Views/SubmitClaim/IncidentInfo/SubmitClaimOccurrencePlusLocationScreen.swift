@@ -5,20 +5,19 @@ import hCoreUI
 
 struct SubmitClaimOccurrencePlusLocationScreen: View {
     @PresentableStore var store: SubmitClaimStore
-    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
-    private let options: SubmitClaimsNavigationAction.SubmitClaimOption
-    private let model: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels
+    @ObservedObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @State private var options: SubmitClaimsNavigationAction.SubmitClaimOption = []
 
     init(
-        model: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels
+        claimsNavigationVm: ClaimsNavigationViewModel
     ) {
-        self.model = model
+        self.claimsNavigationVm = claimsNavigationVm
 
-        if model.dateOfOccurencePlusLocationModel != nil {
+        if claimsNavigationVm.flowClaimOccurrencePlusLocationStepModel.dateOfOccurencePlusLocationModel != nil {
             options = [.date, .location]
-        } else if model.dateOfOccurenceModel != nil {
+        } else if claimsNavigationVm.flowClaimOccurrencePlusLocationStepModel.dateOfOccurenceModel != nil {
             options = [.date]
-        } else if model.locationModel != nil {
+        } else if claimsNavigationVm.flowClaimOccurrencePlusLocationStepModel.locationModel != nil {
             options = [.location]
         } else {
             options = []
@@ -45,15 +44,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
     @ViewBuilder
     private var displayFieldsAndNotice: some View {
 
-        //        PresentableStoreLens(
-        //            SubmitClaimStore.self,
-        //            getter: { state in
-        //                state.locationStep
-        //            }
-        //        ) { locationStep in
-        if let locationStep = model.locationModel {
-
-            //            if let locationStep = locationStep {
+        if let locationStep = claimsNavigationVm.flowClaimOccurrencePlusLocationStepModel.locationModel {
             hFloatingField(
                 value: locationStep.getSelectedOption()?.displayName ?? "",
                 placeholder: L10n.Claims.Location.Screen.title,
@@ -63,16 +54,8 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
             )
             .padding(.bottom, .padding4)
         }
-        //        }
 
-        //        PresentableStoreLens(
-        //            SubmitClaimStore.self,
-        //            getter: { state in
-        //                state.dateOfOccurenceStep
-        //            }
-        //        ) { dateOfOccurenceStep in
-        //            if let dateOfOccurrenceStep = dateOfOccurenceStep {
-        if let dateOfOccurrenceStep = model.dateOfOccurenceModel {
+        if let dateOfOccurrenceStep = claimsNavigationVm.flowClaimOccurrencePlusLocationStepModel.dateOfOccurenceModel {
             hDatePickerField(
                 config: .init(
                     maxDate: dateOfOccurrenceStep.getMaxDate(),
@@ -87,7 +70,6 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
             InfoCard(text: L10n.claimsDateNotSureNoticeLabel, type: .info)
                 .padding(.vertical, .padding16)
         }
-        //        }
     }
 
     @ViewBuilder
@@ -104,8 +86,6 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
 
 struct SubmitClaimOccurrencePlusLocationScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SubmitClaimOccurrencePlusLocationScreen(
-            model: .init(dateOfOccurencePlusLocationModel: nil, dateOfOccurenceModel: nil, locationModel: nil)
-        )
+        SubmitClaimOccurrencePlusLocationScreen(claimsNavigationVm: .init())
     }
 }
