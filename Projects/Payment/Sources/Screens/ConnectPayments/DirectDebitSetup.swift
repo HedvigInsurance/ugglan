@@ -95,7 +95,8 @@ private class DirectDebitWebview: UIView {
 
         activityIndicator.startAnimating()
 
-        activityIndicator.snp.makeConstraints { make in make.edges.equalToSuperview()
+        activityIndicator.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
             make.size.equalToSuperview()
         }
 
@@ -175,7 +176,8 @@ private class DirectDebitWebview: UIView {
     }
 
     private func showResultScreen(type: DirectDebitResultType) {
-        DispatchQueue.main.async { [weak self] in guard let self = self else { return }
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             vc.navigationItem.setLeftBarButtonItems(nil, animated: true)
 
             let directDebitResult = DirectDebitResult(
@@ -250,6 +252,8 @@ struct DirectDebitSetupRepresentable: UIViewRepresentable {
 public struct DirectDebitSetup: View {
     @State var showCancelAlert: Bool = false
     @State var showErrorAlert: Bool = false
+    @State var showNotSupported: Bool = false
+
     @StateObject var router = Router()
     let setupType: SetupType
 
@@ -265,13 +269,40 @@ public struct DirectDebitSetup: View {
                 .contains(store.state.paymentStatusData?.status ?? .active)
             return hasAlreadyConnected ? .replacement : .initial
         }()
-
+        showNotSupported = {
+            !Dependencies.featureFlags().isConnectPaymentEnabled
+        }()
         self.setupType = finalSetupType
     }
 
     public var body: some View {
         Group {
-            if showCancelAlert {
+            if showNotSupported {
+                GenericErrorView(title: L10n.moveintentGenericError, description: nil)
+                    .hErrorViewButtonConfig(
+                        .init(
+                            actionButtonAttachedToBottom: .init(
+                                buttonTitle: L10n.openChat,
+                                buttonAction: {
+                                    router.dismiss()
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                                        NotificationCenter.default.post(
+                                            name: .openChat,
+                                            object: ChatType.newConversation
+                                        )
+                                    }
+                                }
+                            ),
+                            dismissButton: .init(
+                                buttonTitle: L10n.generalCloseButton,
+                                buttonAction: {
+                                    router.dismiss()
+                                }
+                            )
+                        )
+                    )
+                    .hFormDontUseInitialAnimation
+            } else if showCancelAlert {
                 DirectDebitSetupRepresentable(setupType: setupType, showErrorAlert: $showErrorAlert, router: router)
                     .alert(isPresented: $showCancelAlert) {
                         cancelAlert()
@@ -287,7 +318,9 @@ public struct DirectDebitSetup: View {
             ToolbarItem(
                 placement: .topBarLeading
             ) {
-                dismissButton
+                if !showNotSupported {
+                    dismissButton
+                }
             }
         }
         .configureTitle(
@@ -299,7 +332,11 @@ public struct DirectDebitSetup: View {
 
     private var dismissButton: some View {
         hButton.MediumButton(type: .ghost) {
-            showCancelAlert = true
+            if self.showNotSupported {
+                router.dismiss()
+            } else {
+                showCancelAlert = true
+            }
         } content: {
             hText(setupType == .postOnboarding ? L10n.PayInIframePostSign.skipButton : L10n.generalCancelButton)
         }
@@ -339,4 +376,10 @@ extension DirectDebitSetup: TrackingViewNameProtocol {
         return .init(describing: DirectDebitSetup.self)
     }
 
+}
+
+#Preview {
+    Localization.Locale.currentLocale.send(.en_SE)
+    Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlagsDemo() })
+    return DirectDebitSetup(setupType: .initial)
 }

@@ -21,7 +21,7 @@ public class FeatureFlagsUnleash: FeatureFlags {
     public var isPaymentScreenEnabled: Bool = false
     public var isCommonClaimEnabled: Bool = false
     public var isForeverEnabled: Bool = false
-    public var paymentType: PaymentType = .trustly
+    public var isConnectPaymentEnabled: Bool = true
     public var isHelpCenterEnabled: Bool = false
     public var isSubmitClaimEnabled: Bool = true
     public var osVersionTooLow: Bool = false
@@ -130,13 +130,12 @@ public class FeatureFlagsUnleash: FeatureFlags {
         let enableTiersKey = "enable_tiers"
         isTiersEnabled = unleashClient.isEnabled(name: enableTiersKey)
         featureFlags[enableTiersKey] = isTiersEnabled
-
         let paymentTypeKey = "payment_type"
         let paymentTypeName = unleashClient.getVariant(name: paymentTypeKey).name
-        if paymentTypeName == "adyen" {
-            paymentType = .adyen
+        if paymentTypeName == "trustly" {
+            isConnectPaymentEnabled = true
         } else {
-            paymentType = .trustly
+            isConnectPaymentEnabled = false
         }
         let movingFlowKey = "moving_flow_version"
         let isMovingFlowEnabled = unleashClient.getVariant(name: movingFlowKey)
