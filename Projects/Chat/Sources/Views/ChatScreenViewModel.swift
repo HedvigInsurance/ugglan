@@ -2,7 +2,6 @@ import Combine
 import Kingfisher
 import PresentableStore
 import SwiftUI
-import UniformTypeIdentifiers
 import hCore
 import hCoreUI
 import hGraphQL
@@ -233,24 +232,13 @@ public class ChatScreenViewModel: ObservableObject {
                 switch file.source {
                 case .localFile(let results):
                     if let results {
-                        try? await withCheckedThrowingContinuation {
-                            (inCont: CheckedContinuation<Void, Error>) -> Void in
-                            results.itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.item.identifier) {
-                                fileUrl,
-                                error in
-                                if let fileUrl,
-                                    let pathData = FileManager.default.contents(atPath: fileUrl.relativePath),
-                                    let image = UIImage(data: pathData)
-                                {
-                                    let processor = DownsamplingImageProcessor(
-                                        size: CGSize(width: 300, height: 300)
-                                    )
-                                    var options = KingfisherParsedOptionsInfo.init(nil)
-                                    options.processor = processor
-                                    ImageCache.default.store(image, forKey: remoteMessage.id, options: options)
-                                }
-                                inCont.resume()
-                            }
+                        if let data = try? await results.itemProvider.getData().data, let image = UIImage(data: data) {
+                            let processor = DownsamplingImageProcessor(
+                                size: CGSize(width: 300, height: 300)
+                            )
+                            var options = KingfisherParsedOptionsInfo.init(nil)
+                            options.processor = processor
+                            try? await ImageCache.default.store(image, forKey: remoteMessage.id, options: options)
                         }
                     }
                     break
