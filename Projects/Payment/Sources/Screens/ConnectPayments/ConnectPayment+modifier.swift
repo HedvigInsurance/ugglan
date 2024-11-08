@@ -26,22 +26,10 @@ struct ConnectPayment: ViewModifier {
 public class ConnectPaymentViewModel: ObservableObject {
     @Published var setupTypeNavigationModel: SetupTypeNavigationModel?
     public init() {}
-    private let adyenClient: AdyenClient = Dependencies.shared.resolve()
 
     public func set(for setupType: SetupType?) {
         Task { @MainActor [weak self] in
-            let featureFlags: FeatureFlags = Dependencies.shared.resolve()
-            switch featureFlags.paymentType {
-            case .adyen:
-                do {
-                    let url = try await self?.adyenClient.getAdyenUrl()
-                    NotificationCenter.default.post(name: .openDeepLink, object: url)
-                } catch {
-                    //we are not so concerned about this
-                }
-            case .trustly:
-                self?.setupTypeNavigationModel = .init(setUpType: setupType)
-            }
+            self?.setupTypeNavigationModel = .init(setUpType: setupType)
         }
     }
 }
