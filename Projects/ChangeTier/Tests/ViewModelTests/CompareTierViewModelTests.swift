@@ -67,7 +67,7 @@ final class CompareTierVireModelTests: XCTestCase {
 
     func testCompareTiersSuccess() async throws {
         let peril1 = Perils(
-            id: nil,
+            id: "peril1",
             title: "peril1",
             description: "description",
             color: nil,
@@ -91,7 +91,7 @@ final class CompareTierVireModelTests: XCTestCase {
                 termsVersion: "",
                 typeOfContract: "",
                 partner: "",
-                perils: [],
+                perils: [peril1],
                 insurableLimits: [],
                 documents: [],
                 displayName: "",
