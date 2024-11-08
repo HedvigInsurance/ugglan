@@ -29,7 +29,9 @@ public class TracingOffsetViewModel: ObservableObject {
         didSet {
             scrollOffsetCancellable = scrollView?.publisher(for: \.contentOffset)
                 .sink(receiveValue: { [weak self] offset in
-                    self?.currentOffset = offset
+                    withAnimation {
+                        self?.currentOffset = offset
+                    }
                 })
         }
     }
