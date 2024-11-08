@@ -19,8 +19,15 @@ fragment MessageFragment on ChatMessage {
     id
     sender
     sentAt
+    ... ChatMessageActionFragment
     ... ChatMessageFileFragment
     ... ChatMessageTextFragment
+}
+
+fragment ChatMessageActionFragment on ChatMessageAction {
+    actionTitle
+    actionUrl
+    actionText: text
 }
 
 fragment ChatMessageFileFragment on ChatMessageFile {

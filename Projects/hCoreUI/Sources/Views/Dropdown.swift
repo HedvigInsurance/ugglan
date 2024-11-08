@@ -46,5 +46,10 @@ public struct DropdownView: View {
 }
 
 #Preview {
-    DropdownView(value: "value", placeHolder: "placeholder", onTap: {})
+    VStack {
+        DropdownView(value: "", placeHolder: "placeholder", onTap: {}).hFieldSize(.small)
+        DropdownView(value: "", placeHolder: "placeholder", onTap: {}).hFieldSize(.medium)
+        DropdownView(value: "", placeHolder: "placeholder", onTap: {}).hFieldSize(.large)
+
+    }
 }

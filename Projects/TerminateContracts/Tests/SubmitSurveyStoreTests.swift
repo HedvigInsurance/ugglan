@@ -35,7 +35,8 @@ final class SubmitSurveyStoreTests: XCTestCase {
             surveySend: { context, option, inputData in
                 .init(
                     context: context,
-                    action: .stepModelAction(action: .setSuccessStep(model: .init(terminationDate: nil)))
+                    action: .stepModelAction(action: .setSuccessStep(model: .init(terminationDate: nil))),
+                    progress: 0
                 )
             }
         )
@@ -54,7 +55,11 @@ final class SubmitSurveyStoreTests: XCTestCase {
     func testSubmitSurveyResponseFailure() async throws {
         MockData.createMockTerminateContractsService(
             surveySend: { context, option, inputData in
-                .init(context: context, action: .stepModelAction(action: .setFailedStep(model: .init(id: "id"))))
+                .init(
+                    context: context,
+                    action: .stepModelAction(action: .setFailedStep(model: .init(id: "id"))),
+                    progress: 0
+                )
             }
         )
 

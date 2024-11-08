@@ -47,7 +47,7 @@ class TerminationFlowNavigationViewModel: ObservableObject {
                             DispatchQueue.main.async { [weak self] in
                                 self?.changeTierInput = .existingIntent(
                                     intent: newInput,
-                                    onSelect: { _ in }
+                                    onSelect: nil
                                 )
                                 self?.router.dismiss()
                             }
@@ -106,8 +106,9 @@ struct TerminationFlowNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(router: vm.router, tracking: initialStep) {
+        RouterHost(router: vm.router, options: [.navigationType(type: .withProgress)], tracking: initialStep) {
             getView(for: initialStep)
+                .addTerminationProgressBar
                 .routerDestination(for: [TerminationFlowSurveyStepModelOption].self) { options in
                     TerminationSurveyScreen(vm: .init(options: options, subtitleType: .generic))
                 }
@@ -239,6 +240,7 @@ struct TerminationFlowNavigation: View {
                 vm.isConfirmTerminationPresented = true
             }
         )
+        .resetProgressToPreviousValueOnDismiss
         .withDismissButton()
         .toolbar {
             ToolbarItem(
@@ -291,6 +293,7 @@ struct TerminationFlowNavigation: View {
             subTitle: .init(.small, .heading2, L10n.terminationFlowBody)
         )
         .withDismissButton()
+        .resetProgressToPreviousValueOnDismiss
         .hFieldSize(.small)
         .toolbar {
             ToolbarItem(
@@ -316,7 +319,9 @@ struct TerminationFlowNavigation: View {
         subtitleType: SurveyScreenSubtitleType
     ) -> some View {
         let vm = SurveyScreenViewModel(options: options, subtitleType: subtitleType)
-        return TerminationSurveyScreen(vm: vm).withDismissButton()
+        return TerminationSurveyScreen(vm: vm)
+            .resetProgressToPreviousValueOnDismiss
+            .withDismissButton()
     }
 
     private func openConfirmTerminationScreen() -> some View {
@@ -457,15 +462,18 @@ struct TerminateInsurance: ViewModifier {
 public class TerminateInsuranceViewModel: ObservableObject {
     @Published var initialStep: TerminationFlowActionWrapper?
     var configs: [TerminationConfirmConfig] = []
+    @PresentableStore var store: TerminationContractStore
     private var firstStepCancellable: AnyCancellable?
     public init() {}
 
     public func start(with configs: [TerminationConfirmConfig]) {
         self.configs = configs
         if configs.count > 1 {
+            store.send(.sethaveSelectInsuranceStep(to: true))
             self.initialStep = .init(action: .router(action: .selectInsurance(configs: configs)))
         } else if let config = configs.first {
             let store: TerminationContractStore = globalPresentableStoreContainer.get()
+            store.send(.sethaveSelectInsuranceStep(to: false))
             firstStepCancellable = store.actionSignal
                 .receive(on: RunLoop.main)
                 .sink { _ in

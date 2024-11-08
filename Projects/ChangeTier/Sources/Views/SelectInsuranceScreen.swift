@@ -48,7 +48,7 @@ struct SelectInsuranceScreen: View {
         )
         .hFormTitle(
             title: .init(.small, .body2, L10n.terminationFlowTitle, alignment: .leading),
-            subTitle: .init(.small, .body2, "Select the insurance you want to edit")
+            subTitle: .init(.small, .body2, L10n.tierFlowSelectInsuranceSubtitle)
         )
         .withDismissButton()
     }

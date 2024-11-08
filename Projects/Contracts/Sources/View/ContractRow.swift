@@ -128,12 +128,12 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack(spacing: .padding6) {
+            HStack(alignment: .top, spacing: .padding6) {
                 if let tierDisplayName, Dependencies.featureFlags().isTiersEnabled {
                     StatusPill(text: tierDisplayName, type: .tier)
                 }
                 if let terminationMessage {
-                    StatusPill(text: terminationMessage, type: .text).padding(.trailing, .padding4)
+                    StatusPill(text: terminationMessage, type: .text)
                 } else if let activeFrom {
                     StatusPill(
                         text: L10n.dashboardInsuranceStatusActiveUpdateDate(
@@ -141,7 +141,6 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                         ),
                         type: .text
                     )
-                    .padding(.trailing, .padding4)
                 } else if activeInFuture ?? false {
                     StatusPill(
                         text: L10n.contractStatusActiveInFuture(
@@ -149,7 +148,6 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                         ),
                         type: .text
                     )
-                    .padding(.trailing, .padding4)
                 } else {
                     StatusPill(
                         text: L10n.dashboardInsuranceStatusActive,
@@ -212,7 +210,7 @@ private struct StatusPill: View {
     }
 }
 
-#Preview{
+#Preview {
     hSection {
         ContractRow(
             image: hCoreUIAssets.pillowHome.image,

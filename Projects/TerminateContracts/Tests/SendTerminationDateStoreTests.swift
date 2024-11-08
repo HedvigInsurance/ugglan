@@ -26,7 +26,8 @@ final class SendTerminationDateStoreTests: XCTestCase {
             sendDate: { inputDateToString, context in
                 .init(
                     context: context,
-                    action: .stepModelAction(action: .setSuccessStep(model: .init(terminationDate: inputDateToString)))
+                    action: .stepModelAction(action: .setSuccessStep(model: .init(terminationDate: inputDateToString))),
+                    progress: 0
                 )
             }
         )
@@ -59,7 +60,11 @@ final class SendTerminationDateStoreTests: XCTestCase {
 
         MockData.createMockTerminateContractsService(
             sendDate: { inputDateToString, context in
-                .init(context: context, action: .stepModelAction(action: .setFailedStep(model: .init(id: "id"))))
+                .init(
+                    context: context,
+                    action: .stepModelAction(action: .setFailedStep(model: .init(id: "id"))),
+                    progress: 0
+                )
             }
         )
 

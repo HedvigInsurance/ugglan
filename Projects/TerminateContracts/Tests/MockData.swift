@@ -16,19 +16,22 @@ struct MockData {
                         contractExposureName: "contract exposure name",
                         activeFrom: nil
                     )
-                )
+                ),
+                progress: 0
             )
         },
         sendDate: @escaping SendTerminationDate = { inputDateToString, context in
             .init(
                 context: context,
-                action: .setTerminationDate(terminationDate: inputDateToString.localDateToDate ?? Date())
+                action: .setTerminationDate(terminationDate: inputDateToString.localDateToDate ?? Date()),
+                progress: 0
             )
         },
         confirmDelete: @escaping SendConfirmDelete = { context in
             .init(
                 context: context,
-                action: .sendConfirmDelete
+                action: .sendConfirmDelete,
+                progress: 0
             )
         },
         surveySend: @escaping SendSurvey = { context, option, inputData in
@@ -37,7 +40,8 @@ struct MockData {
                 action: .submitSurvey(
                     option: option,
                     feedback: inputData
-                )
+                ),
+                progress: 0
             )
         }
     ) -> MockTerminateContractsService {

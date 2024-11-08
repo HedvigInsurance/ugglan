@@ -28,6 +28,7 @@ extension NetworkClient: hClaimFileUploadClient {
         var observation: NSKeyValueObservation?
         let response = try await withCheckedThrowingContinuation {
             (inCont: CheckedContinuation<[ClaimFileUploadResponse], Error>) -> Void in
+            self.sessionClient.dataTaskPublisher(for: request)
             let task = self.sessionClient.dataTask(with: request) { [weak self] (data, response, error) in
                 do {
                     if let uploadedFiles: [ClaimFileUploadResponse] = try self?
@@ -36,16 +37,25 @@ extension NetworkClient: hClaimFileUploadClient {
                         for file in uploadedFiles.compactMap({ $0.file }).enumerated() {
                             let localFileSource = files[file.offset].source
                             switch localFileSource {
-                            case let .localFile(url, _):
-                                if MimeType.findBy(mimeType: file.element.mimeType).isImage,
-                                    let data = try? Data(contentsOf: url), let image = UIImage(data: data)
-                                {
-                                    let processor = DownsamplingImageProcessor(
-                                        size: CGSize(width: 300, height: 300)
-                                    )
-                                    var options = KingfisherParsedOptionsInfo.init(nil)
-                                    options.processor = processor
-                                    ImageCache.default.store(image, forKey: file.element.fileId, options: options)
+                            case let .localFile(results):
+                                if let results = results {
+                                    Task {
+                                        if MimeType.findBy(mimeType: file.element.mimeType).isImage,
+                                            let data = try? await results.itemProvider.getData(),
+                                            let image = UIImage(data: data.data)
+                                        {
+                                            let processor = DownsamplingImageProcessor(
+                                                size: CGSize(width: 300, height: 300)
+                                            )
+                                            var options = KingfisherParsedOptionsInfo.init(nil)
+                                            options.processor = processor
+                                            try? await ImageCache.default.store(
+                                                image,
+                                                forKey: file.element.fileId,
+                                                options: options
+                                            )
+                                        }
+                                    }
                                 }
                             case .url(_):
                                 break
@@ -114,9 +124,18 @@ enum ClaimsRequest {
             let url = URL(string: baseUrlString)!
             let multipartFormDataRequest = MultipartFormDataRequest(url: url)
             for file in files {
-                guard case let .localFile(url, _) = file.source,
-                    let data = try? Data(contentsOf: url) /*FileManager.default.contents(atPath: url.path)*/
-                else { throw NetworkError.badRequest(message: nil) }
+                var data: Data?
+                switch file.source {
+                case .data(let fileData):
+                    data = fileData
+                case .url:
+                    break
+                case .localFile(let results):
+                    if let results {
+                        data = try? await results.itemProvider.getData().data
+                    }
+                }
+                guard let data = data else { throw NetworkError.badRequest(message: nil) }
                 multipartFormDataRequest.addDataField(
                     fieldName: "files",
                     fileName: file.name,

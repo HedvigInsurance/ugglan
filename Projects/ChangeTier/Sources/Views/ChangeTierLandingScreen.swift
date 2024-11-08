@@ -174,8 +174,10 @@ public struct ChangeTierLandingScreen: View {
                     case .contractWithSource:
                         changeTierNavigationVm.router.push(ChangeTierRouterActions.summary)
                     case let .existingIntent(_, onSelect):
-                        if let selectedTier = vm.selectedTier, let selectedDeductible = vm.selectedQuote {
+                        if let selectedTier = vm.selectedTier, let selectedDeductible = vm.selectedQuote, let onSelect {
                             onSelect((selectedTier, selectedDeductible))
+                        } else {
+                            changeTierNavigationVm.router.push(ChangeTierRouterActions.summary)
                         }
                     }
                 } content: {

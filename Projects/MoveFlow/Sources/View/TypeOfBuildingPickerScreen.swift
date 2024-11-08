@@ -2,24 +2,27 @@ import PresentableStore
 import SwiftUI
 import hCoreUI
 
-struct TypeOfBuildingPickerView: View {
+struct TypeOfBuildingPickerScreen: View {
     var currentlySelected: ExtraBuildingType?
     @Binding var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
+    @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
+    @ObservedObject var addExtraBuidlingViewModel: MovingFlowAddExtraBuildingViewModel
 
     public init(
         currentlySelected: ExtraBuildingType?,
-        isBuildingTypePickerPresented: Binding<ExtraBuildingTypeNavigationModel?>
+        isBuildingTypePickerPresented: Binding<ExtraBuildingTypeNavigationModel?>,
+        addExtraBuidlingViewModel: MovingFlowAddExtraBuildingViewModel
     ) {
         self.currentlySelected = currentlySelected
         self._isBuildingTypePickerPresented = isBuildingTypePickerPresented
+        self.addExtraBuidlingViewModel = addExtraBuidlingViewModel
     }
 
     var body: some View {
         ItemPickerScreen<ExtraBuildingType>(
             config: .init(
                 items: {
-                    let store: MoveFlowStore = globalPresentableStoreContainer.get()
-                    return store.state.movingFlowModel?.extraBuildingTypes
+                    return movingFlowNavigationVm.movingFlowVm?.extraBuildingTypes
                         .compactMap({ (object: $0, displayName: .init(title: $0.translatedValue)) }) ?? []
                 }(),
                 preSelectedItems: {
@@ -29,11 +32,10 @@ struct TypeOfBuildingPickerView: View {
                     return []
                 },
                 onSelected: { selected in
-                    let store: MoveFlowStore = globalPresentableStoreContainer.get()
                     if let selected = selected.first {
                         isBuildingTypePickerPresented = nil
                         if let object = selected.0 {
-                            store.send(.setExtraBuildingType(with: object))
+                            addExtraBuidlingViewModel.buildingType = object
                         }
                     }
                 },
@@ -46,6 +48,10 @@ struct TypeOfBuildingPickerView: View {
     }
 }
 
-#Preview{
-    TypeOfBuildingPickerView(currentlySelected: nil, isBuildingTypePickerPresented: .constant(nil))
+#Preview {
+    TypeOfBuildingPickerScreen(
+        currentlySelected: nil,
+        isBuildingTypePickerPresented: .constant(nil),
+        addExtraBuidlingViewModel: .init()
+    )
 }

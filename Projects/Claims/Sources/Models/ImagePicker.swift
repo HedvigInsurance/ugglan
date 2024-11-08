@@ -3,11 +3,10 @@ import Kingfisher
 import MobileCoreServices
 import PhotosUI
 import SwiftUI
-import UniformTypeIdentifiers
 import hCore
 
 struct ImagePicker: UIViewControllerRepresentable {
-    let filesSelected: (_ files: [FilePickerDto]) -> Void
+    let filesSelected: (_ files: [File]) -> Void
 
     func makeUIViewController(context: Context) -> PHPickerViewController {
         var config = PHPickerConfiguration()
@@ -35,74 +34,46 @@ struct ImagePicker: UIViewControllerRepresentable {
         }
 
         func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-            let selectedItems =
-                results
-                .map { $0.itemProvider }
             picker.isEditing = false
             guard !didFinishAdding else { return }
             didFinishAdding = true
+            var files = [File]()
 
-            let dispatchGroup = DispatchGroup()
-            var files = [FilePickerDto]()
-
-            for selectedItem in selectedItems {
-                dispatchGroup.enter()  // signal IN
-                if selectedItem.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
-                    selectedItem.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { imageUrl, error in
-                        if let imageUrl,
-                            let pathData = FileManager.default.contents(atPath: imageUrl.relativePath),
-                            let image = UIImage(data: pathData),
-                            let data = image.jpegData(compressionQuality: 0.9),
-                            let thumbnailData = image.jpegData(compressionQuality: 0.1)
-                        {
-                            let id = UUID().uuidString
-                            let file: FilePickerDto =
-                                .init(
-                                    id: id,
-                                    size: Double(data.count),
-                                    mimeType: .JPEG,
-                                    name: "\(Date().currentTimeMillis).jpeg",
-                                    data: data,
-                                    thumbnailData: thumbnailData
-                                )
-                            files.append(file)
-                        }
-                        dispatchGroup.leave()
-                    }
-                } else if selectedItem.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
-                    selectedItem.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { videoUrl, error in
-                        if let videoUrl, let data = FileManager.default.contents(atPath: videoUrl.relativePath) {
-                            let file: FilePickerDto =
-                                .init(
-                                    id: UUID().uuidString,
-                                    size: Double(data.count),
-                                    mimeType: .MOV,
-                                    name: "\(Date().currentTimeMillis).mov",
-                                    data: data,
-                                    thumbnailData: nil
-                                )
-                            files.append(file)
-                        }
-                        dispatchGroup.leave()
-                    }
-                } else {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        dispatchGroup.leave()
-                    }
+            for selectedItem in results {
+                if selectedItem.itemProvider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
+                    let id = UUID().uuidString
+                    let file: File =
+                        .init(
+                            id: id,
+                            size: 0,
+                            mimeType: .JPEG,
+                            name: "\(Date().currentTimeMillis).jpeg",
+                            source: .localFile(results: selectedItem)
+                        )
+                    files.append(file)
+                } else if selectedItem.itemProvider.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
+                    let id = UUID().uuidString
+                    let file: File =
+                        .init(
+                            id: id,
+                            size: 0,
+                            mimeType: .MOV,
+                            name: "\(Date().currentTimeMillis).mov",
+                            source: .localFile(results: selectedItem)
+                        )
+                    files.append(file)
                 }
             }
-            dispatchGroup.notify(queue: .main) {
-                picker.dismiss(animated: true)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
-                    self.parent.filesSelected(files)
-                }
+            picker.dismiss(animated: true)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
+                self.parent.filesSelected(files)
             }
         }
     }
 }
 
 struct FileImporterView: UIViewControllerRepresentable {
-    let imagesSelected: (_ filesSelected: [FilePickerDto]) -> Void
+    let imagesSelected: (_ filesSelected: [File]) -> Void
 
     @Environment(\.presentationMode) var presentationMode
 
@@ -130,14 +101,15 @@ struct FileImporterView: UIViewControllerRepresentable {
         }
 
         func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-            var files: [FilePickerDto] = []
+            var files: [File] = []
             guard !didFinishAdding else { return }
             didFinishAdding = true
             for url in urls {
                 _ = url.startAccessingSecurityScopedResource()
-                if let file = FilePickerDto(from: url) {
+                if let file = File(from: url) {
                     files.append(file)
                 }
+
                 url.stopAccessingSecurityScopedResource()
             }
             parent.imagesSelected(files)

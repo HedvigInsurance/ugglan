@@ -120,16 +120,14 @@ struct SubmitClaimFilesUploadScreen: View {
         }
         .sheet(isPresented: $showCamera) {
             CameraPickerView { image in
-                guard let data = image.jpegData(compressionQuality: 0.9),
-                    let thumbnailData = image.jpegData(compressionQuality: 0.1)
+                guard let data = image.jpegData(compressionQuality: 0.9)
                 else { return }
-                let file: FilePickerDto = .init(
+                let file: File = .init(
                     id: UUID().uuidString,
                     size: Double(data.count),
                     mimeType: .JPEG,
                     name: "image_\(Date()).jpeg",
-                    data: data,
-                    thumbnailData: thumbnailData
+                    source: .data(data: data)
                 )
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     vm.addFiles(with: [file])
@@ -166,7 +164,6 @@ public class FilesUploadViewModel: ObservableObject {
     var timerProgress: Double = 0
     let uploadDelayDuration: UInt64 = 1_500_000_000
 
-    private let fileUploadManager = FileUploadManager()
     private let model: FlowClaimFileUploadStepModel
     var claimFileUploadService = hClaimFileUploadService()
     @ObservedObject var fileGridViewModel: FileGridViewModel
@@ -188,7 +185,6 @@ public class FilesUploadViewModel: ObservableObject {
             files: files,
             options: [.delete, .add]
         )
-        fileUploadManager.resetuploadFilesPath()
         fileGridViewModel.$files
             .receive(on: RunLoop.main)
             .sink { _ in
@@ -239,14 +235,9 @@ public class FilesUploadViewModel: ObservableObject {
 
     }
 
-    func addFiles(with files: [FilePickerDto]) {
+    func addFiles(with files: [File]) {
         if !files.isEmpty {
-            let filess = files.compactMap(
-                {
-                    return $0.asFile()
-                }
-            )
-            fileGridViewModel.files.append(contentsOf: filess)
+            fileGridViewModel.files.append(contentsOf: files)
 
         }
     }
@@ -264,11 +255,21 @@ public class FilesUploadViewModel: ObservableObject {
         do {
             let alreadyUploadedFiles = fileGridViewModel.files
                 .filter({
-                    if case .url(_) = $0.source { return true } else { return false }
+                    switch $0.source {
+                    case .url:
+                        return true
+                    case .data, .localFile:
+                        return false
+                    }
                 })
                 .compactMap({ $0.id })
             let filteredFiles = fileGridViewModel.files.filter({
-                if case .localFile(_, _) = $0.source { return true } else { return false }
+                switch $0.source {
+                case .data, .localFile:
+                    return true
+                case .url:
+                    return false
+                }
             })
             hasFilesToUpload = !filteredFiles.isEmpty
             if !filteredFiles.isEmpty {
@@ -279,7 +280,8 @@ public class FilesUploadViewModel: ObservableObject {
                     endPoint: model.targetUploadUrl,
                     files: filteredFiles
                 ) { progress in
-                    DispatchQueue.main.async { [weak self] in guard let self = self else { return }
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self = self else { return }
                         self.uploadProgress = progress
                         withAnimation {
                             self.progress = min(self.uploadProgress, self.timerProgress)
@@ -327,7 +329,7 @@ public class FilesUploadViewModel: ObservableObject {
                     guard let self = self else { return }
                     withAnimation {
                         if let index = self.fileGridViewModel.files.firstIndex(where: {
-                            if case .localFile(_, _) = $0.source { return true } else { return false }
+                            if case .localFile(_) = $0.source { return true } else { return false }
                         }) {
                             self.fileGridViewModel.files.replaceSubrange(
                                 index...index + filteredFiles.count - 1,
@@ -355,7 +357,7 @@ public class FilesUploadViewModel: ObservableObject {
     }
 }
 
-#Preview{
+#Preview {
     Localization.Locale.currentLocale.send(.en_SE)
     return SubmitClaimFilesUploadScreen(model: .init(id: "id", title: "title", targetUploadUrl: "url", uploads: []))
 }

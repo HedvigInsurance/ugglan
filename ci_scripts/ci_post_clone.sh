@@ -9,7 +9,6 @@ echo "login ${MAVEN_LOGIN}" >> ~/.netrc
 echo "password ${MAVEN_PASSWORD}" >> ~/.netrc
 
 brew tap tuist/tuist
-brew install --formula tuist
 brew install --formula tuist@4.31.0
 if [[ $CI_WORKFLOW == "Tests" ]]; then
     echo "tests" > ~/buildForTests

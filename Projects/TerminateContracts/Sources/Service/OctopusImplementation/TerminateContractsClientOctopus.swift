@@ -51,23 +51,23 @@ public class TerminateContractsClientOctopus: TerminateContractsClient {
 
 protocol Into {
     associatedtype To
-    func into() -> To
+    func into(with progress: Float) -> To
 }
 
 extension OctopusGraphQL.FlowTerminationFragment.CurrentStep: Into {
-    func into() -> TerminationContractAction {
+    func into(with progress: Float) -> (action: TerminationContractAction, progress: Float?) {
         if let step = self.asFlowTerminationDateStep?.fragments.flowTerminationDateStepFragment {
-            return .stepModelAction(action: .setTerminationDateStep(model: .init(with: step)))
+            return (.stepModelAction(action: .setTerminationDateStep(model: .init(with: step))), progress)
         } else if let step = self.asFlowTerminationDeletionStep?.fragments.flowTerminationDeletionFragment {
-            return .stepModelAction(action: .setTerminationDeletion(model: .init(with: step)))
+            return (.stepModelAction(action: .setTerminationDeletion(model: .init(with: step))), progress)
         } else if let step = self.asFlowTerminationFailedStep?.fragments.flowTerminationFailedFragment {
-            return .stepModelAction(action: .setFailedStep(model: .init(with: step)))
+            return (.stepModelAction(action: .setFailedStep(model: .init(with: step))), nil)
         } else if let step = self.asFlowTerminationSuccessStep?.fragments.flowTerminationSuccessFragment {
-            return .stepModelAction(action: .setSuccessStep(model: .init(with: step)))
+            return (.stepModelAction(action: .setSuccessStep(model: .init(with: step))), nil)
         } else if let step = self.asFlowTerminationSurveyStep?.fragments.flowTerminationSurveyStepFragment {
-            return .stepModelAction(action: .setTerminationSurveyStep(model: .init(with: step)))
+            return (.stepModelAction(action: .setTerminationSurveyStep(model: .init(with: step))), progress)
         } else {
-            return .navigationAction(action: .openTerminationUpdateAppScreen)
+            return (.navigationAction(action: .openTerminationUpdateAppScreen), nil)
         }
     }
 }
@@ -77,15 +77,20 @@ extension GraphQLMutation {
         _ keyPath: KeyPath<Self.Data, TerminationStep>
     ) async throws -> TerminateStepResponse
     where
-        TerminationStep.To == TerminationContractAction,
-        Self.Data: TerminationStepContext
+        TerminationStep.To == (action: TerminationContractAction, progress: Float?),
+        Self.Data: TerminationStepContext & TerminationStepProgress
     {
         let octopus: hOctopus = Dependencies.shared.resolve()
         let data = try await octopus.client.perform(mutation: self)
         let context = data.getContext()
-        let action = data[keyPath: keyPath].into()
-        return .init(context: context, action: action)
+        let progress = data.getProgress()
+        let actionWithNewProgress = data[keyPath: keyPath].into(with: progress)
+        return .init(context: context, action: actionWithNewProgress.action, progress: actionWithNewProgress.progress)
     }
+}
+
+protocol TerminationStepProgress {
+    func getProgress() -> Float
 }
 
 protocol TerminationStepContext {
@@ -113,6 +118,34 @@ extension OctopusGraphQL.FlowTerminationDeletionNextMutation.Data: TerminationSt
 extension OctopusGraphQL.FlowTerminationSurveyNextMutation.Data: TerminationStepContext {
     func getContext() -> String {
         return self.flowTerminationSurveyNext.context
+    }
+}
+
+extension OctopusGraphQL.FlowTerminationStartMutation.Data: TerminationStepProgress {
+    func getProgress() -> Float {
+        Float(self.flowTerminationStart.progress?.clearedSteps ?? 0)
+            / Float(self.flowTerminationStart.progress?.totalSteps ?? 0)
+    }
+}
+
+extension OctopusGraphQL.FlowTerminationDateNextMutation.Data: TerminationStepProgress {
+    func getProgress() -> Float {
+        Float(self.flowTerminationDateNext.progress?.clearedSteps ?? 0)
+            / Float(self.flowTerminationDateNext.progress?.totalSteps ?? 0)
+    }
+}
+
+extension OctopusGraphQL.FlowTerminationDeletionNextMutation.Data: TerminationStepProgress {
+    func getProgress() -> Float {
+        Float(self.flowTerminationDeletionNext.progress?.clearedSteps ?? 0)
+            / Float(self.flowTerminationDeletionNext.progress?.totalSteps ?? 0)
+    }
+}
+
+extension OctopusGraphQL.FlowTerminationSurveyNextMutation.Data: TerminationStepProgress {
+    func getProgress() -> Float {
+        Float(self.flowTerminationSurveyNext.progress?.clearedSteps ?? 0)
+            / Float(self.flowTerminationSurveyNext.progress?.totalSteps ?? 0)
     }
 }
 

@@ -20,11 +20,15 @@ struct MockData {
                 typeOfContract: .seHouse
             )
         },
-        commitTier: @escaping CommitTier = { quoteId in }
+        commitTier: @escaping CommitTier = { quoteId in },
+        compareProductVariants: @escaping CompareProductVariants = { termsVersion in
+            .init(rows: [], variantColumns: [])
+        }
     ) -> MockChangeTierService {
         let service = MockChangeTierService(
             fetchTier: fetchTier,
-            sendTier: commitTier
+            sendTier: commitTier,
+            compareProductVariants: compareProductVariants
         )
         Dependencies.shared.add(module: Module { () -> ChangeTierClient in service })
         return service
@@ -34,28 +38,29 @@ struct MockData {
 typealias GetTier = (ChangeTier.ChangeTierInputData) async throws(ChangeTier.ChangeTierError) ->
     ChangeTier.ChangeTierIntentModel
 typealias CommitTier = (String) async throws(ChangeTier.ChangeTierError) -> Void
+typealias CompareProductVariants = ([String]) async throws -> ProductVariantComparison
 
 class MockChangeTierService: ChangeTierClient {
-    func compareProductVariants(termsVersion: [String]) async throws -> ChangeTier.ProductVariantComparison {
-        throw ChangeTierError.somethingWentWrong
-    }
-
     var events = [Event]()
 
     var fetchTier: GetTier
     var sendTier: CommitTier
+    var compareProductVariantsClosure: CompareProductVariants
 
     enum Event {
         case getTier
         case commitTier
+        case productVariantComparison
     }
 
     init(
         fetchTier: @escaping GetTier,
-        sendTier: @escaping CommitTier
+        sendTier: @escaping CommitTier,
+        compareProductVariants: @escaping CompareProductVariants
     ) {
         self.fetchTier = fetchTier
         self.sendTier = sendTier
+        self.compareProductVariantsClosure = compareProductVariants
     }
 
     func getTier(input: ChangeTierInputData) async throws -> ChangeTierIntentModel {
@@ -67,5 +72,11 @@ class MockChangeTierService: ChangeTierClient {
     func commitTier(quoteId: String) async throws {
         try await sendTier(quoteId)
         events.append(.commitTier)
+    }
+
+    func compareProductVariants(termsVersion: [String]) async throws -> ProductVariantComparison {
+        events.append(.productVariantComparison)
+        let data = try await compareProductVariantsClosure(termsVersion)
+        return data
     }
 }

@@ -70,12 +70,12 @@ enum FileUploadRequest {
             let url = URL(string: baseUrlString)!
             let multipartFormDataRequest = MultipartFormDataRequest(url: url)
             for file in files {
-                let data: Data? = {
+                let data: Data? = try await {
                     switch file.source {
                     case .data(let data):
                         return data
-                    case .localFile(let url, _):
-                        return try? Data(contentsOf: url)
+                    case .localFile(let results):
+                        return try await results?.itemProvider.getData().data
                     case .url:
                         return nil
                     }
