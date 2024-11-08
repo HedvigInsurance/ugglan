@@ -6,10 +6,12 @@ import hGraphQL
 struct CompareTierScreen: View {
     @ObservedObject private var vm: CompareTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
+    @StateObject private var tracingOffsetVm = TracingOffsetViewModel()
+    @StateObject private var setOffsetVm = SetOffsetViewModel()
+
     @SwiftUI.Environment(\.horizontalSizeClass) var horizontalSizeClass
-
-    @State var offset: CGPoint = .zero
-
+    @SwiftUI.Environment(\.colorScheme) private var colorScheme
+    @State private var leftColumnWidth: CGFloat = 0
     init(
         vm: CompareTierViewModel
     ) {
@@ -41,48 +43,83 @@ struct CompareTierScreen: View {
             ForEach(vm.tiers, id: \.self) { tier in
                 getColumn(for: tier).id("column " + tier.id)
             }
+            Spacing(height: Float(horizontalSizeClass == .regular ? CGFloat.padding64 : CGFloat.padding16))
         }
     }
 
     @ViewBuilder
     var succesView: some View {
         hForm {
-            HStack(spacing: 0) {
-                ZStack {
-                    shadowDividerView
-                    perilTitleColumn
-                        .frame(width: horizontalSizeClass == .regular ? 190 : 140, alignment: .leading)
-                }
-                .zIndex(2)
+            ZStack {
+                HStack(spacing: 0) {
+                    ZStack {
+                        shadowDividerView
+                        perilTitleColumn
+                    }
+                    .frame(width: leftColumnWidth)
+                    .zIndex(2)
 
-                ScrollViewReader { scrollView in
-                    ScrollView(
-                        [.horizontal],
-                        showsIndicators: false,
-                        content: {
-                            scrollContent
-                        }
-                    )
-                    .modifier(TrackingOffsetModifier(offset: $offset))
-                    .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                            withAnimation(.spring(duration: 2)) {
-                                scrollView.scrollTo("column " + vm.tiers[1].id, anchor: .leading)
+                    Divider()
+                        .frame(minHeight: 1)
+                        .overlay(hBorderColor.secondary)
+                        .padding(.top, 32)
+                        .opacity(tracingOffsetVm.currentOffset.x <= .zero ? 1 : 0)
+
+                    ScrollViewReader { scrollView in
+                        ScrollView(
+                            [.horizontal],
+                            showsIndicators: false,
+                            content: {
+                                scrollContent
                             }
-
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                withAnimation(.spring(duration: 2)) {
-                                    scrollView.scrollTo("column " + vm.tiers[0].id, anchor: .leading)
+                        )
+                        .modifier(TrackingOffsetModifier(vm: tracingOffsetVm))
+                        .modifier(SetOffsetModifier(vm: setOffsetVm))
+                        .onAppear {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak setOffsetVm, weak vm] in
+                                guard let setOffsetVm = setOffsetVm, let vm = vm else { return }
+                                if vm.tiers.first == vm.selectedTier {
+                                    setOffsetVm.animate(
+                                        with: .init(duration: 1, damping: 0.6, offset: .init(x: 60, y: 0))
+                                    )
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
+                                        setOffsetVm.animate(with: .init(duration: 1, damping: 0.6, offset: .zero))
+                                    }
+                                } else {
+                                    if let selectedTierIndex = vm.tiers.firstIndex(where: { $0 == vm.selectedTier }) {
+                                        let offset = selectedTierIndex * 100 - 50
+                                        setOffsetVm.animate(
+                                            with: .init(duration: 1, damping: 0.6, offset: .init(x: offset, y: 0))
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
+                    .zIndex(1)
                 }
-                .zIndex(1)
+                .sectionContainerStyle(.transparent)
+                .hWithoutHorizontalPadding
+                .padding(.top, .padding16)
+
+                //added to measure current left size - aprox 140 on default text size
+                hText("hhhhhhhhhhhhhhhhh", style: .label)
+                    .foregroundColor(.clear)
+                    .background {
+                        GeometryReader { proxy in
+                            Color.clear
+                                .onAppear {
+                                    print(proxy.size)
+                                    leftColumnWidth = min(proxy.size.width, 300)
+                                }
+                                .onChange(of: proxy.size) { newValue in
+                                    print(newValue)
+                                    leftColumnWidth = min(proxy.size.width, 300)
+                                }
+                        }
+                    }
             }
-            .sectionContainerStyle(.transparent)
-            .hWithoutHorizontalPadding
-            .padding(.top, .padding16)
+            .padding(.leading, horizontalSizeClass == .regular ? .padding60 : .padding16)
         }
         .hFormTitle(
             title: .init(
@@ -101,38 +138,58 @@ struct CompareTierScreen: View {
 
     @ViewBuilder
     private var shadowDividerView: some View {
-        Rectangle()
-            .fill(hBackgroundColor.black)
-            .padding(.top, 32)
-            .frame(width: horizontalSizeClass == .regular ? 200 : 140, alignment: .leading)
-            .shadow(color: Color.black.opacity(0.05), radius: offset.x > .zero ? 5 : 0, x: 0, y: 4)
-            .shadow(color: Color.black.opacity(0.1), radius: offset.x > .zero ? 1 : 0, x: 0, y: 2)
-            .mask {
-                Rectangle()
-                    .offset(x: horizontalSizeClass == .regular ? 110 : 80, y: 10)
-                    .frame(width: 20)
-            }
+        VStack(spacing: 0) {
+            hText(" ", style: .label)
+                .padding(.top, 7)
+            Rectangle()
+                .fill(hBackgroundColor.black)
+                .frame(width: leftColumnWidth, alignment: .leading)
+                .shadow(
+                    color: shadowColor.opacity(0.05),
+                    radius: tracingOffsetVm.currentOffset.x > .zero ? 5 : 0,
+                    x: 0,
+                    y: 4
+                )
+                .shadow(
+                    color: shadowColor.opacity(0.1),
+                    radius: tracingOffsetVm.currentOffset.x > .zero ? 1 : 0,
+                    x: 0,
+                    y: 2
+                )
+                .mask {
+                    Rectangle()
+                        .offset(x: leftColumnWidth, y: 10)
+                        .frame(width: leftColumnWidth)
+                }
+        }
+    }
+
+    private var shadowColor: Color {
+        hTextColor.Opaque.primary.colorFor(colorScheme == .light ? .light : .dark, .base).color
     }
 
     @ViewBuilder
     private var perilTitleColumn: some View {
         VStack(alignment: .leading) {
-            hText("", style: .label)
-                .padding(.top, 11)
+            hText(" ", style: .label)
+                .padding(.top, 7)
             let firstTier = vm.tiers.first?.name ?? ""
 
             hSection(vm.perils[firstTier] ?? [], id: \.self) { peril in
                 hRow {
-                    hText(peril.title, style: .label)
-                        .frame(height: .padding40, alignment: .center)
-                        .frame(maxWidth: 124, alignment: .leading)
+                    ZStack {
+                        hText(peril.title, style: .label)
+                            .frame(height: .padding40, alignment: .center)
+                    }
                 }
                 .verticalPadding(0)
-                .frame(width: horizontalSizeClass == .regular ? 135 : 124)
+                .frame(width: leftColumnWidth)
                 .modifier(CompareOnRowTap(currentPeril: peril, vm: vm))
             }
             .hWithoutDividerPadding
+            .hSectionWithoutHorizontalPadding
         }
+        .fixedSize()
     }
 
     @ViewBuilder
@@ -154,7 +211,7 @@ struct CompareTierScreen: View {
                             .frame(maxWidth: .infinity, alignment: .center)
                     }
                     .verticalPadding(0)
-                    .dividerInsets(.leading, tier == vm.tiers.first ? -100 : 0)
+                    .dividerInsets(.leading, tier == vm.tiers.first ? -200 : 0)
                     .modifier(CompareOnRowTap(currentPeril: peril, vm: vm))
                 }
                 .hSectionWithoutHorizontalPadding
@@ -330,12 +387,6 @@ public class CompareTierViewModel: ObservableObject {
                 let tierNames = columns.compactMap({ $0.displayNameTier })
 
                 self.perils = getPerils(tierNames: tierNames, rows: rows)
-
-                let pageModels: [PageModel] = tierNames.compactMap({ PageModel(id: $0, title: $0) })
-                let currentId = productVariantComparisionData.variantColumns
-                    .first(where: { $0.displayNameTier == selectedTier?.name })?
-                    .displayNameTier
-
                 withAnimation {
                     viewState = .success
                 }
@@ -399,6 +450,24 @@ public class CompareTierViewModel: ObservableObject {
         exposureName: "Standard"
     )
 
+    let premiumTier = Tier(
+        id: "PREMIUM",
+        name: "Premium",
+        level: 0,
+        quotes: [
+            .init(
+                id: "quote1",
+                quoteAmount: .init(amount: "220", currency: "SEK"),
+                quotePercentage: 0,
+                subTitle: nil,
+                premium: .init(amount: "220", currency: "SEK"),
+                displayItems: [],
+                productVariant: nil
+            )
+        ],
+        exposureName: "exposure name"
+    )
+
     let vm: CompareTierViewModel = .init(
         tiers: [
             .init(
@@ -419,23 +488,7 @@ public class CompareTierViewModel: ObservableObject {
                 exposureName: "exposure name"
             ),
             standardTier,
-            .init(
-                id: "PREMIUM",
-                name: "Premium",
-                level: 0,
-                quotes: [
-                    .init(
-                        id: "quote1",
-                        quoteAmount: .init(amount: "220", currency: "SEK"),
-                        quotePercentage: 0,
-                        subTitle: nil,
-                        premium: .init(amount: "220", currency: "SEK"),
-                        displayItems: [],
-                        productVariant: nil
-                    )
-                ],
-                exposureName: "exposure name"
-            ),
+            premiumTier,
         ],
         selectedTier: standardTier
     )

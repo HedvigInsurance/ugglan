@@ -41,15 +41,11 @@ typealias CommitTier = (String) async throws(ChangeTier.ChangeTierError) -> Void
 typealias CompareProductVariants = ([String]) async throws -> ProductVariantComparison
 
 class MockChangeTierService: ChangeTierClient {
-    func compareProductVariants(termsVersion: [String]) async throws -> ChangeTier.ProductVariantComparison {
-        throw ChangeTierError.somethingWentWrong
-    }
-
     var events = [Event]()
 
     var fetchTier: GetTier
     var sendTier: CommitTier
-    var compareProductVariants: CompareProductVariants
+    var compareProductVariantsClosure: CompareProductVariants
 
     enum Event {
         case getTier
@@ -64,7 +60,7 @@ class MockChangeTierService: ChangeTierClient {
     ) {
         self.fetchTier = fetchTier
         self.sendTier = sendTier
-        self.compareProductVariants = compareProductVariants
+        self.compareProductVariantsClosure = compareProductVariants
     }
 
     func getTier(input: ChangeTierInputData) async throws -> ChangeTierIntentModel {
@@ -80,7 +76,7 @@ class MockChangeTierService: ChangeTierClient {
 
     func compareProductVariants(termsVersion: [String]) async throws -> ProductVariantComparison {
         events.append(.productVariantComparison)
-        let data = try await compareProductVariants(termsVersion)
+        let data = try await compareProductVariantsClosure(termsVersion)
         return data
     }
 }
