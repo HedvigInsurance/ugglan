@@ -17,13 +17,13 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         switch action {
         case .submitClaimOpenFreeTextChat:
             NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
-        case let .startClaimRequest(entrypointId, entrypointOptionId):
-            await executeAsync(loadingType: .startClaim) {
-                try await self.submitClaimClient.startClaim(
-                    entrypointId: entrypointId,
-                    entrypointOptionId: entrypointOptionId
-                )
-            }
+        //        case let .startClaimRequest(entrypointId, entrypointOptionId):
+        //            await executeAsync(loadingType: .startClaim) {
+        //                try await self.submitClaimClient.startClaim(
+        //                    entrypointId: entrypointId,
+        //                    entrypointOptionId: entrypointOptionId
+        //                )
+        //            }
         case let .phoneNumberRequest(phoneNumberInput):
             await executeAsync(loadingType: .postPhoneNumber) {
                 try await self.submitClaimClient.updateContact(phoneNumber: phoneNumberInput, context: newClaimContext)
@@ -170,21 +170,21 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
                 self?.send(.navigationAction(action: action.nextStepAction))
             }
-        case .startClaimRequest:
-            setLoading(for: .startClaim)
-            newState.summaryStep = nil
-            newState.dateOfOccurenceStep = nil
-            newState.locationStep = nil
-            newState.singleItemStep = nil
-            newState.phoneNumberStep = nil
-            newState.dateOfOccurrencePlusLocationStep = nil
-            newState.singleItemCheckoutStep = nil
-            newState.successStep = nil
-            newState.failedStep = nil
-            newState.audioRecordingStep = nil
-            newState.contractStep = nil
-            newState.currentClaimContext = nil
-            newState.fileUploadStep = nil
+        //        case .startClaimRequest:
+        //            setLoading(for: .startClaim)
+        //            newState.summaryStep = nil
+        //            newState.dateOfOccurenceStep = nil
+        //            newState.locationStep = nil
+        //            newState.singleItemStep = nil
+        //            newState.phoneNumberStep = nil
+        //            newState.dateOfOccurrencePlusLocationStep = nil
+        //            newState.singleItemCheckoutStep = nil
+        //            newState.successStep = nil
+        //            newState.failedStep = nil
+        //            newState.audioRecordingStep = nil
+        //            newState.contractStep = nil
+        //            newState.currentClaimContext = nil
+        //            newState.fileUploadStep = nil
         case let .setPayoutMethod(method):
             newState.singleItemCheckoutStep?.selectedPayoutMethod = method
         case .phoneNumberRequest:
@@ -228,7 +228,7 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             if let progress = data.progress {
                 await sendAsync(.setProgress(progress: progress))
             }
-            await sendAsync(data.action)
+            //            await sendAsync(data.step)
             removeLoading(for: loadingType)
         } catch let error {
             self.setError(error.localizedDescription, for: loadingType)

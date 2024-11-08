@@ -208,7 +208,7 @@ extension GraphQLMutation {
         _ keyPath: KeyPath<Self.Data, ClaimStep>
     ) async throws -> SubmitClaimStepResponse
     where
-        ClaimStep.To == SubmitClaimsAction, Self: ClaimStepLoadingType, Self.Data: ClaimStepContext,
+        ClaimStep.To == SubmitClaimStep, Self: ClaimStepLoadingType, Self.Data: ClaimStepContext,
         Self.Data: ClaimStepProgress, Self.Data: ClaimStepId
     {
         let octopus: hOctopus = Dependencies.shared.resolve()
@@ -230,8 +230,8 @@ extension GraphQLMutation {
                     return nil
                 }
             }()
-            let action = data[keyPath: keyPath].into()
-            return .init(claimId: claimId, context: context, progress: progress, action: action)
+            let step = data[keyPath: keyPath].into()
+            return .init(claimId: claimId, context: context, progress: progress, step: step)
         } catch _ {
             throw SubmitClaimError.error(message: L10n.General.errorBody)
         }
@@ -256,19 +256,31 @@ private protocol Into {
 }
 
 extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
-    fileprivate func into() -> SubmitClaimsAction {
-        if let step = self.asFlowClaimPhoneNumberStep?.fragments.flowClaimPhoneNumberStepFragment {
-            return .stepModelAction(action: .setPhoneNumber(model: .init(with: step)))
+    fileprivate func into() -> SubmitClaimStep {
+        if let step = self.asFlowClaimDateOfOccurrenceStep?.fragments.flowClaimDateOfOccurrenceStepFragment {
+            return .setDateOfOccurence(model: .init(with: step))
+        } else if let step = self.asFlowClaimDateOfOccurrencePlusLocationStep?.fragments
+            .flowClaimDateOfOccurrencePlusLocationStepFragment
+        {
+            return .setDateOfOccurrencePlusLocation(
+                model: .init(
+                    dateOfOccurencePlusLocationModel: .init(with: step),
+                    dateOfOccurenceModel: .init(
+                        with: step.dateOfOccurrenceStep.fragments.flowClaimDateOfOccurrenceStepFragment
+                    ),
+                    locationModel: .init(with: step.locationStep.fragments.flowClaimLocationStepFragment)
+                )
+            )
+        } else if let step = self.asFlowClaimPhoneNumberStep?.fragments.flowClaimPhoneNumberStepFragment {
+            return .setPhoneNumber(model: .init(with: step))
         } else if let step = self.asFlowClaimAudioRecordingStep?.fragments.flowClaimAudioRecordingStepFragment {
-            return .stepModelAction(action: .setAudioStep(model: .init(with: step)))
+            return .setAudioStep(model: .init(with: step))
         } else if let step = self.asFlowClaimSingleItemStep?.fragments.flowClaimSingleItemStepFragment {
-            return .stepModelAction(action: .setSingleItem(model: .init(with: step)))
+            return .setSingleItem(model: .init(with: step))
         } else if let step = self.asFlowClaimSingleItemCheckoutStep?.fragments.flowClaimSingleItemCheckoutStepFragment {
-            return .stepModelAction(action: .setSingleItemCheckoutStep(model: .init(with: step)))
+            return .setSingleItemCheckoutStep(model: .init(with: step))
         } else if let step = self.asFlowClaimLocationStep?.fragments.flowClaimLocationStepFragment {
-            return .stepModelAction(action: .setLocation(model: .init(with: step)))
-        } else if let step = self.asFlowClaimDateOfOccurrenceStep?.fragments.flowClaimDateOfOccurrenceStepFragment {
-            return .stepModelAction(action: .setDateOfOccurence(model: .init(with: step)))
+            return .setLocation(model: .init(with: step))
         } else if let step = self.asFlowClaimSummaryStep?.fragments.flowClaimSummaryStepFragment {
             let summaryStep = FlowClaimSummaryStepModel(with: step)
             let singleItemStepModel: FlowClamSingleItemStepModel? = {
@@ -277,58 +289,54 @@ extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
                 }
                 return nil
             }()
-            return .stepModelAction(
-                action: .setSummaryStep(
-                    model: .init(
-                        summaryStep: summaryStep,
-                        singleItemStepModel: singleItemStepModel,
-                        dateOfOccurenceModel: .init(
-                            with: step.dateOfOccurrenceStep.fragments.flowClaimDateOfOccurrenceStepFragment
-                        ),
-                        locationModel: .init(with: step.locationStep.fragments.flowClaimLocationStepFragment),
-                        audioRecordingModel: .init(
-                            with: step.audioRecordingStep?.fragments.flowClaimAudioRecordingStepFragment
-                        ),
-                        fileUploadModel: .init(with: step.fileUploadStep?.fragments.flowClaimFileUploadStepFragment)
-                    )
+            return .setSummaryStep(
+                model: .init(
+                    summaryStep: summaryStep,
+                    singleItemStepModel: singleItemStepModel,
+                    dateOfOccurenceModel: .init(
+                        with: step.dateOfOccurrenceStep.fragments.flowClaimDateOfOccurrenceStepFragment
+                    ),
+                    locationModel: .init(with: step.locationStep.fragments.flowClaimLocationStepFragment),
+                    audioRecordingModel: .init(
+                        with: step.audioRecordingStep?.fragments.flowClaimAudioRecordingStepFragment
+                    ),
+                    fileUploadModel: .init(with: step.fileUploadStep?.fragments.flowClaimFileUploadStepFragment)
                 )
             )
         } else if let step = self.asFlowClaimDateOfOccurrencePlusLocationStep?.fragments
             .flowClaimDateOfOccurrencePlusLocationStepFragment
         {
-            return .stepModelAction(
-                action: .setDateOfOccurrencePlusLocation(
-                    model: .init(
-                        dateOfOccurencePlusLocationModel: .init(with: step),
-                        dateOfOccurenceModel: .init(
-                            with: step.dateOfOccurrenceStep.fragments.flowClaimDateOfOccurrenceStepFragment
-                        ),
-                        locationModel: .init(with: step.locationStep.fragments.flowClaimLocationStepFragment)
-                    )
+            return .setDateOfOccurrencePlusLocation(
+                model: .init(
+                    dateOfOccurencePlusLocationModel: .init(with: step),
+                    dateOfOccurenceModel: .init(
+                        with: step.dateOfOccurrenceStep.fragments.flowClaimDateOfOccurrenceStepFragment
+                    ),
+                    locationModel: .init(with: step.locationStep.fragments.flowClaimLocationStepFragment)
                 )
             )
         } else if let step = self.asFlowClaimFailedStep?.fragments.flowClaimFailedStepFragment {
-            return .stepModelAction(action: .setFailedStep(model: .init(with: step)))
+            return .setFailedStep(model: .init(with: step))
         } else if let step = self.asFlowClaimSuccessStep?.fragments.flowClaimSuccessStepFragment {
-            return .stepModelAction(action: .setSuccessStep(model: .init(with: step)))
+            return .setSuccessStep(model: .init(with: step))
         } else if let step = self.asFlowClaimContractSelectStep?.fragments.flowClaimContractSelectStepFragment {
-            return .stepModelAction(action: .setContractSelectStep(model: .init(with: step)))
+            return .setContractSelectStep(model: .init(with: step))
         } else if let step = self.asFlowClaimDeflectEmergencyStep?.fragments.flowClaimDeflectEmergencyStepFragment {
-            return .stepModelAction(action: .setDeflectModel(model: .init(with: step)))
+            return .setDeflectModel(model: .init(with: step))
         } else if let step = self.asFlowClaimConfirmEmergencyStep?.fragments.flowClaimConfirmEmergencyStepFragment {
-            return .stepModelAction(action: .setConfirmDeflectEmergencyStepModel(model: .init(with: step)))
+            return .setConfirmDeflectEmergencyStepModel(model: .init(with: step))
         } else if let step = self.asFlowClaimDeflectPestsStep?.fragments.flowClaimDeflectPestsStepFragment {
-            return .stepModelAction(action: .setDeflectModel(model: .init(with: step)))
+            return .setDeflectModel(model: .init(with: step))
         } else if let step = self.asFlowClaimDeflectGlassDamageStep?.fragments.flowClaimDeflectGlassDamageStepFragment {
-            return .stepModelAction(action: .setDeflectModel(model: .init(with: step)))
+            return .setDeflectModel(model: .init(with: step))
         } else if let step = self.asFlowClaimDeflectTowingStep?.fragments.flowClaimDeflectTowingStepFragment {
-            return .stepModelAction(action: .setDeflectModel(model: .init(with: step)))
+            return .setDeflectModel(model: .init(with: step))
         } else if let step = self.asFlowClaimDeflectEirStep?.fragments.flowClaimDeflectEirStepFragment {
-            return .stepModelAction(action: .setDeflectModel(model: .init(with: step)))
+            return .setDeflectModel(model: .init(with: step))
         } else if let step = self.asFlowClaimFileUploadStep?.fragments.flowClaimFileUploadStepFragment {
-            return .stepModelAction(action: .setFileUploadStep(model: .init(with: step)))
+            return .setFileUploadStep(model: .init(with: step))
         } else {
-            return .navigationAction(action: .openUpdateAppScreen)
+            return .openUpdateAppScreen
         }
     }
 }

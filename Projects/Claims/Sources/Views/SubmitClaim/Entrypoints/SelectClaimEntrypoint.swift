@@ -7,7 +7,6 @@ import hCoreUI
 
 public struct SelectClaimEntrypointGroup: View {
     @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
-    @EnvironmentObject var router: Router
     @ObservedObject var vm: SelectClaimEntrypointViewModel
 
     public init(
@@ -44,10 +43,13 @@ public struct SelectClaimEntrypointGroup: View {
                                 if claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints.isEmpty {
                                     claimsNavigationVm.entrypoints.selectedEntrypoints =
                                         claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints
-                                    claimsNavigationVm.selectClaimEntrypointVm.startClaimRequest(
-                                        entrypointId: nil,
-                                        entrypointOptionId: nil
-                                    )
+
+                                    Task {
+                                        await claimsNavigationVm.startClaimRequest(
+                                            entrypointId: nil,
+                                            entrypointOptionId: nil
+                                        )
+                                    }
                                 } else {
                                     if claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints.first?.options == []
                                     {
@@ -64,7 +66,7 @@ public struct SelectClaimEntrypointGroup: View {
 
                                     claimsNavigationVm.entrypoints.selectedEntrypoints =
                                         claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints
-                                    router.push(ClaimsRouterActions.triagingEntrypoint)
+                                    claimsNavigationVm.router.push(ClaimsRouterActions.triagingEntrypoint)
                                 }
 
                             }
@@ -119,10 +121,12 @@ struct SelectClaimEntrypointType: View {
                         )
 
                         if claimOptions.isEmpty {
-                            claimsNavigationVm.selectClaimEntrypointVm.startClaimRequest(
-                                entrypointId: claimsNavigationVm.entrypoints.selectedEntrypointId,
-                                entrypointOptionId: nil
-                            )
+                            Task {
+                                await claimsNavigationVm.startClaimRequest(
+                                    entrypointId: claimsNavigationVm.entrypoints.selectedEntrypointId,
+                                    entrypointOptionId: nil
+                                )
+                            }
 
                         } else {
                             router.push(ClaimsRouterActions.triagingOption)
@@ -166,15 +170,9 @@ struct SelectClaimEntrypointType: View {
 
 struct SelectClaimEntrypointOption: View {
     @State var selectedClaimOption: String? = nil
-    var onButtonClick: (String, String) -> Void
-
     @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
 
-    public init(
-        onButtonClick: @escaping (String, String) -> Void
-    ) {
-        self.onButtonClick = onButtonClick
-    }
+    public init() {}
 
     var body: some View {
         hForm {
@@ -191,12 +189,15 @@ struct SelectClaimEntrypointOption: View {
                 },
                 onButtonClick: {
                     if selectedClaimOption != nil {
-                        onButtonClick(
-                            claimsNavigationVm.entrypoints.selectedEntrypointId ?? "",
-                            mapNametoEntrypointOptionId(
-                                input: claimsNavigationVm.entrypoints.selectedEntrypointOptions ?? []
+
+                        Task {
+                            await claimsNavigationVm.startClaimRequest(
+                                entrypointId: claimsNavigationVm.entrypoints.selectedEntrypointId ?? "",
+                                entrypointOptionId: mapNametoEntrypointOptionId(
+                                    input: claimsNavigationVm.entrypoints.selectedEntrypointOptions ?? []
+                                )
                             )
-                        )
+                        }
                     }
                 },
                 oldValue: $selectedClaimOption
@@ -374,15 +375,6 @@ public class SelectClaimEntrypointViewModel: ObservableObject {
                 }
             }
         }
-    }
-
-    func startClaimRequest(entrypointId: String?, entrypointOptionId: String?) {
-        store.send(
-            .startClaimRequest(
-                entrypointId: entrypointId,
-                entrypointOptionId: entrypointOptionId
-            )
-        )
     }
 
     func setProgress(to progress: Float?) {

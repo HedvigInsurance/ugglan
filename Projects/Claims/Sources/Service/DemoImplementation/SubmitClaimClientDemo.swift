@@ -8,7 +8,7 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
             claimId: "",
             context: "",
             progress: nil,
-            action: .startClaimRequest(entrypointId: nil, entrypointOptionId: nil)
+            step: .setFailedStep(model: .init(id: ""))
         )
     }
 
@@ -17,7 +17,7 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
             claimId: "",
             context: "",
             progress: nil,
-            action: .phoneNumberRequest(phoneNumber: "")
+            step: .setFailedStep(model: .init(id: ""))
         )
     }
 
@@ -26,7 +26,7 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
             claimId: "",
             context: "",
             progress: nil,
-            action: .dateOfOccurrenceAndLocationRequest
+            step: .setFailedStep(model: .init(id: ""))
         )
     }
 
@@ -39,7 +39,7 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
             claimId: "",
             context: "",
             progress: nil,
-            action: .submitAudioRecording(type: .audio(url: URL(string: "")!))
+            step: .setFailedStep(model: .init(id: ""))
         )
     }
 
@@ -48,16 +48,26 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
             claimId: "",
             context: "",
             progress: nil,
-            action: .singleItemRequest(purchasePrice: 0)
+            step: .setFailedStep(model: .init(id: ""))
         )
     }
 
     public func summaryRequest(context: String) async throws -> SubmitClaimStepResponse {
-        return SubmitClaimStepResponse(claimId: "", context: "", progress: nil, action: .summaryRequest)
+        return SubmitClaimStepResponse(
+            claimId: "",
+            context: "",
+            progress: nil,
+            step: .setFailedStep(model: .init(id: ""))
+        )
     }
 
     public func singleItemCheckoutRequest(context: String) async throws -> SubmitClaimStepResponse {
-        return SubmitClaimStepResponse(claimId: "", context: "", progress: nil, action: .singleItemCheckoutRequest)
+        return SubmitClaimStepResponse(
+            claimId: "",
+            context: "",
+            progress: nil,
+            step: .setFailedStep(model: .init(id: ""))
+        )
     }
 
     public func contractSelectRequest(contractId: String, context: String) async throws -> SubmitClaimStepResponse {
@@ -65,7 +75,7 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
             claimId: "",
             context: "",
             progress: nil,
-            action: .contractSelectRequest(contractId: "")
+            step: .setFailedStep(model: .init(id: ""))
         )
     }
 
@@ -74,11 +84,16 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
             claimId: "",
             context: "",
             progress: nil,
-            action: .emergencyConfirmRequest(isEmergency: true)
+            step: .setFailedStep(model: .init(id: ""))
         )
     }
 
     public func submitFileUpload(ids: [String], context: String) async throws -> SubmitClaimStepResponse {
-        return SubmitClaimStepResponse(claimId: "", context: "", progress: nil, action: .submitFileUpload(ids: []))
+        return SubmitClaimStepResponse(
+            claimId: "",
+            context: "",
+            progress: nil,
+            step: .setFailedStep(model: .init(id: ""))
+        )
     }
 }
