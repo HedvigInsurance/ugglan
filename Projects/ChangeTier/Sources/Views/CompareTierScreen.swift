@@ -6,10 +6,9 @@ import hGraphQL
 struct CompareTierScreen: View {
     @ObservedObject private var vm: CompareTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
+    @StateObject var tracingOffsetVm = TracingOffsetViewModel()
     @SwiftUI.Environment(\.horizontalSizeClass) var horizontalSizeClass
-
-    @State var offset: CGPoint = .zero
-
+    @SwiftUI.Environment(\.colorScheme) private var colorScheme
     init(
         vm: CompareTierViewModel
     ) {
@@ -59,7 +58,7 @@ struct CompareTierScreen: View {
                     .frame(minHeight: 1)
                     .overlay(hBorderColor.secondary)
                     .padding(.top, 32)
-                    .opacity(offset.x <= .zero ? 1 : 0)
+                    .opacity(tracingOffsetVm.currentOffset.x <= .zero ? 1 : 0)
                 ScrollViewReader { scrollView in
                     ScrollView(
                         [.horizontal],
@@ -68,16 +67,19 @@ struct CompareTierScreen: View {
                             scrollContent
                         }
                     )
-                    .modifier(TrackingOffsetModifier(offset: $offset))
+                    .modifier(TrackingOffsetModifier(vm: tracingOffsetVm))
                     .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                            withAnimation(.spring(duration: 2)) {
-                                scrollView.scrollTo("column " + vm.tiers[1].id, anchor: .leading)
-                            }
-
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak vm] in
+                            guard let vm = vm else { return }
+                            if vm.tiers.count > 1 {
                                 withAnimation(.spring(duration: 2)) {
-                                    scrollView.scrollTo("column " + vm.tiers[0].id, anchor: .leading)
+                                    scrollView.scrollTo("column " + vm.tiers[1].id, anchor: .leading)
+                                }
+
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                    withAnimation(.spring(duration: 2)) {
+                                        scrollView.scrollTo("column " + vm.tiers[0].id, anchor: .leading)
+                                    }
                                 }
                             }
                         }
@@ -110,13 +112,28 @@ struct CompareTierScreen: View {
             .fill(hBackgroundColor.black)
             .padding(.top, 32)
             .frame(width: horizontalSizeClass == .regular ? 200 : 140, alignment: .leading)
-            .shadow(color: Color.black.opacity(0.05), radius: offset.x > .zero ? 5 : 0, x: 0, y: 4)
-            .shadow(color: Color.black.opacity(0.1), radius: offset.x > .zero ? 1 : 0, x: 0, y: 2)
+            .hShadow()
+            .shadow(
+                color: shadowColor.opacity(0.05),
+                radius: tracingOffsetVm.currentOffset.x > .zero ? 5 : 0,
+                x: 0,
+                y: 4
+            )
+            .shadow(
+                color: shadowColor.opacity(0.1),
+                radius: tracingOffsetVm.currentOffset.x > .zero ? 1 : 0,
+                x: 0,
+                y: 2
+            )
             .mask {
                 Rectangle()
                     .offset(x: horizontalSizeClass == .regular ? 110 : 80, y: 10)
                     .frame(width: 20)
             }
+    }
+
+    private var shadowColor: Color {
+        hTextColor.Opaque.primary.colorFor(colorScheme == .light ? .light : .dark, .base).color
     }
 
     @ViewBuilder
@@ -335,12 +352,6 @@ public class CompareTierViewModel: ObservableObject {
                 let tierNames = columns.compactMap({ $0.displayNameTier })
 
                 self.perils = getPerils(tierNames: tierNames, rows: rows)
-
-                let pageModels: [PageModel] = tierNames.compactMap({ PageModel(id: $0, title: $0) })
-                let currentId = productVariantComparisionData.variantColumns
-                    .first(where: { $0.displayNameTier == selectedTier?.name })?
-                    .displayNameTier
-
                 withAnimation {
                     viewState = .success
                 }
