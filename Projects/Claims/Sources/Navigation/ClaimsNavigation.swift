@@ -33,7 +33,7 @@ public class ClaimsNavigationViewModel: ObservableObject {
     @Published var contractSelectModel: FlowClaimContractSelectStepModel?
     @Published var fileUploadModel: FlowClaimFileUploadStepModel?
 
-    var currentClaimId: String? {
+    @Published var currentClaimId: String? {
         didSet {
             do {
                 var isDir: ObjCBool = true
@@ -115,6 +115,7 @@ public class ClaimsNavigationViewModel: ObservableObject {
 
     func navigate(data: SubmitClaimStepResponse) {
         currentClaimContext = data.context
+        currentClaimId = data.claimId
         switch data.step {
         case let .setDateOfOccurrencePlusLocation(model):
             occurrencePlusLocationModel = model

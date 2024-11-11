@@ -1,4 +1,3 @@
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -84,7 +83,6 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
                     claimsNavigationVm.navigate(data: step)
                 }
             }
-
         } content: {
             hText(L10n.generalContinueButton, style: .body1)
         }

@@ -146,7 +146,6 @@ struct SubmitClaimFilesUploadScreen: View {
             }
             .ignoresSafeArea()
         }
-        .claimErrorTrackerFor([.postUploadFiles])
     }
 
     private func showFilePickerAlert() {
@@ -164,7 +163,6 @@ struct SubmitClaimFilesUploadScreen: View {
 
     func skip() {
         vm.hasFilesToUpload = false
-        let fileUploadModel = claimsNavigationVm.fileUploadModel
         Task {
             let step = await vm.submitFileUpload(
                 ids: [],

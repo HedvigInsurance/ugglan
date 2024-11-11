@@ -10,6 +10,8 @@ public struct SubmitClaimAudioRecordingScreen: View {
     @ObservedObject var claimsNavigationVm: ClaimsNavigationViewModel
     @ObservedObject var audioPlayer: AudioPlayer
     @ObservedObject var audioRecorder: AudioRecorder
+    @StateObject var audioRecordingVm = SubmitClaimAudioRecordingScreenModel()
+
     @State var minutes: Int = 0
     @State var seconds: Int = 0
     @State var isAudioInput = true
@@ -113,8 +115,18 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                 }
                             hButton.LargeButton(type: .primary) {
                                 onSubmit(url)
-                                //                                store.send(.submitAudioRecording(type: .audio(url: url)))
-                                /* TODO: IMPLEMENT */
+                                Task {
+                                    let step = await audioRecordingVm.singleItemRequest(
+                                        context: claimsNavigationVm.currentClaimContext ?? "",
+                                        currentClaimId: claimsNavigationVm.currentClaimId ?? "",
+                                        type: .audio(url: url),
+                                        model: claimsNavigationVm.audioRecordingModel
+                                    )
+
+                                    if let step {
+                                        claimsNavigationVm.navigate(data: step)
+                                    }
+                                }
                             } content: {
                                 hText(L10n.saveAndContinueButtonLabel)
                             }
@@ -127,7 +139,6 @@ public struct SubmitClaimAudioRecordingScreen: View {
                             } content: {
                                 hText(L10n.embarkRecordAgain)
                             }
-                            .disableOn(SubmitClaimStore.self, [.postAudioRecording])
                             .presentableStoreLensAnimation(.default)
                         }
                         .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -198,8 +209,18 @@ public struct SubmitClaimAudioRecordingScreen: View {
                 hButton.LargeButton(type: .primary) {
                     UIApplication.dismissKeyboard()
                     if validate() {
-                        //                        store.send(.submitAudioRecording(type: .text(text: inputText)))
-                        /* TODO: IMPLEMENT */
+                        Task {
+                            let step = await audioRecordingVm.singleItemRequest(
+                                context: claimsNavigationVm.currentClaimContext ?? "",
+                                currentClaimId: claimsNavigationVm.currentClaimId ?? "",
+                                type: .text(text: inputText),
+                                model: claimsNavigationVm.audioRecordingModel
+                            )
+
+                            if let step {
+                                claimsNavigationVm.navigate(data: step)
+                            }
+                        }
                     }
                 } content: {
                     hText(L10n.saveAndContinueButtonLabel)
@@ -246,6 +267,46 @@ public struct SubmitClaimAudioRecordingScreen: View {
             }
         }
         return inputTextError == nil
+    }
+}
+
+public class SubmitClaimAudioRecordingScreenModel: ObservableObject {
+    @Inject private var service: SubmitClaimClient
+    @Inject var fileUploaderClient: FileUploaderClient
+
+    @MainActor
+    func singleItemRequest(
+        context: String,
+        currentClaimId: String,
+        type: SubmitAudioRecordingType,
+        model: FlowClaimAudioRecordingStepModel?
+    ) async -> SubmitClaimStepResponse? {
+        //        setProgress(to: 0)
+
+        //        withAnimation {
+        //            self.viewState = .loading
+        //        }
+
+        do {
+            let data = try await service.submitAudioRecording(
+                type: type,
+                fileUploaderClient: fileUploaderClient,
+                context: context,
+                currentClaimId: currentClaimId,
+                model: model
+            )
+
+            //            withAnimation {
+            //                self.viewState = .success
+            //            }
+
+            return data
+        } catch let exception {
+            //            withAnimation {
+            //                self.viewState = .error(errorMessage: exception.localizedDescription)
+            //            }
+        }
+        return nil
     }
 }
 
