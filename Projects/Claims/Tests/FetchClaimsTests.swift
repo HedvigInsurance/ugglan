@@ -83,7 +83,7 @@ final class FetchClaimsTests: XCTestCase {
                     size: 5.0,
                     mimeType: .JPG,
                     name: "file2",
-                    source: .localFile(url: URL(string: "https://hedvig.com")!, thumbnailURL: nil)
+                    source: .localFile(results: nil)
                 ),
             ],
         ]
