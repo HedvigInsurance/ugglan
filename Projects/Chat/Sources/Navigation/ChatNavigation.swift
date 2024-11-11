@@ -5,7 +5,7 @@ import hCore
 import hCoreUI
 
 public class ChatNavigationViewModel: ObservableObject {
-    @Published var isFilePresented: FileUrlModel?
+    @Published var isFilePresented: DocumentPreviewModel.DocumentPreviewType?
     @Published var isAskForPushNotificationsPresented = false
 
     init() {}
@@ -116,8 +116,8 @@ public struct ChatNavigation<Content: View>: View {
         .detent(
             item: $chatNavigationViewModel.isFilePresented,
             style: [.large]
-        ) { urlModel in
-            DocumentPreview(vm: .init(type: .url(url: urlModel.url)))
+        ) { documentType in
+            DocumentPreview(vm: .init(type: documentType))
         }
         .detent(
             presented: $chatNavigationViewModel.isAskForPushNotificationsPresented,
@@ -132,7 +132,7 @@ public struct ChatNavigation<Content: View>: View {
     }
 }
 
-#Preview{
+#Preview {
     ChatNavigation(chatType: .newConversation) { type, onDone in
         EmptyView()
     }

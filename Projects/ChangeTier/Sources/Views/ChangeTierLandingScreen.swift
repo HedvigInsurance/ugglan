@@ -111,7 +111,7 @@ public struct ChangeTierLandingScreen: View {
                         value: vm.selectedTier?.name ?? "",
                         placeholder: L10n.tierFlowCoverageLabel
                     ) {}
-                    .hBackgroundOption(option: [.locked, .translucent, .negative])
+                    .hBackgroundOption(option: [.locked, .secondary, .negative])
                     .hFieldTrailingView {
                         Image(uiImage: hCoreUIAssets.lock.image)
                             .foregroundColor(hTextColor.Opaque.secondary)
@@ -141,7 +141,7 @@ public struct ChangeTierLandingScreen: View {
                     value: vm.selectedQuote?.deductableAmount?.formattedAmount ?? "",
                     placeholder: L10n.tierFlowDeductibleLabel
                 ) {}
-                .hBackgroundOption(option: [.locked, .translucent, .negative])
+                .hBackgroundOption(option: [.locked, .secondary, .negative])
                 .hFieldTrailingView {
                     Image(uiImage: hCoreUIAssets.lock.image)
                         .foregroundColor(hTextColor.Opaque.secondary)
@@ -174,8 +174,10 @@ public struct ChangeTierLandingScreen: View {
                     case .contractWithSource:
                         changeTierNavigationVm.router.push(ChangeTierRouterActions.summary)
                     case let .existingIntent(_, onSelect):
-                        if let selectedTier = vm.selectedTier, let selectedDeductible = vm.selectedQuote {
+                        if let selectedTier = vm.selectedTier, let selectedDeductible = vm.selectedQuote, let onSelect {
                             onSelect((selectedTier, selectedDeductible))
+                        } else {
+                            changeTierNavigationVm.router.push(ChangeTierRouterActions.summary)
                         }
                     }
                 } content: {

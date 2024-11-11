@@ -148,6 +148,14 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
                 for await status in self.networkAuthRepository.observeLoginStatus(
                     statusUrl: .init(url: data.statusUrl.url)
                 ) {
+                    let key = UUID().uuidString
+                    AuthenticationService.logAuthResourceStart(key, authUrl)
+
+                    AuthenticationService.logAuthResourceStop(
+                        key,
+                        HTTPURLResponse(url: authUrl, statusCode: 200, httpVersion: nil, headerFields: [:])!
+                    )
+
                     switch onEnum(of: status) {
                     case .failed(let failed):
                         let message = failed.localisedMessage

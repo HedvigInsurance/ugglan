@@ -15,6 +15,10 @@ fragment FlowTerminationFragment on Flow {
 	...FlowTerminationSuccessFragment
 	...FlowTerminationSurveyStepFragment
   }
+  progress {
+    clearedSteps
+    totalSteps
+  }
 }
 
 fragment FlowTerminationDateStepFragment on FlowTerminationDateStep{

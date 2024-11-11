@@ -12,6 +12,9 @@ public struct TerminationContractState: StateProtocol {
     @OptionalTransient var failedStep: TerminationFlowFailedNextModel?
     @OptionalTransient var terminationSurveyStep: TerminationFlowSurveyStepModel?
     @OptionalTransient var config: TerminationConfirmConfig?
+    @Transient(defaultValue: false) var hasSelectInsuranceStep: Bool
+    @OptionalTransient var progress: Float?
+    @OptionalTransient var previousProgress: Float?
     var isDeletion: Bool {
         terminationDeleteStep != nil
     }

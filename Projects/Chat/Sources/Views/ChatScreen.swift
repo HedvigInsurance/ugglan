@@ -10,6 +10,7 @@ public struct ChatScreen: View {
     @State var infoViewWidth: CGFloat = 0
     @StateObject var chatScrollViewDelegate = ChatScrollViewDelegate()
     @EnvironmentObject var chatNavigationVm: ChatNavigationViewModel
+    @State private var isTargetedForDropdown = false
     public init(
         vm: ChatScreenViewModel
     ) {
@@ -43,6 +44,12 @@ public struct ChatScreen: View {
                 }
             Task {
                 await vm.startFetchingNewMessages()
+            }
+        }
+        .fileDrop(isTargetedForDropdown: $isTargetedForDropdown) { file in
+            Task {
+                let message = Message(type: .file(file: file))
+                await vm.send(message: message)
             }
         }
     }
@@ -105,6 +112,7 @@ public struct ChatScreen: View {
                             }
                         }
                     }
+                    .id("MessageView_\(message.id)")
                 HStack(spacing: 0) {
                     if vm.lastDeliveredMessage?.id == message.id {
                         hText(message.timeStampString)
@@ -204,6 +212,8 @@ class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
                         return vc
                     } else if let superviewVc = vc.view.superview?.viewController {
                         return findProverVC(from: superviewVc)
+                    } else if let parent = vc.parent {
+                        return findProverVC(from: parent)
                     }
                 }
             }

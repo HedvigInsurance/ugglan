@@ -41,7 +41,16 @@ public class DocumentPreviewModel: NSObject, ObservableObject {
 
     }
 
-    public enum DocumentPreviewType {
+    public enum DocumentPreviewType: Equatable, Identifiable {
+        public var id: String {
+            switch self {
+            case .url(let url):
+                return url.absoluteString
+            case .data(let data, let mimeType):
+                return "\(data.count)"
+            }
+        }
+
         case url(url: URL)
         case data(data: Data, mimeType: MimeType)
     }
@@ -150,7 +159,7 @@ struct DocumentPreviewWebView: UIViewRepresentable {
     func makeUIView(context: Context) -> WKWebView {
         vm.webView.scrollView.backgroundColor = .clear
         vm.contentSizeCancellable = vm.webView.scrollView.publisher(for: \.contentSize)
-            .sink(receiveValue: { [weak vm] value in
+            .sink(receiveValue: { @MainActor [weak vm] value in
                 withAnimation {
                     vm?.contentHeight = value.height
                 }

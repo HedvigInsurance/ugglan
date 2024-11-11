@@ -32,7 +32,9 @@ struct ChatInputView: View {
                             text: $vm.inputText,
                             height: $height,
                             keyboardIsShown: $vm.keyboardIsShown
-                        )
+                        ) { file in
+                            vm.sendMessage(.init(type: .file(file: file)))
+                        }
                         .frame(height: height)
                         .frame(minHeight: 40)
 
@@ -94,7 +96,7 @@ struct ChatInputView: View {
     }
 }
 
-#Preview{
+#Preview {
     VStack {
         Spacer()
         ChatInputView(vm: .init())
@@ -170,12 +172,14 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
     @Binding var height: CGFloat
     @Binding var keyboardIsShown: Bool
     @Environment(\.colorScheme) var schema
+    let onPaste: ((File) -> Void)?
     func makeUIView(context: Context) -> some UIView {
         CustomTextView(
             placeholder: placeholder,
             inputText: $text,
             height: $height,
-            keyboardIsShown: $keyboardIsShown
+            keyboardIsShown: $keyboardIsShown,
+            onPaste: onPaste
         )
     }
 
@@ -196,8 +200,16 @@ private class CustomTextView: UITextView, UITextViewDelegate {
     @Binding private var keyboardIsShown: Bool
     private var textCancellable: AnyCancellable?
     private var placeholderLabel = UILabel()
-    init(placeholder: String, inputText: Binding<String>, height: Binding<CGFloat>, keyboardIsShown: Binding<Bool>) {
+    let onPaste: ((File) -> Void)?
+    init(
+        placeholder: String,
+        inputText: Binding<String>,
+        height: Binding<CGFloat>,
+        keyboardIsShown: Binding<Bool>,
+        onPaste: ((File) -> Void)?
+    ) {
         self._inputText = inputText
+        self.onPaste = onPaste
         self._height = height
         self._keyboardIsShown = keyboardIsShown
         super.init(frame: .zero, textContainer: nil)
@@ -221,7 +233,8 @@ private class CustomTextView: UITextView, UITextViewDelegate {
     }
 
     func updateHeight() {
-        DispatchQueue.main.async { [weak self] in guard let self = self else { return }
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             withAnimation {
                 self.height = min(self.contentSize.height, 200)
             }
@@ -263,6 +276,49 @@ private class CustomTextView: UITextView, UITextViewDelegate {
         let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
         return hTextColor.Opaque.secondary.colorFor(colorScheme, .base).color.uiColor()
     }
+
+    override func paste(_ sender: Any?) {
+        if let action = (sender as? UIKeyCommand)?.action, action == #selector(UIResponder.paste(_:)) {
+            if let images = UIPasteboard.general.images {
+                for image in images {
+                    if let data = image.jpegData(compressionQuality: 0.9) {
+                        let file = File(
+                            id: UUID().uuidString,
+                            size: Double(data.count),
+                            mimeType: .JPEG,
+                            name: "image_\(Date())",
+                            source: .data(data: data)
+                        )
+                        self.onPaste?(file)
+                    }
+                }
+                return
+            } else if let urls = UIPasteboard.general.urls, urls.count > 0 {
+                for url in urls {
+                    if let contentProvider = NSItemProvider(contentsOf: url) {
+                        contentProvider.getFile { [weak self] file in
+                            self?.onPaste?(file)
+                        }
+                    }
+                }
+            } else {
+                super.paste(sender)
+            }
+        } else {
+            super.paste(sender)
+        }
+    }
+
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        if action == #selector(UIResponder.paste(_:)) {
+            if let imagesFileTypes = UIPasteboard.typeListImage as? [String],
+                UIPasteboard.general.contains(pasteboardTypes: imagesFileTypes)
+            {
+                return true
+            }
+        }
+        return super.canPerformAction(action, withSender: sender)
+    }
 }
 
 extension ChatInputViewModel: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
@@ -272,17 +328,14 @@ extension ChatInputViewModel: UIImagePickerControllerDelegate, UINavigationContr
         didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
     ) {
         if let image = info[.originalImage] as? UIImage {
-            let data = FilePickerDto(
+            let file = File(
                 id: UUID().uuidString,
                 size: 0,
                 mimeType: .JPEG,
                 name: "Camera shoot",
-                data: image.jpegData(compressionQuality: 0.9)!,
-                thumbnailData: image.jpegData(compressionQuality: 0.1)!
+                source: .data(data: image.jpegData(compressionQuality: 0.9)!)
             )
-            if let file = data.asFile() {
-                sendMessage(.init(type: .file(file: file)))
-            }
+            sendMessage(.init(type: .file(file: file)))
         }
         picker.dismiss(animated: true)
     }
@@ -291,84 +344,50 @@ extension ChatInputViewModel: UIImagePickerControllerDelegate, UINavigationContr
 
 extension ChatInputViewModel: PHPickerViewControllerDelegate {
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-        let selectedItems =
-            results
-            .map { $0.itemProvider }
         picker.isEditing = false
-        let dispatchGroup = DispatchGroup()
-        var files = [FilePickerDto]()
+        var files = [File]()
 
-        for selectedItem in selectedItems {
-            dispatchGroup.enter()  // signal IN
-            if selectedItem.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
-                selectedItem.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { imageUrl, error in
-                    if let imageUrl,
-                        let pathData = FileManager.default.contents(atPath: imageUrl.relativePath),
-                        let image = UIImage(data: pathData),
-                        let data = image.jpegData(compressionQuality: 0.9),
-                        let thumbnailData = image.jpegData(compressionQuality: 0.1)
-                    {
-                        let id = UUID().uuidString
-                        let file: FilePickerDto =
-                            .init(
-                                id: id,
-                                size: Double(data.count),
-                                mimeType: .JPEG,
-                                name: "\(Date().currentTimeMillis).jpeg",
-                                data: data,
-                                thumbnailData: thumbnailData
-                            )
-                        files.append(file)
-                    }
-                    dispatchGroup.leave()
-                }
-            } else if selectedItem.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
-                selectedItem.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { videoUrl, error in
-                    if let videoUrl, let data = FileManager.default.contents(atPath: videoUrl.relativePath) {
-                        let file: FilePickerDto =
-                            .init(
-                                id: UUID().uuidString,
-                                size: Double(data.count),
-                                mimeType: .MOV,
-                                name: "\(Date().currentTimeMillis).mov",
-                                data: data,
-                                thumbnailData: nil
-                            )
-                        files.append(file)
-                    }
-                    dispatchGroup.leave()
-                }
-            } else {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    dispatchGroup.leave()
-                }
+        for selectedItem in results {
+            if selectedItem.itemProvider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
+                let file = File(
+                    id: UUID().uuidString,
+                    size: 0,
+                    mimeType: .JPEG,
+                    name: "\(Date().currentTimeMillis).jpeg",
+                    source: .localFile(results: selectedItem)
+                )
+                files.append(file)
+            } else if selectedItem.itemProvider.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
+                let file = File(
+                    id: UUID().uuidString,
+                    size: 0,
+                    mimeType: .MOV,
+                    name: "\(Date().currentTimeMillis).mov",
+                    source: .localFile(results: selectedItem)
+                )
+                files.append(file)
+
             }
         }
-        dispatchGroup.notify(queue: .main) { [weak self] in
-            picker.dismiss(animated: true)
-            for fileDTO in files {
-                if let file = fileDTO.asFile() {
-                    self?.sendMessage(.init(type: .file(file: file)))
-                }
-            }
+        picker.dismiss(animated: true)
+        for file in files {
+            self.sendMessage(.init(type: .file(file: file)))
         }
     }
 }
 
 extension ChatInputViewModel: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-        var files: [FilePickerDto] = []
+        var files: [File] = []
         for url in urls {
             _ = url.startAccessingSecurityScopedResource()
-            if let file = FilePickerDto(from: url) {
+            if let file = File(from: url) {
                 files.append(file)
             }
             url.stopAccessingSecurityScopedResource()
         }
-        for fileDTO in files {
-            if let file = fileDTO.asFile() {
-                self.sendMessage(.init(type: .file(file: file)))
-            }
+        for file in files {
+            self.sendMessage(.init(type: .file(file: file)))
         }
         controller.dismiss(animated: true)
 
