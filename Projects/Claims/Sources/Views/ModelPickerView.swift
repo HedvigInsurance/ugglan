@@ -5,11 +5,11 @@ import hCoreUI
 
 struct ModelPickerView: View {
     @EnvironmentObject var router: Router
-    @PresentableStore var store: SubmitClaimStore
+    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
     let brand: ClaimFlowItemBrandOptionModel
 
     var body: some View {
-        let step = store.state.singleItemStep
+        let step = claimsNavigationVm.singleItemModel
         let customName = step?.selectedItemBrand == brand.itemBrandId ? step?.customName : nil
         return ItemPickerScreen<ClaimFlowItemModelOptionModel>(
             config: .init(
@@ -24,13 +24,16 @@ struct ModelPickerView: View {
                     }
                     return []
                 },
-                onSelected: { [weak store, weak router] item in guard let store = store else { return }
+                onSelected: { [weak router] item in
                     if item.first?.0 == nil {
+                        claimsNavigationVm.singleItemModel?.selectedItemBrand = brand.itemBrandId
                         let customName = item.first?.1 ?? ""
-                        store.send(.setItemModel(model: .custom(brand: brand, name: customName)))
+                        claimsNavigationVm.singleItemModel?.customName = customName
+                        claimsNavigationVm.singleItemModel?.selectedItemModel = nil
                     } else {
                         if let object = item.first?.0 {
-                            store.send(.setItemModel(model: .model(object)))
+                            claimsNavigationVm.singleItemModel?.customName = nil
+                            claimsNavigationVm.singleItemModel?.selectedItemModel = object.itemModelId
                         }
                     }
                     router?.dismiss()
@@ -47,6 +50,6 @@ struct ModelPickerView: View {
     }
 }
 
-#Preview{
+#Preview {
     ModelPickerView(brand: .init(displayName: "displayName", itemBrandId: "brandId", itemTypeId: "type"))
 }

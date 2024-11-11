@@ -28,11 +28,7 @@ public struct SubmitClaimsState: StateProtocol {
             } catch _ {}
         }
     }
-    @OptionalTransient var currentClaimContext: String?
     @OptionalTransient var summaryStep: FlowClaimSummaryStepModel?
-    @OptionalTransient var dateOfOccurenceStep: FlowClaimDateOfOccurenceStepModel?
-    @OptionalTransient var locationStep: FlowClaimLocationStepModel?
-    @OptionalTransient var singleItemStep: FlowClamSingleItemStepModel?
     @OptionalTransient var phoneNumberStep: FlowClaimPhoneNumberStepModel?
     @OptionalTransient var dateOfOccurrencePlusLocationStep: FlowClaimDateOfOccurrencePlusLocationStepModel?
     @OptionalTransient var singleItemCheckoutStep: FlowClaimSingleItemCheckoutStepModel?

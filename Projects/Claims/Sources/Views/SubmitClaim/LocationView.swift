@@ -11,11 +11,11 @@ struct LocationView: View {
         ItemPickerScreen<ClaimFlowLocationOptionModel>(
             config: .init(
                 items: {
-                    return claimsNavigationVm.flowClaimOccurrencePlusLocationStepModel.locationModel?.options
+                    return claimsNavigationVm.occurrencePlusLocationModel?.locationModel?.options
                         .compactMap({ (object: $0, displayName: .init(title: $0.displayName)) }) ?? []
                 }(),
                 preSelectedItems: {
-                    if let value = claimsNavigationVm.flowClaimOccurrencePlusLocationStepModel.locationModel?
+                    if let value = claimsNavigationVm.occurrencePlusLocationModel?.locationModel?
                         .getSelectedOption()
                     {
                         return [value]
@@ -25,7 +25,7 @@ struct LocationView: View {
                 onSelected: { selectedLocation in
                     if let object = selectedLocation.first?.0 {
                         claimsNavigationVm.isLocationPickerPresented = false
-                        claimsNavigationVm.flowClaimOccurrencePlusLocationStepModel.locationModel?.location =
+                        claimsNavigationVm.occurrencePlusLocationModel?.locationModel?.location =
                             object.value
                     }
                 },

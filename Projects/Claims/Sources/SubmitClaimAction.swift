@@ -10,27 +10,15 @@ public indirect enum SubmitClaimsAction: ActionProtocol, Hashable {
     case resetAudioRecording
 
     case setNewClaimId(with: String)
-    case setNewClaimContext(context: String)
 
-    //    case startClaimRequest(entrypointId: String?, entrypointOptionId: String?)
     case phoneNumberRequest(phoneNumber: String)
-    case dateOfOccurrenceAndLocationRequest
-    case singleItemRequest(purchasePrice: Double?)
     case emergencyConfirmRequest(isEmergency: Bool)
     case summaryRequest
     case singleItemCheckoutRequest
     case contractSelectRequest(contractId: String?)
     case submitFileUpload(ids: [String])
 
-    case setNewLocation(location: ClaimFlowLocationOptionModel?)
-    case setNewDate(dateOfOccurrence: String?)
-    case setPurchasePrice(priceOfPurchase: Double?)
-    case setSingleItemDamage(damages: [String])
-    case setSingleItemPurchaseDate(purchaseDate: Date?)
-    case setItemBrand(brand: ClaimFlowItemBrandOptionModel)
-    case setItemModel(model: SelectedModel)
     case setPayoutMethod(method: AvailableCheckoutMethod)
-    case setLocation(location: String?)
 
     case setProgress(progress: Float?)
     case setOnlyProgress(progress: Float?)
@@ -87,13 +75,6 @@ public enum SubmitClaimsNavigationAction: ActionProtocol, Hashable {
 }
 
 public enum ClaimsStepModelAction: ActionProtocol, Hashable {
-
-    public struct DateOfOccurrencePlusLocationStepModels: ActionProtocol, Hashable {
-        let dateOfOccurencePlusLocationModel: FlowClaimDateOfOccurrencePlusLocationStepModel
-        let dateOfOccurenceModel: FlowClaimDateOfOccurenceStepModel
-        let locationModel: FlowClaimLocationStepModel
-    }
-
     public struct SummaryStepModels: ActionProtocol, Hashable {
         let summaryStep: FlowClaimSummaryStepModel?
         let singleItemStepModel: FlowClamSingleItemStepModel?
@@ -104,10 +85,6 @@ public enum ClaimsStepModelAction: ActionProtocol, Hashable {
     }
 
     case setPhoneNumber(model: FlowClaimPhoneNumberStepModel)
-    case setDateOfOccurrencePlusLocation(model: DateOfOccurrencePlusLocationStepModels)
-    case setDateOfOccurence(model: FlowClaimDateOfOccurenceStepModel)
-    case setLocation(model: FlowClaimLocationStepModel)
-    case setSingleItem(model: FlowClamSingleItemStepModel)
     case setSummaryStep(model: SummaryStepModels)
     case setSingleItemCheckoutStep(model: FlowClaimSingleItemCheckoutStepModel)
     case setSuccessStep(model: FlowClaimSuccessStepModel)
@@ -124,14 +101,6 @@ extension ClaimsStepModelAction {
         switch self {
         case .setPhoneNumber(let model):
             return .openPhoneNumberScreen(model: model)
-        case .setDateOfOccurrencePlusLocation:
-            return .openDateOfOccurrencePlusLocationScreen(options: [.date, .location])
-        case .setDateOfOccurence:
-            return .openDateOfOccurrencePlusLocationScreen(options: [.date])
-        case .setLocation:
-            return .openDateOfOccurrencePlusLocationScreen(options: [.location])
-        case .setSingleItem:
-            return .openSingleItemScreen
         case .setSummaryStep:
             return .openSummaryScreen
         case .setSingleItemCheckoutStep:
@@ -160,11 +129,7 @@ extension ClaimsStepModelAction {
 }
 
 public enum ClaimsLoadingType: LoadingProtocol {
-    case startClaim
-    case fetchClaimEntrypointGroups
     case postPhoneNumber
-    case postDateOfOccurrenceAndLocation
-    case postSingleItem
     case postSummary
     case postSingleItemCheckout
     case postAudioRecording

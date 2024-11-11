@@ -21,7 +21,10 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
         )
     }
 
-    public func dateOfOccurrenceAndLocationRequest(context: String) async throws -> SubmitClaimStepResponse {
+    public func dateOfOccurrenceAndLocationRequest(
+        context: String,
+        model: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels?
+    ) async throws -> SubmitClaimStepResponse {
         return SubmitClaimStepResponse(
             claimId: "",
             context: "",
@@ -43,7 +46,10 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
         )
     }
 
-    public func singleItemRequest(purchasePrice: Double?, context: String) async throws -> SubmitClaimStepResponse {
+    public func singleItemRequest(
+        context: String,
+        model: FlowClamSingleItemStepModel?
+    ) async throws -> SubmitClaimStepResponse {
         return SubmitClaimStepResponse(
             claimId: "",
             context: "",

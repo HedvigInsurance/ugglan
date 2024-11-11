@@ -7,6 +7,7 @@ import hCoreUI
 public struct SubmitClaimSummaryScreen: View {
     @PresentableStore var store: SubmitClaimStore
     @StateObject fileprivate var vm: SubmitClaimSummaryScreenViewModel
+    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
 
     public init() {
         _vm = StateObject(wrappedValue: SubmitClaimSummaryScreenViewModel())
@@ -77,83 +78,47 @@ public struct SubmitClaimSummaryScreen: View {
 
     @ViewBuilder
     private var damageType: some View {
-        PresentableStoreLens(
-            SubmitClaimStore.self,
-            getter: { state in
-                state.singleItemStep
-            }
-        ) { singleItemStep in
-            createRow(with: L10n.claimsDamages, and: singleItemStep?.getAllChoosenDamagesAsText())
-        }
+        let singleItemStep = claimsNavigationVm.singleItemModel
+        createRow(with: L10n.claimsDamages, and: singleItemStep?.getAllChoosenDamagesAsText())
     }
 
     @ViewBuilder
     private var damageDate: some View {
-        PresentableStoreLens(
-            SubmitClaimStore.self,
-            getter: { state in
-                state.dateOfOccurenceStep
-            }
-        ) { dateOfOccurenceStep in
-            createRow(
-                with: L10n.Claims.Item.Screen.Date.Of.Incident.button,
-                and: dateOfOccurenceStep?.dateOfOccurence?.localDateToDate?.displayDateDDMMMYYYYFormat
-            )
-        }
+        let dateOfOccurenceStep = claimsNavigationVm.occurrencePlusLocationModel?.dateOfOccurrenceModel
+        createRow(
+            with: L10n.Claims.Item.Screen.Date.Of.Incident.button,
+            and: dateOfOccurenceStep?.dateOfOccurence?.localDateToDate?.displayDateDDMMMYYYYFormat
+        )
     }
 
     @ViewBuilder
     private var place: some View {
-        PresentableStoreLens(
-            SubmitClaimStore.self,
-            getter: { state in
-                state.locationStep
-            }
-        ) { locationStep in
-            createRow(with: L10n.Claims.Location.Screen.title, and: locationStep?.getSelectedOption()?.displayName)
-        }
+        let locationStep = claimsNavigationVm.occurrencePlusLocationModel?.locationModel
+        createRow(with: L10n.Claims.Location.Screen.title, and: locationStep?.getSelectedOption()?.displayName)
     }
 
     @ViewBuilder
     private var model: some View {
-        PresentableStoreLens(
-            SubmitClaimStore.self,
-            getter: { state in
-                state.singleItemStep
-            }
-        ) { singleItemStep in
-            createRow(with: L10n.Claims.Item.Screen.Model.button, and: singleItemStep?.getBrandOrModelName())
-        }
+        let singleItemStep = claimsNavigationVm.singleItemModel
+        createRow(with: L10n.Claims.Item.Screen.Model.button, and: singleItemStep?.getBrandOrModelName())
     }
 
     @ViewBuilder
     private var dateOfPurchase: some View {
-        PresentableStoreLens(
-            SubmitClaimStore.self,
-            getter: { state in
-                state.singleItemStep
-            }
-        ) { singleItemStep in
-            createRow(
-                with: L10n.Claims.Item.Screen.Date.Of.Purchase.button,
-                and: singleItemStep?.purchaseDate?.localDateToDate?.displayDateDDMMMYYYYFormat
-            )
-        }
+        let singleItemStep = claimsNavigationVm.singleItemModel
+        createRow(
+            with: L10n.Claims.Item.Screen.Date.Of.Purchase.button,
+            and: singleItemStep?.purchaseDate?.localDateToDate?.displayDateDDMMMYYYYFormat
+        )
     }
 
     @ViewBuilder
     private var purchasePrice: some View {
-        PresentableStoreLens(
-            SubmitClaimStore.self,
-            getter: { state in
-                state.singleItemStep
-            }
-        ) { singleItemStep in
-            createRow(
-                with: L10n.Claims.Item.Screen.Purchase.Price.button,
-                and: singleItemStep?.returnDisplayStringForSummaryPrice
-            )
-        }
+        let singleItemStep = claimsNavigationVm.singleItemModel
+        createRow(
+            with: L10n.Claims.Item.Screen.Purchase.Price.button,
+            and: singleItemStep?.returnDisplayStringForSummaryPrice
+        )
     }
 
     @ViewBuilder

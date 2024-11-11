@@ -45,78 +45,56 @@ public struct SubmitClaimEditSummaryScreen: View {
     }
 
     @ViewBuilder func displayDateOfIncidentField() -> some View {
+        let dateOfOccurenceStep = claimsNavigationVm.occurrencePlusLocationModel?.dateOfOccurrenceModel
+        hRow {
+            hText(L10n.Claims.Item.Screen.Date.Of.Incident.button)
+                .foregroundColor(hTextColor.Opaque.primary)
 
-        PresentableStoreLens(
-            SubmitClaimStore.self,
-            getter: { state in
-                state.dateOfOccurenceStep
+        }
+        .withCustomAccessory {
+            Spacer()
+            HStack(spacing: 0) {
+                hText(dateOfOccurenceStep?.dateOfOccurence ?? "")
+                    .foregroundColor(hTextColor.Opaque.primary).colorScheme(.light)
+                    .padding(.vertical, 11)
+                    .padding([.trailing, .leading], 12)
             }
-        ) { dateOfOccurenceStep in
-            hRow {
-                hText(L10n.Claims.Item.Screen.Date.Of.Incident.button)
-                    .foregroundColor(hTextColor.Opaque.primary)
-
-            }
-            .withCustomAccessory {
-
-                Spacer()
-
-                HStack(spacing: 0) {
-                    hText(dateOfOccurenceStep?.dateOfOccurence ?? "")
-                        .foregroundColor(hTextColor.Opaque.primary).colorScheme(.light)
-                        .padding(.vertical, 11)
-                        .padding([.trailing, .leading], 12)
-                }
-                .cornerRadius(.cornerRadiusL)
-            }
+            .cornerRadius(.cornerRadiusL)
         }
     }
 
     @ViewBuilder func displayPlaceOfIncidentField() -> some View {
-        PresentableStoreLens(
-            SubmitClaimStore.self,
-            getter: { state in
-                state.locationStep
-            }
-        ) { locationStep in
-            hRow {
-                HStack {
-                    hText(L10n.Claims.Location.Screen.title)
-                        .foregroundColor(hTextColor.Opaque.primary)
-                    Spacer()
+        let locationStep = claimsNavigationVm.occurrencePlusLocationModel?.locationModel
+        hRow {
+            HStack {
+                hText(L10n.Claims.Location.Screen.title)
+                    .foregroundColor(hTextColor.Opaque.primary)
+                Spacer()
 
-                    hText(locationStep?.getSelectedOption()?.displayName ?? "")
-                        .foregroundColor(hTextColor.Opaque.secondary)
-                }
+                hText(locationStep?.getSelectedOption()?.displayName ?? "")
+                    .foregroundColor(hTextColor.Opaque.secondary)
             }
-            .onTap {
-                claimsNavigationVm.isLocationPickerPresented = true
-            }
+        }
+        .onTap {
+            claimsNavigationVm.isLocationPickerPresented = true
         }
     }
 
     @ViewBuilder func displayModelInfoField() -> some View {
-        PresentableStoreLens(
-            SubmitClaimStore.self,
-            getter: { state in
-                state.singleItemStep
-            }
-        ) { singleItemStep in
-            hRow {
-                HStack {
-                    hText(L10n.Claims.Item.Screen.Model.button)
-                        .foregroundColor(hTextColor.Opaque.primary)
-                    Spacer()
+        let singleItemStep = claimsNavigationVm.singleItemModel
+        hRow {
+            HStack {
+                hText(L10n.Claims.Item.Screen.Model.button)
+                    .foregroundColor(hTextColor.Opaque.primary)
+                Spacer()
 
-                    if let getBrandOrModelName = singleItemStep?.getBrandOrModelName() {
-                        hText(getBrandOrModelName)
-                            .foregroundColor(hTextColor.Opaque.secondary)
-                    }
+                if let getBrandOrModelName = singleItemStep?.getBrandOrModelName() {
+                    hText(getBrandOrModelName)
+                        .foregroundColor(hTextColor.Opaque.secondary)
                 }
             }
-            .onTap {}
         }
-
+        .onTap {}
     }
 
     @ViewBuilder func displayDateOfPurchaseField() -> some View {
@@ -126,24 +104,17 @@ public struct SubmitClaimEditSummaryScreen: View {
                 .foregroundColor(hTextColor.Opaque.primary)
         }
         .withCustomAccessory {
-            PresentableStoreLens(
-                SubmitClaimStore.self,
-                getter: { state in
-                    state.singleItemStep
+            let singleItemStep = claimsNavigationVm.singleItemModel
+            Spacer()
+            HStack(spacing: 0) {
+                if let date = singleItemStep?.purchaseDate {
+                    hText(date)
+                        .foregroundColor(hTextColor.Opaque.primary).colorScheme(.light)
+                        .padding(.vertical, 11)
+                        .padding([.trailing, .leading], 12)
                 }
-            ) { singleItemStep in
-                Spacer()
-
-                HStack(spacing: 0) {
-                    if let date = singleItemStep?.purchaseDate {
-                        hText(date)
-                            .foregroundColor(hTextColor.Opaque.primary).colorScheme(.light)
-                            .padding(.vertical, 11)
-                            .padding([.trailing, .leading], 12)
-                    }
-                }
-                .cornerRadius(.cornerRadiusL)
             }
+            .cornerRadius(.cornerRadiusL)
         }
     }
 
@@ -158,18 +129,12 @@ public struct SubmitClaimEditSummaryScreen: View {
             }
         }
         .withCustomAccessory {
-            PresentableStoreLens(
-                SubmitClaimStore.self,
-                getter: { state in
-                    state.singleItemStep
-                }
-            ) { singleItemStep in
-                if let text = singleItemStep?.getChoosenDamagesAsText() {
-                    hText(text).foregroundColor(hTextColor.Opaque.primary)
-                } else {
-                    hText(L10n.Claim.Location.choose)
-                        .foregroundColor(hTextColor.Opaque.secondary)
-                }
+            let singleItemStep = claimsNavigationVm.singleItemModel
+            if let text = singleItemStep?.getChoosenDamagesAsText() {
+                hText(text).foregroundColor(hTextColor.Opaque.primary)
+            } else {
+                hText(L10n.Claim.Location.choose)
+                    .foregroundColor(hTextColor.Opaque.secondary)
             }
         }
         .onTap {

@@ -9,17 +9,17 @@ struct PriceInputScreen: View {
     @State var purchasePrice: String = ""
     @State var type: ClaimsFlowSingleItemFieldType? = .purchasePrice
     @EnvironmentObject var router: Router
+    @ObservedObject var claimsNavigationVm: ClaimsNavigationViewModel
 
     let currency: String
-    var onSave: (String) -> Void
 
     init(
-        onSave: @escaping (String) -> Void
+        claimsNavigationVm: ClaimsNavigationViewModel
     ) {
-        self.onSave = onSave
-        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-        currency = store.state.singleItemStep?.prefferedCurrency ?? ""
-        if let purchasePrice = store.state.singleItemStep?.purchasePrice {
+        self.claimsNavigationVm = claimsNavigationVm
+        self.currency = claimsNavigationVm.singleItemModel?.prefferedCurrency ?? ""
+
+        if let purchasePrice = claimsNavigationVm.singleItemModel?.purchasePrice {
             self.purchasePrice = String(purchasePrice)
         }
     }
@@ -43,7 +43,8 @@ struct PriceInputScreen: View {
                 VStack(spacing: 8) {
                     hButton.LargeButton(type: .primary) {
                         UIApplication.dismissKeyboard()
-                        onSave(purchasePrice)
+                        claimsNavigationVm.singleItemModel?.purchasePrice = Double(purchasePrice)
+                        claimsNavigationVm.isPriceInputPresented = false
                     } content: {
                         hText(L10n.generalSaveButton, style: .body1)
                     }

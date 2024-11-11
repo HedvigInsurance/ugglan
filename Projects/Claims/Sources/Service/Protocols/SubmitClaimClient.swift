@@ -1,13 +1,16 @@
 public protocol SubmitClaimClient {
     func startClaim(entrypointId: String?, entrypointOptionId: String?) async throws -> SubmitClaimStepResponse
     func updateContact(phoneNumber: String, context: String) async throws -> SubmitClaimStepResponse
-    func dateOfOccurrenceAndLocationRequest(context: String) async throws -> SubmitClaimStepResponse
+    func dateOfOccurrenceAndLocationRequest(
+        context: String,
+        model: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels?
+    ) async throws -> SubmitClaimStepResponse
     func submitAudioRecording(
         type: SubmitAudioRecordingType,
         fileUploaderClient: FileUploaderClient,
         context: String
     ) async throws -> SubmitClaimStepResponse
-    func singleItemRequest(purchasePrice: Double?, context: String) async throws -> SubmitClaimStepResponse
+    func singleItemRequest(context: String, model: FlowClamSingleItemStepModel?) async throws -> SubmitClaimStepResponse
     func summaryRequest(context: String) async throws -> SubmitClaimStepResponse
     func singleItemCheckoutRequest(context: String) async throws -> SubmitClaimStepResponse
     func contractSelectRequest(contractId: String, context: String) async throws -> SubmitClaimStepResponse
@@ -25,7 +28,7 @@ public struct SubmitClaimStepResponse {
 public enum SubmitClaimStep {
     public struct DateOfOccurrencePlusLocationStepModels: Hashable, Equatable {
         let dateOfOccurencePlusLocationModel: FlowClaimDateOfOccurrencePlusLocationStepModel?
-        var dateOfOccurenceModel: FlowClaimDateOfOccurenceStepModel?
+        var dateOfOccurrenceModel: FlowClaimDateOfOccurenceStepModel?
         var locationModel: FlowClaimLocationStepModel?
     }
 

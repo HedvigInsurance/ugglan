@@ -6,9 +6,9 @@ import hCoreUI
 import hGraphQL
 
 public struct SubmitClaimSingleItem: View {
-    @PresentableStore var store: SubmitClaimStore
     @State var type: ClaimsFlowSingleItemFieldType?
     @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @StateObject var vm = SubmitClaimSingleItemViewModel()
 
     public init() {}
 
@@ -17,29 +17,27 @@ public struct SubmitClaimSingleItem: View {
         }
         .hFormTitle(title: .init(.small, .displayXSLong, L10n.claimsSingleItemDetails))
         .hFormAttachToBottom {
-            VStack(spacing: 4) {
-                PresentableStoreLens(
-                    SubmitClaimStore.self,
-                    getter: { state in
-                        state.singleItemStep
-                    }
-                ) { singleItemStep in
-                    hSection {
-                        getFields(singleItemStep: singleItemStep)
-                            .disableOn(SubmitClaimStore.self, [.postSingleItem])
-                        hButton.LargeButton(type: .primary) {
-                            store.send(.singleItemRequest(purchasePrice: singleItemStep?.purchasePrice))
-                        } content: {
-                            hText(L10n.generalContinueButton)
+            hSection {
+                getFields(singleItemStep: claimsNavigationVm.singleItemModel)
+                hButton.LargeButton(type: .primary) {
+                    let singleItemModel = claimsNavigationVm.singleItemModel
+                    Task {
+                        let step = await vm.singleItemRequest(
+                            context: claimsNavigationVm.currentClaimContext ?? "",
+                            model: singleItemModel
+                        )
+
+                        if let step {
+                            claimsNavigationVm.navigate(data: step)
                         }
-                        .trackLoading(SubmitClaimStore.self, action: .postSingleItem)
-                        .presentableStoreLensAnimation(.default)
                     }
-                    .sectionContainerStyle(.transparent)
+                } content: {
+                    hText(L10n.generalContinueButton)
                 }
+                .presentableStoreLensAnimation(.default)
             }
+            .sectionContainerStyle(.transparent)
         }
-        .claimErrorTrackerFor([.postSingleItem])
     }
 
     @ViewBuilder
@@ -83,7 +81,7 @@ public struct SubmitClaimSingleItem: View {
             ),
             selectedDate: claim?.purchaseDate?.localDateToDate
         ) { date in
-            store.send(.setSingleItemPurchaseDate(purchaseDate: date))
+            claimsNavigationVm.singleItemModel?.purchaseDate = date.localDateString
         }
     }
 
@@ -108,6 +106,34 @@ public struct SubmitClaimSingleItem: View {
                 claimsNavigationVm.isPriceInputPresented = true
             }
         )
+    }
+}
+
+public class SubmitClaimSingleItemViewModel: ObservableObject {
+    @Inject private var service: SubmitClaimClient
+
+    @MainActor
+    func singleItemRequest(context: String, model: FlowClamSingleItemStepModel?) async -> SubmitClaimStepResponse? {
+        //        setProgress(to: 0)
+
+        //        withAnimation {
+        //            self.viewState = .loading
+        //        }
+
+        do {
+            let data = try await service.singleItemRequest(context: context, model: model)
+
+            //            withAnimation {
+            //                self.viewState = .success
+            //            }
+
+            return data
+        } catch let exception {
+            //            withAnimation {
+            //                self.viewState = .error(errorMessage: exception.localizedDescription)
+            //            }
+        }
+        return nil
     }
 }
 

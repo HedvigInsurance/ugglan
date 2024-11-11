@@ -13,7 +13,6 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         _ getState: @escaping () -> SubmitClaimsState,
         _ action: SubmitClaimsAction
     ) async {
-        let newClaimContext = state.currentClaimContext ?? ""
         switch action {
         case .submitClaimOpenFreeTextChat:
             NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
@@ -25,55 +24,55 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         //                )
         //            }
         case let .phoneNumberRequest(phoneNumberInput):
-            await executeAsync(loadingType: .postPhoneNumber) {
-                try await self.submitClaimClient.updateContact(phoneNumber: phoneNumberInput, context: newClaimContext)
-            }
-        case .dateOfOccurrenceAndLocationRequest:
-            await executeAsync(loadingType: .postDateOfOccurrenceAndLocation) {
-                try await self.submitClaimClient.dateOfOccurrenceAndLocationRequest(context: newClaimContext)
-            }
+            break
+        //            await executeAsync(loadingType: .postPhoneNumber) {
+        //                try await self.submitClaimClient.updateContact(phoneNumber: phoneNumberInput, context: newClaimContext)
+        //            }
+        //        case .dateOfOccurrenceAndLocationRequest:
+        //            await executeAsync(loadingType: .postDateOfOccurrenceAndLocation) {
+        //                try await self.submitClaimClient.dateOfOccurrenceAndLocationRequest(context: newClaimContext)
+        //            }
         case let .submitAudioRecording(type):
-            await executeAsync(loadingType: .postAudioRecording) {
-                try await self.submitClaimClient.submitAudioRecording(
-                    type: type,
-                    fileUploaderClient: self.fileUploaderClient,
-                    context: newClaimContext
-                )
-            }
-        case let .singleItemRequest(purchasePrice):
-            await executeAsync(loadingType: .postSingleItem) {
-                try await self.submitClaimClient.singleItemRequest(
-                    purchasePrice: purchasePrice,
-                    context: newClaimContext
-                )
-            }
+            break
+        //            await executeAsync(loadingType: .postAudioRecording) {
+        //                try await self.submitClaimClient.submitAudioRecording(
+        //                    type: type,
+        //                    fileUploaderClient: self.fileUploaderClient,
+        //                    context: newClaimContext
+        //                )
+        //            }
         case .summaryRequest:
-            await executeAsync(loadingType: .postSummary) {
-                try await self.submitClaimClient.summaryRequest(context: newClaimContext)
-            }
+            break
+        //            await executeAsync(loadingType: .postSummary) {
+        //                try await self.submitClaimClient.summaryRequest(context: newClaimContext)
+        //            }
         case .singleItemCheckoutRequest:
-            await executeAsync(loadingType: .postSingleItemCheckout) {
-                try await self.submitClaimClient.singleItemCheckoutRequest(context: newClaimContext)
-            }
+            break
+        //            await executeAsync(loadingType: .postSingleItemCheckout) {
+        //                try await self.submitClaimClient.singleItemCheckoutRequest(context: newClaimContext)
+        //            }
 
         case let .contractSelectRequest(contractId):
-            await executeAsync(loadingType: .postContractSelect) {
-                try await self.submitClaimClient.contractSelectRequest(
-                    contractId: contractId ?? "",
-                    context: newClaimContext
-                )
-            }
+            break
+        //            await executeAsync(loadingType: .postContractSelect) {
+        //                try await self.submitClaimClient.contractSelectRequest(
+        //                    contractId: contractId ?? "",
+        //                    context: newClaimContext
+        //                )
+        //            }
         case let .emergencyConfirmRequest(isEmergency):
-            await executeAsync(loadingType: .postConfirmEmergency) {
-                try await self.submitClaimClient.emergencyConfirmRequest(
-                    isEmergency: isEmergency,
-                    context: newClaimContext
-                )
-            }
+            break
+        //            await executeAsync(loadingType: .postConfirmEmergency) {
+        //                try await self.submitClaimClient.emergencyConfirmRequest(
+        //                    isEmergency: isEmergency,
+        //                    context: newClaimContext
+        //                )
+        //            }
         case let .submitFileUpload(ids):
-            await executeAsync(loadingType: .postUploadFiles) {
-                try await self.submitClaimClient.submitFileUpload(ids: ids, context: newClaimContext)
-            }
+            break
+        //            await executeAsync(loadingType: .postUploadFiles) {
+        //                try await self.submitClaimClient.submitFileUpload(ids: ids, context: newClaimContext)
+        //            }
         default:
             break
         }
@@ -86,30 +85,6 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             if newState.currentClaimId != id {
                 newState.currentClaimId = id
             }
-        case let .setNewLocation(location):
-            newState.locationStep?.location = location?.value
-        case let .setNewDate(dateOfOccurrence):
-            newState.dateOfOccurenceStep?.dateOfOccurence = dateOfOccurrence
-        case let .setSingleItemDamage(damages):
-            newState.singleItemStep?.selectedItemProblems = damages
-        case let .setItemModel(model):
-            switch model {
-            case let .model(model):
-                newState.singleItemStep?.selectedItemBrand = model.itemBrandId
-                newState.singleItemStep?.customName = nil
-                newState.singleItemStep?.selectedItemModel = model.itemModelId
-            case let .custom(brand, name):
-                newState.singleItemStep?.selectedItemBrand = brand.itemBrandId
-                newState.singleItemStep?.customName = name
-                newState.singleItemStep?.selectedItemModel = nil
-            }
-        case let .setPurchasePrice(priceOfPurchase):
-            newState.singleItemStep?.purchasePrice = priceOfPurchase
-        case let .setSingleItemPurchaseDate(purchaseDate):
-            newState.singleItemStep?.purchaseDate = purchaseDate?.localDateString
-        case let .setNewClaimContext(context):
-            newState.currentClaimContext = context
-            removeLoading(for: .fetchClaimEntrypointGroups)
         case .submitAudioRecording:
             setLoading(for: .postAudioRecording)
         case .resetAudioRecording:
@@ -119,26 +94,12 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             case let .setPhoneNumber(model):
                 removeLoading(for: .postPhoneNumber)
                 newState.phoneNumberStep = model
-            case let .setDateOfOccurrencePlusLocation(model):
-                removeLoading(for: .postDateOfOccurrenceAndLocation)
-                newState.dateOfOccurrencePlusLocationStep = model.dateOfOccurencePlusLocationModel
-                newState.locationStep = model.locationModel
-                newState.dateOfOccurenceStep = model.dateOfOccurenceModel
-            case let .setDateOfOccurence(model):
-                removeLoading(for: .postDateOfOccurrenceAndLocation)
-                newState.dateOfOccurenceStep = model
-            case let .setLocation(model):
-                removeLoading(for: .postDateOfOccurrenceAndLocation)
-                newState.locationStep = model
-            case let .setSingleItem(model):
-                removeLoading(for: .postSingleItem)
-                newState.singleItemStep = model
             case let .setSummaryStep(model):
                 removeLoading(for: .postSummary)
                 newState.summaryStep = model.summaryStep
-                newState.locationStep = model.locationModel
-                newState.dateOfOccurenceStep = model.dateOfOccurenceModel
-                newState.singleItemStep = model.singleItemStepModel
+                //                newState.locationStep = model.locationModel
+                //                newState.dateOfOccurenceStep = model.dateOfOccurenceModel
+                //                newState.singleItemStep = model.singleItemStepModel
                 newState.audioRecordingStep = model.audioRecordingModel
                 newState.fileUploadStep = model.fileUploadModel
             case let .setSingleItemCheckoutStep(model):
@@ -164,38 +125,18 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             case let .setFileUploadStep(model):
                 removeLoading(for: .postUploadFiles)
                 newState.fileUploadStep = model
-
             }
 
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
                 self?.send(.navigationAction(action: action.nextStepAction))
             }
-        //        case .startClaimRequest:
-        //            setLoading(for: .startClaim)
-        //            newState.summaryStep = nil
-        //            newState.dateOfOccurenceStep = nil
-        //            newState.locationStep = nil
-        //            newState.singleItemStep = nil
-        //            newState.phoneNumberStep = nil
-        //            newState.dateOfOccurrencePlusLocationStep = nil
-        //            newState.singleItemCheckoutStep = nil
-        //            newState.successStep = nil
-        //            newState.failedStep = nil
-        //            newState.audioRecordingStep = nil
-        //            newState.contractStep = nil
-        //            newState.currentClaimContext = nil
-        //            newState.fileUploadStep = nil
         case let .setPayoutMethod(method):
             newState.singleItemCheckoutStep?.selectedPayoutMethod = method
         case .phoneNumberRequest:
             setLoading(for: .postPhoneNumber)
-        case .dateOfOccurrenceAndLocationRequest:
-            setLoading(for: .postDateOfOccurrenceAndLocation)
         case let .contractSelectRequest(selected):
             newState.contractStep?.selectedContractId = selected
             setLoading(for: .postContractSelect)
-        case .singleItemRequest:
-            setLoading(for: .postSingleItem)
         case .summaryRequest:
             setLoading(for: .postSummary)
         case .singleItemCheckoutRequest:
@@ -214,24 +155,5 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             break
         }
         return newState
-    }
-
-    private func executeAsync(
-        loadingType: ClaimsLoadingType,
-        action: @escaping () async throws -> SubmitClaimStepResponse
-    ) async {
-        self.setLoading(for: loadingType)
-        do {
-            let data = try await action()
-            await sendAsync(.setNewClaimId(with: data.claimId))
-            await sendAsync(.setNewClaimContext(context: data.context))
-            if let progress = data.progress {
-                await sendAsync(.setProgress(progress: progress))
-            }
-            //            await sendAsync(data.step)
-            removeLoading(for: loadingType)
-        } catch let error {
-            self.setError(error.localizedDescription, for: loadingType)
-        }
     }
 }

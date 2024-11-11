@@ -4,20 +4,20 @@ import hCore
 import hCoreUI
 
 struct SubmitClaimOccurrencePlusLocationScreen: View {
-    @PresentableStore var store: SubmitClaimStore
     @ObservedObject var claimsNavigationVm: ClaimsNavigationViewModel
     @State private var options: SubmitClaimsNavigationAction.SubmitClaimOption = []
+    @StateObject private var vm = SubmitClaimOccurrencePlusLocationViewModel()
 
     init(
         claimsNavigationVm: ClaimsNavigationViewModel
     ) {
         self.claimsNavigationVm = claimsNavigationVm
 
-        if claimsNavigationVm.flowClaimOccurrencePlusLocationStepModel.dateOfOccurencePlusLocationModel != nil {
+        if claimsNavigationVm.occurrencePlusLocationModel?.dateOfOccurencePlusLocationModel != nil {
             options = [.date, .location]
-        } else if claimsNavigationVm.flowClaimOccurrencePlusLocationStepModel.dateOfOccurenceModel != nil {
+        } else if claimsNavigationVm.occurrencePlusLocationModel?.dateOfOccurrenceModel != nil {
             options = [.date]
-        } else if claimsNavigationVm.flowClaimOccurrencePlusLocationStepModel.locationModel != nil {
+        } else if claimsNavigationVm.occurrencePlusLocationModel?.locationModel != nil {
             options = [.location]
         } else {
             options = []
@@ -32,19 +32,17 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
                 VStack(spacing: 0) {
                     hSection {
                         displayFieldsAndNotice
-                            .disableOn(SubmitClaimStore.self, [.postDateOfOccurrenceAndLocation])
                         continueButton
                     }
                     .sectionContainerStyle(.transparent)
                 }
             }
-            .claimErrorTrackerFor([.postDateOfOccurrenceAndLocation])
     }
 
     @ViewBuilder
     private var displayFieldsAndNotice: some View {
 
-        if let locationStep = claimsNavigationVm.flowClaimOccurrencePlusLocationStepModel.locationModel {
+        if let locationStep = claimsNavigationVm.occurrencePlusLocationModel?.locationModel {
             hFloatingField(
                 value: locationStep.getSelectedOption()?.displayName ?? "",
                 placeholder: L10n.Claims.Location.Screen.title,
@@ -55,7 +53,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
             .padding(.bottom, .padding4)
         }
 
-        if let dateOfOccurrenceStep = claimsNavigationVm.flowClaimOccurrencePlusLocationStepModel.dateOfOccurenceModel {
+        if let dateOfOccurrenceStep = claimsNavigationVm.occurrencePlusLocationModel?.dateOfOccurrenceModel {
             hDatePickerField(
                 config: .init(
                     maxDate: dateOfOccurrenceStep.getMaxDate(),
@@ -65,7 +63,8 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
                 selectedDate: dateOfOccurrenceStep.dateOfOccurence?.localDateToDate,
                 placehodlerText: L10n.Claims.Item.Screen.Date.Of.Incident.button
             ) { date in
-                store.send(.setNewDate(dateOfOccurrence: date.localDateString))
+                claimsNavigationVm.occurrencePlusLocationModel?.dateOfOccurrenceModel?.dateOfOccurence =
+                    date.localDateString
             }
             InfoCard(text: L10n.claimsDateNotSureNoticeLabel, type: .info)
                 .padding(.vertical, .padding16)
@@ -75,12 +74,53 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
     @ViewBuilder
     private var continueButton: some View {
         hButton.LargeButton(type: .primary) {
-            store.send(.dateOfOccurrenceAndLocationRequest)
+            Task {
+                let step = await vm.dateOfOccurrenceAndLocationRequest(
+                    context: claimsNavigationVm.currentClaimContext ?? "",
+                    model: claimsNavigationVm.occurrencePlusLocationModel
+                )
+
+                if let step {
+                    claimsNavigationVm.navigate(data: step)
+                }
+            }
+
         } content: {
             hText(L10n.generalContinueButton, style: .body1)
         }
-        .trackLoading(SubmitClaimStore.self, action: .postDateOfOccurrenceAndLocation)
         .presentableStoreLensAnimation(.default)
+    }
+}
+
+public class SubmitClaimOccurrencePlusLocationViewModel: ObservableObject {
+    @Inject private var service: SubmitClaimClient
+    @Published var viewState: ProcessingState = .loading
+
+    @MainActor
+    func dateOfOccurrenceAndLocationRequest(
+        context: String,
+        model: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels?
+    ) async -> SubmitClaimStepResponse? {
+        //        setProgress(to: 0)
+
+        withAnimation {
+            self.viewState = .loading
+        }
+
+        do {
+            let data = try await service.dateOfOccurrenceAndLocationRequest(context: context, model: model)
+
+            withAnimation {
+                self.viewState = .success
+            }
+
+            return data
+        } catch let exception {
+            withAnimation {
+                self.viewState = .error(errorMessage: exception.localizedDescription)
+            }
+        }
+        return nil
     }
 }
 

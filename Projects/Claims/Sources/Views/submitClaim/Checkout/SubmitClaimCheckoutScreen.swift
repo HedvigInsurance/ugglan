@@ -247,30 +247,30 @@ struct SubmitClaimCheckoutRepairScreen_Previews: PreviewProvider {
                         )
                     )
                 )
-                store.send(
-                    .stepModelAction(
-                        action: .setSingleItem(
-                            model: .init(
-                                id: "Test",
-                                availableItemBrandOptions: [],
-                                availableItemModelOptions: [
-                                    .init(
-                                        displayName: "Model display name",
-                                        itemBrandId: "testBrand",
-                                        itemTypeId: "testModel",
-                                        itemModelId: "testModel"
-                                    )
-                                ],
-                                availableItemProblems: [],
-                                prefferedCurrency: "sek",
-                                currencyCode: "SEK",
-                                selectedItemModel: "testModel",
-                                defaultItemProblems: [],
-                                purchasePriceApplicable: false
-                            )
-                        )
-                    )
-                )
+                //                store.send(
+                //                    .stepModelAction(
+                //                        action: .setSingleItem(
+                //                            model: .init(
+                //                                id: "Test",
+                //                                availableItemBrandOptions: [],
+                //                                availableItemModelOptions: [
+                //                                    .init(
+                //                                        displayName: "Model display name",
+                //                                        itemBrandId: "testBrand",
+                //                                        itemTypeId: "testModel",
+                //                                        itemModelId: "testModel"
+                //                                    )
+                //                                ],
+                //                                availableItemProblems: [],
+                //                                prefferedCurrency: "sek",
+                //                                currencyCode: "SEK",
+                //                                selectedItemModel: "testModel",
+                //                                defaultItemProblems: [],
+                //                                purchasePriceApplicable: false
+                //                            )
+                //                        )
+                //                    )
+                //                )
             }
     }
 }
@@ -280,61 +280,61 @@ struct SubmitClaimCheckoutNoRepairScreen_Previews: PreviewProvider {
         Localization.Locale.currentLocale.send(.en_SE)
         return SubmitClaimCheckoutScreen()
             .onAppear {
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                store.send(
-                    .stepModelAction(
-                        action: .setSingleItemCheckoutStep(
-                            model: .init(
-                                id: "id",
-                                payoutMethods: [
-                                    .init(
-                                        id: "id",
-                                        autogiro: .init(
-                                            id: "autogiroId",
-                                            amount: .sek(100),
-                                            displayName: "Auto giro"
-                                        )
-                                    )
-                                ],
-                                compensation: .init(
-                                    id: "compensation id",
-                                    deductible: .sek(20),
-                                    payoutAmount: .sek(100),
-                                    repairCompensation: nil,
-                                    valueCompensation: .init(
-                                        depreciation: .sek(30),
-                                        price: .sek(300)
-                                    )
-                                ),
-                                singleItemModel: nil
-                            )
-                        )
-                    )
-                )
-                store.send(
-                    .stepModelAction(
-                        action: .setSingleItem(
-                            model: .init(
-                                id: "Test",
-                                availableItemBrandOptions: [],
-                                availableItemModelOptions: [
-                                    .init(
-                                        displayName: "Model display name",
-                                        itemBrandId: "testBrand",
-                                        itemTypeId: "testModel",
-                                        itemModelId: "testModel"
-                                    )
-                                ],
-                                availableItemProblems: [],
-                                prefferedCurrency: "sek",
-                                currencyCode: "SEK",
-                                selectedItemModel: "testModel",
-                                defaultItemProblems: [],
-                                purchasePriceApplicable: false
-                            )
-                        )
-                    )
-                )
+                //                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+                //                store.send(
+                //                    .stepModelAction(
+                //                        action: .setSingleItemCheckoutStep(
+                //                            model: .init(
+                //                                id: "id",
+                //                                payoutMethods: [
+                //                                    .init(
+                //                                        id: "id",
+                //                                        autogiro: .init(
+                //                                            id: "autogiroId",
+                //                                            amount: .sek(100),
+                //                                            displayName: "Auto giro"
+                //                                        )
+                //                                    )
+                //                                ],
+                //                                compensation: .init(
+                //                                    id: "compensation id",
+                //                                    deductible: .sek(20),
+                //                                    payoutAmount: .sek(100),
+                //                                    repairCompensation: nil,
+                //                                    valueCompensation: .init(
+                //                                        depreciation: .sek(30),
+                //                                        price: .sek(300)
+                //                                    )
+                //                                ),
+                //                                singleItemModel: nil
+                //                            )
+                //                        )
+                //                    )
+                //                )
+                //                store.send(
+                //                    .stepModelAction(
+                //                        action: .setSingleItem(
+                //                            model: .init(
+                //                                id: "Test",
+                //                                availableItemBrandOptions: [],
+                //                                availableItemModelOptions: [
+                //                                    .init(
+                //                                        displayName: "Model display name",
+                //                                        itemBrandId: "testBrand",
+                //                                        itemTypeId: "testModel",
+                //                                        itemModelId: "testModel"
+                //                                    )
+                //                                ],
+                //                                availableItemProblems: [],
+                //                                prefferedCurrency: "sek",
+                //                                currencyCode: "SEK",
+                //                                selectedItemModel: "testModel",
+                //                                defaultItemProblems: [],
+                //                                purchasePriceApplicable: false
+                //                            )
+                //                        )
+                //                    )
+                //                )
             }
     }
 }

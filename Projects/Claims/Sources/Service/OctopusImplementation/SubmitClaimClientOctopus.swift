@@ -24,8 +24,11 @@ public class SubmitClaimClientOctopus: SubmitClaimClient {
         return try await mutation.execute(\.flowClaimPhoneNumberNext.fragments.flowClaimFragment.currentStep)
     }
 
-    public func dateOfOccurrenceAndLocationRequest(context: String) async throws -> SubmitClaimStepResponse {
-        if let dateOfOccurrenceStep = store.state.dateOfOccurenceStep, let locationStep = store.state.locationStep {
+    public func dateOfOccurrenceAndLocationRequest(
+        context: String,
+        model: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels?
+    ) async throws -> SubmitClaimStepResponse {
+        if let dateOfOccurrenceStep = model?.dateOfOccurrenceModel, let locationStep = model?.locationModel {
             let location = locationStep.getSelectedOption()?.value
             let date = dateOfOccurrenceStep.dateOfOccurence
 
@@ -41,7 +44,7 @@ public class SubmitClaimClientOctopus: SubmitClaimClient {
             return try await mutation.execute(
                 \.flowClaimDateOfOccurrencePlusLocationNext.fragments.flowClaimFragment.currentStep
             )
-        } else if let dateOfOccurrenceStep = store.state.dateOfOccurenceStep {
+        } else if let dateOfOccurrenceStep = model?.dateOfOccurrenceModel {
             let dateString = dateOfOccurrenceStep.dateOfOccurence
             let dateOfOccurrenceInput = OctopusGraphQL.FlowClaimDateOfOccurrenceInput(
                 dateOfOccurrence: GraphQLNullable(optionalValue: dateString)
@@ -52,7 +55,7 @@ public class SubmitClaimClientOctopus: SubmitClaimClient {
             )
             return try await mutation.execute(\.flowClaimDateOfOccurrenceNext.fragments.flowClaimFragment.currentStep)
 
-        } else if let locationStep = store.state.locationStep {
+        } else if let locationStep = model?.locationModel {
             let locationInput = OctopusGraphQL.FlowClaimLocationInput(
                 location: GraphQLNullable(optionalValue: locationStep.location)
             )
@@ -123,8 +126,11 @@ public class SubmitClaimClientOctopus: SubmitClaimClient {
         }
     }
 
-    public func singleItemRequest(purchasePrice: Double?, context: String) async throws -> SubmitClaimStepResponse {
-        let singleItemInput = store.state.singleItemStep!.returnSingleItemInfo(purchasePrice: purchasePrice)
+    public func singleItemRequest(
+        context: String,
+        model: FlowClamSingleItemStepModel?
+    ) async throws -> SubmitClaimStepResponse {
+        let singleItemInput = model!.returnSingleItemInfo(purchasePrice: model?.purchasePrice)
         let mutation = OctopusGraphQL.FlowClaimSingleItemNextMutation(
             input: singleItemInput,
             context: context
@@ -208,7 +214,7 @@ extension GraphQLMutation {
         _ keyPath: KeyPath<Self.Data, ClaimStep>
     ) async throws -> SubmitClaimStepResponse
     where
-        ClaimStep.To == SubmitClaimStep, Self: ClaimStepLoadingType, Self.Data: ClaimStepContext,
+        ClaimStep.To == SubmitClaimStep, Self.Data: ClaimStepContext,
         Self.Data: ClaimStepProgress, Self.Data: ClaimStepId
     {
         let octopus: hOctopus = Dependencies.shared.resolve()
@@ -265,7 +271,7 @@ extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
             return .setDateOfOccurrencePlusLocation(
                 model: .init(
                     dateOfOccurencePlusLocationModel: .init(with: step),
-                    dateOfOccurenceModel: .init(
+                    dateOfOccurrenceModel: .init(
                         with: step.dateOfOccurrenceStep.fragments.flowClaimDateOfOccurrenceStepFragment
                     ),
                     locationModel: .init(with: step.locationStep.fragments.flowClaimLocationStepFragment)
@@ -309,7 +315,7 @@ extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
             return .setDateOfOccurrencePlusLocation(
                 model: .init(
                     dateOfOccurencePlusLocationModel: .init(with: step),
-                    dateOfOccurenceModel: .init(
+                    dateOfOccurrenceModel: .init(
                         with: step.dateOfOccurrenceStep.fragments.flowClaimDateOfOccurrenceStepFragment
                     ),
                     locationModel: .init(with: step.locationStep.fragments.flowClaimLocationStepFragment)
@@ -536,82 +542,82 @@ extension OctopusGraphQL.FlowClaimFileUploadNextMutation.Data: ClaimStepId, Clai
     }
 }
 
-//MARK: loading type
-protocol ClaimStepLoadingType {
-    func getLoadingType() -> ClaimsLoadingType
-}
-
-extension OctopusGraphQL.FlowClaimStartMutation: ClaimStepLoadingType {
-    func getLoadingType() -> ClaimsLoadingType {
-        return .startClaim
-    }
-}
-
-extension OctopusGraphQL.FlowClaimPhoneNumberNextMutation: ClaimStepLoadingType {
-    func getLoadingType() -> ClaimsLoadingType {
-        return .postPhoneNumber
-    }
-}
-
-extension OctopusGraphQL.FlowClaimDateOfOccurrenceNextMutation: ClaimStepLoadingType {
-    func getLoadingType() -> ClaimsLoadingType {
-        return .postDateOfOccurrenceAndLocation
-    }
-}
-
-extension OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationNextMutation: ClaimStepLoadingType {
-    func getLoadingType() -> ClaimsLoadingType {
-        return .postDateOfOccurrenceAndLocation
-    }
-}
-
-extension OctopusGraphQL.FlowClaimContractSelectNextMutation: ClaimStepLoadingType {
-    func getLoadingType() -> ClaimsLoadingType {
-        return .postContractSelect
-    }
-}
-
-extension OctopusGraphQL.FlowClaimConfirmEmergencyNextMutation: ClaimStepLoadingType {
-    func getLoadingType() -> ClaimsLoadingType {
-        return .postConfirmEmergency
-    }
-}
-
-extension OctopusGraphQL.FlowClaimLocationNextMutation: ClaimStepLoadingType {
-    func getLoadingType() -> ClaimsLoadingType {
-        return .postDateOfOccurrenceAndLocation
-    }
-}
-
-extension OctopusGraphQL.FlowClaimAudioRecordingNextMutation: ClaimStepLoadingType {
-    func getLoadingType() -> ClaimsLoadingType {
-        return .postAudioRecording
-    }
-}
-
-extension OctopusGraphQL.FlowClaimSingleItemNextMutation: ClaimStepLoadingType {
-    func getLoadingType() -> ClaimsLoadingType {
-        return .postSingleItem
-    }
-}
-
-extension OctopusGraphQL.FlowClaimSingleItemCheckoutNextMutation: ClaimStepLoadingType {
-    func getLoadingType() -> ClaimsLoadingType {
-        return .postSingleItemCheckout
-    }
-}
-
-extension OctopusGraphQL.FlowClaimFileUploadNextMutation: ClaimStepLoadingType {
-    func getLoadingType() -> ClaimsLoadingType {
-        return .postUploadFiles
-    }
-}
-
-extension OctopusGraphQL.FlowClaimSummaryNextMutation: ClaimStepLoadingType {
-    func getLoadingType() -> ClaimsLoadingType {
-        return .postSummary
-    }
-}
+////MARK: loading type
+//protocol ClaimStepLoadingType {
+//    func getLoadingType() -> ClaimsLoadingType
+//}
+//
+//extension OctopusGraphQL.FlowClaimStartMutation: ClaimStepLoadingType {
+//    func getLoadingType() -> ClaimsLoadingType {
+//        return .startClaim
+//    }
+//}
+//
+//extension OctopusGraphQL.FlowClaimPhoneNumberNextMutation: ClaimStepLoadingType {
+//    func getLoadingType() -> ClaimsLoadingType {
+//        return .postPhoneNumber
+//    }
+//}
+//
+//extension OctopusGraphQL.FlowClaimDateOfOccurrenceNextMutation: ClaimStepLoadingType {
+//    func getLoadingType() -> ClaimsLoadingType {
+//        return .postDateOfOccurrenceAndLocation
+//    }
+//}
+//
+//extension OctopusGraphQL.FlowClaimDateOfOccurrencePlusLocationNextMutation: ClaimStepLoadingType {
+//    func getLoadingType() -> ClaimsLoadingType {
+//        return .postDateOfOccurrenceAndLocation
+//    }
+//}
+//
+//extension OctopusGraphQL.FlowClaimContractSelectNextMutation: ClaimStepLoadingType {
+//    func getLoadingType() -> ClaimsLoadingType {
+//        return .postContractSelect
+//    }
+//}
+//
+//extension OctopusGraphQL.FlowClaimConfirmEmergencyNextMutation: ClaimStepLoadingType {
+//    func getLoadingType() -> ClaimsLoadingType {
+//        return .postConfirmEmergency
+//    }
+//}
+//
+//extension OctopusGraphQL.FlowClaimLocationNextMutation: ClaimStepLoadingType {
+//    func getLoadingType() -> ClaimsLoadingType {
+//        return .postDateOfOccurrenceAndLocation
+//    }
+//}
+//
+//extension OctopusGraphQL.FlowClaimAudioRecordingNextMutation: ClaimStepLoadingType {
+//    func getLoadingType() -> ClaimsLoadingType {
+//        return .postAudioRecording
+//    }
+//}
+//
+//extension OctopusGraphQL.FlowClaimSingleItemNextMutation: ClaimStepLoadingType {
+//    func getLoadingType() -> ClaimsLoadingType {
+//        return .postSingleItem
+//    }
+//}
+//
+//extension OctopusGraphQL.FlowClaimSingleItemCheckoutNextMutation: ClaimStepLoadingType {
+//    func getLoadingType() -> ClaimsLoadingType {
+//        return .postSingleItemCheckout
+//    }
+//}
+//
+//extension OctopusGraphQL.FlowClaimFileUploadNextMutation: ClaimStepLoadingType {
+//    func getLoadingType() -> ClaimsLoadingType {
+//        return .postUploadFiles
+//    }
+//}
+//
+//extension OctopusGraphQL.FlowClaimSummaryNextMutation: ClaimStepLoadingType {
+//    func getLoadingType() -> ClaimsLoadingType {
+//        return .postSummary
+//    }
+//}
 
 extension FlowClaimSuccessStepModel {
     init(

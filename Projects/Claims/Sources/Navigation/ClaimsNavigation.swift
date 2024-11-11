@@ -17,63 +17,87 @@ public class ClaimsNavigationViewModel: ObservableObject {
     @Published var claimEntrypoints: [ClaimEntryPointResponseModel] = []
     @Published var entrypoints: EntrypointState = .init()
 
+    @Published var currentClaimContext: String?
+
     @Published var progress: Float?
     @Published var previousProgress: Float?
-    @Published var flowClaimOccurrencePlusLocationStepModel = SubmitClaimStep.DateOfOccurrencePlusLocationStepModels(
-        dateOfOccurencePlusLocationModel: nil,
-        dateOfOccurenceModel: nil,
-        locationModel: nil
-    )
+
+    @Published var occurrencePlusLocationModel: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels?
+    @Published var singleItemModel: FlowClamSingleItemStepModel?
 
     var router = Router()
 
     @Inject private var submitClaimService: SubmitClaimClient
 
     func startClaimRequest(entrypointId: String?, entrypointOptionId: String?) async {
-        // TODO: reset all steps
+        await reset()
         Task { @MainActor in
             do {
                 let data = try await submitClaimService.startClaim(
                     entrypointId: entrypointId,
                     entrypointOptionId: entrypointOptionId
                 )
-
-                switch data.step {
-                case let .setDateOfOccurrencePlusLocation(model):
-                    flowClaimOccurrencePlusLocationStepModel = model
-                    router.push(ClaimsRouterActions.dateOfOccurrancePlusLocation)
-                case let .setDateOfOccurence(model):
-                    flowClaimOccurrencePlusLocationStepModel.dateOfOccurenceModel = model
-                    router.push(ClaimsRouterActions.dateOfOccurrancePlusLocation)
-                case let .setPhoneNumber(model):
-                    router.push(ClaimsRouterActions.phoneNumber(model: model))
-                case let .setAudioStep(model):
-                    router.push(ClaimsRouterActions.audioRecording(model: model))
-                case let .setSingleItem(model):
-                    router.push(ClaimsRouterActions.singleItem(model: model))
-                case let .setLocation(model):
-                    flowClaimOccurrencePlusLocationStepModel.locationModel = model
-                    router.push(ClaimsRouterActions.dateOfOccurrancePlusLocation)
-                case let .setSummaryStep(model):
-                    router.push(ClaimsRouterActions.summary(model: model))
-                case let .setSingleItemCheckoutStep(model):
-                    router.push(ClaimsRouterActions.checkOutNoRepair(model: model))
-                case .setSuccessStep:
-                    break
-                case .setFailedStep:
-                    break
-                case let .setContractSelectStep(model):
-                    router.push(ClaimsRouterActions.selectContract(model: model))
-                case let .setConfirmDeflectEmergencyStepModel(model):
-                    router.push(ClaimsRouterActions.emergencySelect(model: model))
-                case let .setDeflectModel(model):
-                    router.push(ClaimsRouterActions.deflect(type: model.id))
-                case let .setFileUploadStep(model):
-                    router.push(ClaimsRouterActions.uploadFiles(model: model))
-                case .openUpdateAppScreen:
-                    break
-                }
+                navigate(data: data)
             }
+        }
+    }
+
+    @MainActor
+    func reset() {
+        occurrencePlusLocationModel = nil
+        singleItemModel = nil
+        //            newState.summaryStep = nil
+        //            newState.dateOfOccurenceStep = nil
+        //            newState.locationStep = nil
+        //            newState.singleItemStep = nil
+        //            newState.phoneNumberStep = nil
+        //            newState.dateOfOccurrencePlusLocationStep = nil
+        //            newState.singleItemCheckoutStep = nil
+        //            newState.successStep = nil
+        //            newState.failedStep = nil
+        //            newState.audioRecordingStep = nil
+        //            newState.contractStep = nil
+        //            newState.currentClaimContext = nil
+        //            newState.fileUploadStep = nil
+    }
+
+    func navigate(data: SubmitClaimStepResponse) {
+        currentClaimContext = data.context
+        switch data.step {
+        case let .setDateOfOccurrencePlusLocation(model):
+            occurrencePlusLocationModel = model
+            router.push(ClaimsRouterActions.dateOfOccurrancePlusLocation)
+        case let .setDateOfOccurence(model):
+            occurrencePlusLocationModel?.dateOfOccurrenceModel = model
+            router.push(ClaimsRouterActions.dateOfOccurrancePlusLocation)
+        case let .setPhoneNumber(model):
+            router.push(ClaimsRouterActions.phoneNumber(model: model))
+        case let .setAudioStep(model):
+            router.push(ClaimsRouterActions.audioRecording(model: model))
+        case let .setSingleItem(model):
+            singleItemModel = model
+            router.push(ClaimsRouterActions.singleItem(model: model))
+        case let .setLocation(model):
+            occurrencePlusLocationModel?.locationModel = model
+            router.push(ClaimsRouterActions.dateOfOccurrancePlusLocation)
+        case let .setSummaryStep(model):
+            router.push(ClaimsRouterActions.summary(model: model))
+        case let .setSingleItemCheckoutStep(model):
+            router.push(ClaimsRouterActions.checkOutNoRepair(model: model))
+        case .setSuccessStep:
+            break
+        case .setFailedStep:
+            break
+        case let .setContractSelectStep(model):
+            router.push(ClaimsRouterActions.selectContract(model: model))
+        case let .setConfirmDeflectEmergencyStepModel(model):
+            router.push(ClaimsRouterActions.emergencySelect(model: model))
+        case let .setDeflectModel(model):
+            router.push(ClaimsRouterActions.deflect(type: model.id))
+        case let .setFileUploadStep(model):
+            router.push(ClaimsRouterActions.uploadFiles(model: model))
+        case .openUpdateAppScreen:
+            break
         }
     }
 }
@@ -414,34 +438,30 @@ public struct ClaimsNavigation: View {
 
     private func openBrandPickerScreen() -> some View {
         BrandPickerView()
+            .environmentObject(claimsNavigationVm)
             .navigationTitle(L10n.claimsChooseBrandTitle)
     }
 
     private func openModelPickerScreen(brand: ClaimFlowItemBrandOptionModel) -> some View {
         ModelPickerView(brand: brand)
+            .environmentObject(claimsNavigationVm)
             .navigationTitle(L10n.claimsChooseModelTitle)
     }
 
     private func openPriceInputScreen() -> some View {
-        PriceInputScreen(onSave: { purchasePrice in
-            let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-            store.send(.setPurchasePrice(priceOfPurchase: Double(purchasePrice)))
-            claimsNavigationVm.isPriceInputPresented = false
-        })
-        .configureTitle(L10n.submitClaimPurchasePriceTitle)
+        PriceInputScreen(claimsNavigationVm: claimsNavigationVm)
+            .configureTitle(L10n.submitClaimPurchasePriceTitle)
     }
 
     private func openDamagePickerScreen() -> some View {
         ItemPickerScreen<ClaimFlowItemProblemOptionModel>(
             config: .init(
                 items: {
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    return store.state.singleItemStep?.availableItemProblems
+                    return claimsNavigationVm.singleItemModel?.availableItemProblems
                         .compactMap({ (object: $0, displayName: .init(title: $0.displayName)) }) ?? []
                 }(),
                 preSelectedItems: {
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    if let singleItemStep = store.state.singleItemStep {
+                    if let singleItemStep = claimsNavigationVm.singleItemModel {
                         let preselected = singleItemStep.availableItemProblems
                             .filter { model in
                                 singleItemStep.selectedItemProblems?
@@ -462,12 +482,7 @@ public struct ClaimsNavigation: View {
                         }
                     }
                     claimsNavigationVm.isDamagePickerPresented = false
-                    let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                    store.send(
-                        .setSingleItemDamage(
-                            damages: damages
-                        )
-                    )
+                    claimsNavigationVm.singleItemModel?.selectedItemProblems = damages
                 },
                 onCancel: {
                     claimsNavigationVm.router.dismiss()
