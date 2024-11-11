@@ -28,7 +28,6 @@ extension NetworkClient: hClaimFileUploadClient {
         var observation: NSKeyValueObservation?
         let response = try await withCheckedThrowingContinuation {
             (inCont: CheckedContinuation<[ClaimFileUploadResponse], Error>) -> Void in
-            self.sessionClient.dataTaskPublisher(for: request)
             let task = self.sessionClient.dataTask(with: request) { [weak self] (data, response, error) in
                 do {
                     if let uploadedFiles: [ClaimFileUploadResponse] = try self?

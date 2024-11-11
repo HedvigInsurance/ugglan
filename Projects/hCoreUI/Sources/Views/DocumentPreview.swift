@@ -46,7 +46,7 @@ public class DocumentPreviewModel: NSObject, ObservableObject {
             switch self {
             case .url(let url):
                 return url.absoluteString
-            case .data(let data, let mimeType):
+            case .data(let data, _):
                 return "\(data.count)"
             }
         }

@@ -1,7 +1,7 @@
 import Foundation
 import hGraphQL
 
-extension hGraphQL.GraphQLError: LocalizedError {
+extension hGraphQL.GraphQLError: @retroactive LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .graphQLError(let errors):

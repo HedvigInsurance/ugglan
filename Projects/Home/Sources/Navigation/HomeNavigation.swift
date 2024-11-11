@@ -10,7 +10,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-extension String: TrackingViewNameProtocol {
+extension String: @retroactive TrackingViewNameProtocol {
     public var nameForTracking: String {
         return self
     }

@@ -222,7 +222,7 @@ struct ContractInformationView: View {
     private func upatedContractView(_ contract: Contract) -> some View {
         if let upcomingRenewal = contract.upcomingRenewal,
             let days = upcomingRenewal.renewalDate.localDateToDate?.daysBetween(start: Date()),
-            let url = URL(string: upcomingRenewal.certificateUrl)
+            URL(string: upcomingRenewal.certificateUrl) != nil
         {
             hSection {
                 InfoCard(

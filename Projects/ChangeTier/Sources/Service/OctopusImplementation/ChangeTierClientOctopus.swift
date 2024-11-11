@@ -202,7 +202,7 @@ public class ChangeTierClientOctopus: ChangeTierClient {
             )
 
             return productVariantComparision
-        } catch let ex {
+        } catch _ {
             throw ChangeTierError.somethingWentWrong
         }
     }

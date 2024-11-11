@@ -1,5 +1,5 @@
 import Combine
-import WebKit
+@preconcurrency import WebKit
 
 public class WebViewDelegate: NSObject, WKNavigationDelegate, WKUIDelegate {
     private let actionPublishedSubject = PassthroughSubject<WKNavigationAction, Never>()

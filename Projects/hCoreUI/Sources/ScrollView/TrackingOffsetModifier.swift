@@ -106,7 +106,7 @@ public class SetOffsetViewModel: ObservableObject {
 }
 
 #Preview {
-    var vm = SetOffsetViewModel()
+    let vm = SetOffsetViewModel()
     ScrollView(.horizontal) {
         HStack {
             Rectangle().frame(width: 100)
