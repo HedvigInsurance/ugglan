@@ -22,16 +22,14 @@ public struct TrackingOffsetModifier: ViewModifier {
 }
 
 public class TracingOffsetViewModel: ObservableObject {
-    var scrollOffsetCancellable: AnyCancellable?
+    private var scrollOffsetCancellable: AnyCancellable?
     @Published public var currentOffset: CGPoint = .zero
 
     weak var scrollView: UIScrollView? {
         didSet {
             scrollOffsetCancellable = scrollView?.publisher(for: \.contentOffset)
                 .sink(receiveValue: { [weak self] offset in
-                    withAnimation {
-                        self?.currentOffset = offset
-                    }
+                    self?.currentOffset = offset
                 })
         }
     }
@@ -60,7 +58,6 @@ public struct SetOffsetModifier: ViewModifier {
 
 public class SetOffsetViewModel: ObservableObject {
     public func animate(with animationProperties: AnimationProperties) {
-        print("SIZE IS \(animationProperties.offset) - \(scrollView!.frame) - \(scrollView!.contentSize)")
         let scrollTo: CGPoint = {
             var x: CGFloat = 0
             if let scrollView {
