@@ -169,7 +169,7 @@ struct CompareTierScreen: View {
                 )
                 .mask {
                     Rectangle()
-                        .offset(x: leftColumnWidth, y: 10)
+                        .offset(x: leftColumnWidth, y: 5)
                         .frame(width: leftColumnWidth)
                 }
         }
