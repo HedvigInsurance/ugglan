@@ -24,6 +24,62 @@ public class ClaimsNavigationViewModel: ObservableObject {
 
     @Published var occurrencePlusLocationModel: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels?
     @Published var singleItemModel: FlowClamSingleItemStepModel?
+    @Published var summaryModel: SubmitClaimStep.SummaryStepModels?
+    @Published var phoneNumberModel: FlowClaimPhoneNumberStepModel?
+    @Published var singleItemCheckoutModel: FlowClaimSingleItemCheckoutStepModel?
+    @Published var successModel: FlowClaimSuccessStepModel?
+    @Published var failedModel: FlowClaimFailedStepModel?
+    @Published var audioRecordingModel: FlowClaimAudioRecordingStepModel?
+    @Published var contractSelectModel: FlowClaimContractSelectStepModel?
+    @Published var fileUploadModel: FlowClaimFileUploadStepModel?
+
+    var currentClaimId: String? {
+        didSet {
+            do {
+                var isDir: ObjCBool = true
+                if FileManager.default.fileExists(
+                    atPath: claimsAudioRecordingRootPath.relativePath,
+                    isDirectory: &isDir
+                ) {
+                    let content = try FileManager.default
+                        .contentsOfDirectory(atPath: claimsAudioRecordingRootPath.relativePath)
+                        .filter({ URL(string: $0)?.pathExtension == AudioRecorder.audioFileExtension })
+                    try content.forEach({
+                        try FileManager.default.removeItem(
+                            atPath: claimsAudioRecordingRootPath.appendingPathComponent($0).relativePath
+                        )
+                    })
+                } else {
+                    try FileManager.default.createDirectory(
+                        at: claimsAudioRecordingRootPath,
+                        withIntermediateDirectories: true
+                    )
+                }
+            } catch _ {}
+        }
+    }
+
+    var claimAudioRecordingPath: URL {
+        let nameOfFile: String = {
+            if let currentClaimId, currentClaimId.isEmpty {
+                return "audio-file-recoding"
+            }
+            return currentClaimId ?? ""
+        }()
+        let audioPath =
+            claimsAudioRecordingRootPath
+            .appendingPathComponent(nameOfFile)
+            .appendingPathExtension(AudioRecorder.audioFileExtension)
+        return audioPath
+    }
+
+    private var claimsAudioRecordingRootPath: URL {
+        let tempDirectory = FileManager.default.temporaryDirectory
+        let claimsAudioRecoringPath =
+            tempDirectory
+            .appendingPathComponent("claims")
+        return claimsAudioRecoringPath
+    }
 
     var router = Router()
 
@@ -44,21 +100,17 @@ public class ClaimsNavigationViewModel: ObservableObject {
 
     @MainActor
     func reset() {
+        currentClaimContext = nil
         occurrencePlusLocationModel = nil
         singleItemModel = nil
-        //            newState.summaryStep = nil
-        //            newState.dateOfOccurenceStep = nil
-        //            newState.locationStep = nil
-        //            newState.singleItemStep = nil
-        //            newState.phoneNumberStep = nil
-        //            newState.dateOfOccurrencePlusLocationStep = nil
-        //            newState.singleItemCheckoutStep = nil
-        //            newState.successStep = nil
-        //            newState.failedStep = nil
-        //            newState.audioRecordingStep = nil
-        //            newState.contractStep = nil
-        //            newState.currentClaimContext = nil
-        //            newState.fileUploadStep = nil
+        summaryModel = nil
+        phoneNumberModel = nil
+        singleItemCheckoutModel = nil
+        successModel = nil
+        failedModel = nil
+        audioRecordingModel = nil
+        contractSelectModel = nil
+        fileUploadModel = nil
     }
 
     func navigate(data: SubmitClaimStepResponse) {
@@ -71,31 +123,37 @@ public class ClaimsNavigationViewModel: ObservableObject {
             occurrencePlusLocationModel?.dateOfOccurrenceModel = model
             router.push(ClaimsRouterActions.dateOfOccurrancePlusLocation)
         case let .setPhoneNumber(model):
+            phoneNumberModel = model
             router.push(ClaimsRouterActions.phoneNumber(model: model))
         case let .setAudioStep(model):
-            router.push(ClaimsRouterActions.audioRecording(model: model))
+            audioRecordingModel = model
+            router.push(ClaimsRouterActions.audioRecording)
         case let .setSingleItem(model):
             singleItemModel = model
-            router.push(ClaimsRouterActions.singleItem(model: model))
+            router.push(ClaimsRouterActions.singleItem)
         case let .setLocation(model):
             occurrencePlusLocationModel?.locationModel = model
             router.push(ClaimsRouterActions.dateOfOccurrancePlusLocation)
         case let .setSummaryStep(model):
-            router.push(ClaimsRouterActions.summary(model: model))
+            summaryModel = model
+            router.push(ClaimsRouterActions.summary)
         case let .setSingleItemCheckoutStep(model):
-            router.push(ClaimsRouterActions.checkOutNoRepair(model: model))
+            singleItemCheckoutModel = model
+            router.push(ClaimsRouterActions.checkOutNoRepair)
         case .setSuccessStep:
             break
         case .setFailedStep:
             break
         case let .setContractSelectStep(model):
-            router.push(ClaimsRouterActions.selectContract(model: model))
+            contractSelectModel = model
+            router.push(ClaimsRouterActions.selectContract)
         case let .setConfirmDeflectEmergencyStepModel(model):
             router.push(ClaimsRouterActions.emergencySelect(model: model))
         case let .setDeflectModel(model):
             router.push(ClaimsRouterActions.deflect(type: model.id))
         case let .setFileUploadStep(model):
-            router.push(ClaimsRouterActions.uploadFiles(model: model))
+            fileUploadModel = model
+            router.push(ClaimsRouterActions.uploadFiles)
         case .openUpdateAppScreen:
             break
         }
@@ -106,15 +164,15 @@ enum ClaimsRouterActions: Hashable {
     case triagingEntrypoint
     case triagingOption
     case dateOfOccurrancePlusLocation
-    case selectContract(model: FlowClaimContractSelectStepModel)
+    case selectContract
     case phoneNumber(model: FlowClaimPhoneNumberStepModel)
-    case audioRecording(model: FlowClaimAudioRecordingStepModel?)
-    case singleItem(model: FlowClamSingleItemStepModel)
-    case summary(model: SubmitClaimStep.SummaryStepModels)
+    case audioRecording
+    case singleItem
+    case summary
     case deflect(type: FlowClaimDeflectStepType)
     case emergencySelect(model: FlowClaimConfirmEmergencyStepModel)
-    case uploadFiles(model: FlowClaimFileUploadStepModel?)
-    case checkOutNoRepair(model: FlowClaimSingleItemCheckoutStepModel)
+    case uploadFiles
+    case checkOutNoRepair
 }
 
 extension ClaimsRouterActions: TrackingViewNameProtocol {
@@ -327,9 +385,8 @@ public struct ClaimsNavigation: View {
     }
 
     private func openAudioRecordingSceen() -> some View {
-        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-        let url = store.state.audioRecordingStep?.getUrl()
-        return SubmitClaimAudioRecordingScreen(url: url)
+        let url = claimsNavigationVm.audioRecordingModel?.getUrl()
+        return SubmitClaimAudioRecordingScreen(url: url, claimsNavigationVm: claimsNavigationVm)
             .resetProgressToPreviousValueOnDismiss
             .addDismissClaimsFlow()
     }
@@ -345,7 +402,7 @@ public struct ClaimsNavigation: View {
     }
 
     private func openSummaryScreen() -> some View {
-        SubmitClaimSummaryScreen()
+        SubmitClaimSummaryScreen(claimsNavigationVm: claimsNavigationVm)
             .configureTitle(L10n.Claims.Summary.Screen.title)
             .resetProgressToPreviousValueOnDismiss
             .addDismissClaimsFlow()
@@ -391,8 +448,7 @@ public struct ClaimsNavigation: View {
     }
 
     private func openFileUploadScreen() -> some View {
-        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-        return SubmitClaimFilesUploadScreen(model: store.state.fileUploadStep!)
+        return SubmitClaimFilesUploadScreen(claimsNavigationVm: claimsNavigationVm)
             .resetProgressToPreviousValueOnDismiss
             .addDismissClaimsFlow()
     }

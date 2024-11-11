@@ -1,5 +1,4 @@
 import Combine
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -9,8 +8,13 @@ struct SubmitClaimFilesUploadScreen: View {
     @State var showFilePicker = false
     @State var showCamera = false
     @StateObject fileprivate var vm: FilesUploadViewModel
+    @ObservedObject var claimsNavigationVm: ClaimsNavigationViewModel
 
-    init(model: FlowClaimFileUploadStepModel) {
+    init(
+        claimsNavigationVm: ClaimsNavigationViewModel
+    ) {
+        self.claimsNavigationVm = claimsNavigationVm
+        let model = claimsNavigationVm.fileUploadModel ?? .init(id: "", title: "", targetUploadUrl: "", uploads: [])
         _vm = StateObject(wrappedValue: FilesUploadViewModel(model: model))
     }
 
@@ -40,8 +44,15 @@ struct SubmitClaimFilesUploadScreen: View {
                             ZStack(alignment: .leading) {
                                 hButton.LargeButton(type: .primary) {
                                     Task {
-                                        await vm.uploadFiles()
+                                        let step = await vm.uploadFiles(
+                                            newClaimContext: claimsNavigationVm.currentClaimContext ?? ""
+                                        )
+
+                                        if let step {
+                                            claimsNavigationVm.navigate(data: step)
+                                        }
                                     }
+
                                 } content: {
                                     hText(L10n.generalContinueButton)
                                 }
@@ -72,7 +83,6 @@ struct SubmitClaimFilesUploadScreen: View {
                         }
                     }
                 }
-
             } else {
                 hForm {}
                     .hFormTitle(title: .init(.standard, .displayXSLong, L10n.claimsFileUploadTitle))
@@ -93,7 +103,7 @@ struct SubmitClaimFilesUploadScreen: View {
                                     .hButtonIsLoading(vm.isLoading && !vm.skipPressed)
                                     .disabled(vm.isLoading && vm.skipPressed)
                                     hButton.LargeButton(type: .ghost) {
-                                        vm.skip()
+                                        skip()
                                     } content: {
                                         hText(L10n.NavBar.skip)
                                     }
@@ -151,6 +161,21 @@ struct SubmitClaimFilesUploadScreen: View {
             }
         }
     }
+
+    func skip() {
+        vm.hasFilesToUpload = false
+        let fileUploadModel = claimsNavigationVm.fileUploadModel
+        Task {
+            let step = await vm.submitFileUpload(
+                ids: [],
+                newClaimContext: claimsNavigationVm.currentClaimContext ?? ""
+            )
+
+            if let step {
+                claimsNavigationVm.navigate(data: step)
+            }
+        }
+    }
 }
 
 public class FilesUploadViewModel: ObservableObject {
@@ -167,9 +192,12 @@ public class FilesUploadViewModel: ObservableObject {
     private let model: FlowClaimFileUploadStepModel
     var claimFileUploadService = hClaimFileUploadService()
     @ObservedObject var fileGridViewModel: FileGridViewModel
-    @PresentableStore var store: SubmitClaimStore
+    //    @PresentableStore var store: SubmitClaimStore
     var delayTimer: AnyCancellable?
-    private var cancellables = Set<AnyCancellable>()
+    //    private var cancellables = Set<AnyCancellable>()
+
+    @Inject var submitClaimService: SubmitClaimClient
+
     init(model: FlowClaimFileUploadStepModel) {
         self.model = model
         let files = model.uploads.compactMap({
@@ -185,53 +213,55 @@ public class FilesUploadViewModel: ObservableObject {
             files: files,
             options: [.delete, .add]
         )
-        fileGridViewModel.$files
-            .receive(on: RunLoop.main)
-            .sink { _ in
 
-            } receiveValue: { [weak self] files in
-                withAnimation {
-                    self?.hasFiles = !files.isEmpty
-                }
-            }
-            .store(in: &cancellables)
+        /* TODO: IMPLEMENT */
+        //        fileGridViewModel.$files
+        //            .receive(on: RunLoop.main)
+        //            .sink { _ in
+        //
+        //            } receiveValue: { [weak self] files in
+        //                withAnimation {
+        //                    self?.hasFiles = !files.isEmpty
+        //                }
+        //            }
+        //            .store(in: &cancellables)
         fileGridViewModel.onDelete = { [weak self] file in
             withAnimation {
                 self?.fileGridViewModel.files.removeAll(where: { $0.id == file.id })
             }
         }
 
-        store.loadingSignal
-            .receive(on: RunLoop.main)
-            .sink { _ in
+        //        store.loadingSignal
+        //            .receive(on: RunLoop.main)
+        //            .sink { _ in
+        //
+        //            } receiveValue: { [weak self] state in
+        //                guard let self else { return }
+        //                withAnimation {
+        //                    switch state[.postUploadFiles] {
+        //                    case .loading:
+        //                        self.isLoading = true
+        //                    case let .error(error):
+        //                        self.setNavigationBarHidden(false)
+        //                        self.isLoading = false
+        //                        self.skipPressed = false
+        //                        self.error = error
+        //                    case .none:
+        //                        self.setNavigationBarHidden(false)
+        //                        self.isLoading = false
+        //                        self.skipPressed = false
+        //                    }
+        //                }
+        //            }
+        //            .store(in: &cancellables)
 
-            } receiveValue: { [weak self] state in
-                guard let self else { return }
-                withAnimation {
-                    switch state[.postUploadFiles] {
-                    case .loading:
-                        self.isLoading = true
-                    case let .error(error):
-                        self.setNavigationBarHidden(false)
-                        self.isLoading = false
-                        self.skipPressed = false
-                        self.error = error
-                    case .none:
-                        self.setNavigationBarHidden(false)
-                        self.isLoading = false
-                        self.skipPressed = false
-                    }
-                }
-            }
-            .store(in: &cancellables)
-
-        self.$isLoading.receive(on: RunLoop.main)
-            .sink { _ in
-
-            } receiveValue: { [weak self] isLoading in
-                self?.fileGridViewModel.update(options: isLoading ? [.loading] : [.add, .delete])
-            }
-            .store(in: &cancellables)
+        //        self.$isLoading.receive(on: RunLoop.main)
+        //            .sink { _ in
+        //
+        //            } receiveValue: { [weak self] isLoading in
+        //                self?.fileGridViewModel.update(options: isLoading ? [.loading] : [.add, .delete])
+        //            }
+        //            .store(in: &cancellables)
 
     }
 
@@ -242,12 +272,7 @@ public class FilesUploadViewModel: ObservableObject {
         }
     }
 
-    func skip() {
-        hasFilesToUpload = false
-        store.send(.submitFileUpload(ids: []))
-    }
-
-    func uploadFiles() async {
+    func uploadFiles(newClaimContext: String) async -> SubmitClaimStepResponse? {
         withAnimation {
             error = nil
             isLoading = true
@@ -338,9 +363,12 @@ public class FilesUploadViewModel: ObservableObject {
                         }
                     }
                 }
-                store.send(.submitFileUpload(ids: alreadyUploadedFiles + uploadedFiles))
+                return await submitFileUpload(
+                    ids: alreadyUploadedFiles + uploadedFiles,
+                    newClaimContext: newClaimContext
+                )
             } else {
-                store.send(.submitFileUpload(ids: alreadyUploadedFiles))
+                return await submitFileUpload(ids: alreadyUploadedFiles, newClaimContext: newClaimContext)
             }
         } catch let ex {
             withAnimation {
@@ -349,6 +377,18 @@ public class FilesUploadViewModel: ObservableObject {
                 isLoading = false
             }
         }
+        return nil
+    }
+
+    func submitFileUpload(ids: [String], newClaimContext: String) async -> SubmitClaimStepResponse? {
+        do {
+            let data = try await submitClaimService.submitFileUpload(ids: ids, context: newClaimContext, model: model)
+
+            return data
+        } catch let exception {
+
+        }
+        return nil
     }
 
     private func setNavigationBarHidden(_ hidden: Bool) {
@@ -359,5 +399,5 @@ public class FilesUploadViewModel: ObservableObject {
 
 #Preview {
     Localization.Locale.currentLocale.send(.en_SE)
-    return SubmitClaimFilesUploadScreen(model: .init(id: "id", title: "title", targetUploadUrl: "url", uploads: []))
+    return SubmitClaimFilesUploadScreen(claimsNavigationVm: .init())
 }

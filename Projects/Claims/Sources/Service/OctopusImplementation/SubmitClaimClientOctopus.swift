@@ -1,12 +1,10 @@
 import Combine
 import Foundation
-import PresentableStore
 import hCore
 import hGraphQL
 
 public class SubmitClaimClientOctopus: SubmitClaimClient {
     public init() {}
-    @PresentableStore var store: SubmitClaimStore
 
     public func startClaim(entrypointId: String?, entrypointOptionId: String?) async throws -> SubmitClaimStepResponse {
         let startInput = OctopusGraphQL.FlowClaimStartInput(
@@ -18,7 +16,11 @@ public class SubmitClaimClientOctopus: SubmitClaimClient {
         return try await mutation.execute(\.flowClaimStart.fragments.flowClaimFragment.currentStep)
     }
 
-    public func updateContact(phoneNumber: String, context: String) async throws -> SubmitClaimStepResponse {
+    public func updateContact(
+        phoneNumber: String,
+        context: String,
+        model: FlowClaimPhoneNumberStepModel?
+    ) async throws -> SubmitClaimStepResponse {
         let phoneNumberInput = OctopusGraphQL.FlowClaimPhoneNumberInput(phoneNumber: phoneNumber)
         let mutation = OctopusGraphQL.FlowClaimPhoneNumberNextMutation(input: phoneNumberInput, context: context)
         return try await mutation.execute(\.flowClaimPhoneNumberNext.fragments.flowClaimFragment.currentStep)
@@ -71,12 +73,14 @@ public class SubmitClaimClientOctopus: SubmitClaimClient {
     public func submitAudioRecording(
         type: SubmitAudioRecordingType,
         fileUploaderClient: FileUploaderClient,
-        context: String
+        context: String,
+        currentClaimId: String,
+        model: FlowClaimAudioRecordingStepModel?
     ) async throws -> SubmitClaimStepResponse {
         switch type {
         case .audio(let audioURL):
             do {
-                if let url = store.state.audioRecordingStep?.audioContent?.audioUrl {
+                if let url = model?.audioContent?.audioUrl {
                     let audioInput = OctopusGraphQL.FlowClaimAudioRecordingInput(
                         audioUrl: GraphQLNullable(optionalValue: url),
                         freeText: .none
@@ -95,7 +99,7 @@ public class SubmitClaimClientOctopus: SubmitClaimClient {
                     let uploadFile = UploadFile(data: data, name: name, mimeType: "audio/x-m4a")
 
                     let fileUploaderData = try await fileUploaderClient.upload(
-                        flowId: store.state.currentClaimId,
+                        flowId: currentClaimId,
                         file: uploadFile
                     )
 
@@ -138,7 +142,10 @@ public class SubmitClaimClientOctopus: SubmitClaimClient {
         return try await mutation.execute(\.flowClaimSingleItemNext.fragments.flowClaimFragment.currentStep)
     }
 
-    public func summaryRequest(context: String) async throws -> SubmitClaimStepResponse {
+    public func summaryRequest(
+        context: String,
+        model: SubmitClaimStep.SummaryStepModels?
+    ) async throws -> SubmitClaimStepResponse {
         let summaryInput = OctopusGraphQL.FlowClaimSummaryInput()
         let mutation = OctopusGraphQL.FlowClaimSummaryNextMutation(
             input: summaryInput,
@@ -147,8 +154,11 @@ public class SubmitClaimClientOctopus: SubmitClaimClient {
         return try await mutation.execute(\.flowClaimSummaryNext.fragments.flowClaimFragment.currentStep)
     }
 
-    public func singleItemCheckoutRequest(context: String) async throws -> SubmitClaimStepResponse {
-        if let claimSingleItemCheckoutInput = store.state.singleItemCheckoutStep?.returnSingleItemCheckoutInfo() {
+    public func singleItemCheckoutRequest(
+        context: String,
+        model: FlowClaimSingleItemCheckoutStepModel?
+    ) async throws -> SubmitClaimStepResponse {
+        if let claimSingleItemCheckoutInput = model?.returnSingleItemCheckoutInfo() {
             let mutation = OctopusGraphQL.FlowClaimSingleItemCheckoutNextMutation(
                 input: claimSingleItemCheckoutInput,
                 context: context
@@ -159,7 +169,11 @@ public class SubmitClaimClientOctopus: SubmitClaimClient {
         }
     }
 
-    public func contractSelectRequest(contractId: String, context: String) async throws -> SubmitClaimStepResponse {
+    public func contractSelectRequest(
+        contractId: String,
+        context: String,
+        model: FlowClaimContractSelectStepModel?
+    ) async throws -> SubmitClaimStepResponse {
         let contractSelectInput = OctopusGraphQL.FlowClaimContractSelectInput(
             contractId: GraphQLNullable(optionalValue: contractId)
         )
@@ -179,7 +193,11 @@ public class SubmitClaimClientOctopus: SubmitClaimClient {
         return try await mutation.execute(\.flowClaimConfirmEmergencyNext.fragments.flowClaimFragment.currentStep)
     }
 
-    public func submitFileUpload(ids: [String], context: String) async throws -> SubmitClaimStepResponse {
+    public func submitFileUpload(
+        ids: [String],
+        context: String,
+        model: FlowClaimFileUploadStepModel?
+    ) async throws -> SubmitClaimStepResponse {
         let input = OctopusGraphQL.FlowClaimFileUploadInput(fileIds: ids)
         let mutation = OctopusGraphQL.FlowClaimFileUploadNextMutation(input: input, context: context)
         return try await mutation.execute(\.flowClaimFileUploadNext.fragments.flowClaimFragment.currentStep)

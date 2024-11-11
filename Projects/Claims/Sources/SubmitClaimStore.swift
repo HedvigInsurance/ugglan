@@ -16,13 +16,6 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         switch action {
         case .submitClaimOpenFreeTextChat:
             NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
-        //        case let .startClaimRequest(entrypointId, entrypointOptionId):
-        //            await executeAsync(loadingType: .startClaim) {
-        //                try await self.submitClaimClient.startClaim(
-        //                    entrypointId: entrypointId,
-        //                    entrypointOptionId: entrypointOptionId
-        //                )
-        //            }
         case let .phoneNumberRequest(phoneNumberInput):
             break
         //            await executeAsync(loadingType: .postPhoneNumber) {
@@ -31,15 +24,6 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         //        case .dateOfOccurrenceAndLocationRequest:
         //            await executeAsync(loadingType: .postDateOfOccurrenceAndLocation) {
         //                try await self.submitClaimClient.dateOfOccurrenceAndLocationRequest(context: newClaimContext)
-        //            }
-        case let .submitAudioRecording(type):
-            break
-        //            await executeAsync(loadingType: .postAudioRecording) {
-        //                try await self.submitClaimClient.submitAudioRecording(
-        //                    type: type,
-        //                    fileUploaderClient: self.fileUploaderClient,
-        //                    context: newClaimContext
-        //                )
         //            }
         case .summaryRequest:
             break
@@ -68,11 +52,6 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         //                    context: newClaimContext
         //                )
         //            }
-        case let .submitFileUpload(ids):
-            break
-        //            await executeAsync(loadingType: .postUploadFiles) {
-        //                try await self.submitClaimClient.submitFileUpload(ids: ids, context: newClaimContext)
-        //            }
         default:
             break
         }
@@ -81,14 +60,6 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
     public override func reduce(_ state: SubmitClaimsState, _ action: SubmitClaimsAction) -> SubmitClaimsState {
         var newState = state
         switch action {
-        case let .setNewClaimId(id):
-            if newState.currentClaimId != id {
-                newState.currentClaimId = id
-            }
-        case .submitAudioRecording:
-            setLoading(for: .postAudioRecording)
-        case .resetAudioRecording:
-            newState.audioRecordingStep?.audioContent = nil
         case let .stepModelAction(action):
             switch action {
             case let .setPhoneNumber(model):
@@ -97,11 +68,6 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             case let .setSummaryStep(model):
                 removeLoading(for: .postSummary)
                 newState.summaryStep = model.summaryStep
-                //                newState.locationStep = model.locationModel
-                //                newState.dateOfOccurenceStep = model.dateOfOccurenceModel
-                //                newState.singleItemStep = model.singleItemStepModel
-                newState.audioRecordingStep = model.audioRecordingModel
-                newState.fileUploadStep = model.fileUploadModel
             case let .setSingleItemCheckoutStep(model):
                 removeLoading(for: .postSingleItemCheckout)
                 newState.singleItemCheckoutStep = model
@@ -111,9 +77,6 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
             case let .setSuccessStep(model):
                 newState.successStep = model
                 newState.progress = nil
-            case let .setAudioStep(model):
-                removeLoading(for: .postAudioRecording)
-                newState.audioRecordingStep = model
             case let .setContractSelectStep(model):
                 removeLoading(for: .postContractSelect)
                 newState.contractStep = model
@@ -122,9 +85,6 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
                 newState.emergencyConfirm = model
             case let .setDeflectModel(model):
                 newState.deflectStepModel = model
-            case let .setFileUploadStep(model):
-                removeLoading(for: .postUploadFiles)
-                newState.fileUploadStep = model
             }
 
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in

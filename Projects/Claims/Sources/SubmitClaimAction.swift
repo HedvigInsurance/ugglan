@@ -6,8 +6,6 @@ public indirect enum SubmitClaimsAction: ActionProtocol, Hashable {
     case dismissNewClaimFlow
     case popClaimFlow
     case submitClaimOpenFreeTextChat
-    case submitAudioRecording(type: SubmitAudioRecordingType)
-    case resetAudioRecording
 
     case setNewClaimId(with: String)
 
@@ -16,7 +14,6 @@ public indirect enum SubmitClaimsAction: ActionProtocol, Hashable {
     case summaryRequest
     case singleItemCheckoutRequest
     case contractSelectRequest(contractId: String?)
-    case submitFileUpload(ids: [String])
 
     case setPayoutMethod(method: AvailableCheckoutMethod)
 
@@ -89,11 +86,9 @@ public enum ClaimsStepModelAction: ActionProtocol, Hashable {
     case setSingleItemCheckoutStep(model: FlowClaimSingleItemCheckoutStepModel)
     case setSuccessStep(model: FlowClaimSuccessStepModel)
     case setFailedStep(model: FlowClaimFailedStepModel)
-    case setAudioStep(model: FlowClaimAudioRecordingStepModel?)
     case setContractSelectStep(model: FlowClaimContractSelectStepModel)
     case setConfirmDeflectEmergencyStepModel(model: FlowClaimConfirmEmergencyStepModel)
     case setDeflectModel(model: FlowClaimDeflectStepModel)
-    case setFileUploadStep(model: FlowClaimFileUploadStepModel?)
 }
 
 extension ClaimsStepModelAction {
@@ -109,8 +104,6 @@ extension ClaimsStepModelAction {
             return .openSuccessScreen
         case .setFailedStep:
             return .openFailureSceen
-        case .setAudioStep:
-            return .openAudioRecordingScreen
         case .setContractSelectStep:
             return .openSelectContractScreen
         case .setConfirmDeflectEmergencyStepModel:
@@ -122,8 +115,6 @@ extension ClaimsStepModelAction {
             default:
                 return .openDeflectScreen(type: model.id)
             }
-        case .setFileUploadStep:
-            return .openFileUploadScreen
         }
     }
 }
@@ -132,8 +123,6 @@ public enum ClaimsLoadingType: LoadingProtocol {
     case postPhoneNumber
     case postSummary
     case postSingleItemCheckout
-    case postAudioRecording
     case postContractSelect
     case postConfirmEmergency
-    case postUploadFiles
 }

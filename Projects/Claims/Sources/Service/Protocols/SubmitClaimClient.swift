@@ -1,6 +1,10 @@
 public protocol SubmitClaimClient {
     func startClaim(entrypointId: String?, entrypointOptionId: String?) async throws -> SubmitClaimStepResponse
-    func updateContact(phoneNumber: String, context: String) async throws -> SubmitClaimStepResponse
+    func updateContact(
+        phoneNumber: String,
+        context: String,
+        model: FlowClaimPhoneNumberStepModel?
+    ) async throws -> SubmitClaimStepResponse
     func dateOfOccurrenceAndLocationRequest(
         context: String,
         model: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels?
@@ -8,14 +12,30 @@ public protocol SubmitClaimClient {
     func submitAudioRecording(
         type: SubmitAudioRecordingType,
         fileUploaderClient: FileUploaderClient,
-        context: String
+        context: String,
+        currentClaimId: String,
+        model: FlowClaimAudioRecordingStepModel?
     ) async throws -> SubmitClaimStepResponse
     func singleItemRequest(context: String, model: FlowClamSingleItemStepModel?) async throws -> SubmitClaimStepResponse
-    func summaryRequest(context: String) async throws -> SubmitClaimStepResponse
-    func singleItemCheckoutRequest(context: String) async throws -> SubmitClaimStepResponse
-    func contractSelectRequest(contractId: String, context: String) async throws -> SubmitClaimStepResponse
+    func summaryRequest(
+        context: String,
+        model: SubmitClaimStep.SummaryStepModels?
+    ) async throws -> SubmitClaimStepResponse
+    func singleItemCheckoutRequest(
+        context: String,
+        model: FlowClaimSingleItemCheckoutStepModel?
+    ) async throws -> SubmitClaimStepResponse
+    func contractSelectRequest(
+        contractId: String,
+        context: String,
+        model: FlowClaimContractSelectStepModel?
+    ) async throws -> SubmitClaimStepResponse
     func emergencyConfirmRequest(isEmergency: Bool, context: String) async throws -> SubmitClaimStepResponse
-    func submitFileUpload(ids: [String], context: String) async throws -> SubmitClaimStepResponse
+    func submitFileUpload(
+        ids: [String],
+        context: String,
+        model: FlowClaimFileUploadStepModel?
+    ) async throws -> SubmitClaimStepResponse
 }
 
 public struct SubmitClaimStepResponse {
