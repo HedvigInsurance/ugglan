@@ -104,7 +104,7 @@ final class DateOfOccurrancePlusLocationStoreTests: XCTestCase {
 }
 
 extension XCTestCase {
-    public func waitUntil(description: String, closure: @escaping () -> Bool) async {
+    public func waitUntil(description: String, timeout: TimeInterval = 2, closure: @escaping () -> Bool) async {
         let exc = expectation(description: description)
         if closure() {
             exc.fulfill()
@@ -117,6 +117,6 @@ extension XCTestCase {
                 }
             }
         }
-        await fulfillment(of: [exc], timeout: 2)
+        await fulfillment(of: [exc], timeout: timeout)
     }
 }
