@@ -6,12 +6,14 @@ import hGraphQL
 struct CompareTierScreen: View {
     @ObservedObject private var vm: CompareTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
-    @StateObject private var tracingOffsetVm = TracingOffsetViewModel()
-    @StateObject private var setOffsetVm = SetOffsetViewModel()
+    @State var shouldShowShadow = false
+    @ObservedObject var tracingOffsetVm = TracingOffsetViewModel()
+    private let setOffsetVm = SetOffsetViewModel()
 
     @SwiftUI.Environment(\.horizontalSizeClass) var horizontalSizeClass
     @SwiftUI.Environment(\.colorScheme) private var colorScheme
     @State private var leftColumnWidth: CGFloat = 0
+
     init(
         vm: CompareTierViewModel
     ) {
@@ -40,8 +42,13 @@ struct CompareTierScreen: View {
 
     private var scrollContent: some View {
         HStack(spacing: 0) {
-            ForEach(vm.tiers, id: \.self) { tier in
-                getColumn(for: tier).id("column " + tier.id)
+            ForEach(vm.tiers, id: \.id) { tier in
+                Column(
+                    tier: tier,
+                    selectedTier: vm.selectedTier,
+                    perils: vm.perils[tier.name] ?? [],
+                    vm: vm
+                )
             }
             Spacing(height: Float(horizontalSizeClass == .regular ? CGFloat.padding64 : CGFloat.padding16))
         }
@@ -58,12 +65,11 @@ struct CompareTierScreen: View {
                     }
                     .frame(width: leftColumnWidth)
                     .zIndex(2)
-
                     Divider()
                         .frame(minHeight: 1)
                         .overlay(hBorderColor.secondary)
                         .padding(.top, 32)
-                        .opacity(tracingOffsetVm.currentOffset.x <= .zero ? 1 : 0)
+                        .opacity(!shouldShowShadow ? 1 : 0)
 
                     ScrollViewReader { scrollView in
                         ScrollView(
@@ -87,7 +93,8 @@ struct CompareTierScreen: View {
                                     }
                                 } else {
                                     if let selectedTierIndex = vm.tiers.firstIndex(where: { $0 == vm.selectedTier }) {
-                                        let offset = selectedTierIndex * 100 - 50
+                                        let columnWidth = 108
+                                        let offset = selectedTierIndex * columnWidth - columnWidth / 2
                                         setOffsetVm.animate(
                                             with: .init(duration: 1, damping: 0.6, offset: .init(x: offset, y: 0))
                                         )
@@ -134,9 +141,13 @@ struct CompareTierScreen: View {
                 L10n.tierComparisonSubtitle
             )
         )
+        .onChange(of: tracingOffsetVm.currentOffset) { newValue in
+            withAnimation {
+                shouldShowShadow = newValue.x > 0
+            }
+        }
     }
 
-    @ViewBuilder
     private var shadowDividerView: some View {
         VStack(spacing: 0) {
             hText(" ", style: .label)
@@ -146,19 +157,19 @@ struct CompareTierScreen: View {
                 .frame(width: leftColumnWidth, alignment: .leading)
                 .shadow(
                     color: shadowColor.opacity(0.05),
-                    radius: tracingOffsetVm.currentOffset.x > .zero ? 5 : 0,
+                    radius: shouldShowShadow ? 5 : 0,
                     x: 0,
                     y: 4
                 )
                 .shadow(
                     color: shadowColor.opacity(0.1),
-                    radius: tracingOffsetVm.currentOffset.x > .zero ? 1 : 0,
+                    radius: shouldShowShadow ? 1 : 0,
                     x: 0,
                     y: 2
                 )
                 .mask {
                     Rectangle()
-                        .offset(x: leftColumnWidth, y: 10)
+                        .offset(x: leftColumnWidth, y: 5)
                         .frame(width: leftColumnWidth)
                 }
         }
@@ -168,7 +179,6 @@ struct CompareTierScreen: View {
         hTextColor.Opaque.primary.colorFor(colorScheme == .light ? .light : .dark, .base).color
     }
 
-    @ViewBuilder
     private var perilTitleColumn: some View {
         VStack(alignment: .leading) {
             hText(" ", style: .label)
@@ -190,81 +200,6 @@ struct CompareTierScreen: View {
             .hSectionWithoutHorizontalPadding
         }
         .fixedSize()
-    }
-
-    @ViewBuilder
-    private func getColumn(for tier: Tier) -> some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: .cornerRadiusXS)
-                .fill(getColumnColor(for: tier))
-                .frame(width: 100, alignment: .center)
-
-            VStack(alignment: .center) {
-                hText(tier.name, style: .label)
-                    .foregroundColor(getTierNameColor(for: tier))
-                    .padding(.top, 7)
-
-                hSection(vm.perils[tier.name] ?? [], id: \.self) { peril in
-                    hRow {
-                        getRowIcon(for: peril, tier: tier)
-                            .frame(height: .padding40, alignment: .center)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                    }
-                    .verticalPadding(0)
-                    .dividerInsets(.leading, tier == vm.tiers.first ? -200 : 0)
-                    .modifier(CompareOnRowTap(currentPeril: peril, vm: vm))
-                }
-                .hSectionWithoutHorizontalPadding
-            }
-        }
-    }
-
-    @hColorBuilder
-    private func getColumnColor(for tier: Tier) -> some hColor {
-        if tier == vm.selectedTier {
-            hHighlightColor.Green.fillOne
-        } else {
-            hBackgroundColor.clear
-        }
-    }
-
-    @hColorBuilder
-    private func getTierNameColor(for tier: Tier) -> some hColor {
-        if tier == vm.selectedTier {
-            hTextColor.Opaque.black
-        } else {
-            hTextColor.Opaque.primary
-        }
-    }
-
-    @ViewBuilder
-    private func getRowIcon(for peril: Perils, tier: Tier) -> some View {
-        Group {
-            if !(peril.isDisabled) {
-                Image(
-                    uiImage: hCoreUIAssets.checkmark.image
-                )
-                .resizable()
-            } else {
-                Image(
-                    uiImage: hCoreUIAssets.minus.image
-                )
-                .resizable()
-            }
-        }
-        .frame(width: 24, height: 24)
-        .foregroundColor(getIconColor(for: peril, tier: tier))
-    }
-
-    @hColorBuilder
-    func getIconColor(for peril: Perils, tier: Tier) -> some hColor {
-        if peril.isDisabled {
-            hFillColor.Opaque.disabled
-        } else if tier == vm.selectedTier {
-            hFillColor.Opaque.black
-        } else {
-            hFillColor.Opaque.secondary
-        }
     }
 }
 
@@ -318,7 +253,7 @@ struct CompareOnRowTap: ViewModifier {
     }
 }
 
-public class CompareTierViewModel: ObservableObject {
+class CompareTierViewModel: ObservableObject {
     @Inject private var service: ChangeTierClient
     @Published var viewState: ProcessingState = .loading
     @Published var selectedTier: Tier?
@@ -363,7 +298,7 @@ public class CompareTierViewModel: ObservableObject {
         return tempPerils
     }
 
-    public func productVariantComparision() {
+    func productVariantComparision() {
         withAnimation {
             viewState = .loading
         }
