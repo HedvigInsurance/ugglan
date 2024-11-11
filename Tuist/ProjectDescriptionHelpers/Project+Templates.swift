@@ -23,12 +23,12 @@ extension Project {
         let frameworkConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
-                settings: [String: SettingValue](),
+                settings: ["SWIFT_VERSION": "6.0"],
                 xcconfig: .relativeToRoot("Configurations/iOS/iOS-Framework.xcconfig")
             ),
             .release(
                 name: "Release",
-                settings: [String: SettingValue](),
+                settings: ["SWIFT_VERSION": "6.0"],
                 xcconfig: .relativeToRoot("Configurations/iOS/iOS-Framework.xcconfig")
             ),
         ]
@@ -36,36 +36,36 @@ extension Project {
         let testsConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
-                settings: [String: SettingValue](),
+                settings: ["SWIFT_VERSION": "6.0"],
                 xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")
             ),
             .release(
                 name: "Release",
-                settings: [String: SettingValue](),
+                settings: ["SWIFT_VERSION": "6.0"],
                 xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")
             ),
         ]
         let appConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
-                settings: [String: SettingValue](),
+                settings: ["SWIFT_VERSION": "6.0"],
                 xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
             ),
             .release(
                 name: "Release",
-                settings: [String: SettingValue](),
+                settings: ["SWIFT_VERSION": "6.0"],
                 xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
             ),
         ]
         let projectConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
-                settings: [String: SettingValue](),
+                settings: ["SWIFT_VERSION": "6.0"],
                 xcconfig: .relativeToRoot("Configurations/Base/Configurations/Debug.xcconfig")
             ),
             .release(
                 name: "Release",
-                settings: [String: SettingValue](),
+                settings: ["SWIFT_VERSION": "6.0"],
                 xcconfig: .relativeToRoot("Configurations/Base/Configurations/Release.xcconfig")
             ),
         ]
