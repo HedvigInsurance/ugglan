@@ -293,8 +293,10 @@ struct CompareOnRowTap: ViewModifier {
                 )
             }
             .onLongPressGesture(minimumDuration: 0.1) {
-                withAnimation {
-                    vm.selectedPeril = currentPeril
+                if #available(iOS 18.0, *) {
+                    withAnimation {
+                        vm.selectedPeril = currentPeril
+                    }
                 }
             } onPressingChanged: { isPressing in
                 if !isPressing {
