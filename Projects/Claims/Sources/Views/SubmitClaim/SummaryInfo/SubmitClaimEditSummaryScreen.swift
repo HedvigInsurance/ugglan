@@ -1,11 +1,9 @@
 import Combine
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct SubmitClaimEditSummaryScreen: View {
-    @PresentableStore var store: SubmitClaimStore
     @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
     @State var purchasePrice: String = ""
 
@@ -36,7 +34,7 @@ public struct SubmitClaimEditSummaryScreen: View {
 
         .hFormAttachToBottom {
             hButton.LargeButton(type: .primary) {
-                store.send(.dismissNewClaimFlow)
+                claimsNavigationVm.router.dismiss()
             } content: {
                 hText(L10n.generalSaveButton)
             }

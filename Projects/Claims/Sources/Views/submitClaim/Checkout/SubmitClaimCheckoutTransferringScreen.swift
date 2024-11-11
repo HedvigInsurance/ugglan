@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 struct SubmitClaimCheckoutTransferringScreen: View {
-    @PresentableStore var store: SubmitClaimStore
+    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
     @State var loadingAnimation: Bool = false
     @State var successAnimation: Bool = false
     @State var errorAnimation: Bool = false
@@ -27,21 +27,22 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                 }
                 .opacity(loadingAnimation ? 0 : 1)
                 .animation(.spring(), value: loadingAnimation)
-                LoadingViewWithState(SubmitClaimStore.self, .postSingleItemCheckout) {
-                    successView()
-                } onLoading: {
-                    loadingView()
-                } onError: { error in
-                    errorView(withError: error)
-                }
-                .transition(
-                    .scale.animation(
-                        .interpolatingSpring(
-                            stiffness: 170,
-                            damping: 15
+                EmptyView()
+                    //                LoadingViewWithState(SubmitClaimStore.self, .postSingleItemCheckout) {
+                    //                    successView()
+                    //                } onLoading: {
+                    //                    loadingView()
+                    //                } onError: { error in
+                    //                    errorView(withError: error)
+                    //                }
+                    .transition(
+                        .scale.animation(
+                            .interpolatingSpring(
+                                stiffness: 170,
+                                damping: 15
+                            )
                         )
                     )
-                )
             }
             .padding(.horizontal, .padding24)
         }
@@ -52,19 +53,20 @@ struct SubmitClaimCheckoutTransferringScreen: View {
         VStack {
             Spacer()
             VStack(spacing: 8) {
-                PresentableStoreLens(
-                    SubmitClaimStore.self,
-                    getter: { state in
-                        state.singleItemCheckoutStep
-                    }
-                ) { singleItemCheckoutStep in
+                EmptyView()
+                //                PresentableStoreLens(
+                //                    SubmitClaimStore.self,
+                //                    getter: { state in
+                //                        state.singleItemCheckoutStep
+                //                    }
+                //                ) { singleItemCheckoutStep in
 
-                    hText(
-                        (singleItemCheckoutStep?.compensation.payoutAmount.formattedAmount ?? ""),
-                        style: .displayXSLong
-                    )
-                    .foregroundColor(hTextColor.Opaque.primary)
-                }
+                //                    hText(
+                //                        (singleItemCheckoutStep?.compensation.payoutAmount.formattedAmount ?? ""),
+                //                        style: .displayXSLong
+                //                    )
+                //                    .foregroundColor(hTextColor.Opaque.primary)
+                //                }
                 hSection {
                     hText(L10n.claimsPayoutSuccessLabel, style: .body1)
                         .foregroundColor(hTextColor.Opaque.secondary)
@@ -82,7 +84,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
             )
             Spacer()
             hButton.LargeButton(type: .ghost) {
-                store.send(.dismissNewClaimFlow)
+                claimsNavigationVm.router.dismiss()
             } content: {
                 hText(L10n.generalCloseButton, style: .body1)
                     .foregroundColor(hTextColor.Opaque.primary)
@@ -178,9 +180,10 @@ struct SubmitClaimCheckoutTransferringScreen: View {
 
             hSection {
                 hButton.LargeButton(type: .primary) {
-                    store.send(.dismissNewClaimFlow)
+                    claimsNavigationVm.router.dismiss()
+                    /** TODO: Is delay needed? **/
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        store.send(.submitClaimOpenFreeTextChat)
+                        NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                     }
                 } content: {
                     hText(L10n.openChat, style: .body1)
@@ -190,7 +193,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
             .sectionContainerStyle(.transparent)
             HStack {
                 Button {
-                    store.send(.dismissNewClaimFlow)
+                    claimsNavigationVm.router.dismiss()
                 } label: {
                     HStack {
                         hText(L10n.generalCloseButton, style: .body1)
@@ -208,7 +211,8 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                 }
 
                 Button {
-                    store.send(.singleItemCheckoutRequest)
+                    /* TODO: IMPLEMENT */
+                    //                    store.send(.singleItemCheckoutRequest)
                 } label: {
                     HStack {
                         hText(L10n.generalRetry, style: .body1)

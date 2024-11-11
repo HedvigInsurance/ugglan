@@ -4,7 +4,7 @@ import hCoreUI
 
 struct SubmitClaimOccurrencePlusLocationScreen: View {
     @ObservedObject var claimsNavigationVm: ClaimsNavigationViewModel
-    @State private var options: SubmitClaimsNavigationAction.SubmitClaimOption = []
+    @State private var options: SubmitClaimOption = []
     @StateObject private var vm = SubmitClaimOccurrencePlusLocationViewModel()
 
     init(

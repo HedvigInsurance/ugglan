@@ -1,11 +1,10 @@
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct SubmitClaimCarScreen: View {
     let model: FlowClaimDeflectStepModel?
-    @PresentableStore var store: SubmitClaimStore
+    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
 
     init(
         model: FlowClaimDeflectStepModel?
@@ -33,7 +32,7 @@ struct SubmitClaimCarScreen: View {
                             UIApplication.shared.open(url)
                             let delayTime = 60.0 * 3
                             DispatchQueue.main.asyncAfter(deadline: .now() + delayTime) {
-                                store.send(.dismissNewClaimFlow)
+                                claimsNavigationVm.router.dismiss()
                             }
                         }
                     } content: {
@@ -48,6 +47,6 @@ struct SubmitClaimCarScreen: View {
     }
 }
 
-#Preview{
+#Preview {
     SubmitClaimCarScreen(model: .init(id: .FlowClaimDeflectEirStep, partners: [], isEmergencyStep: false))
 }

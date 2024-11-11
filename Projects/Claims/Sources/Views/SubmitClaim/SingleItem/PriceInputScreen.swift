@@ -1,11 +1,9 @@
-import PresentableStore
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore
 import hCoreUI
 
 struct PriceInputScreen: View {
-    @PresentableStore var store: SubmitClaimStore
     @State var purchasePrice: String = ""
     @State var type: ClaimsFlowSingleItemFieldType? = .purchasePrice
     @EnvironmentObject var router: Router

@@ -3,14 +3,6 @@ import PresentableStore
 import hCore
 
 public struct SubmitClaimsState: StateProtocol {
-    @OptionalTransient var summaryStep: FlowClaimSummaryStepModel?
-    @OptionalTransient var phoneNumberStep: FlowClaimPhoneNumberStepModel?
-    @OptionalTransient var singleItemCheckoutStep: FlowClaimSingleItemCheckoutStepModel?
-    @OptionalTransient var successStep: FlowClaimSuccessStepModel?
-    @OptionalTransient var failedStep: FlowClaimFailedStepModel?
-    @OptionalTransient var contractStep: FlowClaimContractSelectStepModel?
-    @OptionalTransient var emergencyConfirm: FlowClaimConfirmEmergencyStepModel?
-    @OptionalTransient var deflectStepModel: FlowClaimDeflectStepModel?
     @OptionalTransient var progress: Float?
     @OptionalTransient var previousProgress: Float?
 

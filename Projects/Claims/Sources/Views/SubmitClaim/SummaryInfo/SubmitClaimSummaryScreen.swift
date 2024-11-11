@@ -29,7 +29,6 @@ public struct SubmitClaimSummaryScreen: View {
                         dateOfPurchase
                         purchasePrice
                     }
-                    .disableOn(SubmitClaimStore.self, [.postSummary])
                 }
                 .withHeader {
                     HStack {
@@ -53,8 +52,16 @@ public struct SubmitClaimSummaryScreen: View {
                     InfoCard(text: L10n.claimsComplementClaim, type: .info)
                         .padding(.bottom, .padding8)
                     hButton.LargeButton(type: .primary) {
-                        /* TODO: IMPLEMENT */
-                        //                        store.send(.summaryRequest)
+                        Task {
+                            let step = await vm.summaryRequest(
+                                context: claimsNavigationVm.currentClaimContext ?? "",
+                                model: claimsNavigationVm.summaryModel
+                            )
+
+                            if let step {
+                                claimsNavigationVm.navigate(data: step)
+                            }
+                        }
                     } content: {
                         hText(L10n.embarkSubmitClaim)
                     }
@@ -64,7 +71,6 @@ public struct SubmitClaimSummaryScreen: View {
             }
             .sectionContainerStyle(.transparent)
         }
-        .claimErrorTrackerFor([.postSummary])
     }
 
     @ViewBuilder
@@ -179,6 +185,7 @@ struct SubmitClaimSummaryScreen_Previews: PreviewProvider {
 
 class SubmitClaimSummaryScreenViewModel: ObservableObject {
     let model: FilesUploadViewModel?
+    @Inject private var service: SubmitClaimClient
 
     init(fileUploadStep: FlowClaimFileUploadStepModel?) {
         if let fileUploadStep {
@@ -186,5 +193,18 @@ class SubmitClaimSummaryScreenViewModel: ObservableObject {
         } else {
             self.model = nil
         }
+    }
+
+    @MainActor
+    func summaryRequest(
+        context: String,
+        model: SubmitClaimStep.SummaryStepModels?
+    ) async -> SubmitClaimStepResponse? {
+        do {
+            let data = try await service.summaryRequest(context: context, model: model)
+
+            return data
+        } catch let exception {}
+        return nil
     }
 }
