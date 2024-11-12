@@ -19,9 +19,10 @@ final class SubmitFileUploadStoreTests: XCTestCase {
     }
 
     override func tearDown() async throws {
-        await waitUntil(description: "Store deinited successfully") {
+        await waitUntil(description: "Store deinited successfully", timeout: 5) {
             self.store == nil
         }
+        assert(store == nil)
     }
 
     func testSubmitFileUploadSuccess() async {

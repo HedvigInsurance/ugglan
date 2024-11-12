@@ -9,13 +9,9 @@ struct Column: View {
     let vm: CompareTierViewModel
     var body: some View {
         ZStack {
-            HStack(spacing: 0) {
-                Spacing(width: Float(CGFloat.padding8))
-                RoundedRectangle(cornerRadius: .cornerRadiusXS)
-                    .fill(getColumnColor(for: tier))
-                    .frame(width: 100, alignment: .center)
-
-            }
+            RoundedRectangle(cornerRadius: .cornerRadiusXS)
+                .fill(getColumnColor(for: tier))
+                .padding(.horizontal, .padding4)
             VStack(alignment: .center) {
                 hText(tier.name, style: .label)
                     .foregroundColor(getTierNameColor(for: tier))
@@ -34,6 +30,9 @@ struct Column: View {
                 .hSectionWithoutHorizontalPadding
             }
         }
+        .frame(width: 108, alignment: .center)
+        .padding(.horizontal, tier == vm.tiers.first ? .padding4 : 0)
+
     }
 
     @hColorBuilder
@@ -79,7 +78,7 @@ struct Column: View {
         } else if tier == vm.selectedTier {
             hFillColor.Opaque.black
         } else {
-            hFillColor.Opaque.secondary
+            hFillColor.Opaque.primary
         }
     }
 }
