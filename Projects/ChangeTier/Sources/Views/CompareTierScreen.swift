@@ -156,7 +156,7 @@ struct CompareTierScreen: View {
         withAnimation {
             shadowIntensity = {
                 guard colorScheme == .light else { return 0 }
-                let absoluteValue = min(max(tracingOffsetVm.currentOffset.x, 1), 5)  // goes from 1 - 5
+                let absoluteValue = min(max(tracingOffsetVm.currentOffset.x, 2), 5)  // goes from 2 - 5
                 let relativeValue = absoluteValue / 5
                 return relativeValue
             }()
