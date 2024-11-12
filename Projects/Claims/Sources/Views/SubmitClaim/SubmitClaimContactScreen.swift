@@ -63,27 +63,23 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
 }
 
 class SubmitClaimContractViewModel: ObservableObject {
-    @Published var phoneNumber: String = ""
+    @Published var phoneNumber: String {
+        didSet {
+            let isValidPhone = phoneNumber.isValidPhone
+            self.enableContinueButton = isValidPhone || phoneNumber.isEmpty
+            self.phoneNumberError =
+                (self.enableContinueButton || keyboardEnabled) ? nil : L10n.myInfoPhoneNumberMalformedError
+        }
+    }
     @Published var enableContinueButton: Bool = false
     @Published var keyboardEnabled: Bool = false
     @Published var type: ClaimsFlowContactType?
     @Published var phoneNumberError: String?
-    //    var phoneNumberCancellable: AnyCancellable?
     @Inject private var service: SubmitClaimClient
 
     init(phoneNumber: String) {
         self.phoneNumber = phoneNumber
         self.enableContinueButton = phoneNumber.isValidPhone || phoneNumber.isEmpty
-        /* TODO: IMPLEMENT */
-        //        phoneNumberCancellable = Publishers.CombineLatest($phoneNumber, $keyboardEnabled)
-        //            .receive(on: RunLoop.main)
-        //            .sink { _ in
-        //            } receiveValue: { (phone, keyboardVisible) in
-        //                let isValidPhone = phone.isValidPhone
-        //                self.enableContinueButton = isValidPhone || phone.isEmpty
-        //                self.phoneNumberError =
-        //                    (self.enableContinueButton || keyboardVisible) ? nil : L10n.myInfoPhoneNumberMalformedError
-        //            }
     }
 
     @MainActor
