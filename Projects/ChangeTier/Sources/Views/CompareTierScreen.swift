@@ -6,7 +6,7 @@ import hGraphQL
 struct CompareTierScreen: View {
     @ObservedObject private var vm: CompareTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
-    @State var shadowRadius: CGFloat = 0
+    @State var shadowIntensity: CGFloat = 0
     @State var shouldShowDivider = true
     @ObservedObject var tracingOffsetVm = TracingOffsetViewModel()
     private let setOffsetVm = SetOffsetViewModel()
@@ -19,7 +19,6 @@ struct CompareTierScreen: View {
         vm: CompareTierViewModel
     ) {
         self.vm = vm
-        setShadowAndDivider()
     }
 
     var body: some View {
@@ -148,13 +147,18 @@ struct CompareTierScreen: View {
         .onChange(of: colorScheme) { _ in
             setShadowAndDivider()
         }
+        .onAppear {
+            setShadowAndDivider()
+        }
     }
 
     private func setShadowAndDivider() {
         withAnimation {
-            shadowRadius = {
+            shadowIntensity = {
                 guard colorScheme == .light else { return 0 }
-                return min(max(tracingOffsetVm.currentOffset.x, 1), 5)
+                let absoluteValue = min(max(tracingOffsetVm.currentOffset.x, 1), 5)  // goes from 1 - 5
+                let relativeValue = absoluteValue / 5
+                return relativeValue
             }()
             shouldShowDivider = colorScheme == .dark
         }
@@ -169,13 +173,13 @@ struct CompareTierScreen: View {
                 .frame(width: leftColumnWidth, alignment: .leading)
                 .shadow(
                     color: shadowColor.opacity(0.05),
-                    radius: shadowRadius,
+                    radius: shadowIntensity * 5,
                     x: 0,
                     y: 4
                 )
                 .shadow(
                     color: shadowColor.opacity(0.1),
-                    radius: shadowRadius,
+                    radius: shadowIntensity * 1,
                     x: 0,
                     y: 2
                 )
