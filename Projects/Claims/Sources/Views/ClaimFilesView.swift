@@ -27,7 +27,6 @@ public struct ClaimFilesView: View {
                         successView
                     }
                 }
-                .presentableStoreLensAnimation(.default)
             } else if let error = vm.error {
                 GenericErrorView(
                     description: error

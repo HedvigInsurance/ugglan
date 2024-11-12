@@ -130,7 +130,8 @@ public struct SubmitClaimAudioRecordingScreen: View {
                             } content: {
                                 hText(L10n.saveAndContinueButtonLabel)
                             }
-                            .presentableStoreLensAnimation(.default)
+                            .disabled(audioRecordingVm.viewState == .loading)
+                            .hButtonIsLoading(audioRecordingVm.viewState == .loading)
                             hButton.LargeButton(type: .ghost) {
                                 withAnimation(.spring()) {
                                     claimsNavigationVm.audioRecordingModel?.audioContent = nil
@@ -139,7 +140,6 @@ public struct SubmitClaimAudioRecordingScreen: View {
                             } content: {
                                 hText(L10n.embarkRecordAgain)
                             }
-                            .presentableStoreLensAnimation(.default)
                         }
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                         .onAppear {
@@ -273,6 +273,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
 public class SubmitClaimAudioRecordingScreenModel: ObservableObject {
     @Inject private var service: SubmitClaimClient
     @Inject var fileUploaderClient: FileUploaderClient
+    @Published public var viewState: ProcessingState = .success
 
     @MainActor
     func singleItemRequest(
@@ -281,11 +282,9 @@ public class SubmitClaimAudioRecordingScreenModel: ObservableObject {
         type: SubmitAudioRecordingType,
         model: FlowClaimAudioRecordingStepModel?
     ) async -> SubmitClaimStepResponse? {
-        //        setProgress(to: 0)
-
-        //        withAnimation {
-        //            self.viewState = .loading
-        //        }
+        withAnimation {
+            self.viewState = .loading
+        }
 
         do {
             let data = try await service.submitAudioRecording(
@@ -296,15 +295,15 @@ public class SubmitClaimAudioRecordingScreenModel: ObservableObject {
                 model: model
             )
 
-            //            withAnimation {
-            //                self.viewState = .success
-            //            }
+            withAnimation {
+                self.viewState = .success
+            }
 
             return data
         } catch let exception {
-            //            withAnimation {
-            //                self.viewState = .error(errorMessage: exception.localizedDescription)
-            //            }
+            withAnimation {
+                self.viewState = .error(errorMessage: exception.localizedDescription)
+            }
         }
         return nil
     }

@@ -86,21 +86,20 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
         } content: {
             hText(L10n.generalContinueButton, style: .body1)
         }
-        .presentableStoreLensAnimation(.default)
+        .hButtonIsLoading(vm.viewState == .loading)
+        .disabled(vm.viewState == .loading)
     }
 }
 
 public class SubmitClaimOccurrencePlusLocationViewModel: ObservableObject {
     @Inject private var service: SubmitClaimClient
-    @Published var viewState: ProcessingState = .loading
+    @Published var viewState: ProcessingState = .success
 
     @MainActor
     func dateOfOccurrenceAndLocationRequest(
         context: String,
         model: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels?
     ) async -> SubmitClaimStepResponse? {
-        //        setProgress(to: 0)
-
         withAnimation {
             self.viewState = .loading
         }

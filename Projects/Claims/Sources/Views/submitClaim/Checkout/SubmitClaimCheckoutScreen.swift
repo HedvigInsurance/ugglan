@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct SubmitClaimCheckoutView: View {
+public struct SubmitClaimCheckoutScreen: View {
     @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
 
     public init() {}
@@ -45,12 +45,13 @@ public struct SubmitClaimCheckoutView: View {
                             style: .body1
                         )
                     }
+                    .disabled(claimsNavigationVm.submitClaimCheckoutVm.viewState == .loading)
+                    .hButtonIsLoading(claimsNavigationVm.submitClaimCheckoutVm.viewState == .loading)
                 }
             }
             .padding(.vertical, .padding16)
             .sectionContainerStyle(.transparent)
         }
-        .presentableStoreLensAnimation(.spring())
     }
 
     func getFormContent(from singleItemCheckoutStep: FlowClaimSingleItemCheckoutStepModel?) -> some View {
@@ -219,14 +220,13 @@ public struct SubmitClaimCheckoutView: View {
 
 public class SubmitClaimCheckoutViewModel: ObservableObject {
     @Inject private var service: SubmitClaimClient
-    @Published var viewState: ProcessingState = .loading
+    @Published var viewState: ProcessingState = .success
 
     @MainActor
     func singleItemRequest(
         context: String,
         model: FlowClaimSingleItemCheckoutStepModel?
     ) async -> SubmitClaimStepResponse? {
-        //        setProgress(to: 0)
         withAnimation {
             viewState = .loading
         }
@@ -250,6 +250,6 @@ public class SubmitClaimCheckoutViewModel: ObservableObject {
 struct SubmitClaimCheckoutNoRepairScreen_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
-        return SubmitClaimCheckoutView()
+        return SubmitClaimCheckoutScreen()
     }
 }

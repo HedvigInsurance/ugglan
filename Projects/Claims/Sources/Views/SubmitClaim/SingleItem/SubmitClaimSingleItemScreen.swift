@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct SubmitClaimSingleItem: View {
+public struct SubmitClaimSingleItemScreen: View {
     @State var type: ClaimsFlowSingleItemFieldType?
     @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
     @StateObject var vm = SubmitClaimSingleItemViewModel()
@@ -33,7 +33,8 @@ public struct SubmitClaimSingleItem: View {
                 } content: {
                     hText(L10n.generalContinueButton)
                 }
-                .presentableStoreLensAnimation(.default)
+                .hButtonIsLoading(vm.viewState == .loading)
+                .disabled(vm.viewState == .loading)
             }
             .sectionContainerStyle(.transparent)
         }
@@ -110,27 +111,23 @@ public struct SubmitClaimSingleItem: View {
 
 public class SubmitClaimSingleItemViewModel: ObservableObject {
     @Inject private var service: SubmitClaimClient
+    @Published var viewState: ProcessingState = .success
 
     @MainActor
     func singleItemRequest(context: String, model: FlowClamSingleItemStepModel?) async -> SubmitClaimStepResponse? {
-        //        setProgress(to: 0)
-
-        //        withAnimation {
-        //            self.viewState = .loading
-        //        }
-
+        withAnimation {
+            self.viewState = .loading
+        }
         do {
             let data = try await service.singleItemRequest(context: context, model: model)
-
-            //            withAnimation {
-            //                self.viewState = .success
-            //            }
-
+            withAnimation {
+                self.viewState = .success
+            }
             return data
         } catch let exception {
-            //            withAnimation {
-            //                self.viewState = .error(errorMessage: exception.localizedDescription)
-            //            }
+            withAnimation {
+                self.viewState = .error(errorMessage: exception.localizedDescription)
+            }
         }
         return nil
     }
@@ -153,6 +150,6 @@ enum ClaimsFlowSingleItemFieldType: hTextFieldFocusStateCompliant {
 
 struct SubmitClaimSingleItem_Previews: PreviewProvider {
     static var previews: some View {
-        SubmitClaimSingleItem()
+        SubmitClaimSingleItemScreen()
     }
 }

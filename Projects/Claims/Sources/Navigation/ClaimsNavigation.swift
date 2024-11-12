@@ -201,12 +201,12 @@ extension ClaimsRouterActions: TrackingViewNameProtocol {
         case .audioRecording:
             return .init(describing: SubmitClaimAudioRecordingScreen.self)
         case .singleItem:
-            return .init(describing: SubmitClaimSingleItem.self)
+            return .init(describing: SubmitClaimSingleItemScreen.self)
         case .summary:
             return .init(describing: SubmitClaimSummaryScreen.self)
         case let .deflect(type):
             if type == .FlowClaimDeflectEirStep {
-                return .init(describing: SubmitClaimCarScreen.self)
+                return .init(describing: SubmitClaimCarView.self)
             } else {
                 return .init(describing: SubmitClaimDeflectScreen.self)
             }
@@ -215,7 +215,7 @@ extension ClaimsRouterActions: TrackingViewNameProtocol {
         case .uploadFiles:
             return .init(describing: SubmitClaimFilesUploadScreen.self)
         case .checkOutNoRepair:
-            return .init(describing: SubmitClaimCheckoutView.self)
+            return .init(describing: SubmitClaimCheckoutScreen.self)
         }
     }
 
@@ -408,7 +408,7 @@ public struct ClaimsNavigation: View {
     }
 
     private func openSingleItemScreen() -> some View {
-        SubmitClaimSingleItem()
+        SubmitClaimSingleItemScreen()
             .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
             .addDismissClaimsFlow()
     }
@@ -426,7 +426,7 @@ public struct ClaimsNavigation: View {
 
         Group {
             if model?.id == .FlowClaimDeflectEirStep {
-                SubmitClaimCarScreen(model: model)
+                SubmitClaimCarView(model: model)
             } else {
                 SubmitClaimDeflectScreen(
                     model: model,
@@ -464,7 +464,7 @@ public struct ClaimsNavigation: View {
     }
 
     private func openCheckoutScreen() -> some View {
-        SubmitClaimCheckoutView()
+        SubmitClaimCheckoutScreen()
             .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
             .addDismissClaimsFlow()
             .configureTitle(L10n.Claims.Payout.Summary.title)

@@ -65,8 +65,8 @@ public struct SubmitClaimSummaryScreen: View {
                     } content: {
                         hText(L10n.embarkSubmitClaim)
                     }
-                    .presentableStoreLensAnimation(.default)
-
+                    .disabled(vm.viewState == .loading)
+                    .hButtonIsLoading(vm.viewState == .loading)
                 }
             }
             .sectionContainerStyle(.transparent)
@@ -186,6 +186,7 @@ struct SubmitClaimSummaryScreen_Previews: PreviewProvider {
 class SubmitClaimSummaryScreenViewModel: ObservableObject {
     let model: FilesUploadViewModel?
     @Inject private var service: SubmitClaimClient
+    @Published var viewState: ProcessingState = .success
 
     init(fileUploadStep: FlowClaimFileUploadStepModel?) {
         if let fileUploadStep {
@@ -200,11 +201,22 @@ class SubmitClaimSummaryScreenViewModel: ObservableObject {
         context: String,
         model: SubmitClaimStep.SummaryStepModels?
     ) async -> SubmitClaimStepResponse? {
+        withAnimation {
+            viewState = .loading
+        }
         do {
             let data = try await service.summaryRequest(context: context, model: model)
 
+            withAnimation {
+                viewState = .success
+            }
+
             return data
-        } catch let exception {}
+        } catch let exception {
+            withAnimation {
+                viewState = .error(errorMessage: exception.localizedDescription)
+            }
+        }
         return nil
     }
 }

@@ -48,8 +48,8 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
                         } content: {
                             hText(vm.keyboardEnabled ? L10n.generalSaveButton : L10n.generalContinueButton)
                         }
-                        .presentableStoreLensAnimation(.default)
                         .disabled(!(vm.enableContinueButton || vm.keyboardEnabled))
+                        .hButtonIsLoading(vm.viewState == .loading)
 
                     }
                     .padding(.bottom, .padding16)
@@ -76,6 +76,7 @@ class SubmitClaimContractViewModel: ObservableObject {
     @Published var type: ClaimsFlowContactType?
     @Published var phoneNumberError: String?
     @Inject private var service: SubmitClaimClient
+    @Published var viewState: ProcessingState = .success
 
     init(phoneNumber: String) {
         self.phoneNumber = phoneNumber
@@ -87,11 +88,20 @@ class SubmitClaimContractViewModel: ObservableObject {
         context: String,
         model: FlowClaimPhoneNumberStepModel?
     ) async -> SubmitClaimStepResponse? {
+        withAnimation {
+            self.viewState = .loading
+        }
         do {
             let data = try await service.updateContact(phoneNumber: phoneNumber, context: context, model: model)
-
+            withAnimation {
+                self.viewState = .success
+            }
             return data
-        } catch let exception {}
+        } catch let exception {
+            withAnimation {
+                self.viewState = .error(errorMessage: exception.localizedDescription)
+            }
+        }
         return nil
     }
 }

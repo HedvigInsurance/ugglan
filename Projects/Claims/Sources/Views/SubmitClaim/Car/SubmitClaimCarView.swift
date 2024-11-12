@@ -2,7 +2,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct SubmitClaimCarScreen: View {
+struct SubmitClaimCarView: View {
     let model: FlowClaimDeflectStepModel?
     @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
 
@@ -48,5 +48,5 @@ struct SubmitClaimCarScreen: View {
 }
 
 #Preview {
-    SubmitClaimCarScreen(model: .init(id: .FlowClaimDeflectEirStep, partners: [], isEmergencyStep: false))
+    SubmitClaimCarView(model: .init(id: .FlowClaimDeflectEirStep, partners: [], isEmergencyStep: false))
 }
