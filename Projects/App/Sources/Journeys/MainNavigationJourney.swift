@@ -129,6 +129,7 @@ class MainNavigationViewModel: ObservableObject {
     @MainActor
     init() {
         Task { @MainActor [weak self] in
+            try await Task.sleep(nanoseconds: 100_000_000)
             await self?.checkForFeatureFlags()
             withAnimation(.easeInOut) {
                 self?.hasLaunchFinished = true

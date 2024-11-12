@@ -132,8 +132,8 @@ extension ApolloClient {
         }
     }
 
-    public static func initNetwworkClients() {
-        let hApollo = self.createClient()
+    public static func initNetwworkClients() async {
+        let hApollo = await self.createClient()
         Dependencies.shared.add(module: Module { hApollo.octopus })
     }
 

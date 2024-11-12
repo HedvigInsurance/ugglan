@@ -50,10 +50,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let authenticationService = AuthenticationService()
             do {
                 try await authenticationService.logout()
-                ApolloClient.deleteToken()
+                await ApolloClient.deleteToken()
                 clearData()
             } catch _ {
-                ApolloClient.deleteToken()
+                await ApolloClient.deleteToken()
                 clearData()
             }
         }
@@ -148,7 +148,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let store: UgglanStore = globalPresentableStoreContainer.get()
             store.send(.setIsDemoMode(to: false))
             Task {
-                setupSession()
+                await setupSession()
                 await impersonate.impersonate(with: url)
 
             }
@@ -179,8 +179,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
-    func setupSession() {
-        ApolloClient.initNetwworkClients()
+    func setupSession() async {
+        await ApolloClient.initNetwworkClients()
         ApolloClient.initAndRegisterClient()
         urlSessionClientProvider = {
             return InterceptingURLSessionClient()
@@ -206,38 +206,40 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         Localization.Locale.currentLocale.send(ApplicationState.preferredLocale)
-        setupSession()
-        TokenRefresher.shared.onRefresh = { token in
-            let authService = AuthenticationService()
-            try await authService.exchange(refreshToken: token)
-        }
-        let config = Logger.Configuration(
-            service: "ios",
-            networkInfoEnabled: true,
-            bundleWithRumEnabled: true,
-            bundleWithTraceEnabled: true,
-            remoteLogThreshold: .info,
-            consoleLogFormat: .shortWith(prefix: "[Hedvig] ")
-        )
-        let datadogLogger = Logger.create(with: config)
-        hGraphQL.log = DatadogLogger(datadogLogger: datadogLogger)
+        Task {
+            await setupSession()
+            TokenRefresher.shared.onRefresh = { token in
+                let authService = AuthenticationService()
+                try await authService.exchange(refreshToken: token)
+            }
+            let config = Logger.Configuration(
+                service: "ios",
+                networkInfoEnabled: true,
+                bundleWithRumEnabled: true,
+                bundleWithTraceEnabled: true,
+                remoteLogThreshold: .info,
+                consoleLogFormat: .shortWith(prefix: "[Hedvig] ")
+            )
+            let datadogLogger = Logger.create(with: config)
+            hGraphQL.log = DatadogLogger(datadogLogger: datadogLogger)
 
-        setupPresentableStoreLogger()
+            setupPresentableStoreLogger()
 
-        log.info("Starting app")
+            log.info("Starting app")
 
-        forceLogoutHook = { [weak self] in
-            if ApplicationState.currentState != .notLoggedIn {
-                DispatchQueue.main.async {
-                    ApplicationState.preserveState(.notLoggedIn)
-                    ApplicationState.state = .notLoggedIn
-                    self?.logout()
+            forceLogoutHook = { [weak self] in
+                if ApplicationState.currentState != .notLoggedIn {
+                    DispatchQueue.main.async {
+                        ApplicationState.preserveState(.notLoggedIn)
+                        ApplicationState.state = .notLoggedIn
+                        self?.logout()
 
-                    let toast = ToastBar(
-                        type: .info,
-                        text: L10n.forceLogoutMessageTitle
-                    )
-                    Toasts.shared.displayToastBar(toast: toast)
+                        let toast = ToastBar(
+                            type: .info,
+                            text: L10n.forceLogoutMessageTitle
+                        )
+                        Toasts.shared.displayToastBar(toast: toast)
+                    }
                 }
             }
         }

@@ -30,6 +30,7 @@ public class FeatureFlagsUnleash: FeatureFlags {
     public var movingFlowVersion: MovingFlowVersion?
     public var isMovingFlowEnabled: Bool { movingFlowVersion != nil }
 
+    @MainActor
     public func setup(with context: [String: String]) async throws {
         unleashClient?.unsubscribe(name: "ready")
         unleashClient?.unsubscribe(name: "update")
@@ -143,10 +144,11 @@ public class FeatureFlagsUnleash: FeatureFlags {
         if let movingFlowVersion = MovingFlowVersion(rawValue: movingFlowEnabledName), isMovingFlowEnabled.enabled {
             self.movingFlowVersion = movingFlowVersion
         }
-
-        log.info(
-            "Feature flag set",
-            attributes: ["featureFlags": featureFlags]
-        )
+        Task {
+            await log.info(
+                "Feature flag set",
+                attributes: ["featureFlags": featureFlags]
+            )
+        }
     }
 }

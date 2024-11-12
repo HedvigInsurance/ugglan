@@ -146,7 +146,7 @@ enum ClaimsRequest {
         }
         request.httpMethod = self.methodType
         try await TokenRefresher.shared.refreshIfNeeded()
-        let headers = ApolloClient.headers()
+        let headers = await ApolloClient.headers()
         headers.forEach { element in
             request.setValue(element.value, forHTTPHeaderField: element.key)
         }

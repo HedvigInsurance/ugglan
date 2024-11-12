@@ -19,9 +19,12 @@ public enum GraphQLError: Error {
 }
 
 func logGraphQLError(error: GraphQLError) {
-    log.addError(error: error, type: .network, attributes: ["desc": error.logDescription])
+    Task { @MainActor in
+        log.addError(error: error, type: .network, attributes: ["desc": error.logDescription])
+    }
 }
 
+@MainActor
 extension ApolloClient {
     public func fetch<Query: GraphQLQuery>(
         query: Query,
@@ -42,7 +45,9 @@ extension ApolloClient {
                         logGraphQLError(error: .graphQLError(errors: errors))
                         inCont.resume(throwing: GraphQLError.graphQLError(errors: errors))
                     } else if let data = result.data {
-                        inCont.resume(returning: data)
+                        Task {@MainActor in
+                            inCont.resume(returning: data)
+                        }
                     }
                 case let .failure(error):
                     inCont.resume(throwing: GraphQLError.otherError(error: error))
@@ -67,7 +72,9 @@ extension ApolloClient {
                         logGraphQLError(error: .graphQLError(errors: errors))
                         inCont.resume(throwing: GraphQLError.graphQLError(errors: errors))
                     } else if let data = result.data {
-                        inCont.resume(returning: data)
+                        Task {@MainActor in
+                            inCont.resume(returning: data)
+                        }
                     }
                 case .failure(let error):
                     inCont.resume(throwing: GraphQLError.otherError(error: error))

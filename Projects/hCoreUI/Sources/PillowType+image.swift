@@ -58,12 +58,13 @@ public enum TypeOfContract: String, Codable, CaseIterable {
         }) {
             return mostLikelyTypeOfContract
         }
-
-        log.warn(
-            "Got an unknown type of contract \(typeOfContract) that couldn't be resolved.",
-            error: nil,
-            attributes: nil
-        )
+        Task {
+            await log.warn(
+                "Got an unknown type of contract \(typeOfContract) that couldn't be resolved.",
+                error: nil,
+                attributes: nil
+            )
+        }
         return .unknown
     }
 

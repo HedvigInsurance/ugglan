@@ -54,7 +54,16 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
     private var networkAuthRepository: NetworkAuthRepository = {
         NetworkAuthRepository(
             environment: Environment.current.authEnvironment,
-            additionalHttpHeadersProvider: { ApolloClient.headers() },
+            additionalHttpHeadersProvider: {
+                var headers = [String: String]()
+                let semaphore = DispatchSemaphore(value: 0)
+                Task {
+                    headers = await ApolloClient.headers()
+                    semaphore.signal()
+                }
+                semaphore.wait()
+                return headers
+            },
             httpClientEngine: nil
         )
     }()
@@ -223,7 +232,7 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
 
     public func logout() async throws {
         do {
-            if let token = try ApolloClient.retreiveToken() {
+            if let token = try await ApolloClient.retreiveToken() {
                 let data = try await self.networkAuthRepository.revoke(token: token.refreshToken)
                 switch onEnum(of: data) {
                 case .error:
@@ -248,7 +257,7 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
                 refreshToken: successResult.refreshToken.token,
                 refreshTokenExpiryIn: Int(successResult.refreshToken.expiryInSeconds)
             )
-            ApolloClient.handleAuthTokenSuccessResult(result: tokenData)
+            await ApolloClient.handleAuthTokenSuccessResult(result: tokenData)
             return
         }
         let error = NSError(domain: "", code: 1000)
@@ -266,10 +275,10 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
                 refreshToken: success.refreshToken.token,
                 refreshTokenExpiryIn: Int(success.refreshToken.expiryInSeconds)
             )
-            ApolloClient.handleAuthTokenSuccessResult(result: accessTokenDto)
+            await ApolloClient.handleAuthTokenSuccessResult(result: accessTokenDto)
         case .error(let error):
             log.error("Refreshing failed \(error.errorMessage), forcing logout")
-            forceLogoutHook()
+            await forceLogoutHook()
             throw AuthError.refreshFailed
         }
     }

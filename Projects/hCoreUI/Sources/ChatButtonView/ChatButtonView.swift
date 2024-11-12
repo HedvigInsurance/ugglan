@@ -232,7 +232,7 @@ struct ToolbarButtonsViewModifier: ViewModifier {
     func body(content: Content) -> some View {
         if #available(iOS 18.0, *) {
             content
-                .introspect(.viewController, on: .iOS(.v18...)) { vc in
+                .introspect(.viewController, on: .iOS(.v18...)) { @MainActor vc in
                     if let nav = vc.navigationController {
                         if self.navVm.nav != nav {
                             self.navVm.nav = nav

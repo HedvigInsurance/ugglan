@@ -2,19 +2,20 @@ import Apollo
 import Combine
 import Foundation
 
+@MainActor
 public class TokenRefresher {
     public static let shared = TokenRefresher()
     private var isRefreshing: CurrentValueSubject<Bool, Never> = CurrentValueSubject<Bool, Never>(false)
     private var cancellables = Set<AnyCancellable>()
-    private var needRefresh: Bool {
-        guard let token = try? ApolloClient.retreiveToken() else {
+    private func needRefresh() async -> Bool {
+        guard let token = try? await ApolloClient.retreiveToken() else {
             return false
         }
         return Date().addingTimeInterval(60) > token.accessTokenExpirationDate
     }
 
     public func refreshIfNeeded() async throws {
-        let token = try ApolloClient.retreiveToken()
+        let token = try await ApolloClient.retreiveToken()
         guard let token = token else {
             forceLogoutHook()
             log.info("Access token refresh missing token", error: nil, attributes: nil)
@@ -22,7 +23,7 @@ public class TokenRefresher {
         }
 
         log.debug("Checking if access token refresh is needed")
-        guard self.needRefresh else {
+        guard await self.needRefresh() else {
             log.debug("Access token refresh is not needed")
             return
         }

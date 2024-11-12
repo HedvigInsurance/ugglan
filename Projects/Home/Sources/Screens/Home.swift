@@ -148,6 +148,7 @@ extension HomeView {
     }
 }
 
+@MainActor
 class HomeVM: ObservableObject {
     @Published var memberContractState: MemberContractState = .loading
     private(set) var homeBottomScrollViewModel: HomeBottomScrollViewModel

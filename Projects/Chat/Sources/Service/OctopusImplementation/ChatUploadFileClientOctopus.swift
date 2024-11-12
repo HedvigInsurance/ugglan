@@ -12,7 +12,7 @@ public class ChatFileUploaderService {
         files: [File],
         withProgress: ((_ progress: Double) -> Void)?
     ) async throws -> [ChatUploadFileResponseModel] {
-        log.info("ChatFileUploaderService: upload", error: nil, attributes: nil)
+        await log.info("ChatFileUploaderService: upload", error: nil, attributes: nil)
         return try await client.upload(files: files, withProgress: withProgress)
     }
 }
@@ -92,7 +92,7 @@ enum FileUploadRequest {
         }
         request.httpMethod = self.methodType
         try await TokenRefresher.shared.refreshIfNeeded()
-        let headers = ApolloClient.headers()
+        let headers = await ApolloClient.headers()
         headers.forEach { element in
             request.setValue(element.value, forHTTPHeaderField: element.key)
         }
