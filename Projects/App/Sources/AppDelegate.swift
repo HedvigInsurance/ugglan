@@ -206,44 +206,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         Localization.Locale.currentLocale.send(ApplicationState.preferredLocale)
-        Task {
-            await setupSession()
-            TokenRefresher.shared.onRefresh = { token in
-                let authService = AuthenticationService()
-                try await authService.exchange(refreshToken: token)
-            }
-            let config = Logger.Configuration(
-                service: "ios",
-                networkInfoEnabled: true,
-                bundleWithRumEnabled: true,
-                bundleWithTraceEnabled: true,
-                remoteLogThreshold: .info,
-                consoleLogFormat: .shortWith(prefix: "[Hedvig] ")
-            )
-            let datadogLogger = Logger.create(with: config)
-            hGraphQL.log = DatadogLogger(datadogLogger: datadogLogger)
-
-            setupPresentableStoreLogger()
-
-            log.info("Starting app")
-
-            forceLogoutHook = { [weak self] in
-                if ApplicationState.currentState != .notLoggedIn {
-                    DispatchQueue.main.async {
-                        ApplicationState.preserveState(.notLoggedIn)
-                        ApplicationState.state = .notLoggedIn
-                        self?.logout()
-
-                        let toast = ToastBar(
-                            type: .info,
-                            text: L10n.forceLogoutMessageTitle
-                        )
-                        Toasts.shared.displayToastBar(toast: toast)
-                    }
-                }
-            }
-        }
-
         window.rootViewController = UIViewController()
         window.makeKeyAndVisible()
         DefaultStyling.installCustom()
@@ -251,5 +213,43 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UNUserNotificationCenter.current().delegate = self
         observeNotificationsSettings()
         return true
+    }
+
+    func initialSetup() async {
+        await setupSession()
+        TokenRefresher.shared.onRefresh = { token in
+            let authService = AuthenticationService()
+            try await authService.exchange(refreshToken: token)
+        }
+        let config = Logger.Configuration(
+            service: "ios",
+            networkInfoEnabled: true,
+            bundleWithRumEnabled: true,
+            bundleWithTraceEnabled: true,
+            remoteLogThreshold: .info,
+            consoleLogFormat: .shortWith(prefix: "[Hedvig] ")
+        )
+        let datadogLogger = Logger.create(with: config)
+        hGraphQL.log = DatadogLogger(datadogLogger: datadogLogger)
+
+        setupPresentableStoreLogger()
+
+        log.info("Starting app")
+
+        forceLogoutHook = { [weak self] in
+            if ApplicationState.currentState != .notLoggedIn {
+                DispatchQueue.main.async {
+                    ApplicationState.preserveState(.notLoggedIn)
+                    ApplicationState.state = .notLoggedIn
+                    self?.logout()
+
+                    let toast = ToastBar(
+                        type: .info,
+                        text: L10n.forceLogoutMessageTitle
+                    )
+                    Toasts.shared.displayToastBar(toast: toast)
+                }
+            }
+        }
     }
 }
