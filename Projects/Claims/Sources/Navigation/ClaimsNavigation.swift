@@ -555,7 +555,7 @@ public struct ClaimsNavigation: View {
     }
 
     private func openCheckoutTransferringScreen() -> some View {
-        SubmitClaimCheckoutTransferringView()
+        SubmitClaimCheckoutTransferringScreen()
     }
 
     private func openInfoView(model: InfoViewModel) -> some View {

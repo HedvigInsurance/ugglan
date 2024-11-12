@@ -2,7 +2,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct SubmitClaimCheckoutTransferringView: View {
+struct SubmitClaimCheckoutTransferringScreen: View {
     @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
     @State var loadingAnimation: Bool = false
     @State var successAnimation: Bool = false
@@ -135,6 +135,6 @@ struct SubmitClaimCheckoutTransferringView: View {
 #Preview {
     Dependencies.shared.add(module: Module { () -> SubmitClaimClient in SubmitClaimClientDemo() })
     Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in FetchEntrypointsClientDemo() })
-    return SubmitClaimCheckoutTransferringView()
+    return SubmitClaimCheckoutTransferringScreen()
         .environmentObject(ClaimsNavigationViewModel())
 }
