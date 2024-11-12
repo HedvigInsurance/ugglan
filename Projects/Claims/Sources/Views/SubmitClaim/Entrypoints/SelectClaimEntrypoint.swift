@@ -8,6 +8,7 @@ import hCoreUI
 public struct SelectClaimEntrypointGroup: View {
     @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
     @ObservedObject var vm: SelectClaimEntrypointViewModel
+    @State var buttonIsLoading: Bool = false
 
     public init(
         vm: SelectClaimEntrypointViewModel
@@ -41,11 +42,13 @@ public struct SelectClaimEntrypointGroup: View {
                                     claimsNavigationVm.entrypoints.selectedEntrypoints =
                                         claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints
 
+                                    buttonIsLoading = true
                                     Task {
                                         await claimsNavigationVm.startClaimRequest(
                                             entrypointId: nil,
                                             entrypointOptionId: nil
                                         )
+                                        buttonIsLoading = false
                                     }
                                 } else {
                                     if claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints.first?.options == []
@@ -62,7 +65,8 @@ public struct SelectClaimEntrypointGroup: View {
 
                             }
                         },
-                        oldValue: $claimsNavigationVm.selectClaimEntrypointVm.selectedClaimGroup
+                        oldValue: $claimsNavigationVm.selectClaimEntrypointVm.selectedClaimGroup,
+                        buttonIsLoading: $buttonIsLoading
                     )
                 }
             }
@@ -77,6 +81,7 @@ struct SelectClaimEntrypointType: View {
     @State var entrypointList: [ClaimEntryPointResponseModel] = []
     @State var claimOptions: [ClaimEntryPointOptionResponseModel] = []
     @State var selectedClaimEntrypoint: String? = nil
+    @State var buttonIsLoading: Bool = false
 
     @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
     @EnvironmentObject var router: Router
@@ -112,11 +117,13 @@ struct SelectClaimEntrypointType: View {
                         )
 
                         if claimOptions.isEmpty {
+                            buttonIsLoading = true
                             Task {
                                 await claimsNavigationVm.startClaimRequest(
                                     entrypointId: claimsNavigationVm.entrypoints.selectedEntrypointId,
                                     entrypointOptionId: nil
                                 )
+                                buttonIsLoading = false
                             }
 
                         } else {
@@ -124,7 +131,8 @@ struct SelectClaimEntrypointType: View {
                         }
                     }
                 },
-                oldValue: $selectedClaimEntrypoint
+                oldValue: $selectedClaimEntrypoint,
+                buttonIsLoading: $buttonIsLoading
             )
         }
     }
@@ -162,6 +170,7 @@ struct SelectClaimEntrypointType: View {
 struct SelectClaimEntrypointOption: View {
     @State var selectedClaimOption: String? = nil
     @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @State var buttonIsLoading: Bool = false
 
     public init() {}
 
@@ -180,6 +189,7 @@ struct SelectClaimEntrypointOption: View {
                 },
                 onButtonClick: {
                     if selectedClaimOption != nil {
+                        buttonIsLoading = true
                         Task {
                             await claimsNavigationVm.startClaimRequest(
                                 entrypointId: claimsNavigationVm.entrypoints.selectedEntrypointId ?? "",
@@ -187,10 +197,12 @@ struct SelectClaimEntrypointOption: View {
                                     input: claimsNavigationVm.entrypoints.selectedEntrypointOptions ?? []
                                 )
                             )
+                            buttonIsLoading = false
                         }
                     }
                 },
-                oldValue: $selectedClaimOption
+                oldValue: $selectedClaimOption,
+                buttonIsLoading: $buttonIsLoading
             )
         }
     }
@@ -227,6 +239,9 @@ struct ShowTagList: View {
     @State var selection: String? = nil
     @Binding var oldValue: String?
     @State private var showTags = false
+
+    @Binding var buttonIsLoading: Bool
+
     var body: some View {
         hSection {
             VStack(spacing: 16) {
@@ -279,7 +294,7 @@ struct ShowTagList: View {
                 } content: {
                     hText(L10n.generalContinueButton, style: .body1)
                 }
-                .presentableStoreLensAnimation(.default)
+                .hButtonIsLoading(buttonIsLoading)
             }
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {

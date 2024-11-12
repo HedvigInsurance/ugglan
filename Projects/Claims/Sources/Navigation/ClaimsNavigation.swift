@@ -483,10 +483,7 @@ public struct ClaimsNavigation: View {
                         buttonTitle: L10n.openChat,
                         buttonAction: {
                             claimsNavigationVm.router.dismiss()
-                            /** TODO: Is delay needed? **/
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
-                            }
+                            NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                         }
                     )
                 )
