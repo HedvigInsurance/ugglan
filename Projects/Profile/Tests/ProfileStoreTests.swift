@@ -85,9 +85,8 @@ final class ProfileStoreTests: XCTestCase {
         let store = ProfileStore()
         self.store = store
         await store.sendAsync(.fetchMemberDetails)
-        try await waitUntil(description: "loading state") {
-            store.loadingState[.fetchMemberDetails] == nil
-        }
+        try await Task.sleep(nanoseconds: 100_000_000)
+        assert(store.loadingState[.fetchMemberDetails] == nil)
         assert(store.state.memberDetails == memberData)
         assert(store.state.hasTravelCertificates == false)
 

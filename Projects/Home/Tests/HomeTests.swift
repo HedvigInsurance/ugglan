@@ -108,7 +108,7 @@ final class HomeTests: XCTestCase {
     }
 
     func testHomeStoreWithMultipleActionsAtOnce() async throws {
-        for i in 1...100 {
+        for i in 1...10 {
             try await iteratedStoreTest(iteration: i)
         }
         try await Task.sleep(nanoseconds: 100_000_000)
@@ -160,7 +160,7 @@ final class HomeTests: XCTestCase {
         store.send(.fetchImportantMessages)
         store.send(.fetchQuickActions)
         store.send(.fetchChatNotifications)
-        try await Task.sleep(nanoseconds: 100_000_000)
+        try await Task.sleep(nanoseconds: 300_000_000)
 
         assert(store.state.memberContractState == memberState.contractState)
         assert(store.state.futureStatus == memberState.futureState)

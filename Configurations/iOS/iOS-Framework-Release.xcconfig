@@ -5,7 +5,7 @@
 //
 
 // Import base framework settings
-#include "../Base/Targets/Framework.xcconfig"
+#include "../Base/Targets/Framework-Release.xcconfig"
 
 // Import common settings specific to iOS
 #include "iOS-Base.xcconfig"
