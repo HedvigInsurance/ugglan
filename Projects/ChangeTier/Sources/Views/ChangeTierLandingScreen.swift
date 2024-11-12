@@ -21,27 +21,31 @@ public struct ChangeTierLandingScreen: View {
         } else {
             ProcessingStateView(
                 loadingViewText: L10n.tierFlowProcessing,
-                errorViewButtons: .init(
-                    actionButton: .init(
-                        buttonAction: {
-                            vm.fetchTiers()
-                        }
-                    ),
-                    dismissButton:
-                        .init(
-                            buttonTitle: L10n.generalCloseButton,
-                            buttonAction: {
-                                changeTierNavigationVm.router.dismiss()
-                            }
-                        )
-                ),
                 state: $vm.viewState,
                 duration: 6
             )
             .hCustomSuccessView {
                 succesView
             }
+            .hErrorViewButtonConfig(errorButtons)
         }
+    }
+
+    private var errorButtons: ErrorViewButtonConfig {
+        .init(
+            actionButton: .init(
+                buttonAction: {
+                    vm.fetchTiers()
+                }
+            ),
+            dismissButton:
+                .init(
+                    buttonTitle: L10n.generalCloseButton,
+                    buttonAction: {
+                        changeTierNavigationVm.router.dismiss()
+                    }
+                )
+        )
     }
 
     var succesView: some View {

@@ -19,15 +19,6 @@ public struct MovingFlowHousingTypeScreen: View {
     public var body: some View {
         ProcessingStateView(
             loadingViewText: L10n.embarkLoading,
-            errorViewButtons: .init(
-                actionButton: .init(
-                    buttonTitle: L10n.openChat,
-                    buttonAction: {
-                        NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
-                    }
-                ),
-                dismissButton: nil
-            ),
             state: $vm.viewState
         )
         .hCustomSuccessView {
@@ -84,6 +75,19 @@ public struct MovingFlowHousingTypeScreen: View {
                 )
                 .hDisableScroll
         }
+        .hErrorViewButtonConfig(errorButtons)
+    }
+
+    private var errorButtons: ErrorViewButtonConfig {
+        .init(
+            actionButton: .init(
+                buttonTitle: L10n.openChat,
+                buttonAction: {
+                    NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
+                }
+            ),
+            dismissButton: nil
+        )
     }
 
     func continuePressed() {

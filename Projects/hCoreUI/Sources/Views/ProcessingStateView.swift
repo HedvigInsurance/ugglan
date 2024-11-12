@@ -21,7 +21,6 @@ public struct ProcessingStateView: View {
     var successViewTitle: String?
     var successViewBody: String?
     var successViewButtonAction: (() -> Void)?
-    var errorViewButtons: ErrorViewButtonConfig?
     @Environment(\.hCustomSuccessView) var customSuccessView
     @Environment(\.hErrorViewButtonConfig) var errorViewButtonConfig
 
@@ -30,7 +29,6 @@ public struct ProcessingStateView: View {
         successViewTitle: String? = nil,
         successViewBody: String? = nil,
         successViewButtonAction: (() -> Void)? = nil,
-        errorViewButtons: ErrorViewButtonConfig? = nil,
         state: Binding<ProcessingState>,
         duration: Float = 1.5
     ) {
@@ -38,7 +36,6 @@ public struct ProcessingStateView: View {
         self.successViewTitle = successViewTitle
         self.successViewBody = successViewBody
         self.successViewButtonAction = successViewButtonAction
-        self.errorViewButtons = errorViewButtons
         self._state = state
 
         let baseDurationFactor: Float = duration * (Float(1) / Float(24))
@@ -94,7 +91,7 @@ public struct ProcessingStateView: View {
             title: L10n.somethingWentWrong,
             description: errorMessage
         )
-        .hErrorViewButtonConfig(errorViewButtons ?? errorViewButtonConfig)
+        .hErrorViewButtonConfig(errorViewButtonConfig)
     }
 
     @ViewBuilder
@@ -128,7 +125,6 @@ public struct ProcessingStateView: View {
 #Preview(body: {
     ProcessingStateView(
         loadingViewText: "loading...",
-        errorViewButtons: .init(),
         state: .constant(.error(errorMessage: "error message"))
     )
 })
