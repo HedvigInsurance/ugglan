@@ -23,14 +23,17 @@ public struct SubmitClaimCheckoutView: View {
                     }
                     hButton.LargeButton(type: .primary) {
                         claimsNavigationVm.isCheckoutTransferringPresented = true
-                        Task {
-                            let step = await claimsNavigationVm.submitClaimCheckoutVm.singleItemRequest(
-                                context: claimsNavigationVm.currentClaimContext ?? "",
-                                model: claimsNavigationVm.singleItemCheckoutModel
-                            )
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 7) {
+                            Task {
+                                let step = await claimsNavigationVm.submitClaimCheckoutVm.singleItemRequest(
+                                    context: claimsNavigationVm.currentClaimContext ?? "",
+                                    model: claimsNavigationVm.singleItemCheckoutModel
+                                )
 
-                            if let step {
-                                claimsNavigationVm.navigate(data: step)
+                                if let step {
+                                    claimsNavigationVm.isCheckoutTransferringPresented = false
+                                    claimsNavigationVm.navigate(data: step)
+                                }
                             }
                         }
 

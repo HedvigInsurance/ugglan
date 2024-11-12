@@ -349,6 +349,7 @@ public struct ClaimsNavigation: View {
             presented: $claimsNavigationVm.isCheckoutTransferringPresented
         ) {
             openCheckoutTransferringScreen()
+                .environmentObject(claimsNavigationVm)
         }
         .modally(
             item: $claimsNavigationVm.isClaimFilesPresented
@@ -629,13 +630,13 @@ extension View {
         /* TODO: IMPLEMENT */
         //        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
         //        let previousProgress = store.state.previousProgress
-        //        let previousProgress = vm.previousProgress
+        let previousProgress = vm.previousProgress
 
         return self.onDeinit {
             //            let store: SubmitClaimStore = globalPresentableStoreContainer.get()
             //            store.send(.setProgress(progress: previousProgress))
-            //            vm.previousProgress = vm.progress
-            //            vm.progress = previousProgress
+            vm.previousProgress = vm.progress
+            vm.progress = previousProgress
         }
     }
 }
