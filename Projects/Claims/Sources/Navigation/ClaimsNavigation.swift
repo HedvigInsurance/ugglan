@@ -361,8 +361,7 @@ public struct ClaimsNavigation: View {
     private func showClaimEntrypointGroup(origin: ClaimsOrigin) -> some View {
         SelectClaimEntrypointGroup(vm: claimsNavigationVm.selectClaimEntrypointVm)
             .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
-            //            .addClaimsProgressBar
-            .addClaimsProgressBar(vm: claimsNavigationVm)
+            .modifier(SubmitClaimProgressBarView())
             .addDismissClaimsFlow()
     }
 
