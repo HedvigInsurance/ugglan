@@ -344,7 +344,7 @@ public class SelectClaimEntrypointViewModel: ObservableObject {
     @Published var selectedClaimGroup: String? = nil
 
     /* TODO: REMOVE LATER */
-    @PresentableStore var store: SubmitClaimStore
+    //    @PresentableStore var store: SubmitClaimStore
 
     init() {
         fetchClaimEntrypointGroups()
@@ -374,20 +374,20 @@ public class SelectClaimEntrypointViewModel: ObservableObject {
     }
 
     func setProgress(to progress: Float?) {
-        store.send(
-            .setProgress(progress: progress)
-        )
+        //        store.send(
+        //            .setProgress(progress: progress)
+        //        )
     }
 
     func setOnlyProgress(to progress: Float?) {
-        store.send(
-            .setOnlyProgress(progress: progress)
-        )
+        //        store.send(
+        //            .setOnlyProgress(progress: progress)
+        //        )
     }
 
     func setOnlyPreviousProgress(to progress: Float?) {
-        store.send(
-            .setOnlyPreviousProgress(progress: progress)
-        )
+        //        store.send(
+        //            .setOnlyPreviousProgress(progress: progress)
+        //        )
     }
 }

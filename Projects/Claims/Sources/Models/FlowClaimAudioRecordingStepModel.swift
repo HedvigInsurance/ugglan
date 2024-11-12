@@ -55,3 +55,8 @@ struct AudioContentModel: Codable, Equatable, Hashable {
         self.signedUrl = data.signedUrl
     }
 }
+
+public enum SubmitAudioRecordingType: Hashable {
+    case audio(url: URL)
+    case text(text: String)
+}

@@ -6,7 +6,6 @@ import hGraphQL
 
 public struct SubmitClaimCheckoutView: View {
     @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
-    @StateObject var submitClaimCheckoutVm = SubmitClaimCheckoutViewModel()
 
     public init() {}
 
@@ -25,7 +24,7 @@ public struct SubmitClaimCheckoutView: View {
                     hButton.LargeButton(type: .primary) {
                         claimsNavigationVm.isCheckoutTransferringPresented = true
                         Task {
-                            let step = await submitClaimCheckoutVm.singleItemRequest(
+                            let step = await claimsNavigationVm.submitClaimCheckoutVm.singleItemRequest(
                                 context: claimsNavigationVm.currentClaimContext ?? "",
                                 model: claimsNavigationVm.singleItemCheckoutModel
                             )
@@ -217,6 +216,7 @@ public struct SubmitClaimCheckoutView: View {
 
 public class SubmitClaimCheckoutViewModel: ObservableObject {
     @Inject private var service: SubmitClaimClient
+    @Published var viewState: ProcessingState = .loading
 
     @MainActor
     func singleItemRequest(
@@ -224,11 +224,22 @@ public class SubmitClaimCheckoutViewModel: ObservableObject {
         model: FlowClaimSingleItemCheckoutStepModel?
     ) async -> SubmitClaimStepResponse? {
         //        setProgress(to: 0)
+        withAnimation {
+            viewState = .loading
+        }
         do {
             let data = try await service.singleItemCheckoutRequest(context: context, model: model)
 
+            withAnimation {
+                viewState = .success
+            }
+
             return data
-        } catch let exception {}
+        } catch let exception {
+            withAnimation {
+                viewState = .error(errorMessage: exception.localizedDescription)
+            }
+        }
         return nil
     }
 }

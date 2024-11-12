@@ -1,5 +1,4 @@
 import Foundation
-import PresentableStore
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore
@@ -9,7 +8,7 @@ extension View {
     @MainActor public var addClaimsProgressBar: some View {
         self.introspect(.viewController, on: .iOS(.v13...)) { vc in
             let progressViewTag = "navigationProgressBar".hashValue
-            let store: SubmitClaimStore = globalPresentableStoreContainer.get()
+            //            let store: SubmitClaimStore = globalPresentableStoreContainer.get()
             if let navigationBar = vc.navigationController?.navigationBar,
                 navigationBar.subviews.first(where: { $0.tag == progressViewTag }) == nil
             {
@@ -26,21 +25,21 @@ extension View {
                     make.top.equalToSuperview()
                     make.height.equalTo(4)
                 }
-                progresView.progress = store.state.progress ?? 0
-                progresView.alpha = store.state.progress == nil ? 0 : 1
-                store.progressCancellable = store.stateSignal
-                    .map({ $0.progress })
-                    .receive(on: RunLoop.main)
-                    .sink { [weak progresView] progress in
-                        if let progress {
-                            UIView.animate(withDuration: 0.4) {
-                                progresView?.setProgress(progress, animated: true)
-                            }
-                        }
-                        UIView.animate(withDuration: 0.2) {
-                            progresView?.alpha = progress == nil ? 0 : 1
-                        }
-                    }
+                //                progresView.progress = store.state.progress ?? 0
+                //                progresView.alpha = store.state.progress == nil ? 0 : 1
+                //                store.progressCancellable = store.stateSignal
+                //                    .map({ $0.progress })
+                //                    .receive(on: RunLoop.main)
+                //                    .sink { [weak progresView] progress in
+                //                        if let progress {
+                //                            UIView.animate(withDuration: 0.4) {
+                //                                progresView?.setProgress(progress, animated: true)
+                //                            }
+                //                        }
+                //                        UIView.animate(withDuration: 0.2) {
+                //                            progresView?.alpha = progress == nil ? 0 : 1
+                //                        }
+                //                    }
             }
         }
     }

@@ -35,6 +35,8 @@ public class ClaimsNavigationViewModel: ObservableObject {
     @Published var deflectStepModel: FlowClaimDeflectStepModel?
     @Published var emergencyConfirmModel: FlowClaimConfirmEmergencyStepModel?
 
+    @Published var submitClaimCheckoutVm = SubmitClaimCheckoutViewModel()
+
     @Published var currentClaimId: String? {
         didSet {
             do {
@@ -123,7 +125,7 @@ public class ClaimsNavigationViewModel: ObservableObject {
             occurrencePlusLocationModel = model
             router.push(ClaimsRouterActions.dateOfOccurrancePlusLocation)
         case let .setDateOfOccurence(model):
-            occurrencePlusLocationModel?.dateOfOccurrenceModel = model
+            occurrencePlusLocationModel = .init(dateOfOccurencePlusLocationModel: nil, dateOfOccurrenceModel: model)
             router.push(ClaimsRouterActions.dateOfOccurrancePlusLocation)
         case let .setPhoneNumber(model):
             phoneNumberModel = model
@@ -135,7 +137,7 @@ public class ClaimsNavigationViewModel: ObservableObject {
             singleItemModel = model
             router.push(ClaimsRouterActions.singleItem)
         case let .setLocation(model):
-            occurrencePlusLocationModel?.locationModel = model
+            occurrencePlusLocationModel = .init(dateOfOccurencePlusLocationModel: nil, locationModel: model)
             router.push(ClaimsRouterActions.dateOfOccurrancePlusLocation)
         case let .setSummaryStep(model):
             summaryModel = model
@@ -354,45 +356,45 @@ public struct ClaimsNavigation: View {
 
     private func showClaimEntrypointGroup(origin: ClaimsOrigin) -> some View {
         SelectClaimEntrypointGroup(vm: claimsNavigationVm.selectClaimEntrypointVm)
-            .resetProgressToPreviousValueOnDismiss
+            .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
             .addClaimsProgressBar
             .addDismissClaimsFlow()
     }
 
     private func showClaimEntrypointType() -> some View {
         SelectClaimEntrypointType()
-            .resetProgressToPreviousValueOnDismiss
+            .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
             .addDismissClaimsFlow()
     }
 
     private func showClaimEntrypointOption() -> some View {
         SelectClaimEntrypointOption()
-            .resetProgressToPreviousValueOnDismiss
+            .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
             .addDismissClaimsFlow()
     }
 
     private func submitClaimOccurrancePlusLocationScreen() -> some View {
         SubmitClaimOccurrencePlusLocationScreen(claimsNavigationVm: claimsNavigationVm)
-            .resetProgressToPreviousValueOnDismiss
+            .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
             .addDismissClaimsFlow()
     }
 
     private func openSelectContractScreen() -> some View {
         SelectContractView()
-            .resetProgressToPreviousValueOnDismiss
+            .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
             .addDismissClaimsFlow()
     }
 
     private func submitClaimPhoneNumberScreen(model: FlowClaimPhoneNumberStepModel) -> some View {
         SubmitClaimContactScreen(model: model)
-            .resetProgressToPreviousValueOnDismiss
+            .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
             .addDismissClaimsFlow()
     }
 
     private func openAudioRecordingSceen() -> some View {
         let url = claimsNavigationVm.audioRecordingModel?.getUrl()
         return SubmitClaimAudioRecordingScreen(url: url, claimsNavigationVm: claimsNavigationVm)
-            .resetProgressToPreviousValueOnDismiss
+            .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
             .addDismissClaimsFlow()
     }
 
@@ -402,14 +404,14 @@ public struct ClaimsNavigation: View {
 
     private func openSingleItemScreen() -> some View {
         SubmitClaimSingleItem()
-            .resetProgressToPreviousValueOnDismiss
+            .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
             .addDismissClaimsFlow()
     }
 
     private func openSummaryScreen() -> some View {
         SubmitClaimSummaryScreen(claimsNavigationVm: claimsNavigationVm)
             .configureTitle(L10n.Claims.Summary.Screen.title)
-            .resetProgressToPreviousValueOnDismiss
+            .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
             .addDismissClaimsFlow()
     }
 
@@ -429,7 +431,7 @@ public struct ClaimsNavigation: View {
                 )
             }
         }
-        .resetProgressToPreviousValueOnDismiss
+        .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
         .addDismissClaimsFlow()
         .configureTitle(model?.id.title ?? "")
     }
@@ -446,19 +448,19 @@ public struct ClaimsNavigation: View {
         SumitClaimEmergencySelectView(title: {
             return claimsNavigationVm.emergencyConfirmModel?.text ?? ""
         })
-        .resetProgressToPreviousValueOnDismiss
+        .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
         .addDismissClaimsFlow()
     }
 
     private func openFileUploadScreen() -> some View {
         return SubmitClaimFilesUploadScreen(claimsNavigationVm: claimsNavigationVm)
-            .resetProgressToPreviousValueOnDismiss
+            .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
             .addDismissClaimsFlow()
     }
 
     private func openCheckoutScreen() -> some View {
         SubmitClaimCheckoutView()
-            .resetProgressToPreviousValueOnDismiss
+            .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
             .addDismissClaimsFlow()
             .configureTitle(L10n.Claims.Payout.Summary.title)
     }
@@ -551,7 +553,7 @@ public struct ClaimsNavigation: View {
     }
 
     private func openCheckoutTransferringScreen() -> some View {
-        SubmitClaimCheckoutTransferringScreen()
+        SubmitClaimCheckoutTransferringView()
     }
 
     private func openInfoView(model: InfoViewModel) -> some View {
@@ -559,7 +561,7 @@ public struct ClaimsNavigation: View {
             title: model.title ?? "",
             description: model.description ?? ""
         )
-        .resetProgressToPreviousValueOnDismiss
+        .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
     }
 
     private func openFileScreen(model: ClaimsFileModel) -> some View {
@@ -617,14 +619,19 @@ extension View {
         )
     }
 
-    var resetProgressToPreviousValueOnDismiss: some View {
-        /* TOSO: IMPLEMENT */
+    //    var resetProgressToPreviousValueOnDismiss: some View {
+    func resetProgressToPreviousValueOnDismiss(vm: ClaimsNavigationViewModel) -> some View {
+        //    var resetProgressToPreviousValueOnDismiss: some View {
+        /* TODO: IMPLEMENT */
         //        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
         //        let previousProgress = store.state.previousProgress
+        //        let previousProgress = vm.previousProgress
 
         return self.onDeinit {
             //            let store: SubmitClaimStore = globalPresentableStoreContainer.get()
             //            store.send(.setProgress(progress: previousProgress))
+            //            vm.previousProgress = vm.progress
+            //            vm.progress = previousProgress
         }
     }
 }
@@ -651,6 +658,45 @@ public struct SubmitClaimOption: OptionSet, ActionProtocol, Hashable {
         }
         return ""
     }
+}
+
+public enum ClaimsOrigin: Codable, Equatable, Hashable {
+    case generic
+    case commonClaims(id: String)
+    case commonClaimsWithOption(id: String, optionId: String)
+
+    public var id: CommonClaimId {
+        switch self {
+        case .generic:
+            return CommonClaimId()
+        case let .commonClaims(id):
+            return CommonClaimId(id: id)
+        case let .commonClaimsWithOption(id, optionId):
+            return CommonClaimId(
+                id: id,
+                entrypointOptionId: optionId
+            )
+        }
+    }
+}
+
+public struct CommonClaimId {
+    public let id: String
+    public let entrypointOptionId: String?
+
+    init(
+        id: String = "",
+        entrypointOptionId: String? = nil
+    ) {
+        self.id = id
+        self.entrypointOptionId = entrypointOptionId
+    }
+}
+
+struct EntrypointState: Codable, Equatable, Hashable {
+    var selectedEntrypoints: [ClaimEntryPointResponseModel]?
+    var selectedEntrypointId: String?
+    var selectedEntrypointOptions: [ClaimEntryPointOptionResponseModel]?
 }
 
 #Preview {

@@ -1,11 +1,9 @@
 import Foundation
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct SupportView: View {
-    @PresentableStore var store: SubmitClaimStore
     @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
     let openChat: () -> Void
 
