@@ -31,7 +31,7 @@ struct Column: View {
             }
         }
         .frame(width: 108, alignment: .center)
-        .padding(.horizontal, tier == vm.tiers.first ? .padding4 : 0)
+        .padding(.leading, tier == vm.tiers.first ? .padding4 : 0)
 
     }
 
