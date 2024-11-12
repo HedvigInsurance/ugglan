@@ -268,7 +268,7 @@ public struct ChangeTierNavigation: View {
     var getScreen: some View {
 
         ChangeTierLandingScreen(vm: changeTierNavigationVm.vm)
-            .withDismissButton()
+            .withAlertDismiss()
             .routerDestination(for: ChangeTierRouterActions.self) { action in
                 switch action {
                 case .summary:
@@ -277,7 +277,7 @@ public struct ChangeTierNavigation: View {
                         changeTierNavigationVm: changeTierNavigationVm
                     )
                     .configureTitle(L10n.offerUpdateSummaryTitle)
-                    .withDismissButton()
+                    .withAlertDismiss()
                 }
             }
             .routerDestination(for: ChangeTierRouterActionsWithoutBackButton.self, options: [.hidesBackButton]) {

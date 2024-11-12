@@ -141,23 +141,23 @@ public struct MovingFlowNavigation: View {
 
     func openSelectHousingScreen() -> some View {
         MovingFlowHousingTypeScreen(movingFlowNavigationVm: movingFlowNavigationVm)
-            .withDismissButton()
+            .withAlertDismiss()
     }
 
     func openApartmentFillScreen() -> some View {
         return MovingFlowAddressScreen(vm: movingFlowNavigationVm.addressInputModel)
-            .withDismissButton()
+            .withAlertDismiss()
     }
 
     func openHouseFillScreen() -> some View {
         return MovingFlowHouseScreen(houseInformationInputvm: movingFlowNavigationVm.houseInformationInputvm)
-            .withDismissButton()
+            .withAlertDismiss()
     }
 
     func openConfirmScreen() -> some View {
         MovingFlowConfirmScreen()
             .navigationTitle(L10n.changeAddressSummaryTitle)
-            .withDismissButton()
+            .withAlertDismiss()
     }
 
     func openProcessingView(confirmVm: MovingFlowConfirmViewModel) -> some View {
