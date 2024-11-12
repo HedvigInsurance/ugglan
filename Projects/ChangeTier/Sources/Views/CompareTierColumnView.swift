@@ -78,7 +78,7 @@ struct Column: View {
         } else if tier == vm.selectedTier {
             hFillColor.Opaque.black
         } else {
-            hFillColor.Opaque.secondary
+            hFillColor.Opaque.primary
         }
     }
 }
