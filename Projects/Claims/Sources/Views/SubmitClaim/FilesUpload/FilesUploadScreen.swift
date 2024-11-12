@@ -190,10 +190,8 @@ public class FilesUploadViewModel: ObservableObject {
     private let model: FlowClaimFileUploadStepModel
     var claimFileUploadService = hClaimFileUploadService()
     @ObservedObject var fileGridViewModel: FileGridViewModel
-    //    @PresentableStore var store: SubmitClaimStore
     var delayTimer: AnyCancellable?
-    //    private var cancellables = Set<AnyCancellable>()
-
+    @Published var stateView: ProcessingState = .loading
     @Inject var submitClaimService: SubmitClaimClient
 
     init(model: FlowClaimFileUploadStepModel) {
@@ -212,61 +210,19 @@ public class FilesUploadViewModel: ObservableObject {
             options: [.delete, .add]
         )
 
-        /* TODO: IMPLEMENT */
-        //        fileGridViewModel.$files
-        //            .receive(on: RunLoop.main)
-        //            .sink { _ in
-        //
-        //            } receiveValue: { [weak self] files in
-        //                withAnimation {
-        //                    self?.hasFiles = !files.isEmpty
-        //                }
-        //            }
-        //            .store(in: &cancellables)
         fileGridViewModel.onDelete = { [weak self] file in
             withAnimation {
                 self?.fileGridViewModel.files.removeAll(where: { $0.id == file.id })
             }
         }
-
-        //                store.loadingSignal
-        //                    .receive(on: RunLoop.main)
-        //                    .sink { _ in
-        //
-        //                    } receiveValue: { [weak self] state in
-        //                        guard let self else { return }
-        //                        withAnimation {
-        //                            switch state[.postUploadFiles] {
-        //                            case .loading:
-        //                                self.isLoading = true
-        //                            case let .error(error):
-        //                                self.setNavigationBarHidden(false)
-        //                                self.isLoading = false
-        //                                self.skipPressed = false
-        //                                self.error = error
-        //                            case .none:
-        //                                self.setNavigationBarHidden(false)
-        //                                self.isLoading = false
-        //                                self.skipPressed = false
-        //                            }
-        //                        }
-        //                    }
-        //                    .store(in: &cancellables)
-        //
-        //                self.$isLoading.receive(on: RunLoop.main)
-        //                    .sink { _ in
-        //
-        //                    } receiveValue: { [weak self] isLoading in
-        //                        self?.fileGridViewModel.update(options: isLoading ? [.loading] : [.add, .delete])
-        //                    }
-        //                    .store(in: &cancellables)
-
     }
 
     func addFiles(with files: [File]) {
         if !files.isEmpty {
             fileGridViewModel.files.append(contentsOf: files)
-
+            withAnimation {
+                self.hasFiles = !files.isEmpty
+            }
         }
     }
 
@@ -361,11 +317,17 @@ public class FilesUploadViewModel: ObservableObject {
                         }
                     }
                 }
+                withAnimation {
+                    self.hasFiles = !fileGridViewModel.files.isEmpty
+                }
                 return await submitFileUpload(
                     ids: alreadyUploadedFiles + uploadedFiles,
                     newClaimContext: newClaimContext
                 )
             } else {
+                withAnimation {
+                    self.hasFiles = !fileGridViewModel.files.isEmpty
+                }
                 return await submitFileUpload(ids: alreadyUploadedFiles, newClaimContext: newClaimContext)
             }
         } catch let ex {
@@ -379,12 +341,27 @@ public class FilesUploadViewModel: ObservableObject {
     }
 
     func submitFileUpload(ids: [String], newClaimContext: String) async -> SubmitClaimStepResponse? {
+        withAnimation {
+            stateView = .loading
+            self.fileGridViewModel.update(options: isLoading ? [.loading] : [.add, .delete])
+        }
+
         do {
             let data = try await submitClaimService.submitFileUpload(ids: ids, context: newClaimContext, model: model)
 
+            self.setNavigationBarHidden(false)
+            self.skipPressed = false
+            self.stateView = .success
+            self.isLoading = false
+
             return data
         } catch let exception {
-
+            withAnimation {
+                self.setNavigationBarHidden(false)
+                self.isLoading = false
+                self.skipPressed = false
+                stateView = .error(errorMessage: exception.localizedDescription)
+            }
         }
         return nil
     }
