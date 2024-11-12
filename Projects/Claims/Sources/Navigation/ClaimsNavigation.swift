@@ -145,10 +145,13 @@ public class ClaimsNavigationViewModel: ObservableObject {
         case let .setSingleItemCheckoutStep(model):
             singleItemCheckoutModel = model
             router.push(ClaimsRouterActions.checkOutNoRepair)
+            progress = nil
         case .setSuccessStep:
             router.push(ClaimsRouterActionsWithoutBackButton.success)
+            progress = nil
         case .setFailedStep:
             router.push(ClaimsRouterActionsWithoutBackButton.failure)
+            progress = nil
         case let .setContractSelectStep(model):
             contractSelectModel = model
             router.push(ClaimsRouterActions.selectContract)
@@ -357,7 +360,8 @@ public struct ClaimsNavigation: View {
     private func showClaimEntrypointGroup(origin: ClaimsOrigin) -> some View {
         SelectClaimEntrypointGroup(vm: claimsNavigationVm.selectClaimEntrypointVm)
             .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
-            .addClaimsProgressBar
+            //            .addClaimsProgressBar
+            .addClaimsProgressBar(vm: claimsNavigationVm)
             .addDismissClaimsFlow()
     }
 

@@ -229,37 +229,37 @@ public class FilesUploadViewModel: ObservableObject {
             }
         }
 
-        //        store.loadingSignal
-        //            .receive(on: RunLoop.main)
-        //            .sink { _ in
+        //                store.loadingSignal
+        //                    .receive(on: RunLoop.main)
+        //                    .sink { _ in
         //
-        //            } receiveValue: { [weak self] state in
-        //                guard let self else { return }
-        //                withAnimation {
-        //                    switch state[.postUploadFiles] {
-        //                    case .loading:
-        //                        self.isLoading = true
-        //                    case let .error(error):
-        //                        self.setNavigationBarHidden(false)
-        //                        self.isLoading = false
-        //                        self.skipPressed = false
-        //                        self.error = error
-        //                    case .none:
-        //                        self.setNavigationBarHidden(false)
-        //                        self.isLoading = false
-        //                        self.skipPressed = false
+        //                    } receiveValue: { [weak self] state in
+        //                        guard let self else { return }
+        //                        withAnimation {
+        //                            switch state[.postUploadFiles] {
+        //                            case .loading:
+        //                                self.isLoading = true
+        //                            case let .error(error):
+        //                                self.setNavigationBarHidden(false)
+        //                                self.isLoading = false
+        //                                self.skipPressed = false
+        //                                self.error = error
+        //                            case .none:
+        //                                self.setNavigationBarHidden(false)
+        //                                self.isLoading = false
+        //                                self.skipPressed = false
+        //                            }
+        //                        }
         //                    }
-        //                }
-        //            }
-        //            .store(in: &cancellables)
-
-        //        self.$isLoading.receive(on: RunLoop.main)
-        //            .sink { _ in
+        //                    .store(in: &cancellables)
         //
-        //            } receiveValue: { [weak self] isLoading in
-        //                self?.fileGridViewModel.update(options: isLoading ? [.loading] : [.add, .delete])
-        //            }
-        //            .store(in: &cancellables)
+        //                self.$isLoading.receive(on: RunLoop.main)
+        //                    .sink { _ in
+        //
+        //                    } receiveValue: { [weak self] isLoading in
+        //                        self?.fileGridViewModel.update(options: isLoading ? [.loading] : [.add, .delete])
+        //                    }
+        //                    .store(in: &cancellables)
 
     }
 

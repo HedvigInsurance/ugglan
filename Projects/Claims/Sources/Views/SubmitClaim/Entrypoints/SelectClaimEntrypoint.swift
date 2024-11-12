@@ -37,9 +37,6 @@ public struct SelectClaimEntrypointGroup: View {
                             if claimsNavigationVm.selectClaimEntrypointVm.selectedClaimGroup != nil {
                                 claimsNavigationVm.previousProgress = 0
 
-                                /* TODO: REMOVE LATER*/
-                                vm.setOnlyPreviousProgress(to: 0)
-
                                 if claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints.isEmpty {
                                     claimsNavigationVm.entrypoints.selectedEntrypoints =
                                         claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints
@@ -54,14 +51,8 @@ public struct SelectClaimEntrypointGroup: View {
                                     if claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints.first?.options == []
                                     {
                                         claimsNavigationVm.progress = 0.2
-
-                                        /* TODO: REMOVE LATER*/
-                                        vm.setProgress(to: 0.2)
                                     } else {
                                         claimsNavigationVm.progress = 0.1
-
-                                        /* TODO: REMOVE LATER*/
-                                        vm.setProgress(to: 0.1)
                                     }
 
                                     claimsNavigationVm.entrypoints.selectedEntrypoints =
@@ -74,6 +65,10 @@ public struct SelectClaimEntrypointGroup: View {
                         oldValue: $claimsNavigationVm.selectClaimEntrypointVm.selectedClaimGroup
                     )
                 }
+            }
+            .onAppear {
+                claimsNavigationVm.progress = 0
+                claimsNavigationVm.previousProgress = 0
             }
     }
 }
@@ -110,9 +105,6 @@ struct SelectClaimEntrypointType: View {
                     if selectedClaimEntrypoint != nil {
                         claimsNavigationVm.previousProgress = claimsNavigationVm.progress
                         claimsNavigationVm.progress = 0.2
-
-                        /* TODO: REMOVE LATER */
-                        claimsNavigationVm.selectClaimEntrypointVm.setProgress(to: 0.2)
 
                         claimsNavigationVm.entrypoints.selectedEntrypointOptions = claimOptions
                         claimsNavigationVm.entrypoints.selectedEntrypointId = mapNametoEntrypointId(
@@ -343,15 +335,11 @@ public class SelectClaimEntrypointViewModel: ObservableObject {
     @Published var claimEntrypoints: [ClaimEntryPointResponseModel] = []
     @Published var selectedClaimGroup: String? = nil
 
-    /* TODO: REMOVE LATER */
-    //    @PresentableStore var store: SubmitClaimStore
-
     init() {
         fetchClaimEntrypointGroups()
     }
 
     func fetchClaimEntrypointGroups() {
-        setProgress(to: 0)
 
         withAnimation {
             self.viewState = .loading
@@ -371,23 +359,5 @@ public class SelectClaimEntrypointViewModel: ObservableObject {
                 }
             }
         }
-    }
-
-    func setProgress(to progress: Float?) {
-        //        store.send(
-        //            .setProgress(progress: progress)
-        //        )
-    }
-
-    func setOnlyProgress(to progress: Float?) {
-        //        store.send(
-        //            .setOnlyProgress(progress: progress)
-        //        )
-    }
-
-    func setOnlyPreviousProgress(to progress: Float?) {
-        //        store.send(
-        //            .setOnlyPreviousProgress(progress: progress)
-        //        )
     }
 }
