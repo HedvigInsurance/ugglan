@@ -132,7 +132,7 @@ public class SubmitClaimClientOctopus: SubmitClaimClient {
 
     public func singleItemRequest(
         context: String,
-        model: FlowClamSingleItemStepModel?
+        model: FlowClaimSingleItemStepModel?
     ) async throws -> SubmitClaimStepResponse {
         let singleItemInput = model!.returnSingleItemInfo(purchasePrice: model?.purchasePrice)
         let mutation = OctopusGraphQL.FlowClaimSingleItemNextMutation(
@@ -307,7 +307,7 @@ extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
             return .setLocation(model: .init(with: step))
         } else if let step = self.asFlowClaimSummaryStep?.fragments.flowClaimSummaryStepFragment {
             let summaryStep = FlowClaimSummaryStepModel(with: step)
-            let singleItemStepModel: FlowClamSingleItemStepModel? = {
+            let singleItemStepModel: FlowClaimSingleItemStepModel? = {
                 if let singleItemStep = step.singleItemStep?.fragments.flowClaimSingleItemStepFragment {
                     return .init(with: singleItemStep)
                 }

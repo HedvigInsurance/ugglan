@@ -41,7 +41,7 @@ public struct SubmitClaimSingleItemScreen: View {
     }
 
     @ViewBuilder
-    func getFields(singleItemStep: FlowClamSingleItemStepModel?) -> some View {
+    func getFields(singleItemStep: FlowClaimSingleItemStepModel?) -> some View {
         VStack(spacing: 4) {
             displayBrandAndModelField(singleItemStep: singleItemStep)
             displayDateField(claim: singleItemStep)
@@ -58,7 +58,7 @@ public struct SubmitClaimSingleItemScreen: View {
         .padding(.vertical, .padding12)
     }
 
-    @ViewBuilder func displayBrandAndModelField(singleItemStep: FlowClamSingleItemStepModel?) -> some View {
+    @ViewBuilder func displayBrandAndModelField(singleItemStep: FlowClaimSingleItemStepModel?) -> some View {
         if (singleItemStep?.availableItemModelOptions.count) ?? 0 > 0
             || (singleItemStep?.availableItemBrandOptions.count) ?? 0 > 0
         {
@@ -72,7 +72,7 @@ public struct SubmitClaimSingleItemScreen: View {
         }
     }
 
-    @ViewBuilder func displayDateField(claim: FlowClamSingleItemStepModel?) -> some View {
+    @ViewBuilder func displayDateField(claim: FlowClaimSingleItemStepModel?) -> some View {
         hDatePickerField(
             config: .init(
                 maxDate: Date(),
@@ -85,7 +85,7 @@ public struct SubmitClaimSingleItemScreen: View {
         }
     }
 
-    @ViewBuilder func displayDamageField(claim: FlowClamSingleItemStepModel?) -> some View {
+    @ViewBuilder func displayDamageField(claim: FlowClaimSingleItemStepModel?) -> some View {
         if !(claim?.availableItemProblems.isEmpty ?? true) {
             hFloatingField(
                 value: claim?.getChoosenDamagesAsText() ?? "",
@@ -97,7 +97,7 @@ public struct SubmitClaimSingleItemScreen: View {
         }
     }
 
-    @ViewBuilder func displayPurchasePriceField(claim: FlowClamSingleItemStepModel?) -> some View {
+    @ViewBuilder func displayPurchasePriceField(claim: FlowClaimSingleItemStepModel?) -> some View {
         hFloatingField(
             value: (claim?.purchasePrice != nil)
                 ? String(format: "%.0f", claim?.purchasePrice ?? 0) + " " + (claim?.prefferedCurrency ?? "") : "",
@@ -114,7 +114,7 @@ public class SubmitClaimSingleItemViewModel: ObservableObject {
     @Published var viewState: ProcessingState = .success
 
     @MainActor
-    func singleItemRequest(context: String, model: FlowClamSingleItemStepModel?) async -> SubmitClaimStepResponse? {
+    func singleItemRequest(context: String, model: FlowClaimSingleItemStepModel?) async -> SubmitClaimStepResponse? {
         withAnimation {
             self.viewState = .loading
         }

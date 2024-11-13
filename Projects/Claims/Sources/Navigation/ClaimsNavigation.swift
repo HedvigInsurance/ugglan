@@ -18,7 +18,7 @@ public class ClaimsNavigationViewModel: ObservableObject {
     @Published var previousProgress: Float?
     @Published var claimEntrypoints: [ClaimEntryPointResponseModel] = []
     @Published var occurrencePlusLocationModel: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels?
-    @Published var singleItemModel: FlowClamSingleItemStepModel?
+    @Published var singleItemModel: FlowClaimSingleItemStepModel?
     @Published var summaryModel: SubmitClaimStep.SummaryStepModels?
     @Published var phoneNumberModel: FlowClaimPhoneNumberStepModel?
     @Published var singleItemCheckoutModel: FlowClaimSingleItemCheckoutStepModel?

@@ -16,7 +16,10 @@ public protocol SubmitClaimClient {
         currentClaimId: String,
         model: FlowClaimAudioRecordingStepModel?
     ) async throws -> SubmitClaimStepResponse
-    func singleItemRequest(context: String, model: FlowClamSingleItemStepModel?) async throws -> SubmitClaimStepResponse
+    func singleItemRequest(
+        context: String,
+        model: FlowClaimSingleItemStepModel?
+    ) async throws -> SubmitClaimStepResponse
     func summaryRequest(
         context: String,
         model: SubmitClaimStep.SummaryStepModels?
@@ -54,7 +57,7 @@ public enum SubmitClaimStep {
 
     public struct SummaryStepModels: Hashable {
         let summaryStep: FlowClaimSummaryStepModel?
-        let singleItemStepModel: FlowClamSingleItemStepModel?
+        let singleItemStepModel: FlowClaimSingleItemStepModel?
         let dateOfOccurenceModel: FlowClaimDateOfOccurenceStepModel
         let locationModel: FlowClaimLocationStepModel
         let audioRecordingModel: FlowClaimAudioRecordingStepModel?
@@ -65,7 +68,7 @@ public enum SubmitClaimStep {
     case setDateOfOccurrencePlusLocation(model: DateOfOccurrencePlusLocationStepModels)
     case setPhoneNumber(model: FlowClaimPhoneNumberStepModel)
     case setLocation(model: FlowClaimLocationStepModel)
-    case setSingleItem(model: FlowClamSingleItemStepModel)
+    case setSingleItem(model: FlowClaimSingleItemStepModel)
     case setSummaryStep(model: SummaryStepModels)
     case setSingleItemCheckoutStep(model: FlowClaimSingleItemCheckoutStepModel)
     case setSuccessStep(model: FlowClaimSuccessStepModel)

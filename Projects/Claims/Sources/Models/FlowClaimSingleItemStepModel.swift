@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
+public struct FlowClaimSingleItemStepModel: FlowClaimStepModel {
     let id: String
     let availableItemBrandOptions: [ClaimFlowItemBrandOptionModel]
     let availableItemModelOptions: [ClaimFlowItemModelOptionModel]

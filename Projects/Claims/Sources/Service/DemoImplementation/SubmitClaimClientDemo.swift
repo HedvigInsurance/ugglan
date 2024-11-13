@@ -54,7 +54,7 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
 
     public func singleItemRequest(
         context: String,
-        model: FlowClamSingleItemStepModel?
+        model: FlowClaimSingleItemStepModel?
     ) async throws -> SubmitClaimStepResponse {
         return SubmitClaimStepResponse(
             claimId: "",
