@@ -48,7 +48,7 @@ public struct SubmitClaimStepResponse {
     let step: SubmitClaimStep
 }
 
-public enum SubmitClaimStep {
+public enum SubmitClaimStep: Equatable {
     public struct DateOfOccurrencePlusLocationStepModels: Hashable, Equatable {
         let dateOfOccurencePlusLocationModel: FlowClaimDateOfOccurrencePlusLocationStepModel?
         var dateOfOccurrenceModel: FlowClaimDateOfOccurenceStepModel?
