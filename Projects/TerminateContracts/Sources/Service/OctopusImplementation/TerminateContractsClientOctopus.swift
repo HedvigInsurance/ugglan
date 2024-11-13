@@ -26,7 +26,7 @@ public class TerminateContractsClientOctopus: TerminateContractsClient {
     }
 
     public func sendConfirmDelete(terminationContext: String) async throws -> TerminateStepResponse {
-        let store: TerminationContractStore = globalPresentableStoreContainer.get()
+        let store: TerminationContractStore = await globalPresentableStoreContainer.get()
         let mutation = OctopusGraphQL.FlowTerminationDeletionNextMutation(
             context: terminationContext,
             input: GraphQLNullable(optionalValue: store.state.terminationDeleteStep?.returnDeltionInput())
@@ -72,6 +72,7 @@ extension OctopusGraphQL.FlowTerminationFragment.CurrentStep: Into {
     }
 }
 
+@MainActor
 extension GraphQLMutation {
     func execute<TerminationStep: Into>(
         _ keyPath: KeyPath<Self.Data, TerminationStep>

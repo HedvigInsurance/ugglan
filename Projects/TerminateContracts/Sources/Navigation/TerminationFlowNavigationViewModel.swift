@@ -6,6 +6,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
+@MainActor
 class TerminationFlowNavigationViewModel: ObservableObject {
     @Published var isDatePickerPresented = false
     @Published var isConfirmTerminationPresented = false

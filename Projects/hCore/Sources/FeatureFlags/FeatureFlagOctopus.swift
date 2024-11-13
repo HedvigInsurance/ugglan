@@ -1,5 +1,5 @@
 import Foundation
-import UnleashProxyClientSwift
+@preconcurrency import UnleashProxyClientSwift
 import hGraphQL
 
 public class FeatureFlagsUnleash: FeatureFlags {
@@ -30,7 +30,6 @@ public class FeatureFlagsUnleash: FeatureFlags {
     public var movingFlowVersion: MovingFlowVersion?
     public var isMovingFlowEnabled: Bool { movingFlowVersion != nil }
 
-    @MainActor
     public func setup(with context: [String: String]) async throws {
         unleashClient?.unsubscribe(name: "ready")
         unleashClient?.unsubscribe(name: "update")
@@ -53,18 +52,23 @@ public class FeatureFlagsUnleash: FeatureFlags {
             environment: environmentContext,
             context: context
         )
-        unleashClient?
-            .subscribe(name: "ready") { [weak self] in
-                self?.handleReady()
+        self.unleashClient?
+            .subscribe(.ready) { [weak self] in
+                self?.handleUpdate()
             }
-        unleashClient?
-            .subscribe(name: "update") { [weak self] in
+        self.unleashClient?
+            .subscribe(.update) { [weak self] in
                 self?.handleUpdate()
             }
         log.info("Started loading unleash experiments")
-        emailPreferencesEnabled = Localization.Locale.currentLocale.value.market == .se
+
+        let market = await Task { @MainActor in
+            Localization.Locale.currentLocale.value.market
+        }
+        .value
+        emailPreferencesEnabled = market == .se
         do {
-            try await unleashClient?.start(printToConsole: true)
+            try await self.unleashClient?.start(printToConsole: true)
             log.info("Successfully loaded unleash experiments")
         } catch let exception {
             log.info("Failed loading unleash experiments \(exception)")

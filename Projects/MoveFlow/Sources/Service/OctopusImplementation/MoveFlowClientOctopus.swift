@@ -119,6 +119,7 @@ public class MoveFlowClientOctopus: MoveFlowClient {
     }
 }
 
+@MainActor
 extension MovingFlowModel {
     init(from data: OctopusGraphQL.MoveIntentFragment, apiVersion: OctopusGraphQL.MoveApiVersion) {
         id = data.id
@@ -186,6 +187,7 @@ extension MoveAddress {
     }
 }
 
+@MainActor
 extension MovingFlowQuote {
     init(from data: OctopusGraphQL.QuoteFragment.Quote) {
         id = UUID().uuidString
@@ -263,6 +265,7 @@ extension DisplayItem {
     }
 }
 
+@MainActor
 extension ChangeTierIntentModel {
     static func initWith(data: [OctopusGraphQL.QuoteFragment.HomeQuote]) -> ChangeTierIntentModel {
         let groupedQuotes = data.reduce([(tierName: String, quotes: [OctopusGraphQL.QuoteFragment.HomeQuote])]()) {

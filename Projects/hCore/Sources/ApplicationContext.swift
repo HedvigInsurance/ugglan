@@ -1,7 +1,7 @@
 import Combine
 import Foundation
 
-public class ApplicationContext {
+public actor ApplicationContext {
     public static var shared = ApplicationContext()
 
     private init() {}

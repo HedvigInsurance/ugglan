@@ -159,6 +159,7 @@ public struct ClaimFilesView: View {
     }
 }
 
+@MainActor
 class ClaimFilesViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var success = false

@@ -6,6 +6,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
+@MainActor
 public class ChatScreenViewModel: ObservableObject {
     @Published var messages: [Message] = []
     @Published var lastDeliveredMessage: Message?

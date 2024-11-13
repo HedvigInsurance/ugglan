@@ -45,6 +45,7 @@ public struct FlowClaimSingleItemCheckoutStepModel: FlowClaimStepModel {
         self.selectedPayoutMethod = payoutMethods.first
     }
 
+    @MainActor
     public func returnSingleItemCheckoutInfo() -> OctopusGraphQL.FlowClaimSingleItemCheckoutInput? {
         return selectedPayoutMethod?.getCheckoutInput(forAmount: Double(compensation.payoutAmount.floatAmount))
     }

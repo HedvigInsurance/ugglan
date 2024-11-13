@@ -86,6 +86,7 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
         self.defaultItemProblems = data.selectedItemProblems
     }
 
+    @MainActor
     public func returnSingleItemInfo(purchasePrice: Double?) -> OctopusGraphQL.FlowClaimSingleItemInput {
         let itemBrandInput: OctopusGraphQL.FlowClaimItemBrandInput? = {
             if selectedItemModel != nil {

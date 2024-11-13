@@ -56,6 +56,7 @@ public struct MovingFlowModel: Codable, Equatable, Hashable {
         self.changeTier = nil
     }
 
+    @MainActor
     var total: MonetaryAmount {
         let amount = quotes.reduce(0, { $0 + $1.premium.floatAmount }) + (homeQuote?.premium.floatAmount ?? 0)
         let currency = homeQuote?.premium.currency ?? quotes.first?.premium.currency ?? ""

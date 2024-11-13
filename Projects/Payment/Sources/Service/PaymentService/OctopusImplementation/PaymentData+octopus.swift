@@ -2,6 +2,7 @@ import Foundation
 import hCore
 import hGraphQL
 
+@MainActor
 extension PaymentData {
     init?(
         with data: OctopusGraphQL.PaymentDataQuery.Data,
@@ -39,6 +40,7 @@ extension PaymentData.PaymentDetails {
     }
 }
 
+@MainActor
 extension PaymentData.PaymentStatus {
     static func getStatus(
         with data: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember
@@ -72,6 +74,7 @@ extension PaymentData.PaymentStatus {
     }
 }
 
+@MainActor
 extension PaymentData.PaymentStack {
     init(with data: OctopusGraphQL.MemberChargeFragment) {
         gross = .init(fragment: data.gross.fragments.moneyFragment)
@@ -82,6 +85,7 @@ extension PaymentData.PaymentStack {
     }
 }
 
+@MainActor
 extension PaymentData.ContractPaymentDetails {
     init(with data: OctopusGraphQL.MemberChargeFragment.ContractsChargeBreakdown) {
         id = UUID().uuidString
@@ -92,6 +96,7 @@ extension PaymentData.ContractPaymentDetails {
     }
 }
 
+@MainActor
 extension PaymentData.PeriodInfo {
     init(with data: OctopusGraphQL.MemberChargeFragment.ContractsChargeBreakdown.Period) {
         id = UUID().uuidString
@@ -107,6 +112,7 @@ extension PaymentData.PeriodInfo {
     }
 }
 
+@MainActor
 extension OctopusGraphQL.MemberChargeFragment.ContractsChargeBreakdown.Period {
     fileprivate var getDescription: String? {
         guard let fromDate = fromDate.localDateToDate,

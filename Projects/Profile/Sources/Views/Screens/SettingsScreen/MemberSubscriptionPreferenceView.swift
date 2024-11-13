@@ -36,6 +36,7 @@ struct MemberSubscriptionPreferenceView: View {
     }
 }
 
+@MainActor
 class MemberSubscriptionPreferenceViewModel: ObservableObject {
     @Published var memberId: String = ""
     @Published var isLoading = false

@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 public class ConversationsDemoClient: ConversationsClient, ConversationClient {
     private var conversations: [Conversation] = []
     private var messages = [String: [Message]]()

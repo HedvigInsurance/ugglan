@@ -15,11 +15,13 @@ public struct ProfileState: StateProtocol {
 
     var hasTravelCertificates: Bool = false
 
+    @MainActor
     var showTravelCertificate: Bool {
         let flags: FeatureFlags = Dependencies.shared.resolve()
         return flags.isTravelInsuranceEnabled && (hasTravelCertificates || canCreateTravelInsurance)
     }
 
+    @MainActor
     public var canCreateTravelInsurance: Bool {
         let store: ContractStore = globalPresentableStoreContainer.get()
         return store.state.activeContracts.filter({ $0.supportsTravelCertificate }).isEmpty

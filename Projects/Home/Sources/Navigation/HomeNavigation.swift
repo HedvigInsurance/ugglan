@@ -21,6 +21,7 @@ public struct ChatConversation: Equatable, Identifiable {
     public var chatType: ChatType
 }
 
+@MainActor
 public class HomeNavigationViewModel: ObservableObject {
     public static var isChatPresented = false
     private var cancellables = Set<AnyCancellable>()

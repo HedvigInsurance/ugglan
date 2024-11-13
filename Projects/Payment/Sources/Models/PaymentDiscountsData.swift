@@ -85,6 +85,7 @@ extension Referral {
         }
     }
 
+    @MainActor
     var discountLabelText: String {
         switch self.status {
         case .active:

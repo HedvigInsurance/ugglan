@@ -119,6 +119,7 @@ public struct ContractsNavigation<Content: View>: View {
     }
 }
 
+@MainActor
 public class ContractsNavigationViewModel: ObservableObject {
     public let contractsRouter = Router()
     let terminateInsuranceVm = TerminateInsuranceViewModel()
@@ -131,7 +132,7 @@ public class ContractsNavigationViewModel: ObservableObject {
     @Published public var isChangeAddressPresented = false
     @Published public var changeTierInput: ChangeTierInput?
 
-    public var editCoInsuredVm = EditCoInsuredViewModel(
+    public lazy var editCoInsuredVm = EditCoInsuredViewModel(
         existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
     )
 

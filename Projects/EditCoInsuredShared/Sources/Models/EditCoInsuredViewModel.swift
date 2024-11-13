@@ -5,15 +5,16 @@ import hCore
 public protocol ExistingCoInsured {
     func get(contractId: String) -> [CoInsuredModel]
 }
-
+@MainActor
 public class EditCoInsuredViewModel: ObservableObject {
     @Published public var editCoInsuredModelDetent: EditCoInsuredNavigationModel?
     @Published public var editCoInsuredModelFullScreen: EditCoInsuredNavigationModel?
     @Published public var editCoInsuredModelMissingAlert: InsuredPeopleConfig?
-    public var editCoInsuredSharedService = EditCoInsuredSharedService()
+    public let editCoInsuredSharedService = EditCoInsuredSharedService()
     public static var updatedCoInsuredForContractId = PassthroughSubject<String?, Never>()
     let existingCoInsured: ExistingCoInsured
 
+    @MainActor
     public init(
         existingCoInsured: ExistingCoInsured
     ) {

@@ -447,6 +447,7 @@ private enum LoggedInNavigationDetentType: TrackingViewNameProtocol {
     case crossSelling
 }
 
+@MainActor
 class LoggedInNavigationViewModel: ObservableObject {
     @Published var selectedTab = 0 {
         willSet {

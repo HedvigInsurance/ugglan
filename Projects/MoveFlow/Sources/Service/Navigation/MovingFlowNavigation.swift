@@ -6,6 +6,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
+@MainActor
 public class MovingFlowNavigationViewModel: ObservableObject {
     @Published var isAddExtraBuildingPresented: HouseInformationInputModel?
     @Published public var document: hPDFDocument? = nil

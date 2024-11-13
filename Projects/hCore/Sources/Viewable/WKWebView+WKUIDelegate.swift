@@ -1,4 +1,4 @@
-import Combine
+@preconcurrency import Combine
 @preconcurrency import WebKit
 
 public class WebViewDelegate: NSObject, WKNavigationDelegate, WKUIDelegate {
@@ -36,7 +36,9 @@ public class WebViewDelegate: NSObject, WKNavigationDelegate, WKUIDelegate {
             \.isLoading,
             options: [.new],
             changeHandler: { _, change in
-                self.isLoadingSubject.send(change.newValue ?? false)
+                Task {
+                    await self.isLoadingSubject.send(change.newValue ?? false)
+                }
             }
         )
     }

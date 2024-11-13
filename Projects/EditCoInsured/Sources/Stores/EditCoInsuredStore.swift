@@ -4,6 +4,7 @@ import Foundation
 import PresentableStore
 import hCore
 
+@MainActor
 public final class EditCoInsuredStore: LoadingStateStore<
     EditCoInsuredState, EditCoInsuredAction, EditCoInsuredLoadingAction
 >

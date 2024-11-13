@@ -3,7 +3,7 @@ import Chat
 import Contracts
 import EditCoInsuredShared
 import Foundation
-import PresentableStore
+@preconcurrency import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -79,6 +79,7 @@ public enum HomeLoadingType: LoadingProtocol {
     case fetchQuickActions
 }
 
+@MainActor
 public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadingType> {
     @Inject var homeService: HomeClient
 
@@ -150,29 +151,28 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         case let .setQuickActions(quickActions):
             removeLoading(for: .fetchQuickActions)
             newState.quickActions = quickActions
-            setToolbarTypes(&newState)
+        //            setToolbarTypes(&newState)
         case let .hideImportantMessage(id):
             newState.hidenImportantMessages.append(id)
         case let .setChatNotification(hasNew):
             newState.showChatNotification = hasNew
-            setToolbarTypes(&newState)
+        //            setToolbarTypes(&newState)
         case let .setChatNotificationTimeStamp(sentAt):
             newState.latestChatTimeStamp = sentAt
             newState.showChatNotification = false
-            setToolbarTypes(&newState)
+        //            setToolbarTypes(&newState)
         case let .setHasSentOrRecievedAtLeastOneMessage(hasSent):
             newState.hasSentOrRecievedAtLeastOneMessage = hasSent
-            setToolbarTypes(&newState)
+        //            setToolbarTypes(&newState)
         case let .setChatNotificationConversationTimeStamp(timeStamp):
             newState.latestConversationTimeStamp = timeStamp
-            setToolbarTypes(&newState)
+        //            setToolbarTypes(&newState)
         default:
             break
         }
 
         return newState
     }
-
     private func setToolbarTypes(_ state: inout HomeState) {
         var types: [ToolbarOptionType] = []
         types.append(.newOffer)

@@ -387,6 +387,7 @@ struct ClaimDetailView_Previews: PreviewProvider {
     }
 }
 
+@MainActor
 public class ClaimDetailViewModel: ObservableObject {
     @PresentableStore var store: ClaimsStore
     @Published var claim: ClaimModel

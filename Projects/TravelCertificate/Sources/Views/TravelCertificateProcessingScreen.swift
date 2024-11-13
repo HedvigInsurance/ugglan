@@ -59,6 +59,7 @@ struct TravelCertificateProcessingScreen: View {
     }
 }
 
+@MainActor
 class ProcessingViewModel: ObservableObject {
     var service = TravelInsuranceService()
     @Published var isLoading = true
@@ -133,7 +134,7 @@ class ProcessingViewModel: ObservableObject {
     func present(activity: UIActivityViewController) {
 
     }
-
+    @MainActor
     var fileName: String {
         "\("Travel Insurance Certificate") \(Date().localDateString)\(".pdf")"
     }

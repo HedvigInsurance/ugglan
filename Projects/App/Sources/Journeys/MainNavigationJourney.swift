@@ -141,9 +141,11 @@ class MainNavigationViewModel: ObservableObject {
             }
         }
         if state == .loggedIn {
-            ApplicationContext.shared.setValue(to: true)
-            UIApplication.shared.registerForRemoteNotifications()
-            showLaunchScreen = false
+            Task {
+                await ApplicationContext.shared.setValue(to: true)
+                UIApplication.shared.registerForRemoteNotifications()
+                showLaunchScreen = false
+            }
         }
         appDelegate.configureAppBadgeTracking()
     }

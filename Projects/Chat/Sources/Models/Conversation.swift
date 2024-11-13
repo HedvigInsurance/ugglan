@@ -39,6 +39,7 @@ public struct Conversation: Codable, Identifiable, Hashable {
     let claimType: String?
     let unreadMessageCount: Int
 
+    @MainActor
     public init(
         fragment: OctopusGraphQL.ConversationFragment,
         type: ConversationType
@@ -79,6 +80,7 @@ public struct Conversation: Codable, Identifiable, Hashable {
         return nil
     }
 
+    @MainActor
     var getAnyDate: Date {
         newestMessage?.sentAt ?? createdAt?.localDateToIso8601Date ?? Date()
     }

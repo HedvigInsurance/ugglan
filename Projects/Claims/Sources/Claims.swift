@@ -35,6 +35,7 @@ extension Claims: View {
     }
 }
 
+@MainActor
 class ClaimsViewModel: ObservableObject {
     @PresentableStore private var store: ClaimsStore
     private var pollTimerCancellable: AnyCancellable?
@@ -63,10 +64,12 @@ class ClaimsViewModel: ObservableObject {
             .sink(receiveValue: { [weak self] _ in
                 //added this check here because we have major memory leak in the tabjourney so when we logout this vm is still alive
                 //TODO: remove after we fix memory leak
-                if ApplicationContext.shared.isLoggedIn {
-                    self?.fetch()
-                } else {
-                    self?.pollTimerCancellable?.cancel()
+                Task {
+                    if await ApplicationContext.shared.isLoggedIn {
+                        self?.fetch()
+                    } else {
+                        self?.pollTimerCancellable?.cancel()
+                    }
                 }
             })
     }

@@ -2,7 +2,7 @@ import Foundation
 import hCore
 import hGraphQL
 
-public class EditCoInsuredSharedService {
+public actor EditCoInsuredSharedService {
     @Inject var service: EditCoInsuredSharedClient
 
     public func fetchContracts() async throws -> [Contract] {

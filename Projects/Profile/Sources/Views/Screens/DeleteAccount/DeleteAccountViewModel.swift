@@ -6,6 +6,7 @@ import Foundation
 import hCore
 import hGraphQL
 
+@MainActor
 public class DeleteAccountViewModel: ObservableObject {
     var memberDetails: MemberDetails
     let claimsStore: ClaimsStore

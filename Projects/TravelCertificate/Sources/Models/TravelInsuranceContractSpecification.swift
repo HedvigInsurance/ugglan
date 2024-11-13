@@ -39,6 +39,7 @@ public struct PolicyCoinsuredPersonModel: Codable, Equatable, Hashable {
     var birthDate: String? = nil
 }
 
+@MainActor
 public struct TravelCertificateModel: Codable, Equatable, Hashable, Identifiable {
     public let id: String
     let date: Date

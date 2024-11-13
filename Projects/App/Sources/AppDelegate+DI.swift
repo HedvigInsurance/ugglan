@@ -18,6 +18,7 @@ import TravelCertificate
 import hCore
 import hGraphQL
 
+@MainActor
 extension ApolloClient {
     public static func initAndRegisterClient() {
         let authorizationService = AuthenticationClientAuthLib()

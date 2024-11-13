@@ -26,7 +26,7 @@ extension ApolloClient {
         "\(bundle?.bundleIdentifier ?? "") \(appVersion) (iOS \(UIDevice.current.systemVersion))"
     }
 
-    nonisolated(unsafe) public static var cache = InMemoryNormalizedCache()
+    public static var cache = InMemoryNormalizedCache()
 
     public static func headers() async -> [String: String] {
         if let token = try? await ApolloClient.retreiveToken() {

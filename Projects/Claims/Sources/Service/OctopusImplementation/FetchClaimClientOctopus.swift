@@ -59,6 +59,7 @@ extension ClaimModel {
         self.conversation = nil
     }
 
+    @MainActor
     fileprivate init(
         claim: OctopusGraphQL.ClaimsQueryWithConversationQuery.Data.CurrentMember.Claim
     ) {

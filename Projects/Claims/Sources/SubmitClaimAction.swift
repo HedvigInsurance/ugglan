@@ -31,7 +31,7 @@ public indirect enum SubmitClaimsAction: ActionProtocol, Hashable {
     case setNewDate(dateOfOccurrence: String?)
     case setPurchasePrice(priceOfPurchase: Double?)
     case setSingleItemDamage(damages: [String])
-    case setSingleItemPurchaseDate(purchaseDate: Date?)
+    case setSingleItemPurchaseDate(purchaseDate: String?)
     case setItemBrand(brand: ClaimFlowItemBrandOptionModel)
     case setItemModel(model: SelectedModel)
     case setPayoutMethod(method: AvailableCheckoutMethod)

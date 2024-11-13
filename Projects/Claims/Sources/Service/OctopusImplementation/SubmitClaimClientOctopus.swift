@@ -4,6 +4,7 @@ import PresentableStore
 import hCore
 import hGraphQL
 
+@MainActor
 public class SubmitClaimClientOctopus: SubmitClaimClient {
     public init() {}
     @PresentableStore var store: SubmitClaimStore
@@ -203,6 +204,7 @@ public class SubmitClaimClientOctopus: SubmitClaimClient {
     }
 }
 
+@MainActor
 extension GraphQLMutation {
     fileprivate func execute<ClaimStep: Into>(
         _ keyPath: KeyPath<Self.Data, ClaimStep>
@@ -630,6 +632,7 @@ extension FlowClaimDateOfOccurenceStepModel {
         self.maxDate = data.maxDate
     }
 
+    @MainActor
     func getMaxDate() -> Date {
         return maxDate?.localDateToDate ?? Date()
     }

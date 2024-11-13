@@ -228,6 +228,7 @@ struct InsuredPeopleScreen_Previews: PreviewProvider {
     }
 }
 
+@MainActor
 class InsuredPeopleNewScreenModel: ObservableObject {
     @Published var previousValue = CoInsuredModel()
     @Published var coInsuredAdded: [CoInsuredModel] = []

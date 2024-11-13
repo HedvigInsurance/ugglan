@@ -115,6 +115,7 @@ extension TravelInsuranceFormDTO {
     }
 }
 
+@MainActor
 extension TravelInsuranceContractSpecification {
     init(
         _ data: OctopusGraphQL.TravelCertificateQuery.Data.CurrentMember.TravelCertificateSpecifications

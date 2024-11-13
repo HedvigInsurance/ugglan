@@ -120,6 +120,7 @@ public struct MyInfoView: View {
     }
 }
 
+@MainActor
 public class MyInfoViewModel: ObservableObject {
     var profileService = ProfileService()
     @PresentableStore var store: ProfileStore

@@ -11,6 +11,7 @@ import TravelCertificate
 import hCore
 import hCoreUI
 
+@MainActor
 public class HelpCenterNavigationViewModel: ObservableObject {
     @Published var quickActions = QuickActions()
     var connectPaymentsVm = ConnectPaymentViewModel()

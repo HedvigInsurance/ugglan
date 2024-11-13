@@ -129,6 +129,7 @@ class LargeNavBar: UINavigationBar {
     }
 }
 
+@MainActor
 public struct DefaultStyling {
     public static func applyCommonNavigationBarStyling(_ appearance: UINavigationBarAppearance) {
         appearance.titleTextAttributes = [

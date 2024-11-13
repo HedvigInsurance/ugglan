@@ -2,6 +2,7 @@ import Foundation
 import hCore
 import hGraphQL
 
+@MainActor
 public class EditCoInsuredSharedClientDemo: EditCoInsuredSharedClient {
     public func fetchContracts() async throws -> [Contract] {
         return [

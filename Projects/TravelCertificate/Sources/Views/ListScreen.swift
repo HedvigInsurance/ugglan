@@ -114,6 +114,7 @@ public struct ListScreen: View {
     }
 }
 
+@MainActor
 class ListScreenViewModel: ObservableObject {
     var service = TravelInsuranceService()
 

@@ -1,6 +1,7 @@
 import SwiftUI
 import hCoreUI
 
+@MainActor
 public struct CoInsuredField<Content: View>: View {
     let coInsured: CoInsuredModel?
     let accessoryView: Content

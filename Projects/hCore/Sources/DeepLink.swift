@@ -1,6 +1,7 @@
 import Foundation
 import hGraphQL
 
+@MainActor
 public enum DeepLink: String, Codable, CaseIterable {
     case forever
     case directDebit = "direct-debit"

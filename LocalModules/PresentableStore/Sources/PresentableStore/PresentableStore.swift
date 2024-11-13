@@ -296,7 +296,9 @@ open class LoadingStateStore<State: StateProtocol, Action: ActionProtocol, Loadi
         loadingWriteSignal.removeDuplicates().eraseToAnyPublisher()
     }
 
-    public func removeLoading(for action: Loading) {
+    nonisolated(unsafe)
+        public func removeLoading(for action: Loading)
+    {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.loadingStates.removeValue(forKey: action)
@@ -304,14 +306,18 @@ open class LoadingStateStore<State: StateProtocol, Action: ActionProtocol, Loadi
         }
     }
 
-    public func setLoading(for action: Loading) {
+    nonisolated(unsafe)
+        public func setLoading(for action: Loading)
+    {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.loadingStates[action] = .loading
         }
     }
 
-    public func setError(_ error: String, for action: Loading) {
+    nonisolated(unsafe)
+        public func setError(_ error: String, for action: Loading)
+    {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.loadingStates[action] = .error(error: error)

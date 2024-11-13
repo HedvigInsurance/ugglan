@@ -227,6 +227,7 @@ struct ActionView: View {
     }
 }
 
+@MainActor
 extension URL {
     public var contractName: String? {
         guard let urlComponents = URLComponents(url: self, resolvingAgainstBaseURL: false) else { return nil }

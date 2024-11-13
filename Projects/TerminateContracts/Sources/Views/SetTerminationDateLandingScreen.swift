@@ -201,6 +201,7 @@ struct SetTerminationDateLandingScreen: View {
     }
 }
 
+@MainActor
 class SetTerminationDateLandingScreenViewModel: ObservableObject {
     @Published var isDeletion: Bool?
     @Published var hasAgreedToTerms: Bool = false

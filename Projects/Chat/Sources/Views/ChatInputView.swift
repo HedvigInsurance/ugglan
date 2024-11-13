@@ -296,8 +296,10 @@ private class CustomTextView: UITextView, UITextViewDelegate {
             } else if let urls = UIPasteboard.general.urls, urls.count > 0 {
                 for url in urls {
                     if let contentProvider = NSItemProvider(contentsOf: url) {
-                        contentProvider.getFile { [weak self] file in
-                            self?.onPaste?(file)
+                        Task { [weak self] in
+                            if let file = await contentProvider.getFile() {
+                                self?.onPaste?(file)
+                            }
                         }
                     }
                 }

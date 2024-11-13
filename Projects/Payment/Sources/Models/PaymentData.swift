@@ -63,6 +63,7 @@ public struct PaymentData: Codable, Equatable, Hashable {
         let isOutstanding: Bool
         let desciption: String?
 
+        @MainActor
         var fromToDate: String {
             return "\(from.displayDateShort) - \(to.displayDateShort)"
         }
@@ -100,6 +101,7 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable {
     let validUntil: ServerBasedDate?
     let canBeDeleted: Bool
 
+    @MainActor
     var isValid: Bool {
         if let validUntil = validUntil?.localDateToDate {
             let components = Calendar.current.dateComponents(

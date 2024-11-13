@@ -4,6 +4,7 @@ import authlib
 import hCore
 import hGraphQL
 
+@MainActor
 public class AuthenticationService {
     @Inject var client: AuthenticationClient
 
@@ -139,14 +140,14 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
     public func startSeBankId(updateStatusTo: @escaping (_: ObserveStatusResponseType) -> Void) async throws {
         do {
             let authUrl = Environment.current.authUrl
-            AuthenticationService.logAuthResourceStart(authUrl.absoluteString, authUrl)
+            await AuthenticationService.logAuthResourceStart(authUrl.absoluteString, authUrl)
             let data = try await self.networkAuthRepository.startLoginAttempt(
                 loginMethod: .seBankid,
                 market: Localization.Locale.currentLocale.value.market.asOtpMarket,
                 personalNumber: nil,
                 email: nil
             )
-            AuthenticationService.logAuthResourceStop(
+            await AuthenticationService.logAuthResourceStop(
                 authUrl.absoluteString,
                 HTTPURLResponse(url: authUrl, statusCode: 200, httpVersion: nil, headerFields: [:])!
             )
@@ -158,9 +159,9 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
                     statusUrl: .init(url: data.statusUrl.url)
                 ) {
                     let key = UUID().uuidString
-                    AuthenticationService.logAuthResourceStart(key, authUrl)
+                    await AuthenticationService.logAuthResourceStart(key, authUrl)
 
-                    AuthenticationService.logAuthResourceStop(
+                    await AuthenticationService.logAuthResourceStop(
                         key,
                         HTTPURLResponse(url: authUrl, statusCode: 200, httpVersion: nil, headerFields: [:])!
                     )

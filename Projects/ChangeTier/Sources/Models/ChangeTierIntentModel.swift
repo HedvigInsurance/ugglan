@@ -67,7 +67,6 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable {
         //        self.productVariantComparision = productVariantComparision
     }
 }
-
 public struct Tier: Codable, Equatable, Hashable, Identifiable {
     public var id: String
     let name: String
@@ -89,6 +88,7 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable {
         self.exposureName = exposureName
     }
 
+    @MainActor
     func getPremiumLabel() -> String? {
         if quotes.count == 1 {
             return quotes.first?.premium.formattedAmountPerMonth

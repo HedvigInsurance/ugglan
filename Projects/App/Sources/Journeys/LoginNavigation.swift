@@ -200,6 +200,7 @@ public class NotLoggedViewModel: ObservableObject {
         NotificationCenter.default.removeObserver(self)
     }
 
+    @MainActor
     func onOnBoardPressed() {
         var webUrl = Environment.current.webBaseURL
         webUrl.appendPathComponent(Localization.Locale.currentLocale.value.webPath)

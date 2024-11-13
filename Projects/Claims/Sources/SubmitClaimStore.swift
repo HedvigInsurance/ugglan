@@ -114,7 +114,7 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         case let .setPurchasePrice(priceOfPurchase):
             newState.singleItemStep?.purchasePrice = priceOfPurchase
         case let .setSingleItemPurchaseDate(purchaseDate):
-            newState.singleItemStep?.purchaseDate = purchaseDate?.localDateString
+            newState.singleItemStep?.purchaseDate = purchaseDate
         case let .setNewClaimContext(context):
             newState.currentClaimContext = context
         case let .setClaimEntrypointsForSelection(commonClaims):

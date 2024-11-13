@@ -4,6 +4,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
+@MainActor
 public class ForeverNavigationViewModel: ObservableObject {
     @Published public var isChangeCodePresented = false
     var modalPresentationSourceWrapperViewModel = ModalPresentationSourceWrapperViewModel()
@@ -99,7 +100,7 @@ private enum ForeverNavigationDetentType: TrackingViewNameProtocol {
 
 }
 
-#Preview{
+#Preview {
     ForeverNavigation(useOwnNavigation: true)
 }
 

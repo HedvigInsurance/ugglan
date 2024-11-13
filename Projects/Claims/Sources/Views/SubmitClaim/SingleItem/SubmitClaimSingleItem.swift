@@ -83,7 +83,9 @@ public struct SubmitClaimSingleItem: View {
             ),
             selectedDate: claim?.purchaseDate?.localDateToDate
         ) { date in
-            store.send(.setSingleItemPurchaseDate(purchaseDate: date))
+            Task {
+                store.send(.setSingleItemPurchaseDate(purchaseDate: date.localDateString))
+            }
         }
     }
 
