@@ -1,5 +1,4 @@
 import Photos
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -169,7 +168,6 @@ class ClaimFilesViewModel: ObservableObject {
     var claimFileUploadService = hClaimFileUploadService()
     var fetchClaimService = hFetchClaimService()
 
-    @PresentableStore var store: ClaimsStore
     init(
         endPoint: String,
         files: [File],

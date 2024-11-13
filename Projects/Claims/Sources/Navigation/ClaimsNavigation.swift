@@ -1,5 +1,4 @@
 import Combine
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -525,7 +524,7 @@ extension View {
     }
 }
 
-public struct SubmitClaimOption: OptionSet, ActionProtocol, Hashable {
+public struct SubmitClaimOption: OptionSet, Hashable {
     public let rawValue: UInt
 
     public init(rawValue: UInt) {
