@@ -11,7 +11,7 @@ struct SubmitClaimProgressBarView: ViewModifier {
     func body(content: Content) -> some View {
         content.introspect(.viewController, on: .iOS(.v13...)) { vc in
             let progressViewTag = "navigationProgressBar".hashValue
-            if let navigationBar = vc.navigationController?.navigationBar,
+            if let navigationBar = (vc as? UINavigationController)?.navigationBar,
                 navigationBar.subviews.first(where: { $0.tag == progressViewTag }) == nil
             {
 
@@ -26,19 +26,15 @@ struct SubmitClaimProgressBarView: ViewModifier {
                     make.top.equalToSuperview()
                     make.height.equalTo(4)
                 }
-
-                progressView.progress = vm.progress ?? 0
-                progressView.alpha = vm.progress == nil ? 0 : 1
             }
-        }
-        .onUpdate(of: vm.progress) { newProgress in
-            if let newProgress {
-                UIView.animate(withDuration: 0.2) {
-                    progressView.progress = newProgress
+
+            if let progress = vm.progress {
+                UIView.animate(withDuration: 0.4) {
+                    progressView.setProgress(progress, animated: true)
                 }
             }
             UIView.animate(withDuration: 0.2) {
-                progressView.alpha = newProgress == nil ? 0 : 1
+                progressView.alpha = vm.progress == nil ? 0 : 1
             }
         }
     }

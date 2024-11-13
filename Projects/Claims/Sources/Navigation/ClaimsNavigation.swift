@@ -19,8 +19,16 @@ public class ClaimsNavigationViewModel: ObservableObject {
 
     @Published var currentClaimContext: String?
 
-    @Published var progress: Float?
-    @Published var previousProgress: Float?
+    @Published var progress: Float? {
+        didSet {
+            print("")
+        }
+    }
+    @Published var previousProgress: Float? {
+        didSet {
+            print("")
+        }
+    }
 
     @Published var occurrencePlusLocationModel: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels?
     @Published var singleItemModel: FlowClamSingleItemStepModel?
@@ -97,6 +105,7 @@ public class ClaimsNavigationViewModel: ObservableObject {
                     entrypointId: entrypointId,
                     entrypointOptionId: entrypointOptionId
                 )
+
                 navigate(data: data)
             }
         }
@@ -120,6 +129,7 @@ public class ClaimsNavigationViewModel: ObservableObject {
     func navigate(data: SubmitClaimStepResponse) {
         currentClaimContext = data.context
         currentClaimId = data.claimId
+        progress = data.progress
         switch data.step {
         case let .setDateOfOccurrencePlusLocation(model):
             occurrencePlusLocationModel = model
@@ -260,34 +270,45 @@ public struct ClaimsNavigation: View {
             options: [.navigationType(type: .withProgress)],
             tracking: ClaimsDetentType.entryPoints
         ) {
-            showClaimEntrypointGroup(origin: origin)
+            SelectClaimEntrypointGroup(vm: claimsNavigationVm.selectClaimEntrypointVm)
+                .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
+                .addDismissClaimsFlow()
                 .routerDestination(for: ClaimsRouterActions.self) { routerAction in
-                    switch routerAction {
-                    case .triagingEntrypoint:
-                        showClaimEntrypointType()
-                    case .triagingOption:
-                        showClaimEntrypointOption()
-                    case .dateOfOccurrancePlusLocation:
-                        submitClaimOccurrancePlusLocationScreen()
-                    case .selectContract:
-                        openSelectContractScreen()
-                    case let .phoneNumber(model):
-                        submitClaimPhoneNumberScreen(model: model)
-                    case .audioRecording:
-                        openAudioRecordingSceen()
-                    case .singleItem:
-                        openSingleItemScreen()
-                    case .summary:
-                        openSummaryScreen()
-                    case .deflect:
-                        openDeflectStepScreen()
-                    case .emergencySelect:
-                        openEmergencySelectScreen()
-                    case .uploadFiles:
-                        openFileUploadScreen()
-                    case .checkOutNoRepair:
-                        openCheckoutScreen()
+                    Group {
+                        switch routerAction {
+                        case .triagingEntrypoint:
+                            SelectClaimEntrypointType()
+                        case .triagingOption:
+                            SelectClaimEntrypointOption()
+                        case .dateOfOccurrancePlusLocation:
+                            SubmitClaimOccurrencePlusLocationScreen(claimsNavigationVm: claimsNavigationVm)
+                        case .selectContract:
+                            SelectContractView()
+                        case let .phoneNumber(model):
+                            SubmitClaimContactScreen(model: model)
+                        case .audioRecording:
+                            let url = claimsNavigationVm.audioRecordingModel?.getUrl()
+                            SubmitClaimAudioRecordingScreen(url: url, claimsNavigationVm: claimsNavigationVm)
+                        case .singleItem:
+                            SubmitClaimSingleItemScreen()
+                        case .summary:
+                            SubmitClaimSummaryScreen(claimsNavigationVm: claimsNavigationVm)
+                                .configureTitle(L10n.Claims.Summary.Screen.title)
+                        case .deflect:
+                            openDeflectStepScreen()
+                        case .emergencySelect:
+                            SumitClaimEmergencySelectView(title: {
+                                claimsNavigationVm.emergencyConfirmModel?.text ?? ""
+                            })
+                        case .uploadFiles:
+                            SubmitClaimFilesUploadScreen(claimsNavigationVm: claimsNavigationVm)
+                        case .checkOutNoRepair:
+                            SubmitClaimCheckoutScreen()
+                                .configureTitle(L10n.Claims.Payout.Summary.title)
+                        }
                     }
+                    .addDismissClaimsFlow()
+                    .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
                 }
                 .routerDestination(
                     for: ClaimsRouterActionsWithoutBackButton.self,
@@ -297,31 +318,42 @@ public struct ClaimsNavigation: View {
                     case .failure:
                         showClaimFailureScreen()
                     case .success:
-                        openSuccessScreen()
+                        SubmitClaimSuccessScreen()
                     case .updateApp:
-                        openUpdateAppScreen()
+                        UpdateAppScreen(
+                            onSelected: {
+                                claimsNavigationVm.router.dismiss()
+                            }
+                        )
                     default:
                         EmptyView()
                     }
                 }
         }
+        .modifier(SubmitClaimProgressBarView())
         .environmentObject(claimsNavigationVm)
         .detent(
             presented: $claimsNavigationVm.isLocationPickerPresented,
             style: [.height]
         ) {
-            openLocationScreen()
+            LocationView()
+                .environmentObject(claimsNavigationVm)
+                .navigationTitle(L10n.Claims.Incident.Screen.location)
                 .embededInNavigation(options: .navigationType(type: .large), tracking: ClaimsDetentType.locationPicker)
         }
         .detent(
             presented: $claimsNavigationVm.isBrandPickerPresented,
             style: [.large]
         ) {
-            openBrandPickerScreen()
+            BrandPickerView()
+                .environmentObject(claimsNavigationVm)
+                .navigationTitle(L10n.claimsChooseBrandTitle)
                 .routerDestination(
                     for: ClaimFlowItemBrandOptionModel.self
                 ) { brandModel in
-                    openModelPickerScreen(brand: brandModel)
+                    ModelPickerView(brand: brandModel)
+                        .environmentObject(claimsNavigationVm)
+                        .navigationTitle(L10n.claimsChooseModelTitle)
                 }
                 .embededInNavigation(options: .navigationType(type: .large), tracking: ClaimsDetentType.brandPicker)
         }
@@ -329,7 +361,8 @@ public struct ClaimsNavigation: View {
             presented: $claimsNavigationVm.isPriceInputPresented,
             style: [.height]
         ) {
-            openPriceInputScreen()
+            PriceInputScreen(claimsNavigationVm: claimsNavigationVm)
+                .configureTitle(L10n.submitClaimPurchasePriceTitle)
                 .embededInNavigation(options: .navigationType(type: .large), tracking: ClaimsDetentType.priceInput)
         }
         .detent(
@@ -343,12 +376,15 @@ public struct ClaimsNavigation: View {
             item: $claimsNavigationVm.isInfoViewPresented,
             style: [.height]
         ) { infoViewModel in
-            openInfoView(model: infoViewModel)
+            InfoView(
+                title: infoViewModel.title ?? "",
+                description: infoViewModel.description ?? ""
+            )
         }
         .modally(
             presented: $claimsNavigationVm.isCheckoutTransferringPresented
         ) {
-            openCheckoutTransferringScreen()
+            SubmitClaimCheckoutTransferringScreen()
                 .environmentObject(claimsNavigationVm)
         }
         .modally(
@@ -356,67 +392,6 @@ public struct ClaimsNavigation: View {
         ) { claimsFileModel in
             openFileScreen(model: claimsFileModel)
         }
-    }
-
-    private func showClaimEntrypointGroup(origin: ClaimsOrigin) -> some View {
-        SelectClaimEntrypointGroup(vm: claimsNavigationVm.selectClaimEntrypointVm)
-            .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
-            .modifier(SubmitClaimProgressBarView())
-            .addDismissClaimsFlow()
-    }
-
-    private func showClaimEntrypointType() -> some View {
-        SelectClaimEntrypointType()
-            .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
-            .addDismissClaimsFlow()
-    }
-
-    private func showClaimEntrypointOption() -> some View {
-        SelectClaimEntrypointOption()
-            .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
-            .addDismissClaimsFlow()
-    }
-
-    private func submitClaimOccurrancePlusLocationScreen() -> some View {
-        SubmitClaimOccurrencePlusLocationScreen(claimsNavigationVm: claimsNavigationVm)
-            .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
-            .addDismissClaimsFlow()
-    }
-
-    private func openSelectContractScreen() -> some View {
-        SelectContractView()
-            .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
-            .addDismissClaimsFlow()
-    }
-
-    private func submitClaimPhoneNumberScreen(model: FlowClaimPhoneNumberStepModel) -> some View {
-        SubmitClaimContactScreen(model: model)
-            .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
-            .addDismissClaimsFlow()
-    }
-
-    private func openAudioRecordingSceen() -> some View {
-        let url = claimsNavigationVm.audioRecordingModel?.getUrl()
-        return SubmitClaimAudioRecordingScreen(url: url, claimsNavigationVm: claimsNavigationVm)
-            .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
-            .addDismissClaimsFlow()
-    }
-
-    private func openSuccessScreen() -> some View {
-        SubmitClaimSuccessScreen()
-    }
-
-    private func openSingleItemScreen() -> some View {
-        SubmitClaimSingleItemScreen()
-            .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
-            .addDismissClaimsFlow()
-    }
-
-    private func openSummaryScreen() -> some View {
-        SubmitClaimSummaryScreen(claimsNavigationVm: claimsNavigationVm)
-            .configureTitle(L10n.Claims.Summary.Screen.title)
-            .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
-            .addDismissClaimsFlow()
     }
 
     @ViewBuilder
@@ -435,38 +410,7 @@ public struct ClaimsNavigation: View {
                 )
             }
         }
-        .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
-        .addDismissClaimsFlow()
         .configureTitle(model?.id.title ?? "")
-    }
-
-    private func openUpdateAppScreen() -> some View {
-        UpdateAppScreen(
-            onSelected: {
-                claimsNavigationVm.router.dismiss()
-            }
-        )
-    }
-
-    private func openEmergencySelectScreen() -> some View {
-        SumitClaimEmergencySelectView(title: {
-            return claimsNavigationVm.emergencyConfirmModel?.text ?? ""
-        })
-        .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
-        .addDismissClaimsFlow()
-    }
-
-    private func openFileUploadScreen() -> some View {
-        return SubmitClaimFilesUploadScreen(claimsNavigationVm: claimsNavigationVm)
-            .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
-            .addDismissClaimsFlow()
-    }
-
-    private func openCheckoutScreen() -> some View {
-        SubmitClaimCheckoutScreen()
-            .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
-            .addDismissClaimsFlow()
-            .configureTitle(L10n.Claims.Payout.Summary.title)
     }
 
     private func showClaimFailureScreen() -> some View {
@@ -488,30 +432,6 @@ public struct ClaimsNavigation: View {
                 )
             )
             .withDismissButton()
-    }
-
-    private func openLocationScreen() -> some View {
-        LocationView()
-            .environmentObject(claimsNavigationVm)
-            .navigationTitle(L10n.Claims.Incident.Screen.location)
-
-    }
-
-    private func openBrandPickerScreen() -> some View {
-        BrandPickerView()
-            .environmentObject(claimsNavigationVm)
-            .navigationTitle(L10n.claimsChooseBrandTitle)
-    }
-
-    private func openModelPickerScreen(brand: ClaimFlowItemBrandOptionModel) -> some View {
-        ModelPickerView(brand: brand)
-            .environmentObject(claimsNavigationVm)
-            .navigationTitle(L10n.claimsChooseModelTitle)
-    }
-
-    private func openPriceInputScreen() -> some View {
-        PriceInputScreen(claimsNavigationVm: claimsNavigationVm)
-            .configureTitle(L10n.submitClaimPurchasePriceTitle)
     }
 
     private func openDamagePickerScreen() -> some View {
@@ -553,23 +473,10 @@ public struct ClaimsNavigation: View {
         .configureTitle(L10n.Claims.Item.Screen.Damage.button)
     }
 
-    private func openCheckoutTransferringScreen() -> some View {
-        SubmitClaimCheckoutTransferringScreen()
-    }
-
-    private func openInfoView(model: InfoViewModel) -> some View {
-        InfoView(
-            title: model.title ?? "",
-            description: model.description ?? ""
-        )
-        .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
-    }
-
     private func openFileScreen(model: ClaimsFileModel) -> some View {
         ClaimFilesView(endPoint: model.endpoint, files: model.files) { uploadedFiles in
             claimsNavigationVm.router.dismiss()
         }
-        .addDismissClaimsFlow()
         .configureTitle(L10n.ClaimStatusDetail.addedFiles)
     }
 }
@@ -620,19 +527,13 @@ extension View {
         )
     }
 
-    //    var resetProgressToPreviousValueOnDismiss: some View {
     func resetProgressToPreviousValueOnDismiss(vm: ClaimsNavigationViewModel) -> some View {
-        //    var resetProgressToPreviousValueOnDismiss: some View {
-        /* TODO: IMPLEMENT */
-        //        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-        //        let previousProgress = store.state.previousProgress
         let previousProgress = vm.previousProgress
-
         return self.onDeinit {
-            //            let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-            //            store.send(.setProgress(progress: previousProgress))
-            vm.previousProgress = vm.progress
-            vm.progress = previousProgress
+            Task {
+                vm.previousProgress = vm.progress
+                vm.progress = previousProgress
+            }
         }
     }
 }
