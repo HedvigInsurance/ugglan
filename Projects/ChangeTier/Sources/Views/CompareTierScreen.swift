@@ -6,7 +6,8 @@ import hGraphQL
 struct CompareTierScreen: View {
     @ObservedObject private var vm: CompareTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
-    @State var shouldShowShadow = false
+    @State var shadowIntensity: CGFloat = 0
+    @State var shouldShowDivider = true
     @ObservedObject var tracingOffsetVm = TracingOffsetViewModel()
     private let setOffsetVm = SetOffsetViewModel()
 
@@ -65,11 +66,12 @@ struct CompareTierScreen: View {
                     }
                     .frame(width: leftColumnWidth)
                     .zIndex(2)
-                    Divider()
-                        .frame(minHeight: 1)
-                        .overlay(hBorderColor.secondary)
-                        .padding(.top, 32)
-                        .opacity(!shouldShowShadow ? 1 : 0)
+                    if shouldShowDivider {
+                        Rectangle()
+                            .fill(hBorderColor.secondary)
+                            .frame(width: 1)
+                            .padding(.top, 32)
+                    }
 
                     ScrollViewReader { scrollView in
                         ScrollView(
@@ -116,11 +118,9 @@ struct CompareTierScreen: View {
                         GeometryReader { proxy in
                             Color.clear
                                 .onAppear {
-                                    print(proxy.size)
                                     leftColumnWidth = min(proxy.size.width, 300)
                                 }
                                 .onChange(of: proxy.size) { newValue in
-                                    print(newValue)
                                     leftColumnWidth = min(proxy.size.width, 300)
                                 }
                         }
@@ -141,10 +141,26 @@ struct CompareTierScreen: View {
                 L10n.tierComparisonSubtitle
             )
         )
-        .onChange(of: tracingOffsetVm.currentOffset) { newValue in
-            withAnimation {
-                shouldShowShadow = newValue.x > 0
-            }
+        .onChange(of: tracingOffsetVm.currentOffset) { _ in
+            setShadowAndDivider()
+        }
+        .onChange(of: colorScheme) { _ in
+            setShadowAndDivider()
+        }
+        .onAppear {
+            setShadowAndDivider()
+        }
+    }
+
+    private func setShadowAndDivider() {
+        withAnimation {
+            shadowIntensity = {
+                guard colorScheme == .light else { return 0 }
+                let absoluteValue = min(max(tracingOffsetVm.currentOffset.x, 2), 5)  // goes from 2 - 5
+                let relativeValue = absoluteValue / 5
+                return relativeValue
+            }()
+            shouldShowDivider = colorScheme == .dark
         }
     }
 
@@ -157,19 +173,20 @@ struct CompareTierScreen: View {
                 .frame(width: leftColumnWidth, alignment: .leading)
                 .shadow(
                     color: shadowColor.opacity(0.05),
-                    radius: shouldShowShadow ? 5 : 0,
+                    radius: shadowIntensity * 5,
                     x: 0,
                     y: 4
                 )
                 .shadow(
                     color: shadowColor.opacity(0.1),
-                    radius: shouldShowShadow ? 1 : 0,
+                    radius: shadowIntensity * 1,
                     x: 0,
                     y: 2
                 )
                 .mask {
                     Rectangle()
-                        .offset(x: leftColumnWidth, y: 5)
+                        .offset(x: leftColumnWidth, y: 0)
+                        .padding(.vertical, -20)
                         .frame(width: leftColumnWidth)
                 }
         }
