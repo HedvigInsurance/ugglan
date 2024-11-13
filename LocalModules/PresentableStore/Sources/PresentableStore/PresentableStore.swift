@@ -2,6 +2,7 @@ import Combine
 import Foundation
 
 @propertyWrapper
+@MainActor
 public struct PresentableStore<S: Store> {
     public var wrappedValue: S { globalPresentableStoreContainer.get() }
 
@@ -215,7 +216,9 @@ public protocol Debugger {
     func registerStore<S: Store>(_ store: S)
 }
 
+@MainActor
 public class PresentableStoreContainer: NSObject {
+    @MainActor
     public func get<S: Store>() -> S {
         if let store: S = associatedValue(forKey: S.getKey()) {
             return store
@@ -253,6 +256,7 @@ public class PresentableStoreContainer: NSObject {
 }
 
 /// Set this to automatically populate all presentables with your global PresentableStoreContainer
+@MainActor
 public var globalPresentableStoreContainer = PresentableStoreContainer()
 
 public protocol LoadingProtocol: Codable & Equatable & Hashable {}

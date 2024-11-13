@@ -182,7 +182,7 @@ public struct hDatePickerField: View {
     }
 }
 
-extension hDatePickerField: TrackingViewNameProtocol {
+extension hDatePickerField: @preconcurrency TrackingViewNameProtocol {
     public var nameForTracking: String {
         return .init(describing: DatePickerView.self)
     }

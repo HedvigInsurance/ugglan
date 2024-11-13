@@ -82,6 +82,7 @@ public struct CoInsuredField<Content: View>: View {
     }
 }
 
+@MainActor
 extension StatusPillType {
     @hColorBuilder
     var textColor: some hColor {

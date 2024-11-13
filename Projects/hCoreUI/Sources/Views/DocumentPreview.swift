@@ -4,6 +4,7 @@ import SwiftUI
 import WebKit
 import hCore
 
+@MainActor
 public class DocumentPreviewModel: NSObject, ObservableObject {
     let type: DocumentPreviewType
     let webView = WKWebView()
@@ -114,7 +115,7 @@ public struct DocumentPreview: View {
         .embededInNavigation(options: [.navigationBarHidden], tracking: self)
     }
 }
-extension DocumentPreview: TrackingViewNameProtocol {
+extension DocumentPreview: @preconcurrency TrackingViewNameProtocol {
     public var nameForTracking: String {
         return .init(describing: DocumentPreview.self)
     }

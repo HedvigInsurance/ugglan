@@ -14,7 +14,7 @@ public struct HomeState: StateProtocol {
     public var contracts: [HomeContract] = []
     public var importantMessages: [ImportantMessage] = []
     public var quickActions: [QuickAction] = []
-    public var toolbarOptionTypes: [ToolbarOptionType] = [.chat]
+    public var toolbarOptionTypes: [ToolbarOptionType] = []
     @Transient(defaultValue: []) var hidenImportantMessages = [String]()
     public var upcomingRenewalContracts: [HomeContract] {
         return contracts.filter { $0.upcomingRenewal != nil }
@@ -160,20 +160,23 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         case let .setChatNotificationTimeStamp(sentAt):
             newState.latestChatTimeStamp = sentAt
             newState.showChatNotification = false
-        //            setToolbarTypes(&newState)
+            setToolbarTypes(&newState)
         case let .setHasSentOrRecievedAtLeastOneMessage(hasSent):
             newState.hasSentOrRecievedAtLeastOneMessage = hasSent
-        //            setToolbarTypes(&newState)
+            setToolbarTypes(&newState)
         case let .setChatNotificationConversationTimeStamp(timeStamp):
             newState.latestConversationTimeStamp = timeStamp
-        //            setToolbarTypes(&newState)
+            setToolbarTypes(&newState)
         default:
             break
         }
 
         return newState
     }
-    private func setToolbarTypes(_ state: inout HomeState) {
+
+    nonisolated(unsafe)
+        private func setToolbarTypes(_ state: inout HomeState)
+    {
         var types: [ToolbarOptionType] = []
         types.append(.newOffer)
 

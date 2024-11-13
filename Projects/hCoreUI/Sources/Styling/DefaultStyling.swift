@@ -4,10 +4,10 @@ import StoreKit
 import SwiftUI
 
 public class hNavigationBaseController: UINavigationController {
-    var onDeinit: (() -> Void)?
+    nonisolated(unsafe) var onDeinit: (() -> Void)?
 
     deinit {
-        onDeinit?()
+        self.onDeinit?()
     }
 }
 
@@ -404,6 +404,7 @@ public struct DefaultStyling {
 
 final class ListTableView: UITableView {}
 
+@MainActor
 extension CGFloat {
     public static var cornerRadiusXS: CGFloat = 6
     public static var cornerRadiusS: CGFloat = 8

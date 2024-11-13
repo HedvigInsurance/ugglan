@@ -3,7 +3,8 @@ import Foundation
 import SwiftUI
 import hCore
 
-private struct EnvironmentDefaultHTextStyle: EnvironmentKey {
+@MainActor
+private struct EnvironmentDefaultHTextStyle: @preconcurrency EnvironmentKey {
     static let defaultValue: HFontTextStyle? = nil
 }
 
@@ -19,7 +20,7 @@ extension View {
         self.environment(\.defaultHTextStyle, style)
     }
 }
-
+@MainActor
 extension String {
     public func hText(_ style: HFontTextStyle? = nil) -> hText {
         if let style = style {

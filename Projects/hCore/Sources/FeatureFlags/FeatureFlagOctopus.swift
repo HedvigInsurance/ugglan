@@ -149,7 +149,7 @@ public class FeatureFlagsUnleash: FeatureFlags {
             self.movingFlowVersion = movingFlowVersion
         }
         Task {
-            await log.info(
+            log.info(
                 "Feature flag set",
                 attributes: ["featureFlags": featureFlags]
             )

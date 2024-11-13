@@ -22,6 +22,7 @@ public enum ToolbarOptionType: Codable, Equatable {
     case chat
     case chatNotification(lastMessageTimeStamp: Date?)
 
+    @MainActor
     var image: UIImage {
         switch self {
         case .newOffer:

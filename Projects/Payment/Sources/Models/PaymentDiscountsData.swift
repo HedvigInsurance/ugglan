@@ -49,6 +49,7 @@ public struct Referral: Equatable, Codable, Identifiable {
     }
 }
 
+@MainActor
 extension Referral {
     @hColorBuilder var statusColor: some hColor {
         switch self.status {

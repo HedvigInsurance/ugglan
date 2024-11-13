@@ -155,7 +155,8 @@ struct SuccessScreenWithCustomBottom_Previews: PreviewProvider {
     }
 }
 
-private struct EnvironmentHSuccessBottomAttachedView: EnvironmentKey {
+@MainActor
+private struct EnvironmentHSuccessBottomAttachedView: @preconcurrency EnvironmentKey {
     static let defaultValue: AnyView? = nil
 }
 
@@ -172,7 +173,8 @@ extension View {
     }
 }
 
-private struct EnvironmentHCustomSuccessView: EnvironmentKey {
+@MainActor
+private struct EnvironmentHCustomSuccessView: @preconcurrency EnvironmentKey {
     static let defaultValue: AnyView? = nil
 }
 

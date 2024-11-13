@@ -92,7 +92,9 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
             }
 
             func dismissKeyboard() {
-                textField?.resignFirstResponder()
+                Task {
+                    await textField?.resignFirstResponder()
+                }
             }
 
             vm?.observer.onBeginEditing = {
@@ -251,6 +253,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     }
 }
 
+@MainActor
 class TextFieldVM: ObservableObject {
     weak var textField: UITextField?
     var observer = TextFieldObserver()
@@ -311,7 +314,7 @@ struct hFloatingTextField_Previews: PreviewProvider {
     }
 }
 
-public enum BackgroundOption {
+public enum BackgroundOption: Sendable {
     case translucent
     case negative
     case withoutDisabled
@@ -340,7 +343,7 @@ private struct EnvironmentHFieldSize: EnvironmentKey {
     static let defaultValue: hFieldSize = .large
 }
 
-public enum hFieldSize: Hashable {
+public enum hFieldSize: Hashable, Sendable {
     case small
     case large
     case medium
@@ -370,8 +373,8 @@ extension View {
     }
 }
 
-private struct EnvironmentHFieldAttachedView: EnvironmentKey {
-    static let defaultValue: AnyView? = nil
+private struct EnvironmentHFieldAttachedView: @preconcurrency EnvironmentKey {
+    @MainActor static let defaultValue: AnyView? = nil
 }
 
 extension EnvironmentValues {

@@ -160,6 +160,7 @@ public enum TypeOfContract: String, Codable, CaseIterable {
     }
 }
 
+@MainActor
 extension PillowType {
     public var bgImage: UIImage {
         asset.image

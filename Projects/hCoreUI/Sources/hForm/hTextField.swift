@@ -31,7 +31,8 @@ extension Set where Element == hTextFieldOptions {
     }
 }
 
-private struct EnvironmentHTextFieldOptions: EnvironmentKey {
+@MainActor
+private struct EnvironmentHTextFieldOptions: @preconcurrency EnvironmentKey {
     static let defaultValue: Set<hTextFieldOptions> = [.showDivider, .minimumHeight(height: 40.0)]
 }
 
@@ -143,6 +144,7 @@ struct hTextFieldPreview: PreviewProvider {
     }
 }
 
+@MainActor
 @propertyWrapper public struct hTextFieldFocusState<Value: Hashable>: DynamicProperty {
     @State var field: Value?
 

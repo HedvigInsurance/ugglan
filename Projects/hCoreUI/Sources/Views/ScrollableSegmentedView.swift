@@ -118,6 +118,7 @@ public struct ScrollableSegmentedView<Content: View>: View {
     }
 }
 
+@MainActor
 public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
     let pageModels: [PageModel]
     var heights: [String: CGFloat] = [:]
@@ -131,6 +132,7 @@ public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
     @Published var currentHeight: CGFloat = 0
     @Published var currentId: String
 
+    @MainActor
     weak var horizontalScrollView: UIScrollView? {
         didSet {
             horizontalScrollView?.delegate = self
@@ -198,6 +200,7 @@ public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
         selectedIndicatorHeight = CGFloat(Int(position.height))
     }
 
+    @MainActor
     func scrollToNearestWith(offset: CGFloat) {
         let allOffsets = getPagesOffset()
         let nearestTabOffset = getNearestTabOffset(for: offset)
@@ -216,7 +219,12 @@ public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
     func setSelectedTab(with id: String, withAnimation animation: Bool = true) {
         if let index = pageModels.firstIndex(where: { $0.id == id }) {
             currentId = id
-            scrollTo(offset: CGFloat(index) * viewWidth + pageSpacing * CGFloat(index), withAnimation: animation)
+            Task {
+                await scrollTo(
+                    offset: CGFloat(index) * viewWidth + pageSpacing * CGFloat(index),
+                    withAnimation: animation
+                )
+            }
             withAnimation {
                 currentHeight = (heights[id] ?? 0)
             }
@@ -227,6 +235,7 @@ public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
         return pageModels.enumerated().compactMap({ CGFloat($0.offset) * viewWidth + pageSpacing * CGFloat($0.offset) })
     }
 
+    @MainActor
     func scrollTo(offset: CGFloat, withAnimation: Bool = true) {
         horizontalScrollView?
             .scrollRectToVisible(.init(x: offset, y: 1, width: viewWidth, height: 1), animated: withAnimation)

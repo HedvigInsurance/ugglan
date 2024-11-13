@@ -415,8 +415,8 @@ struct ItemPickerScreen_Previews: PreviewProvider {
     }
 }
 
-private struct EnvironmentHItemPickerBottomAttachedView: EnvironmentKey {
-    static let defaultValue: AnyView? = nil
+private struct EnvironmentHItemPickerBottomAttachedView: @preconcurrency EnvironmentKey {
+    @MainActor static let defaultValue: AnyView? = nil
 }
 
 extension EnvironmentValues {

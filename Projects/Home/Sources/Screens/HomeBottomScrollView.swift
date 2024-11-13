@@ -187,7 +187,7 @@ class HomeBottomScrollViewModel: ObservableObject {
 
     private func handleDeleteRequests(memberId: String) {
         Task {
-            let members = await ApolloClient.retreiveMembersWithDeleteRequests()
+            let members = ApolloClient.retreiveMembersWithDeleteRequests()
             let store: ContractStore = globalPresentableStoreContainer.get()
             handleItem(
                 .deletedView,

@@ -107,7 +107,7 @@ public struct DatePickerView: View {
     }
 }
 
-#Preview{
+#Preview {
     @State var date = Date()
     return VStack {
         DatePickerView(
@@ -125,7 +125,8 @@ public struct DatePickerView: View {
     }
 }
 
-public class DatePickerViewModel: ObservableObject, Equatable, Identifiable {
+@MainActor
+public class DatePickerViewModel: ObservableObject, @preconcurrency Equatable, @preconcurrency Identifiable {
     public static func == (lhs: DatePickerViewModel, rhs: DatePickerViewModel) -> Bool {
         return lhs.id == rhs.id
     }
@@ -178,6 +179,7 @@ public class DatePickerViewModel: ObservableObject, Equatable, Identifiable {
         self.config = config
     }
 
+    @MainActor
     func updateColors() {
         if #available(iOS 18.0, *) {
         } else {
@@ -197,6 +199,7 @@ public class DatePickerViewModel: ObservableObject, Equatable, Identifiable {
         }
     }
     /// labels representing days (mon, tue...)
+    @MainActor
     private func configure(sectionHeader: UIView) {
         let daysColor = UIColor(
             light: hTextColor.Opaque.tertiary.colorFor(.light, .base).color.uiColor(),
@@ -209,6 +212,7 @@ public class DatePickerViewModel: ObservableObject, Equatable, Identifiable {
         }
     }
     /// buttons for previous, next month
+    @MainActor
     private func configure(header: UIView) {
         let buttonsColor = UIColor(
             light: hFillColor.Opaque.secondary.colorFor(.light, .base).color.uiColor(),
@@ -235,6 +239,7 @@ public class DatePickerViewModel: ObservableObject, Equatable, Identifiable {
 
     }
 
+    @MainActor
     private func update(collection: UICollectionView) {
         //iterate through collection sections and find the proper cells for date picker
         for sectionId in 0...collection.numberOfSections - 1 {
@@ -259,10 +264,13 @@ public class DatePickerViewModel: ObservableObject, Equatable, Identifiable {
                                         //when the background color of the selected date changes (by the system) - we want to set it to the proper one
                                         observation = backgroundView.observe(\.backgroundColor) {
                                             [weak label] view, value in
-                                            if view.backgroundColor != bgColor && view.backgroundColor != UIColor.clear
-                                            {
-                                                view.backgroundColor = bgColor
-                                                label?.textColor = textColor
+                                            Task { @MainActor in
+                                                if view.backgroundColor != bgColor
+                                                    && view.backgroundColor != UIColor.clear
+                                                {
+                                                    view.backgroundColor = bgColor
+                                                    label?.textColor = textColor
+                                                }
                                             }
                                         }
 
@@ -318,7 +326,7 @@ public enum DateFormatter {
     case birthDate
 }
 
-extension DatePickerView: TrackingViewNameProtocol {
+extension DatePickerView: @preconcurrency TrackingViewNameProtocol {
     public var nameForTracking: String {
         return .init(describing: DatePickerView.self)
     }
