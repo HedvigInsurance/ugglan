@@ -2,13 +2,18 @@ import Foundation
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import hCore
-import hCoreUI
 
-struct SubmitClaimProgressBarView: ViewModifier {
-    @EnvironmentObject var vm: ClaimsNavigationViewModel
+public struct ProgressBarView: ViewModifier {
+    @Binding var progress: Float?
     @State var progressView = UIProgressView()
 
-    func body(content: Content) -> some View {
+    public init(
+        progress: Binding<Float?>
+    ) {
+        self._progress = progress
+    }
+
+    public func body(content: Content) -> some View {
         content.introspect(.viewController, on: .iOS(.v13...)) { vc in
             let progressViewTag = "navigationProgressBar".hashValue
             if let navigationBar = (vc as? UINavigationController)?.navigationBar,
@@ -28,13 +33,23 @@ struct SubmitClaimProgressBarView: ViewModifier {
                 }
             }
 
-            if let progress = vm.progress {
+            if let progress = progress {
                 UIView.animate(withDuration: 0.4) {
                     progressView.setProgress(progress, animated: true)
                 }
             }
             UIView.animate(withDuration: 0.2) {
-                progressView.alpha = vm.progress == nil ? 0 : 1
+                progressView.alpha = progress == nil ? 0 : 1
+            }
+        }
+    }
+}
+
+extension View {
+    public func resetProgressToPreviousValueOnDismiss(onChange: @escaping () -> Void) -> some View {
+        return self.onDeinit {
+            Task {
+                onChange()
             }
         }
     }
