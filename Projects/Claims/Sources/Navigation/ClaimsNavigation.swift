@@ -115,6 +115,7 @@ public class ClaimsNavigationViewModel: ObservableObject {
     func navigate(data: SubmitClaimStepResponse) {
         currentClaimContext = data.context
         currentClaimId = data.claimId
+        previousProgress = progress
         progress = data.progress
         switch data.step {
         case let .setDateOfOccurrencePlusLocation(model):
