@@ -116,7 +116,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                             hButton.LargeButton(type: .primary) {
                                 onSubmit(url)
                                 Task {
-                                    let step = await audioRecordingVm.singleItemRequest(
+                                    let step = await audioRecordingVm.submitAudioRecording(
                                         context: claimsNavigationVm.currentClaimContext ?? "",
                                         currentClaimId: claimsNavigationVm.currentClaimId ?? "",
                                         type: .audio(url: url),
@@ -210,7 +210,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                     UIApplication.dismissKeyboard()
                     if validate() {
                         Task {
-                            let step = await audioRecordingVm.singleItemRequest(
+                            let step = await audioRecordingVm.submitAudioRecording(
                                 context: claimsNavigationVm.currentClaimContext ?? "",
                                 currentClaimId: claimsNavigationVm.currentClaimId ?? "",
                                 type: .text(text: inputText),
@@ -276,7 +276,7 @@ public class SubmitClaimAudioRecordingScreenModel: ObservableObject {
     @Published public var viewState: ProcessingState = .success
 
     @MainActor
-    func singleItemRequest(
+    func submitAudioRecording(
         context: String,
         currentClaimId: String,
         type: SubmitAudioRecordingType,

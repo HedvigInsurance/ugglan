@@ -13,23 +13,11 @@ public class ClaimsNavigationViewModel: ObservableObject {
     @Published public var isInfoViewPresented: InfoViewModel?
     @Published public var isClaimFilesPresented: ClaimsFileModel?
 
-    @Published var selectClaimEntrypointVm = SelectClaimEntrypointViewModel()
-    @Published var claimEntrypoints: [ClaimEntryPointResponseModel] = []
     @Published var entrypoints: EntrypointState = .init()
-
     @Published var currentClaimContext: String?
-
-    @Published var progress: Float? {
-        didSet {
-            print("")
-        }
-    }
-    @Published var previousProgress: Float? {
-        didSet {
-            print("")
-        }
-    }
-
+    @Published var progress: Float?
+    @Published var previousProgress: Float?
+    @Published var claimEntrypoints: [ClaimEntryPointResponseModel] = []
     @Published var occurrencePlusLocationModel: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels?
     @Published var singleItemModel: FlowClamSingleItemStepModel?
     @Published var summaryModel: SubmitClaimStep.SummaryStepModels?
@@ -42,8 +30,11 @@ public class ClaimsNavigationViewModel: ObservableObject {
     @Published var fileUploadModel: FlowClaimFileUploadStepModel?
     @Published var deflectStepModel: FlowClaimDeflectStepModel?
     @Published var emergencyConfirmModel: FlowClaimConfirmEmergencyStepModel?
-
     @Published var submitClaimCheckoutVm = SubmitClaimCheckoutViewModel()
+    @Published var selectClaimEntrypointVm = SelectClaimEntrypointViewModel()
+
+    var router = Router()
+    @Inject private var submitClaimService: SubmitClaimClient
 
     @Published var currentClaimId: String? {
         didSet {
@@ -92,10 +83,6 @@ public class ClaimsNavigationViewModel: ObservableObject {
             .appendingPathComponent("claims")
         return claimsAudioRecoringPath
     }
-
-    var router = Router()
-
-    @Inject private var submitClaimService: SubmitClaimClient
 
     func startClaimRequest(entrypointId: String?, entrypointOptionId: String?) async {
         await reset()
