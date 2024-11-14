@@ -42,7 +42,7 @@ final class PhoneNumberStoreTests: XCTestCase {
         assert(store.state.phoneNumberStep == phoneNumberModel)
     }
 
-    func testPhoneNumberResponseFailure() async {
+    func testPhoneNumberResponseFailure() async throws {
         MockData.createMockSubmitClaimService(update: { phoneNumber, context in
             .init(
                 claimId: "claim id",
@@ -59,11 +59,8 @@ final class PhoneNumberStoreTests: XCTestCase {
         )
 
         await store.sendAsync(.phoneNumberRequest(phoneNumber: "phone number"))
-
-        await waitUntil(description: "loading state") {
-            store.loadingState[.postPhoneNumber] == nil
-        }
-
+        try await Task.sleep(nanoseconds: 300_000_000)
+        assert(store.loadingState[.postPhoneNumber] == nil)
         assert(store.state.successStep == nil)
         assert(store.state.failedStep != nil)
     }

@@ -17,21 +17,25 @@ struct ChangeTierProcessingView: View {
                 changeTierNavigationVm.onChangedTier()
                 changeTierNavigationVm.router.dismiss()
             },
-            errorViewButtons: .init(
-                actionButton: .init(
-                    buttonAction: {
-                        vm.commitTier()
-                    }
-                ),
-                dismissButton:
-                    .init(
-                        buttonTitle: L10n.generalCloseButton,
-                        buttonAction: {
-                            changeTierNavigationVm.router.dismiss()
-                        }
-                    )
-            ),
             state: $vm.viewState
+        )
+        .hErrorViewButtonConfig(errorButtons)
+    }
+
+    private var errorButtons: ErrorViewButtonConfig {
+        .init(
+            actionButton: .init(
+                buttonAction: {
+                    vm.commitTier()
+                }
+            ),
+            dismissButton:
+                .init(
+                    buttonTitle: L10n.generalCloseButton,
+                    buttonAction: {
+                        changeTierNavigationVm.router.dismiss()
+                    }
+                )
         )
     }
 }

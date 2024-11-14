@@ -31,12 +31,12 @@ extension Project {
             .debug(
                 name: "Debug",
                 settings: settings,
-                xcconfig: .relativeToRoot("Configurations/iOS/iOS-Framework.xcconfig")
+                xcconfig: .relativeToRoot("Configurations/iOS/iOS-Framework-Debug.xcconfig")
             ),
             .release(
                 name: "Release",
                 settings: settings,
-                xcconfig: .relativeToRoot("Configurations/iOS/iOS-Framework.xcconfig")
+                xcconfig: .relativeToRoot("Configurations/iOS/iOS-Framework-Release.xcconfig")
             ),
         ]
 

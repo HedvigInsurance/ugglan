@@ -53,7 +53,7 @@ final class SingleItemCheckoutStoreTests: XCTestCase {
         assert(store.state.singleItemCheckoutStep == singleItemCheckoutModel)
     }
 
-    func testSingleItemCheckoutResponseFailure() async {
+    func testSingleItemCheckoutResponseFailure() async throws {
         MockData.createMockSubmitClaimService(singleItemCheckout: { context in
             .init(
                 claimId: "claim id",
@@ -70,11 +70,8 @@ final class SingleItemCheckoutStoreTests: XCTestCase {
         )
 
         await store.sendAsync(.singleItemCheckoutRequest)
-
-        await waitUntil(description: "loading state") {
-            store.loadingState[.postSingleItemCheckout] == nil
-        }
-
+        try await Task.sleep(nanoseconds: 100_000_000)
+        assert(store.loadingState[.postSingleItemCheckout] == nil)
         assert(store.state.successStep == nil)
         assert(store.state.failedStep != nil)
     }

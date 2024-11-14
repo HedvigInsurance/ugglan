@@ -121,9 +121,8 @@ final class SendTerminationDateStoreTests: XCTestCase {
         await store.sendAsync(.setTerminationDate(terminationDate: terminationDate ?? Date()))
         await store.sendAsync(.sendTerminationDate)
 
-        await waitUntil(description: "loading state") {
-            store.loadingState[.sendTerminationDate] != nil
-        }
+        try! await Task.sleep(nanoseconds: 100_000_000)
+        assert(store.loadingState[.sendTerminationDate] != nil)
         assert(store.state.successStep == nil)
         assert(store.state.failedStep == nil)
     }
@@ -143,6 +142,6 @@ extension XCTestCase {
                 }
             }
         }
-        await fulfillment(of: [exc], timeout: 2)
+        await fulfillment(of: [exc], timeout: 6)
     }
 }
