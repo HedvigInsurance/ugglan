@@ -11,6 +11,7 @@ public final class TerminationContractStore: LoadingStateStore<
 {
     @Inject var terminateContractsService: TerminateContractsClient
     var terminateProgressCancellable: AnyCancellable?
+
     public override func effects(
         _ getState: @escaping () -> TerminationContractState,
         _ action: TerminationContractAction
@@ -24,26 +25,27 @@ public final class TerminationContractStore: LoadingStateStore<
         case .sendTerminationDate:
             let inputDateToString = self.state.terminationDateStep?.date?.localDateString ?? ""
             return await executeAsFiniteSignal(loadingType: .sendTerminationDate) {
-                async let minimumTime: () = try Task.sleep(nanoseconds: 3_000_000_000)
-                async let request = try self.terminateContractsService
+                let delayTask = Task {
+                    try await Task.sleep(nanoseconds: 3_000_000_000)
+                }
+                let request = try await self.terminateContractsService
                     .sendTerminationDate(
                         inputDateToString: inputDateToString,
                         terminationContext: terminationContext
                     )
-                let data = try await [minimumTime, request] as [Any]
-
-                let terminateStepResponse = data[1] as! TerminateStepResponse
-                return terminateStepResponse
+                try await delayTask.value
+                return request
             }
         case .sendConfirmDelete:
             return await executeAsFiniteSignal(loadingType: .sendTerminationDate) {
-                async let minimumTime: () = try Task.sleep(nanoseconds: 3_000_000_000)
-                async let request = try self.terminateContractsService.sendConfirmDelete(
+                let delayTask = Task {
+                    try await Task.sleep(nanoseconds: 3_000_000_000)
+                }
+                let request = try await self.terminateContractsService.sendConfirmDelete(
                     terminationContext: terminationContext
                 )
-                let data = try await [minimumTime, request] as [Any]
-                let terminateStepResponse = data[1] as! TerminateStepResponse
-                return terminateStepResponse
+                try await delayTask.value
+                return request
             }
         case let .submitSurvey(option, feedback):
             return await executeAsFiniteSignal(loadingType: .sendSurvey) { [weak self] in
@@ -126,6 +128,8 @@ public final class TerminationContractStore: LoadingStateStore<
     }
 
     typealias optionalResponse = (() async throws -> TerminateStepResponse?)?
+
+    @MainActor
     private func executeAsFiniteSignal(
         loadingType: TerminationContractLoadingAction,
         action: optionalResponse

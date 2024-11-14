@@ -460,6 +460,7 @@ struct TerminateInsurance: ViewModifier {
     }
 }
 
+@MainActor
 public class TerminateInsuranceViewModel: ObservableObject {
     @Published var initialStep: TerminationFlowActionWrapper?
     var configs: [TerminationConfirmConfig] = []

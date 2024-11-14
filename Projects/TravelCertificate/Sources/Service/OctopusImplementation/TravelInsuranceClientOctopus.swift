@@ -2,6 +2,7 @@ import Foundation
 import hCore
 import hGraphQL
 
+@MainActor
 public class TravelInsuranceService {
     @Inject var service: TravelInsuranceClient
 
@@ -21,6 +22,7 @@ public class TravelInsuranceService {
     }
 }
 
+@MainActor
 public class TravelInsuranceClientOctopus: TravelInsuranceClient {
     @Inject var octopus: hOctopus
 
@@ -41,18 +43,19 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
         }
     }
 
+    @MainActor
     public func submitForm(dto: TravelInsuranceFormDTO) async throws -> URL {
         let input = dto.asOctopusInput
         let mutation = OctopusGraphQL.CreateTravelCertificateMutation(input: input)
         do {
-            async let data = try await self.octopus.client.perform(mutation: mutation)
-            async let sleepTask: () = Task.sleep(nanoseconds: 1_500_000_000)
 
-            let response = try await [data, sleepTask] as [Any]
+            let delayTask = Task {
+                try await Task.sleep(nanoseconds: 3_000_000_000)
+            }
+            let data = try await octopus.client.perform(mutation: mutation)
+            try await delayTask.value
 
-            if let mutationResponse = response[0] as? OctopusGraphQL.CreateTravelCertificateMutation.Data,
-                let url = URL(string: mutationResponse.travelCertificateCreate.signedUrl)
-            {
+            if let url = URL(string: data.travelCertificateCreate.signedUrl) {
                 return url
             }
             throw TravelInsuranceError.missingURL
@@ -64,32 +67,18 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
 
     public func getList() async throws -> (list: [TravelCertificateModel], canAddTravelInsurance: Bool) {
         let query = OctopusGraphQL.TravelCertificatesQuery()
-        let canAddTravelInsuranceQuery = OctopusGraphQL.CanCreateTravelCertificateQuery()
         do {
-            async let listData = try await self.octopus.client.fetch(
+            let data = try await self.octopus.client.fetch(
                 query: query,
                 cachePolicy: .fetchIgnoringCacheCompletely
             )
-            async let canAddTravelInsuranceData = try await self.octopus.client.fetch(
-                query: canAddTravelInsuranceQuery,
-                cachePolicy: .fetchIgnoringCacheCompletely
-            )
+            let listData = data.currentMember.travelCertificates.compactMap({
+                TravelCertificateModel.init($0)
+            })
+            let canAddTravelInsuranceData = !data.currentMember.activeContracts
+                .filter({ $0.supportsTravelCertificate }).isEmpty
 
-            let response = try await [listData, canAddTravelInsuranceData] as [Any]
-
-            if let listResponse = response[0] as? OctopusGraphQL.TravelCertificatesQuery.Data,
-                let canAddTravelInsuranceResponse = response[1] as? OctopusGraphQL.CanCreateTravelCertificateQuery.Data
-            {
-                let listData = listResponse.currentMember.travelCertificates.compactMap({
-                    TravelCertificateModel.init($0)
-                })
-                let canAddTravelInsuranceData = !canAddTravelInsuranceResponse.currentMember.activeContracts
-                    .filter({ $0.supportsTravelCertificate }).isEmpty
-
-                return (listData, canAddTravelInsuranceData)
-            }
-            throw TravelInsuranceError.missingURL
-
+            return (listData, canAddTravelInsuranceData)
         } catch let ex {
             throw ex
         }

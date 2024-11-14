@@ -13,9 +13,8 @@ public protocol EmptyInitable {
     init()
 }
 
-public protocol StateProtocol: Codable & EmptyInitable & Equatable {}
-public protocol ActionProtocol: Codable & Equatable {}
-
+public protocol StateProtocol: Codable & EmptyInitable & Equatable & Sendable {}
+public protocol ActionProtocol: Codable & Equatable & Sendable {}
 
 open class StateStore<State: StateProtocol, Action: ActionProtocol>: Store where State: Sendable, Action: Sendable {
     let stateWriteSignal: CurrentValueSubject<State, Never>
@@ -49,47 +48,47 @@ open class StateStore<State: StateProtocol, Action: ActionProtocol>: Store where
 
     private lazy var serialQueue = DispatchQueue(label: "quoue.\(String(describing: self))", qos: .default)
     /// Sends an action to the store, which is then reduced to produce a new state
-    
+
     public func send(_ action: Action) {
-        Task {// @MainActor in
+        Task {  // @MainActor in
             await self.sendAsync(action)
         }
-//        logger("🦄 \(String(describing: Self.self)): sending \(action)")
-//        serialQueue.async { [weak self] in
-//            guard let self = self else { return }
-//            let previousState = stateWriteSignal.value
-//            let semaphore = DispatchSemaphore(value: 0)
-//            let newValue = reduce(stateWriteSignal.value, action)
-//            DispatchQueue.main.async { [weak self] in
-//                guard let self = self else { return }
-//                self.stateWriteSignal.value = newValue
-//                semaphore.signal()
-//            }
-//            semaphore.wait()
-//            actionCallbacker.send(action)
-//            
-//            if newValue != previousState {
-//                logger("🦄 \(String(describing: Self.self)): new state \n \(newValue)")
-//                DispatchQueue.global(qos: .background)
-//                    .async { [weak self] in
-//                        guard let self = self else { return }
-//                        Self.persist(self.stateWriteSignal.value)
-//                    }
-//            }
-//            Task { [weak self] in
-//                guard let self = self else { return }
-//                await effects(
-//                    {
-//                        self.stateWriteSignal.value
-//                    },
-//                    action
-//                )
-//                semaphore.signal()
-//            }
-//            semaphore.wait()
-//        }
+        //        logger("🦄 \(String(describing: Self.self)): sending \(action)")
+        //        serialQueue.async { [weak self] in
+        //            guard let self = self else { return }
+        //            let previousState = stateWriteSignal.value
+        //            let semaphore = DispatchSemaphore(value: 0)
+        //            let newValue = reduce(stateWriteSignal.value, action)
+        //            DispatchQueue.main.async { [weak self] in
+        //                guard let self = self else { return }
+        //                self.stateWriteSignal.value = newValue
+        //                semaphore.signal()
+        //            }
+        //            semaphore.wait()
+        //            actionCallbacker.send(action)
+        //
+        //            if newValue != previousState {
+        //                logger("🦄 \(String(describing: Self.self)): new state \n \(newValue)")
+        //                DispatchQueue.global(qos: .background)
+        //                    .async { [weak self] in
+        //                        guard let self = self else { return }
+        //                        Self.persist(self.stateWriteSignal.value)
+        //                    }
+        //            }
+        //            Task { [weak self] in
+        //                guard let self = self else { return }
+        //                await effects(
+        //                    {
+        //                        self.stateWriteSignal.value
+        //                    },
+        //                    action
+        //                )
+        //                semaphore.signal()
+        //            }
+        //            semaphore.wait()
+        //        }
     }
-    
+
     public func sendAsync(_ action: Action) async {
         logger("🦄 \(String(describing: Self.self)): sending \(action)")
 
@@ -123,7 +122,6 @@ open class StateStore<State: StateProtocol, Action: ActionProtocol>: Store where
         }
     }
 }
-
 
 public protocol Store {
     associatedtype State: StateProtocol
@@ -298,8 +296,8 @@ public protocol StoreLoading {
 @MainActor
 open class LoadingStateStore<State: StateProtocol, Action: ActionProtocol, Loading: LoadingProtocol>: StateStore<
     State, Action
->, StoreLoading where State: Sendable, Action: Sendable
-{
+>, StoreLoading
+where State: Sendable, Action: Sendable {
     public var loadingState: [Loading: LoadingState<String>] {
         return loadingStates
     }
@@ -315,18 +313,15 @@ open class LoadingStateStore<State: StateProtocol, Action: ActionProtocol, Loadi
         loadingWriteSignal.removeDuplicates().eraseToAnyPublisher()
     }
 
-        public func removeLoading(for action: Loading)
-    {
-            self.loadingStates.removeValue(forKey: action)
+    public func removeLoading(for action: Loading) {
+        self.loadingStates.removeValue(forKey: action)
     }
 
-        public func setLoading(for action: Loading)
-    {
+    public func setLoading(for action: Loading) {
         self.loadingStates[action] = .loading
     }
 
-        public func setError(_ error: String, for action: Loading)
-    {
+    public func setError(_ error: String, for action: Loading) {
         self.loadingStates[action] = .error(error: error)
     }
 

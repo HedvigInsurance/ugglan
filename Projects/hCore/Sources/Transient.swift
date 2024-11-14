@@ -1,7 +1,7 @@
 import Foundation
 
 @propertyWrapper
-public struct Transient<Value>: Codable & Equatable where Value: Codable & Equatable {
+public struct Transient<Value>: Codable & Equatable & Sendable where Value: Codable & Equatable & Sendable {
     public var wrappedValue: Value {
         get {
             innerValue ?? defaultValue
@@ -34,7 +34,7 @@ public struct Transient<Value>: Codable & Equatable where Value: Codable & Equat
 }
 
 @propertyWrapper
-public struct OptionalTransient<Value>: Codable & Equatable where Value: Codable & Equatable {
+public struct OptionalTransient<Value>: Codable & Equatable & Sendable where Value: Codable & Equatable & Sendable {
     public var wrappedValue: Value? {
         get {
             innerValue

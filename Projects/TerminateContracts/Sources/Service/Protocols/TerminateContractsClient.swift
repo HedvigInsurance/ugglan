@@ -1,3 +1,4 @@
+@MainActor
 public protocol TerminateContractsClient {
     func startTermination(contractId: String) async throws -> TerminateStepResponse
     func sendTerminationDate(
@@ -12,7 +13,7 @@ public protocol TerminateContractsClient {
     ) async throws -> TerminateStepResponse
 }
 
-public struct TerminateStepResponse {
+public struct TerminateStepResponse: Sendable {
     let context: String
     let action: TerminationContractAction
     let progress: Float?

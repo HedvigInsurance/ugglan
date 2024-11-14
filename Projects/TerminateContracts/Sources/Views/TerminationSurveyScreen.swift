@@ -114,6 +114,7 @@ struct TerminationSurveyScreen: View {
     }
 }
 
+@MainActor
 class SurveyScreenViewModel: ObservableObject {
     let options: [TerminationFlowSurveyStepModelOption]
     let subtitleType: SurveyScreenSubtitleType
