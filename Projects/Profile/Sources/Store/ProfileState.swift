@@ -30,8 +30,12 @@ public struct ProfileState: StateProtocol {
     public init() {
         UNUserNotificationCenter.current()
             .getNotificationSettings { settings in
-                let store: ProfileStore = globalPresentableStoreContainer.get()
-                store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+                let status = settings.authorizationStatus.rawValue
+                Task {
+                    let store: ProfileStore = await globalPresentableStoreContainer.get()
+                    await store.send(.setPushNotificationStatus(status: status))
+
+                }
             }
     }
 
@@ -50,7 +54,7 @@ public struct ProfileState: StateProtocol {
     }
 }
 
-public struct PartnerData: Codable, Equatable, Hashable {
+public struct PartnerData: Codable, Equatable, Hashable, Sendable {
     public let sas: PartnerDataSas?
 
     public var shouldShowEuroBonus: Bool {
@@ -66,7 +70,7 @@ public struct PartnerData: Codable, Equatable, Hashable {
     }
 }
 
-public struct PartnerDataSas: Codable, Equatable, Hashable {
+public struct PartnerDataSas: Codable, Equatable, Hashable, Sendable {
     let eligible: Bool
     let eurobonusNumber: String?
     init(eligible: Bool, eurobonusNumber: String?) {

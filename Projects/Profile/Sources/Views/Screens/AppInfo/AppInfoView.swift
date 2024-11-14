@@ -142,8 +142,9 @@ public struct AppInfoView: View {
     }
 }
 
+@MainActor
 class AppInfoViewModel: ObservableObject {
-    var deviceId: String?
+    @Published var deviceId: String?
 
     init() {
         Task {
