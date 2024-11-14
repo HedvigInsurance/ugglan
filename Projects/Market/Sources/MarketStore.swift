@@ -28,7 +28,7 @@ public final class MarketStore: StateStore<MarketState, MarketAction> {
         }
     }
 
-    public override func reduce(_ state: MarketState, _ action: MarketAction) -> MarketState {
+    public override func reduce(_ state: MarketState, _ action: MarketAction) async -> MarketState {
         var newState = state
 
         switch action {

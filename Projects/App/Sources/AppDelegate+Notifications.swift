@@ -37,15 +37,19 @@ extension AppDelegate {
             using: { _ in
                 UNUserNotificationCenter.current()
                     .getNotificationSettings { settings in
-                        let store: ProfileStore = globalPresentableStoreContainer.get()
-                        store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+                        Task {
+                            let store: ProfileStore = globalPresentableStoreContainer.get()
+                            store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+                        }
                     }
             }
         )
         UNUserNotificationCenter.current()
             .getNotificationSettings { settings in
-                let store: ProfileStore = globalPresentableStoreContainer.get()
-                store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+                Task {
+                    let store: ProfileStore = globalPresentableStoreContainer.get()
+                    store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+                }
             }
     }
 }

@@ -22,7 +22,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         }
     }
 
-    public override func reduce(_ state: ClaimsState, _ action: ClaimsAction) -> ClaimsState {
+    public override func reduce(_ state: ClaimsState, _ action: ClaimsAction) async -> ClaimsState {
         var newState = state
         switch action {
         case .fetchClaims:

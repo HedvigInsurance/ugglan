@@ -62,7 +62,7 @@ public final class TerminationContractStore: LoadingStateStore<
     public override func reduce(
         _ state: TerminationContractState,
         _ action: TerminationContractAction
-    ) -> TerminationContractState {
+    ) async -> TerminationContractState {
         var newState = state
         switch action {
         case let .startTermination(config):

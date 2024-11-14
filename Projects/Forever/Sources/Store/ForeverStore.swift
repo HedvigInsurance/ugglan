@@ -24,7 +24,7 @@ public final class ForeverStore: LoadingStateStore<ForeverState, ForeverAction, 
         }
     }
 
-    public override func reduce(_ state: ForeverState, _ action: ForeverAction) -> ForeverState {
+    public override func reduce(_ state: ForeverState, _ action: ForeverAction) async -> ForeverState {
         var newState = state
 
         switch action {

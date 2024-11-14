@@ -135,7 +135,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         }
     }
 
-    public override func reduce(_ state: HomeState, _ action: HomeAction) -> HomeState {
+    public override func reduce(_ state: HomeState, _ action: HomeAction) async -> HomeState {
         var newState = state
 
         switch action {

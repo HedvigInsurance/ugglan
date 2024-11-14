@@ -31,7 +31,7 @@ public final class EditCoInsuredStore: LoadingStateStore<
         }
     }
 
-    public override func reduce(_ state: EditCoInsuredState, _ action: EditCoInsuredAction) -> EditCoInsuredState {
+    public override func reduce(_ state: EditCoInsuredState, _ action: EditCoInsuredAction) async -> EditCoInsuredState {
         switch action {
         case .performCoInsuredChanges:
             setLoading(for: .postCoInsured)

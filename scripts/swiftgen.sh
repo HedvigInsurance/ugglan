@@ -16,6 +16,19 @@ mkdir Projects/Market/Sources/Derived
 if [[ -f $TMPDIR/bin/swiftgen ]]
 then
     $TMPDIR/bin/swiftgen
+    file="Projects/hCoreUI/Sources/Derived/Assets.swift"         # File where you want to insert the new line
+    search_text="public enum hCoreUIAssets"             # Line number at which to insert the new line
+    replace_text="@MainActor \npublic enum hCoreUIAssets"  # Text to insert
+    
+    if grep -q "@MainActor" "$file"; then
+        echo "Already @MainActor"
+    else
+        if [ ! -f "$file" ]; then
+            echo "File not found!"
+            exit 1
+        fi
+    sed -i '' "s/${search_text}/${replace_text}/g" "$file"
+    fi
     exit 0
 fi
 

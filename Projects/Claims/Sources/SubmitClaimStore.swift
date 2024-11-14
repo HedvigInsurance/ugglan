@@ -87,7 +87,7 @@ public final class SubmitClaimStore: LoadingStateStore<SubmitClaimsState, Submit
         }
     }
 
-    public override func reduce(_ state: SubmitClaimsState, _ action: SubmitClaimsAction) -> SubmitClaimsState {
+    public override func reduce(_ state: SubmitClaimsState, _ action: SubmitClaimsAction) async -> SubmitClaimsState {
         var newState = state
         switch action {
         case let .setNewClaimId(id):
