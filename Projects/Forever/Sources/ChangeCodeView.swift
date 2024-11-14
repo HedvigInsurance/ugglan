@@ -16,6 +16,7 @@ struct ChangeCodeView: View {
     }
 }
 
+@MainActor
 class ChangeCodeViewModel: ObservableObject {
     let inputVm: TextInputViewModel
     @Inject var foreverService: ForeverClient
