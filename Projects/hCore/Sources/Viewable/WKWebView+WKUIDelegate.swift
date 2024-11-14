@@ -36,8 +36,8 @@ public class WebViewDelegate: NSObject, WKNavigationDelegate, WKUIDelegate {
             \.isLoading,
             options: [.new],
             changeHandler: { _, change in
-                Task {
-                    await self.isLoadingSubject.send(change.newValue ?? false)
+                Task { @MainActor in
+                    self.isLoadingSubject.send(change.newValue ?? false)
                 }
             }
         )

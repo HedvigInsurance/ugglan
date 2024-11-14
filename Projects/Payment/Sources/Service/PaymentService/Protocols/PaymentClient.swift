@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 public protocol hPaymentClient {
     func getPaymentData() async throws -> PaymentData?
     func getPaymentStatusData() async throws -> PaymentStatusData

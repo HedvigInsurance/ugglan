@@ -3,7 +3,6 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-@MainActor
 extension PaymentData: TitleView {
     public func getTitleView() -> UIView {
         let titleView = hText(self.getTitle).foregroundColor(self.titleColor)

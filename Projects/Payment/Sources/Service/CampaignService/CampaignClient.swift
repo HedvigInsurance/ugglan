@@ -2,6 +2,7 @@ import Foundation
 import hCore
 import hGraphQL
 
+@MainActor
 public protocol hCampaignClient {
     func remove(codeId: String) async throws
     func add(code: String) async throws

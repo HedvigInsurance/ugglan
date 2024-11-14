@@ -3,6 +3,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+@MainActor
 public class PaymentsNavigationViewModel: ObservableObject {
 
     public init() {}
@@ -135,6 +136,6 @@ extension PaymentsRedirectType: TrackingViewNameProtocol {
     }
 }
 
-#Preview{
+#Preview {
     PaymentsNavigation(paymentsNavigationVm: .init(), redirect: { redirectType in })
 }
