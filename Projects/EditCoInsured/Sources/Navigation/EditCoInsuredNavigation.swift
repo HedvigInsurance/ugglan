@@ -153,8 +153,7 @@ public struct EditCoInsuredNavigation: View {
     func openNewInsuredPeopleScreen() -> some View {
         openSpecificScreen = .none
         return InsuredPeopleNewScreen(
-            vm: editCoInsuredNavigationVm.coInsuredViewModel,
-            intentVm: editCoInsuredNavigationVm.intentViewModel
+            vm: editCoInsuredNavigationVm.coInsuredViewModel
         )
         .configureTitle(L10n.coinsuredEditTitle)
         .addDismissEditCoInsuredFlow()
@@ -162,8 +161,7 @@ public struct EditCoInsuredNavigation: View {
 
     func openInsuredPeopleScreen() -> some View {
         return InsuredPeopleScreen(
-            vm: editCoInsuredNavigationVm.coInsuredViewModel,
-            intentVm: editCoInsuredNavigationVm.intentViewModel
+            vm: editCoInsuredNavigationVm.coInsuredViewModel
         )
         .configureTitle(L10n.coinsuredEditTitle)
         .addDismissEditCoInsuredFlow()

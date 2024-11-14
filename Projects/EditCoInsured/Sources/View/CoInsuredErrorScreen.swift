@@ -4,7 +4,6 @@ import hCore
 import hCoreUI
 
 public struct CoInsuredInputErrorView: View {
-    @ObservedObject var intentVm: IntentViewModel
     @ObservedObject var vm: CoInusuredInputViewModel
     @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
 
@@ -13,7 +12,6 @@ public struct CoInsuredInputErrorView: View {
         editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     ) {
         self.editCoInsuredNavigation = editCoInsuredNavigation
-        intentVm = editCoInsuredNavigation.intentViewModel
         self.vm = vm
     }
 
@@ -27,7 +25,8 @@ public struct CoInsuredInputErrorView: View {
         }
 
         GenericErrorView(
-            description: vm.SSNError ?? intentVm.errorMessageForInput ?? intentVm.errorMessageForCoinsuredList,
+            description: vm.SSNError ?? editCoInsuredNavigation.intentViewModel.errorMessageForInput
+                ?? editCoInsuredNavigation.intentViewModel.errorMessageForCoinsuredList,
             useForm: true
         )
         .hErrorViewButtonConfig(
@@ -40,8 +39,8 @@ public struct CoInsuredInputErrorView: View {
                             vm.noSSN = true
                         } else {
                             vm.SSNError = nil
-                            intentVm.errorMessageForInput = nil
-                            intentVm.errorMessageForCoinsuredList = nil
+                            editCoInsuredNavigation.intentViewModel.errorMessageForInput = nil
+                            editCoInsuredNavigation.intentViewModel.errorMessageForCoinsuredList = nil
                         }
                     }
                 ),
@@ -49,8 +48,8 @@ public struct CoInsuredInputErrorView: View {
                     buttonTitle: L10n.generalCancelButton,
                     buttonAction: {
                         vm.SSNError = nil
-                        intentVm.errorMessageForInput = nil
-                        intentVm.errorMessageForCoinsuredList = nil
+                        editCoInsuredNavigation.intentViewModel.errorMessageForInput = nil
+                        editCoInsuredNavigation.intentViewModel.errorMessageForCoinsuredList = nil
                     }
                 )
             )

@@ -6,7 +6,6 @@ import hGraphQL
 
 struct InsuredPeopleNewScreen: View {
     @ObservedObject var vm: InsuredPeopleNewScreenModel
-    @ObservedObject var intentVm: IntentViewModel
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @EnvironmentObject var router: Router
 
@@ -63,14 +62,16 @@ struct InsuredPeopleNewScreen: View {
                     hSection {
                         hButton.LargeButton(type: .primary) {
                             Task {
-                                await intentVm.performCoInsuredChanges(commitId: intentVm.intent.id)
+                                await editCoInsuredNavigation.intentViewModel.performCoInsuredChanges(
+                                    commitId: editCoInsuredNavigation.intentViewModel.intent.id
+                                )
                             }
                             editCoInsuredNavigation.showProgressScreenWithoutSuccess = true
                             editCoInsuredNavigation.editCoInsuredConfig = nil
                         } content: {
                             hText(L10n.generalSaveChangesButton)
                         }
-                        .trackLoading(EditCoInsuredStore.self, action: .postCoInsured)
+                        .hButtonIsLoading(editCoInsuredNavigation.intentViewModel.isLoading)
                         .disabled(
                             (vm.config.contractCoInsured.count + vm.coInsuredAdded.count)
                                 < nbOfMissingCoInsured
@@ -84,7 +85,7 @@ struct InsuredPeopleNewScreen: View {
                 } content: {
                     hText(L10n.generalCancelButton)
                 }
-                .disableOn(EditCoInsuredStore.self, [.postCoInsured])
+                .disabled(editCoInsuredNavigation.intentViewModel.isLoading)
             }
         }
     }
@@ -154,7 +155,6 @@ struct InsuredPeopleNewScreen: View {
 struct InsuredPeopleScreenNew_Previews: PreviewProvider {
     static var previews: some View {
         let vm = InsuredPeopleNewScreenModel()
-        let intentVm = IntentViewModel()
         let config = InsuredPeopleConfig(
             id: UUID().uuidString,
             contractCoInsured: [],
@@ -171,6 +171,6 @@ struct InsuredPeopleScreenNew_Previews: PreviewProvider {
             fromInfoCard: false
         )
         vm.initializeCoInsured(with: config)
-        return InsuredPeopleScreen(vm: vm, intentVm: intentVm)
+        return InsuredPeopleScreen(vm: vm)
     }
 }

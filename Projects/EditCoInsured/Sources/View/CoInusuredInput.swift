@@ -7,7 +7,6 @@ import hGraphQL
 
 struct CoInusuredInputScreen: View {
     @ObservedObject var insuredPeopleVm: InsuredPeopleNewScreenModel
-    @ObservedObject var intentVm: IntentViewModel
     @ObservedObject var vm: CoInusuredInputViewModel
     let title: String
     @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
@@ -20,13 +19,12 @@ struct CoInusuredInputScreen: View {
     ) {
         self.editCoInsuredNavigation = editCoInsuredNavigation
         insuredPeopleVm = editCoInsuredNavigation.coInsuredViewModel
-        intentVm = editCoInsuredNavigation.intentViewModel
         self.vm = vm
         self.title = title
 
         vm.SSNError = nil
-        intentVm.errorMessageForInput = nil
-        intentVm.errorMessageForCoinsuredList = nil
+        editCoInsuredNavigation.intentViewModel.errorMessageForInput = nil
+        editCoInsuredNavigation.intentViewModel.errorMessageForCoinsuredList = nil
 
         if vm.SSN != "" {
             vm.noSSN = false
@@ -48,7 +46,9 @@ struct CoInusuredInputScreen: View {
     }
 
     var body: some View {
-        if (vm.SSNError ?? intentVm.errorMessageForInput ?? intentVm.errorMessageForCoinsuredList) != nil {
+        if (vm.SSNError ?? editCoInsuredNavigation.intentViewModel.errorMessageForInput
+            ?? editCoInsuredNavigation.intentViewModel.errorMessageForCoinsuredList) != nil
+        {
             CoInsuredInputErrorView(vm: vm, editCoInsuredNavigation: editCoInsuredNavigation)
         } else {
             mainView
@@ -103,14 +103,14 @@ struct CoInusuredInputScreen: View {
                                             )
                                         }
                                     }()
-                                    await intentVm.getIntent(
+                                    await editCoInsuredNavigation.intentViewModel.getIntent(
                                         contractId: vm.contractId,
                                         origin: .coinsuredInput,
                                         coInsured: insuredPeopleVm.listForGettingIntentFor(
                                             removedCoInsured: coInsuredToDelete
                                         )
                                     )
-                                    if !intentVm.showErrorViewForCoInsuredInput {
+                                    if !editCoInsuredNavigation.intentViewModel.showErrorViewForCoInsuredInput {
                                         editCoInsuredNavigation.coInsuredViewModel.removeCoInsured(coInsuredToDelete)
                                         router.push(CoInsuredAction.delete)
                                     } else {
@@ -140,7 +140,7 @@ struct CoInusuredInputScreen: View {
                                 hText(L10n.removeConfirmationButton)
                                     .transition(.opacity.animation(.easeOut))
                             }
-                            .hButtonIsLoading(vm.isLoading || intentVm.isLoading)
+                            .hButtonIsLoading(vm.isLoading || editCoInsuredNavigation.intentViewModel.isLoading)
                         } else {
                             hButton.LargeButton(type: .primary) {
                                 if !(buttonIsDisabled || vm.nameFetchedFromSSN || vm.noSSN) {
@@ -149,7 +149,7 @@ struct CoInusuredInputScreen: View {
                                     }
                                 } else if vm.nameFetchedFromSSN || vm.noSSN {
                                     Task {
-                                        if !intentVm.showErrorViewForCoInsuredInput {
+                                        if !editCoInsuredNavigation.intentViewModel.showErrorViewForCoInsuredInput {
                                             if vm.actionType == .edit {
                                                 if vm.noSSN {
                                                     editCoInsuredNavigation.coInsuredViewModel.editCoInsured(
@@ -170,7 +170,7 @@ struct CoInusuredInputScreen: View {
                                                         )
                                                     )
                                                 }
-                                                await intentVm.getIntent(
+                                                await editCoInsuredNavigation.intentViewModel.getIntent(
                                                     contractId: vm.contractId,
                                                     origin: .coinsuredInput,
                                                     coInsured: insuredPeopleVm.completeList()
@@ -194,19 +194,21 @@ struct CoInusuredInputScreen: View {
                                                     }
                                                 }()
 
-                                                await intentVm.getIntent(
+                                                await editCoInsuredNavigation.intentViewModel.getIntent(
                                                     contractId: vm.contractId,
                                                     origin: .coinsuredInput,
                                                     coInsured: insuredPeopleVm.listForGettingIntentFor(
                                                         addCoInsured: coInsuredToAdd
                                                     )
                                                 )
-                                                if !intentVm.showErrorViewForCoInsuredInput {
+                                                if !editCoInsuredNavigation.intentViewModel
+                                                    .showErrorViewForCoInsuredInput
+                                                {
                                                     insuredPeopleVm.addCoInsured(coInsuredToAdd)
                                                 }
                                             }
 
-                                            if !intentVm.showErrorViewForCoInsuredInput {
+                                            if !editCoInsuredNavigation.intentViewModel.showErrorViewForCoInsuredInput {
                                                 router.push(CoInsuredAction.add)
                                             } else {
                                                 if vm.noSSN {
@@ -238,7 +240,7 @@ struct CoInusuredInputScreen: View {
                                 hText(buttonDisplayText)
                                     .transition(.opacity.animation(.easeOut))
                             }
-                            .hButtonIsLoading(vm.isLoading || intentVm.isLoading)
+                            .hButtonIsLoading(vm.isLoading || editCoInsuredNavigation.intentViewModel.isLoading)
                         }
                     }
                 }
@@ -253,7 +255,7 @@ struct CoInusuredInputScreen: View {
                     }
                     .padding(.top, .padding4)
                     .padding(.bottom, .padding16)
-                    .disabled(vm.isLoading || intentVm.isLoading)
+                    .disabled(vm.isLoading || editCoInsuredNavigation.intentViewModel.isLoading)
                 }
                 .sectionContainerStyle(.transparent)
             }
@@ -284,7 +286,7 @@ struct CoInusuredInputScreen: View {
             toggleField
         }
         .hFieldSize(.small)
-        .disabled(vm.isLoading || intentVm.isLoading)
+        .disabled(vm.isLoading || editCoInsuredNavigation.intentViewModel.isLoading)
     }
 
     @ViewBuilder
@@ -576,7 +578,7 @@ public class IntentViewModel: ObservableObject {
     @Published var enterManually: Bool = false
     @Published var errorMessageForInput: String?
     @Published var errorMessageForCoinsuredList: String?
-    @Published var errorMessageCommitChanges: String?
+    @Published var viewState: ProcessingState = .loading
 
     var fullName: String {
         return firstName + " " + lastName
@@ -628,15 +630,20 @@ public class IntentViewModel: ObservableObject {
     @MainActor
     func performCoInsuredChanges(commitId: String) async {
         withAnimation {
+            viewState = .loading
             self.isLoading = true
-            self.errorMessageCommitChanges = nil
         }
         do {
             try await service.sendMidtermChangeIntentCommit(commitId: commitId)
+            withAnimation {
+                //                DispatchQueue.main.asyncAfter(deadline: .now()+0.1) {
+                self.viewState = .success
+                //                }
+            }
             AskForRating().askForReview()
         } catch let exception {
             withAnimation {
-                self.errorMessageCommitChanges = exception.localizedDescription
+                viewState = .error(errorMessage: exception.localizedDescription)
             }
         }
         withAnimation {

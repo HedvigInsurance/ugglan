@@ -7,7 +7,6 @@ struct CoInsuredSelectScreen: View {
     let contractId: String
     @State var isLoading = false
     @ObservedObject var vm: InsuredPeopleNewScreenModel
-    @ObservedObject var intentVm: IntentViewModel
     let alreadyAddedCoinsuredMembers: [CoInsuredModel]
     @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
 
@@ -18,17 +17,17 @@ struct CoInsuredSelectScreen: View {
         self.contractId = contractId
         self.editCoInsuredNavigation = editCoInsuredNavigation
         vm = editCoInsuredNavigation.coInsuredViewModel
-        intentVm = editCoInsuredNavigation.intentViewModel
+        editCoInsuredNavigation.intentViewModel = editCoInsuredNavigation.intentViewModel
         alreadyAddedCoinsuredMembers = editCoInsuredNavigation.coInsuredViewModel.config.preSelectedCoInsuredList
             .filter({
                 !editCoInsuredNavigation.coInsuredViewModel.coInsuredAdded.contains($0)
             })
-        intentVm.errorMessageForCoinsuredList = nil
-        intentVm.errorMessageForInput = nil
+        editCoInsuredNavigation.intentViewModel.errorMessageForCoinsuredList = nil
+        editCoInsuredNavigation.intentViewModel.errorMessageForInput = nil
     }
 
     var body: some View {
-        if intentVm.showErrorViewForCoInsuredList {
+        if editCoInsuredNavigation.intentViewModel.showErrorViewForCoInsuredList {
             CoInsuredInputErrorView(
                 vm: .init(
                     coInsuredModel: CoInsuredModel(),

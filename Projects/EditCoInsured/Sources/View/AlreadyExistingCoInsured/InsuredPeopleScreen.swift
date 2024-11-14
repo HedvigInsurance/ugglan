@@ -6,7 +6,6 @@ import hGraphQL
 
 struct InsuredPeopleScreen: View {
     @ObservedObject var vm: InsuredPeopleNewScreenModel
-    @ObservedObject var intentVm: IntentViewModel
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @EnvironmentObject var router: Router
 
@@ -128,7 +127,8 @@ struct InsuredPeopleScreen: View {
             CoInsuredListType(
                 coInsured: coIn,
                 type: .added,
-                date: (intentVm.intent.activationDate != "") ? intentVm.intent.activationDate : vm.config.activeFrom,
+                date: (editCoInsuredNavigation.intentViewModel.intent.activationDate != "")
+                    ? editCoInsuredNavigation.intentViewModel.intent.activationDate : vm.config.activeFrom,
                 locallyAdded: true
             )
         }
@@ -155,13 +155,13 @@ struct CancelButton: View {
 }
 
 struct ConfirmChangesView: View {
-    @ObservedObject var intentVm: IntentViewModel
+    //    @ObservedObject var intentVm: IntentViewModel
     @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
 
     public init(
         editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     ) {
-        intentVm = editCoInsuredNavigation.intentViewModel
+        //        intentVm = editCoInsuredNavigation.intentViewModel
         self.editCoInsuredNavigation = editCoInsuredNavigation
     }
 
@@ -173,19 +173,26 @@ struct ConfirmChangesView: View {
                         hText(L10n.contractAddCoinsuredTotal)
                         Spacer()
                         if #available(iOS 16.0, *) {
-                            hText(intentVm.intent.currentPremium.formattedAmount + L10n.perMonth)
-                                .strikethrough()
-                                .foregroundColor(hTextColor.Opaque.secondary)
+                            hText(
+                                editCoInsuredNavigation.intentViewModel.intent.currentPremium.formattedAmount
+                                    + L10n.perMonth
+                            )
+                            .strikethrough()
+                            .foregroundColor(hTextColor.Opaque.secondary)
                         } else {
-                            hText(intentVm.intent.currentPremium.formattedAmount + L10n.perMonth)
-                                .foregroundColor(hTextColor.Opaque.secondary)
+                            hText(
+                                editCoInsuredNavigation.intentViewModel.intent.currentPremium.formattedAmount
+                                    + L10n.perMonth
+                            )
+                            .foregroundColor(hTextColor.Opaque.secondary)
 
                         }
-                        hText(intentVm.intent.newPremium.formattedAmount + L10n.perMonth)
+                        hText(editCoInsuredNavigation.intentViewModel.intent.newPremium.formattedAmount + L10n.perMonth)
                     }
                     hText(
                         L10n.contractAddCoinsuredStartsFrom(
-                            intentVm.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                            editCoInsuredNavigation.intentViewModel.intent.activationDate.localDateToDate?
+                                .displayDateDDMMMYYYYFormat ?? ""
                         ),
                         style: .label
                     )
@@ -194,14 +201,16 @@ struct ConfirmChangesView: View {
                 }
 
                 hButton.LargeButton(type: .primary) {
-                    Task {
-                        await intentVm.performCoInsuredChanges(commitId: intentVm.intent.id)
-                    }
                     editCoInsuredNavigation.showProgressScreenWithSuccess = true
+                    Task {
+                        await editCoInsuredNavigation.intentViewModel.performCoInsuredChanges(
+                            commitId: editCoInsuredNavigation.intentViewModel.intent.id
+                        )
+                    }
                 } content: {
                     hText(L10n.contractAddCoinsuredConfirmChanges)
                 }
-                .hButtonIsLoading(intentVm.isLoading)
+                .hButtonIsLoading(editCoInsuredNavigation.intentViewModel.isLoading)
             }
         }
         .sectionContainerStyle(.transparent)
@@ -211,7 +220,6 @@ struct ConfirmChangesView: View {
 struct InsuredPeopleScreen_Previews: PreviewProvider {
     static var previews: some View {
         let vm = InsuredPeopleNewScreenModel()
-        let intentVm = IntentViewModel()
         let config = InsuredPeopleConfig(
             id: UUID().uuidString,
             contractCoInsured: [],
@@ -228,7 +236,7 @@ struct InsuredPeopleScreen_Previews: PreviewProvider {
             fromInfoCard: false
         )
         vm.initializeCoInsured(with: config)
-        return InsuredPeopleScreen(vm: vm, intentVm: intentVm)
+        return InsuredPeopleScreen(vm: vm)
     }
 }
 
