@@ -155,13 +155,11 @@ struct CancelButton: View {
 }
 
 struct ConfirmChangesView: View {
-    //    @ObservedObject var intentVm: IntentViewModel
     @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
 
     public init(
         editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     ) {
-        //        intentVm = editCoInsuredNavigation.intentViewModel
         self.editCoInsuredNavigation = editCoInsuredNavigation
     }
 
