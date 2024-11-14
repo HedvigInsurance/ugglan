@@ -63,12 +63,13 @@ struct MovingFlowConfirmScreen: View {
     }
 }
 
+@MainActor
 public class MovingFlowConfirmViewModel: ObservableObject, Hashable {
-    public static func == (lhs: MovingFlowConfirmViewModel, rhs: MovingFlowConfirmViewModel) -> Bool {
+    nonisolated public static func == (lhs: MovingFlowConfirmViewModel, rhs: MovingFlowConfirmViewModel) -> Bool {
         return true
     }
 
-    public func hash(into hasher: inout Hasher) {
+    nonisolated public func hash(into hasher: inout Hasher) {
         hasher.combine(ObjectIdentifier(self))
     }
 
