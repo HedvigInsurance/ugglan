@@ -4,6 +4,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
+@MainActor
 public class ChangeTierViewModel: ObservableObject {
     @Inject private var service: ChangeTierClient
     @Published var viewState: ProcessingState = .loading
