@@ -1,11 +1,14 @@
 import EditCoInsuredShared
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 public class EditCoInsuredNavigationViewModel: ObservableObject {
-    public init() {}
+    public init(
+        config: InsuredPeopleConfig
+    ) {
+        coInsuredViewModel.initializeCoInsured(with: config)
+    }
 
     @Published var editCoInsuredConfig: InsuredPeopleConfig?
     @Published var coInsuredInputModel: CoInsuredInputModel?
@@ -14,6 +17,9 @@ public class EditCoInsuredNavigationViewModel: ObservableObject {
     @Published var showProgressScreenWithoutSuccess = false
 
     @Published var isEditCoinsuredSelectPresented: InsuredPeopleConfig?
+
+    @Published var coInsuredViewModel = InsuredPeopleNewScreenModel()
+    @Published var intentViewModel = IntentViewModel()
 }
 
 extension EditCoInsuredScreenType {
@@ -72,7 +78,7 @@ private enum EditCoInsuredDetentType: TrackingViewNameProtocol {
 public struct EditCoInsuredNavigation: View {
     let config: InsuredPeopleConfig
     @State var openSpecificScreen: EditCoInsuredScreenType
-    @StateObject private var editCoInsuredNavigationVm = EditCoInsuredNavigationViewModel()
+    @ObservedObject private var editCoInsuredNavigationVm: EditCoInsuredNavigationViewModel
     @StateObject var router = Router()
     @EnvironmentObject var editCoInsuredViewModel: EditCoInsuredViewModel
 
@@ -82,9 +88,7 @@ public struct EditCoInsuredNavigation: View {
     ) {
         self.config = config
         self.openSpecificScreen = openSpecificScreen ?? .none
-
-        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-        store.coInsuredViewModel.initializeCoInsured(with: config)
+        self.editCoInsuredNavigationVm = .init(config: config)
     }
 
     public var body: some View {
@@ -139,8 +143,7 @@ public struct EditCoInsuredNavigation: View {
             openProgress(showSuccess: false)
         }
         .modally(item: $editCoInsuredNavigationVm.isEditCoinsuredSelectPresented) { editConfig in
-            let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-            let _ = store.coInsuredViewModel.initializeCoInsured(with: editConfig)
+            let _ = editCoInsuredNavigationVm.coInsuredViewModel.initializeCoInsured(with: editConfig)
             openNewInsuredPeopleScreen()
                 .environmentObject(router)
         }
@@ -149,20 +152,18 @@ public struct EditCoInsuredNavigation: View {
 
     func openNewInsuredPeopleScreen() -> some View {
         openSpecificScreen = .none
-        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         return InsuredPeopleNewScreen(
-            vm: store.coInsuredViewModel,
-            intentVm: store.intentViewModel
+            vm: editCoInsuredNavigationVm.coInsuredViewModel,
+            intentVm: editCoInsuredNavigationVm.intentViewModel
         )
         .configureTitle(L10n.coinsuredEditTitle)
         .addDismissEditCoInsuredFlow()
     }
 
     func openInsuredPeopleScreen() -> some View {
-        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         return InsuredPeopleScreen(
-            vm: store.coInsuredViewModel,
-            intentVm: store.intentViewModel
+            vm: editCoInsuredNavigationVm.coInsuredViewModel,
+            intentVm: editCoInsuredNavigationVm.intentViewModel
         )
         .configureTitle(L10n.coinsuredEditTitle)
         .addDismissEditCoInsuredFlow()
@@ -177,20 +178,22 @@ public struct EditCoInsuredNavigation: View {
                 actionType: coInsuredModelEdit.actionType,
                 contractId: coInsuredModelEdit.contractId
             ),
-            title: coInsuredModelEdit.title
+            title: coInsuredModelEdit.title,
+            editCoInsuredNavigation: editCoInsuredNavigationVm
         )
         .environmentObject(editCoInsuredNavigationVm)
         .configureTitle(L10n.contractAddConisuredInfo)
     }
 
     func openCoInsuredSelectScreen(contractId: String) -> some View {
-        CoInsuredSelectScreen(contractId: contractId)
+        CoInsuredSelectScreen(contractId: contractId, editCoInsuredNavigation: editCoInsuredNavigationVm)
             .configureTitle(L10n.contractAddConisuredInfo)
     }
 
     func openProgress(showSuccess: Bool) -> some View {
         CoInsuredProcessingScreen(
-            showSuccessScreen: showSuccess
+            showSuccessScreen: showSuccess,
+            editCoInsuredNavigation: editCoInsuredNavigationVm
         )
         .environmentObject(editCoInsuredNavigationVm)
         .environmentObject(editCoInsuredViewModel)
@@ -208,9 +211,8 @@ public struct EditCoInsuredNavigation: View {
     }
 
     func openRemoveCoInsuredScreen() -> some View {
-        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
         return RemoveCoInsuredScreen(
-            vm: store.coInsuredViewModel
+            vm: editCoInsuredNavigationVm.coInsuredViewModel
         )
         .configureTitle(L10n.coinsuredEditTitle)
     }
@@ -239,6 +241,7 @@ public struct EditCoInsuredSelectInsuranceNavigation: View {
     let configs: [InsuredPeopleConfig]
     @StateObject var router = Router()
     @EnvironmentObject var editCoInsuredViewModel: EditCoInsuredViewModel
+    @EnvironmentObject var editCoInsuredNavigationVm: EditCoInsuredNavigationViewModel
 
     public init(
         configs: [InsuredPeopleConfig]
@@ -273,8 +276,7 @@ public struct EditCoInsuredSelectInsuranceNavigation: View {
                             editCoInsuredViewModel?.editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
                                 return [object]
                             })
-                            let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-                            store.coInsuredViewModel.initializeCoInsured(with: object)
+                            self.editCoInsuredNavigationVm.coInsuredViewModel.initializeCoInsured(with: object)
                         }
                     }
                 },

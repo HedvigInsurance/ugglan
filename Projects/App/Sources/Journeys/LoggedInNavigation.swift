@@ -3,6 +3,7 @@ import Chat
 import Claims
 import Combine
 import Contracts
+import EditCoInsured
 import EditCoInsuredShared
 import Forever
 import Foundation
@@ -26,6 +27,7 @@ struct LoggedInNavigation: View {
     @StateObject private var foreverRouter = Router()
     @StateObject private var paymentsRouter = Router()
     @EnvironmentObject private var mainNavigationVm: MainNavigationViewModel
+
     var body: some View {
         TabView(selection: $vm.selectedTab) {
             homeTab
@@ -53,7 +55,10 @@ struct LoggedInNavigation: View {
                 infoButtonPlacement: .leading,
                 useOwnNavigation: true
             )
-            .handleEditCoInsured(with: vm.travelCertificateNavigationVm.editCoInsuredVm)
+            .handleEditCoInsured(
+                with: vm.travelCertificateNavigationVm.editCoInsuredVm,
+                navigationVm: vm.editCoInsuredNavigationVm
+            )
         }
         .modally(
             presented: $vm.isMoveContractPresented,
@@ -148,7 +153,7 @@ struct LoggedInNavigation: View {
                 }
             }
         }
-        .handleEditCoInsured(with: vm.contractsNavigationVm.editCoInsuredVm)
+        .handleEditCoInsured(with: vm.contractsNavigationVm.editCoInsuredVm, navigationVm: vm.editCoInsuredNavigationVm)
         .tabItem {
             Image(
                 uiImage: vm.selectedTab == 1
@@ -204,7 +209,10 @@ struct LoggedInNavigation: View {
                     infoButtonPlacement: .trailing,
                     useOwnNavigation: false
                 )
-                .handleEditCoInsured(with: vm.travelCertificateNavigationVm.editCoInsuredVm)
+                .handleEditCoInsured(
+                    with: vm.travelCertificateNavigationVm.editCoInsuredVm,
+                    navigationVm: vm.editCoInsuredNavigationVm
+                )
             case let .deleteAccount(memberDetails):
                 let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
                 let contractsStore: ContractStore = globalPresentableStoreContainer.get()
@@ -300,7 +308,7 @@ struct HomeTab: View {
         }
         .environmentObject(homeNavigationVm)
         .handleConnectPayment(with: homeNavigationVm.connectPaymentVm)
-        .handleEditCoInsured(with: homeNavigationVm.editCoInsuredVm)
+        .handleEditCoInsured(with: homeNavigationVm.editCoInsuredVm, navigationVm: loggedInVm.editCoInsuredNavigationVm)
         .detent(
             presented: $homeNavigationVm.isSubmitClaimPresented,
             style: [.height],
@@ -332,7 +340,10 @@ struct HomeTab: View {
                         infoButtonPlacement: .leading,
                         useOwnNavigation: true
                     )
-                    .handleEditCoInsured(with: loggedInVm.travelCertificateNavigationVm.editCoInsuredVm)
+                    .handleEditCoInsured(
+                        with: loggedInVm.travelCertificateNavigationVm.editCoInsuredVm,
+                        navigationVm: loggedInVm.editCoInsuredNavigationVm
+                    )
                 case .deflect:
                     let model: FlowClaimDeflectStepModel? = {
                         let store: HomeStore = globalPresentableStoreContainer.get()
@@ -373,7 +384,10 @@ struct HomeTab: View {
                     )
                 }
             }
-            .handleEditCoInsured(with: loggedInVm.helpCenterVm.editCoInsuredVm)
+            .handleEditCoInsured(
+                with: loggedInVm.helpCenterVm.editCoInsuredVm,
+                navigationVm: loggedInVm.editCoInsuredNavigationVm
+            )
             .environmentObject(homeNavigationVm)
         }
         .detent(
@@ -464,6 +478,8 @@ class LoggedInNavigationViewModel: ObservableObject {
     let helpCenterVm = HelpCenterNavigationViewModel()
     let travelCertificateNavigationVm = TravelCertificateNavigationViewModel()
     let terminateInsuranceVm = TerminateInsuranceViewModel()
+
+    @Published var editCoInsuredNavigationVm = EditCoInsuredNavigationViewModel(config: .init())
 
     @Published var isTravelInsurancePresented = false
     @Published var isMoveContractPresented = false

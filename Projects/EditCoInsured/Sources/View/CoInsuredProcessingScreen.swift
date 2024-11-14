@@ -1,5 +1,4 @@
 import EditCoInsuredShared
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -8,16 +7,16 @@ struct CoInsuredProcessingScreen: View {
     @StateObject var vm = ProcessingViewModel()
     @ObservedObject var intentVm: IntentViewModel
     var showSuccessScreen: Bool
-    @PresentableStore var store: EditCoInsuredStore
-    @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+    @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @EnvironmentObject private var editCoInsuredViewModel: EditCoInsuredViewModel
     @StateObject var router = Router()
     init(
-        showSuccessScreen: Bool
+        showSuccessScreen: Bool,
+        editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     ) {
         self.showSuccessScreen = showSuccessScreen
-        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-        intentVm = store.intentViewModel
+        self.editCoInsuredNavigation = editCoInsuredNavigation
+        intentVm = editCoInsuredNavigation.intentViewModel
     }
 
     var body: some View {
@@ -75,16 +74,10 @@ extension CoInsuredProcessingScreen: TrackingViewNameProtocol {
 }
 class ProcessingViewModel: ObservableObject {
     @Published var progress: Float = 0
-    @PresentableStore var store: EditCoInsuredStore
 }
 
 struct SuccessScreen_Previews: PreviewProvider {
     static var previews: some View {
-        CoInsuredProcessingScreen(showSuccessScreen: true)
-            .onAppear {
-                let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-                store.setLoading(for: .postCoInsured)
-                store.setError("error", for: .postCoInsured)
-            }
+        CoInsuredProcessingScreen(showSuccessScreen: true, editCoInsuredNavigation: .init(config: .init()))
     }
 }

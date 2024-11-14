@@ -1,12 +1,10 @@
 import EditCoInsuredShared
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
 
 struct InsuredPeopleNewScreen: View {
-    @PresentableStore var store: EditCoInsuredStore
     @ObservedObject var vm: InsuredPeopleNewScreenModel
     @ObservedObject var intentVm: IntentViewModel
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
@@ -20,7 +18,10 @@ struct InsuredPeopleNewScreen: View {
 
                 hSection {
                     hRow {
-                        ContractOwnerField(hasContentBelow: hasContentBelow, config: store.coInsuredViewModel.config)
+                        ContractOwnerField(
+                            hasContentBelow: hasContentBelow,
+                            config: editCoInsuredNavigation.coInsuredViewModel.config
+                        )
                     }
                     .verticalPadding(0)
                     .padding(.top, .padding16)
@@ -61,7 +62,9 @@ struct InsuredPeopleNewScreen: View {
                 if vm.coInsuredAdded.count >= nbOfMissingCoInsured {
                     hSection {
                         hButton.LargeButton(type: .primary) {
-                            store.send(.performCoInsuredChanges(commitId: intentVm.intent.id))
+                            Task {
+                                await intentVm.performCoInsuredChanges(commitId: intentVm.intent.id)
+                            }
                             editCoInsuredNavigation.showProgressScreenWithoutSuccess = true
                             editCoInsuredNavigation.editCoInsuredConfig = nil
                         } content: {
@@ -110,28 +113,21 @@ struct InsuredPeopleNewScreen: View {
 
     @ViewBuilder
     var emptyAccessoryView: some View {
-        PresentableStoreLens(
-            EditCoInsuredStore.self,
-            getter: { state in
-                state
-            }
-        ) { contract in
-            HStack {
-                hText(L10n.generalAddInfoButton)
-                Image(uiImage: hCoreUIAssets.plusSmall.image)
-            }
-            .onTapGesture {
-                let hasExistingCoInsured = vm.config.preSelectedCoInsuredList.filter { !vm.coInsuredAdded.contains($0) }
-                if !hasExistingCoInsured.isEmpty {
-                    editCoInsuredNavigation.selectCoInsured = .init(id: vm.config.contractId)
-                } else {
-                    editCoInsuredNavigation.coInsuredInputModel = .init(
-                        actionType: .add,
-                        coInsuredModel: CoInsuredModel(),
-                        title: L10n.contractAddConisuredInfo,
-                        contractId: vm.config.contractId
-                    )
-                }
+        HStack {
+            hText(L10n.generalAddInfoButton)
+            Image(uiImage: hCoreUIAssets.plusSmall.image)
+        }
+        .onTapGesture {
+            let hasExistingCoInsured = vm.config.preSelectedCoInsuredList.filter { !vm.coInsuredAdded.contains($0) }
+            if !hasExistingCoInsured.isEmpty {
+                editCoInsuredNavigation.selectCoInsured = .init(id: vm.config.contractId)
+            } else {
+                editCoInsuredNavigation.coInsuredInputModel = .init(
+                    actionType: .add,
+                    coInsuredModel: CoInsuredModel(),
+                    title: L10n.contractAddConisuredInfo,
+                    contractId: vm.config.contractId
+                )
             }
         }
     }

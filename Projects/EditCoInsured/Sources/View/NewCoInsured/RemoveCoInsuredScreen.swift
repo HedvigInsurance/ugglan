@@ -1,12 +1,10 @@
 import EditCoInsuredShared
 import Foundation
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct RemoveCoInsuredScreen: View {
-    @PresentableStore var store: EditCoInsuredStore
     @ObservedObject var vm: InsuredPeopleNewScreenModel
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @EnvironmentObject private var router: Router
@@ -20,7 +18,10 @@ struct RemoveCoInsuredScreen: View {
 
                 hSection {
                     hRow {
-                        ContractOwnerField(hasContentBelow: hasContentBelow, config: store.coInsuredViewModel.config)
+                        ContractOwnerField(
+                            hasContentBelow: hasContentBelow,
+                            config: editCoInsuredNavigation.coInsuredViewModel.config
+                        )
                     }
                     .verticalPadding(0)
                     .padding(.top, .padding16)
@@ -49,7 +50,7 @@ struct RemoveCoInsuredScreen: View {
         .hFormAttachToBottom {
             VStack(spacing: 8) {
                 if vm.coInsuredAdded.count > 0 || vm.coInsuredDeleted.count > 0 {
-                    ConfirmChangesView()
+                    ConfirmChangesView(editCoInsuredNavigation: editCoInsuredNavigation)
                 }
                 hSection {
                     CancelButton()

@@ -1,6 +1,5 @@
 import Combine
 import EditCoInsuredShared
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -9,19 +8,19 @@ import hGraphQL
 struct CoInusuredInputScreen: View {
     @ObservedObject var insuredPeopleVm: InsuredPeopleNewScreenModel
     @ObservedObject var intentVm: IntentViewModel
-    @PresentableStore var store: EditCoInsuredStore
     @ObservedObject var vm: CoInusuredInputViewModel
     let title: String
-    @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+    @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @EnvironmentObject private var router: Router
 
     public init(
         vm: CoInusuredInputViewModel,
-        title: String
+        title: String,
+        editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     ) {
-        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-        insuredPeopleVm = store.coInsuredViewModel
-        intentVm = store.intentViewModel
+        self.editCoInsuredNavigation = editCoInsuredNavigation
+        insuredPeopleVm = editCoInsuredNavigation.coInsuredViewModel
+        intentVm = editCoInsuredNavigation.intentViewModel
         self.vm = vm
         self.title = title
 
@@ -50,7 +49,7 @@ struct CoInusuredInputScreen: View {
 
     var body: some View {
         if (vm.SSNError ?? intentVm.errorMessageForInput ?? intentVm.errorMessageForCoinsuredList) != nil {
-            CoInsuredInputErrorView(vm: vm)
+            CoInsuredInputErrorView(vm: vm, editCoInsuredNavigation: editCoInsuredNavigation)
         } else {
             mainView
                 .toolbar {
@@ -112,12 +111,12 @@ struct CoInusuredInputScreen: View {
                                         )
                                     )
                                     if !intentVm.showErrorViewForCoInsuredInput {
-                                        store.coInsuredViewModel.removeCoInsured(coInsuredToDelete)
+                                        editCoInsuredNavigation.coInsuredViewModel.removeCoInsured(coInsuredToDelete)
                                         router.push(CoInsuredAction.delete)
                                     } else {
                                         // add back
                                         if vm.noSSN {
-                                            store.coInsuredViewModel.undoDeleted(
+                                            editCoInsuredNavigation.coInsuredViewModel.undoDeleted(
                                                 .init(
                                                     firstName: vm.personalData.firstName,
                                                     lastName: vm.personalData.lastName,
@@ -126,7 +125,7 @@ struct CoInusuredInputScreen: View {
                                                 )
                                             )
                                         } else {
-                                            store.coInsuredViewModel.undoDeleted(
+                                            editCoInsuredNavigation.coInsuredViewModel.undoDeleted(
                                                 .init(
                                                     firstName: vm.personalData.firstName,
                                                     lastName: vm.personalData.lastName,
@@ -153,7 +152,7 @@ struct CoInusuredInputScreen: View {
                                         if !intentVm.showErrorViewForCoInsuredInput {
                                             if vm.actionType == .edit {
                                                 if vm.noSSN {
-                                                    store.coInsuredViewModel.editCoInsured(
+                                                    editCoInsuredNavigation.coInsuredViewModel.editCoInsured(
                                                         .init(
                                                             firstName: vm.personalData.firstName,
                                                             lastName: vm.personalData.lastName,
@@ -162,7 +161,7 @@ struct CoInusuredInputScreen: View {
                                                         )
                                                     )
                                                 } else {
-                                                    store.coInsuredViewModel.editCoInsured(
+                                                    editCoInsuredNavigation.coInsuredViewModel.editCoInsured(
                                                         .init(
                                                             firstName: vm.personalData.firstName,
                                                             lastName: vm.personalData.lastName,
@@ -211,7 +210,7 @@ struct CoInusuredInputScreen: View {
                                                 router.push(CoInsuredAction.add)
                                             } else {
                                                 if vm.noSSN {
-                                                    store.coInsuredViewModel.removeCoInsured(
+                                                    editCoInsuredNavigation.coInsuredViewModel.removeCoInsured(
                                                         .init(
                                                             firstName: vm.personalData.firstName,
                                                             lastName: vm.personalData.lastName,
@@ -220,7 +219,7 @@ struct CoInusuredInputScreen: View {
                                                         )
                                                     )
                                                 } else {
-                                                    store.coInsuredViewModel.removeCoInsured(
+                                                    editCoInsuredNavigation.coInsuredViewModel.removeCoInsured(
                                                         .init(
                                                             firstName: vm.personalData.firstName,
                                                             lastName: vm.personalData.lastName,
@@ -425,7 +424,8 @@ struct CoInusuredInput_Previews: PreviewProvider {
     static var previews: some View {
         CoInusuredInputScreen(
             vm: .init(coInsuredModel: CoInsuredModel(), actionType: .add, contractId: ""),
-            title: "title"
+            title: "title",
+            editCoInsuredNavigation: .init(config: .init())
         )
     }
 }
@@ -576,10 +576,12 @@ public class IntentViewModel: ObservableObject {
     @Published var enterManually: Bool = false
     @Published var errorMessageForInput: String?
     @Published var errorMessageForCoinsuredList: String?
+    @Published var errorMessageCommitChanges: String?
+
     var fullName: String {
         return firstName + " " + lastName
     }
-    var editCoInsuredService = EditCoInsuredService()
+    var service = EditCoInsuredService()
 
     var showErrorViewForCoInsuredList: Bool {
         errorMessageForCoinsuredList != nil
@@ -599,7 +601,7 @@ public class IntentViewModel: ObservableObject {
             self.errorMessageForCoinsuredList = nil
         }
         do {
-            let data = try await editCoInsuredService.sendIntent(contractId: contractId, coInsured: coInsured)
+            let data = try await service.sendIntent(contractId: contractId, coInsured: coInsured)
             withAnimation {
                 self.intent = data
             }
@@ -621,5 +623,24 @@ public class IntentViewModel: ObservableObject {
     enum GetIntentOrigin {
         case coinsuredSelectList
         case coinsuredInput
+    }
+
+    @MainActor
+    func performCoInsuredChanges(commitId: String) async {
+        withAnimation {
+            self.isLoading = true
+            self.errorMessageCommitChanges = nil
+        }
+        do {
+            try await service.sendMidtermChangeIntentCommit(commitId: commitId)
+            AskForRating().askForReview()
+        } catch let exception {
+            withAnimation {
+                self.errorMessageCommitChanges = exception.localizedDescription
+            }
+        }
+        withAnimation {
+            self.isLoading = false
+        }
     }
 }

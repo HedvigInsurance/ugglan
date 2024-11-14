@@ -4,7 +4,6 @@ import hCoreUI
 
 public enum EditCoInsuredAction: ActionProtocol, Hashable {
     case openEditCoInsured(config: InsuredPeopleConfig, fromInfoCard: Bool)
-    case performCoInsuredChanges(commitId: String)
 }
 
 public enum EditCoInsuredLoadingAction: LoadingProtocol {
@@ -14,6 +13,7 @@ public enum EditCoInsuredLoadingAction: LoadingProtocol {
     case fetchNameFromSSN
 }
 
+/* TODO: MOVE */
 public enum CoInsuredAction: Codable, Identifiable {
     public var id: Self {
         return self

@@ -1,19 +1,19 @@
 import EditCoInsuredShared
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct CoInsuredInputErrorView: View {
     @ObservedObject var intentVm: IntentViewModel
-    @PresentableStore var store: EditCoInsuredStore
     @ObservedObject var vm: CoInusuredInputViewModel
+    @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
 
     public init(
-        vm: CoInusuredInputViewModel
+        vm: CoInusuredInputViewModel,
+        editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     ) {
-        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-        intentVm = store.intentViewModel
+        self.editCoInsuredNavigation = editCoInsuredNavigation
+        intentVm = editCoInsuredNavigation.intentViewModel
         self.vm = vm
     }
 
@@ -64,6 +64,7 @@ public struct CoInsuredInputErrorView: View {
             coInsuredModel: CoInsuredModel(),
             actionType: .add,
             contractId: ""
-        )
+        ),
+        editCoInsuredNavigation: .init(config: .init())
     )
 }
