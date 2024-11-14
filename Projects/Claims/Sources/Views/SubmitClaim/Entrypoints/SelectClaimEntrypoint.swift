@@ -69,10 +69,6 @@ public struct SelectClaimEntrypointGroup: View {
                     )
                 }
             }
-            .onAppear {
-                claimsNavigationVm.progress = 0
-                claimsNavigationVm.previousProgress = 0
-            }
     }
 }
 

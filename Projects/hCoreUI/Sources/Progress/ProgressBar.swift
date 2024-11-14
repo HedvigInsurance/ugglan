@@ -46,11 +46,31 @@ public struct ProgressBarView: ViewModifier {
 }
 
 extension View {
-    public func resetProgressToPreviousValueOnDismiss(onChange: @escaping () -> Void) -> some View {
-        return self.onDeinit {
-            Task {
-                onChange()
+    public func resetProgressOnDismiss(to value: Float?, for progress: Binding<Float?>) -> some View {
+        self.modifier(ResetProgressViewModifier(toValue: value, progress: progress))
+    }
+}
+
+struct ResetProgressViewModifier: ViewModifier {
+    let toValue: Float?
+    @Binding var progress: Float?
+    @StateObject private var vm = ResetProgressViewModifierViewModel()
+    func body(content: Content) -> some View {
+        content.onDeinit {
+            Task { @MainActor in
+                progress = vm.value
+            }
+        }
+        .task {
+            if !vm.didSetValue {
+                vm.value = toValue
+                vm.didSetValue = true
             }
         }
     }
+}
+
+class ResetProgressViewModifierViewModel: ObservableObject {
+    var value: Float?
+    var didSetValue = false
 }
