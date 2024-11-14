@@ -73,6 +73,7 @@ extension CoInsuredProcessingScreen: TrackingViewNameProtocol {
     }
 
 }
+@MainActor
 class ProcessingViewModel: ObservableObject {
     @Published var progress: Float = 0
     @PresentableStore var store: EditCoInsuredStore

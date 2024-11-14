@@ -3,7 +3,7 @@ import SwiftUI
 import hCore
 import hGraphQL
 
-public struct CoInsuredModel: Codable, @preconcurrency Hashable, @preconcurrency Equatable {
+public struct CoInsuredModel: Codable, Hashable, Equatable, Sendable {
     public let SSN: String?
     public let hasMissingInfo: Bool
     public var firstName: String?

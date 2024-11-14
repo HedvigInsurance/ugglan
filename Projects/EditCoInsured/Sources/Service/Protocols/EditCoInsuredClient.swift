@@ -3,6 +3,7 @@ import Foundation
 import hCore
 import hGraphQL
 
+@MainActor
 public protocol EditCoInsuredClient {
     func sendMidtermChangeIntentCommit(commitId: String) async throws
     func getPersonalInformation(SSN: String) async throws -> PersonalData?

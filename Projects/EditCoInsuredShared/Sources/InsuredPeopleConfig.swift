@@ -1,6 +1,6 @@
 import Foundation
 
-public struct InsuredPeopleConfig: Codable & Equatable & Hashable, Identifiable {
+public struct InsuredPeopleConfig: Codable & Equatable & Hashable, Identifiable, Sendable {
     public var id: String
     public var contractCoInsured: [CoInsuredModel]
     public var contractId: String
