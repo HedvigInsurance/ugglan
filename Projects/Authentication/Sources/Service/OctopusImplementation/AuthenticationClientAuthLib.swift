@@ -1,6 +1,6 @@
 import Apollo
 import Foundation
-import authlib
+@preconcurrency import authlib
 import hCore
 import hGraphQL
 
@@ -52,6 +52,7 @@ public class AuthenticationService {
 final public class AuthenticationClientAuthLib: AuthenticationClient {
     public init() {}
 
+    @MainActor
     private var networkAuthRepository: NetworkAuthRepository = {
         NetworkAuthRepository(
             environment: Environment.current.authEnvironment,
@@ -258,7 +259,7 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
                 refreshToken: successResult.refreshToken.token,
                 refreshTokenExpiryIn: Int(successResult.refreshToken.expiryInSeconds)
             )
-            await ApolloClient.handleAuthTokenSuccessResult(result: tokenData)
+            ApolloClient.handleAuthTokenSuccessResult(result: tokenData)
             return
         }
         let error = NSError(domain: "", code: 1000)

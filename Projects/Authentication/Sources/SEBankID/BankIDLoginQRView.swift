@@ -206,7 +206,9 @@ class BankIDViewModel: ObservableObject {
     }
 
     deinit {
-        observeLoginTask?.cancel()
+        Task { @MainActor [weak self] in
+            self?.observeLoginTask?.cancel()
+        }
     }
 
     @MainActor
