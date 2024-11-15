@@ -5,14 +5,15 @@ import SwiftUI
 import hCore
 import hGraphQL
 
+@MainActor
 public class ChatFileUploaderService {
     @Inject var client: ChatFileUploaderClient
 
     func upload(
         files: [File],
-        withProgress: ((_ progress: Double) -> Void)?
+        withProgress: (@Sendable (_ progress: Double) -> Void)?
     ) async throws -> [ChatUploadFileResponseModel] {
-        await log.info("ChatFileUploaderService: upload", error: nil, attributes: nil)
+        log.info("ChatFileUploaderService: upload", error: nil, attributes: nil)
         return try await client.upload(files: files, withProgress: withProgress)
     }
 }
@@ -20,7 +21,7 @@ public class ChatFileUploaderService {
 extension NetworkClient: ChatFileUploaderClient {
     public func upload(
         files: [File],
-        withProgress: ((_ progress: Double) -> Void)?
+        withProgress: (@Sendable (_ progress: Double) -> Void)?
     ) async throws -> [ChatUploadFileResponseModel] {
         let request = try await FileUploadRequest.uploadFile(files: files).asRequest()
         var observation: NSKeyValueObservation?

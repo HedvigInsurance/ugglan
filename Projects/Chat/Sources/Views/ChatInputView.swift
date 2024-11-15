@@ -2,6 +2,7 @@ import Combine
 import Photos
 import PhotosUI
 import SwiftUI
+@preconcurrency import UIKit
 import hCore
 import hCoreUI
 
@@ -103,6 +104,7 @@ struct ChatInputView: View {
     }
 }
 
+@MainActor
 class ChatInputViewModel: NSObject, ObservableObject {
     @Published var inputText: String = ""
     @Published var keyboardIsShown = false {
@@ -194,6 +196,7 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
     }
 }
 
+@MainActor
 private class CustomTextView: UITextView, UITextViewDelegate {
     @Binding private var inputText: String
     @Binding private var height: CGFloat

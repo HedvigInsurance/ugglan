@@ -16,7 +16,7 @@ extension NetworkClient: FileUploaderClient {
     public func upload(flowId: String, file: UploadFile) async throws -> UploadFileResponseModel {
         let request = try await OdysseyRequest.uploadAudioFile(flowId: flowId, file: file).asRequest()
         let (data, response) = try await self.sessionClient.data(for: request)
-        let responseModel: UploadFileResponseModel? = try self.handleResponse(
+        let responseModel: UploadFileResponseModel? = try await self.handleResponse(
             data: data,
             response: response,
             error: nil

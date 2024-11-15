@@ -2,7 +2,8 @@ import Foundation
 import hCore
 import hGraphQL
 
-public struct Conversation: Codable, Identifiable, Hashable {
+@MainActor
+public struct Conversation: Codable, Identifiable, Hashable, Sendable {
     public init(
         id: String,
         type: ConversationType,
@@ -39,7 +40,6 @@ public struct Conversation: Codable, Identifiable, Hashable {
     let claimType: String?
     let unreadMessageCount: Int
 
-    @MainActor
     public init(
         fragment: OctopusGraphQL.ConversationFragment,
         type: ConversationType
@@ -94,13 +94,13 @@ public struct Conversation: Codable, Identifiable, Hashable {
     }
 }
 
-public enum ConversationType: Codable, Hashable {
+public enum ConversationType: Codable, Hashable, Sendable {
     case legacy
     case service
     case claim
 }
 
-public enum ConversationStatus: Codable, Hashable {
+public enum ConversationStatus: Codable, Hashable, Sendable {
     case open
     case closed
 }

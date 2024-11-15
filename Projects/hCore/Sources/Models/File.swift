@@ -3,7 +3,7 @@ import PhotosUI
 import SwiftUI
 import UniformTypeIdentifiers
 
-public struct File: Codable, Equatable, Identifiable, Hashable {
+public struct File: Codable, Equatable, Identifiable, Hashable, Sendable {
     public let id: String
     public let size: Double
     public let mimeType: MimeType
@@ -54,7 +54,7 @@ public struct File: Codable, Equatable, Identifiable, Hashable {
     }
 }
 
-public enum FileSource: Codable, Equatable, Hashable {
+public enum FileSource: Codable, Equatable, Hashable, Sendable {
     case data(data: Data)
     case url(url: URL)
     case localFile(results: PHPickerResult?)
@@ -252,4 +252,8 @@ extension NSItemProvider {
             }
         }
     }
+}
+
+extension PHPickerResult: @unchecked @retroactive Sendable {
+
 }

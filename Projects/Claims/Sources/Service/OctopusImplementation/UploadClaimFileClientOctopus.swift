@@ -5,6 +5,7 @@ import SwiftUI
 import hCore
 import hGraphQL
 
+@MainActor
 public class hClaimFileUploadService {
     @Inject var client: hClaimFileUploadClient
 
@@ -28,6 +29,7 @@ extension NetworkClient: hClaimFileUploadClient {
         var observation: NSKeyValueObservation?
         let response = try await withCheckedThrowingContinuation {
             (inCont: CheckedContinuation<[ClaimFileUploadResponse], Error>) -> Void in
+
             let task = self.sessionClient.dataTask(with: request) { [weak self] (data, response, error) in
                 do {
                     if let uploadedFiles: [ClaimFileUploadResponse] = try self?
@@ -88,12 +90,12 @@ extension NetworkClient: hClaimFileUploadClient {
     }
 }
 
-public struct ClaimFileUploadResponse: Codable {
+public struct ClaimFileUploadResponse: Codable, Sendable {
     let file: FileUpload?
     let error: String?
 }
 
-struct FileUpload: Codable {
+struct FileUpload: Codable, Sendable {
     let fileId: String
     let name: String
     let mimeType: String

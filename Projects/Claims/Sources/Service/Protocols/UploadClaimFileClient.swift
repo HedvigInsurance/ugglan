@@ -1,6 +1,7 @@
 import Foundation
 import hCore
 
+@MainActor
 public protocol hClaimFileUploadClient {
     func upload(
         endPoint: String,

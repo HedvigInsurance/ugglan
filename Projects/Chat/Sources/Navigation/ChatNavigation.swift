@@ -1,6 +1,7 @@
 import Combine
 import PresentableStore
 import SwiftUI
+@preconcurrency import UserNotifications
 import hCore
 import hCoreUI
 

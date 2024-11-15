@@ -128,6 +128,7 @@ public struct InboxView: View {
     }
 }
 
+@MainActor
 class InboxViewModel: ObservableObject {
     @Inject var service: ConversationsClient
     @Published var conversations: [Conversation] = []
@@ -152,7 +153,9 @@ class InboxViewModel: ObservableObject {
         configureFetching()
         chatClosedObserver = NotificationCenter.default.addObserver(forName: .chatClosed, object: nil, queue: nil) {
             [weak self] notification in
-            self?.configureFetching()
+            Task {
+                await self?.configureFetching()
+            }
         }
     }
 
@@ -187,8 +190,10 @@ class InboxViewModel: ObservableObject {
     }
 
     deinit {
-        if let chatClosedObserver {
-            NotificationCenter.default.removeObserver(chatClosedObserver)
+        Task { @MainActor [weak self] in
+            if let chatClosedObserver = self?.chatClosedObserver {
+                NotificationCenter.default.removeObserver(chatClosedObserver)
+            }
         }
     }
 }

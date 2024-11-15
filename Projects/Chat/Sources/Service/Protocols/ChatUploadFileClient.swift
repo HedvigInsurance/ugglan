@@ -1,13 +1,14 @@
 import Foundation
 import hCore
 
+@MainActor
 public protocol ChatFileUploaderClient {
     func upload(
         files: [File],
-        withProgress: ((_ progress: Double) -> Void)?
+        withProgress: (@Sendable (_ progress: Double) -> Void)?
     ) async throws -> [ChatUploadFileResponseModel]
 }
 
-public struct ChatUploadFileResponseModel: Decodable {
+public struct ChatUploadFileResponseModel: Decodable, Sendable {
     let uploadToken: String
 }

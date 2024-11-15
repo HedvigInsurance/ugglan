@@ -2,11 +2,13 @@ import Foundation
 import hCore
 import hCoreUI
 
+@MainActor
 public protocol ConversationsClient {
     func getConversations() async throws -> [Conversation]
     func createConversation(with id: UUID) async throws -> Conversation
 }
 
+@MainActor
 public protocol ConversationClient {
     func getConversationMessages(
         for conversationId: String,
