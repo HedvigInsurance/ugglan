@@ -61,8 +61,6 @@ class ClaimsViewModel: ObservableObject {
         pollTimerCancellable = Timer.publish(every: TimeInterval(refreshOn), on: .main, in: .common)
             .autoconnect()
             .sink(receiveValue: { _ in
-                //added this check here because we have major memory leak in the tabjourney so when we logout this vm is still alive
-                //TODO: remove after we fix memory leak
                 Task { [weak self] in
                     self?.fetch()
                 }
