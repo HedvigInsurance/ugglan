@@ -142,9 +142,7 @@ struct TerminationSurveyScreen: View {
                     inputData: vm.selectedFeedBackViewModel?.text
                 )
 
-                if let step {
-                    terminationFlowNavigationViewModel.navigate(data: step)
-                }
+                terminationFlowNavigationViewModel.navigate(data: step)
             }
             //            store.send(.submitSurvey(option: selectedOption.id, feedback: selectedFeedBackViewModel?.text))
         }
@@ -219,11 +217,10 @@ class SurveyScreenViewModel: ObservableObject {
     }
 
     @MainActor
-    public func submitSurvey(context: String, option: String, inputData: String?) async -> TerminateStepResponse? {
+    public func submitSurvey(context: String, option: String, inputData: String?) async -> TerminateStepResponse {
         withAnimation {
             viewState = .loading
         }
-        //        Task { @MainActor in
         do {
             let data = try await service.sendSurvey(terminationContext: context, option: option, inputData: inputData)
             withAnimation {
@@ -236,10 +233,8 @@ class SurveyScreenViewModel: ObservableObject {
                     errorMessage: error.localizedDescription
                 )
             }
-            //            }
-            //            return
+            return TerminateStepResponse(context: context, step: .setFailedStep(model: .init(id: "")), progress: nil)
         }
-        return nil
     }
 
     func checkContinueButtonStatus() {

@@ -174,6 +174,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject {
 
     @MainActor
     func reset() {
+        currentContext = nil
         terminationDateStepModel = nil
         terminationDeleteStepModel = nil
         successStepModel = nil
