@@ -9,6 +9,7 @@ import Payment
 import PresentableStore
 import Profile
 import SwiftUI
+@preconcurrency import UserNotifications
 import hCore
 import hCoreUI
 import hGraphQL
@@ -37,24 +38,24 @@ extension AppDelegate {
             using: { _ in
                 UNUserNotificationCenter.current()
                     .getNotificationSettings { settings in
+                        let status = settings.authorizationStatus.rawValue
                         Task {
-                            let store: ProfileStore = globalPresentableStoreContainer.get()
-                            store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+                            let store: ProfileStore = await globalPresentableStoreContainer.get()
+                            await store.send(.setPushNotificationStatus(status: status))
                         }
                     }
             }
         )
-        UNUserNotificationCenter.current()
-            .getNotificationSettings { settings in
-                Task {
-                    let store: ProfileStore = globalPresentableStoreContainer.get()
-                    store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
-                }
-            }
+        Task { @MainActor in
+            let settings = await UNUserNotificationCenter.current().notificationSettings()
+            let store: ProfileStore = globalPresentableStoreContainer.get()
+            store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+        }
     }
 }
 
-extension AppDelegate: UNUserNotificationCenterDelegate {
+extension AppDelegate: @preconcurrency UNUserNotificationCenterDelegate {
+    @MainActor
     fileprivate func performPushAction(notificationType: String, userInfo: [AnyHashable: Any]) {
         NotificationCenter.default.post(
             name: .handlePushNotification,
@@ -72,7 +73,9 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         guard let notificationType = (userInfo["TYPE"] as? String) ?? (userInfo["type"] as? String) else { return }
 
         if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
-            performPushAction(notificationType: notificationType, userInfo: userInfo)
+            Task {
+                performPushAction(notificationType: notificationType, userInfo: userInfo)
+            }
         }
         UNUserNotificationCenter.current().removeAllDeliveredNotifications()
         completionHandler()

@@ -20,6 +20,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
+@MainActor
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var cancellables = Set<AnyCancellable>()
     private var localizationObserverTask: AnyCancellable?
@@ -66,41 +67,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
-    }
-
-    func configureAppBadgeTracking() {
-        NotificationCenter.default.addObserver(
-            forName: UIApplication.willEnterForegroundNotification,
-            object: nil,
-            queue: nil
-        ) { [weak self] _ in
-            self?.resetBadge()
-        }
-
-        NotificationCenter.default.addObserver(
-            forName: UIApplication.didEnterBackgroundNotification,
-            object: nil,
-            queue: nil
-        ) { [weak self] _ in
-            self?.resetBadge()
-        }
-
-        NotificationCenter.default.addObserver(
-            forName: UIApplication.willTerminateNotification,
-            object: nil,
-            queue: nil
-        ) { [weak self] _ in
-            self?.resetBadge()
-        }
-    }
-
-    func resetBadge() {
-        UserDefaults(suiteName: "group.\(Bundle.main.bundleIdentifier!)")?.set(1, forKey: "count")
-        if #available(iOS 16.0, *) {
-            UNUserNotificationCenter.current().setBadgeCount(0)
-        } else {
-            UIApplication.shared.applicationIconBadgeNumber = 0
-        }
     }
 
     func application(

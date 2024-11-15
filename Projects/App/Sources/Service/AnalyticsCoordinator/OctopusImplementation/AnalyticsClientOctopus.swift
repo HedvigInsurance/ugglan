@@ -4,6 +4,7 @@ import SwiftUI
 import hCore
 import hGraphQL
 
+@MainActor
 public class AnalyticsService {
     @Inject var client: AnalyticsClient
 

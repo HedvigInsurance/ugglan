@@ -146,6 +146,7 @@ struct NotLoggedInView_Previews: PreviewProvider {
     }
 }
 
+@MainActor
 public class NotLoggedViewModel: ObservableObject {
     @PresentableStore var store: MarketStore
     @Published var blurHash: String = ""
@@ -185,15 +186,20 @@ public class NotLoggedViewModel: ObservableObject {
 
         self.bootStrapped = true
 
-        NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) {
-            [weak self] notification in
-            if let url = notification.object as? URL {
-                if url.relativePath.contains("login-failure") {
-                    self?.router.push(AuthentificationRouterType.error(message: L10n.authenticationBankidLoginError))
-                }
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(openDeeplingLink),
+            name: .openDeepLink,
+            object: nil
+        )
+    }
+
+    @objc func openDeeplingLink(_ notification: Notification) {
+        if let url = notification.object as? URL {
+            if url.relativePath.contains("login-failure") {
+                router.push(AuthentificationRouterType.error(message: L10n.authenticationBankidLoginError))
             }
         }
-
     }
 
     deinit {
@@ -315,7 +321,7 @@ private class PlayerUIView: UIView {
     }
 }
 
-extension Localization.Locale.Market: TrackingViewNameProtocol {
+extension Localization.Locale.Market: @retroactive TrackingViewNameProtocol {
     public var nameForTracking: String {
         switch self {
         case .no, .dk:

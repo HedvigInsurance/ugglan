@@ -53,10 +53,6 @@ public class FeatureFlagsUnleash: FeatureFlags {
             context: context
         )
         self.unleashClient?
-            .subscribe(.ready) { [weak self] in
-                self?.handleUpdate()
-            }
-        self.unleashClient?
             .subscribe(.update) { [weak self] in
                 self?.handleUpdate()
             }
@@ -69,6 +65,7 @@ public class FeatureFlagsUnleash: FeatureFlags {
         emailPreferencesEnabled = market == .se
         do {
             try await self.unleashClient?.start(printToConsole: true)
+            handleUpdate()
             log.info("Successfully loaded unleash experiments")
         } catch let exception {
             log.info("Failed loading unleash experiments \(exception)")
