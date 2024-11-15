@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 public protocol HomeClient {
     func getImportantMessages() async throws -> [ImportantMessage]
     func getMemberState() async throws -> MemberState
@@ -7,7 +8,7 @@ public protocol HomeClient {
     func getMessagesState() async throws -> MessageState
 }
 
-public struct MemberState {
+public struct MemberState: Sendable {
     let contracts: [HomeContract]
     let contractState: MemberContractState
     let futureState: FutureStatus

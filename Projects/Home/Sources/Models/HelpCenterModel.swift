@@ -3,20 +3,20 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct HelpCenterModel: Codable, Equatable, Hashable {
+public struct HelpCenterModel: Codable, Equatable, Hashable, Sendable {
     let title: String
     let description: String
     let commonTopics: [CommonTopic]
     let commonQuestions: [Question]
 }
 
-public struct CommonTopic: Codable, Equatable, Hashable {
+public struct CommonTopic: Codable, Equatable, Hashable, Sendable {
     let title: String
     let commonQuestions: [Question]
     let allQuestions: [Question]
 }
 
-public struct Question: Codable, Equatable, Hashable {
+public struct Question: Codable, Equatable, Hashable, Sendable {
     let question: String
     let questionEn: String
     let answer: String

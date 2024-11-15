@@ -115,7 +115,7 @@ public struct DocumentPreview: View {
         .embededInNavigation(options: [.navigationBarHidden], tracking: self)
     }
 }
-extension DocumentPreview: @preconcurrency TrackingViewNameProtocol {
+extension DocumentPreview: TrackingViewNameProtocol {
     public var nameForTracking: String {
         return .init(describing: DocumentPreview.self)
     }

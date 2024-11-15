@@ -28,7 +28,7 @@ struct InfoScreenWrapper: View {
     }
 }
 
-extension InfoScreenWrapper: @preconcurrency TrackingViewNameProtocol {
+extension InfoScreenWrapper: TrackingViewNameProtocol {
     var nameForTracking: String {
         return .init(describing: TrackingViewNameProtocol.self)
     }

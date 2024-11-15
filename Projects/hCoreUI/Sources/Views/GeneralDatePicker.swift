@@ -326,7 +326,7 @@ public enum DateFormatter {
     case birthDate
 }
 
-extension DatePickerView: @preconcurrency TrackingViewNameProtocol {
+extension DatePickerView: TrackingViewNameProtocol {
     public var nameForTracking: String {
         return .init(describing: DatePickerView.self)
     }

@@ -68,7 +68,7 @@ public enum HomeAction: ActionProtocol {
     case dismissHelpCenter
 }
 
-public enum FutureStatus: Codable, Equatable {
+public enum FutureStatus: Codable, Equatable, Sendable {
     case activeInFuture(inceptionDate: String)
     case pendingSwitchable
     case pendingNonswitchable

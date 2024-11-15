@@ -168,7 +168,7 @@ private class DocumentView: UIView {
     }
 }
 
-extension PDFPreview: @preconcurrency TrackingViewNameProtocol {
+extension PDFPreview: TrackingViewNameProtocol {
     public var nameForTracking: String {
         return .init(describing: PDFPreview.self)
     }

@@ -226,7 +226,7 @@ extension UIViewController {
 }
 
 @MainActor
-public struct DetentPresentationOption: @preconcurrency OptionSet {
+public struct DetentPresentationOption: @preconcurrency OptionSet, Sendable {
     public let rawValue: UInt
     public static let alwaysOpenOnTop = DetentPresentationOption(rawValue: 1 << 0)
     public static let withoutGrabber = DetentPresentationOption(rawValue: 1 << 2)

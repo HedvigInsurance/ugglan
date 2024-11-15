@@ -2,7 +2,7 @@ import Combine
 import Foundation
 
 public actor ApplicationContext {
-    public static var shared = ApplicationContext()
+    public static let shared = ApplicationContext()
 
     private init() {}
     private let isLoggedInSubject = CurrentValueSubject<Bool, Never>(false)

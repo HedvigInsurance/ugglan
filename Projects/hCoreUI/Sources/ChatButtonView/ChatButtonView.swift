@@ -16,7 +16,7 @@ extension View {
     }
 }
 
-public enum ToolbarOptionType: Codable, Equatable {
+public enum ToolbarOptionType: Codable, Equatable, Sendable {
     case newOffer
     case firstVet
     case chat

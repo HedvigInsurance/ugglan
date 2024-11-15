@@ -197,16 +197,21 @@ class HomeVM: ObservableObject {
     }
     private func addObserverForApplicationDidBecomeActive() {
         Task {
-            if await ApplicationContext.shared.isLoggedIn {
+            let isLoggedIn = await ApplicationContext.shared.isLoggedIn
+            if isLoggedIn {
                 NotificationCenter.default.addObserver(
-                    forName: UIApplication.didBecomeActiveNotification,
-                    object: nil,
-                    queue: OperationQueue.main,
-                    using: { [weak self] _ in
-                        self?.fetch()
-                    }
+                    self,
+                    selector: #selector(notification),
+                    name: UIApplication.didBecomeActiveNotification,
+                    object: nil
                 )
             }
+        }
+    }
+
+    @objc func notification(notification: Notification) {
+        Task { [weak self] in
+            self?.fetch()
         }
     }
 
