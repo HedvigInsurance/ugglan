@@ -530,7 +530,9 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     @objc func registerForPushNotification(notification: Notification) {
-        UIApplication.shared.appDelegate.registerForPushNotifications {}
+        Task {
+            await UIApplication.shared.appDelegate.registerForPushNotifications()
+        }
     }
 
     @objc func handlePushNotification(notification: Notification) {

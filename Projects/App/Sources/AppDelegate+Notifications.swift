@@ -46,10 +46,10 @@ extension AppDelegate {
                     }
             }
         )
-        Task { @MainActor in
-            let settings = await UNUserNotificationCenter.current().notificationSettings()
+        Task {
+            let status = await UNUserNotificationCenter.current().notificationSettings()
             let store: ProfileStore = globalPresentableStoreContainer.get()
-            store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+            store.send(.setPushNotificationStatus(status: status.authorizationStatus.rawValue))
         }
     }
 }

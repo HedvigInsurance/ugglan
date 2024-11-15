@@ -212,7 +212,7 @@ public class ChatScreenViewModel: ObservableObject {
         let store: ChatStore = globalPresentableStoreContainer.get()
         if !store.state.askedForPushNotificationsPermission {
             store.send(.checkPushNotificationStatus)
-            Task {
+            Task { @MainActor in
                 await chatNavigationVm?.checkForPushNotificationStatus()
             }
         }

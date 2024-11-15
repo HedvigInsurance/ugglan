@@ -15,7 +15,7 @@ import Profile
 import SwiftUI
 import TerminateContracts
 import TravelCertificate
-import UserNotifications
+@preconcurrency import UserNotifications
 import hCore
 import hCoreUI
 import hGraphQL
@@ -79,37 +79,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
 
-    func registerForPushNotifications(completed: @escaping () -> Void) {
-        UNUserNotificationCenter.current()
-            .getNotificationSettings { settings in
-                Task { @MainActor in
-                    let store: ProfileStore = globalPresentableStoreContainer.get()
-                    store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
-                    guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
-                        return
-                    }
-                    if settings.authorizationStatus == .denied {
-                        DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
-                    }
-                }
+    func registerForPushNotifications() async {
+        let settings = await UNUserNotificationCenter.current().notificationSettings()
+        let store: ProfileStore = globalPresentableStoreContainer.get()
+        store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+        guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+            return
+        }
+        if settings.authorizationStatus == .denied {
+            DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
+        } else {
+            do {
+                let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+                let status = try await UNUserNotificationCenter.current().requestAuthorization(options: authOptions)
+            } catch let exception {
+
             }
-
-        let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
-        UNUserNotificationCenter.current()
-            .requestAuthorization(
-                options: authOptions,
-                completionHandler: { _, _ in
-                    UNUserNotificationCenter.current()
-                        .getNotificationSettings { settings in
-                            Task { @MainActor in
-                                let store: ProfileStore = globalPresentableStoreContainer.get()
-                                store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
-                            }
-                        }
-                    completed()
-                }
-            )
-
+            let settings = await UNUserNotificationCenter.current().notificationSettings()
+            let store: ProfileStore = globalPresentableStoreContainer.get()
+            store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+        }
     }
 
     func handleURL(url: URL) {

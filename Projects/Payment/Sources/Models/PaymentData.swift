@@ -69,7 +69,7 @@ public struct PaymentData: Codable, Equatable, Hashable, Sendable {
         }
     }
 
-    struct PaymentDetails: Codable, Equatable, Hashable {
+    struct PaymentDetails: Codable, Equatable, Hashable, Sendable {
         typealias KeyValue = (key: String, value: String)
         let paymentMethod: String
         let account: String
