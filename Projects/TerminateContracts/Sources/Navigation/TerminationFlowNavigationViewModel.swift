@@ -1,17 +1,50 @@
 import ChangeTier
 import Combine
-import PresentableStore
+//import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
 
-class TerminationFlowNavigationViewModel: ObservableObject {
+public class TerminationFlowNavigationViewModel: ObservableObject {
+    public init(
+        initialStep: TerminationFlowActions?
+    ) {
+        if let initialStep {
+            setModels(initialStep: initialStep)
+        }
+    }
+
+    private func setModels(initialStep: TerminationFlowActions) {
+        Task {
+            await reset()
+        }
+        switch initialStep {
+        case .router(let action):
+            switch action {
+            case .selectInsurance:
+                break
+            case let .terminationDate(config, model):
+                terminationDateStepModel = model
+            case let .surveyStep(model):
+                terminationSurveyStepModel = model
+            }
+        case .final(let action):
+            switch action {
+            case let .success(model):
+                successStepModel = model
+            case let .fail(model):
+                failedStepModel = model
+            case .updateApp:
+                break
+            }
+        }
+    }
+
     @Published var isDatePickerPresented = false
     @Published var isConfirmTerminationPresented = false
     @Published var isProcessingPresented = false
     @Published var changeTierInput: ChangeTierInput?
-    @Published var loadingActions: [FlowTerminationSurveyRedirectAction: LoadingState<String>] = [:]
     @Published var infoText: String?
 
     var isFlowPresented: (DismissTerminationAction) -> Void = { _ in }
@@ -26,8 +59,7 @@ class TerminationFlowNavigationViewModel: ObservableObject {
                     NotificationCenter.default.post(name: .openDeepLink, object: url)
                 }
             case .changeTierFoundBetterPrice, .changeTierMissingCoverageAndTerms:
-                let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                if let contractId = store.state.config?.contractId,
+                if let contractId = config?.contractId,
                     let redirectAction,
                     let source: ChangeTierSource = {
                         if case .changeTierFoundBetterPrice = redirectAction {
@@ -39,7 +71,6 @@ class TerminationFlowNavigationViewModel: ObservableObject {
                     }()
                 {
                     let input = ChangeTierInputData(source: source, contractId: contractId)
-                    loadingActions[redirectAction] = .loading
                     Task { @MainActor [weak self] in
                         guard let self = self else { return }
                         do {
@@ -67,7 +98,6 @@ class TerminationFlowNavigationViewModel: ObservableObject {
                                 )
                             }
                         }
-                        loadingActions[redirectAction] = nil
                     }
                 }
             case .none:
@@ -87,26 +117,93 @@ class TerminationFlowNavigationViewModel: ObservableObject {
         }
     }
     let router = Router()
-    var cancellable: AnyCancellable?
+
+    @Inject private var terminateContractsService: TerminateContractsClient
+
+    @Published var currentContext: String?
+    @Published var progress: Float?
+    @Published var previousProgress: Float?
+    @Published var hasSelectInsuranceStep: Bool = false
+
+    @Published var terminationDateStepModel: TerminationFlowDateNextStepModel?
+    @Published var terminationDeleteStepModel: TerminationFlowDeletionNextModel?
+    @Published var successStepModel: TerminationFlowSuccessNextModel?
+    @Published var failedStepModel: TerminationFlowFailedNextModel?
+    @Published var terminationSurveyStepModel: TerminationFlowSurveyStepModel?
+    @Published var config: TerminationConfirmConfig?
+
+    var isDeletion: Bool {
+        terminationDeleteStepModel != nil
+    }
+
+    @MainActor
+    func startTermination(config: TerminationConfirmConfig) async {
+        do {
+            let data = try await terminateContractsService.startTermination(contractId: config.contractId)
+            navigate(data: data)
+        } catch {
+
+        }
+    }
+
+    func navigate(data: TerminateStepResponse) {
+        currentContext = data.context
+        previousProgress = progress
+        progress = data.progress
+        switch data.step {
+        case let .setTerminationDateStep(model):
+            terminationDateStepModel = model
+            if let config {
+                router.push(TerminationFlowRouterActions.terminationDate(config: config, model: model))
+            }
+        case let .setTerminationDeletion(model):
+            terminationDeleteStepModel = model
+        case let .setSuccessStep(model):
+            successStepModel = model
+            router.push(TerminationFlowFinalRouterActions.success(model: model))
+        case let .setFailedStep(model):
+            failedStepModel = model
+            router.push(TerminationFlowFinalRouterActions.fail(model: model))
+        case let .setTerminationSurveyStep(model):
+            terminationSurveyStepModel = model
+            router.push(TerminationFlowRouterActions.surveyStep(model: model))
+        case .openTerminationUpdateAppScreen:
+            router.push(TerminationFlowFinalRouterActions.updateApp)
+        }
+    }
+
+    @MainActor
+    func reset() {
+        terminationDateStepModel = nil
+        terminationDeleteStepModel = nil
+        successStepModel = nil
+        failedStepModel = nil
+        terminationSurveyStepModel = nil
+    }
 }
 
 struct TerminationFlowNavigation: View {
     @ObservedObject private var vm: TerminationFlowNavigationViewModel
-    let configs: [TerminationConfirmConfig]
+    //    @StateObject var router = Router()
+    var configs: [TerminationConfirmConfig] = []
+
     let initialStep: TerminationFlowActions
 
     public init(
         initialStep: TerminationFlowActions,
-        configs: [TerminationConfirmConfig],
-        vm: TerminationFlowNavigationViewModel
+        configs: [TerminationConfirmConfig]
     ) {
         self.initialStep = initialStep
         self.configs = configs
-        self.vm = vm
+        self.vm = .init(initialStep: initialStep)
     }
 
     public var body: some View {
-        RouterHost(router: vm.router, options: [.navigationType(type: .withProgress)], tracking: initialStep) {
+        RouterHost(
+            router: vm.router,
+            options: [.navigationType(type: .withProgress)],
+            tracking: initialStep
+        ) {
             getView(for: initialStep)
                 .addTerminationProgressBar
                 .routerDestination(for: [TerminationFlowSurveyStepModelOption].self) { options in
@@ -114,10 +211,10 @@ struct TerminationFlowNavigation: View {
                 }
                 .routerDestination(for: TerminationFlowRouterActions.self) { action in
                     switch action {
-                    case let .terminationDate(config):
+                    case let .terminationDate(config, model):
                         openSetTerminationDateLandingScreen(config: config, fromSelectInsurance: false)
-                    case let .surveyStep(options, type):
-                        openSurveyScreen(options: options, subtitleType: type)
+                    case let .surveyStep(model):
+                        openSurveyScreen(model: model ?? .init(id: "", options: [], subTitleType: .default))
                     case .selectInsurance:
                         openSelectInsuranceScreen()
                     }
@@ -128,11 +225,10 @@ struct TerminationFlowNavigation: View {
                 ) { action in
                     switch action {
                     case .success:
-                        let store: TerminationContractStore = globalPresentableStoreContainer.get()
                         let terminationDate =
-                            store.state.successStep?.terminationDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                            vm.successStepModel?.terminationDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                         openTerminationSuccessScreen(
-                            isDeletion: store.state.isDeletion,
+                            isDeletion: vm.isDeletion,
                             terminationDate: terminationDate
                         )
                         .onAppear {
@@ -148,33 +244,10 @@ struct TerminationFlowNavigation: View {
                     }
                 }
         }
-        .environmentObject(vm)
-        .onAppear { [weak vm] in
-            let store: TerminationContractStore = globalPresentableStoreContainer.get()
-            vm?.cancellable = store.actionSignal
-                .receive(on: RunLoop.main)
-                .sink { _ in
-                } receiveValue: { [weak vm] action in
-                    switch action {
-                    case let .navigationAction(navigationAction):
-                        switch navigationAction {
-                        case .openTerminationSuccessScreen:
-                            vm?.router.push(TerminationFlowFinalRouterActions.success)
-                        case .openTerminationFailScreen:
-                            vm?.router.push(TerminationFlowFinalRouterActions.fail)
-                        case .openTerminationUpdateAppScreen:
-                            vm?.router.push(TerminationFlowFinalRouterActions.updateApp)
-                        case .openTerminationSurveyStep(let options, let type):
-                            vm?.router
-                                .push(TerminationFlowRouterActions.surveyStep(options: options, subtitleType: type))
-                        case let .openSetTerminationDateLandingScreen(config):
-                            vm?.router.push(TerminationFlowRouterActions.terminationDate(config: config))
-                        }
-                    default:
-                        break
-                    }
-                }
+        .modally(item: $vm.changeTierInput) { item in
+            ChangeTierNavigation(input: item)
         }
+        .environmentObject(vm)
         .detent(
             presented: $vm.isDatePickerPresented,
             style: [.height]
@@ -200,21 +273,20 @@ struct TerminationFlowNavigation: View {
         switch action {
         case let .router(action):
             switch action {
-            case let .terminationDate(config):
+            case let .terminationDate(config, _):
                 openSetTerminationDateLandingScreen(config: config, fromSelectInsurance: false)
-            case let .surveyStep(options, type):
-                openSurveyScreen(options: options, subtitleType: type)
+            case let .surveyStep(model):
+                openSurveyScreen(model: model ?? .init(id: "", options: [], subTitleType: .default))
             case .selectInsurance:
                 openSelectInsuranceScreen()
             }
         case let .final(action):
             switch action {
             case .success:
-                let store: TerminationContractStore = globalPresentableStoreContainer.get()
                 let terminationDate =
-                    store.state.successStep?.terminationDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                    vm.successStepModel?.terminationDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                 openTerminationSuccessScreen(
-                    isDeletion: store.state.isDeletion,
+                    isDeletion: vm.isDeletion,
                     terminationDate: terminationDate
                 )
                 .onAppear {
@@ -277,8 +349,9 @@ struct TerminationFlowNavigation: View {
                             contractExposureName: selectedContract.contractExposureName,
                             activeFrom: selectedContract.activeFrom
                         )
-                        let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                        store.send(.startTermination(config: config))
+                        Task {
+                            await vm.startTermination(config: config)
+                        }
                     }
                 },
                 singleSelect: true,
@@ -302,7 +375,6 @@ struct TerminationFlowNavigation: View {
                 tabBarInfoView
             }
         }
-        .trackLoading(TerminationContractStore.self, action: .getInitialStep)
     }
 
     private func openUpdateAppTerminationScreen() -> some View {
@@ -315,41 +387,28 @@ struct TerminationFlowNavigation: View {
     }
 
     private func openSurveyScreen(
-        options: [TerminationFlowSurveyStepModelOption],
-        subtitleType: SurveyScreenSubtitleType
+        model: TerminationFlowSurveyStepModel
     ) -> some View {
-        let vm = SurveyScreenViewModel(options: options, subtitleType: subtitleType)
+        let vm = SurveyScreenViewModel(options: model.options, subtitleType: model.subTitleType)
         return TerminationSurveyScreen(vm: vm)
             .resetProgressToPreviousValueOnDismiss
             .withDismissButton()
     }
 
     private func openConfirmTerminationScreen() -> some View {
-        ConfirmTerminationScreen(
-            onSelected: {
-                let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                if store.state.isDeletion {
-                    store.send(.sendConfirmDelete)
-                } else {
-                    store.send(.sendTerminationDate)
-                }
-                vm.isProcessingPresented = true
-            }
-        )
-        .withDismissButton()
+        ConfirmTerminationScreen()
+            .withDismissButton()
     }
 
     private func openSetTerminationDatePickerScreen() -> some View {
         SetTerminationDate(
             onSelected: {
                 terminationDate in
-                let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                store.send(.setTerminationDate(terminationDate: terminationDate))
+                vm.terminationDateStepModel?.date = terminationDate
                 vm.isDatePickerPresented = false
             },
             terminationDate: {
-                let store: TerminationContractStore = globalPresentableStoreContainer.get()
-                let preSelectedTerminationDate = store.state.terminationDateStep?.minDate.localDateToDate
+                let preSelectedTerminationDate = vm.terminationDateStepModel?.minDate.localDateToDate
                 return preSelectedTerminationDate ?? Date()
             }
         )
@@ -421,95 +480,19 @@ struct TerminationFlowNavigation: View {
     }
 }
 
-extension View {
-    public func handleTerminateInsurance(
-        vm: TerminateInsuranceViewModel,
-        onDismiss: @escaping (DismissTerminationAction) -> Void
-    ) -> some View {
-        modifier(TerminateInsurance(vm: vm, onDismiss: onDismiss))
-
-    }
-}
-
-struct TerminateInsurance: ViewModifier {
-    @ObservedObject var vm: TerminateInsuranceViewModel
-    @StateObject var navigationVm = TerminationFlowNavigationViewModel()
-    let onDismiss: (DismissTerminationAction) -> Void
-    func body(content: Content) -> some View {
-        content
-            .modally(
-                item: $vm.initialStep,
-                options: .constant(.alwaysOpenOnTop)
-            ) { item in
-
-                TerminationFlowNavigation(
-                    initialStep: item.action,
-                    configs: vm.configs,
-                    vm: navigationVm
-                )
-                .task {
-                    navigationVm.isFlowPresented = { dismissType in
-                        onDismiss(dismissType)
-                    }
-                }
-            }
-            .modally(item: $navigationVm.changeTierInput) { item in
-                ChangeTierNavigation(input: item)
-            }
-    }
-}
-
-public class TerminateInsuranceViewModel: ObservableObject {
-    @Published var initialStep: TerminationFlowActionWrapper?
-    var configs: [TerminationConfirmConfig] = []
-    @PresentableStore var store: TerminationContractStore
-    private var firstStepCancellable: AnyCancellable?
-    public init() {}
-
-    public func start(with configs: [TerminationConfirmConfig]) {
-        self.configs = configs
-        if configs.count > 1 {
-            store.send(.sethaveSelectInsuranceStep(to: true))
-            self.initialStep = .init(action: .router(action: .selectInsurance(configs: configs)))
-        } else if let config = configs.first {
-            let store: TerminationContractStore = globalPresentableStoreContainer.get()
-            store.send(.sethaveSelectInsuranceStep(to: false))
-            firstStepCancellable = store.actionSignal
-                .receive(on: RunLoop.main)
-                .sink { _ in
-                } receiveValue: { [weak self] action in
-                    switch action {
-                    case let .navigationAction(navigationAction):
-                        switch navigationAction {
-                        case .openTerminationSuccessScreen:
-                            self?.initialStep = .init(action: .final(action: .success))
-                        case .openTerminationFailScreen:
-                            self?.initialStep = .init(action: .final(action: .fail))
-                        case .openTerminationUpdateAppScreen:
-                            self?.initialStep = .init(action: .final(action: .updateApp))
-                        case let .openTerminationSurveyStep(options, type):
-                            self?.initialStep = .init(
-                                action: .router(action: .surveyStep(options: options, subtitleType: type))
-                            )
-                        case let .openSetTerminationDateLandingScreen(config):
-                            self?.initialStep = .init(action: .router(action: .terminationDate(config: config)))
-                        }
-                        self?.firstStepCancellable = nil
-                    default:
-                        break
-                    }
-                }
-            store.send(.startTermination(config: config))
-        }
-    }
-}
-
 struct TerminationFlowActionWrapper: Identifiable, Equatable {
     var id = UUID().uuidString
     let action: TerminationFlowActions
 }
 
-enum TerminationFlowActions: Hashable {
+//extension TerminationFlowActionWrapper: TrackingViewNameProtocol {
+//    var nameForTracking: String {
+//        //TODO: fix later
+//        return ""
+//    }
+//}
+
+public enum TerminationFlowActions: Hashable {
     case router(action: TerminationFlowRouterActions)
     case final(action: TerminationFlowFinalRouterActions)
 }
@@ -526,7 +509,7 @@ enum TerminationFlowDetentActions: Hashable, TrackingViewNameProtocol {
 }
 
 extension TerminationFlowActions: TrackingViewNameProtocol {
-    var nameForTracking: String {
+    public var nameForTracking: String {
         switch self {
         case .router(let action):
             return action.nameForTracking
@@ -536,14 +519,14 @@ extension TerminationFlowActions: TrackingViewNameProtocol {
     }
 }
 
-enum TerminationFlowRouterActions: Hashable {
+public enum TerminationFlowRouterActions: Hashable {
     case selectInsurance(configs: [TerminationConfirmConfig])
-    case terminationDate(config: TerminationConfirmConfig)
-    case surveyStep(options: [TerminationFlowSurveyStepModelOption], subtitleType: SurveyScreenSubtitleType)
+    case terminationDate(config: TerminationConfirmConfig, model: TerminationFlowDateNextStepModel?)
+    case surveyStep(model: TerminationFlowSurveyStepModel?)
 }
 
 extension TerminationFlowRouterActions: TrackingViewNameProtocol {
-    var nameForTracking: String {
+    public var nameForTracking: String {
         switch self {
         case .selectInsurance:
             return "Select Insurance"
@@ -555,14 +538,14 @@ extension TerminationFlowRouterActions: TrackingViewNameProtocol {
     }
 }
 
-enum TerminationFlowFinalRouterActions: Hashable {
-    case success
-    case fail
+public enum TerminationFlowFinalRouterActions: Hashable {
+    case success(model: TerminationFlowSuccessNextModel?)
+    case fail(model: TerminationFlowFailedNextModel?)
     case updateApp
 }
 
 extension TerminationFlowFinalRouterActions: TrackingViewNameProtocol {
-    var nameForTracking: String {
+    public var nameForTracking: String {
         switch self {
         case .success:
             return "TerminationSuccessScreen"

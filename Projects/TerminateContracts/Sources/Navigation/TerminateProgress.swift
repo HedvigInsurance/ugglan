@@ -51,8 +51,9 @@ extension View {
         let store: TerminationContractStore = globalPresentableStoreContainer.get()
         let previousProgress = store.state.previousProgress ?? 0
         return self.onDeinit {
-            let store: TerminationContractStore = globalPresentableStoreContainer.get()
-            store.send(.setProgress(progress: previousProgress))
+            /** TODO; FIX**/
+            //            let store: TerminationContractStore = globalPresentableStoreContainer.get()
+            //            store.send(.setProgress(progress: previousProgress))
         }
     }
 }

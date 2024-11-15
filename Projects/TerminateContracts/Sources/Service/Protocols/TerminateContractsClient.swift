@@ -1,10 +1,15 @@
+import Foundation
+
 public protocol TerminateContractsClient {
     func startTermination(contractId: String) async throws -> TerminateStepResponse
     func sendTerminationDate(
         inputDateToString: String,
         terminationContext: String
     ) async throws -> TerminateStepResponse
-    func sendConfirmDelete(terminationContext: String) async throws -> TerminateStepResponse
+    func sendConfirmDelete(
+        terminationContext: String,
+        model: TerminationFlowDeletionNextModel?
+    ) async throws -> TerminateStepResponse
     func sendSurvey(
         terminationContext: String,
         option: String,
@@ -12,8 +17,17 @@ public protocol TerminateContractsClient {
     ) async throws -> TerminateStepResponse
 }
 
-public struct TerminateStepResponse {
+public struct TerminateStepResponse: Equatable {
     let context: String
-    let action: TerminationContractAction
+    let step: TerminationContractStep
     let progress: Float?
+}
+
+public enum TerminationContractStep: Equatable {
+    case setTerminationDateStep(model: TerminationFlowDateNextStepModel)
+    case setTerminationDeletion(model: TerminationFlowDeletionNextModel)
+    case setSuccessStep(model: TerminationFlowSuccessNextModel)
+    case setFailedStep(model: TerminationFlowFailedNextModel)
+    case setTerminationSurveyStep(model: TerminationFlowSurveyStepModel)
+    case openTerminationUpdateAppScreen
 }

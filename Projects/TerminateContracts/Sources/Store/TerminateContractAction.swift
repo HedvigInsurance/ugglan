@@ -13,13 +13,13 @@ public enum TerminationContractAction: ActionProtocol, Hashable {
     case stepModelAction(action: TerminationStepModelAction)
     case navigationAction(action: TerminationNavigationAction)
     case submitSurvey(option: String, feedback: String?)
-    case startTermination(config: TerminationConfirmConfig)
-    case setTerminationDate(terminationDate: Date)
+    //    case startTermination(config: TerminationConfirmConfig)
+    //    case setTerminationDate(terminationDate: Date)
     case sendTerminationDate
     case sendConfirmDelete
-    case setTerminationContext(context: String)
-    case setProgress(progress: Float?)
-    case sethaveSelectInsuranceStep(to: Bool)
+    //    case setTerminationContext(context: String)
+    //    case setProgress(progress: Float?)
+    //    case sethaveSelectInsuranceStep(to: Bool)
 }
 
 public enum TerminationNavigationAction: ActionProtocol, Hashable {

@@ -1,5 +1,4 @@
 import Combine
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -9,7 +8,6 @@ struct TerminationSurveyScreen: View {
     @Namespace var animationNamespace
     @EnvironmentObject var terminationFlowNavigationViewModel: TerminationFlowNavigationViewModel
 
-    @PresentableStore var store: TerminationContractStore
     var body: some View {
         hForm {
             hSection {
@@ -72,7 +70,7 @@ struct TerminationSurveyScreen: View {
         .hFormAttachToBottom {
             hSection {
                 hButton.LargeButton(type: .primary) { [weak vm] in
-                    vm?.continueClicked()
+                    continueClicked()
                 } content: {
                     hText(L10n.generalContinueButton)
                 }
@@ -80,7 +78,6 @@ struct TerminationSurveyScreen: View {
             }
             .sectionContainerStyle(.transparent)
         }
-        .trackLoading(TerminationContractStore.self, action: .sendSurvey)
     }
 
     @ViewBuilder
@@ -96,7 +93,7 @@ struct TerminationSurveyScreen: View {
                         }
                     )
                 ])
-                .hButtonIsLoading(terminationFlowNavigationViewModel.loadingActions[action.action] == .loading)
+                .hButtonIsLoading(vm.viewState == .loading)
         case .redirect(let redirect):
             InfoCard(text: redirect.description, type: .campaign)
                 .buttons([
@@ -112,6 +109,46 @@ struct TerminationSurveyScreen: View {
                 .hButtonIsLoading(false)
         }
     }
+
+    func continueClicked() {
+        if let subOptions = vm.selectedOption?.subOptions, !subOptions.isEmpty {
+            let currentProgress = terminationFlowNavigationViewModel.progress ?? 0
+            Task { @MainActor in
+                terminationFlowNavigationViewModel.previousProgress = terminationFlowNavigationViewModel.progress
+
+                let progress = (currentProgress + 0.2)
+                terminationFlowNavigationViewModel.progress =
+                    (progress / 1) * (terminationFlowNavigationViewModel.hasSelectInsuranceStep ? 0.75 : 1)
+                    + (terminationFlowNavigationViewModel.hasSelectInsuranceStep ? 0.25 : 0)
+
+                terminationFlowNavigationViewModel.terminationSurveyStepModel?.options = subOptions
+                terminationFlowNavigationViewModel.terminationSurveyStepModel?.subTitleType = .generic
+
+                terminationFlowNavigationViewModel.router.push(
+                    TerminationFlowRouterActions.surveyStep(
+                        model: terminationFlowNavigationViewModel.terminationSurveyStepModel
+                    )
+                )
+                //                await store.sendAsync(
+                //                    .navigationAction(action: .openTerminationSurveyStep(options: subOptions, subtitleType: .generic))
+                //                )
+            }
+        } else if let selectedOption = vm.selectedOption {
+            /* TODO: IMPLEMENT */
+            Task {
+                let step = await vm.submitSurvey(
+                    context: terminationFlowNavigationViewModel.currentContext ?? "",
+                    option: selectedOption.id,
+                    inputData: vm.selectedFeedBackViewModel?.text
+                )
+
+                if let step {
+                    terminationFlowNavigationViewModel.navigate(data: step)
+                }
+            }
+            //            store.send(.submitSurvey(option: selectedOption.id, feedback: selectedFeedBackViewModel?.text))
+        }
+    }
 }
 
 class SurveyScreenViewModel: ObservableObject {
@@ -119,24 +156,38 @@ class SurveyScreenViewModel: ObservableObject {
     let subtitleType: SurveyScreenSubtitleType
     var allFeedBackViewModels = [String: TerminationFlowSurveyStepFeedBackViewModel]()
 
-    @PresentableStore var store: TerminationContractStore
-
     @Published var text: String = "test"
     @Published var continueEnabled = true
-    @Published var selected: String?
-    @Published var selectedOption: TerminationFlowSurveyStepModelOption?
-    @Published var selectedFeedBackViewModel: TerminationFlowSurveyStepFeedBackViewModel?
 
-    private var selectedFeedBackViewModelCancellable: AnyCancellable?
-    private var selectedOptionCancellable: AnyCancellable?
+    @Published var selected: String? {
+        didSet {
+            handleSelection(of: selected)
+        }
+    }
+
+    @Published var selectedOption: TerminationFlowSurveyStepModelOption?
+    @Published var selectedFeedBackViewModel: TerminationFlowSurveyStepFeedBackViewModel? {
+        didSet {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.checkContinueButtonStatus()
+            }
+        }
+    }
+
+    @Published var viewState: ProcessingState = .success
+    @Inject private var service: TerminateContractsClient
+
+    //    private var selectedFeedBackViewModelCancellable: AnyCancellable?
+    //    private var selectedOptionCancellable: AnyCancellable?
+
     init(options: [TerminationFlowSurveyStepModelOption], subtitleType: SurveyScreenSubtitleType) {
         self.options = options
         self.subtitleType = subtitleType
-        selectedOptionCancellable =
-            $selected
-            .sink(receiveValue: { [weak self] value in
-                self?.handleSelection(of: value)
-            })
+        //        selectedOptionCancellable =
+        //            $selected
+        //            .sink(receiveValue: { [weak self] value in
+        //                self?.handleSelection(of: value)
+        //            })
     }
 
     private func handleSelection(of option: String?) {
@@ -154,17 +205,41 @@ class SurveyScreenViewModel: ObservableObject {
             }
             return nil
         }()
-        selectedFeedBackViewModelCancellable = selectedFeedBackViewModel?.$text
-            .sink(receiveValue: { [weak self] value in
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    self?.checkContinueButtonStatus()
-                }
-            })
+        //        selectedFeedBackViewModelCancellable = selectedFeedBackViewModel?.$text
+        //            .sink(receiveValue: { [weak self] value in
+        //                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        //                    self?.checkContinueButtonStatus()
+        //                }
+        //            })
         withAnimation {
             self.selectedOption = selectedOption
             self.selectedFeedBackViewModel = selectedFeedBackViewModel
         }
         checkContinueButtonStatus()
+    }
+
+    @MainActor
+    public func submitSurvey(context: String, option: String, inputData: String?) async -> TerminateStepResponse? {
+        withAnimation {
+            viewState = .loading
+        }
+        //        Task { @MainActor in
+        do {
+            let data = try await service.sendSurvey(terminationContext: context, option: option, inputData: inputData)
+            withAnimation {
+                viewState = .success
+            }
+            return data
+        } catch let error {
+            withAnimation {
+                self.viewState = .error(
+                    errorMessage: error.localizedDescription
+                )
+            }
+            //            }
+            //            return
+        }
+        return nil
     }
 
     func checkContinueButtonStatus() {
@@ -181,20 +256,6 @@ class SurveyScreenViewModel: ObservableObject {
             continueEnabled = false
         } else {
             continueEnabled = status
-        }
-    }
-
-    func continueClicked() {
-        if let subOptions = selectedOption?.subOptions, !subOptions.isEmpty {
-            let currentProgress = store.state.progress ?? 0
-            Task { @MainActor in
-                await store.sendAsync(.setProgress(progress: currentProgress + 0.2))
-                await store.sendAsync(
-                    .navigationAction(action: .openTerminationSurveyStep(options: subOptions, subtitleType: .generic))
-                )
-            }
-        } else if let selectedOption {
-            store.send(.submitSurvey(option: selectedOption.id, feedback: selectedFeedBackViewModel?.text))
         }
     }
 }

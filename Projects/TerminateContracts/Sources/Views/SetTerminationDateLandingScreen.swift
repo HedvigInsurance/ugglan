@@ -1,14 +1,20 @@
 import Combine
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct SetTerminationDateLandingScreen: View {
-    @PresentableStore var store: TerminationContractStore
     @StateObject var vm = SetTerminationDateLandingScreenViewModel()
     let onSelected: () -> Void
     @EnvironmentObject var terminationNavigationVm: TerminationFlowNavigationViewModel
+
+    init(
+        onSelected: @escaping () -> Void
+    ) {
+        self.onSelected = onSelected
+        vm.terminationDeleteStep = terminationNavigationVm.terminationDeleteStepModel
+        vm.terminationDateStep = terminationNavigationVm.terminationDateStepModel
+    }
 
     var body: some View {
         if vm.isDeletion == nil {
@@ -61,7 +67,7 @@ struct SetTerminationDateLandingScreen: View {
 
     @ViewBuilder
     private var displayInsuranceField: some View {
-        if let config = store.state.config {
+        if let config = terminationNavigationVm.config {
             hSection {
                 hRow {
                     VStack(alignment: .leading, spacing: 0) {
@@ -208,18 +214,23 @@ class SetTerminationDateLandingScreenViewModel: ObservableObject {
     @Published var titleText: String = ""
     @Published var terminationDate: Date?
     private var cancellables = Set<AnyCancellable>()
-    init() {
-        let terminationStore: TerminationContractStore = globalPresentableStoreContainer.get()
-        terminationStore.stateSignal
-            .map({ $0.terminationDateStep?.date })
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .sink { _ in
 
-            } receiveValue: { [weak self] date in
-                self?.terminationDate = date
-            }
-            .store(in: &cancellables)
+    var terminationDeleteStep: TerminationFlowDeletionNextModel?
+    var terminationDateStep: TerminationFlowDateNextStepModel?
+
+    init() {
+        /* TODO: IMPLEMENT*/
+        //        let terminationStore: TerminationContractStore = globalPresentableStoreContainer.get()
+        //        terminationStore.stateSignal
+        //            .map({ $0.terminationDateStep?.date })
+        //            .removeDuplicates()
+        //            .receive(on: RunLoop.main)
+        //            .sink { _ in
+        //
+        //            } receiveValue: { [weak self] date in
+        //                self?.terminationDate = date
+        //            }
+        //            .store(in: &cancellables)
 
         Publishers.CombineLatest3($terminationDate, $isDeletion, $hasAgreedToTerms)
             .receive(on: RunLoop.main)
@@ -235,10 +246,10 @@ class SetTerminationDateLandingScreenViewModel: ObservableObject {
 
         isDeletion = {
 
-            if terminationStore.state.terminationDeleteStep != nil {
+            if terminationDeleteStep != nil {
                 return true
             }
-            if terminationStore.state.terminationDateStep != nil {
+            if terminationDateStep != nil {
                 return false
             }
             return nil

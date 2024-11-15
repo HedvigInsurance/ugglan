@@ -18,6 +18,7 @@ public class HelpCenterNavigationViewModel: ObservableObject {
         existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
     )
     let terminateInsuranceVm = TerminateInsuranceViewModel()
+    @Published var terminateInsuranceNavigationVm = TerminationFlowNavigationViewModel(initialStep: nil)
 
     struct QuickActions {
         var editContractActions: EditInsuranceActionsWrapper?
@@ -149,7 +150,10 @@ public struct HelpCenterNavigation<Content: View>: View {
             }
         )
         .handleConnectPayment(with: helpCenterVm.connectPaymentsVm)
-        .handleTerminateInsurance(vm: helpCenterVm.terminateInsuranceVm) { dismissType in
+        .handleTerminateInsurance(
+            vm: helpCenterVm.terminateInsuranceVm,
+            navigationVm: helpCenterVm.terminateInsuranceNavigationVm
+        ) { dismissType in
             switch dismissType {
             case .done:
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
