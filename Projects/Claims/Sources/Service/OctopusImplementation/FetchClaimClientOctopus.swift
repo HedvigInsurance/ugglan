@@ -2,6 +2,7 @@ import Foundation
 import hCore
 import hGraphQL
 
+@MainActor
 public class hFetchClaimService {
     @Inject var client: hFetchClaimClient
 

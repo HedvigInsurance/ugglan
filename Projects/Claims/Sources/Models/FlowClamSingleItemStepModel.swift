@@ -54,7 +54,7 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
 
     init(
         with data: OctopusGraphQL.FlowClaimSingleItemStepFragment
-    ) {
+    ) async {
         self.id = data.id
         self.availableItemBrandOptions =
             data.availableItemBrands?.map({ ClaimFlowItemBrandOptionModel.init(with: $0) }) ?? []
@@ -72,7 +72,7 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
         self.purchasePriceApplicable = data.purchasePriceApplicable
 
         if self.selectedItemModel == nil && self.customName == nil {
-            let currentDeviceName = UIDevice.modelName.lowercased()
+            let currentDeviceName = await UIDevice.modelName.lowercased()
             if let matchingModelWithCurrentDevice = self.availableItemModelOptions.first(where: {
                 let name = $0.displayName.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
                 return name == currentDeviceName
@@ -183,7 +183,7 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
     }
 }
 
-public struct ClaimFlowItemBrandOptionModel: Codable, Equatable, Hashable {
+public struct ClaimFlowItemBrandOptionModel: Codable, Equatable, Hashable, Sendable {
     let displayName: String
     let itemBrandId: String
     let itemTypeId: String
@@ -207,7 +207,7 @@ public struct ClaimFlowItemBrandOptionModel: Codable, Equatable, Hashable {
     }
 }
 
-public struct ClaimFlowItemModelOptionModel: Codable, Equatable, Hashable {
+public struct ClaimFlowItemModelOptionModel: Codable, Equatable, Hashable, Sendable {
     let displayName: String
     let itemBrandId: String
     let itemTypeId: String
@@ -235,7 +235,7 @@ public struct ClaimFlowItemModelOptionModel: Codable, Equatable, Hashable {
     }
 }
 
-public struct ClaimFlowItemProblemOptionModel: Codable, Equatable, Hashable {
+public struct ClaimFlowItemProblemOptionModel: Codable, Equatable, Hashable, Sendable {
     let displayName: String
     let itemProblemId: String
 
@@ -255,7 +255,7 @@ public struct ClaimFlowItemProblemOptionModel: Codable, Equatable, Hashable {
     }
 }
 
-public enum SelectedModel: Codable, Equatable, Hashable {
+public enum SelectedModel: Codable, Equatable, Hashable, Sendable {
     case model(ClaimFlowItemModelOptionModel)
     case custom(brand: ClaimFlowItemBrandOptionModel, name: String)
 }

@@ -232,7 +232,10 @@ extension GraphQLMutation {
                     return nil
                 }
             }()
-            let action = data[keyPath: keyPath].into()
+            let results = Task {
+                await data[keyPath: keyPath].into()
+            }
+            let action = await results.value
             return .init(claimId: claimId, context: context, progress: progress, action: action)
         } catch _ {
             throw SubmitClaimError.error(message: L10n.General.errorBody)
@@ -252,30 +255,30 @@ extension SubmitClaimError: LocalizedError {
     }
 }
 
-private protocol Into {
+private protocol Into<To> where To: Sendable {
     associatedtype To
-    func into() -> To
+    func into() async -> To
 }
 
 extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
-    fileprivate func into() -> SubmitClaimsAction {
+    fileprivate func into() async -> SubmitClaimsAction {
         if let step = self.asFlowClaimPhoneNumberStep?.fragments.flowClaimPhoneNumberStepFragment {
             return .stepModelAction(action: .setPhoneNumber(model: .init(with: step)))
         } else if let step = self.asFlowClaimAudioRecordingStep?.fragments.flowClaimAudioRecordingStepFragment {
             return .stepModelAction(action: .setAudioStep(model: .init(with: step)))
         } else if let step = self.asFlowClaimSingleItemStep?.fragments.flowClaimSingleItemStepFragment {
-            return .stepModelAction(action: .setSingleItem(model: .init(with: step)))
+            return await .stepModelAction(action: .setSingleItem(model: .init(with: step)))
         } else if let step = self.asFlowClaimSingleItemCheckoutStep?.fragments.flowClaimSingleItemCheckoutStepFragment {
-            return .stepModelAction(action: .setSingleItemCheckoutStep(model: .init(with: step)))
+            return await .stepModelAction(action: .setSingleItemCheckoutStep(model: .init(with: step)))
         } else if let step = self.asFlowClaimLocationStep?.fragments.flowClaimLocationStepFragment {
             return .stepModelAction(action: .setLocation(model: .init(with: step)))
         } else if let step = self.asFlowClaimDateOfOccurrenceStep?.fragments.flowClaimDateOfOccurrenceStepFragment {
             return .stepModelAction(action: .setDateOfOccurence(model: .init(with: step)))
         } else if let step = self.asFlowClaimSummaryStep?.fragments.flowClaimSummaryStepFragment {
             let summaryStep = FlowClaimSummaryStepModel(with: step)
-            let singleItemStepModel: FlowClamSingleItemStepModel? = {
+            let singleItemStepModel: FlowClamSingleItemStepModel? = await {
                 if let singleItemStep = step.singleItemStep?.fragments.flowClaimSingleItemStepFragment {
-                    return .init(with: singleItemStep)
+                    return await .init(with: singleItemStep)
                 }
                 return nil
             }()

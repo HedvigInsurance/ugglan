@@ -2,7 +2,7 @@ import Foundation
 import hCore
 import hGraphQL
 
-public enum FlowClaimDeflectStepType: Decodable, Encodable {
+public enum FlowClaimDeflectStepType: Decodable, Encodable, Sendable {
     case FlowClaimDeflectGlassDamageStep
     case FlowClaimDeflectPestsStep
     case FlowClaimDeflectEmergencyStep
@@ -183,7 +183,7 @@ public struct FlowClaimDeflectStepModel: FlowClaimStepModel {
     }
 }
 
-public struct Partner: Codable, Equatable, Hashable {
+public struct Partner: Codable, Equatable, Hashable, Sendable {
     let id: String
     let imageUrl: String?
     let url: String?

@@ -65,6 +65,7 @@ struct FilesGridView: View {
     }
 }
 
+@MainActor
 class FileGridViewModel: ObservableObject {
     @Published var files: [File]
     @Published private(set) var options: ClaimFilesViewModel.ClaimFilesViewOptions

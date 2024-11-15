@@ -1,3 +1,4 @@
+@MainActor
 public protocol SubmitClaimClient {
     func startClaim(entrypointId: String?, entrypointOptionId: String?) async throws -> SubmitClaimStepResponse
     func updateContact(phoneNumber: String, context: String) async throws -> SubmitClaimStepResponse
@@ -15,7 +16,7 @@ public protocol SubmitClaimClient {
     func submitFileUpload(ids: [String], context: String) async throws -> SubmitClaimStepResponse
 }
 
-public struct SubmitClaimStepResponse {
+public struct SubmitClaimStepResponse: Sendable {
     let claimId: String
     let context: String
     let progress: Float?

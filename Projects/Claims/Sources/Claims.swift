@@ -6,6 +6,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
+@MainActor
 public struct Claims {
     @StateObject var vm = ClaimsViewModel()
 

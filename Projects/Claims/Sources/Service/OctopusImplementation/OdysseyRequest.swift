@@ -3,7 +3,7 @@ import Foundation
 import hCore
 import hGraphQL
 
-enum OdysseyRequest {
+enum OdysseyRequest: Sendable {
     case uploadAudioFile(flowId: String, file: UploadFile)
 
     var baseUrl: URL {

@@ -1,6 +1,6 @@
 import Foundation
 
-public struct UploadFile {
+public struct UploadFile: Sendable {
     public let data: Data
     public let name: String
     public let mimeType: String

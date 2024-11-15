@@ -153,6 +153,7 @@ struct SubmitClaimFilesUploadScreen: View {
     }
 }
 
+@MainActor
 public class FilesUploadViewModel: ObservableObject {
     @Published var hasFiles: Bool = false
     @Published var isLoading: Bool = false

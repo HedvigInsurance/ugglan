@@ -4,7 +4,7 @@ import SwiftUI
 import hCore
 import hGraphQL
 
-public indirect enum ClaimsAction: ActionProtocol, Hashable {
+public indirect enum ClaimsAction: ActionProtocol, Hashable, Sendable {
     case submitNewClaim(from: ClaimsOrigin)
     case fetchClaims
     case setClaims(claims: [ClaimModel])

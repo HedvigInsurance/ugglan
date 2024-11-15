@@ -12,7 +12,7 @@ public class hClaimFileUploadService {
     public func upload(
         endPoint: String,
         files: [File],
-        withProgress: ((_ progress: Double) -> Void)?
+        withProgress: (@Sendable (_ progress: Double) -> Void)?
     ) async throws -> [ClaimFileUploadResponse] {
         log.info("hClaimFileUploadService: upload", error: nil, attributes: nil)
         return try await client.upload(endPoint: endPoint, files: files, withProgress: withProgress)
@@ -23,7 +23,7 @@ extension NetworkClient: hClaimFileUploadClient {
     public func upload(
         endPoint: String,
         files: [File],
-        withProgress: ((_ progress: Double) -> Void)?
+        withProgress: (@Sendable (_ progress: Double) -> Void)?
     ) async throws -> [ClaimFileUploadResponse] {
         let request = try await ClaimsRequest.uploadFile(endPoint: endPoint, files: files).asRequest()
         var observation: NSKeyValueObservation?

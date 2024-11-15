@@ -25,11 +25,11 @@ public struct FlowClaimSingleItemCheckoutStepModel: FlowClaimStepModel {
 
     init(
         with data: OctopusGraphQL.FlowClaimSingleItemCheckoutStepFragment
-    ) {
+    ) async {
         self.id = data.id
         self.compensation = .init(with: data.compensation.fragments.flowClaimSingleItemCheckoutCompensationFragment)
         if let singleItemFragment = data.singleItemStep?.fragments.flowClaimSingleItemStepFragment {
-            self.singleItemModel = .init(with: singleItemFragment)
+            self.singleItemModel = await .init(with: singleItemFragment)
         } else {
             self.singleItemModel = nil
         }
@@ -51,7 +51,7 @@ public struct FlowClaimSingleItemCheckoutStepModel: FlowClaimStepModel {
     }
 }
 
-public struct AvailableCheckoutMethod: Codable, Equatable, Hashable {
+public struct AvailableCheckoutMethod: Codable, Equatable, Hashable, Sendable {
     var id: String
     var autogiro: ClaimAutomaticAutogiroPayoutModel?
 

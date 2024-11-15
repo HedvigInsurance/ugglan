@@ -302,7 +302,7 @@ class ClaimFilesViewModel: ObservableObject {
 
     }
 }
-
+@MainActor
 struct FilePicker {
     static func showAlert(closure: @escaping (_ selected: SelectedFileInputType) -> Void) {
         let alert = UIAlertController(

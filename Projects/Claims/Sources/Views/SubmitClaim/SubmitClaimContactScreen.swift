@@ -54,6 +54,7 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
     }
 }
 
+@MainActor
 class SubmitClaimContractViewModel: ObservableObject {
     @Published var phoneNumber: String = ""
     @Published var enableContinueButton: Bool = false
@@ -69,11 +70,12 @@ class SubmitClaimContractViewModel: ObservableObject {
         phoneNumberCancellable = Publishers.CombineLatest($phoneNumber, $keyboardEnabled)
             .receive(on: RunLoop.main)
             .sink { _ in
-            } receiveValue: { (phone, keyboardVisible) in
+            } receiveValue: { [weak self] (phone, keyboardVisible) in
                 let isValidPhone = phone.isValidPhone
-                self.enableContinueButton = isValidPhone || phone.isEmpty
-                self.phoneNumberError =
-                    (self.enableContinueButton || keyboardVisible) ? nil : L10n.myInfoPhoneNumberMalformedError
+                self?.enableContinueButton = isValidPhone || phone.isEmpty
+                self?.phoneNumberError =
+                    (self?.enableContinueButton ?? false || keyboardVisible)
+                    ? nil : L10n.myInfoPhoneNumberMalformedError
             }
     }
 }

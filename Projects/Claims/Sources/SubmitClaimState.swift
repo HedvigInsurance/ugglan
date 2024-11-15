@@ -73,7 +73,7 @@ public struct SubmitClaimsState: StateProtocol {
     public init() {}
 }
 
-public enum ClaimsOrigin: Codable, Equatable, Hashable {
+public enum ClaimsOrigin: Codable, Equatable, Hashable, Sendable {
     case generic
     case commonClaims(id: String)
     case commonClaimsWithOption(id: String, optionId: String)
