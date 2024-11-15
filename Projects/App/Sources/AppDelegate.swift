@@ -116,13 +116,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func registerForPushNotifications(completed: @escaping () -> Void) {
         UNUserNotificationCenter.current()
             .getNotificationSettings { settings in
-                let store: ProfileStore = globalPresentableStoreContainer.get()
-                store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
-                guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
-                    return
-                }
-                if settings.authorizationStatus == .denied {
-                    DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
+                Task { @MainActor in
+                    let store: ProfileStore = globalPresentableStoreContainer.get()
+                    store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+                    guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+                        return
+                    }
+                    if settings.authorizationStatus == .denied {
+                        DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
+                    }
                 }
             }
 
@@ -133,8 +135,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 completionHandler: { _, _ in
                     UNUserNotificationCenter.current()
                         .getNotificationSettings { settings in
-                            let store: ProfileStore = globalPresentableStoreContainer.get()
-                            store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+                            Task { @MainActor in
+                                let store: ProfileStore = globalPresentableStoreContainer.get()
+                                store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+                            }
                         }
                     completed()
                 }

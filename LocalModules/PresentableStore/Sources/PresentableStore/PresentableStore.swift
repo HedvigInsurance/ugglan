@@ -229,7 +229,6 @@ public protocol Debugger {
 
 @MainActor
 public class PresentableStoreContainer: NSObject {
-    @MainActor
     public func get<S: Store>() -> S {
         if let store: S = associatedValue(forKey: S.getKey()) {
             return store
