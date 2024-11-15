@@ -6,7 +6,7 @@ public protocol FetchContractsClient {
     func getCrossSell() async throws -> [CrossSell]
 }
 
-public struct ContractsStack {
+public struct ContractsStack: Sendable {
     public let activeContracts: [Contract]
     public let pendingContracts: [Contract]
     public let terminatedContracts: [Contract]

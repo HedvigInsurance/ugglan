@@ -6,7 +6,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct Contract: Codable, Hashable, Equatable, Identifiable {
+public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     public init(
         id: String,
         currentAgreement: Agreement,
@@ -331,7 +331,7 @@ extension TypeOfContract {
     }
 }
 
-public struct ContractRenewal: Codable, Hashable {
+public struct ContractRenewal: Codable, Hashable, Sendable {
     public let renewalDate: String
     public let certificateUrl: String?
 
@@ -350,7 +350,7 @@ public struct ContractRenewal: Codable, Hashable {
     }
 }
 
-public struct Agreement: Codable, Hashable {
+public struct Agreement: Codable, Hashable, Sendable {
     public init(
         certificateUrl: String?,
         activeFrom: String?,
@@ -402,7 +402,7 @@ public struct Agreement: Codable, Hashable {
     }
 }
 
-public struct AgreementDisplayItem: Codable, Hashable {
+public struct AgreementDisplayItem: Codable, Hashable, Sendable {
     let displayTitle: String
     let displayValue: String
 

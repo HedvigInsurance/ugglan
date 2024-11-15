@@ -4,6 +4,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+@MainActor
 public class EditCoInsuredNavigationViewModel: ObservableObject {
     public init() {}
 

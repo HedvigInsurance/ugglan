@@ -2,9 +2,11 @@ import Combine
 import Foundation
 import hCore
 
+@MainActor
 public protocol ExistingCoInsured {
     func get(contractId: String) -> [CoInsuredModel]
 }
+
 @MainActor
 public class EditCoInsuredViewModel: ObservableObject {
     @Published public var editCoInsuredModelDetent: EditCoInsuredNavigationModel?

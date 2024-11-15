@@ -1,4 +1,4 @@
-public struct hPDFDocument: Codable, Equatable, Hashable, Identifiable {
+public struct hPDFDocument: Codable, Equatable, Hashable, Identifiable, Sendable {
     public var id: String?
     public var displayName: String
     public var url: String
@@ -23,7 +23,7 @@ public struct hPDFDocument: Codable, Equatable, Hashable, Identifiable {
     }
 }
 
-public enum TypeOfDocument: Codable, Hashable {
+public enum TypeOfDocument: Codable, Hashable, Sendable {
     case termsAndConditions
     case preSaleInfoEuStandard
     case preSaleInfo

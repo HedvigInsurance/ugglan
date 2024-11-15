@@ -3,7 +3,7 @@ import SwiftUI
 import hCore
 import hGraphQL
 
-public enum TypeOfContract: String, Codable, CaseIterable {
+public enum TypeOfContract: String, Codable, CaseIterable, Sendable {
     case seHouse = "SE_HOUSE"
     case seApartmentBrf = "SE_APARTMENT_BRF"
     case seApartmentRent = "SE_APARTMENT_RENT"

@@ -335,6 +335,7 @@ struct ContractInformationView: View {
     }
 }
 
+@MainActor
 private class ContractsInformationViewModel: ObservableObject {
     var cancellable: AnyCancellable?
 
