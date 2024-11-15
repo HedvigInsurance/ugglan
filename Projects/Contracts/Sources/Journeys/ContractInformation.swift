@@ -245,7 +245,7 @@ struct ContractInformationView: View {
             }
             .padding(.top, .padding8)
         } else if let upcomingChangedAgreement = contract.upcomingChangedAgreement,
-            let url = URL(string: upcomingChangedAgreement.certificateUrl)
+            URL(string: upcomingChangedAgreement.certificateUrl) != nil
         {
             hSection {
                 HStack {

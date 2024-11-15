@@ -141,14 +141,14 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
     public func startSeBankId(updateStatusTo: @escaping (_: ObserveStatusResponseType) -> Void) async throws {
         do {
             let authUrl = Environment.current.authUrl
-            await AuthenticationService.logAuthResourceStart(authUrl.absoluteString, authUrl)
+            AuthenticationService.logAuthResourceStart(authUrl.absoluteString, authUrl)
             let data = try await self.networkAuthRepository.startLoginAttempt(
                 loginMethod: .seBankid,
                 market: Localization.Locale.currentLocale.value.market.asOtpMarket,
                 personalNumber: nil,
                 email: nil
             )
-            await AuthenticationService.logAuthResourceStop(
+            AuthenticationService.logAuthResourceStop(
                 authUrl.absoluteString,
                 HTTPURLResponse(url: authUrl, statusCode: 200, httpVersion: nil, headerFields: [:])!
             )
@@ -160,9 +160,9 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
                     statusUrl: .init(url: data.statusUrl.url)
                 ) {
                     let key = UUID().uuidString
-                    await AuthenticationService.logAuthResourceStart(key, authUrl)
+                    AuthenticationService.logAuthResourceStart(key, authUrl)
 
-                    await AuthenticationService.logAuthResourceStop(
+                    AuthenticationService.logAuthResourceStop(
                         key,
                         HTTPURLResponse(url: authUrl, statusCode: 200, httpVersion: nil, headerFields: [:])!
                     )
@@ -277,10 +277,10 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
                 refreshToken: success.refreshToken.token,
                 refreshTokenExpiryIn: Int(success.refreshToken.expiryInSeconds)
             )
-            await ApolloClient.handleAuthTokenSuccessResult(result: accessTokenDto)
+            ApolloClient.handleAuthTokenSuccessResult(result: accessTokenDto)
         case .error(let error):
             log.error("Refreshing failed \(error.errorMessage), forcing logout")
-            await forceLogoutHook()
+            forceLogoutHook()
             throw AuthError.refreshFailed
         }
     }

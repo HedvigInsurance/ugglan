@@ -42,11 +42,10 @@ public class WebViewDelegate: NSObject, WKNavigationDelegate, WKUIDelegate {
             }
         )
     }
-
     public func webView(
         _ webView: WKWebView,
         didReceive challenge: URLAuthenticationChallenge,
-        completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
+        completionHandler: @escaping @MainActor (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
     ) {
         self.challengeReceiveSubject.send(challenge)
 

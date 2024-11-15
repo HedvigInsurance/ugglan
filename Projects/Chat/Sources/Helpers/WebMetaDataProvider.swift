@@ -21,12 +21,12 @@ class WebMetaDataProvider {
                         if let metadata {
                             if #available(iOS 16.0, *) {
                                 if let imageProvider = metadata.imageProvider {
+                                    let title = metadata.title ?? ""
                                     _ =
                                         imageProvider
                                         .loadDataRepresentation(
                                             for: .image,
                                             completionHandler: { [weak self] data, error in
-                                                let title = metadata.title ?? ""
                                                 Task { @MainActor in
                                                     if let data, let image = UIImage(data: data) {
                                                         self?.cache[url] = WebMetaDataProviderData(

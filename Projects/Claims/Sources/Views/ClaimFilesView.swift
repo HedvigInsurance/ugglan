@@ -183,7 +183,7 @@ class ClaimFilesViewModel: ObservableObject {
         self.fileGridViewModel = .init(files: files, options: options)
         self.fileGridViewModel.onDelete = { [weak self] file in
             Task {
-                await self?.removeFile(id: file.id)
+                self?.removeFile(id: file.id)
             }
         }
     }

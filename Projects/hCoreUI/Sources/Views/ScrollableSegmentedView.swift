@@ -220,7 +220,7 @@ public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
         if let index = pageModels.firstIndex(where: { $0.id == id }) {
             currentId = id
             Task {
-                await scrollTo(
+                scrollTo(
                     offset: CGFloat(index) * viewWidth + pageSpacing * CGFloat(index),
                     withAnimation: animation
                 )

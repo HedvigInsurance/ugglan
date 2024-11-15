@@ -165,7 +165,7 @@ extension InfoCardScrollViewModel: UIScrollViewDelegate {
     }
 
     func calculateOffset(scrollView: UIScrollView) async {
-        let offset = await scrollView.contentOffset.x
+        let offset = scrollView.contentOffset.x
         var indexToScroll = Int(offset / self.cardWidth)
         let valueOver = (offset - CGFloat(indexToScroll) * self.cardWithSpacing) / self.cardWithSpacing
         if valueOver > 0.5 {
@@ -174,6 +174,6 @@ extension InfoCardScrollViewModel: UIScrollViewDelegate {
         withAnimation {
             self.activeCard = indexToScroll
         }
-        await scrollView.setContentOffset(.init(x: CGFloat(indexToScroll) * self.cardWithSpacing, y: 0), animated: true)
+        scrollView.setContentOffset(.init(x: CGFloat(indexToScroll) * self.cardWithSpacing, y: 0), animated: true)
     }
 }

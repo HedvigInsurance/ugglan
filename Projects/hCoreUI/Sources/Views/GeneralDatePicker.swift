@@ -107,21 +107,23 @@ public struct DatePickerView: View {
     }
 }
 
-#Preview {
-    @State var date = Date()
-    return VStack {
-        DatePickerView(
-            vm:
-                .init(
-                    continueAction: {},
-                    cancelAction: {},
-                    date: $date,
-                    config: .init(
-                        placeholder: "PLACEHOLDER",
-                        title: "TITLE"
+struct DatePickerView_Previews: PreviewProvider {
+    @State static var date = Date()
+    static var previews: some View {
+        return VStack {
+            DatePickerView(
+                vm:
+                    .init(
+                        continueAction: {},
+                        cancelAction: {},
+                        date: $date,
+                        config: .init(
+                            placeholder: "PLACEHOLDER",
+                            title: "TITLE"
+                        )
                     )
-                )
-        )
+            )
+        }
     }
 }
 
