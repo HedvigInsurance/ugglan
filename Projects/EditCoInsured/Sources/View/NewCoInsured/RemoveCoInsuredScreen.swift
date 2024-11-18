@@ -20,7 +20,7 @@ struct RemoveCoInsuredScreen: View {
                     hRow {
                         ContractOwnerField(
                             hasContentBelow: hasContentBelow,
-                            config: editCoInsuredNavigation.coInsuredViewModel.config
+                            config: vm.config
                         )
                     }
                     .verticalPadding(0)

@@ -8,12 +8,14 @@ struct CoInsuredProcessingScreen: View {
     var showSuccessScreen: Bool
     @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @EnvironmentObject private var editCoInsuredViewModel: EditCoInsuredViewModel
+    @ObservedObject private var intentViewModel: IntentViewModel
     @StateObject var router = Router()
 
     init(
         showSuccessScreen: Bool,
         editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     ) {
+        self.intentViewModel = editCoInsuredNavigation.intentViewModel
         self.showSuccessScreen = showSuccessScreen
         self.editCoInsuredNavigation = editCoInsuredNavigation
     }
@@ -25,7 +27,7 @@ struct CoInsuredProcessingScreen: View {
                 loadingViewText: L10n.contractAddCoinsuredProcessing,
                 successViewTitle: L10n.contractAddCoinsuredUpdatedTitle,
                 successViewBody: L10n.contractAddCoinsuredUpdatedLabel(
-                    editCoInsuredNavigation.intentViewModel.intent.activationDate.localDateToDate?
+                    intentViewModel.intent.activationDate.localDateToDate?
                         .displayDateDDMMMYYYYFormat ?? ""
                 ),
                 successViewButtonAction: nil,
@@ -37,11 +39,11 @@ struct CoInsuredProcessingScreen: View {
                         editCoInsuredViewModel?.checkForAlert()
                     }
                     EditCoInsuredViewModel.updatedCoInsuredForContractId.send(
-                        editCoInsuredNavigation.intentViewModel.contractId
+                        intentViewModel.contractId
                     )
 
                 },
-                state: $editCoInsuredNavigation.intentViewModel.viewState
+                state: $intentViewModel.viewState
             )
             .hSuccessBottomAttachedView {
                 customBottomSuccessView
@@ -69,7 +71,7 @@ struct CoInsuredProcessingScreen: View {
                 editCoInsuredNavigation.editCoInsuredConfig = nil
                 editCoInsuredViewModel.checkForAlert()
                 EditCoInsuredViewModel.updatedCoInsuredForContractId.send(
-                    editCoInsuredNavigation.intentViewModel.contractId
+                    intentViewModel.contractId
                 )
             } content: {
                 hText(L10n.generalDoneButton)

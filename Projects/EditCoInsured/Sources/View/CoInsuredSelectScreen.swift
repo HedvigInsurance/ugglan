@@ -9,7 +9,7 @@ struct CoInsuredSelectScreen: View {
     @ObservedObject var vm: InsuredPeopleNewScreenModel
     let alreadyAddedCoinsuredMembers: [CoInsuredModel]
     @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
-
+    @ObservedObject private var intentViewModel: IntentViewModel
     public init(
         contractId: String,
         editCoInsuredNavigation: EditCoInsuredNavigationViewModel
@@ -17,17 +17,17 @@ struct CoInsuredSelectScreen: View {
         self.contractId = contractId
         self.editCoInsuredNavigation = editCoInsuredNavigation
         vm = editCoInsuredNavigation.coInsuredViewModel
-        editCoInsuredNavigation.intentViewModel = editCoInsuredNavigation.intentViewModel
         alreadyAddedCoinsuredMembers = editCoInsuredNavigation.coInsuredViewModel.config.preSelectedCoInsuredList
             .filter({
                 !editCoInsuredNavigation.coInsuredViewModel.coInsuredAdded.contains($0)
             })
-        editCoInsuredNavigation.intentViewModel.errorMessageForCoinsuredList = nil
-        editCoInsuredNavigation.intentViewModel.errorMessageForInput = nil
+        intentViewModel = editCoInsuredNavigation.intentViewModel
+        intentViewModel.errorMessageForCoinsuredList = nil
+        intentViewModel.errorMessageForInput = nil
     }
 
     var body: some View {
-        if editCoInsuredNavigation.intentViewModel.showErrorViewForCoInsuredList {
+        if intentViewModel.showErrorViewForCoInsuredList {
             CoInsuredInputErrorView(
                 vm: .init(
                     coInsuredModel: CoInsuredModel(),
@@ -56,7 +56,7 @@ struct CoInsuredSelectScreen: View {
                     if let selectedCoinsured = selectedCoinsured.first {
                         if let object = selectedCoinsured.0 {
 
-                            editCoInsuredNavigation.coInsuredViewModel.addCoInsured(
+                            vm.addCoInsured(
                                 .init(
                                     firstName: object.firstName,
                                     lastName: object.lastName,
@@ -70,19 +70,19 @@ struct CoInsuredSelectScreen: View {
                             withAnimation {
                                 isLoading = true
                             }
-                            await editCoInsuredNavigation.intentViewModel.getIntent(
+                            await intentViewModel.getIntent(
                                 contractId: contractId,
                                 origin: .coinsuredSelectList,
-                                coInsured: editCoInsuredNavigation.coInsuredViewModel.completeList()
+                                coInsured: vm.completeList()
                             )
                             withAnimation {
                                 isLoading = false
                             }
-                            if !editCoInsuredNavigation.intentViewModel.showErrorViewForCoInsuredList {
+                            if !intentViewModel.showErrorViewForCoInsuredList {
                                 editCoInsuredNavigation.selectCoInsured = nil
                             } else {
                                 if let object = selectedCoinsured.0 {
-                                    editCoInsuredNavigation.coInsuredViewModel.removeCoInsured(
+                                    vm.removeCoInsured(
                                         .init(
                                             firstName: object.firstName,
                                             lastName: object.lastName,

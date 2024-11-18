@@ -8,7 +8,7 @@ struct InsuredPeopleNewScreen: View {
     @ObservedObject var vm: InsuredPeopleNewScreenModel
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @EnvironmentObject var router: Router
-
+    @ObservedObject var intentViewModel: IntentViewModel
     var body: some View {
         hForm {
             VStack(spacing: 0) {
@@ -19,7 +19,7 @@ struct InsuredPeopleNewScreen: View {
                     hRow {
                         ContractOwnerField(
                             hasContentBelow: hasContentBelow,
-                            config: editCoInsuredNavigation.coInsuredViewModel.config
+                            config: vm.config
                         )
                     }
                     .verticalPadding(0)
@@ -62,8 +62,8 @@ struct InsuredPeopleNewScreen: View {
                     hSection {
                         hButton.LargeButton(type: .primary) {
                             Task {
-                                await editCoInsuredNavigation.intentViewModel.performCoInsuredChanges(
-                                    commitId: editCoInsuredNavigation.intentViewModel.intent.id
+                                await intentViewModel.performCoInsuredChanges(
+                                    commitId: intentViewModel.intent.id
                                 )
                             }
                             editCoInsuredNavigation.showProgressScreenWithoutSuccess = true
@@ -71,7 +71,7 @@ struct InsuredPeopleNewScreen: View {
                         } content: {
                             hText(L10n.generalSaveChangesButton)
                         }
-                        .hButtonIsLoading(editCoInsuredNavigation.intentViewModel.isLoading)
+                        .hButtonIsLoading(intentViewModel.isLoading)
                         .disabled(
                             (vm.config.contractCoInsured.count + vm.coInsuredAdded.count)
                                 < nbOfMissingCoInsured
@@ -85,7 +85,7 @@ struct InsuredPeopleNewScreen: View {
                 } content: {
                     hText(L10n.generalCancelButton)
                 }
-                .disabled(editCoInsuredNavigation.intentViewModel.isLoading)
+                .disabled(intentViewModel.isLoading)
             }
         }
     }
@@ -171,6 +171,6 @@ struct InsuredPeopleScreenNew_Previews: PreviewProvider {
             fromInfoCard: false
         )
         vm.initializeCoInsured(with: config)
-        return InsuredPeopleScreen(vm: vm)
+        return InsuredPeopleScreen(vm: vm, intentViewModel: .init())
     }
 }

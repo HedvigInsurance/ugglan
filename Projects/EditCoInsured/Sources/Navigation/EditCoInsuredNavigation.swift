@@ -18,8 +18,8 @@ class EditCoInsuredNavigationViewModel: ObservableObject {
 
     @Published var isEditCoinsuredSelectPresented: InsuredPeopleConfig?
 
-    @Published var coInsuredViewModel = InsuredPeopleNewScreenModel()
-    @Published var intentViewModel = IntentViewModel()
+    let coInsuredViewModel = InsuredPeopleNewScreenModel()
+    let intentViewModel = IntentViewModel()
 }
 
 extension EditCoInsuredScreenType {
@@ -153,7 +153,8 @@ public struct EditCoInsuredNavigation: View {
     func openNewInsuredPeopleScreen() -> some View {
         openSpecificScreen = .none
         return InsuredPeopleNewScreen(
-            vm: editCoInsuredNavigationVm.coInsuredViewModel
+            vm: editCoInsuredNavigationVm.coInsuredViewModel,
+            intentViewModel: editCoInsuredNavigationVm.intentViewModel
         )
         .configureTitle(L10n.coinsuredEditTitle)
         .addDismissEditCoInsuredFlow()
@@ -161,7 +162,8 @@ public struct EditCoInsuredNavigation: View {
 
     func openInsuredPeopleScreen() -> some View {
         return InsuredPeopleScreen(
-            vm: editCoInsuredNavigationVm.coInsuredViewModel
+            vm: editCoInsuredNavigationVm.coInsuredViewModel,
+            intentViewModel: editCoInsuredNavigationVm.intentViewModel
         )
         .configureTitle(L10n.coinsuredEditTitle)
         .addDismissEditCoInsuredFlow()
