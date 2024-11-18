@@ -12,7 +12,9 @@ public struct SubmitClaimSummaryScreen: View {
     ) {
         self.claimsNavigationVm = claimsNavigationVm
         _vm = StateObject(
-            wrappedValue: SubmitClaimSummaryScreenViewModel(fileUploadStep: claimsNavigationVm.fileUploadModel)
+            wrappedValue: SubmitClaimSummaryScreenViewModel(
+                fileUploadStep: claimsNavigationVm.summaryModel?.fileUploadModel
+            )
         )
     }
 
@@ -80,13 +82,13 @@ public struct SubmitClaimSummaryScreen: View {
 
     @ViewBuilder
     private var damageType: some View {
-        let singleItemStep = claimsNavigationVm.singleItemModel
+        let singleItemStep = claimsNavigationVm.summaryModel?.singleItemStepModel
         createRow(with: L10n.claimsDamages, and: singleItemStep?.getAllChoosenDamagesAsText())
     }
 
     @ViewBuilder
     private var damageDate: some View {
-        let dateOfOccurenceStep = claimsNavigationVm.occurrencePlusLocationModel?.dateOfOccurrenceModel
+        let dateOfOccurenceStep = claimsNavigationVm.summaryModel?.dateOfOccurenceModel
         createRow(
             with: L10n.Claims.Item.Screen.Date.Of.Incident.button,
             and: dateOfOccurenceStep?.dateOfOccurence?.localDateToDate?.displayDateDDMMMYYYYFormat
@@ -95,19 +97,19 @@ public struct SubmitClaimSummaryScreen: View {
 
     @ViewBuilder
     private var place: some View {
-        let locationStep = claimsNavigationVm.occurrencePlusLocationModel?.locationModel
+        let locationStep = claimsNavigationVm.summaryModel?.locationModel
         createRow(with: L10n.Claims.Location.Screen.title, and: locationStep?.getSelectedOption()?.displayName)
     }
 
     @ViewBuilder
     private var model: some View {
-        let singleItemStep = claimsNavigationVm.singleItemModel
+        let singleItemStep = claimsNavigationVm.summaryModel?.singleItemStepModel
         createRow(with: L10n.Claims.Item.Screen.Model.button, and: singleItemStep?.getBrandOrModelName())
     }
 
     @ViewBuilder
     private var dateOfPurchase: some View {
-        let singleItemStep = claimsNavigationVm.singleItemModel
+        let singleItemStep = claimsNavigationVm.summaryModel?.singleItemStepModel
         createRow(
             with: L10n.Claims.Item.Screen.Date.Of.Purchase.button,
             and: singleItemStep?.purchaseDate?.localDateToDate?.displayDateDDMMMYYYYFormat
@@ -116,7 +118,7 @@ public struct SubmitClaimSummaryScreen: View {
 
     @ViewBuilder
     private var purchasePrice: some View {
-        let singleItemStep = claimsNavigationVm.singleItemModel
+        let singleItemStep = claimsNavigationVm.summaryModel?.singleItemStepModel
         createRow(
             with: L10n.Claims.Item.Screen.Purchase.Price.button,
             and: singleItemStep?.returnDisplayStringForSummaryPrice
@@ -125,7 +127,7 @@ public struct SubmitClaimSummaryScreen: View {
 
     @ViewBuilder
     private var uploadedFilesView: some View {
-        let audioRecordingStep = claimsNavigationVm.audioRecordingModel
+        let audioRecordingStep = claimsNavigationVm.summaryModel?.audioRecordingModel
         if audioRecordingStep?.audioContent != nil || vm.model?.fileGridViewModel.files.count ?? 0 > 0 {
             hSection {
                 VStack(spacing: 8) {
@@ -161,7 +163,7 @@ public struct SubmitClaimSummaryScreen: View {
 
     @ViewBuilder
     private var memberFreeTextSection: some View {
-        let audioStep = claimsNavigationVm.audioRecordingModel
+        let audioStep = claimsNavigationVm.summaryModel?.audioRecordingModel
         if let inputText = audioStep?.inputTextContent, audioStep?.optionalAudio == true {
             hSection {
                 hRow {
@@ -188,7 +190,9 @@ class SubmitClaimSummaryScreenViewModel: ObservableObject {
     @Inject private var service: SubmitClaimClient
     @Published var viewState: ProcessingState = .success
 
-    init(fileUploadStep: FlowClaimFileUploadStepModel?) {
+    init(
+        fileUploadStep: FlowClaimFileUploadStepModel?
+    ) {
         if let fileUploadStep {
             self.model = FilesUploadViewModel(model: fileUploadStep)
         } else {
