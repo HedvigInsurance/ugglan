@@ -3,8 +3,8 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public class EditCoInsuredNavigationViewModel: ObservableObject {
-    public init(
+class EditCoInsuredNavigationViewModel: ObservableObject {
+    init(
         config: InsuredPeopleConfig
     ) {
         coInsuredViewModel.initializeCoInsured(with: config)
@@ -239,7 +239,7 @@ public struct EditCoInsuredSelectInsuranceNavigation: View {
     let configs: [InsuredPeopleConfig]
     @StateObject var router = Router()
     @EnvironmentObject var editCoInsuredViewModel: EditCoInsuredViewModel
-    @EnvironmentObject var editCoInsuredNavigationVm: EditCoInsuredNavigationViewModel
+    @StateObject var editCoInsuredNavigationVm = EditCoInsuredNavigationViewModel(config: .init())
 
     public init(
         configs: [InsuredPeopleConfig]

@@ -3,11 +3,11 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct CoInsuredInputErrorView: View {
+struct CoInsuredInputErrorView: View {
     @ObservedObject var vm: CoInusuredInputViewModel
     @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
 
-    public init(
+    init(
         vm: CoInusuredInputViewModel,
         editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     ) {
@@ -16,7 +16,7 @@ public struct CoInsuredInputErrorView: View {
     }
 
     @ViewBuilder
-    public var body: some View {
+    var body: some View {
         var actionButtonTitle: String {
             if vm.enterManually {
                 return L10n.coinsuredEnterManuallyButton
