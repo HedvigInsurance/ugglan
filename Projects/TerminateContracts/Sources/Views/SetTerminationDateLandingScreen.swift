@@ -4,15 +4,12 @@ import hCore
 import hCoreUI
 
 struct SetTerminationDateLandingScreen: View {
-    @StateObject var vm = SetTerminationDateLandingScreenViewModel()
-    let onSelected: () -> Void
+    @State var vm = SetTerminationDateLandingScreenViewModel()
     @ObservedObject var terminationNavigationVm: TerminationFlowNavigationViewModel
 
     init(
-        onSelected: @escaping () -> Void,
         terminationNavigationVm: TerminationFlowNavigationViewModel
     ) {
-        self.onSelected = onSelected
         self.terminationNavigationVm = terminationNavigationVm
         vm.terminationDeleteStep = terminationNavigationVm.terminationDeleteStepModel
         vm.terminationDateStep = terminationNavigationVm.terminationDateStepModel
@@ -53,7 +50,7 @@ struct SetTerminationDateLandingScreen: View {
                         hSection {
                             VStack(spacing: 16) {
                                 hButton.LargeButton(type: .primary) {
-                                    onSelected()
+                                    terminationNavigationVm.isConfirmTerminationPresented = true
                                 } content: {
                                     hText(L10n.terminationButton, style: .body1)
                                 }
@@ -215,13 +212,40 @@ class SetTerminationDateLandingScreenViewModel: ObservableObject {
     @Published var isCancelButtonDisabled: Bool = true
     @Published var titleText: String = ""
     @Published var terminationDate: Date?
-    private var cancellables = Set<AnyCancellable>()
+    private var cancellables = Set<AnyCancellable>()  //remove?
 
-    var terminationDeleteStep: TerminationFlowDeletionNextModel?
-    var terminationDateStep: TerminationFlowDateNextStepModel?
+    @Published var terminationDeleteStep: TerminationFlowDeletionNextModel? {
+        didSet {
+            checkDeletion()
+        }
+    }
+    @Published var terminationDateStep: TerminationFlowDateNextStepModel? {
+        didSet {
+            checkDeletion()
+        }
+    }
 
-    init() {
-        /* TODO: IMPLEMENT*/
+    private func checkDeletion() {
+        isDeletion = {
+            if terminationDeleteStep != nil {
+                return true
+            }
+            if terminationDateStep != nil {
+                return false
+            }
+            return nil
+        }()
+
+        withAnimation {
+            self.isDeletion = isDeletion
+            self.titleText =
+                isDeletion ?? false ? L10n.terminationFlowConfirmInformation : L10n.terminationDateText
+        }
+    }
+
+    init(
+
+    ) {
         //        let terminationStore: TerminationContractStore = globalPresentableStoreContainer.get()
         //        terminationStore.stateSignal
         //            .map({ $0.terminationDateStep?.date })
@@ -245,28 +269,11 @@ class SetTerminationDateLandingScreenViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellables)
-
-        isDeletion = {
-
-            if terminationDeleteStep != nil {
-                return true
-            }
-            if terminationDateStep != nil {
-                return false
-            }
-            return nil
-        }()
-        withAnimation {
-            self.isDeletion = isDeletion
-            self.titleText =
-                isDeletion ?? false ? L10n.terminationFlowConfirmInformation : L10n.terminationDateText
-        }
     }
 }
 
 #Preview {
     SetTerminationDateLandingScreen(
-        onSelected: {},
         terminationNavigationVm: .init(initialStep: nil, context: "", progress: nil, previousProgress: nil)
     )
 }

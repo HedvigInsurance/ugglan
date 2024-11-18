@@ -6,14 +6,13 @@ import hGraphQL
 struct SetTerminationDate: View {
     @State private var terminationDate = Date()
     @State private var isHidden = false
-    @EnvironmentObject var terminationNavigationVm: TerminationFlowNavigationViewModel
-    let onSelected: (Date) -> Void
+    @ObservedObject var terminationNavigationVm: TerminationFlowNavigationViewModel
 
     init(
-        onSelected: @escaping (Date) -> Void,
-        terminationDate: () -> Date
+        terminationDate: () -> Date,
+        terminationNavigationVm: TerminationFlowNavigationViewModel
     ) {
-        self.onSelected = onSelected
+        self.terminationNavigationVm = terminationNavigationVm
         self._terminationDate = State(wrappedValue: terminationNavigationVm.terminationDateStepModel?.date ?? Date())
     }
 
@@ -23,7 +22,9 @@ struct SetTerminationDate: View {
                 DatePickerView(
                     vm: .init(
                         continueAction: {
-                            self.onSelected(terminationDate)
+                            terminationNavigationVm.terminationDateStepModel?.date = terminationDate
+                            terminationNavigationVm.isDatePickerPresented = false
+
                             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                                 self.isHidden = true
                             }
@@ -53,9 +54,7 @@ struct SetTerminationDate: View {
 
 #Preview {
     SetTerminationDate(
-        onSelected: { date in
-
-        },
-        terminationDate: { Date() }
+        terminationDate: { Date() },
+        terminationNavigationVm: .init(initialStep: nil, context: "", progress: nil, previousProgress: nil)
     )
 }

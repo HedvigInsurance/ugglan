@@ -261,7 +261,6 @@ struct TerminationFlowNavigation: View {
             style: [.height]
         ) {
             openSetTerminationDatePickerScreen()
-                .environmentObject(vm)
         }
         .detent(
             presented: $vm.isConfirmTerminationPresented,
@@ -316,9 +315,6 @@ struct TerminationFlowNavigation: View {
         fromSelectInsurance: Bool
     ) -> some View {
         SetTerminationDateLandingScreen(
-            onSelected: {
-                vm.isConfirmTerminationPresented = true
-            },
             terminationNavigationVm: vm
         )
         .resetProgressToPreviousValueOnDismiss
@@ -411,15 +407,11 @@ struct TerminationFlowNavigation: View {
 
     private func openSetTerminationDatePickerScreen() -> some View {
         SetTerminationDate(
-            onSelected: {
-                terminationDate in
-                vm.terminationDateStepModel?.date = terminationDate
-                vm.isDatePickerPresented = false
-            },
             terminationDate: {
                 let preSelectedTerminationDate = vm.terminationDateStepModel?.minDate.localDateToDate
                 return preSelectedTerminationDate ?? Date()
-            }
+            },
+            terminationNavigationVm: vm
         )
         .navigationTitle(L10n.setTerminationDateText)
         .embededInNavigation(
