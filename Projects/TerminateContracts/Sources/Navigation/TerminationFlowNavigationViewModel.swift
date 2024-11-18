@@ -10,8 +10,10 @@ public class TerminationFlowNavigationViewModel: ObservableObject {
         initialStep: TerminationFlowActions?,
         context: String,
         progress: Float?,
-        previousProgress: Float?
+        previousProgress: Float?,
+        config: TerminationConfirmConfig
     ) {
+        self.config = config
         if let initialStep {
             setInitialModel(initialStep: initialStep, context: context)
         }
@@ -63,6 +65,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject {
                     NotificationCenter.default.post(name: .openDeepLink, object: url)
                 }
             case .changeTierFoundBetterPrice, .changeTierMissingCoverageAndTerms:
+                // Config is nil
                 if let contractId = config?.contractId,
                     let redirectAction,
                     let source: ChangeTierSource = {
@@ -203,7 +206,9 @@ struct TerminationFlowNavigation: View {
             initialStep: initialStep,
             context: context,
             progress: progress,
-            previousProgress: previousProgress
+            previousProgress: previousProgress,
+            config: configs.first
+                ?? .init(contractId: "", contractDisplayName: "", contractExposureName: "", activeFrom: nil)
         )
     }
 

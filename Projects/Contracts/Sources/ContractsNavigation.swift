@@ -129,7 +129,8 @@ public class ContractsNavigationViewModel: ObservableObject {
         initialStep: nil,
         context: "",
         progress: nil,
-        previousProgress: nil
+        previousProgress: nil,
+        config: .init(contractId: "", contractDisplayName: "", contractExposureName: "", activeFrom: nil)
     )
 
     @Published public var insurableLimit: InsurableLimits?

@@ -22,7 +22,8 @@ public class HelpCenterNavigationViewModel: ObservableObject {
         initialStep: nil,
         context: "",
         progress: nil,
-        previousProgress: nil
+        previousProgress: nil,
+        config: .init(contractId: "", contractDisplayName: "", contractExposureName: "", activeFrom: nil)
     )
 
     struct QuickActions {
