@@ -14,8 +14,8 @@ public class ClaimsNavigationViewModel: ObservableObject {
 
     @Published var entrypoints: EntrypointState = .init()
     @Published var currentClaimContext: String?
-    @Published var progress: Float?
-    @Published var previousProgress: Float?
+    @Published var progress: Float? = 0
+    var previousProgress: Float?
     @Published var claimEntrypoints: [ClaimEntryPointResponseModel] = []
     @Published var occurrencePlusLocationModel: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels?
     @Published var singleItemModel: FlowClaimSingleItemStepModel?
@@ -258,7 +258,7 @@ public struct ClaimsNavigation: View {
             tracking: ClaimsDetentType.entryPoints
         ) {
             SelectClaimEntrypointGroup(vm: claimsNavigationVm.selectClaimEntrypointVm)
-                .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
+                .resetProgressOnDismiss(to: claimsNavigationVm.previousProgress, for: $claimsNavigationVm.progress)
                 .addDismissClaimsFlow()
                 .routerDestination(for: ClaimsRouterActions.self) { routerAction in
                     Group {
@@ -295,7 +295,7 @@ public struct ClaimsNavigation: View {
                         }
                     }
                     .addDismissClaimsFlow()
-                    .resetProgressToPreviousValueOnDismiss(vm: claimsNavigationVm)
+                    .resetProgressOnDismiss(to: claimsNavigationVm.previousProgress, for: $claimsNavigationVm.progress)
                 }
                 .routerDestination(
                     for: ClaimsRouterActionsWithoutBackButton.self,
@@ -317,7 +317,7 @@ public struct ClaimsNavigation: View {
                     }
                 }
         }
-        .modifier(SubmitClaimProgressBarView())
+        .modifier(ProgressBarView(progress: $claimsNavigationVm.progress))
         .environmentObject(claimsNavigationVm)
         .detent(
             presented: $claimsNavigationVm.isLocationPickerPresented,
@@ -512,16 +512,6 @@ extension View {
             confirmButton: L10n.General.yes,
             cancelButton: L10n.General.no
         )
-    }
-
-    func resetProgressToPreviousValueOnDismiss(vm: ClaimsNavigationViewModel) -> some View {
-        let previousProgress = vm.previousProgress
-        return self.onDeinit {
-            Task {
-                vm.previousProgress = vm.progress
-                vm.progress = previousProgress
-            }
-        }
     }
 }
 
