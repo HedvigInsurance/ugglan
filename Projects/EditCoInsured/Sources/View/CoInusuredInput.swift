@@ -11,7 +11,7 @@ struct CoInusuredInputScreen: View {
     let title: String
     @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @EnvironmentObject private var router: Router
-
+    @ObservedObject var intentViewModel: IntentViewModel
     public init(
         vm: CoInusuredInputViewModel,
         title: String,
@@ -23,8 +23,9 @@ struct CoInusuredInputScreen: View {
         self.title = title
 
         vm.SSNError = nil
-        editCoInsuredNavigation.intentViewModel.errorMessageForInput = nil
-        editCoInsuredNavigation.intentViewModel.errorMessageForCoinsuredList = nil
+        intentViewModel = editCoInsuredNavigation.intentViewModel
+        intentViewModel.errorMessageForInput = nil
+        intentViewModel.errorMessageForCoinsuredList = nil
 
         if vm.SSN != "" {
             vm.noSSN = false
@@ -46,8 +47,8 @@ struct CoInusuredInputScreen: View {
     }
 
     var body: some View {
-        if (vm.SSNError ?? editCoInsuredNavigation.intentViewModel.errorMessageForInput
-            ?? editCoInsuredNavigation.intentViewModel.errorMessageForCoinsuredList) != nil
+        if (vm.SSNError ?? intentViewModel.errorMessageForInput
+            ?? intentViewModel.errorMessageForCoinsuredList) != nil
         {
             CoInsuredInputErrorView(vm: vm, editCoInsuredNavigation: editCoInsuredNavigation)
         } else {
@@ -103,14 +104,14 @@ struct CoInusuredInputScreen: View {
                                             )
                                         }
                                     }()
-                                    await editCoInsuredNavigation.intentViewModel.getIntent(
+                                    await intentViewModel.getIntent(
                                         contractId: vm.contractId,
                                         origin: .coinsuredInput,
                                         coInsured: insuredPeopleVm.listForGettingIntentFor(
                                             removedCoInsured: coInsuredToDelete
                                         )
                                     )
-                                    if !editCoInsuredNavigation.intentViewModel.showErrorViewForCoInsuredInput {
+                                    if !intentViewModel.showErrorViewForCoInsuredInput {
                                         editCoInsuredNavigation.coInsuredViewModel.removeCoInsured(coInsuredToDelete)
                                         router.push(CoInsuredAction.delete)
                                     } else {
@@ -140,7 +141,7 @@ struct CoInusuredInputScreen: View {
                                 hText(L10n.removeConfirmationButton)
                                     .transition(.opacity.animation(.easeOut))
                             }
-                            .hButtonIsLoading(vm.isLoading || editCoInsuredNavigation.intentViewModel.isLoading)
+                            .hButtonIsLoading(vm.isLoading || intentViewModel.isLoading)
                         } else {
                             hButton.LargeButton(type: .primary) {
                                 if !(buttonIsDisabled || vm.nameFetchedFromSSN || vm.noSSN) {
@@ -149,7 +150,7 @@ struct CoInusuredInputScreen: View {
                                     }
                                 } else if vm.nameFetchedFromSSN || vm.noSSN {
                                     Task {
-                                        if !editCoInsuredNavigation.intentViewModel.showErrorViewForCoInsuredInput {
+                                        if !intentViewModel.showErrorViewForCoInsuredInput {
                                             if vm.actionType == .edit {
                                                 if vm.noSSN {
                                                     editCoInsuredNavigation.coInsuredViewModel.editCoInsured(
@@ -170,7 +171,7 @@ struct CoInusuredInputScreen: View {
                                                         )
                                                     )
                                                 }
-                                                await editCoInsuredNavigation.intentViewModel.getIntent(
+                                                await intentViewModel.getIntent(
                                                     contractId: vm.contractId,
                                                     origin: .coinsuredInput,
                                                     coInsured: insuredPeopleVm.completeList()
@@ -194,7 +195,7 @@ struct CoInusuredInputScreen: View {
                                                     }
                                                 }()
 
-                                                await editCoInsuredNavigation.intentViewModel.getIntent(
+                                                await intentViewModel.getIntent(
                                                     contractId: vm.contractId,
                                                     origin: .coinsuredInput,
                                                     coInsured: insuredPeopleVm.listForGettingIntentFor(
@@ -208,7 +209,7 @@ struct CoInusuredInputScreen: View {
                                                 }
                                             }
 
-                                            if !editCoInsuredNavigation.intentViewModel.showErrorViewForCoInsuredInput {
+                                            if !intentViewModel.showErrorViewForCoInsuredInput {
                                                 router.push(CoInsuredAction.add)
                                             } else {
                                                 if vm.noSSN {
@@ -240,7 +241,7 @@ struct CoInusuredInputScreen: View {
                                 hText(buttonDisplayText)
                                     .transition(.opacity.animation(.easeOut))
                             }
-                            .hButtonIsLoading(vm.isLoading || editCoInsuredNavigation.intentViewModel.isLoading)
+                            .hButtonIsLoading(vm.isLoading || intentViewModel.isLoading)
                         }
                     }
                 }
@@ -255,7 +256,7 @@ struct CoInusuredInputScreen: View {
                     }
                     .padding(.top, .padding4)
                     .padding(.bottom, .padding16)
-                    .disabled(vm.isLoading || editCoInsuredNavigation.intentViewModel.isLoading)
+                    .disabled(vm.isLoading || intentViewModel.isLoading)
                 }
                 .sectionContainerStyle(.transparent)
             }
@@ -286,7 +287,7 @@ struct CoInusuredInputScreen: View {
             toggleField
         }
         .hFieldSize(.small)
-        .disabled(vm.isLoading || editCoInsuredNavigation.intentViewModel.isLoading)
+        .disabled(vm.isLoading || intentViewModel.isLoading)
     }
 
     @ViewBuilder

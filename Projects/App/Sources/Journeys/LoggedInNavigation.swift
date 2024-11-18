@@ -56,8 +56,7 @@ struct LoggedInNavigation: View {
                 useOwnNavigation: true
             )
             .handleEditCoInsured(
-                with: vm.travelCertificateNavigationVm.editCoInsuredVm,
-                navigationVm: vm.editCoInsuredNavigationVm
+                with: vm.travelCertificateNavigationVm.editCoInsuredVm
             )
         }
         .modally(
@@ -153,7 +152,7 @@ struct LoggedInNavigation: View {
                 }
             }
         }
-        .handleEditCoInsured(with: vm.contractsNavigationVm.editCoInsuredVm, navigationVm: vm.editCoInsuredNavigationVm)
+        .handleEditCoInsured(with: vm.contractsNavigationVm.editCoInsuredVm)
         .tabItem {
             Image(
                 uiImage: vm.selectedTab == 1
@@ -210,8 +209,7 @@ struct LoggedInNavigation: View {
                     useOwnNavigation: false
                 )
                 .handleEditCoInsured(
-                    with: vm.travelCertificateNavigationVm.editCoInsuredVm,
-                    navigationVm: vm.editCoInsuredNavigationVm
+                    with: vm.travelCertificateNavigationVm.editCoInsuredVm
                 )
             case let .deleteAccount(memberDetails):
                 let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
@@ -308,7 +306,7 @@ struct HomeTab: View {
         }
         .environmentObject(homeNavigationVm)
         .handleConnectPayment(with: homeNavigationVm.connectPaymentVm)
-        .handleEditCoInsured(with: homeNavigationVm.editCoInsuredVm, navigationVm: loggedInVm.editCoInsuredNavigationVm)
+        .handleEditCoInsured(with: homeNavigationVm.editCoInsuredVm)
         .detent(
             presented: $homeNavigationVm.isSubmitClaimPresented,
             style: [.height],
@@ -341,8 +339,7 @@ struct HomeTab: View {
                         useOwnNavigation: true
                     )
                     .handleEditCoInsured(
-                        with: loggedInVm.travelCertificateNavigationVm.editCoInsuredVm,
-                        navigationVm: loggedInVm.editCoInsuredNavigationVm
+                        with: loggedInVm.travelCertificateNavigationVm.editCoInsuredVm
                     )
                 case .deflect:
                     let model: FlowClaimDeflectStepModel? = {
@@ -385,8 +382,7 @@ struct HomeTab: View {
                 }
             }
             .handleEditCoInsured(
-                with: loggedInVm.helpCenterVm.editCoInsuredVm,
-                navigationVm: loggedInVm.editCoInsuredNavigationVm
+                with: loggedInVm.helpCenterVm.editCoInsuredVm
             )
             .environmentObject(homeNavigationVm)
         }
@@ -478,8 +474,6 @@ class LoggedInNavigationViewModel: ObservableObject {
     let helpCenterVm = HelpCenterNavigationViewModel()
     let travelCertificateNavigationVm = TravelCertificateNavigationViewModel()
     let terminateInsuranceVm = TerminateInsuranceViewModel()
-
-    @Published var editCoInsuredNavigationVm = EditCoInsuredNavigationViewModel(config: .init())
 
     @Published var isTravelInsurancePresented = false
     @Published var isMoveContractPresented = false

@@ -5,17 +5,14 @@ import hCoreUI
 
 extension View {
     public func handleEditCoInsured(
-        with vm: EditCoInsuredViewModel,
-        navigationVm: EditCoInsuredNavigationViewModel
+        with vm: EditCoInsuredViewModel
     ) -> some View {
         return modifier(EditCoInsured(vm: vm))
-            .environmentObject(navigationVm)
     }
 }
 
 struct EditCoInsured: ViewModifier {
     @ObservedObject var vm: EditCoInsuredViewModel
-    @EnvironmentObject var navgationVm: EditCoInsuredNavigationViewModel
 
     func body(content: Content) -> some View {
         content
@@ -29,7 +26,6 @@ struct EditCoInsured: ViewModifier {
                         configs: contractsSupportingCoInsured
                     )
                     .environmentObject(vm)
-                    .environmentObject(navgationVm)
 
                 } else {
                     getEditCoInsuredNavigation(coInsuredModel: coInsuredModel)

@@ -3,8 +3,8 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public class EditCoInsuredNavigationViewModel: ObservableObject {
-    public init(
+class EditCoInsuredNavigationViewModel: ObservableObject {
+    init(
         config: InsuredPeopleConfig
     ) {
         coInsuredViewModel.initializeCoInsured(with: config)
@@ -18,8 +18,8 @@ public class EditCoInsuredNavigationViewModel: ObservableObject {
 
     @Published var isEditCoinsuredSelectPresented: InsuredPeopleConfig?
 
-    @Published var coInsuredViewModel = InsuredPeopleNewScreenModel()
-    @Published var intentViewModel = IntentViewModel()
+    let coInsuredViewModel = InsuredPeopleNewScreenModel()
+    let intentViewModel = IntentViewModel()
 }
 
 extension EditCoInsuredScreenType {
@@ -153,7 +153,8 @@ public struct EditCoInsuredNavigation: View {
     func openNewInsuredPeopleScreen() -> some View {
         openSpecificScreen = .none
         return InsuredPeopleNewScreen(
-            vm: editCoInsuredNavigationVm.coInsuredViewModel
+            vm: editCoInsuredNavigationVm.coInsuredViewModel,
+            intentViewModel: editCoInsuredNavigationVm.intentViewModel
         )
         .configureTitle(L10n.coinsuredEditTitle)
         .addDismissEditCoInsuredFlow()
@@ -161,7 +162,8 @@ public struct EditCoInsuredNavigation: View {
 
     func openInsuredPeopleScreen() -> some View {
         return InsuredPeopleScreen(
-            vm: editCoInsuredNavigationVm.coInsuredViewModel
+            vm: editCoInsuredNavigationVm.coInsuredViewModel,
+            intentViewModel: editCoInsuredNavigationVm.intentViewModel
         )
         .configureTitle(L10n.coinsuredEditTitle)
         .addDismissEditCoInsuredFlow()
@@ -239,7 +241,7 @@ public struct EditCoInsuredSelectInsuranceNavigation: View {
     let configs: [InsuredPeopleConfig]
     @StateObject var router = Router()
     @EnvironmentObject var editCoInsuredViewModel: EditCoInsuredViewModel
-    @EnvironmentObject var editCoInsuredNavigationVm: EditCoInsuredNavigationViewModel
+    @StateObject var editCoInsuredNavigationVm = EditCoInsuredNavigationViewModel(config: .init())
 
     public init(
         configs: [InsuredPeopleConfig]
