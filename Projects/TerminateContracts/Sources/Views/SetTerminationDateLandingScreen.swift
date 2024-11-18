@@ -4,63 +4,71 @@ import hCore
 import hCoreUI
 
 struct SetTerminationDateLandingScreen: View {
-    @State var vm = SetTerminationDateLandingScreenViewModel()
+    @StateObject var vm = SetTerminationDateLandingScreenViewModel()
     @ObservedObject var terminationNavigationVm: TerminationFlowNavigationViewModel
 
     init(
         terminationNavigationVm: TerminationFlowNavigationViewModel
     ) {
         self.terminationNavigationVm = terminationNavigationVm
-        vm.terminationDeleteStep = terminationNavigationVm.terminationDeleteStepModel
-        vm.terminationDateStep = terminationNavigationVm.terminationDateStepModel
     }
 
     var body: some View {
-        if vm.isDeletion == nil {
-            HStack {
-                DotsActivityIndicator(.standard)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .edgesIgnoringSafeArea(.top)
-            .useDarkColor
-        } else {
-            hForm {}
-                .hDisableScroll
-                .hFormTitle(
-                    title: .init(
-                        .small,
-                        .heading2,
-                        L10n.terminationFlowCancellationTitle,
-                        alignment: .leading
-                    ),
-                    subTitle: .init(
-                        .small,
-                        .heading2,
-                        vm.titleText
-                    )
-                )
-                .hFormAttachToBottom {
-                    VStack(spacing: 16) {
-                        VStack(spacing: 4) {
-                            displayInsuranceField
-                            displayTerminationDateField
-                            displayImportantInformation
-                        }
-
-                        hSection {
-                            VStack(spacing: 16) {
-                                hButton.LargeButton(type: .primary) {
-                                    terminationNavigationVm.isConfirmTerminationPresented = true
-                                } content: {
-                                    hText(L10n.terminationButton, style: .body1)
-                                }
-                                .disabled(vm.isCancelButtonDisabled)
-                            }
-                        }
-                        .sectionContainerStyle(.transparent)
-                    }
-                    .padding(.vertical, 16)
+        Group {
+            if vm.isDeletion == nil {
+                HStack {
+                    DotsActivityIndicator(.standard)
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .edgesIgnoringSafeArea(.top)
+                .useDarkColor
+            } else {
+                hForm {}
+                    .hDisableScroll
+                    .hFormTitle(
+                        title: .init(
+                            .small,
+                            .heading2,
+                            L10n.terminationFlowCancellationTitle,
+                            alignment: .leading
+                        ),
+                        subTitle: .init(
+                            .small,
+                            .heading2,
+                            vm.titleText
+                        )
+                    )
+                    .hFormAttachToBottom {
+                        VStack(spacing: 16) {
+                            VStack(spacing: 4) {
+                                displayInsuranceField
+                                displayTerminationDateField
+                                displayImportantInformation
+                            }
+
+                            hSection {
+                                VStack(spacing: 16) {
+                                    hButton.LargeButton(type: .primary) {
+                                        terminationNavigationVm.isConfirmTerminationPresented = true
+                                    } content: {
+                                        hText(L10n.terminationButton, style: .body1)
+                                    }
+                                    .disabled(
+                                        vm.isCancelButtonDisabled(
+                                            terminationDate: terminationNavigationVm.terminationDateStepModel?.date
+                                        )
+                                    )
+                                }
+                            }
+                            .sectionContainerStyle(.transparent)
+                        }
+                        .padding(.vertical, 16)
+                    }
+            }
+        }
+        .onAppear {
+            vm.terminationDeleteStep = terminationNavigationVm.terminationDeleteStepModel
+            vm.terminationDateStep = terminationNavigationVm.terminationDateStepModel
         }
     }
 
@@ -109,7 +117,7 @@ struct SetTerminationDateLandingScreen: View {
                 .sectionContainerStyle(.transparent)
             } else {
                 DropdownView(
-                    value: vm.terminationDate?.displayDateDDMMMYYYYFormat
+                    value: terminationNavigationVm.terminationDateStepModel?.date?.displayDateDDMMMYYYYFormat
                         ?? L10n.terminationFlowDateFieldPlaceholder,
                     placeHolder: L10n.terminationFlowDateFieldText,
                     onTap: {
@@ -123,7 +131,7 @@ struct SetTerminationDateLandingScreen: View {
 
     @ViewBuilder
     private var displayImportantInformation: some View {
-        if vm.terminationDate != nil {
+        if terminationNavigationVm.terminationDateStepModel?.date != nil {
             hSection {
                 hRow {
                     VStack(spacing: 16) {
@@ -209,10 +217,7 @@ struct SetTerminationDateLandingScreen: View {
 class SetTerminationDateLandingScreenViewModel: ObservableObject {
     @Published var isDeletion: Bool?
     @Published var hasAgreedToTerms: Bool = false
-    @Published var isCancelButtonDisabled: Bool = true
     @Published var titleText: String = ""
-    @Published var terminationDate: Date?
-    private var cancellables = Set<AnyCancellable>()  //remove?
 
     @Published var terminationDeleteStep: TerminationFlowDeletionNextModel? {
         didSet {
@@ -223,6 +228,11 @@ class SetTerminationDateLandingScreenViewModel: ObservableObject {
         didSet {
             checkDeletion()
         }
+    }
+
+    func isCancelButtonDisabled(terminationDate: Date?) -> Bool {
+        let hasSetTerminationDate = terminationDate != nil
+        return !(isDeletion ?? false) && (!hasSetTerminationDate || !hasAgreedToTerms)
     }
 
     private func checkDeletion() {
@@ -241,34 +251,6 @@ class SetTerminationDateLandingScreenViewModel: ObservableObject {
             self.titleText =
                 isDeletion ?? false ? L10n.terminationFlowConfirmInformation : L10n.terminationDateText
         }
-    }
-
-    init(
-
-    ) {
-        //        let terminationStore: TerminationContractStore = globalPresentableStoreContainer.get()
-        //        terminationStore.stateSignal
-        //            .map({ $0.terminationDateStep?.date })
-        //            .removeDuplicates()
-        //            .receive(on: RunLoop.main)
-        //            .sink { _ in
-        //
-        //            } receiveValue: { [weak self] date in
-        //                self?.terminationDate = date
-        //            }
-        //            .store(in: &cancellables)
-
-        Publishers.CombineLatest3($terminationDate, $isDeletion, $hasAgreedToTerms)
-            .receive(on: RunLoop.main)
-            .sink { _ in
-
-            } receiveValue: { [weak self] (date, isDeletion, aggreedToTerms) in
-                let hasSetTerminationDate = date != nil
-                withAnimation {
-                    self?.isCancelButtonDisabled = !(isDeletion ?? false) && (!hasSetTerminationDate || !aggreedToTerms)
-                }
-            }
-            .store(in: &cancellables)
     }
 }
 
