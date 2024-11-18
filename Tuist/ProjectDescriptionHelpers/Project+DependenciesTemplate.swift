@@ -163,15 +163,16 @@ extension Project {
         externalDependencies: [ExternalDependencies],
         sdks: [String] = []
     ) -> Project {
+
         let frameworkConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
-                settings: [String: SettingValue](),
+                settings: ["SWIFT_VERSION": "6.0.2"],
                 xcconfig: .relativeToRoot("Configurations/iOS/iOS-Framework-Debug.xcconfig")
             ),
             .release(
                 name: "Release",
-                settings: [String: SettingValue](),
+                settings: ["SWIFT_VERSION": "6.0.2"],
                 xcconfig: .relativeToRoot("Configurations/iOS/iOS-Framework-Release.xcconfig")
             ),
         ]
@@ -179,12 +180,12 @@ extension Project {
         let projectConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
-                settings: [String: SettingValue](),
+                settings: ["SWIFT_VERSION": "6.0.2"],
                 xcconfig: .relativeToRoot("Configurations/Base/Configurations/Debug.xcconfig")
             ),
             .release(
                 name: "Release",
-                settings: [String: SettingValue](),
+                settings: ["SWIFT_VERSION": "6.0.2"],
                 xcconfig: .relativeToRoot("Configurations/Base/Configurations/Release.xcconfig")
             ),
         ]

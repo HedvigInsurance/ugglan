@@ -12,7 +12,7 @@ let ugglanConfigurations: [Configuration] = [
     .debug(
         name: "Debug",
         settings: [
-            "SWIFT_VERSION": "6.0",
+            "SWIFT_VERSION": "6.0.2",
             "CODE_SIGN_STYLE": "automatic",
             "OTHER_SWIFT_FLAGS": "$(inherited) -DPRESENTATION_DEBUGGER",
         ],
@@ -21,7 +21,7 @@ let ugglanConfigurations: [Configuration] = [
     .release(
         name: "Release",
         settings: [
-            "SWIFT_VERSION": "6.0",
+            "SWIFT_VERSION": "6.0.2",
             "CODE_SIGN_STYLE": "automatic",
             "OTHER_SWIFT_FLAGS": "$(inherited) -DPRESENTATION_DEBUGGER",
         ],
@@ -33,7 +33,7 @@ let hedvigConfigurations: [Configuration] = [
     .debug(
         name: "Debug",
         settings: [
-            "SWIFT_VERSION": "6.0",
+            "SWIFT_VERSION": "6.0.2",
             "CODE_SIGN_STYLE": "automatic",
         ],
         xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
@@ -41,7 +41,7 @@ let hedvigConfigurations: [Configuration] = [
     .release(
         name: "Release",
         settings: [
-            "SWIFT_VERSION": "6.0",
+            "SWIFT_VERSION": "6.0.2",
             "CODE_SIGN_STYLE": "automatic",
         ],
         xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
@@ -52,7 +52,7 @@ let testsConfigurations: [Configuration] = [
     .debug(
         name: "Debug",
         settings: [
-            "SWIFT_VERSION": "6.0",
+            "SWIFT_VERSION": "6.0.2",
             "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "DEBUG APP_VARIANT_STAGING",
         ],
         xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")
@@ -60,7 +60,7 @@ let testsConfigurations: [Configuration] = [
     .release(
         name: "Release",
         settings: [
-            "SWIFT_VERSION": "6.0",
+            "SWIFT_VERSION": "6.0.2",
             "SWIFT_ACTIVE_COMPILATION_CONDITIONS": "APP_VARIANT_STAGING",
         ],
         xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")
@@ -71,7 +71,7 @@ let notificationConfiguration: [Configuration] = [
     .debug(
         name: "Debug",
         settings: [
-            "SWIFT_VERSION": "6.0",
+            "SWIFT_VERSION": "6.0.2",
             "OTHER_SWIFT_FLAGS": "$(inherited) -DPRESENTATION_DEBUGGER",
             "CODE_SIGN_STYLE": "automatic",
         ],
@@ -80,7 +80,7 @@ let notificationConfiguration: [Configuration] = [
     .release(
         name: "Release",
         settings: [
-            "SWIFT_VERSION": "6.0",
+            "SWIFT_VERSION": "6.0.2",
             "OTHER_SWIFT_FLAGS": "$(inherited) -DPRESENTATION_DEBUGGER",
             "CODE_SIGN_STYLE": "automatic",
         ],

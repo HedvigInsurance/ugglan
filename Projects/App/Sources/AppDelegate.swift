@@ -91,7 +91,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         } else {
             do {
                 let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
-                let status = try await UNUserNotificationCenter.current().requestAuthorization(options: authOptions)
+                _ = try await UNUserNotificationCenter.current().requestAuthorization(options: authOptions)
             } catch let exception {
 
             }
