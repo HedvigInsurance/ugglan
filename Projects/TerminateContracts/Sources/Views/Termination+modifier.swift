@@ -24,6 +24,9 @@ extension View {
 struct TerminateInsurance: ViewModifier {
     @ObservedObject var vm: TerminateInsuranceViewModel
     @EnvironmentObject var navigationVm: TerminationFlowNavigationViewModel
+    @State var context: String = ""
+    @State var progress: Float?
+    @State var previousProgress: Float?
 
     let onDismiss: (DismissTerminationAction) -> Void
     func body(content: Content) -> some View {
@@ -37,7 +40,10 @@ struct TerminateInsurance: ViewModifier {
 
                     TerminationFlowNavigation(
                         initialStep: .router(action: .selectInsurance(configs: item.config)),
-                        configs: item.config
+                        configs: item.config,
+                        context: context,
+                        progress: progress,
+                        previousProgress: previousProgress
                     )
                     .task {
                         navigationVm.isFlowPresented = { dismissType in
@@ -58,7 +64,10 @@ struct TerminateInsurance: ViewModifier {
 
                     TerminationFlowNavigation(
                         initialStep: action.action,
-                        configs: item.config
+                        configs: item.config,
+                        context: context,
+                        progress: progress,
+                        previousProgress: previousProgress
                     )
                     .task {
                         navigationVm.isFlowPresented = { dismissType in
@@ -73,13 +82,13 @@ struct TerminateInsurance: ViewModifier {
     }
 
     func getInitialStep(data: TerminateStepResponse, config: TerminationConfirmConfig) -> TerminationFlowActionWrapper {
-        navigationVm.currentContext = data.context
-        navigationVm.previousProgress = navigationVm.progress
-        navigationVm.progress = data.progress
+        self.context = data.context
+        self.previousProgress = navigationVm.progress
+        self.progress = data.progress
 
         switch data.step {
         case let .setTerminationDateStep(model):
-            return .init(action: .router(action: .terminationDate(config: config, model: model)))
+            return .init(action: .router(action: .terminationDate(model: model)))
         case let .setSuccessStep(model):
             return .init(action: .final(action: .success(model: model)))
         case let .setFailedStep(model):

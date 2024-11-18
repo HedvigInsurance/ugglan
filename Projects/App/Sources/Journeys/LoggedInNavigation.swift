@@ -465,7 +465,12 @@ class LoggedInNavigationViewModel: ObservableObject {
     let helpCenterVm = HelpCenterNavigationViewModel()
     let travelCertificateNavigationVm = TravelCertificateNavigationViewModel()
     let terminateInsuranceVm = TerminateInsuranceViewModel()
-    @Published var terminateInsuranceNavigationVm = TerminationFlowNavigationViewModel(initialStep: nil)
+    @Published var terminateInsuranceNavigationVm = TerminationFlowNavigationViewModel(
+        initialStep: nil,
+        context: "",
+        progress: nil,
+        previousProgress: nil
+    )
 
     @Published var isTravelInsurancePresented = false
     @Published var isMoveContractPresented = false

@@ -125,7 +125,12 @@ public struct ContractsNavigation<Content: View>: View {
 public class ContractsNavigationViewModel: ObservableObject {
     public let contractsRouter = Router()
     let terminateInsuranceVm = TerminateInsuranceViewModel()
-    @Published var terminateInsuranceNavigationVm = TerminationFlowNavigationViewModel(initialStep: nil)
+    @Published var terminateInsuranceNavigationVm = TerminationFlowNavigationViewModel(
+        initialStep: nil,
+        context: "",
+        progress: nil,
+        previousProgress: nil
+    )
 
     @Published public var insurableLimit: InsurableLimits?
     @Published public var document: hPDFDocument?

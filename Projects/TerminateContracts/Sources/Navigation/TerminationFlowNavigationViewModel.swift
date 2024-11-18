@@ -1,6 +1,5 @@
 import ChangeTier
 import Combine
-//import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -8,23 +7,28 @@ import hGraphQL
 
 public class TerminationFlowNavigationViewModel: ObservableObject {
     public init(
-        initialStep: TerminationFlowActions?
+        initialStep: TerminationFlowActions?,
+        context: String,
+        progress: Float?,
+        previousProgress: Float?
     ) {
         if let initialStep {
-            setModels(initialStep: initialStep)
+            setInitialModel(initialStep: initialStep, context: context)
         }
     }
 
-    private func setModels(initialStep: TerminationFlowActions) {
-        Task {
-            await reset()
-        }
+    private func setInitialModel(initialStep: TerminationFlowActions, context: String) {
+        reset()
+        self.currentContext = context
+        self.progress = progress
+        self.progress = previousProgress
+
         switch initialStep {
         case .router(let action):
             switch action {
             case .selectInsurance:
                 break
-            case let .terminationDate(config, model):
+            case let .terminationDate(model):
                 terminationDateStepModel = model
             case let .surveyStep(model):
                 terminationSurveyStepModel = model
@@ -153,9 +157,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject {
         switch data.step {
         case let .setTerminationDateStep(model):
             terminationDateStepModel = model
-            if let config {
-                router.push(TerminationFlowRouterActions.terminationDate(config: config, model: model))
-            }
+            router.push(TerminationFlowRouterActions.terminationDate(model: model))
         case let .setTerminationDeletion(model):
             terminationDeleteStepModel = model
         case let .setSuccessStep(model):
@@ -172,7 +174,6 @@ public class TerminationFlowNavigationViewModel: ObservableObject {
         }
     }
 
-    @MainActor
     func reset() {
         currentContext = nil
         terminationDateStepModel = nil
@@ -185,18 +186,24 @@ public class TerminationFlowNavigationViewModel: ObservableObject {
 
 struct TerminationFlowNavigation: View {
     @ObservedObject private var vm: TerminationFlowNavigationViewModel
-    //    @StateObject var router = Router()
     var configs: [TerminationConfirmConfig] = []
-
     let initialStep: TerminationFlowActions
 
     public init(
         initialStep: TerminationFlowActions,
-        configs: [TerminationConfirmConfig]
+        configs: [TerminationConfirmConfig],
+        context: String,
+        progress: Float?,
+        previousProgress: Float?
     ) {
         self.initialStep = initialStep
         self.configs = configs
-        self.vm = .init(initialStep: initialStep)
+        self.vm = .init(
+            initialStep: initialStep,
+            context: context,
+            progress: progress,
+            previousProgress: previousProgress
+        )
     }
 
     public var body: some View {
@@ -212,8 +219,8 @@ struct TerminationFlowNavigation: View {
                 }
                 .routerDestination(for: TerminationFlowRouterActions.self) { action in
                     switch action {
-                    case let .terminationDate(config, model):
-                        openSetTerminationDateLandingScreen(config: config, fromSelectInsurance: false)
+                    case .terminationDate:
+                        openSetTerminationDateLandingScreen(fromSelectInsurance: false)
                     case let .surveyStep(model):
                         openSurveyScreen(model: model ?? .init(id: "", options: [], subTitleType: .default))
                     case .selectInsurance:
@@ -274,8 +281,8 @@ struct TerminationFlowNavigation: View {
         switch action {
         case let .router(action):
             switch action {
-            case let .terminationDate(config, _):
-                openSetTerminationDateLandingScreen(config: config, fromSelectInsurance: false)
+            case .terminationDate:
+                openSetTerminationDateLandingScreen(fromSelectInsurance: false)
             case let .surveyStep(model):
                 openSurveyScreen(model: model ?? .init(id: "", options: [], subTitleType: .default))
             case .selectInsurance:
@@ -305,13 +312,14 @@ struct TerminationFlowNavigation: View {
     }
 
     private func openSetTerminationDateLandingScreen(
-        config: TerminationConfirmConfig,
+        //        config: TerminationConfirmConfig,
         fromSelectInsurance: Bool
     ) -> some View {
         SetTerminationDateLandingScreen(
             onSelected: {
                 vm.isConfirmTerminationPresented = true
-            }
+            },
+            terminationNavigationVm: vm
         )
         .resetProgressToPreviousValueOnDismiss
         .withDismissButton()
@@ -522,7 +530,8 @@ extension TerminationFlowActions: TrackingViewNameProtocol {
 
 public enum TerminationFlowRouterActions: Hashable {
     case selectInsurance(configs: [TerminationConfirmConfig])
-    case terminationDate(config: TerminationConfirmConfig, model: TerminationFlowDateNextStepModel?)
+    //    case terminationDate(config: TerminationConfirmConfig, model: TerminationFlowDateNextStepModel?)
+    case terminationDate(model: TerminationFlowDateNextStepModel?)
     case surveyStep(model: TerminationFlowSurveyStepModel?)
 }
 

@@ -18,7 +18,12 @@ public class HelpCenterNavigationViewModel: ObservableObject {
         existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
     )
     let terminateInsuranceVm = TerminateInsuranceViewModel()
-    @Published var terminateInsuranceNavigationVm = TerminationFlowNavigationViewModel(initialStep: nil)
+    @Published var terminateInsuranceNavigationVm = TerminationFlowNavigationViewModel(
+        initialStep: nil,
+        context: "",
+        progress: nil,
+        previousProgress: nil
+    )
 
     struct QuickActions {
         var editContractActions: EditInsuranceActionsWrapper?

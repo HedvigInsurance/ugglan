@@ -69,7 +69,7 @@ struct TerminationSurveyScreen: View {
         .hFormIgnoreScrollOffsetChanges
         .hFormAttachToBottom {
             hSection {
-                hButton.LargeButton(type: .primary) { [weak vm] in
+                hButton.LargeButton(type: .primary) {
                     continueClicked()
                 } content: {
                     hText(L10n.generalContinueButton)
@@ -129,12 +129,8 @@ struct TerminationSurveyScreen: View {
                         model: terminationFlowNavigationViewModel.terminationSurveyStepModel
                     )
                 )
-                //                await store.sendAsync(
-                //                    .navigationAction(action: .openTerminationSurveyStep(options: subOptions, subtitleType: .generic))
-                //                )
             }
         } else if let selectedOption = vm.selectedOption {
-            /* TODO: IMPLEMENT */
             Task {
                 let step = await vm.submitSurvey(
                     context: terminationFlowNavigationViewModel.currentContext ?? "",
@@ -144,7 +140,6 @@ struct TerminationSurveyScreen: View {
 
                 terminationFlowNavigationViewModel.navigate(data: step)
             }
-            //            store.send(.submitSurvey(option: selectedOption.id, feedback: selectedFeedBackViewModel?.text))
         }
     }
 }
@@ -175,17 +170,9 @@ class SurveyScreenViewModel: ObservableObject {
     @Published var viewState: ProcessingState = .success
     @Inject private var service: TerminateContractsClient
 
-    //    private var selectedFeedBackViewModelCancellable: AnyCancellable?
-    //    private var selectedOptionCancellable: AnyCancellable?
-
     init(options: [TerminationFlowSurveyStepModelOption], subtitleType: SurveyScreenSubtitleType) {
         self.options = options
         self.subtitleType = subtitleType
-        //        selectedOptionCancellable =
-        //            $selected
-        //            .sink(receiveValue: { [weak self] value in
-        //                self?.handleSelection(of: value)
-        //            })
     }
 
     private func handleSelection(of option: String?) {
@@ -203,12 +190,6 @@ class SurveyScreenViewModel: ObservableObject {
             }
             return nil
         }()
-        //        selectedFeedBackViewModelCancellable = selectedFeedBackViewModel?.$text
-        //            .sink(receiveValue: { [weak self] value in
-        //                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-        //                    self?.checkContinueButtonStatus()
-        //                }
-        //            })
         withAnimation {
             self.selectedOption = selectedOption
             self.selectedFeedBackViewModel = selectedFeedBackViewModel

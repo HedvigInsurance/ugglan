@@ -6,12 +6,14 @@ import hCoreUI
 struct SetTerminationDateLandingScreen: View {
     @StateObject var vm = SetTerminationDateLandingScreenViewModel()
     let onSelected: () -> Void
-    @EnvironmentObject var terminationNavigationVm: TerminationFlowNavigationViewModel
+    @ObservedObject var terminationNavigationVm: TerminationFlowNavigationViewModel
 
     init(
-        onSelected: @escaping () -> Void
+        onSelected: @escaping () -> Void,
+        terminationNavigationVm: TerminationFlowNavigationViewModel
     ) {
         self.onSelected = onSelected
+        self.terminationNavigationVm = terminationNavigationVm
         vm.terminationDeleteStep = terminationNavigationVm.terminationDeleteStepModel
         vm.terminationDateStep = terminationNavigationVm.terminationDateStepModel
     }
@@ -263,5 +265,8 @@ class SetTerminationDateLandingScreenViewModel: ObservableObject {
 }
 
 #Preview {
-    SetTerminationDateLandingScreen(onSelected: {})
+    SetTerminationDateLandingScreen(
+        onSelected: {},
+        terminationNavigationVm: .init(initialStep: nil, context: "", progress: nil, previousProgress: nil)
+    )
 }
