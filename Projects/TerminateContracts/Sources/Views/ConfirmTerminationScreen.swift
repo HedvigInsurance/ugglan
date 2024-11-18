@@ -5,7 +5,7 @@ import hCoreUI
 struct ConfirmTerminationScreen: View {
     @State private var isHidden = false
     @EnvironmentObject var terminationNavigationVm: TerminationFlowNavigationViewModel
-    @StateObject var confirmTerminationVm = ConfirmTerminationViewModel()
+    @EnvironmentObject var confirmTerminationVm: ConfirmTerminationViewModel
 
     init() {}
 
@@ -22,18 +22,33 @@ struct ConfirmTerminationScreen: View {
                         buttonTitle: L10n.terminationFlowConfirmButton,
                         buttonAction: {
                             if terminationNavigationVm.isDeletion {
-                                confirmTerminationVm.sendConfirmDelete(
-                                    context: terminationNavigationVm.currentContext ?? "",
-                                    model: terminationNavigationVm.terminationDeleteStepModel
-                                )
+                                Task {
+                                    let step = await confirmTerminationVm.sendConfirmDelete(
+                                        context: terminationNavigationVm.currentContext ?? "",
+                                        model: terminationNavigationVm.terminationDeleteStepModel
+                                    )
+
+                                    if let step {
+                                        terminationNavigationVm.navigate(data: step)
+                                    }
+                                }
                             } else {
-                                confirmTerminationVm.sendTerminationDate(
-                                    inputDateToString: terminationNavigationVm.terminationDateStepModel?.date?
-                                        .localDateString ?? "",
-                                    context: terminationNavigationVm.currentContext ?? ""
-                                )
+                                terminationNavigationVm.isProcessingPresented = true
+
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                                    Task {
+                                        let step = await confirmTerminationVm.sendTerminationDate(
+                                            inputDateToString: terminationNavigationVm.terminationDateStepModel?.date?
+                                                .localDateString ?? "",
+                                            context: terminationNavigationVm.currentContext ?? ""
+                                        )
+
+                                        if let step {
+                                            terminationNavigationVm.navigate(data: step)
+                                        }
+                                    }
+                                }
                             }
-                            terminationNavigationVm.isProcessingPresented = true
 
                             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                                 self.isHidden = true
@@ -67,47 +82,52 @@ class ConfirmTerminationViewModel: ObservableObject {
     @Inject private var service: TerminateContractsClient
     @Published var viewState: ProcessingState = .loading
 
-    public func sendConfirmDelete(context: String, model: TerminationFlowDeletionNextModel?) {
+    @MainActor
+    public func sendConfirmDelete(
+        context: String,
+        model: TerminationFlowDeletionNextModel?
+    ) async -> TerminateStepResponse? {
         withAnimation {
             viewState = .loading
         }
-        Task { @MainActor in
-            do {
-                let data = try await service.sendConfirmDelete(terminationContext: context, model: model)
-                withAnimation {
-                    viewState = .success
-                }
-            } catch let error {
-                withAnimation {
-                    self.viewState = .error(
-                        errorMessage: error.localizedDescription
-                    )
-                }
+        do {
+            let data = try await service.sendConfirmDelete(terminationContext: context, model: model)
+            withAnimation {
+                viewState = .success
+            }
+            return data
+        } catch let error {
+            withAnimation {
+                self.viewState = .error(
+                    errorMessage: error.localizedDescription
+                )
             }
         }
+        return nil
     }
 
-    public func sendTerminationDate(inputDateToString: String, context: String) {
+    @MainActor
+    public func sendTerminationDate(inputDateToString: String, context: String) async -> TerminateStepResponse? {
         withAnimation {
             viewState = .loading
         }
-        Task { @MainActor in
-            do {
-                let data = try await service.sendTerminationDate(
-                    inputDateToString: inputDateToString,
-                    terminationContext: context
+        do {
+            let data = try await service.sendTerminationDate(
+                inputDateToString: inputDateToString,
+                terminationContext: context
+            )
+            withAnimation {
+                viewState = .success
+            }
+            return data
+        } catch let error {
+            withAnimation {
+                self.viewState = .error(
+                    errorMessage: error.localizedDescription
                 )
-                withAnimation {
-                    viewState = .success
-                }
-            } catch let error {
-                withAnimation {
-                    self.viewState = .error(
-                        errorMessage: error.localizedDescription
-                    )
-                }
             }
         }
+        return nil
     }
 }
 

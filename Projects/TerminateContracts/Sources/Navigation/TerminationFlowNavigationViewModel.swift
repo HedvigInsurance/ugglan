@@ -135,6 +135,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject {
     @Published var failedStepModel: TerminationFlowFailedNextModel?
     @Published var terminationSurveyStepModel: TerminationFlowSurveyStepModel?
     @Published var config: TerminationConfirmConfig?
+    @Published var confirmTerminationVm: ConfirmTerminationViewModel?
 
     var isDeletion: Bool {
         terminationDeleteStepModel != nil
@@ -403,6 +404,7 @@ struct TerminationFlowNavigation: View {
     private func openConfirmTerminationScreen() -> some View {
         ConfirmTerminationScreen()
             .withDismissButton()
+            .environmentObject(vm.confirmTerminationVm ?? .init())
     }
 
     private func openSetTerminationDatePickerScreen() -> some View {
@@ -421,12 +423,8 @@ struct TerminationFlowNavigation: View {
     }
 
     private func openProgressScreen() -> some View {
-        hProcessingView<TerminationContractStore>(
-            showSuccessScreen: false,
-            TerminationContractStore.self,
-            loading: .sendTerminationDate,
-            loadingViewText: L10n.terminateContractTerminatingProgress
-        )
+        TerminationProcessingScreen()
+            .environmentObject(vm.confirmTerminationVm ?? .init())
     }
 
     private func openTerminationSuccessScreen(
@@ -486,13 +484,6 @@ struct TerminationFlowActionWrapper: Identifiable, Equatable {
     let action: TerminationFlowActions
 }
 
-//extension TerminationFlowActionWrapper: TrackingViewNameProtocol {
-//    var nameForTracking: String {
-//        //TODO: fix later
-//        return ""
-//    }
-//}
-
 public enum TerminationFlowActions: Hashable {
     case router(action: TerminationFlowRouterActions)
     case final(action: TerminationFlowFinalRouterActions)
@@ -522,7 +513,6 @@ extension TerminationFlowActions: TrackingViewNameProtocol {
 
 public enum TerminationFlowRouterActions: Hashable {
     case selectInsurance(configs: [TerminationConfirmConfig])
-    //    case terminationDate(config: TerminationConfirmConfig, model: TerminationFlowDateNextStepModel?)
     case terminationDate(model: TerminationFlowDateNextStepModel?)
     case surveyStep(model: TerminationFlowSurveyStepModel?)
 }
