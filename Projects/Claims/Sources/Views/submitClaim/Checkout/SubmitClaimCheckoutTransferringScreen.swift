@@ -14,37 +14,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
     init() {}
 
     var body: some View {
-        BlurredProgressOverlay {
-            ZStack(alignment: .center) {
-                VStack {
-                    Spacer()
-                        .scaleEffect(
-                            x: loadingAnimation ? 2 : 1,
-                            y: loadingAnimation ? 2 : 1,
-                            anchor: .center
-                        )
-                    Spacer()
-                }
-                .opacity(loadingAnimation ? 0 : 1)
-                .animation(.spring(), value: loadingAnimation)
-                LoadingViewWithState(SubmitClaimStore.self, .postSingleItemCheckout) {
-                    successView()
-                } onLoading: {
-                    loadingView()
-                } onError: { error in
-                    errorView(withError: error)
-                }
-                .transition(
-                    .scale.animation(
-                        .interpolatingSpring(
-                            stiffness: 170,
-                            damping: 15
-                        )
-                    )
-                )
-            }
-            .padding(.horizontal, .padding24)
-        }
+        EmptyView()  // is fixed in other PR
     }
 
     @ViewBuilder

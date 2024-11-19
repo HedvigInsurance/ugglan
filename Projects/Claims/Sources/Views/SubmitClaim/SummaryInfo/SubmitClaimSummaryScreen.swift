@@ -25,7 +25,6 @@ public struct SubmitClaimSummaryScreen: View {
                         dateOfPurchase
                         purchasePrice
                     }
-                    .disableOn(SubmitClaimStore.self, [.postSummary])
                 }
                 .withHeader {
                     HStack {

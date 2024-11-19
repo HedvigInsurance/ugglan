@@ -22,32 +22,7 @@ struct CoInsuredProcessingScreen: View {
 
     var body: some View {
         RouterHost(router: router, options: [.navigationBarHidden], tracking: self) {
-            hProcessingView(
-                showSuccessScreen: showSuccessScreen,
-                EditCoInsuredStore.self,
-                loading: .postCoInsured,
-                loadingViewText: L10n.contractAddCoinsuredProcessing,
-                successViewTitle: L10n.contractAddCoinsuredUpdatedTitle,
-                successViewBody: L10n.contractAddCoinsuredUpdatedLabel(
-                    intentVm.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-                ),
-                onAppearLoadingView: {
-                    editCoInsuredNavigation.showProgressScreenWithSuccess = false
-                    editCoInsuredNavigation.showProgressScreenWithoutSuccess = false
-                    editCoInsuredNavigation.editCoInsuredConfig = nil
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak editCoInsuredViewModel] in
-                        editCoInsuredViewModel?.checkForAlert()
-                    }
-                    EditCoInsuredViewModel.updatedCoInsuredForContractId.send(intentVm.contractId)
-
-                },
-                onErrorCancelAction: {
-                    router.dismiss()
-                }
-            )
-            .hSuccessBottomAttachedView {
-                customBottomSuccessView
-            }
+            EmptyView()  //is reworked in PR for removing store for edit co-insured
         }
     }
 

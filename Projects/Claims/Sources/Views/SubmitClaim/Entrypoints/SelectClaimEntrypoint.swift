@@ -256,7 +256,6 @@ struct ShowTagList: View {
                         )
                     }
                 }
-                .disableOn(SubmitClaimStore.self, [.startClaim])
                 hButton.LargeButton(type: .primary) {
                     if selection != nil && selection != "" {
                         notValid = false

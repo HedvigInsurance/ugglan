@@ -135,7 +135,6 @@ public struct SubmitClaimAudioRecordingScreen: View {
                             } content: {
                                 hText(L10n.embarkRecordAgain)
                             }
-                            .disableOn(SubmitClaimStore.self, [.postAudioRecording])
                             .presentableStoreLensAnimation(.default)
                         }
                         .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -225,7 +224,6 @@ public struct SubmitClaimAudioRecordingScreen: View {
                 } content: {
                     hText(L10n.claimsUseAudioRecording, style: .body1)
                 }
-                .disableOn(SubmitClaimStore.self, [.postAudioRecording])
             }
             .sectionContainerStyle(.transparent)
         }

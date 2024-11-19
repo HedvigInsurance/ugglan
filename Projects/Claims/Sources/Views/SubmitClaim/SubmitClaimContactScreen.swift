@@ -25,7 +25,6 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
                             placeholder: L10n.phoneNumberRowTitle,
                             error: $vm.phoneNumberError
                         )
-                        .disableOn(SubmitClaimStore.self, [.postPhoneNumber])
                         hButton.LargeButton(type: .primary) {
                             if vm.keyboardEnabled {
                                 withAnimation {

@@ -22,7 +22,6 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
                 VStack(spacing: 0) {
                     hSection {
                         displayFieldsAndNotice
-                            .disableOn(SubmitClaimStore.self, [.postDateOfOccurrenceAndLocation])
                         continueButton
                     }
                     .sectionContainerStyle(.transparent)

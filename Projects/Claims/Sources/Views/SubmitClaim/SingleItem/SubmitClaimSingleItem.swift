@@ -26,7 +26,6 @@ public struct SubmitClaimSingleItem: View {
                 ) { singleItemStep in
                     hSection {
                         getFields(singleItemStep: singleItemStep)
-                            .disableOn(SubmitClaimStore.self, [.postSingleItem])
                         hButton.LargeButton(type: .primary) {
                             store.send(.singleItemRequest(purchasePrice: singleItemStep?.purchasePrice))
                         } content: {
