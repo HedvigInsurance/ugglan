@@ -126,6 +126,7 @@ extension File {
     }
 }
 
+@MainActor
 extension NSItemProvider {
     public func getData() async throws -> (data: Data, mimeType: MimeType) {
         return try await withCheckedThrowingContinuation {
