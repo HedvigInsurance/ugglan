@@ -13,20 +13,19 @@ struct ActionStepWrapper: Equatable, Identifiable {
 extension View {
     public func handleTerminateInsurance(
         vm: TerminateInsuranceViewModel,
-        navigationVm: TerminationFlowNavigationViewModel,
         onDismiss: @escaping (DismissTerminationAction) -> Void
     ) -> some View {
         modifier(TerminateInsurance(vm: vm, onDismiss: onDismiss))
-            .environmentObject(navigationVm)
     }
 }
 
 struct TerminateInsurance: ViewModifier {
     @ObservedObject var vm: TerminateInsuranceViewModel
-    @EnvironmentObject var navigationVm: TerminationFlowNavigationViewModel
     @State var context: String = ""
     @State var progress: Float?
     @State var previousProgress: Float?
+
+    @State var isFlowPresented: (DismissTerminationAction) -> Void = { _ in }
 
     let onDismiss: (DismissTerminationAction) -> Void
     func body(content: Content) -> some View {
@@ -36,22 +35,21 @@ struct TerminateInsurance: ViewModifier {
                 options: .constant(.alwaysOpenOnTop)
             ) { item in
                 if item.config.count > 1 {
-                    let _ = navigationVm.hasSelectInsuranceStep = true
-
                     TerminationFlowNavigation(
                         initialStep: .router(action: .selectInsurance(configs: item.config)),
                         configs: item.config,
                         context: context,
                         progress: progress,
-                        previousProgress: previousProgress
+                        previousProgress: previousProgress,
+                        hasSelectInsuranceStep: true,
+                        isFlowPresented: isFlowPresented
                     )
                     .task {
-                        navigationVm.isFlowPresented = { dismissType in
+                        self.isFlowPresented = { dismissType in
                             onDismiss(dismissType)
                         }
                     }
                 } else if let config = item.config.first {
-                    let _ = navigationVm.hasSelectInsuranceStep = false
                     let action = getInitialStep(
                         data: item.response
                             ?? .init(
@@ -67,23 +65,21 @@ struct TerminateInsurance: ViewModifier {
                         configs: item.config,
                         context: context,
                         progress: progress,
-                        previousProgress: previousProgress
+                        previousProgress: previousProgress,
+                        hasSelectInsuranceStep: false
                     )
                     .task {
-                        navigationVm.isFlowPresented = { dismissType in
+                        self.isFlowPresented = { dismissType in
                             onDismiss(dismissType)
                         }
                     }
                 }
             }
-            .modally(item: $navigationVm.changeTierInput) { item in
-                ChangeTierNavigation(input: item)
-            }
     }
 
     func getInitialStep(data: TerminateStepResponse, config: TerminationConfirmConfig) -> TerminationFlowActionWrapper {
         self.context = data.context
-        self.previousProgress = navigationVm.progress
+        self.previousProgress = data.progress
         self.progress = data.progress
 
         switch data.step {

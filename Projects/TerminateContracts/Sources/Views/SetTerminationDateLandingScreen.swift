@@ -261,7 +261,8 @@ class SetTerminationDateLandingScreenViewModel: ObservableObject {
             context: "",
             progress: nil,
             previousProgress: nil,
-            config: .init(contractId: "", contractDisplayName: "", contractExposureName: "", activeFrom: nil)
+            config: .init(contractId: "", contractDisplayName: "", contractExposureName: "", activeFrom: nil),
+            hasSelectInsuranceStep: false
         )
     )
 }

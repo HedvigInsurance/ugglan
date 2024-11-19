@@ -71,7 +71,7 @@ struct LoggedInNavigation: View {
         ) { changeTierInput in
             ChangeTierNavigation(input: changeTierInput)
         }
-        .handleTerminateInsurance(vm: vm.terminateInsuranceVm, navigationVm: vm.terminateInsuranceNavigationVm) {
+        .handleTerminateInsurance(vm: vm.terminateInsuranceVm) {
             dismissType in
             switch dismissType {
             case .done:
@@ -465,13 +465,6 @@ class LoggedInNavigationViewModel: ObservableObject {
     let helpCenterVm = HelpCenterNavigationViewModel()
     let travelCertificateNavigationVm = TravelCertificateNavigationViewModel()
     let terminateInsuranceVm = TerminateInsuranceViewModel()
-    @Published var terminateInsuranceNavigationVm = TerminationFlowNavigationViewModel(
-        initialStep: nil,
-        context: "",
-        progress: nil,
-        previousProgress: nil,
-        config: .init(contractId: "", contractDisplayName: "", contractExposureName: "", activeFrom: nil)
-    )
 
     @Published var isTravelInsurancePresented = false
     @Published var isMoveContractPresented = false

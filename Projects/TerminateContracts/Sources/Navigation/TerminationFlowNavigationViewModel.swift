@@ -11,9 +11,11 @@ public class TerminationFlowNavigationViewModel: ObservableObject {
         context: String,
         progress: Float?,
         previousProgress: Float?,
-        config: TerminationConfirmConfig
+        config: TerminationConfirmConfig,
+        hasSelectInsuranceStep: Bool
     ) {
         self.config = config
+        self.hasSelectInsuranceStep = hasSelectInsuranceStep
         if let initialStep {
             setInitialModel(initialStep: initialStep, context: context)
         }
@@ -53,7 +55,6 @@ public class TerminationFlowNavigationViewModel: ObservableObject {
     @Published var changeTierInput: ChangeTierInput?
     @Published var infoText: String?
 
-    var isFlowPresented: (DismissTerminationAction) -> Void = { _ in }
     var redirectAction: FlowTerminationSurveyRedirectAction? {
         didSet {
             switch redirectAction {
@@ -82,6 +83,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject {
                         guard let self = self else { return }
                         do {
                             let newInput = try await ChangeTierNavigationViewModel.getTiers(input: input)
+
                             DispatchQueue.main.async { [weak self] in
                                 self?.changeTierInput = .existingIntent(
                                     intent: newInput,
@@ -192,23 +194,28 @@ struct TerminationFlowNavigation: View {
     @ObservedObject private var vm: TerminationFlowNavigationViewModel
     var configs: [TerminationConfirmConfig] = []
     let initialStep: TerminationFlowActions
+    let isFlowPresented: (DismissTerminationAction) -> Void
 
     public init(
         initialStep: TerminationFlowActions,
         configs: [TerminationConfirmConfig],
         context: String,
         progress: Float?,
-        previousProgress: Float?
+        previousProgress: Float?,
+        hasSelectInsuranceStep: Bool,
+        isFlowPresented: @escaping (DismissTerminationAction) -> Void = { _ in }
     ) {
         self.initialStep = initialStep
         self.configs = configs
+        self.isFlowPresented = isFlowPresented
         self.vm = .init(
             initialStep: initialStep,
             context: context,
             progress: progress,
             previousProgress: previousProgress,
             config: configs.first
-                ?? .init(contractId: "", contractDisplayName: "", contractExposureName: "", activeFrom: nil)
+                ?? .init(contractId: "", contractDisplayName: "", contractExposureName: "", activeFrom: nil),
+            hasSelectInsuranceStep: false
         )
     }
 
@@ -317,7 +324,6 @@ struct TerminationFlowNavigation: View {
     }
 
     private func openSetTerminationDateLandingScreen(
-        //        config: TerminationConfirmConfig,
         fromSelectInsurance: Bool
     ) -> some View {
         SetTerminationDateLandingScreen(
@@ -445,7 +451,7 @@ struct TerminationFlowNavigation: View {
                 actionButton: nil,
                 primaryButton: .init(buttonAction: { [weak vm] in
                     vm?.router.dismiss()
-                    vm?.isFlowPresented(.done)
+                    self.isFlowPresented(.done)
                 })
             )
         )
@@ -461,7 +467,7 @@ struct TerminationFlowNavigation: View {
                 actionButton: .init(
                     buttonTitle: L10n.openChat,
                     buttonAction: { [weak vm] in
-                        vm?.isFlowPresented(.chat)
+                        self.isFlowPresented(.chat)
                     }
                 ),
                 dismissButton: .init(

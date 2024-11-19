@@ -108,8 +108,7 @@ public struct ContractsNavigation<Content: View>: View {
             .environmentObject(contractsNavigationVm)
         }
         .handleTerminateInsurance(
-            vm: contractsNavigationVm.terminateInsuranceVm,
-            navigationVm: contractsNavigationVm.terminateInsuranceNavigationVm
+            vm: contractsNavigationVm.terminateInsuranceVm
         ) { dismissType in
             redirectAction(.termination(action: dismissType))
             switch dismissType {
@@ -125,13 +124,6 @@ public struct ContractsNavigation<Content: View>: View {
 public class ContractsNavigationViewModel: ObservableObject {
     public let contractsRouter = Router()
     let terminateInsuranceVm = TerminateInsuranceViewModel()
-    @Published var terminateInsuranceNavigationVm = TerminationFlowNavigationViewModel(
-        initialStep: nil,
-        context: "",
-        progress: nil,
-        previousProgress: nil,
-        config: .init(contractId: "", contractDisplayName: "", contractExposureName: "", activeFrom: nil)
-    )
 
     @Published public var insurableLimit: InsurableLimits?
     @Published public var document: hPDFDocument?
