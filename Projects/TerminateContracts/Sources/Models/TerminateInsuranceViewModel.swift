@@ -7,9 +7,6 @@ public class TerminateInsuranceViewModel: ObservableObject {
     @Inject var terminateContractsService: TerminateContractsClient
     @Published var flowNavigationVm: TerminationFlowNavigationViewModel?
     @Published var changeTierInput: ChangeTierInput?
-    @Published var context: String = ""
-    @Published var progress: Float?
-    @Published var previousProgress: Float?
     public init() {}
 
     public func start(with configs: [TerminationConfirmConfig]) {
@@ -40,26 +37,5 @@ public class TerminateInsuranceViewModel: ObservableObject {
 
         }
         return nil
-    }
-
-    func getInitialStep(data: TerminateStepResponse, config: TerminationConfirmConfig) -> TerminationFlowActionWrapper {
-        self.context = data.context
-        self.previousProgress = data.progress
-        self.progress = data.progress
-
-        switch data.step {
-        case let .setTerminationDateStep(model):
-            return .init(action: .router(action: .terminationDate(model: model)))
-        case let .setSuccessStep(model):
-            return .init(action: .final(action: .success(model: model)))
-        case let .setFailedStep(model):
-            return .init(action: .final(action: .fail(model: model)))
-        case let .setTerminationSurveyStep(model):
-            return .init(action: .router(action: .surveyStep(model: model)))
-        case .openTerminationUpdateAppScreen:
-            return .init(action: .final(action: .updateApp))
-        default:
-            return .init(action: .final(action: .fail(model: nil)))
-        }
     }
 }
