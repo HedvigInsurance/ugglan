@@ -2,15 +2,6 @@ import PresentableStore
 import hCore
 import hGraphQL
 
-public class TerminateContractsService {
-    @Inject var service: TerminateContractsClient
-
-    //    public func fetchContracts() async throws -> [Contract] {
-    //        log.info("EditCoInsuredSharedService: fetchContracts", error: nil, attributes: nil)
-    //        return try await service.fetchContracts()
-    //    }
-}
-
 public class TerminateContractsClientOctopus: TerminateContractsClient {
     public init() {}
 
