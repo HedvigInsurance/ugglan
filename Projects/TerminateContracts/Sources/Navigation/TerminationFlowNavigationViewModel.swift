@@ -5,27 +5,57 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public class TerminationFlowNavigationViewModel: ObservableObject {
+public class TerminationFlowNavigationViewModel: ObservableObject, Equatable, Identifiable {
+    public static func == (lhs: TerminationFlowNavigationViewModel, rhs: TerminationFlowNavigationViewModel) -> Bool {
+        return lhs.id == rhs.id
+    }
+
+    public let id = UUID().uuidString
+
     public init(
-        initialStep: TerminationFlowActions?,
-        context: String,
-        progress: Float?,
-        previousProgress: Float?,
+        stepResponse: TerminateStepResponse,
         config: TerminationConfirmConfig,
-        hasSelectInsuranceStep: Bool
+        terminateInsuranceViewModel: TerminateInsuranceViewModel?
     ) {
         self.config = config
-        self.hasSelectInsuranceStep = hasSelectInsuranceStep
-        if let initialStep {
-            setInitialModel(initialStep: initialStep, context: context)
+        self.hasSelectInsuranceStep = false
+        self.progress = stepResponse.progress
+        self.currentContext = stepResponse.context
+        self.initialStep = TerminationFlowNavigationViewModel.getInitialStep(data: stepResponse)
+        self.terminationDateStepModel = terminationDateStepModel
+        self.terminateInsuranceViewModel = terminateInsuranceViewModel
+        setInitialModel(initialStep: initialStep)
+    }
+
+    private static func getInitialStep(data: TerminateStepResponse) -> TerminationFlowActions {
+        switch data.step {
+        case let .setTerminationDateStep(model):
+            return .router(action: .terminationDate(model: model))
+        case let .setSuccessStep(model):
+            return .final(action: .success(model: model))
+        case let .setFailedStep(model):
+            return .final(action: .fail(model: model))
+        case let .setTerminationSurveyStep(model):
+            return .router(action: .surveyStep(model: model))
+        case .openTerminationUpdateAppScreen:
+            return .final(action: .updateApp)
+        default:
+            return .final(action: .fail(model: nil))
         }
     }
 
-    private func setInitialModel(initialStep: TerminationFlowActions, context: String) {
+    public init(
+        configs: [TerminationConfirmConfig],
+        terminateInsuranceViewModel: TerminateInsuranceViewModel?
+    ) {
+        self.configs = configs
+        self.hasSelectInsuranceStep = true
+        self.terminateInsuranceViewModel = terminateInsuranceViewModel
+        initialStep = .router(action: .selectInsurance(configs: configs))
+    }
+
+    private func setInitialModel(initialStep: TerminationFlowActions) {
         reset()
-        self.currentContext = context
-        self.progress = progress
-        self.progress = previousProgress
 
         switch initialStep {
         case .router(let action):
@@ -52,9 +82,10 @@ public class TerminationFlowNavigationViewModel: ObservableObject {
     @Published var isDatePickerPresented = false
     @Published var isConfirmTerminationPresented = false
     @Published var isProcessingPresented = false
-    @Published var changeTierInput: ChangeTierInput?
     @Published var infoText: String?
-
+    let initialStep: TerminationFlowActions
+    var configs: [TerminationConfirmConfig] = []
+    weak var terminateInsuranceViewModel: TerminateInsuranceViewModel?
     var redirectAction: FlowTerminationSurveyRedirectAction? {
         didSet {
             switch redirectAction {
@@ -85,7 +116,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject {
                             let newInput = try await ChangeTierNavigationViewModel.getTiers(input: input)
 
                             DispatchQueue.main.async { [weak self] in
-                                self?.changeTierInput = .existingIntent(
+                                self?.terminateInsuranceViewModel?.changeTierInput = .existingIntent(
                                     intent: newInput,
                                     onSelect: nil
                                 )
@@ -150,6 +181,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject {
     func startTermination(config: TerminationConfirmConfig) async {
         do {
             let data = try await terminateContractsService.startTermination(contractId: config.contractId)
+            self.config = config
             navigate(data: data)
         } catch {
 
@@ -192,40 +224,23 @@ public class TerminationFlowNavigationViewModel: ObservableObject {
 
 struct TerminationFlowNavigation: View {
     @ObservedObject private var vm: TerminationFlowNavigationViewModel
-    var configs: [TerminationConfirmConfig] = []
-    let initialStep: TerminationFlowActions
     let isFlowPresented: (DismissTerminationAction) -> Void
 
     public init(
-        initialStep: TerminationFlowActions,
-        configs: [TerminationConfirmConfig],
-        context: String,
-        progress: Float?,
-        previousProgress: Float?,
-        hasSelectInsuranceStep: Bool,
+        vm: TerminationFlowNavigationViewModel,
         isFlowPresented: @escaping (DismissTerminationAction) -> Void = { _ in }
     ) {
-        self.initialStep = initialStep
-        self.configs = configs
         self.isFlowPresented = isFlowPresented
-        self.vm = .init(
-            initialStep: initialStep,
-            context: context,
-            progress: progress,
-            previousProgress: previousProgress,
-            config: configs.first
-                ?? .init(contractId: "", contractDisplayName: "", contractExposureName: "", activeFrom: nil),
-            hasSelectInsuranceStep: false
-        )
+        self.vm = vm
     }
 
     public var body: some View {
         RouterHost(
             router: vm.router,
             options: [.navigationType(type: .withProgress)],
-            tracking: initialStep
+            tracking: vm.initialStep
         ) {
-            getView(for: initialStep)
+            getView(for: vm.initialStep)
                 .addTerminationProgressBar
                 .routerDestination(for: [TerminationFlowSurveyStepModelOption].self) { options in
                     TerminationSurveyScreen(vm: .init(options: options, subtitleType: .generic))
@@ -264,9 +279,6 @@ struct TerminationFlowNavigation: View {
                         openUpdateAppTerminationScreen()
                     }
                 }
-        }
-        .modally(item: $vm.changeTierInput) { item in
-            ChangeTierNavigation(input: item)
         }
         .environmentObject(vm)
         .detent(
@@ -346,7 +358,7 @@ struct TerminationFlowNavigation: View {
         ItemPickerScreen<TerminationConfirmConfig>(
             config: .init(
                 items: {
-                    let items = configs.map({
+                    let items = vm.configs.map({
                         (
                             object: $0,
                             displayName: ItemModel(

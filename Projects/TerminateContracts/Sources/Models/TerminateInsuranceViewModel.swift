@@ -1,25 +1,31 @@
+import ChangeTier
 import Combine
 import Foundation
 import hCore
 
 public class TerminateInsuranceViewModel: ObservableObject {
-    @Published var initialStep: ActionStepWrapper?
     @Inject var terminateContractsService: TerminateContractsClient
-
+    @Published var flowNavigationVm: TerminationFlowNavigationViewModel?
+    @Published var changeTierInput: ChangeTierInput?
+    @Published var context: String = ""
+    @Published var progress: Float?
+    @Published var previousProgress: Float?
     public init() {}
 
     public func start(with configs: [TerminationConfirmConfig]) {
         if configs.count > 1 {
-            initialStep = .init(
-                actionWrapper: .init(action: .router(action: .selectInsurance(configs: configs))),
-                config: configs,
-                response: nil
+            flowNavigationVm = .init(
+                configs: configs,
+                terminateInsuranceViewModel: self
             )
         } else if let config = configs.first {
-            Task {
-                let stepResponse = await startTermination(config: config)
-                if let stepResponse {
-                    initialStep = .init(config: configs, response: stepResponse)
+            Task { @MainActor in
+                if let stepResponse = await startTermination(config: config) {
+                    flowNavigationVm = .init(
+                        stepResponse: stepResponse,
+                        config: config,
+                        terminateInsuranceViewModel: self
+                    )
                 }
             }
         }
@@ -34,5 +40,26 @@ public class TerminateInsuranceViewModel: ObservableObject {
 
         }
         return nil
+    }
+
+    func getInitialStep(data: TerminateStepResponse, config: TerminationConfirmConfig) -> TerminationFlowActionWrapper {
+        self.context = data.context
+        self.previousProgress = data.progress
+        self.progress = data.progress
+
+        switch data.step {
+        case let .setTerminationDateStep(model):
+            return .init(action: .router(action: .terminationDate(model: model)))
+        case let .setSuccessStep(model):
+            return .init(action: .final(action: .success(model: model)))
+        case let .setFailedStep(model):
+            return .init(action: .final(action: .fail(model: model)))
+        case let .setTerminationSurveyStep(model):
+            return .init(action: .router(action: .surveyStep(model: model)))
+        case .openTerminationUpdateAppScreen:
+            return .init(action: .final(action: .updateApp))
+        default:
+            return .init(action: .final(action: .fail(model: nil)))
+        }
     }
 }
