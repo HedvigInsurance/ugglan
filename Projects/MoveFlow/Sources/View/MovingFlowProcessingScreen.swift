@@ -24,7 +24,7 @@ struct MovingFlowProcessingScreen: View {
         )
         .hErrorViewButtonConfig(errorButtons)
     }
-    
+
     private var errorButtons: ErrorViewButtonConfig {
         .init(
             actionButton: .init(buttonAction: {

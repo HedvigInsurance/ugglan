@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
+public struct FlowClaimSingleItemStepModel: FlowClaimStepModel {
     let id: String
     let availableItemBrandOptions: [ClaimFlowItemBrandOptionModel]
     let availableItemModelOptions: [ClaimFlowItemModelOptionModel]
@@ -252,11 +252,6 @@ public struct ClaimFlowItemProblemOptionModel: Codable, Equatable, Hashable {
         self.displayName = model.displayName
         self.itemProblemId = model.itemProblemId
     }
-}
-
-public enum SelectedModel: Codable, Equatable, Hashable {
-    case model(ClaimFlowItemModelOptionModel)
-    case custom(brand: ClaimFlowItemBrandOptionModel, name: String)
 }
 
 extension ClaimFlowItemBrandOptionModel: TrackingViewNameProtocol {

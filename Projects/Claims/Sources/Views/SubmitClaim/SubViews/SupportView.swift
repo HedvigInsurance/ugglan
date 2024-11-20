@@ -1,11 +1,10 @@
 import Foundation
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct SupportView: View {
-    @PresentableStore var store: SubmitClaimStore
+    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
     let openChat: () -> Void
 
     var body: some View {
@@ -18,7 +17,7 @@ struct SupportView: View {
                     .multilineTextAlignment(.center)
             }
             hButton.MediumButton(type: .primary) {
-                store.send(.dismissNewClaimFlow)
+                claimsNavigationVm.router.dismiss()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     openChat()
                 }

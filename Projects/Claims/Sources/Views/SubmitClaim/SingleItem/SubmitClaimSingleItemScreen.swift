@@ -1,14 +1,13 @@
 import Combine
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
 
-public struct SubmitClaimSingleItem: View {
-    @PresentableStore var store: SubmitClaimStore
+public struct SubmitClaimSingleItemScreen: View {
     @State var type: ClaimsFlowSingleItemFieldType?
     @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @StateObject var vm = SubmitClaimSingleItemViewModel()
 
     public init() {}
 
@@ -17,33 +16,33 @@ public struct SubmitClaimSingleItem: View {
         }
         .hFormTitle(title: .init(.small, .displayXSLong, L10n.claimsSingleItemDetails))
         .hFormAttachToBottom {
-            VStack(spacing: 4) {
-                PresentableStoreLens(
-                    SubmitClaimStore.self,
-                    getter: { state in
-                        state.singleItemStep
-                    }
-                ) { singleItemStep in
-                    hSection {
-                        getFields(singleItemStep: singleItemStep)
-                            .disableOn(SubmitClaimStore.self, [.postSingleItem])
-                        hButton.LargeButton(type: .primary) {
-                            store.send(.singleItemRequest(purchasePrice: singleItemStep?.purchasePrice))
-                        } content: {
-                            hText(L10n.generalContinueButton)
+            hSection {
+                getFields(singleItemStep: claimsNavigationVm.singleItemModel)
+                hButton.LargeButton(type: .primary) {
+                    let singleItemModel = claimsNavigationVm.singleItemModel
+                    Task {
+                        let step = await vm.singleItemRequest(
+                            context: claimsNavigationVm.currentClaimContext ?? "",
+                            model: singleItemModel
+                        )
+
+                        if let step {
+                            claimsNavigationVm.navigate(data: step)
                         }
-                        .trackLoading(SubmitClaimStore.self, action: .postSingleItem)
-                        .presentableStoreLensAnimation(.default)
                     }
-                    .sectionContainerStyle(.transparent)
+                } content: {
+                    hText(L10n.generalContinueButton)
                 }
+                .hButtonIsLoading(vm.viewState == .loading)
+                .disabled(vm.viewState == .loading)
             }
+            .sectionContainerStyle(.transparent)
         }
-        .claimErrorTrackerFor([.postSingleItem])
+        .claimErrorTrackerForState($vm.viewState)
     }
 
     @ViewBuilder
-    func getFields(singleItemStep: FlowClamSingleItemStepModel?) -> some View {
+    func getFields(singleItemStep: FlowClaimSingleItemStepModel?) -> some View {
         VStack(spacing: 4) {
             displayBrandAndModelField(singleItemStep: singleItemStep)
             displayDateField(claim: singleItemStep)
@@ -60,7 +59,7 @@ public struct SubmitClaimSingleItem: View {
         .padding(.vertical, .padding12)
     }
 
-    @ViewBuilder func displayBrandAndModelField(singleItemStep: FlowClamSingleItemStepModel?) -> some View {
+    @ViewBuilder func displayBrandAndModelField(singleItemStep: FlowClaimSingleItemStepModel?) -> some View {
         if (singleItemStep?.availableItemModelOptions.count) ?? 0 > 0
             || (singleItemStep?.availableItemBrandOptions.count) ?? 0 > 0
         {
@@ -74,7 +73,7 @@ public struct SubmitClaimSingleItem: View {
         }
     }
 
-    @ViewBuilder func displayDateField(claim: FlowClamSingleItemStepModel?) -> some View {
+    @ViewBuilder func displayDateField(claim: FlowClaimSingleItemStepModel?) -> some View {
         hDatePickerField(
             config: .init(
                 maxDate: Date(),
@@ -83,11 +82,11 @@ public struct SubmitClaimSingleItem: View {
             ),
             selectedDate: claim?.purchaseDate?.localDateToDate
         ) { date in
-            store.send(.setSingleItemPurchaseDate(purchaseDate: date))
+            claimsNavigationVm.singleItemModel?.purchaseDate = date.localDateString
         }
     }
 
-    @ViewBuilder func displayDamageField(claim: FlowClamSingleItemStepModel?) -> some View {
+    @ViewBuilder func displayDamageField(claim: FlowClaimSingleItemStepModel?) -> some View {
         if !(claim?.availableItemProblems.isEmpty ?? true) {
             hFloatingField(
                 value: claim?.getChoosenDamagesAsText() ?? "",
@@ -99,7 +98,7 @@ public struct SubmitClaimSingleItem: View {
         }
     }
 
-    @ViewBuilder func displayPurchasePriceField(claim: FlowClamSingleItemStepModel?) -> some View {
+    @ViewBuilder func displayPurchasePriceField(claim: FlowClaimSingleItemStepModel?) -> some View {
         hFloatingField(
             value: (claim?.purchasePrice != nil)
                 ? String(format: "%.0f", claim?.purchasePrice ?? 0) + " " + (claim?.prefferedCurrency ?? "") : "",
@@ -108,6 +107,30 @@ public struct SubmitClaimSingleItem: View {
                 claimsNavigationVm.isPriceInputPresented = true
             }
         )
+    }
+}
+
+public class SubmitClaimSingleItemViewModel: ObservableObject {
+    @Inject private var service: SubmitClaimClient
+    @Published var viewState: ProcessingState = .success
+
+    @MainActor
+    func singleItemRequest(context: String, model: FlowClaimSingleItemStepModel?) async -> SubmitClaimStepResponse? {
+        withAnimation {
+            self.viewState = .loading
+        }
+        do {
+            let data = try await service.singleItemRequest(context: context, model: model)
+            withAnimation {
+                self.viewState = .success
+            }
+            return data
+        } catch let exception {
+            withAnimation {
+                self.viewState = .error(errorMessage: exception.localizedDescription)
+            }
+        }
+        return nil
     }
 }
 
@@ -128,6 +151,6 @@ enum ClaimsFlowSingleItemFieldType: hTextFieldFocusStateCompliant {
 
 struct SubmitClaimSingleItem_Previews: PreviewProvider {
     static var previews: some View {
-        SubmitClaimSingleItem()
+        SubmitClaimSingleItemScreen()
     }
 }
