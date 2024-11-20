@@ -45,7 +45,7 @@ extension ApolloClient {
                         logGraphQLError(error: .graphQLError(errors: errors))
                         inCont.resume(throwing: GraphQLError.graphQLError(errors: errors))
                     } else if let data = result.data {
-                        Task {@MainActor in
+                        Task { @MainActor in
                             inCont.resume(returning: data)
                         }
                     }
@@ -72,7 +72,7 @@ extension ApolloClient {
                         logGraphQLError(error: .graphQLError(errors: errors))
                         inCont.resume(throwing: GraphQLError.graphQLError(errors: errors))
                     } else if let data = result.data {
-                        Task {@MainActor in
+                        Task { @MainActor in
                             inCont.resume(returning: data)
                         }
                     }
