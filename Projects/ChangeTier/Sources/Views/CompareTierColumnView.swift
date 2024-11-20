@@ -74,7 +74,7 @@ struct Column: View {
     @hColorBuilder
     func getIconColor(for peril: Perils, tier: Tier) -> some hColor {
         if peril.isDisabled {
-            hFillColor.Opaque.disabled
+            hFillColor.Opaque.tertiary
         } else if tier == vm.selectedTier {
             hFillColor.Opaque.black
         } else {

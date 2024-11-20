@@ -313,16 +313,14 @@ public class FilesUploadViewModel: ObservableObject {
                         }
                     )
                 //added delay so we don't have a flickering
+
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
                     guard let self = self else { return }
-                    withAnimation {
+                    for file in filesToReplaceLocalFiles {
                         if let index = self.fileGridViewModel.files.firstIndex(where: {
                             if case .localFile(_) = $0.source { return true } else { return false }
                         }) {
-                            self.fileGridViewModel.files.replaceSubrange(
-                                index...index + filteredFiles.count - 1,
-                                with: filesToReplaceLocalFiles
-                            )
+                            self.fileGridViewModel.files[index] = file
                         }
                     }
                 }
