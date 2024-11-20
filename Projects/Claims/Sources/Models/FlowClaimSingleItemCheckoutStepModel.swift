@@ -7,14 +7,14 @@ public struct FlowClaimSingleItemCheckoutStepModel: FlowClaimStepModel {
     let compensation: Compensation
     let payoutMethods: [AvailableCheckoutMethod]
     var selectedPayoutMethod: AvailableCheckoutMethod?
-    let singleItemModel: FlowClamSingleItemStepModel?
+    let singleItemModel: FlowClaimSingleItemStepModel?
 
     init(
         id: String,
         payoutMethods: [AvailableCheckoutMethod],
         selectedPayoutMethod: AvailableCheckoutMethod? = nil,
         compensation: Compensation,
-        singleItemModel: FlowClamSingleItemStepModel?
+        singleItemModel: FlowClaimSingleItemStepModel?
     ) {
         self.id = id
         self.payoutMethods = payoutMethods
@@ -22,14 +22,14 @@ public struct FlowClaimSingleItemCheckoutStepModel: FlowClaimStepModel {
         self.compensation = compensation
         self.singleItemModel = singleItemModel
     }
-
+    @MainActor
     init(
         with data: OctopusGraphQL.FlowClaimSingleItemCheckoutStepFragment
-    ) async {
+    ) {
         self.id = data.id
         self.compensation = .init(with: data.compensation.fragments.flowClaimSingleItemCheckoutCompensationFragment)
         if let singleItemFragment = data.singleItemStep?.fragments.flowClaimSingleItemStepFragment {
-            self.singleItemModel = await .init(with: singleItemFragment)
+            self.singleItemModel = .init(with: singleItemFragment)
         } else {
             self.singleItemModel = nil
         }

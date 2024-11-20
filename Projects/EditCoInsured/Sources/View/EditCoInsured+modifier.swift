@@ -4,7 +4,9 @@ import SwiftUI
 import hCoreUI
 
 extension View {
-    public func handleEditCoInsured(with vm: EditCoInsuredViewModel) -> some View {
+    public func handleEditCoInsured(
+        with vm: EditCoInsuredViewModel
+    ) -> some View {
         return modifier(EditCoInsured(vm: vm))
     }
 }

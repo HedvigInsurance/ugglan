@@ -21,21 +21,29 @@ public struct ProcessingStateView: View {
     var successViewTitle: String?
     var successViewBody: String?
     var successViewButtonAction: (() -> Void)?
+    var onAppearLoadingView: (() -> Void)?
+    var showSuccessScreen: Bool
+
     @Environment(\.hCustomSuccessView) var customSuccessView
     @Environment(\.hErrorViewButtonConfig) var errorViewButtonConfig
+    @Environment(\.hSuccessBottomAttachedView) var successBottomView
 
     public init(
+        showSuccessScreen: Bool? = true,
         loadingViewText: String,
         successViewTitle: String? = nil,
         successViewBody: String? = nil,
         successViewButtonAction: (() -> Void)? = nil,
+        onAppearLoadingView: (() -> Void)? = nil,
         state: Binding<ProcessingState>,
         duration: Float = 1.5
     ) {
+        self.showSuccessScreen = showSuccessScreen ?? true
         self.loadingViewText = loadingViewText
         self.successViewTitle = successViewTitle
         self.successViewBody = successViewBody
         self.successViewButtonAction = successViewButtonAction
+        self.onAppearLoadingView = onAppearLoadingView
         self._state = state
 
         let baseDurationFactor: Float = duration * (Float(1) / Float(24))
@@ -62,10 +70,26 @@ public struct ProcessingStateView: View {
         case .loading:
             loadingView
         case .success:
-            successView
+            if showSuccessScreen {
+                if successBottomView != nil {
+                    bottomSuccessView
+                } else {
+                    successView
+                }
+            } else {
+                loadingView
+                    .onAppear {
+                        onAppearLoadingView?()
+                    }
+            }
         case let .error(errorMessage):
             errorView(errorMessage: errorMessage)
         }
+    }
+
+    @ViewBuilder
+    private var bottomSuccessView: some View {
+        SuccessScreen(title: successViewTitle ?? "", subtitle: successViewBody ?? "")
     }
 
     @ViewBuilder
@@ -128,3 +152,40 @@ public struct ProcessingStateView: View {
         state: .constant(.error(errorMessage: "error message"))
     )
 })
+
+extension View {
+    public func trackErrorState(for state: Binding<ProcessingState>) -> some View {
+        self.modifier(TrackErrorState(processingState: state))
+    }
+}
+private struct TrackErrorState: ViewModifier {
+    @State private var error: String?
+    @Binding var processingState: ProcessingState
+    func body(content: Content) -> some View {
+        Group {
+            if let error {
+                GenericErrorView(description: error)
+                    .hFormDontUseInitialAnimation
+            } else {
+                content
+            }
+        }
+        .onAppear {
+            checkForError()
+        }
+        .onChange(of: processingState) { value in
+            checkForError()
+        }
+    }
+
+    private func checkForError() {
+        withAnimation {
+            switch processingState {
+            case let .error(errorMessage):
+                self.error = errorMessage
+            default:
+                self.error = nil
+            }
+        }
+    }
+}

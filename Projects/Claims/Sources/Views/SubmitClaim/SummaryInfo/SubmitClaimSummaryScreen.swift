@@ -1,15 +1,21 @@
 import Kingfisher
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct SubmitClaimSummaryScreen: View {
-    @PresentableStore var store: SubmitClaimStore
     @StateObject fileprivate var vm: SubmitClaimSummaryScreenViewModel
+    @ObservedObject var claimsNavigationVm: ClaimsNavigationViewModel
 
-    public init() {
-        _vm = StateObject(wrappedValue: SubmitClaimSummaryScreenViewModel())
+    public init(
+        claimsNavigationVm: ClaimsNavigationViewModel
+    ) {
+        self.claimsNavigationVm = claimsNavigationVm
+        _vm = StateObject(
+            wrappedValue: SubmitClaimSummaryScreenViewModel(
+                fileUploadStep: claimsNavigationVm.summaryModel?.fileUploadModel
+            )
+        )
     }
 
     public var body: some View {
@@ -25,7 +31,6 @@ public struct SubmitClaimSummaryScreen: View {
                         dateOfPurchase
                         purchasePrice
                     }
-                    .disableOn(SubmitClaimStore.self, [.postSummary])
                 }
                 .withHeader {
                     HStack {
@@ -49,141 +54,101 @@ public struct SubmitClaimSummaryScreen: View {
                     InfoCard(text: L10n.claimsComplementClaim, type: .info)
                         .padding(.bottom, .padding8)
                     hButton.LargeButton(type: .primary) {
-                        store.send(.summaryRequest)
+                        Task {
+                            let step = await vm.summaryRequest(
+                                context: claimsNavigationVm.currentClaimContext ?? "",
+                                model: claimsNavigationVm.summaryModel
+                            )
+
+                            if let step {
+                                claimsNavigationVm.navigate(data: step)
+                            }
+                        }
                     } content: {
                         hText(L10n.embarkSubmitClaim)
                     }
-                    .trackLoading(SubmitClaimStore.self, action: .postSummary)
-                    .presentableStoreLensAnimation(.default)
-
+                    .disabled(vm.viewState == .loading)
+                    .hButtonIsLoading(vm.viewState == .loading)
                 }
             }
             .sectionContainerStyle(.transparent)
         }
-        .claimErrorTrackerFor([.postSummary])
+        .claimErrorTrackerForState($vm.viewState)
+
     }
 
     @ViewBuilder
     private var matter: some View {
-        PresentableStoreLens(
-            SubmitClaimStore.self,
-            getter: { state in
-                state.summaryStep
-            }
-        ) { summaryStep in
-            createRow(with: L10n.claimsCase, and: summaryStep?.title ?? "")
-        }
+        createRow(with: L10n.claimsCase, and: claimsNavigationVm.summaryModel?.summaryStep?.title ?? "")
     }
 
     @ViewBuilder
     private var damageType: some View {
-        PresentableStoreLens(
-            SubmitClaimStore.self,
-            getter: { state in
-                state.singleItemStep
-            }
-        ) { singleItemStep in
-            createRow(with: L10n.claimsDamages, and: singleItemStep?.getAllChoosenDamagesAsText())
-        }
+        let singleItemStep = claimsNavigationVm.summaryModel?.singleItemStepModel
+        createRow(with: L10n.claimsDamages, and: singleItemStep?.getAllChoosenDamagesAsText())
     }
 
     @ViewBuilder
     private var damageDate: some View {
-        PresentableStoreLens(
-            SubmitClaimStore.self,
-            getter: { state in
-                state.dateOfOccurenceStep
-            }
-        ) { dateOfOccurenceStep in
-            createRow(
-                with: L10n.Claims.Item.Screen.Date.Of.Incident.button,
-                and: dateOfOccurenceStep?.dateOfOccurence?.localDateToDate?.displayDateDDMMMYYYYFormat
-            )
-        }
+        let dateOfOccurenceStep = claimsNavigationVm.summaryModel?.dateOfOccurenceModel
+        createRow(
+            with: L10n.Claims.Item.Screen.Date.Of.Incident.button,
+            and: dateOfOccurenceStep?.dateOfOccurence?.localDateToDate?.displayDateDDMMMYYYYFormat
+        )
     }
 
     @ViewBuilder
     private var place: some View {
-        PresentableStoreLens(
-            SubmitClaimStore.self,
-            getter: { state in
-                state.locationStep
-            }
-        ) { locationStep in
-            createRow(with: L10n.Claims.Location.Screen.title, and: locationStep?.getSelectedOption()?.displayName)
-        }
+        let locationStep = claimsNavigationVm.summaryModel?.locationModel
+        createRow(with: L10n.Claims.Location.Screen.title, and: locationStep?.getSelectedOption()?.displayName)
     }
 
     @ViewBuilder
     private var model: some View {
-        PresentableStoreLens(
-            SubmitClaimStore.self,
-            getter: { state in
-                state.singleItemStep
-            }
-        ) { singleItemStep in
-            createRow(with: L10n.Claims.Item.Screen.Model.button, and: singleItemStep?.getBrandOrModelName())
-        }
+        let singleItemStep = claimsNavigationVm.summaryModel?.singleItemStepModel
+        createRow(with: L10n.Claims.Item.Screen.Model.button, and: singleItemStep?.getBrandOrModelName())
     }
 
     @ViewBuilder
     private var dateOfPurchase: some View {
-        PresentableStoreLens(
-            SubmitClaimStore.self,
-            getter: { state in
-                state.singleItemStep
-            }
-        ) { singleItemStep in
-            createRow(
-                with: L10n.Claims.Item.Screen.Date.Of.Purchase.button,
-                and: singleItemStep?.purchaseDate?.localDateToDate?.displayDateDDMMMYYYYFormat
-            )
-        }
+        let singleItemStep = claimsNavigationVm.summaryModel?.singleItemStepModel
+        createRow(
+            with: L10n.Claims.Item.Screen.Date.Of.Purchase.button,
+            and: singleItemStep?.purchaseDate?.localDateToDate?.displayDateDDMMMYYYYFormat
+        )
     }
 
     @ViewBuilder
     private var purchasePrice: some View {
-        PresentableStoreLens(
-            SubmitClaimStore.self,
-            getter: { state in
-                state.singleItemStep
-            }
-        ) { singleItemStep in
-            createRow(
-                with: L10n.Claims.Item.Screen.Purchase.Price.button,
-                and: singleItemStep?.returnDisplayStringForSummaryPrice
-            )
-        }
+        let singleItemStep = claimsNavigationVm.summaryModel?.singleItemStepModel
+        createRow(
+            with: L10n.Claims.Item.Screen.Purchase.Price.button,
+            and: singleItemStep?.returnDisplayStringForSummaryPrice
+        )
     }
 
     @ViewBuilder
     private var uploadedFilesView: some View {
-        PresentableStoreLens(
-            SubmitClaimStore.self,
-            getter: { state in
-                state.audioRecordingStep
-            }
-        ) { audioRecordingStep in
-            if audioRecordingStep?.audioContent != nil || vm.model?.fileGridViewModel.files.count ?? 0 > 0 {
-                hSection {
-                    VStack(spacing: 8) {
-                        if let audioRecordingStep, audioRecordingStep.audioContent != nil {
-                            let audioPlayer = AudioPlayer(url: audioRecordingStep.getUrl())
-                            TrackPlayerView(
-                                audioPlayer: audioPlayer
-                            )
-                        }
-                        if let files = vm.model?.fileGridViewModel.files {
-                            let fileGridVm = FileGridViewModel(files: files, options: [])
-                            FilesGridView(vm: fileGridVm)
-                        }
+        let audioRecordingStep = claimsNavigationVm.summaryModel?.audioRecordingModel
+        if audioRecordingStep?.audioContent != nil || vm.model?.fileGridViewModel.files.count ?? 0 > 0 {
+            hSection {
+                VStack(spacing: 8) {
+                    if let audioRecordingStep, audioRecordingStep.audioContent != nil {
+                        let audioPlayer = AudioPlayer(url: audioRecordingStep.getUrl())
+                        TrackPlayerView(
+                            audioPlayer: audioPlayer
+                        )
+                    }
+                    if let files = vm.model?.fileGridViewModel.files {
+                        let fileGridVm = FileGridViewModel(files: files, options: [])
+                        FilesGridView(vm: fileGridVm)
                     }
                 }
-                .withHeader {
-                    hText(L10n.ClaimStatusDetail.uploadedFiles)
-                }
-                .sectionContainerStyle(.transparent)
             }
+            .withHeader {
+                hText(L10n.ClaimStatusDetail.uploadedFiles)
+            }
+            .sectionContainerStyle(.transparent)
         }
     }
 
@@ -200,44 +165,65 @@ public struct SubmitClaimSummaryScreen: View {
 
     @ViewBuilder
     private var memberFreeTextSection: some View {
-        PresentableStoreLens(
-            SubmitClaimStore.self,
-            getter: { state in
-                state.audioRecordingStep
-            }
-        ) { audioStep in
-            if let inputText = audioStep?.inputTextContent, audioStep?.optionalAudio == true {
-                hSection {
-                    hRow {
-                        hText(inputText)
-                    }
+        let audioStep = claimsNavigationVm.summaryModel?.audioRecordingModel
+        if let inputText = audioStep?.inputTextContent, audioStep?.optionalAudio == true {
+            hSection {
+                hRow {
+                    hText(inputText)
                 }
-                .withHeader {
-                    hText(L10n.ClaimStatusDetail.submittedMessage)
-                        .padding(.leading, 2)
-                }
-                .padding(.top, .padding16)
             }
+            .withHeader {
+                hText(L10n.ClaimStatusDetail.submittedMessage)
+                    .padding(.leading, 2)
+            }
+            .padding(.top, .padding16)
         }
     }
 }
 
 struct SubmitClaimSummaryScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SubmitClaimSummaryScreen()
+        SubmitClaimSummaryScreen(claimsNavigationVm: .init())
     }
 }
 
 @MainActor
 class SubmitClaimSummaryScreenViewModel: ObservableObject {
     let model: FilesUploadViewModel?
+    @Inject private var service: SubmitClaimClient
+    @Published var viewState: ProcessingState = .success
 
-    init() {
-        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-        if let fileUploadStep = store.state.fileUploadStep {
+    init(
+        fileUploadStep: FlowClaimFileUploadStepModel?
+    ) {
+        if let fileUploadStep {
             self.model = FilesUploadViewModel(model: fileUploadStep)
         } else {
             self.model = nil
         }
+    }
+
+    @MainActor
+    func summaryRequest(
+        context: String,
+        model: SubmitClaimStep.SummaryStepModels?
+    ) async -> SubmitClaimStepResponse? {
+        withAnimation {
+            viewState = .loading
+        }
+        do {
+            let data = try await service.summaryRequest(context: context, model: model)
+
+            withAnimation {
+                viewState = .success
+            }
+
+            return data
+        } catch let exception {
+            withAnimation {
+                viewState = .error(errorMessage: exception.localizedDescription)
+            }
+        }
+        return nil
     }
 }

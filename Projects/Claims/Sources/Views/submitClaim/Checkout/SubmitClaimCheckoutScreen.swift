@@ -1,50 +1,58 @@
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
 
 public struct SubmitClaimCheckoutScreen: View {
-    @PresentableStore var store: SubmitClaimStore
-
-    public init() {}
+    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @ObservedObject var vm: SubmitClaimCheckoutViewModel
+    public init(vm: SubmitClaimCheckoutViewModel) {
+        self.vm = vm
+    }
 
     public var body: some View {
-        PresentableStoreLens(
-            SubmitClaimStore.self,
-            getter: { state in
-                state.singleItemCheckoutStep
-            }
-        ) { singleItemCheckoutStep in
-            hForm {
-                getFormContent(from: singleItemCheckoutStep)
-            }
-            .hFormAttachToBottom {
-                hSection {
-                    VStack(spacing: 16) {
-                        let repairCost = singleItemCheckoutStep?.compensation.repairCompensation?.repairCost
-                        if repairCost == nil {
-                            InfoCard(text: L10n.claimsCheckoutNotice, type: .info)
-                        }
-                        hButton.LargeButton(type: .primary) {
-                            store.send(.singleItemCheckoutRequest)
-                            store.send(.navigationAction(action: .openCheckoutTransferringScreen))
-                        } content: {
-                            hText(
-                                L10n.Claims.Payout.Button.label(
-                                    singleItemCheckoutStep?.compensation.payoutAmount.formattedAmount ?? ""
-                                ),
-                                style: .body1
-                            )
-                        }
-                    }
-                }
-                .padding(.vertical, .padding16)
-                .sectionContainerStyle(.transparent)
-            }
+        let singleItemCheckoutStep = claimsNavigationVm.singleItemCheckoutModel
+        hForm {
+            getFormContent(from: singleItemCheckoutStep)
         }
-        .presentableStoreLensAnimation(.spring())
-        .claimErrorTrackerFor([.postSingleItemCheckout])
+        .hFormAttachToBottom {
+            hSection {
+                VStack(spacing: 16) {
+                    let repairCost = singleItemCheckoutStep?.compensation.repairCompensation?.repairCost
+                    if repairCost == nil {
+                        InfoCard(text: L10n.claimsCheckoutNotice, type: .info)
+                    }
+                    hButton.LargeButton(type: .primary) {
+                        claimsNavigationVm.isCheckoutTransferringPresented = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 7) {
+                            Task {
+                                let step = await vm.singleItemRequest(
+                                    context: claimsNavigationVm.currentClaimContext ?? "",
+                                    model: claimsNavigationVm.singleItemCheckoutModel
+                                )
+
+                                if let step {
+                                    claimsNavigationVm.isCheckoutTransferringPresented = false
+                                    claimsNavigationVm.navigate(data: step)
+                                }
+                            }
+                        }
+
+                    } content: {
+                        hText(
+                            L10n.Claims.Payout.Button.label(
+                                singleItemCheckoutStep?.compensation.payoutAmount.formattedAmount ?? ""
+                            ),
+                            style: .body1
+                        )
+                    }
+                    .disabled(vm.viewState == .loading)
+                    .hButtonIsLoading(vm.viewState == .loading)
+                }
+            }
+            .padding(.vertical, .padding16)
+            .sectionContainerStyle(.transparent)
+        }
     }
 
     func getFormContent(from singleItemCheckoutStep: FlowClaimSingleItemCheckoutStepModel?) -> some View {
@@ -143,7 +151,7 @@ public struct SubmitClaimCheckoutScreen: View {
                             .padding(.vertical, .padding8)
                             .onTapGesture {
                                 withAnimation {
-                                    store.send(.setPayoutMethod(method: element))
+                                    claimsNavigationVm.singleItemCheckoutModel?.selectedPayoutMethod = element
                                 }
                             }
                         }
@@ -211,130 +219,39 @@ public struct SubmitClaimCheckoutScreen: View {
     }
 }
 
-struct SubmitClaimCheckoutRepairScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        Localization.Locale.currentLocale.send(.en_SE)
-        return SubmitClaimCheckoutScreen()
-            .onAppear {
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                store.send(
-                    .stepModelAction(
-                        action: .setSingleItemCheckoutStep(
-                            model: .init(
-                                id: "id",
-                                payoutMethods: [
-                                    .init(
-                                        id: "id",
-                                        autogiro: .init(
-                                            id: "autogiroId",
-                                            amount: .sek(100),
-                                            displayName: "Auto giro"
-                                        )
-                                    )
-                                ],
-                                compensation: .init(
-                                    id: "compensation id",
-                                    deductible: .sek(20),
-                                    payoutAmount: .sek(100),
-                                    repairCompensation: nil,
-                                    valueCompensation: .init(
-                                        depreciation: .sek(30),
-                                        price: .sek(300)
-                                    )
-                                ),
-                                singleItemModel: nil
-                            )
-                        )
-                    )
-                )
-                store.send(
-                    .stepModelAction(
-                        action: .setSingleItem(
-                            model: .init(
-                                id: "Test",
-                                availableItemBrandOptions: [],
-                                availableItemModelOptions: [
-                                    .init(
-                                        displayName: "Model display name",
-                                        itemBrandId: "testBrand",
-                                        itemTypeId: "testModel",
-                                        itemModelId: "testModel"
-                                    )
-                                ],
-                                availableItemProblems: [],
-                                prefferedCurrency: "sek",
-                                currencyCode: "SEK",
-                                selectedItemModel: "testModel",
-                                defaultItemProblems: [],
-                                purchasePriceApplicable: false
-                            )
-                        )
-                    )
-                )
+@MainActor
+public class SubmitClaimCheckoutViewModel: ObservableObject {
+    @Inject private var service: SubmitClaimClient
+    @Published var viewState: ProcessingState = .success
+
+    @MainActor
+    func singleItemRequest(
+        context: String,
+        model: FlowClaimSingleItemCheckoutStepModel?
+    ) async -> SubmitClaimStepResponse? {
+        withAnimation {
+            viewState = .loading
+        }
+        do {
+            let data = try await service.singleItemCheckoutRequest(context: context, model: model)
+
+            withAnimation {
+                viewState = .success
             }
+
+            return data
+        } catch let exception {
+            withAnimation {
+                viewState = .error(errorMessage: exception.localizedDescription)
+            }
+        }
+        return nil
     }
 }
 
 struct SubmitClaimCheckoutNoRepairScreen_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
-        return SubmitClaimCheckoutScreen()
-            .onAppear {
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                store.send(
-                    .stepModelAction(
-                        action: .setSingleItemCheckoutStep(
-                            model: .init(
-                                id: "id",
-                                payoutMethods: [
-                                    .init(
-                                        id: "id",
-                                        autogiro: .init(
-                                            id: "autogiroId",
-                                            amount: .sek(100),
-                                            displayName: "Auto giro"
-                                        )
-                                    )
-                                ],
-                                compensation: .init(
-                                    id: "compensation id",
-                                    deductible: .sek(20),
-                                    payoutAmount: .sek(100),
-                                    repairCompensation: nil,
-                                    valueCompensation: .init(
-                                        depreciation: .sek(30),
-                                        price: .sek(300)
-                                    )
-                                ),
-                                singleItemModel: nil
-                            )
-                        )
-                    )
-                )
-                store.send(
-                    .stepModelAction(
-                        action: .setSingleItem(
-                            model: .init(
-                                id: "Test",
-                                availableItemBrandOptions: [],
-                                availableItemModelOptions: [
-                                    .init(
-                                        displayName: "Model display name",
-                                        itemBrandId: "testBrand",
-                                        itemTypeId: "testModel",
-                                        itemModelId: "testModel"
-                                    )
-                                ],
-                                availableItemProblems: [],
-                                prefferedCurrency: "sek",
-                                currencyCode: "SEK",
-                                selectedItemModel: "testModel",
-                                defaultItemProblems: [],
-                                purchasePriceApplicable: false
-                            )
-                        )
-                    )
-                )
-            }
+        return SubmitClaimCheckoutScreen(vm: .init())
     }
 }

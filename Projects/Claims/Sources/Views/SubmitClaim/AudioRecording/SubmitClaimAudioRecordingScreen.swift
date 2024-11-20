@@ -1,16 +1,17 @@
 import AVFAudio
 import Combine
 import Foundation
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
 
 public struct SubmitClaimAudioRecordingScreen: View {
-    @PresentableStore var store: SubmitClaimStore
+    @ObservedObject var claimsNavigationVm: ClaimsNavigationViewModel
     @ObservedObject var audioPlayer: AudioPlayer
     @ObservedObject var audioRecorder: AudioRecorder
+    @StateObject var audioRecordingVm = SubmitClaimAudioRecordingScreenModel()
+
     @State var minutes: Int = 0
     @State var seconds: Int = 0
     @State var isAudioInput = true
@@ -22,18 +23,19 @@ public struct SubmitClaimAudioRecordingScreen: View {
     let onSubmit: (_ url: URL) -> Void
 
     public init(
-        url: URL?
+        url: URL?,
+        claimsNavigationVm: ClaimsNavigationViewModel
     ) {
         audioPlayer = AudioPlayer(url: url)
-        let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-        let path = store.state.claimAudioRecordingPath
+        self.claimsNavigationVm = claimsNavigationVm
+        let path = claimsNavigationVm.claimAudioRecordingPath
         audioRecorder = AudioRecorder(filePath: path)
-        self._isAudioInput = State(initialValue: store.state.audioRecordingStep?.isAudioInput() ?? false)
+        self._isAudioInput = State(initialValue: claimsNavigationVm.audioRecordingModel?.isAudioInput() ?? false)
         let inputText: String? = {
-            if store.state.audioRecordingStep?.optionalAudio == false {
+            if claimsNavigationVm.audioRecordingModel?.optionalAudio == false {
                 return nil
             }
-            return store.state.audioRecordingStep?.inputTextContent
+            return claimsNavigationVm.audioRecordingModel?.inputTextContent
         }()
         self._inputText = State(initialValue: inputText ?? "")
         func myFunc(_: URL) {}
@@ -43,7 +45,6 @@ public struct SubmitClaimAudioRecordingScreen: View {
     public var body: some View {
         if isAudioInput {
             mainContent
-                .claimErrorTrackerFor([.postAudioRecording])
                 .onAppear {
                     UIApplication.shared.isIdleTimerDisabled = true
                 }
@@ -52,23 +53,17 @@ public struct SubmitClaimAudioRecordingScreen: View {
                 }
         } else {
             mainContent
-                .claimErrorTrackerFor([.postAudioRecording])
         }
+
     }
 
     private var mainContent: some View {
         hForm {
-            PresentableStoreLens(
-                SubmitClaimStore.self,
-                getter: { state in
-                    state.audioRecordingStep
-                }
-            ) { audioRecordingStep in
-                if isAudioInput {
-                    textSection(questions: audioRecordingStep?.questions)
-                } else {
-                    textSection(questions: audioRecordingStep?.textQuestions)
-                }
+            let audioRecordingStep = claimsNavigationVm.audioRecordingModel
+            if isAudioInput {
+                textSection(questions: audioRecordingStep?.questions)
+            } else {
+                textSection(questions: audioRecordingStep?.textQuestions)
             }
         }
         .hFormIgnoreKeyboard()
@@ -83,6 +78,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
             }
             .slideUpAppearAnimation()
         }
+        .claimErrorTrackerForState($audioRecordingVm.viewState)
     }
 
     private func textSection(questions: [String]?) -> some View {
@@ -112,7 +108,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
         hSection {
             ZStack(alignment: .bottom) {
                 Group {
-                    if let url = audioRecorder.recording?.url ?? store.state.audioRecordingStep?.getUrl() {
+                    if let url = audioRecorder.recording?.url ?? claimsNavigationVm.audioRecordingModel?.getUrl() {
                         VStack(spacing: 12) {
                             TrackPlayerView(audioPlayer: audioPlayer)
                                 .onAppear {
@@ -121,22 +117,31 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                 }
                             hButton.LargeButton(type: .primary) {
                                 onSubmit(url)
-                                store.send(.submitAudioRecording(type: .audio(url: url)))
+                                Task {
+                                    let step = await audioRecordingVm.submitAudioRecording(
+                                        context: claimsNavigationVm.currentClaimContext ?? "",
+                                        currentClaimId: claimsNavigationVm.currentClaimId ?? "",
+                                        type: .audio(url: url),
+                                        model: claimsNavigationVm.audioRecordingModel
+                                    )
+
+                                    if let step {
+                                        claimsNavigationVm.navigate(data: step)
+                                    }
+                                }
                             } content: {
                                 hText(L10n.saveAndContinueButtonLabel)
                             }
-                            .trackLoading(SubmitClaimStore.self, action: .postAudioRecording)
-                            .presentableStoreLensAnimation(.default)
+                            .disabled(audioRecordingVm.viewState == .loading)
+                            .hButtonIsLoading(audioRecordingVm.viewState == .loading)
                             hButton.LargeButton(type: .ghost) {
                                 withAnimation(.spring()) {
-                                    store.send(.resetAudioRecording)
+                                    claimsNavigationVm.audioRecordingModel?.audioContent = nil
                                     audioRecorder.restart()
                                 }
                             } content: {
                                 hText(L10n.embarkRecordAgain)
                             }
-                            .disableOn(SubmitClaimStore.self, [.postAudioRecording])
-                            .presentableStoreLensAnimation(.default)
                         }
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                         .onAppear {
@@ -158,27 +163,21 @@ public struct SubmitClaimAudioRecordingScreen: View {
                                 .asymmetric(insertion: .move(edge: .bottom), removal: .offset(x: 0, y: 300))
                             )
                             if !audioRecorder.isRecording {
-                                PresentableStoreLens(
-                                    SubmitClaimStore.self,
-                                    getter: { state in
-                                        state.audioRecordingStep
-                                    }
-                                ) { audioRecordingStep in
-                                    if audioRecordingStep?.optionalAudio == true {
-                                        hButton.LargeButton(type: .ghost) {
-                                            withAnimation {
-                                                self.isAudioInput = false
-                                            }
-                                        } content: {
-                                            hText(L10n.claimsUseTextInstead, style: .body1)
-                                                .foregroundColor(hTextColor.Opaque.primary)
+                                let audioRecordingStep = claimsNavigationVm.audioRecordingModel
+                                if audioRecordingStep?.optionalAudio == true {
+                                    hButton.LargeButton(type: .ghost) {
+                                        withAnimation {
+                                            self.isAudioInput = false
                                         }
-
-                                    } else {
-                                        hText(L10n.claimsStartRecordingLabel, style: .body1)
+                                    } content: {
+                                        hText(L10n.claimsUseTextInstead, style: .body1)
                                             .foregroundColor(hTextColor.Opaque.primary)
-
                                     }
+
+                                } else {
+                                    hText(L10n.claimsStartRecordingLabel, style: .body1)
+                                        .foregroundColor(hTextColor.Opaque.primary)
+
                                 }
                             } else {
                                 let minutesToString = String(format: "%02d", minutes)
@@ -212,12 +211,22 @@ public struct SubmitClaimAudioRecordingScreen: View {
                 hButton.LargeButton(type: .primary) {
                     UIApplication.dismissKeyboard()
                     if validate() {
-                        store.send(.submitAudioRecording(type: .text(text: inputText)))
+                        Task {
+                            let step = await audioRecordingVm.submitAudioRecording(
+                                context: claimsNavigationVm.currentClaimContext ?? "",
+                                currentClaimId: claimsNavigationVm.currentClaimId ?? "",
+                                type: .text(text: inputText),
+                                model: claimsNavigationVm.audioRecordingModel
+                            )
+
+                            if let step {
+                                claimsNavigationVm.navigate(data: step)
+                            }
+                        }
                     }
                 } content: {
                     hText(L10n.saveAndContinueButtonLabel)
                 }
-                .trackLoading(SubmitClaimStore.self, action: .postAudioRecording)
                 hButton.LargeButton(type: .ghost) {
                     withAnimation {
                         self.isAudioInput = true
@@ -225,7 +234,6 @@ public struct SubmitClaimAudioRecordingScreen: View {
                 } content: {
                     hText(L10n.claimsUseAudioRecording, style: .body1)
                 }
-                .disableOn(SubmitClaimStore.self, [.postAudioRecording])
             }
             .sectionContainerStyle(.transparent)
         }
@@ -264,24 +272,51 @@ public struct SubmitClaimAudioRecordingScreen: View {
     }
 }
 
+@MainActor
+public class SubmitClaimAudioRecordingScreenModel: ObservableObject {
+    @Inject private var service: SubmitClaimClient
+    @Inject var fileUploaderClient: FileUploaderClient
+    @Published public var viewState: ProcessingState = .success
+
+    @MainActor
+    func submitAudioRecording(
+        context: String,
+        currentClaimId: String,
+        type: SubmitAudioRecordingType,
+        model: FlowClaimAudioRecordingStepModel?
+    ) async -> SubmitClaimStepResponse? {
+        withAnimation {
+            self.viewState = .loading
+        }
+
+        do {
+            let data = try await service.submitAudioRecording(
+                type: type,
+                fileUploaderClient: fileUploaderClient,
+                context: context,
+                currentClaimId: currentClaimId,
+                model: model
+            )
+
+            withAnimation {
+                self.viewState = .success
+            }
+
+            return data
+        } catch let exception {
+            withAnimation {
+                self.viewState = .error(errorMessage: exception.localizedDescription)
+            }
+        }
+        return nil
+    }
+}
+
 struct SubmitClaimAudioRecordingScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SubmitClaimAudioRecordingScreen(url: URL(string: "https://filesamples.com/samples/audio/m4a/sample4.m4a"))
-            .onAppear {
-                let store: SubmitClaimStore = globalPresentableStoreContainer.get()
-                let model = FlowClaimAudioRecordingStepModel(
-                    id: "ID",
-                    questions: ["question", "qustion 12"],
-                    audioContent: .init(
-                        audioUrl: "https://filesamples.com/samples/audio/m4a/sample4.m4a",
-                        signedUrl: "https://filesamples.com/samples/audio/m4a/sample4.m4a"
-                    ),
-                    textQuestions: ["question", "qustion 12"],
-
-                    inputTextContent: "test",
-                    optionalAudio: true
-                )
-                store.send(.stepModelAction(action: .setAudioStep(model: model)))
-            }
+        SubmitClaimAudioRecordingScreen(
+            url: URL(string: "https://filesamples.com/samples/audio/m4a/sample4.m4a"),
+            claimsNavigationVm: .init()
+        )
     }
 }

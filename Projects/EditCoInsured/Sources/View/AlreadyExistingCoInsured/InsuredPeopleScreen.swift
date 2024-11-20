@@ -1,17 +1,14 @@
 import EditCoInsuredShared
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
 
 struct InsuredPeopleScreen: View {
-    @PresentableStore var store: EditCoInsuredStore
     @ObservedObject var vm: InsuredPeopleNewScreenModel
-    @ObservedObject var intentVm: IntentViewModel
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @EnvironmentObject var router: Router
-
+    @ObservedObject var intentViewModel: IntentViewModel
     @ViewBuilder
     func getView(coInsured: CoInsuredListType) -> some View {
         if coInsured.locallyAdded {
@@ -28,7 +25,10 @@ struct InsuredPeopleScreen: View {
                 hSection {
                     hRow {
                         let hasContentBelow = !listToDisplay.isEmpty
-                        ContractOwnerField(hasContentBelow: hasContentBelow, config: store.coInsuredViewModel.config)
+                        ContractOwnerField(
+                            hasContentBelow: hasContentBelow,
+                            config: vm.config
+                        )
                     }
                     .verticalPadding(0)
                     .padding(.top, .padding16)
@@ -73,7 +73,7 @@ struct InsuredPeopleScreen: View {
         .hFormAttachToBottom {
             VStack(spacing: 8) {
                 if vm.coInsuredAdded.count > 0 || vm.coInsuredDeleted.count > 0 {
-                    ConfirmChangesView()
+                    ConfirmChangesView(editCoInsuredNavigation: editCoInsuredNavigation)
                 }
                 hSection {
                     CancelButton()
@@ -127,7 +127,8 @@ struct InsuredPeopleScreen: View {
             CoInsuredListType(
                 coInsured: coIn,
                 type: .added,
-                date: (intentVm.intent.activationDate != "") ? intentVm.intent.activationDate : vm.config.activeFrom,
+                date: (intentViewModel.intent.activationDate != "")
+                    ? intentViewModel.intent.activationDate : vm.config.activeFrom,
                 locallyAdded: true
             )
         }
@@ -154,13 +155,14 @@ struct CancelButton: View {
 }
 
 struct ConfirmChangesView: View {
-    @PresentableStore var store: EditCoInsuredStore
-    @ObservedObject var intentVm: IntentViewModel
-    @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+    @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+    @ObservedObject var intentViewModel: IntentViewModel
 
-    public init() {
-        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-        intentVm = store.intentViewModel
+    public init(
+        editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+    ) {
+        self.editCoInsuredNavigation = editCoInsuredNavigation
+        self.intentViewModel = editCoInsuredNavigation.intentViewModel
     }
 
     var body: some View {
@@ -171,19 +173,26 @@ struct ConfirmChangesView: View {
                         hText(L10n.contractAddCoinsuredTotal)
                         Spacer()
                         if #available(iOS 16.0, *) {
-                            hText(intentVm.intent.currentPremium.formattedAmount + L10n.perMonth)
-                                .strikethrough()
-                                .foregroundColor(hTextColor.Opaque.secondary)
+                            hText(
+                                intentViewModel.intent.currentPremium.formattedAmount
+                                    + L10n.perMonth
+                            )
+                            .strikethrough()
+                            .foregroundColor(hTextColor.Opaque.secondary)
                         } else {
-                            hText(intentVm.intent.currentPremium.formattedAmount + L10n.perMonth)
-                                .foregroundColor(hTextColor.Opaque.secondary)
+                            hText(
+                                intentViewModel.intent.currentPremium.formattedAmount
+                                    + L10n.perMonth
+                            )
+                            .foregroundColor(hTextColor.Opaque.secondary)
 
                         }
-                        hText(intentVm.intent.newPremium.formattedAmount + L10n.perMonth)
+                        hText(intentViewModel.intent.newPremium.formattedAmount + L10n.perMonth)
                     }
                     hText(
                         L10n.contractAddCoinsuredStartsFrom(
-                            intentVm.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                            intentViewModel.intent.activationDate.localDateToDate?
+                                .displayDateDDMMMYYYYFormat ?? ""
                         ),
                         style: .label
                     )
@@ -192,12 +201,16 @@ struct ConfirmChangesView: View {
                 }
 
                 hButton.LargeButton(type: .primary) {
-                    store.send(.performCoInsuredChanges(commitId: intentVm.intent.id))
                     editCoInsuredNavigation.showProgressScreenWithSuccess = true
+                    Task {
+                        await intentViewModel.performCoInsuredChanges(
+                            commitId: intentViewModel.intent.id
+                        )
+                    }
                 } content: {
                     hText(L10n.contractAddCoinsuredConfirmChanges)
                 }
-                .hButtonIsLoading(intentVm.isLoading)
+                .hButtonIsLoading(intentViewModel.isLoading)
             }
         }
         .sectionContainerStyle(.transparent)
@@ -207,7 +220,6 @@ struct ConfirmChangesView: View {
 struct InsuredPeopleScreen_Previews: PreviewProvider {
     static var previews: some View {
         let vm = InsuredPeopleNewScreenModel()
-        let intentVm = IntentViewModel()
         let config = InsuredPeopleConfig(
             id: UUID().uuidString,
             contractCoInsured: [],
@@ -224,7 +236,7 @@ struct InsuredPeopleScreen_Previews: PreviewProvider {
             fromInfoCard: false
         )
         vm.initializeCoInsured(with: config)
-        return InsuredPeopleScreen(vm: vm, intentVm: intentVm)
+        return InsuredPeopleScreen(vm: vm, intentViewModel: IntentViewModel())
     }
 }
 
@@ -236,7 +248,6 @@ class InsuredPeopleNewScreenModel: ObservableObject {
     @Published var noSSN = false
     var config: InsuredPeopleConfig = InsuredPeopleConfig()
 
-    @PresentableStore var store: EditCoInsuredStore
     func completeList(
         coInsuredAdded: [CoInsuredModel]? = nil,
         coInsuredDeleted: [CoInsuredModel]? = nil

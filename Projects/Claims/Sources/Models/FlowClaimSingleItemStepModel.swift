@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
+public struct FlowClaimSingleItemStepModel: FlowClaimStepModel {
     let id: String
     let availableItemBrandOptions: [ClaimFlowItemBrandOptionModel]
     let availableItemModelOptions: [ClaimFlowItemModelOptionModel]
@@ -52,9 +52,10 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
         self.purchasePriceApplicable = purchasePriceApplicable
     }
 
+    @MainActor
     init(
         with data: OctopusGraphQL.FlowClaimSingleItemStepFragment
-    ) async {
+    ) {
         self.id = data.id
         self.availableItemBrandOptions =
             data.availableItemBrands?.map({ ClaimFlowItemBrandOptionModel.init(with: $0) }) ?? []
@@ -72,7 +73,7 @@ public struct FlowClamSingleItemStepModel: FlowClaimStepModel {
         self.purchasePriceApplicable = data.purchasePriceApplicable
 
         if self.selectedItemModel == nil && self.customName == nil {
-            let currentDeviceName = await UIDevice.modelName.lowercased()
+            let currentDeviceName = UIDevice.modelName.lowercased()
             if let matchingModelWithCurrentDevice = self.availableItemModelOptions.first(where: {
                 let name = $0.displayName.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
                 return name == currentDeviceName
@@ -255,11 +256,14 @@ public struct ClaimFlowItemProblemOptionModel: Codable, Equatable, Hashable, Sen
     }
 }
 
-public enum SelectedModel: Codable, Equatable, Hashable, Sendable {
-    case model(ClaimFlowItemModelOptionModel)
-    case custom(brand: ClaimFlowItemBrandOptionModel, name: String)
-}
-
+//<<<<<<< HEAD:Projects/Claims/Sources/Models/FlowClamSingleItemStepModel.swift
+//public enum SelectedModel: Codable, Equatable, Hashable, Sendable {
+//    case model(ClaimFlowItemModelOptionModel)
+//    case custom(brand: ClaimFlowItemBrandOptionModel, name: String)
+//}
+//
+//=======
+//>>>>>>> main:Projects/Claims/Sources/Models/FlowClaimSingleItemStepModel.swift
 extension ClaimFlowItemBrandOptionModel: TrackingViewNameProtocol {
     public var nameForTracking: String {
         return .init(describing: ModelPickerView.self)
