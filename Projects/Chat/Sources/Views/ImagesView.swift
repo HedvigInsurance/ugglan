@@ -2,7 +2,6 @@ import CoreServices
 import MobileCoreServices
 import Photos
 import SwiftUI
-import UniformTypeIdentifiers
 import hCore
 import hCoreUI
 

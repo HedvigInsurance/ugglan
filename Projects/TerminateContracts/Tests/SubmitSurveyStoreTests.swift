@@ -35,7 +35,8 @@ final class SubmitSurveyStoreTests: XCTestCase {
             surveySend: { context, option, inputData in
                 .init(
                     context: context,
-                    action: .stepModelAction(action: .setSuccessStep(model: .init(terminationDate: nil)))
+                    action: .stepModelAction(action: .setSuccessStep(model: .init(terminationDate: nil))),
+                    progress: 0
                 )
             }
         )
@@ -51,10 +52,14 @@ final class SubmitSurveyStoreTests: XCTestCase {
         assert(store.state.terminationSurveyStep == terminationSurveyStep)
     }
 
-    func testSubmitSurveyResponseFailure() async {
+    func testSubmitSurveyResponseFailure() async throws {
         MockData.createMockTerminateContractsService(
             surveySend: { context, option, inputData in
-                .init(context: context, action: .stepModelAction(action: .setFailedStep(model: .init(id: "id"))))
+                .init(
+                    context: context,
+                    action: .stepModelAction(action: .setFailedStep(model: .init(id: "id"))),
+                    progress: 0
+                )
             }
         )
 
@@ -63,10 +68,8 @@ final class SubmitSurveyStoreTests: XCTestCase {
 
         await store.sendAsync(.stepModelAction(action: .setTerminationSurveyStep(model: terminationSurveyStep)))
         await store.sendAsync(.submitSurvey(option: "option", feedback: "feedback"))
-        await waitUntil(description: "loading state") {
-            store.loadingState[.sendSurvey] == nil
-        }
-
+        try await Task.sleep(nanoseconds: 100_000_000)
+        assert(store.loadingState[.sendSurvey] == nil)
         assert(store.state.successStep == nil)
         assert(store.state.failedStep != nil)
     }

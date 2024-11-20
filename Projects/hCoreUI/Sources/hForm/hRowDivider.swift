@@ -36,12 +36,14 @@ extension View {
 public struct hRowDivider: View {
     @Environment(\.hRowDividerSettings) var settings
     @Environment(\.hWithoutDividerPadding) var withoutPadding: Bool
-
     public init() {}
 
     public var body: some View {
         let noPaddingInsets: EdgeInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 0)
-        SwiftUI.Divider().padding(withoutPadding ? noPaddingInsets : settings.insets)
+        RoundedRectangle(cornerRadius: 1, style: .circular)
+            .fill(hBorderColor.secondary)
+            .frame(height: 1)
+            .padding(withoutPadding ? noPaddingInsets : settings.insets)
     }
 }
 
@@ -70,5 +72,13 @@ extension View {
                 )
             )
         )
+    }
+}
+
+#Preview {
+    VStack {
+        Text("TEXT")
+        hRowDivider()
+        Spacer()
     }
 }

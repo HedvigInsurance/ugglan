@@ -21,15 +21,14 @@ public struct ProcessingStateView: View {
     var successViewTitle: String?
     var successViewBody: String?
     var successViewButtonAction: (() -> Void)?
-    var errorViewButtons: ErrorViewButtonConfig
     @Environment(\.hCustomSuccessView) var customSuccessView
+    @Environment(\.hErrorViewButtonConfig) var errorViewButtonConfig
 
     public init(
         loadingViewText: String,
         successViewTitle: String? = nil,
         successViewBody: String? = nil,
         successViewButtonAction: (() -> Void)? = nil,
-        errorViewButtons: ErrorViewButtonConfig,
         state: Binding<ProcessingState>,
         duration: Float = 1.5
     ) {
@@ -37,7 +36,6 @@ public struct ProcessingStateView: View {
         self.successViewTitle = successViewTitle
         self.successViewBody = successViewBody
         self.successViewButtonAction = successViewButtonAction
-        self.errorViewButtons = errorViewButtons
         self._state = state
 
         let baseDurationFactor: Float = duration * (Float(1) / Float(24))
@@ -93,7 +91,7 @@ public struct ProcessingStateView: View {
             title: L10n.somethingWentWrong,
             description: errorMessage
         )
-        .hErrorViewButtonConfig(errorViewButtons)
+        .hErrorViewButtonConfig(errorViewButtonConfig)
     }
 
     @ViewBuilder
@@ -127,7 +125,43 @@ public struct ProcessingStateView: View {
 #Preview(body: {
     ProcessingStateView(
         loadingViewText: "loading...",
-        errorViewButtons: .init(),
         state: .constant(.error(errorMessage: "error message"))
     )
 })
+
+extension View {
+    public func trackErrorState(for state: Binding<ProcessingState>) -> some View {
+        self.modifier(TrackErrorState(processingState: state))
+    }
+}
+private struct TrackErrorState: ViewModifier {
+    @State private var error: String?
+    @Binding var processingState: ProcessingState
+    func body(content: Content) -> some View {
+        Group {
+            if let error {
+                GenericErrorView(description: error)
+                    .hFormDontUseInitialAnimation
+            } else {
+                content
+            }
+        }
+        .onAppear {
+            checkForError()
+        }
+        .onChange(of: processingState) { value in
+            checkForError()
+        }
+    }
+
+    private func checkForError() {
+        withAnimation {
+            switch processingState {
+            case let .error(errorMessage):
+                self.error = errorMessage
+            default:
+                self.error = nil
+            }
+        }
+    }
+}

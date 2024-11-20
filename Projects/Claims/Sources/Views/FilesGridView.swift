@@ -1,10 +1,8 @@
 import Foundation
 import Home
 import Kingfisher
-import PresentableStore
 import SafariServices
 import SwiftUI
-import UniformTypeIdentifiers
 import hCore
 import hCoreUI
 
@@ -121,17 +119,11 @@ class FileGridViewModel: ObservableObject {
     func show(file: File) {
         switch file.source {
         case let .localFile(results):
-            results?.itemProvider
-                .loadDataRepresentation(
-                    forTypeIdentifier: UTType.item.identifier,
-                    completionHandler: { [weak self] data, error in
-                        if let data {
-                            Task { @MainActor in
-                                self?.fileModel = .init(type: .data(data: data, mimeType: file.mimeType))
-                            }
-                        }
-                    }
-                )
+            Task { @MainActor [weak self] in
+                if let data = try? await results?.itemProvider.getData().data {
+                    self?.fileModel = .init(type: .data(data: data, mimeType: file.mimeType))
+                }
+            }
         case .url(let url):
             fileModel = .init(type: .url(url: url))
         case .data(let data):

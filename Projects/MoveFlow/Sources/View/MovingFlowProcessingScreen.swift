@@ -19,15 +19,18 @@ struct MovingFlowProcessingScreen: View {
             successViewButtonAction: {
                 onSuccessButtonAction()
             },
-            errorViewButtons:
-                .init(
-                    actionButton: .init(buttonAction: {
-                        onErrorButtonAction()
-                    }),
-                    dismissButton: nil
-                ),
             state: $movingFlowConfirmVm.viewState,
             duration: 6
+        )
+        .hErrorViewButtonConfig(errorButtons)
+    }
+
+    private var errorButtons: ErrorViewButtonConfig {
+        .init(
+            actionButton: .init(buttonAction: {
+                onErrorButtonAction()
+            }),
+            dismissButton: nil
         )
     }
 }
@@ -40,5 +43,6 @@ struct SuccessScreen_Previews: PreviewProvider {
             onErrorButtonAction: {},
             movingFlowConfirmVm: .init()
         )
+        .environmentObject(MovingFlowNavigationViewModel())
     }
 }

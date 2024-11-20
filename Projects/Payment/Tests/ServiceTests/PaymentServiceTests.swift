@@ -60,7 +60,7 @@ final class PaymentServiceTests: XCTestCase {
         assert(respondedPaymentStatusData == paymentStatusData)
     }
 
-    func testFetchPaymentDiscountsDataSuccess() async {
+    func testFetchPaymentDiscountsDataSuccess() async throws {
         let paymentDiscountsData: PaymentDiscountsData = .init(
             discounts: [],
             referralsData: .init(
@@ -75,12 +75,12 @@ final class PaymentServiceTests: XCTestCase {
             fetchPaymentDiscountsData: { paymentDiscountsData }
         )
         self.sut = mockService
-
-        let respondedPaymentDiscountsData = try! await mockService.getPaymentDiscountsData()
+        let respondedPaymentDiscountsData = try await mockService.getPaymentDiscountsData()
+        try await Task.sleep(nanoseconds: 100_000_000)
         assert(respondedPaymentDiscountsData == paymentDiscountsData)
     }
 
-    func testFetchPaymentHistoryDataSuccess() async {
+    func testFetchPaymentHistoryDataSuccess() async throws {
         let paymentHistoryData: [PaymentHistoryListData] = [
             .init(
                 id: "id",
@@ -94,7 +94,7 @@ final class PaymentServiceTests: XCTestCase {
         )
         self.sut = mockService
 
-        let respondedPaymentHistoryData = try! await mockService.getPaymentHistoryData()
+        let respondedPaymentHistoryData = try await mockService.getPaymentHistoryData()
         assert(respondedPaymentHistoryData == paymentHistoryData)
     }
 

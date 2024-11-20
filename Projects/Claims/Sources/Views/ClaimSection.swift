@@ -1,6 +1,5 @@
 import Combine
 import Home
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -9,7 +8,6 @@ import hGraphQL
 struct ClaimSection: View {
     @Binding var claims: [ClaimModel]
     @StateObject var scrollVM: InfoCardScrollViewModel = .init(spacing: 16)
-    @PresentableStore var store: ClaimsStore
     @EnvironmentObject var homeRouter: Router
 
     var tapAction: (ClaimModel) -> Void {

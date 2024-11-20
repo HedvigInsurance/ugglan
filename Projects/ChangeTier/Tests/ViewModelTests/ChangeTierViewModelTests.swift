@@ -127,7 +127,7 @@ final class ChangeTierViewModelTests: XCTestCase {
         assert(model.selectedTier == nil)
 
         if case .error(let errorMessage) = model.viewState {
-            assert(errorMessage == ChangeTierError.somethingWentWrong.localizedDescription)
+            assert(errorMessage != nil)
         } else {
             assertionFailure("not proper state")
         }

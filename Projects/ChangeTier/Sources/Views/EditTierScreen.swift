@@ -4,7 +4,7 @@ import hCoreUI
 
 struct EditTierScreen: View {
     @State var selectedTier: String?
-    private let vm: ChangeTierViewModel
+    @ObservedObject var vm: ChangeTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
 
     init(
@@ -30,7 +30,7 @@ struct EditTierScreen: View {
                                             hPill(
                                                 text: premiumLabel,
                                                 color: .grey(translucent: false),
-                                                colorLevel: .one
+                                                colorLevel: .two
                                             )
                                             .hFieldSize(.small)
                                         }
