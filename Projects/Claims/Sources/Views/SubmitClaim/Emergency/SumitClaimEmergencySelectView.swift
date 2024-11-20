@@ -6,7 +6,6 @@ struct SumitClaimEmergencySelectView: View {
     @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
     @StateObject var vm = SumitClaimEmergencySelectViewModel()
     @State var selectedValue: Bool = true
-    @State var isLoading: Bool = false
     let title: () -> String
 
     init(
@@ -35,13 +34,14 @@ struct SumitClaimEmergencySelectView: View {
                         } content: {
                             hText(L10n.generalContinueButton)
                         }
-                        .hButtonIsLoading(isLoading)
+                        .hButtonIsLoading(vm.state == .loading)
                     }
                     .padding(.bottom, .padding32)
                 }
                 .sectionContainerStyle(.transparent)
             }
             .hDisableScroll
+            .claimErrorTrackerForState($vm.state)
     }
 
     @ViewBuilder
@@ -78,13 +78,24 @@ struct SumitClaimEmergencySelectView: View {
 
 public class SumitClaimEmergencySelectViewModel: ObservableObject {
     @Inject private var service: SubmitClaimClient
+    @Published var state: ProcessingState = .success
 
     @MainActor
     func emergencyConfirmRequest(context: String, isEmergency: Bool) async -> SubmitClaimStepResponse? {
+        withAnimation {
+            state = .loading
+        }
         do {
             let data = try await service.emergencyConfirmRequest(isEmergency: isEmergency, context: context)
+            withAnimation {
+                state = .success
+            }
             return data
-        } catch let exception {}
+        } catch let exception {
+            withAnimation {
+                state = .error(errorMessage: exception.localizedDescription)
+            }
+        }
         return nil
     }
 }

@@ -36,6 +36,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
                     .sectionContainerStyle(.transparent)
                 }
             }
+            .claimErrorTrackerForState($vm.viewState)
     }
 
     @ViewBuilder

@@ -69,6 +69,26 @@ public struct SelectClaimEntrypointGroup: View {
                     )
                 }
             }
+            .trackErrorState(for: $vm.viewState)
+            .hErrorViewButtonConfig(
+                .init(
+                    actionButton: .init(
+                        buttonAction: {
+                            vm.fetchClaimEntrypointGroups()
+                        }),
+                    dismissButton: .init(
+                        buttonTitle: L10n.openChat,
+                        buttonAction: {
+                            claimsNavigationVm.router.dismiss()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                                NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
+                            }
+                        }
+                    )
+                )
+            )
+            .claimErrorTrackerForState($claimsNavigationVm.startClaimState)
+
     }
 }
 
@@ -130,6 +150,8 @@ struct SelectClaimEntrypointType: View {
                 buttonIsLoading: $buttonIsLoading
             )
         }
+        .claimErrorTrackerForState($claimsNavigationVm.startClaimState)
+
     }
 
     func entrypointsToStringArray(entrypoints: [ClaimEntryPointResponseModel]) -> [String] {
@@ -200,6 +222,8 @@ struct SelectClaimEntrypointOption: View {
                 buttonIsLoading: $buttonIsLoading
             )
         }
+        .claimErrorTrackerForState($claimsNavigationVm.startClaimState)
+
     }
 
     func mapNametoEntrypointOptionId(input: [ClaimEntryPointOptionResponseModel]) -> String {

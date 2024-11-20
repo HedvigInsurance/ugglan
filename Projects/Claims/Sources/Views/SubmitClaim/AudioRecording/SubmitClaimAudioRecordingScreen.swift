@@ -54,6 +54,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
         } else {
             mainContent
         }
+
     }
 
     private var mainContent: some View {
@@ -77,6 +78,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
             }
             .slideUpAppearAnimation()
         }
+        .claimErrorTrackerForState($audioRecordingVm.viewState)
     }
 
     private func textSection(questions: [String]?) -> some View {

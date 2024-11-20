@@ -38,6 +38,7 @@ public struct SubmitClaimSingleItemScreen: View {
             }
             .sectionContainerStyle(.transparent)
         }
+        .claimErrorTrackerForState($vm.viewState)
     }
 
     @ViewBuilder

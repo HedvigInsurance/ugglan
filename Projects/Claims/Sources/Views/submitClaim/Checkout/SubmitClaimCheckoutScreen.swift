@@ -5,8 +5,10 @@ import hGraphQL
 
 public struct SubmitClaimCheckoutScreen: View {
     @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
-
-    public init() {}
+    @ObservedObject var vm: SubmitClaimCheckoutViewModel
+    public init(vm: SubmitClaimCheckoutViewModel) {
+        self.vm = vm
+    }
 
     public var body: some View {
         let singleItemCheckoutStep = claimsNavigationVm.singleItemCheckoutModel
@@ -24,7 +26,7 @@ public struct SubmitClaimCheckoutScreen: View {
                         claimsNavigationVm.isCheckoutTransferringPresented = true
                         DispatchQueue.main.asyncAfter(deadline: .now() + 7) {
                             Task {
-                                let step = await claimsNavigationVm.submitClaimCheckoutVm.singleItemRequest(
+                                let step = await vm.singleItemRequest(
                                     context: claimsNavigationVm.currentClaimContext ?? "",
                                     model: claimsNavigationVm.singleItemCheckoutModel
                                 )
@@ -44,8 +46,8 @@ public struct SubmitClaimCheckoutScreen: View {
                             style: .body1
                         )
                     }
-                    .disabled(claimsNavigationVm.submitClaimCheckoutVm.viewState == .loading)
-                    .hButtonIsLoading(claimsNavigationVm.submitClaimCheckoutVm.viewState == .loading)
+                    .disabled(vm.viewState == .loading)
+                    .hButtonIsLoading(vm.viewState == .loading)
                 }
             }
             .padding(.vertical, .padding16)
@@ -249,6 +251,6 @@ public class SubmitClaimCheckoutViewModel: ObservableObject {
 struct SubmitClaimCheckoutNoRepairScreen_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
-        return SubmitClaimCheckoutScreen()
+        return SubmitClaimCheckoutScreen(vm: .init())
     }
 }

@@ -59,6 +59,8 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
             .onReceive(keyboardPublisher) { keyboardHeight in
                 vm.keyboardEnabled = keyboardHeight != nil
             }
+            .claimErrorTrackerForState($vm.viewState)
+
     }
 }
 

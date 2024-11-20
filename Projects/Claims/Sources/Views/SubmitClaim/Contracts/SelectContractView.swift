@@ -3,7 +3,6 @@ import hCore
 import hCoreUI
 
 struct SelectContractView: View {
-    @State var isLoading: Bool = false
     @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
     @StateObject var vm = SelectContractViewModel()
 
@@ -44,13 +43,15 @@ struct SelectContractView: View {
         )
         .padding(.bottom, .padding16)
         .hFormTitle(title: .init(.small, .displayXSLong, L10n.claimTriagingAboutTitile))
-        .hButtonIsLoading(isLoading)
+        .hButtonIsLoading(vm.state == .loading)
+        .claimErrorTrackerForState($vm.state)
         .hDisableScroll
     }
 }
 
 public class SelectContractViewModel: ObservableObject {
     @Inject private var service: SubmitClaimClient
+    @Published var state: ProcessingState = .success
 
     @MainActor
     func contractSelectRequest(
@@ -58,11 +59,21 @@ public class SelectContractViewModel: ObservableObject {
         context: String,
         model: FlowClaimContractSelectStepModel?
     ) async -> SubmitClaimStepResponse? {
+        withAnimation {
+            state = .loading
+        }
         do {
             let data = try await service.contractSelectRequest(contractId: contractId, context: context, model: model)
-
+            withAnimation {
+                state = .success
+            }
             return data
-        } catch let exception {}
+        } catch let exception {
+            withAnimation {
+                state = .error(errorMessage: exception.localizedDescription)
+            }
+
+        }
         return nil
     }
 }

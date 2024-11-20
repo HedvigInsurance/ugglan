@@ -73,6 +73,8 @@ public struct SubmitClaimSummaryScreen: View {
             }
             .sectionContainerStyle(.transparent)
         }
+        .claimErrorTrackerForState($vm.viewState)
+
     }
 
     @ViewBuilder

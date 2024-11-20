@@ -4,13 +4,16 @@ import hCoreUI
 
 struct SubmitClaimCheckoutTransferringScreen: View {
     @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @ObservedObject var vm: SubmitClaimCheckoutViewModel
     @State var loadingAnimation: Bool = false
     @State var successAnimation: Bool = false
     @State var errorAnimation: Bool = false
     @State var progress: Float = 0
 
     @Namespace private var animation
-    init() {}
+    init(vm: SubmitClaimCheckoutViewModel) {
+        self.vm = vm
+    }
 
     var body: some View {
         BlurredProgressOverlay {
@@ -29,7 +32,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
 
                 ProcessingStateView(
                     loadingViewText: L10n.claimsPayoutProgresLabel,
-                    state: $claimsNavigationVm.submitClaimCheckoutVm.viewState,
+                    state: $vm.viewState,
                     duration: 6
                 )
                 .hCustomSuccessView {
@@ -135,6 +138,6 @@ struct SubmitClaimCheckoutTransferringScreen: View {
 #Preview {
     Dependencies.shared.add(module: Module { () -> SubmitClaimClient in SubmitClaimClientDemo() })
     Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in FetchEntrypointsClientDemo() })
-    return SubmitClaimCheckoutTransferringScreen()
+    return SubmitClaimCheckoutTransferringScreen(vm: .init())
         .environmentObject(ClaimsNavigationViewModel())
 }

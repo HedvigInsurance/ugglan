@@ -3,6 +3,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+@MainActor
 public class ClaimsNavigationViewModel: ObservableObject {
     @Published public var isLocationPickerPresented = false
     @Published public var isBrandPickerPresented = false
@@ -31,7 +32,7 @@ public class ClaimsNavigationViewModel: ObservableObject {
     @Published var emergencyConfirmModel: FlowClaimConfirmEmergencyStepModel?
     @Published var submitClaimCheckoutVm = SubmitClaimCheckoutViewModel()
     @Published var selectClaimEntrypointVm = SelectClaimEntrypointViewModel()
-
+    @Published var startClaimState = ProcessingState.success
     var router = Router()
     @Inject private var submitClaimService: SubmitClaimClient
 
@@ -84,15 +85,21 @@ public class ClaimsNavigationViewModel: ObservableObject {
     }
 
     func startClaimRequest(entrypointId: String?, entrypointOptionId: String?) async {
-        await reset()
-        Task { @MainActor in
-            do {
-                let data = try await submitClaimService.startClaim(
-                    entrypointId: entrypointId,
-                    entrypointOptionId: entrypointOptionId
-                )
-
-                navigate(data: data)
+        withAnimation {
+            startClaimState = .loading
+        }
+        do {
+            let data = try await submitClaimService.startClaim(
+                entrypointId: entrypointId,
+                entrypointOptionId: entrypointOptionId
+            )
+            withAnimation {
+                startClaimState = .success
+            }
+            navigate(data: data)
+        } catch let exception {
+            withAnimation {
+                startClaimState = .error(errorMessage: exception.localizedDescription)
             }
         }
     }
@@ -290,7 +297,7 @@ public struct ClaimsNavigation: View {
                         case .uploadFiles:
                             SubmitClaimFilesUploadScreen(claimsNavigationVm: claimsNavigationVm)
                         case .checkOutNoRepair:
-                            SubmitClaimCheckoutScreen()
+                            SubmitClaimCheckoutScreen(vm: claimsNavigationVm.submitClaimCheckoutVm)
                                 .configureTitle(L10n.Claims.Payout.Summary.title)
                         }
                     }
@@ -371,7 +378,7 @@ public struct ClaimsNavigation: View {
         .modally(
             presented: $claimsNavigationVm.isCheckoutTransferringPresented
         ) {
-            SubmitClaimCheckoutTransferringScreen()
+            SubmitClaimCheckoutTransferringScreen(vm: claimsNavigationVm.submitClaimCheckoutVm)
                 .environmentObject(claimsNavigationVm)
         }
         .modally(
