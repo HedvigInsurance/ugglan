@@ -19,78 +19,68 @@ final class SubmitClaimTests: XCTestCase {
         XCTAssertNil(sut)
     }
 
-    func testStartNewClaimSuccess() async {
-        let startClaimResponse: SubmitClaimStepResponse = .init(
-            claimId: "claimId",
-            context: context,
-            progress: 0.1,
-            action: .startClaimRequest(
-                entrypointId: "entrypointId",
-                entrypointOptionId: "entrypointOptionId"
-            )
-        )
-
-        let mockService = MockData.createMockSubmitClaimService(
-            start: { entrypointId, entrypointOptionId in
-                startClaimResponse
-            }
-        )
-        self.sut = mockService
-
-        let respons = try! await mockService.start("entrypointId", "entrypointOptionId")
-        assert(respons.claimId == startClaimResponse.claimId)
-        assert(respons.context == startClaimResponse.context)
-        assert(respons.progress == startClaimResponse.progress)
-        assert(respons.action == startClaimResponse.action)
-    }
-
     func testUpdateClaimSuccess() async {
         let phoneNumer = "0712121212"
+
+        let model = FlowClaimPhoneNumberStepModel(id: "id", phoneNumber: phoneNumer)
 
         let updateClaimResponse: SubmitClaimStepResponse = .init(
             claimId: "claimId",
             context: context,
             progress: 0.1,
-            action: .phoneNumberRequest(phoneNumber: phoneNumer)
+            step: .setPhoneNumber(model: model)
         )
 
         let mockService = MockData.createMockSubmitClaimService(
-            update: { phoneNumber, context in
+            update: { phoneNumber, context, model in
                 updateClaimResponse
             }
         )
         self.sut = mockService
 
-        let respons = try! await mockService.update(phoneNumer, context)
+        let respons = try! await mockService.update(phoneNumer, context, model)
         assert(respons.claimId == updateClaimResponse.claimId)
         assert(respons.context == updateClaimResponse.context)
         assert(respons.progress == updateClaimResponse.progress)
-        assert(respons.action == updateClaimResponse.action)
+        assert(respons.step == updateClaimResponse.step)
     }
 
     func testDateOfOccurrenceAndLocationSuccess() async {
+        let model = SubmitClaimStep.DateOfOccurrencePlusLocationStepModels(
+            dateOfOccurencePlusLocationModel: .init(id: "id")
+        )
+
         let dateOfOccurrenceAndLocationResponse: SubmitClaimStepResponse = .init(
             claimId: "claimId",
             context: context,
             progress: 0.3,
-            action: .dateOfOccurrenceAndLocationRequest
+            step: .setDateOfOccurrencePlusLocation(model: model)
         )
 
         let mockService = MockData.createMockSubmitClaimService(
-            dateOfOccurrenceAndLocation: { context in
+            dateOfOccurrenceAndLocation: { context, model in
                 dateOfOccurrenceAndLocationResponse
             }
         )
         self.sut = mockService
 
-        let respons = try! await mockService.dateOfOccurrenceAndLocation(context)
+        let respons = try! await mockService.dateOfOccurrenceAndLocation(context, model)
         assert(respons.claimId == dateOfOccurrenceAndLocationResponse.claimId)
         assert(respons.context == dateOfOccurrenceAndLocationResponse.context)
         assert(respons.progress == dateOfOccurrenceAndLocationResponse.progress)
-        assert(respons.action == dateOfOccurrenceAndLocationResponse.action)
+        assert(respons.step == dateOfOccurrenceAndLocationResponse.step)
     }
 
     func testAudioRecordingSuccess() async {
+        let claimId = "claimId"
+        let model = FlowClaimAudioRecordingStepModel(
+            id: "id",
+            questions: [],
+            textQuestions: [],
+            inputTextContent: nil,
+            optionalAudio: false
+        )
+
         let audioRecordingType: SubmitAudioRecordingType = .audio(url: URL(string: "/file")!)
         let fileUploaderClient: MockFileUploaderService = .init(
             uploadFile: { flowId, file in
@@ -102,31 +92,47 @@ final class SubmitClaimTests: XCTestCase {
             claimId: "claimId",
             context: context,
             progress: 0.3,
-            action: .submitAudioRecording(type: audioRecordingType)
+            step: .setAudioStep(model: model)
         )
 
         let mockService = MockData.createMockSubmitClaimService(
-            audioRecording: { type, fileUploaderClient, context in
+            audioRecording: { type, fileUploaderClient, context, claimId, model in
                 audioRecordingResponse
             }
         )
         self.sut = mockService
 
-        let respons = try! await mockService.audioRecording(audioRecordingType, fileUploaderClient, context)
+        let respons = try! await mockService.audioRecording(
+            audioRecordingType,
+            fileUploaderClient,
+            context,
+            claimId,
+            model
+        )
         assert(respons.claimId == audioRecordingResponse.claimId)
         assert(respons.context == audioRecordingResponse.context)
         assert(respons.progress == audioRecordingResponse.progress)
-        assert(respons.action == audioRecordingResponse.action)
+        assert(respons.step == audioRecordingResponse.step)
     }
 
     func testSingleItemSuccess() async {
         let purchasePrice = 11300.00
+        let model = FlowClaimSingleItemStepModel(
+            id: "id",
+            availableItemBrandOptions: [],
+            availableItemModelOptions: [],
+            availableItemProblems: [],
+            prefferedCurrency: nil,
+            currencyCode: nil,
+            defaultItemProblems: nil,
+            purchasePriceApplicable: true
+        )
 
         let singleItemResponse: SubmitClaimStepResponse = .init(
             claimId: "claimId",
             context: context,
             progress: 0.3,
-            action: .singleItemRequest(purchasePrice: purchasePrice)
+            step: .setSingleItem(model: model)
         )
 
         let mockService = MockData.createMockSubmitClaimService(
@@ -136,88 +142,113 @@ final class SubmitClaimTests: XCTestCase {
         )
         self.sut = mockService
 
-        let respons = try! await mockService.singleItem(purchasePrice, context)
+        let respons = try! await mockService.singleItem(context, model)
         assert(respons.claimId == singleItemResponse.claimId)
         assert(respons.context == singleItemResponse.context)
         assert(respons.progress == singleItemResponse.progress)
-        assert(respons.action == singleItemResponse.action)
+        assert(respons.step == singleItemResponse.step)
     }
 
     func testSummarySuccess() async {
+        let model = SubmitClaimStep.SummaryStepModels(
+            summaryStep: nil,
+            singleItemStepModel: nil,
+            dateOfOccurenceModel: .init(id: "id", maxDate: nil),
+            locationModel: .init(id: "id", options: []),
+            audioRecordingModel: nil,
+            fileUploadModel: nil
+        )
+
         let summaryResponse: SubmitClaimStepResponse = .init(
             claimId: "claimId",
             context: context,
             progress: 0.3,
-            action: .summaryRequest
+            step: .setSummaryStep(model: model)
         )
 
         let mockService = MockData.createMockSubmitClaimService(
-            summary: { context in
+            summary: { context, model in
                 summaryResponse
             }
         )
         self.sut = mockService
 
-        let respons = try! await mockService.summary(context)
+        let respons = try! await mockService.summary(context, model)
         assert(respons.claimId == summaryResponse.claimId)
         assert(respons.context == summaryResponse.context)
         assert(respons.progress == summaryResponse.progress)
-        assert(respons.action == summaryResponse.action)
+        assert(respons.step == summaryResponse.step)
     }
 
     func testSingleItemCheckoutSuccess() async {
+        let model = FlowClaimSingleItemCheckoutStepModel(
+            id: "id",
+            payoutMethods: [],
+            compensation: .init(
+                id: "id",
+                deductible: .init(amount: "220", currency: "SEK"),
+                payoutAmount: .init(amount: "1000", currency: "SEK"),
+                repairCompensation: nil,
+                valueCompensation: nil
+            ),
+            singleItemModel: nil
+        )
+
         let singleItemCheckoutResponse: SubmitClaimStepResponse = .init(
             claimId: "claimId",
             context: context,
             progress: 0.3,
-            action: .singleItemCheckoutRequest
+            step: .setSingleItemCheckoutStep(model: model)
         )
 
         let mockService = MockData.createMockSubmitClaimService(
-            singleItemCheckout: { context in
+            singleItemCheckout: { context, model in
                 singleItemCheckoutResponse
             }
         )
         self.sut = mockService
 
-        let respons = try! await mockService.singleItemCheckout(context)
+        let respons = try! await mockService.singleItemCheckout(context, model)
         assert(respons.claimId == singleItemCheckoutResponse.claimId)
         assert(respons.context == singleItemCheckoutResponse.context)
         assert(respons.progress == singleItemCheckoutResponse.progress)
-        assert(respons.action == singleItemCheckoutResponse.action)
+        assert(respons.step == singleItemCheckoutResponse.step)
     }
 
     func testContractSelectSuccess() async {
+        let model = FlowClaimContractSelectStepModel(availableContractOptions: [])
+
         let contractId = "contractId"
         let contractSelectResponse: SubmitClaimStepResponse = .init(
             claimId: "claimId",
             context: context,
             progress: 0.3,
-            action: .contractSelectRequest(contractId: contractId)
+            step: .setContractSelectStep(model: model)
         )
 
         let mockService = MockData.createMockSubmitClaimService(
-            contractSelect: { contractId, context in
+            contractSelect: { contractId, context, model in
                 contractSelectResponse
             }
         )
         self.sut = mockService
 
-        let respons = try! await mockService.contractSelect(contractId, context)
+        let respons = try! await mockService.contractSelect(contractId, context, model)
         assert(respons.claimId == contractSelectResponse.claimId)
         assert(respons.context == contractSelectResponse.context)
         assert(respons.progress == contractSelectResponse.progress)
-        assert(respons.action == contractSelectResponse.action)
+        assert(respons.step == contractSelectResponse.step)
     }
 
     func testEmergencyConfirmSuccess() async {
+        let model = FlowClaimConfirmEmergencyStepModel(id: "id", text: "", confirmEmergency: nil, options: [])
         let isEmergency = true
 
         let emergencyConfirmResponse: SubmitClaimStepResponse = .init(
             claimId: "claimId",
             context: context,
             progress: 0.3,
-            action: .emergencyConfirmRequest(isEmergency: isEmergency)
+            step: .setConfirmDeflectEmergencyStepModel(model: model)
         )
 
         let mockService = MockData.createMockSubmitClaimService(
@@ -231,29 +262,31 @@ final class SubmitClaimTests: XCTestCase {
         assert(respons.claimId == emergencyConfirmResponse.claimId)
         assert(respons.context == emergencyConfirmResponse.context)
         assert(respons.progress == emergencyConfirmResponse.progress)
-        assert(respons.action == emergencyConfirmResponse.action)
+        assert(respons.step == emergencyConfirmResponse.step)
     }
 
     func testSubmitFileSuccess() async {
         let ids: [String] = ["id1", "id2", "id3"]
+        let model = FlowClaimFileUploadStepModel(id: "id", title: "title", targetUploadUrl: "", uploads: [])
+
         let submitFileResponse: SubmitClaimStepResponse = .init(
             claimId: "claimId",
             context: context,
             progress: 0.3,
-            action: .submitFileUpload(ids: ids)
+            step: .setFileUploadStep(model: model)
         )
 
         let mockService = MockData.createMockSubmitClaimService(
-            submitFile: { ids, context in
+            submitFile: { ids, context, model in
                 submitFileResponse
             }
         )
         self.sut = mockService
 
-        let respons = try! await mockService.submitFile(ids, context)
+        let respons = try! await mockService.submitFile(ids, context, model)
         assert(respons.claimId == submitFileResponse.claimId)
         assert(respons.context == submitFileResponse.context)
         assert(respons.progress == submitFileResponse.progress)
-        assert(respons.action == submitFileResponse.action)
+        assert(respons.step == submitFileResponse.step)
     }
 }
