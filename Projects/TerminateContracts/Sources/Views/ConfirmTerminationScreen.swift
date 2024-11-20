@@ -23,7 +23,7 @@ struct ConfirmTerminationScreen: View {
                         buttonAction: {
                             if terminationNavigationVm.isDeletion {
                                 Task {
-                                    let step = await confirmTerminationVm.sendConfirmDelete(
+                                    let step = await terminationNavigationVm.sendConfirmDelete(
                                         context: terminationNavigationVm.currentContext ?? "",
                                         model: terminationNavigationVm.terminationDeleteStepModel
                                     )
@@ -34,18 +34,15 @@ struct ConfirmTerminationScreen: View {
                                 }
                             } else {
                                 terminationNavigationVm.isProcessingPresented = true
+                                Task {
+                                    let step = await terminationNavigationVm.sendTerminationDate(
+                                        inputDateToString: terminationNavigationVm.terminationDateStepModel?.date?
+                                            .localDateString ?? "",
+                                        context: terminationNavigationVm.currentContext ?? ""
+                                    )
 
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                                    Task {
-                                        let step = await confirmTerminationVm.sendTerminationDate(
-                                            inputDateToString: terminationNavigationVm.terminationDateStepModel?.date?
-                                                .localDateString ?? "",
-                                            context: terminationNavigationVm.currentContext ?? ""
-                                        )
-
-                                        if let step {
-                                            terminationNavigationVm.navigate(data: step, fromSelectInsurance: false)
-                                        }
+                                    if let step {
+                                        terminationNavigationVm.navigate(data: step, fromSelectInsurance: false)
                                     }
                                 }
                             }
@@ -80,55 +77,6 @@ struct ConfirmTerminationScreen: View {
 
 class ConfirmTerminationViewModel: ObservableObject {
     @Inject private var service: TerminateContractsClient
-    @Published var viewState: ProcessingState = .loading
-
-    @MainActor
-    public func sendConfirmDelete(
-        context: String,
-        model: TerminationFlowDeletionNextModel?
-    ) async -> TerminateStepResponse? {
-        withAnimation {
-            viewState = .loading
-        }
-        do {
-            let data = try await service.sendConfirmDelete(terminationContext: context, model: model)
-            withAnimation {
-                viewState = .success
-            }
-            return data
-        } catch let error {
-            withAnimation {
-                self.viewState = .error(
-                    errorMessage: error.localizedDescription
-                )
-            }
-        }
-        return nil
-    }
-
-    @MainActor
-    public func sendTerminationDate(inputDateToString: String, context: String) async -> TerminateStepResponse? {
-        withAnimation {
-            viewState = .loading
-        }
-        do {
-            let data = try await service.sendTerminationDate(
-                inputDateToString: inputDateToString,
-                terminationContext: context
-            )
-            withAnimation {
-                viewState = .success
-            }
-            return data
-        } catch let error {
-            withAnimation {
-                self.viewState = .error(
-                    errorMessage: error.localizedDescription
-                )
-            }
-        }
-        return nil
-    }
 }
 
 struct TerminationDeleteScreen_Previews: PreviewProvider {

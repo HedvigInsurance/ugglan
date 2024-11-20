@@ -48,8 +48,8 @@ struct SetTerminationDateLandingScreen: View {
 
                             hSection {
                                 VStack(spacing: 16) {
-                                    hButton.LargeButton(type: .primary) {
-                                        terminationNavigationVm.isConfirmTerminationPresented = true
+                                    hButton.LargeButton(type: .primary) { [weak terminationNavigationVm] in
+                                        terminationNavigationVm?.isConfirmTerminationPresented = true
                                     } content: {
                                         hText(L10n.terminationButton, style: .body1)
                                     }

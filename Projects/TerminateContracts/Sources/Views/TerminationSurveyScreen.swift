@@ -78,6 +78,8 @@ struct TerminationSurveyScreen: View {
             }
             .sectionContainerStyle(.transparent)
         }
+        .trackErrorState(for: $vm.viewState)
+        .hButtonIsLoading(vm.viewState == .loading)
     }
 
     @ViewBuilder
@@ -113,23 +115,21 @@ struct TerminationSurveyScreen: View {
     func continueClicked() {
         if let subOptions = vm.selectedOption?.subOptions, !subOptions.isEmpty {
             let currentProgress = terminationFlowNavigationViewModel.progress ?? 0
-            Task { @MainActor in
-                terminationFlowNavigationViewModel.previousProgress = terminationFlowNavigationViewModel.progress
+            terminationFlowNavigationViewModel.previousProgress = terminationFlowNavigationViewModel.progress
 
-                let progress = (currentProgress + 0.2)
-                terminationFlowNavigationViewModel.progress =
-                    (progress / 1) * (terminationFlowNavigationViewModel.hasSelectInsuranceStep ? 0.75 : 1)
-                    + (terminationFlowNavigationViewModel.hasSelectInsuranceStep ? 0.25 : 0)
+            let progress = (currentProgress + 0.2)
+            terminationFlowNavigationViewModel.progress =
+                (progress / 1) * (terminationFlowNavigationViewModel.hasSelectInsuranceStep ? 0.75 : 1)
+                + (terminationFlowNavigationViewModel.hasSelectInsuranceStep ? 0.25 : 0)
 
-                terminationFlowNavigationViewModel.terminationSurveyStepModel?.options = subOptions
-                terminationFlowNavigationViewModel.terminationSurveyStepModel?.subTitleType = .generic
+            terminationFlowNavigationViewModel.terminationSurveyStepModel?.options = subOptions
+            terminationFlowNavigationViewModel.terminationSurveyStepModel?.subTitleType = .generic
 
-                terminationFlowNavigationViewModel.router.push(
-                    TerminationFlowRouterActions.surveyStep(
-                        model: terminationFlowNavigationViewModel.terminationSurveyStepModel
-                    )
+            terminationFlowNavigationViewModel.router.push(
+                TerminationFlowRouterActions.surveyStep(
+                    model: terminationFlowNavigationViewModel.terminationSurveyStepModel
                 )
-            }
+            )
         } else if let selectedOption = vm.selectedOption {
             Task {
                 let step = await vm.submitSurvey(
@@ -161,8 +161,8 @@ class SurveyScreenViewModel: ObservableObject {
     @Published var selectedOption: TerminationFlowSurveyStepModelOption?
     @Published var selectedFeedBackViewModel: TerminationFlowSurveyStepFeedBackViewModel? {
         didSet {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.checkContinueButtonStatus()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+                self?.checkContinueButtonStatus()
             }
         }
     }

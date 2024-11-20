@@ -55,7 +55,6 @@ public class TerminationFlowNavigationViewModel: ObservableObject, Equatable, Id
 
     private func setInitialModel(initialStep: TerminationFlowActions) {
         reset()
-
         switch initialStep {
         case .router(let action):
             switch action {
@@ -109,7 +108,6 @@ public class TerminationFlowNavigationViewModel: ObservableObject, Equatable, Id
                 {
                     let input = ChangeTierInputData(source: source, contractId: contractId)
                     Task { @MainActor [weak self] in
-                        guard let self = self else { return }
                         do {
                             let newInput = try await ChangeTierNavigationViewModel.getTiers(input: input)
 
@@ -124,7 +122,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, Equatable, Id
                             if let exception = exception as? ChangeTierError {
                                 switch exception {
                                 case .emptyList:
-                                    self.infoText = L10n.terminationNoTierQuotesSubtitle
+                                    self?.infoText = L10n.terminationNoTierQuotesSubtitle
                                 default:
                                     Toasts.shared.displayToastBar(
                                         toast: .init(type: .error, text: exception.localizedDescription)
@@ -221,6 +219,60 @@ public class TerminationFlowNavigationViewModel: ObservableObject, Equatable, Id
         failedStepModel = nil
         terminationSurveyStepModel = nil
     }
+
+    @Published var confirmTerminationState: ProcessingState = .loading
+
+    @MainActor
+    public func sendConfirmDelete(
+        context: String,
+        model: TerminationFlowDeletionNextModel?
+    ) async -> TerminateStepResponse? {
+        withAnimation {
+            confirmTerminationState = .loading
+        }
+        do {
+            let data = try await terminateContractsService.sendConfirmDelete(terminationContext: context, model: model)
+            withAnimation {
+                confirmTerminationState = .success
+            }
+            return data
+        } catch let error {
+            withAnimation {
+                confirmTerminationState = .error(
+                    errorMessage: error.localizedDescription
+                )
+            }
+        }
+        return nil
+    }
+
+    @MainActor
+    public func sendTerminationDate(inputDateToString: String, context: String) async -> TerminateStepResponse? {
+        withAnimation {
+            confirmTerminationState = .loading
+        }
+        do {
+            let data = try await terminateContractsService.sendTerminationDate(
+                inputDateToString: inputDateToString,
+                terminationContext: context
+            )
+            withAnimation {
+                confirmTerminationState = .success
+            }
+            return data
+        } catch let error {
+            withAnimation {
+                confirmTerminationState = .error(
+                    errorMessage: error.localizedDescription
+                )
+            }
+        }
+        return nil
+    }
+
+    deinit {
+        let ss = ""
+    }
 }
 
 struct TerminationFlowNavigation: View {
@@ -262,29 +314,29 @@ struct TerminationFlowNavigation: View {
                 .routerDestination(
                     for: TerminationFlowFinalRouterActions.self,
                     options: .hidesBackButton
-                ) { action in
+                ) { [weak vm] action in
                     Group {
                         switch action {
                         case .success:
                             let terminationDate =
-                                vm.successStepModel?.terminationDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                                vm?.successStepModel?.terminationDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                             openTerminationSuccessScreen(
-                                isDeletion: vm.isDeletion,
+                                isDeletion: vm?.isDeletion ?? false,
                                 terminationDate: terminationDate
                             )
                             .onAppear {
-                                vm.isProcessingPresented = false
+                                vm?.isProcessingPresented = false
                             }
                         case .fail:
                             openTerminationFailScreen()
                                 .onAppear {
-                                    vm.isProcessingPresented = false
+                                    vm?.isProcessingPresented = false
                                 }
                         case .updateApp:
                             openUpdateAppTerminationScreen()
                         }
                     }
-                    .resetProgressOnDismiss(to: vm.previousProgress, for: $vm.progress)
+                    .resetProgressOnDismiss(to: vm?.previousProgress, for: $vm.progress)
                 }
         }
         .modifier(ProgressBarView(progress: $vm.progress))
@@ -459,8 +511,7 @@ struct TerminationFlowNavigation: View {
     }
 
     private func openProgressScreen() -> some View {
-        TerminationProcessingScreen()
-            .environmentObject(vm.confirmTerminationVm ?? .init())
+        TerminationProcessingScreen(terminationNavigationVm: vm)
     }
 
     private func openTerminationSuccessScreen(
@@ -491,7 +542,7 @@ struct TerminationFlowNavigation: View {
             .init(
                 actionButton: .init(
                     buttonTitle: L10n.openChat,
-                    buttonAction: { [weak vm] in
+                    buttonAction: {
                         self.isFlowPresented(.chat)
                     }
                 ),

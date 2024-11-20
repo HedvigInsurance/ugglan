@@ -458,6 +458,7 @@ private enum LoggedInNavigationDetentType: TrackingViewNameProtocol {
     case crossSelling
 }
 
+@MainActor
 class LoggedInNavigationViewModel: ObservableObject {
     @Published var selectedTab = 0 {
         willSet {
@@ -642,20 +643,35 @@ class LoggedInNavigationViewModel: ObservableObject {
             case .terminateContract:
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
                 let contractId = self.getContractId(from: url)
-                var contractsConfig: [TerminationConfirmConfig] = []
-
                 if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
-                        contractsConfig = [contract.asTerminationConfirmConfig]
-                        self?.terminateInsuranceVm.start(with: contractsConfig)
+                    Task { [weak self] in
+                        do {
+                            try await Task.sleep(nanoseconds: 200_000_000)
+                            let contractsConfig = [contract.asTerminationConfirmConfig]
+                            try await self?.terminateInsuranceVm.start(with: contractsConfig)
+                        } catch let exception {
+                            Toasts.shared.displayToastBar(
+                                toast: .init(type: .error, text: exception.localizedDescription)
+                            )
+                        }
                     }
                 } else {
-                    contractsConfig = contractStore.state.activeContracts
-                        .filter({ $0.canTerminate })
-                        .map({
-                            $0.asTerminationConfirmConfig
-                        })
-                    self.terminateInsuranceVm.start(with: contractsConfig)
+                    Task { [weak self] in
+                        do {
+                            try await Task.sleep(nanoseconds: 200_000_000)
+                            let contractsConfig = contractStore.state.activeContracts
+                                .filter({ $0.canTerminate })
+                                .map({
+                                    $0.asTerminationConfirmConfig
+                                })
+                            try await self?.terminateInsuranceVm.start(with: contractsConfig)
+                        } catch let exception {
+                            Toasts.shared.displayToastBar(
+                                toast: .init(type: .error, text: exception.localizedDescription)
+                            )
+                        }
+                    }
+
                 }
             case .conversation:
                 let conversationId = self.getConversationId(from: url)

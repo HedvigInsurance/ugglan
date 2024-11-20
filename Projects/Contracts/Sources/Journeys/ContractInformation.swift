@@ -319,7 +319,21 @@ struct ContractInformationView: View {
                         hButton.LargeButton(type: .ghost) {
                             if let contract {
                                 let config = TerminationConfirmConfig(contract: contract)
-                                contractsNavigationVm.terminateInsuranceVm.start(with: [config])
+                                Task {
+                                    withAnimation {
+                                        vm.cancelInsuranceState = .loading
+                                    }
+                                    do {
+                                        try await contractsNavigationVm.terminateInsuranceVm.start(with: [config])
+                                    } catch let exception {
+                                        Toasts.shared.displayToastBar(
+                                            toast: .init(type: .error, text: exception.localizedDescription)
+                                        )
+                                    }
+                                    withAnimation {
+                                        vm.cancelInsuranceState = .success
+                                    }
+                                }
                             }
                         } content: {
                             hText(L10n.terminationButton, style: .body1)
@@ -327,6 +341,7 @@ struct ContractInformationView: View {
                         }
                     }
                     .sectionContainerStyle(.transparent)
+                    .hButtonIsLoading(vm.cancelInsuranceState == .loading)
                 }
             }
         }
@@ -335,7 +350,7 @@ struct ContractInformationView: View {
 
 private class ContractsInformationViewModel: ObservableObject {
     var cancellable: AnyCancellable?
-
+    @Published var cancelInsuranceState: ProcessingState = .success
     func getListToDisplay(contract: Contract) -> [CoInsuredListType] {
         return contract.coInsured
             .map {

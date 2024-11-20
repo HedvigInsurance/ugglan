@@ -2,6 +2,9 @@ import PresentableStore
 import hCore
 import hGraphQL
 
+enum TerminationError: Error {
+    case invalidInput
+}
 public class TerminateContractsClientOctopus: TerminateContractsClient {
     public init() {}
 
@@ -17,6 +20,8 @@ public class TerminateContractsClientOctopus: TerminateContractsClient {
         inputDateToString: String,
         terminationContext: String
     ) async throws -> TerminateStepResponse {
+        try await Task.sleep(nanoseconds: 2_000_000_000)
+        throw TerminationError.invalidInput
         let terminationDateInput = OctopusGraphQL.FlowTerminationDateInput(terminationDate: inputDateToString)
         let mutation = OctopusGraphQL.FlowTerminationDateNextMutation(
             input: terminationDateInput,
