@@ -6,18 +6,17 @@ import hCoreUI
 struct CoInsuredProcessingScreen: View {
     @StateObject var vm = ProcessingViewModel()
     var showSuccessScreen: Bool
-    @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+    @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @EnvironmentObject private var editCoInsuredViewModel: EditCoInsuredViewModel
     @ObservedObject private var intentViewModel: IntentViewModel
     @StateObject var router = Router()
 
     init(
         showSuccessScreen: Bool,
-        editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+        intentVM: IntentViewModel
     ) {
-        self.intentViewModel = editCoInsuredNavigation.intentViewModel
+        self.intentViewModel = intentVM
         self.showSuccessScreen = showSuccessScreen
-        self.editCoInsuredNavigation = editCoInsuredNavigation
     }
 
     var body: some View {
@@ -95,7 +94,11 @@ struct SuccessScreen_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         let existingCoInsured = (any ExistingCoInsured).self
-        return CoInsuredProcessingScreen(showSuccessScreen: true, editCoInsuredNavigation: .init(config: .init()))
-            .environmentObject(EditCoInsuredViewModel(existingCoInsured: existingCoInsured as! ExistingCoInsured))
+        return CoInsuredProcessingScreen(
+            showSuccessScreen: true,
+            intentVM: .init()
+        )
+        .environmentObject(EditCoInsuredNavigationViewModel.init(config: .init()))
+        .environmentObject(EditCoInsuredViewModel(existingCoInsured: existingCoInsured as! ExistingCoInsured))
     }
 }

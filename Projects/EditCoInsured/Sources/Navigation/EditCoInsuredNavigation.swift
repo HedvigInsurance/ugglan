@@ -193,7 +193,7 @@ public struct EditCoInsuredNavigation: View {
     func openProgress(showSuccess: Bool) -> some View {
         CoInsuredProcessingScreen(
             showSuccessScreen: showSuccess,
-            editCoInsuredNavigation: editCoInsuredNavigationVm
+            intentVM: editCoInsuredNavigationVm.intentViewModel
         )
         .environmentObject(editCoInsuredNavigationVm)
         .environmentObject(editCoInsuredViewModel)
