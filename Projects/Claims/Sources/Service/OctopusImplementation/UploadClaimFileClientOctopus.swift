@@ -28,7 +28,6 @@ extension NetworkClient: hClaimFileUploadClient {
         var observation: NSKeyValueObservation?
         let response = try await withCheckedThrowingContinuation {
             (inCont: CheckedContinuation<[ClaimFileUploadResponse], Error>) -> Void in
-            self.sessionClient.dataTaskPublisher(for: request)
             let task = self.sessionClient.dataTask(with: request) { [weak self] (data, response, error) in
                 do {
                     if let uploadedFiles: [ClaimFileUploadResponse] = try self?
@@ -39,7 +38,7 @@ extension NetworkClient: hClaimFileUploadClient {
                             switch localFileSource {
                             case let .localFile(results):
                                 if let results = results {
-                                    Task {
+                                    Task { @MainActor in
                                         if MimeType.findBy(mimeType: file.element.mimeType).isImage,
                                             let data = try? await results.itemProvider.getData(),
                                             let image = UIImage(data: data.data)
@@ -101,6 +100,7 @@ struct FileUpload: Codable {
     let url: String
 }
 
+@MainActor
 enum ClaimsRequest {
     case uploadFile(endPoint: String, files: [File])
 

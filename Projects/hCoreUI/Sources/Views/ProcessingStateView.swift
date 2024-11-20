@@ -152,3 +152,40 @@ public struct ProcessingStateView: View {
         state: .constant(.error(errorMessage: "error message"))
     )
 })
+
+extension View {
+    public func trackErrorState(for state: Binding<ProcessingState>) -> some View {
+        self.modifier(TrackErrorState(processingState: state))
+    }
+}
+private struct TrackErrorState: ViewModifier {
+    @State private var error: String?
+    @Binding var processingState: ProcessingState
+    func body(content: Content) -> some View {
+        Group {
+            if let error {
+                GenericErrorView(description: error)
+                    .hFormDontUseInitialAnimation
+            } else {
+                content
+            }
+        }
+        .onAppear {
+            checkForError()
+        }
+        .onChange(of: processingState) { value in
+            checkForError()
+        }
+    }
+
+    private func checkForError() {
+        withAnimation {
+            switch processingState {
+            case let .error(errorMessage):
+                self.error = errorMessage
+            default:
+                self.error = nil
+            }
+        }
+    }
+}
