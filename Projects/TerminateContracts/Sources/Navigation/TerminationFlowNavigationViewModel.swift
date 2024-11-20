@@ -49,7 +49,6 @@ public class TerminationFlowNavigationViewModel: ObservableObject, Equatable, Id
         terminateInsuranceViewModel: TerminateInsuranceViewModel?
     ) {
         self.configs = configs
-        self.hasSelectInsuranceStep = true
         self.terminateInsuranceViewModel = terminateInsuranceViewModel
         initialStep = .router(action: .selectInsurance(configs: configs))
     }
@@ -97,7 +96,6 @@ public class TerminationFlowNavigationViewModel: ObservableObject, Equatable, Id
                     NotificationCenter.default.post(name: .openDeepLink, object: url)
                 }
             case .changeTierFoundBetterPrice, .changeTierMissingCoverageAndTerms:
-                // Config is nil
                 if let contractId = config?.contractId,
                     let redirectAction,
                     let source: ChangeTierSource = {
@@ -161,8 +159,8 @@ public class TerminationFlowNavigationViewModel: ObservableObject, Equatable, Id
     @Inject private var terminateContractsService: TerminateContractsClient
 
     @Published var currentContext: String?
-    @Published var progress: Float?
-    @Published var previousProgress: Float?
+    @Published var progress: Float? = 0
+    var previousProgress: Float?
     @Published var hasSelectInsuranceStep: Bool = false
 
     @Published var terminationDateStepModel: TerminationFlowDateNextStepModel?
@@ -178,20 +176,24 @@ public class TerminationFlowNavigationViewModel: ObservableObject, Equatable, Id
     }
 
     @MainActor
-    func startTermination(config: TerminationConfirmConfig) async {
+    func startTermination(config: TerminationConfirmConfig, fromSelectInsurance: Bool) async {
         do {
             let data = try await terminateContractsService.startTermination(contractId: config.contractId)
             self.config = config
-            navigate(data: data)
+            navigate(data: data, fromSelectInsurance: fromSelectInsurance)
         } catch {
 
         }
     }
 
-    func navigate(data: TerminateStepResponse) {
+    func navigate(data: TerminateStepResponse, fromSelectInsurance: Bool) {
         currentContext = data.context
-        previousProgress = progress
-        progress = data.progress
+
+        if !fromSelectInsurance {
+            previousProgress = progress
+            progress = data.progress
+        }
+
         switch data.step {
         case let .setTerminationDateStep(model):
             terminationDateStepModel = model
@@ -213,7 +215,6 @@ public class TerminationFlowNavigationViewModel: ObservableObject, Equatable, Id
     }
 
     func reset() {
-        currentContext = nil
         terminationDateStepModel = nil
         terminationDeleteStepModel = nil
         successStepModel = nil
@@ -241,45 +242,52 @@ struct TerminationFlowNavigation: View {
             tracking: vm.initialStep
         ) {
             getView(for: vm.initialStep)
-                .addTerminationProgressBar
+                .resetProgressOnDismiss(to: vm.previousProgress, for: $vm.progress)
                 .routerDestination(for: [TerminationFlowSurveyStepModelOption].self) { options in
                     TerminationSurveyScreen(vm: .init(options: options, subtitleType: .generic))
                 }
                 .routerDestination(for: TerminationFlowRouterActions.self) { action in
-                    switch action {
-                    case .terminationDate:
-                        openSetTerminationDateLandingScreen(fromSelectInsurance: false)
-                    case let .surveyStep(model):
-                        openSurveyScreen(model: model ?? .init(id: "", options: [], subTitleType: .default))
-                    case .selectInsurance:
-                        openSelectInsuranceScreen()
+                    Group {
+                        switch action {
+                        case .terminationDate:
+                            openSetTerminationDateLandingScreen(fromSelectInsurance: false)
+                        case let .surveyStep(model):
+                            openSurveyScreen(model: model ?? .init(id: "", options: [], subTitleType: .default))
+                        case .selectInsurance:
+                            openSelectInsuranceScreen()
+                        }
                     }
+                    .resetProgressOnDismiss(to: vm.previousProgress, for: $vm.progress)
                 }
                 .routerDestination(
                     for: TerminationFlowFinalRouterActions.self,
                     options: .hidesBackButton
                 ) { action in
-                    switch action {
-                    case .success:
-                        let terminationDate =
-                            vm.successStepModel?.terminationDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-                        openTerminationSuccessScreen(
-                            isDeletion: vm.isDeletion,
-                            terminationDate: terminationDate
-                        )
-                        .onAppear {
-                            vm.isProcessingPresented = false
-                        }
-                    case .fail:
-                        openTerminationFailScreen()
+                    Group {
+                        switch action {
+                        case .success:
+                            let terminationDate =
+                                vm.successStepModel?.terminationDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                            openTerminationSuccessScreen(
+                                isDeletion: vm.isDeletion,
+                                terminationDate: terminationDate
+                            )
                             .onAppear {
                                 vm.isProcessingPresented = false
                             }
-                    case .updateApp:
-                        openUpdateAppTerminationScreen()
+                        case .fail:
+                            openTerminationFailScreen()
+                                .onAppear {
+                                    vm.isProcessingPresented = false
+                                }
+                        case .updateApp:
+                            openUpdateAppTerminationScreen()
+                        }
                     }
+                    .resetProgressOnDismiss(to: vm.previousProgress, for: $vm.progress)
                 }
         }
+        .modifier(ProgressBarView(progress: $vm.progress))
         .environmentObject(vm)
         .detent(
             presented: $vm.isDatePickerPresented,
@@ -341,7 +349,6 @@ struct TerminationFlowNavigation: View {
         SetTerminationDateLandingScreen(
             terminationNavigationVm: vm
         )
-        .resetProgressToPreviousValueOnDismiss
         .withDismissButton()
         .toolbar {
             ToolbarItem(
@@ -379,7 +386,15 @@ struct TerminationFlowNavigation: View {
                             activeFrom: selectedContract.activeFrom
                         )
                         Task {
-                            await vm.startTermination(config: config)
+                            vm.hasSelectInsuranceStep = true
+                            vm.previousProgress = vm.progress
+                            if let progress = vm.progress {
+                                vm.previousProgress = progress
+                                vm.progress = progress * 0.75 + 0.25
+                            } else {
+                                vm.progress = nil
+                            }
+                            await vm.startTermination(config: config, fromSelectInsurance: true)
                         }
                     }
                 },
@@ -395,7 +410,6 @@ struct TerminationFlowNavigation: View {
             subTitle: .init(.small, .heading2, L10n.terminationFlowBody)
         )
         .withDismissButton()
-        .resetProgressToPreviousValueOnDismiss
         .hFieldSize(.small)
         .toolbar {
             ToolbarItem(
@@ -420,7 +434,6 @@ struct TerminationFlowNavigation: View {
     ) -> some View {
         let vm = SurveyScreenViewModel(options: model.options, subtitleType: model.subTitleType)
         return TerminationSurveyScreen(vm: vm)
-            .resetProgressToPreviousValueOnDismiss
             .withDismissButton()
     }
 
