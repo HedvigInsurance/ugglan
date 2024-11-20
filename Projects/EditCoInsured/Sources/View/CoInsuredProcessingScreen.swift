@@ -1,29 +1,65 @@
 import EditCoInsuredShared
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 struct CoInsuredProcessingScreen: View {
     @StateObject var vm = ProcessingViewModel()
-    @ObservedObject var intentVm: IntentViewModel
     var showSuccessScreen: Bool
-    @PresentableStore var store: EditCoInsuredStore
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @EnvironmentObject private var editCoInsuredViewModel: EditCoInsuredViewModel
+    @ObservedObject private var intentViewModel: IntentViewModel
     @StateObject var router = Router()
+
     init(
-        showSuccessScreen: Bool
+        showSuccessScreen: Bool,
+        intentVM: IntentViewModel
     ) {
+        self.intentViewModel = intentVM
         self.showSuccessScreen = showSuccessScreen
-        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-        intentVm = store.intentViewModel
     }
 
     var body: some View {
         RouterHost(router: router, options: [.navigationBarHidden], tracking: self) {
-            EmptyView()  //is reworked in PR for removing store for edit co-insured
+            ProcessingStateView(
+                showSuccessScreen: showSuccessScreen,
+                loadingViewText: L10n.contractAddCoinsuredProcessing,
+                successViewTitle: L10n.contractAddCoinsuredUpdatedTitle,
+                successViewBody: L10n.contractAddCoinsuredUpdatedLabel(
+                    intentViewModel.intent.activationDate.localDateToDate?
+                        .displayDateDDMMMYYYYFormat ?? ""
+                ),
+                successViewButtonAction: nil,
+                onAppearLoadingView: {
+                    editCoInsuredNavigation.showProgressScreenWithSuccess = false
+                    editCoInsuredNavigation.showProgressScreenWithoutSuccess = false
+                    editCoInsuredNavigation.editCoInsuredConfig = nil
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak editCoInsuredViewModel] in
+                        editCoInsuredViewModel?.checkForAlert()
+                    }
+                    EditCoInsuredViewModel.updatedCoInsuredForContractId.send(
+                        intentViewModel.contractId
+                    )
+
+                },
+                state: $intentViewModel.viewState
+            )
+            .hSuccessBottomAttachedView {
+                customBottomSuccessView
+            }
+            .hErrorViewButtonConfig(errorButtons)
         }
+    }
+
+    private var errorButtons: ErrorViewButtonConfig {
+        .init(
+            dismissButton: .init(
+                buttonTitle: L10n.generalCancelButton,
+                buttonAction: {
+                    router.dismiss()
+                }
+            )
+        )
     }
 
     private var customBottomSuccessView: some View {
@@ -33,7 +69,9 @@ struct CoInsuredProcessingScreen: View {
                 editCoInsuredNavigation.showProgressScreenWithoutSuccess = false
                 editCoInsuredNavigation.editCoInsuredConfig = nil
                 editCoInsuredViewModel.checkForAlert()
-                EditCoInsuredViewModel.updatedCoInsuredForContractId.send(intentVm.contractId)
+                EditCoInsuredViewModel.updatedCoInsuredForContractId.send(
+                    intentViewModel.contractId
+                )
             } content: {
                 hText(L10n.generalDoneButton)
             }
@@ -50,16 +88,17 @@ extension CoInsuredProcessingScreen: TrackingViewNameProtocol {
 }
 class ProcessingViewModel: ObservableObject {
     @Published var progress: Float = 0
-    @PresentableStore var store: EditCoInsuredStore
 }
 
 struct SuccessScreen_Previews: PreviewProvider {
     static var previews: some View {
-        CoInsuredProcessingScreen(showSuccessScreen: true)
-            .onAppear {
-                let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-                store.setLoading(for: .postCoInsured)
-                store.setError("error", for: .postCoInsured)
-            }
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+        let existingCoInsured = (any ExistingCoInsured).self
+        return CoInsuredProcessingScreen(
+            showSuccessScreen: true,
+            intentVM: .init()
+        )
+        .environmentObject(EditCoInsuredNavigationViewModel.init(config: .init()))
+        .environmentObject(EditCoInsuredViewModel(existingCoInsured: existingCoInsured as! ExistingCoInsured))
     }
 }
