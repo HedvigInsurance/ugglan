@@ -157,7 +157,7 @@ let project = Project(
             infoPlist: .default,
             sources: ["Tests/**"],
             resources: [],
-            scripts: targetScripts,
+            scripts: [],
             dependencies: [
                 [
                     .target(name: "Ugglan"),
