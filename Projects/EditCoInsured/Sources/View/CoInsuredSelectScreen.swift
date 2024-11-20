@@ -1,5 +1,4 @@
 import EditCoInsuredShared
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -8,32 +7,34 @@ struct CoInsuredSelectScreen: View {
     let contractId: String
     @State var isLoading = false
     @ObservedObject var vm: InsuredPeopleNewScreenModel
-    @ObservedObject var intentVm: IntentViewModel
     let alreadyAddedCoinsuredMembers: [CoInsuredModel]
-    @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
-
+    @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+    @ObservedObject private var intentViewModel: IntentViewModel
     public init(
-        contractId: String
+        contractId: String,
+        editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     ) {
         self.contractId = contractId
-        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-        vm = store.coInsuredViewModel
-        intentVm = store.intentViewModel
-        alreadyAddedCoinsuredMembers = store.coInsuredViewModel.config.preSelectedCoInsuredList.filter({
-            !store.coInsuredViewModel.coInsuredAdded.contains($0)
-        })
-        intentVm.errorMessageForCoinsuredList = nil
-        intentVm.errorMessageForInput = nil
+        self.editCoInsuredNavigation = editCoInsuredNavigation
+        vm = editCoInsuredNavigation.coInsuredViewModel
+        alreadyAddedCoinsuredMembers = editCoInsuredNavigation.coInsuredViewModel.config.preSelectedCoInsuredList
+            .filter({
+                !editCoInsuredNavigation.coInsuredViewModel.coInsuredAdded.contains($0)
+            })
+        intentViewModel = editCoInsuredNavigation.intentViewModel
+        intentViewModel.errorMessageForCoinsuredList = nil
+        intentViewModel.errorMessageForInput = nil
     }
 
     var body: some View {
-        if intentVm.showErrorViewForCoInsuredList {
+        if intentViewModel.showErrorViewForCoInsuredList {
             CoInsuredInputErrorView(
                 vm: .init(
                     coInsuredModel: CoInsuredModel(),
                     actionType: .add,
                     contractId: contractId
-                )
+                ),
+                editCoInsuredNavigation: editCoInsuredNavigation
             )
         } else {
             picker
@@ -53,10 +54,9 @@ struct CoInsuredSelectScreen: View {
                 preSelectedItems: { [] },
                 onSelected: { selectedCoinsured in
                     if let selectedCoinsured = selectedCoinsured.first {
-                        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-
                         if let object = selectedCoinsured.0 {
-                            store.coInsuredViewModel.addCoInsured(
+
+                            vm.addCoInsured(
                                 .init(
                                     firstName: object.firstName,
                                     lastName: object.lastName,
@@ -70,19 +70,19 @@ struct CoInsuredSelectScreen: View {
                             withAnimation {
                                 isLoading = true
                             }
-                            await store.intentViewModel.getIntent(
+                            await intentViewModel.getIntent(
                                 contractId: contractId,
                                 origin: .coinsuredSelectList,
-                                coInsured: store.coInsuredViewModel.completeList()
+                                coInsured: vm.completeList()
                             )
                             withAnimation {
                                 isLoading = false
                             }
-                            if !store.intentViewModel.showErrorViewForCoInsuredList {
+                            if !intentViewModel.showErrorViewForCoInsuredList {
                                 editCoInsuredNavigation.selectCoInsured = nil
                             } else {
                                 if let object = selectedCoinsured.0 {
-                                    store.coInsuredViewModel.removeCoInsured(
+                                    vm.removeCoInsured(
                                         .init(
                                             firstName: object.firstName,
                                             lastName: object.lastName,
@@ -129,6 +129,6 @@ struct CoInsuredSelectScreen: View {
 
 struct CoInsuredSelectScreen_Previews: PreviewProvider {
     static var previews: some View {
-        CoInsuredSelectScreen(contractId: "")
+        CoInsuredSelectScreen(contractId: "", editCoInsuredNavigation: .init(config: .init()))
     }
 }

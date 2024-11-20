@@ -1,17 +1,14 @@
 import EditCoInsuredShared
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
 
 struct InsuredPeopleNewScreen: View {
-    @PresentableStore var store: EditCoInsuredStore
     @ObservedObject var vm: InsuredPeopleNewScreenModel
-    @ObservedObject var intentVm: IntentViewModel
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @EnvironmentObject var router: Router
-
+    @ObservedObject var intentViewModel: IntentViewModel
     var body: some View {
         hForm {
             VStack(spacing: 0) {
@@ -20,7 +17,10 @@ struct InsuredPeopleNewScreen: View {
 
                 hSection {
                     hRow {
-                        ContractOwnerField(hasContentBelow: hasContentBelow, config: store.coInsuredViewModel.config)
+                        ContractOwnerField(
+                            hasContentBelow: hasContentBelow,
+                            config: vm.config
+                        )
                     }
                     .verticalPadding(0)
                     .padding(.top, .padding16)
@@ -61,13 +61,17 @@ struct InsuredPeopleNewScreen: View {
                 if vm.coInsuredAdded.count >= nbOfMissingCoInsured {
                     hSection {
                         hButton.LargeButton(type: .primary) {
-                            store.send(.performCoInsuredChanges(commitId: intentVm.intent.id))
+                            Task {
+                                await intentViewModel.performCoInsuredChanges(
+                                    commitId: intentViewModel.intent.id
+                                )
+                            }
                             editCoInsuredNavigation.showProgressScreenWithoutSuccess = true
                             editCoInsuredNavigation.editCoInsuredConfig = nil
                         } content: {
                             hText(L10n.generalSaveChangesButton)
                         }
-                        .trackLoading(EditCoInsuredStore.self, action: .postCoInsured)
+                        .hButtonIsLoading(intentViewModel.isLoading)
                         .disabled(
                             (vm.config.contractCoInsured.count + vm.coInsuredAdded.count)
                                 < nbOfMissingCoInsured
@@ -81,7 +85,7 @@ struct InsuredPeopleNewScreen: View {
                 } content: {
                     hText(L10n.generalCancelButton)
                 }
-                .disableOn(EditCoInsuredStore.self, [.postCoInsured])
+                .disabled(intentViewModel.isLoading)
             }
         }
     }
@@ -110,28 +114,21 @@ struct InsuredPeopleNewScreen: View {
 
     @ViewBuilder
     var emptyAccessoryView: some View {
-        PresentableStoreLens(
-            EditCoInsuredStore.self,
-            getter: { state in
-                state
-            }
-        ) { contract in
-            HStack {
-                hText(L10n.generalAddInfoButton)
-                Image(uiImage: hCoreUIAssets.plusSmall.image)
-            }
-            .onTapGesture {
-                let hasExistingCoInsured = vm.config.preSelectedCoInsuredList.filter { !vm.coInsuredAdded.contains($0) }
-                if !hasExistingCoInsured.isEmpty {
-                    editCoInsuredNavigation.selectCoInsured = .init(id: vm.config.contractId)
-                } else {
-                    editCoInsuredNavigation.coInsuredInputModel = .init(
-                        actionType: .add,
-                        coInsuredModel: CoInsuredModel(),
-                        title: L10n.contractAddConisuredInfo,
-                        contractId: vm.config.contractId
-                    )
-                }
+        HStack {
+            hText(L10n.generalAddInfoButton)
+            Image(uiImage: hCoreUIAssets.plusSmall.image)
+        }
+        .onTapGesture {
+            let hasExistingCoInsured = vm.config.preSelectedCoInsuredList.filter { !vm.coInsuredAdded.contains($0) }
+            if !hasExistingCoInsured.isEmpty {
+                editCoInsuredNavigation.selectCoInsured = .init(id: vm.config.contractId)
+            } else {
+                editCoInsuredNavigation.coInsuredInputModel = .init(
+                    actionType: .add,
+                    coInsuredModel: CoInsuredModel(),
+                    title: L10n.contractAddConisuredInfo,
+                    contractId: vm.config.contractId
+                )
             }
         }
     }
@@ -158,7 +155,6 @@ struct InsuredPeopleNewScreen: View {
 struct InsuredPeopleScreenNew_Previews: PreviewProvider {
     static var previews: some View {
         let vm = InsuredPeopleNewScreenModel()
-        let intentVm = IntentViewModel()
         let config = InsuredPeopleConfig(
             id: UUID().uuidString,
             contractCoInsured: [],
@@ -175,6 +171,6 @@ struct InsuredPeopleScreenNew_Previews: PreviewProvider {
             fromInfoCard: false
         )
         vm.initializeCoInsured(with: config)
-        return InsuredPeopleScreen(vm: vm, intentVm: intentVm)
+        return InsuredPeopleScreen(vm: vm, intentViewModel: .init())
     }
 }

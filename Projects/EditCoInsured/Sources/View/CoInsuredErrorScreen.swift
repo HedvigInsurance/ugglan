@@ -1,24 +1,23 @@
 import EditCoInsuredShared
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
-public struct CoInsuredInputErrorView: View {
-    @ObservedObject var intentVm: IntentViewModel
-    @PresentableStore var store: EditCoInsuredStore
+struct CoInsuredInputErrorView: View {
     @ObservedObject var vm: CoInusuredInputViewModel
-
-    public init(
-        vm: CoInusuredInputViewModel
+    @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+    @ObservedObject private var intentViewModel: IntentViewModel
+    init(
+        vm: CoInusuredInputViewModel,
+        editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     ) {
-        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-        intentVm = store.intentViewModel
+        self.editCoInsuredNavigation = editCoInsuredNavigation
         self.vm = vm
+        self.intentViewModel = editCoInsuredNavigation.intentViewModel
     }
 
     @ViewBuilder
-    public var body: some View {
+    var body: some View {
         var actionButtonTitle: String {
             if vm.enterManually {
                 return L10n.coinsuredEnterManuallyButton
@@ -27,7 +26,8 @@ public struct CoInsuredInputErrorView: View {
         }
 
         GenericErrorView(
-            description: vm.SSNError ?? intentVm.errorMessageForInput ?? intentVm.errorMessageForCoinsuredList,
+            description: vm.SSNError ?? intentViewModel.errorMessageForInput
+                ?? intentViewModel.errorMessageForCoinsuredList,
             useForm: true
         )
         .hErrorViewButtonConfig(
@@ -40,8 +40,8 @@ public struct CoInsuredInputErrorView: View {
                             vm.noSSN = true
                         } else {
                             vm.SSNError = nil
-                            intentVm.errorMessageForInput = nil
-                            intentVm.errorMessageForCoinsuredList = nil
+                            intentViewModel.errorMessageForInput = nil
+                            intentViewModel.errorMessageForCoinsuredList = nil
                         }
                     }
                 ),
@@ -49,8 +49,8 @@ public struct CoInsuredInputErrorView: View {
                     buttonTitle: L10n.generalCancelButton,
                     buttonAction: {
                         vm.SSNError = nil
-                        intentVm.errorMessageForInput = nil
-                        intentVm.errorMessageForCoinsuredList = nil
+                        intentViewModel.errorMessageForInput = nil
+                        intentViewModel.errorMessageForCoinsuredList = nil
                     }
                 )
             )
@@ -64,6 +64,7 @@ public struct CoInsuredInputErrorView: View {
             coInsuredModel: CoInsuredModel(),
             actionType: .add,
             contractId: ""
-        )
+        ),
+        editCoInsuredNavigation: .init(config: .init())
     )
 }
