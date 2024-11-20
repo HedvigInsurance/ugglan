@@ -152,7 +152,7 @@ public struct HelpCenterNavigation<Content: View>: View {
         .handleConnectPayment(with: helpCenterVm.connectPaymentsVm)
         .handleTerminateInsurance(
             vm: helpCenterVm.terminateInsuranceVm
-        ){ dismissType in
+        ) { dismissType in
             switch dismissType {
             case .done:
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()

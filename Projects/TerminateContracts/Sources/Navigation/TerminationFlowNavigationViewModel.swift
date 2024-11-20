@@ -269,10 +269,6 @@ public class TerminationFlowNavigationViewModel: ObservableObject, Equatable, Id
         }
         return nil
     }
-
-    deinit {
-        let ss = ""
-    }
 }
 
 struct TerminationFlowNavigation: View {
