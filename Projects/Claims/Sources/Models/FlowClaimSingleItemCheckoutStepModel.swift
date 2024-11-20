@@ -7,14 +7,14 @@ public struct FlowClaimSingleItemCheckoutStepModel: FlowClaimStepModel {
     let compensation: Compensation
     let payoutMethods: [AvailableCheckoutMethod]
     var selectedPayoutMethod: AvailableCheckoutMethod?
-    let singleItemModel: FlowClamSingleItemStepModel?
+    let singleItemModel: FlowClaimSingleItemStepModel?
 
     init(
         id: String,
         payoutMethods: [AvailableCheckoutMethod],
         selectedPayoutMethod: AvailableCheckoutMethod? = nil,
         compensation: Compensation,
-        singleItemModel: FlowClamSingleItemStepModel?
+        singleItemModel: FlowClaimSingleItemStepModel?
     ) {
         self.id = id
         self.payoutMethods = payoutMethods

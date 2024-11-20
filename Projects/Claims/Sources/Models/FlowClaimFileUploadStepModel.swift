@@ -7,7 +7,7 @@ public struct FlowClaimFileUploadStepModel: FlowClaimStepModel {
     let targetUploadUrl: String
     let uploads: [FlowClaimFileUploadStepFileModel]
 
-    init(
+    public init(
         id: String,
         title: String,
         targetUploadUrl: String,
@@ -20,7 +20,7 @@ public struct FlowClaimFileUploadStepModel: FlowClaimStepModel {
     }
 }
 
-struct FlowClaimFileUploadStepFileModel: Codable, Equatable, Hashable {
+public struct FlowClaimFileUploadStepFileModel: Codable, Equatable, Hashable {
     let fileId: String
     let signedUrl: String
     let mimeType: String

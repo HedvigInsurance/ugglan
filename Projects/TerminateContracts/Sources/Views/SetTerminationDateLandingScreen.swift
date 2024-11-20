@@ -256,13 +256,6 @@ class SetTerminationDateLandingScreenViewModel: ObservableObject {
 
 #Preview {
     SetTerminationDateLandingScreen(
-        terminationNavigationVm: .init(
-            initialStep: nil,
-            context: "",
-            progress: nil,
-            previousProgress: nil,
-            config: .init(contractId: "", contractDisplayName: "", contractExposureName: "", activeFrom: nil),
-            hasSelectInsuranceStep: false
-        )
+        terminationNavigationVm: .init(configs: [], terminateInsuranceViewModel: nil)
     )
 }

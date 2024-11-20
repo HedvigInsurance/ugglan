@@ -1,16 +1,18 @@
 import Combine
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct SubmitClaimContactScreen: View, KeyboardReadable {
     @StateObject var vm = SubmitClaimContractViewModel(phoneNumber: "")
+    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
+
     public init(
         model: FlowClaimPhoneNumberStepModel
     ) {
         self._vm = StateObject(wrappedValue: SubmitClaimContractViewModel(phoneNumber: model.phoneNumber))
     }
+
     public var body: some View {
         hForm {}
             .hFormTitle(title: .init(.small, .displayXSLong, L10n.claimsConfirmNumberTitle))
@@ -31,49 +33,78 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
                                     UIApplication.dismissKeyboard()
                                 }
                             } else {
-                                vm.store.send(.phoneNumberRequest(phoneNumber: vm.phoneNumber))
+                                Task {
+                                    let step = await vm.phoneNumberRequest(
+                                        context: claimsNavigationVm.currentClaimContext ?? "",
+                                        model: claimsNavigationVm.phoneNumberModel
+                                    )
+
+                                    if let step {
+                                        claimsNavigationVm.navigate(data: step)
+                                    }
+                                }
                                 UIApplication.dismissKeyboard()
                             }
                         } content: {
                             hText(vm.keyboardEnabled ? L10n.generalSaveButton : L10n.generalContinueButton)
                         }
-                        .trackLoading(SubmitClaimStore.self, action: .postPhoneNumber)
-                        .presentableStoreLensAnimation(.default)
                         .disabled(!(vm.enableContinueButton || vm.keyboardEnabled))
+                        .hButtonIsLoading(vm.viewState == .loading)
 
                     }
                     .padding(.bottom, .padding16)
                 }
                 .sectionContainerStyle(.transparent)
             }
-            .claimErrorTrackerFor([.postContractSelect])
             .onReceive(keyboardPublisher) { keyboardHeight in
                 vm.keyboardEnabled = keyboardHeight != nil
             }
+            .claimErrorTrackerForState($vm.viewState)
+
     }
 }
 
 class SubmitClaimContractViewModel: ObservableObject {
-    @Published var phoneNumber: String = ""
+    @Published var phoneNumber: String {
+        didSet {
+            let isValidPhone = phoneNumber.isValidPhone
+            self.enableContinueButton = isValidPhone || phoneNumber.isEmpty
+            self.phoneNumberError =
+                (self.enableContinueButton || keyboardEnabled) ? nil : L10n.myInfoPhoneNumberMalformedError
+        }
+    }
     @Published var enableContinueButton: Bool = false
     @Published var keyboardEnabled: Bool = false
     @Published var type: ClaimsFlowContactType?
     @Published var phoneNumberError: String?
-    @PresentableStore var store: SubmitClaimStore
-    var phoneNumberCancellable: AnyCancellable?
+    @Inject private var service: SubmitClaimClient
+    @Published var viewState: ProcessingState = .success
 
     init(phoneNumber: String) {
         self.phoneNumber = phoneNumber
         self.enableContinueButton = phoneNumber.isValidPhone || phoneNumber.isEmpty
-        phoneNumberCancellable = Publishers.CombineLatest($phoneNumber, $keyboardEnabled)
-            .receive(on: RunLoop.main)
-            .sink { _ in
-            } receiveValue: { (phone, keyboardVisible) in
-                let isValidPhone = phone.isValidPhone
-                self.enableContinueButton = isValidPhone || phone.isEmpty
-                self.phoneNumberError =
-                    (self.enableContinueButton || keyboardVisible) ? nil : L10n.myInfoPhoneNumberMalformedError
+    }
+
+    @MainActor
+    func phoneNumberRequest(
+        context: String,
+        model: FlowClaimPhoneNumberStepModel?
+    ) async -> SubmitClaimStepResponse? {
+        withAnimation {
+            self.viewState = .loading
+        }
+        do {
+            let data = try await service.updateContact(phoneNumber: phoneNumber, context: context, model: model)
+            withAnimation {
+                self.viewState = .success
             }
+            return data
+        } catch let exception {
+            withAnimation {
+                self.viewState = .error(errorMessage: exception.localizedDescription)
+            }
+        }
+        return nil
     }
 }
 

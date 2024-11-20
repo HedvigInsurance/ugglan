@@ -1,20 +1,18 @@
 import AVFoundation
-import PresentableStore
 import SwiftUI
 import TagKit
 import hCore
 import hCoreUI
 
 public struct SelectClaimEntrypointGroup: View {
-    @PresentableStore var store: SubmitClaimStore
-    @State var selectedClaimGroup: String? = nil
-    @State var claimEntrypoints: [ClaimEntryPointResponseModel] = []
-    var selectedEntrypoints: ([ClaimEntryPointResponseModel]) -> Void
+    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @ObservedObject var vm: SelectClaimEntrypointViewModel
+    @State var buttonIsLoading: Bool = false
 
     public init(
-        selectedEntrypoints: @escaping ([ClaimEntryPointResponseModel]) -> Void
+        vm: SelectClaimEntrypointViewModel
     ) {
-        self.selectedEntrypoints = selectedEntrypoints
+        self.vm = vm
     }
 
     public var body: some View {
@@ -22,55 +20,88 @@ public struct SelectClaimEntrypointGroup: View {
             .hFormTitle(title: .init(.small, .displayXSLong, L10n.claimTriagingNavigationTitle))
             .hDisableScroll
             .hFormAttachToBottom {
-                PresentableStoreLens(
-                    SubmitClaimStore.self,
-                    getter: { state in
-                        state.claimEntrypointGroups
-                    }
-                ) { claimEntrypointGroup in
-                    VStack {
-                        ShowTagList(
-                            tagsToShow: claimEntrypointGroup.map({ $0.displayName }),
-                            onTap: { tag in
-                                selectedClaimGroup = tag
-                                claimEntrypoints =
-                                    claimEntrypointGroup.first(where: { $0.displayName == selectedClaimGroup })?
-                                    .entrypoints ?? []
-                            },
-                            onButtonClick: {
-                                if selectedClaimGroup != nil {
-                                    selectedEntrypoints(claimEntrypoints)
+                VStack {
+                    ShowTagList(
+                        tagsToShow: claimsNavigationVm.selectClaimEntrypointVm.claimEntrypointGroups.map({
+                            $0.displayName
+                        }),
+                        onTap: { tag in
+                            claimsNavigationVm.selectClaimEntrypointVm.selectedClaimGroup = tag
+                            claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints =
+                                claimsNavigationVm.selectClaimEntrypointVm.claimEntrypointGroups.first(where: {
+                                    $0.displayName == claimsNavigationVm.selectClaimEntrypointVm.selectedClaimGroup
+                                })?
+                                .entrypoints ?? []
+                        },
+                        onButtonClick: {
+                            if claimsNavigationVm.selectClaimEntrypointVm.selectedClaimGroup != nil {
+                                claimsNavigationVm.previousProgress = 0
+
+                                if claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints.isEmpty {
+                                    claimsNavigationVm.entrypoints.selectedEntrypoints =
+                                        claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints
+
+                                    buttonIsLoading = true
+                                    Task {
+                                        await claimsNavigationVm.startClaimRequest(
+                                            entrypointId: nil,
+                                            entrypointOptionId: nil
+                                        )
+                                        buttonIsLoading = false
+                                    }
+                                } else {
+                                    if claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints.first?.options == []
+                                    {
+                                        claimsNavigationVm.progress = 0.2
+                                    } else {
+                                        claimsNavigationVm.progress = 0.1
+                                    }
+
+                                    claimsNavigationVm.entrypoints.selectedEntrypoints =
+                                        claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints
+                                    claimsNavigationVm.router.push(ClaimsRouterActions.triagingEntrypoint)
                                 }
-                            },
-                            oldValue: $selectedClaimGroup
-                        )
-                    }
+
+                            }
+                        },
+                        oldValue: $claimsNavigationVm.selectClaimEntrypointVm.selectedClaimGroup,
+                        buttonIsLoading: $buttonIsLoading
+                    )
                 }
             }
-            .claimErrorTrackerFor([.fetchClaimEntrypointGroups])
-    }
+            .trackErrorState(for: $vm.viewState)
+            .hErrorViewButtonConfig(
+                .init(
+                    actionButton: .init(
+                        buttonAction: {
+                            vm.fetchClaimEntrypointGroups()
+                        }),
+                    dismissButton: .init(
+                        buttonTitle: L10n.openChat,
+                        buttonAction: {
+                            claimsNavigationVm.router.dismiss()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                                NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
+                            }
+                        }
+                    )
+                )
+            )
+            .claimErrorTrackerForState($claimsNavigationVm.startClaimState)
 
-    var hasClaimEntrypoints: Bool {
-        if claimEntrypoints != [] {
-            return true
-        } else {
-            return false
-        }
     }
 }
 
 struct SelectClaimEntrypointType: View {
-    @PresentableStore var store: SubmitClaimStore
-    var selectedEntrypointOptions: ([ClaimEntryPointOptionResponseModel], String?) -> Void
     @State var entrypointList: [ClaimEntryPointResponseModel] = []
     @State var claimOptions: [ClaimEntryPointOptionResponseModel] = []
     @State var selectedClaimEntrypoint: String? = nil
+    @State var buttonIsLoading: Bool = false
 
-    public init(
-        selectedEntrypointOptions: @escaping ([ClaimEntryPointOptionResponseModel], String?) -> Void
-    ) {
-        self.selectedEntrypointOptions = selectedEntrypointOptions
-    }
+    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @EnvironmentObject var router: Router
+
+    public init() {}
 
     var body: some View {
         hForm {
@@ -78,36 +109,49 @@ struct SelectClaimEntrypointType: View {
         .hFormTitle(title: .init(.small, .displayXSLong, L10n.claimsTriagingWhatHappenedTitle))
         .hDisableScroll
         .hFormAttachToBottom {
+            ShowTagList(
+                tagsToShow: entrypointsToStringArray(
+                    entrypoints: claimsNavigationVm.entrypoints.selectedEntrypoints ?? []
+                ),
+                onTap: { tag in
+                    selectedClaimEntrypoint = tag
+                    for claimEntrypoint in claimsNavigationVm.entrypoints.selectedEntrypoints ?? [] {
+                        if claimEntrypoint.displayName == selectedClaimEntrypoint {
+                            claimOptions = claimEntrypoint.options
+                        }
+                    }
+                },
+                onButtonClick: {
+                    if selectedClaimEntrypoint != nil {
+                        claimsNavigationVm.previousProgress = claimsNavigationVm.progress
+                        claimsNavigationVm.progress = 0.2
 
-            PresentableStoreLens(
-                SubmitClaimStore.self,
-                getter: { state in
-                    state.entrypoints
-                }
-            ) { entrypoints in
+                        claimsNavigationVm.entrypoints.selectedEntrypointOptions = claimOptions
+                        claimsNavigationVm.entrypoints.selectedEntrypointId = mapNametoEntrypointId(
+                            input: claimsNavigationVm.entrypoints.selectedEntrypoints ?? []
+                        )
 
-                ShowTagList(
-                    tagsToShow: entrypointsToStringArray(entrypoints: entrypoints.selectedEntrypoints ?? []),
-                    onTap: { tag in
-                        selectedClaimEntrypoint = tag
-                        for claimEntrypoint in entrypoints.selectedEntrypoints ?? [] {
-                            if claimEntrypoint.displayName == selectedClaimEntrypoint {
-                                claimOptions = claimEntrypoint.options
+                        if claimOptions.isEmpty {
+                            buttonIsLoading = true
+                            Task {
+                                await claimsNavigationVm.startClaimRequest(
+                                    entrypointId: claimsNavigationVm.entrypoints.selectedEntrypointId,
+                                    entrypointOptionId: nil
+                                )
+                                buttonIsLoading = false
                             }
+
+                        } else {
+                            router.push(ClaimsRouterActions.triagingOption)
                         }
-                    },
-                    onButtonClick: {
-                        if selectedClaimEntrypoint != nil {
-                            selectedEntrypointOptions(
-                                claimOptions,
-                                mapNametoEntrypointId(input: entrypoints.selectedEntrypoints ?? [])
-                            )
-                        }
-                    },
-                    oldValue: $selectedClaimEntrypoint
-                )
-            }
+                    }
+                },
+                oldValue: $selectedClaimEntrypoint,
+                buttonIsLoading: $buttonIsLoading
+            )
         }
+        .claimErrorTrackerForState($claimsNavigationVm.startClaimState)
+
     }
 
     func entrypointsToStringArray(entrypoints: [ClaimEntryPointResponseModel]) -> [String] {
@@ -141,15 +185,11 @@ struct SelectClaimEntrypointType: View {
 }
 
 struct SelectClaimEntrypointOption: View {
-    @PresentableStore var store: SubmitClaimStore
     @State var selectedClaimOption: String? = nil
-    var onButtonClick: (String, String) -> Void
+    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @State var buttonIsLoading: Bool = false
 
-    public init(
-        onButtonClick: @escaping (String, String) -> Void
-    ) {
-        self.onButtonClick = onButtonClick
-    }
+    public init() {}
 
     var body: some View {
         hForm {
@@ -157,32 +197,33 @@ struct SelectClaimEntrypointOption: View {
         .hFormTitle(title: .init(.small, .displayXSLong, L10n.claimsTriagingWhatItemTitle))
         .hDisableScroll
         .hFormAttachToBottom {
-            PresentableStoreLens(
-                SubmitClaimStore.self,
-                getter: { state in
-                    state.entrypoints
-                }
-            ) { entrypoints in
-
-                ShowTagList(
-                    tagsToShow: entrypointOptionsToStringArray(input: entrypoints.selectedEntrypointOptions ?? []),
-                    onTap: { tag in
-                        selectedClaimOption = tag
-                    },
-                    onButtonClick: {
-                        if selectedClaimOption != nil {
-                            onButtonClick(
-                                entrypoints.selectedEntrypointId ?? "",
-                                mapNametoEntrypointOptionId(
-                                    input: entrypoints.selectedEntrypointOptions ?? []
+            ShowTagList(
+                tagsToShow: entrypointOptionsToStringArray(
+                    input: claimsNavigationVm.entrypoints.selectedEntrypointOptions ?? []
+                ),
+                onTap: { tag in
+                    selectedClaimOption = tag
+                },
+                onButtonClick: {
+                    if selectedClaimOption != nil {
+                        buttonIsLoading = true
+                        Task {
+                            await claimsNavigationVm.startClaimRequest(
+                                entrypointId: claimsNavigationVm.entrypoints.selectedEntrypointId ?? "",
+                                entrypointOptionId: mapNametoEntrypointOptionId(
+                                    input: claimsNavigationVm.entrypoints.selectedEntrypointOptions ?? []
                                 )
                             )
+                            buttonIsLoading = false
                         }
-                    },
-                    oldValue: $selectedClaimOption
-                )
-            }
+                    }
+                },
+                oldValue: $selectedClaimOption,
+                buttonIsLoading: $buttonIsLoading
+            )
         }
+        .claimErrorTrackerForState($claimsNavigationVm.startClaimState)
+
     }
 
     func mapNametoEntrypointOptionId(input: [ClaimEntryPointOptionResponseModel]) -> String {
@@ -217,6 +258,9 @@ struct ShowTagList: View {
     @State var selection: String? = nil
     @Binding var oldValue: String?
     @State private var showTags = false
+
+    @Binding var buttonIsLoading: Bool
+
     var body: some View {
         hSection {
             VStack(spacing: 16) {
@@ -269,8 +313,7 @@ struct ShowTagList: View {
                 } content: {
                     hText(L10n.generalContinueButton, style: .body1)
                 }
-                .trackLoading(SubmitClaimStore.self, action: .startClaim)
-                .presentableStoreLensAnimation(.default)
+                .hButtonIsLoading(buttonIsLoading)
             }
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
@@ -315,6 +358,40 @@ struct ShowTagList: View {
                 .colorScheme(.light)
         } else {
             hText(claimId, style: .body1)
+        }
+    }
+}
+
+public class SelectClaimEntrypointViewModel: ObservableObject {
+    @Inject private var service: hFetchEntrypointsClient
+    @Published var viewState: ProcessingState = .loading
+    @Published var claimEntrypointGroups: [ClaimEntryPointGroupResponseModel] = []
+    @Published var claimEntrypoints: [ClaimEntryPointResponseModel] = []
+    @Published var selectedClaimGroup: String? = nil
+
+    init() {
+        fetchClaimEntrypointGroups()
+    }
+
+    func fetchClaimEntrypointGroups() {
+
+        withAnimation {
+            self.viewState = .loading
+        }
+
+        Task { @MainActor in
+            do {
+                let data = try await service.get()
+                self.claimEntrypointGroups = data
+
+                withAnimation {
+                    self.viewState = .success
+                }
+            } catch let exception {
+                withAnimation {
+                    self.viewState = .error(errorMessage: exception.localizedDescription)
+                }
+            }
         }
     }
 }

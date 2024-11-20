@@ -55,13 +55,6 @@ struct SetTerminationDate: View {
 #Preview {
     SetTerminationDate(
         terminationDate: { Date() },
-        terminationNavigationVm: .init(
-            initialStep: nil,
-            context: "",
-            progress: nil,
-            previousProgress: nil,
-            config: .init(contractId: "", contractDisplayName: "", contractExposureName: "", activeFrom: nil),
-            hasSelectInsuranceStep: false
-        )
+        terminationNavigationVm: .init(configs: [], terminateInsuranceViewModel: nil)
     )
 }

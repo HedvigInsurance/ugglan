@@ -138,7 +138,7 @@ struct TerminationSurveyScreen: View {
                     inputData: vm.selectedFeedBackViewModel?.text
                 )
 
-                terminationFlowNavigationViewModel.navigate(data: step)
+                terminationFlowNavigationViewModel.navigate(data: step, fromSelectInsurance: false)
             }
         }
     }

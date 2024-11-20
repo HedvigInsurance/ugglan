@@ -1,25 +1,28 @@
+import ChangeTier
 import Combine
 import Foundation
 import hCore
 
 public class TerminateInsuranceViewModel: ObservableObject {
-    @Published var initialStep: ActionStepWrapper?
     @Inject var terminateContractsService: TerminateContractsClient
-
+    @Published var flowNavigationVm: TerminationFlowNavigationViewModel?
+    @Published var changeTierInput: ChangeTierInput?
     public init() {}
 
     public func start(with configs: [TerminationConfirmConfig]) {
         if configs.count > 1 {
-            initialStep = .init(
-                actionWrapper: .init(action: .router(action: .selectInsurance(configs: configs))),
-                config: configs,
-                response: nil
+            flowNavigationVm = .init(
+                configs: configs,
+                terminateInsuranceViewModel: self
             )
         } else if let config = configs.first {
-            Task {
-                let stepResponse = await startTermination(config: config)
-                if let stepResponse {
-                    initialStep = .init(config: configs, response: stepResponse)
+            Task { @MainActor in
+                if let stepResponse = await startTermination(config: config) {
+                    flowNavigationVm = .init(
+                        stepResponse: stepResponse,
+                        config: config,
+                        terminateInsuranceViewModel: self
+                    )
                 }
             }
         }

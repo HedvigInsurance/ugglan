@@ -8,64 +8,96 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
             claimId: "",
             context: "",
             progress: nil,
-            action: .startClaimRequest(entrypointId: nil, entrypointOptionId: nil)
+            step: .setFailedStep(model: .init(id: ""))
         )
     }
 
-    public func updateContact(phoneNumber: String, context: String) async throws -> SubmitClaimStepResponse {
+    public func updateContact(
+        phoneNumber: String,
+        context: String,
+        model: FlowClaimPhoneNumberStepModel?
+    ) async throws -> SubmitClaimStepResponse {
         return SubmitClaimStepResponse(
             claimId: "",
             context: "",
             progress: nil,
-            action: .phoneNumberRequest(phoneNumber: "")
+            step: .setFailedStep(model: .init(id: ""))
         )
     }
 
-    public func dateOfOccurrenceAndLocationRequest(context: String) async throws -> SubmitClaimStepResponse {
+    public func dateOfOccurrenceAndLocationRequest(
+        context: String,
+        model: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels?
+    ) async throws -> SubmitClaimStepResponse {
         return SubmitClaimStepResponse(
             claimId: "",
             context: "",
             progress: nil,
-            action: .dateOfOccurrenceAndLocationRequest
+            step: .setFailedStep(model: .init(id: ""))
         )
     }
 
     public func submitAudioRecording(
         type: SubmitAudioRecordingType,
         fileUploaderClient: FileUploaderClient,
-        context: String
+        context: String,
+        currentClaimId: String,
+        model: FlowClaimAudioRecordingStepModel?
     ) async throws -> SubmitClaimStepResponse {
         return SubmitClaimStepResponse(
             claimId: "",
             context: "",
             progress: nil,
-            action: .submitAudioRecording(type: .audio(url: URL(string: "")!))
+            step: .setFailedStep(model: .init(id: ""))
         )
     }
 
-    public func singleItemRequest(purchasePrice: Double?, context: String) async throws -> SubmitClaimStepResponse {
+    public func singleItemRequest(
+        context: String,
+        model: FlowClaimSingleItemStepModel?
+    ) async throws -> SubmitClaimStepResponse {
         return SubmitClaimStepResponse(
             claimId: "",
             context: "",
             progress: nil,
-            action: .singleItemRequest(purchasePrice: 0)
+            step: .setFailedStep(model: .init(id: ""))
         )
     }
 
-    public func summaryRequest(context: String) async throws -> SubmitClaimStepResponse {
-        return SubmitClaimStepResponse(claimId: "", context: "", progress: nil, action: .summaryRequest)
-    }
-
-    public func singleItemCheckoutRequest(context: String) async throws -> SubmitClaimStepResponse {
-        return SubmitClaimStepResponse(claimId: "", context: "", progress: nil, action: .singleItemCheckoutRequest)
-    }
-
-    public func contractSelectRequest(contractId: String, context: String) async throws -> SubmitClaimStepResponse {
+    public func summaryRequest(
+        context: String,
+        model: SubmitClaimStep.SummaryStepModels?
+    ) async throws -> SubmitClaimStepResponse {
         return SubmitClaimStepResponse(
             claimId: "",
             context: "",
             progress: nil,
-            action: .contractSelectRequest(contractId: "")
+            step: .setFailedStep(model: .init(id: ""))
+        )
+    }
+
+    public func singleItemCheckoutRequest(
+        context: String,
+        model: FlowClaimSingleItemCheckoutStepModel?
+    ) async throws -> SubmitClaimStepResponse {
+        return SubmitClaimStepResponse(
+            claimId: "",
+            context: "",
+            progress: nil,
+            step: .setFailedStep(model: .init(id: ""))
+        )
+    }
+
+    public func contractSelectRequest(
+        contractId: String,
+        context: String,
+        model: FlowClaimContractSelectStepModel?
+    ) async throws -> SubmitClaimStepResponse {
+        return SubmitClaimStepResponse(
+            claimId: "",
+            context: "",
+            progress: nil,
+            step: .setFailedStep(model: .init(id: ""))
         )
     }
 
@@ -74,11 +106,20 @@ public class SubmitClaimClientDemo: SubmitClaimClient {
             claimId: "",
             context: "",
             progress: nil,
-            action: .emergencyConfirmRequest(isEmergency: true)
+            step: .setFailedStep(model: .init(id: ""))
         )
     }
 
-    public func submitFileUpload(ids: [String], context: String) async throws -> SubmitClaimStepResponse {
-        return SubmitClaimStepResponse(claimId: "", context: "", progress: nil, action: .submitFileUpload(ids: []))
+    public func submitFileUpload(
+        ids: [String],
+        context: String,
+        model: FlowClaimFileUploadStepModel?
+    ) async throws -> SubmitClaimStepResponse {
+        return SubmitClaimStepResponse(
+            claimId: "",
+            context: "",
+            progress: nil,
+            step: .setFailedStep(model: .init(id: ""))
+        )
     }
 }

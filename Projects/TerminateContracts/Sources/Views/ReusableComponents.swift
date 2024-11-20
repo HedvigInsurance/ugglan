@@ -5,7 +5,6 @@ import hCoreUI
 import hGraphQL
 
 struct DisplayQuestionView: View {
-    @PresentableStore var store: TerminationContractStore
     @EnvironmentObject var navigationVm: TerminationFlowNavigationViewModel
 
     let terminationQuestions: [TerminationQuestion] = [

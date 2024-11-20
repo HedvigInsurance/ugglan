@@ -11,7 +11,6 @@ import hGraphQL
 
 struct ContractInformationView: View {
     @PresentableStore var store: ContractStore
-    @PresentableStore var terminationContractStore: TerminationContractStore
     @StateObject private var vm = ContractsInformationViewModel()
     @EnvironmentObject private var contractsNavigationVm: ContractsNavigationViewModel
 
@@ -326,7 +325,6 @@ struct ContractInformationView: View {
                             hText(L10n.terminationButton, style: .body1)
                                 .foregroundColor(hTextColor.Opaque.secondary)
                         }
-                        .trackLoading(TerminationContractStore.self, action: .getInitialStep)
                     }
                     .sectionContainerStyle(.transparent)
                 }

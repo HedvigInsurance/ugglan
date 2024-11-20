@@ -29,7 +29,7 @@ struct ConfirmTerminationScreen: View {
                                     )
 
                                     if let step {
-                                        terminationNavigationVm.navigate(data: step)
+                                        terminationNavigationVm.navigate(data: step, fromSelectInsurance: false)
                                     }
                                 }
                             } else {
@@ -44,7 +44,7 @@ struct ConfirmTerminationScreen: View {
                                         )
 
                                         if let step {
-                                            terminationNavigationVm.navigate(data: step)
+                                            terminationNavigationVm.navigate(data: step, fromSelectInsurance: false)
                                         }
                                     }
                                 }

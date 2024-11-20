@@ -100,6 +100,7 @@ struct FileUpload: Codable {
     let url: String
 }
 
+@MainActor
 enum ClaimsRequest {
     case uploadFile(endPoint: String, files: [File])
 
