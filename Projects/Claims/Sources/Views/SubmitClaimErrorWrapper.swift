@@ -39,24 +39,7 @@ private struct ClaimErrorTrackerModifierForString: ViewModifier {
     @State private var processingState = ProcessingState.success
     @EnvironmentObject var router: Router
     func body(content: Content) -> some View {
-        content.trackErrorState(for: $processingState)
-            .hErrorViewButtonConfig(
-                .init(
-                    actionButton: .init(
-                        buttonAction: {
-                            processingState = .success
-                        }),
-                    dismissButton: .init(
-                        buttonTitle: L10n.openChat,
-                        buttonAction: {
-                            router.dismiss()
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                                NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
-                            }
-                        }
-                    )
-                )
-            )
+        content.claimErrorTrackerForState($processingState)
             .onAppear {
                 processingState = {
                     if let error {
