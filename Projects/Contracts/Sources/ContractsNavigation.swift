@@ -120,7 +120,7 @@ public struct ContractsNavigation<Content: View>: View {
         }
     }
 }
-
+@MainActor
 public class ContractsNavigationViewModel: ObservableObject {
     public let contractsRouter = Router()
     let terminateInsuranceVm = TerminateInsuranceViewModel()

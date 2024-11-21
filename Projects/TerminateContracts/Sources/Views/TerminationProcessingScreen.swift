@@ -3,13 +3,29 @@ import hCore
 import hCoreUI
 
 struct TerminationProcessingScreen: View {
-    @EnvironmentObject var confirmTerminationVm: ConfirmTerminationViewModel
+    @ObservedObject var terminationNavigationVm: TerminationFlowNavigationViewModel
 
     var body: some View {
         ProcessingStateView(
             loadingViewText: L10n.terminateContractTerminatingProgress,
-            state: $confirmTerminationVm.viewState,
+            state: $terminationNavigationVm.confirmTerminationState,
             duration: 3
+        )
+        .hErrorViewButtonConfig(
+            .init(
+                actionButton:
+                    .init(
+                        buttonAction: {
+                            terminationNavigationVm.router.dismiss()
+                        }
+                    ),
+                dismissButton: .init(
+                    buttonTitle: L10n.generalCancelButton,
+                    buttonAction: {
+                        terminationNavigationVm.router.dismiss()
+                    }
+                )
+            )
         )
     }
 }

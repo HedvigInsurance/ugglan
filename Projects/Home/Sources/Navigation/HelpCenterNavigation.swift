@@ -11,6 +11,7 @@ import TravelCertificate
 import hCore
 import hCoreUI
 
+@MainActor
 public class HelpCenterNavigationViewModel: ObservableObject {
     @Published var quickActions = QuickActions()
     var connectPaymentsVm = ConnectPaymentViewModel()
@@ -206,7 +207,13 @@ public struct HelpCenterNavigation<Content: View>: View {
                 .map({
                     $0.asTerminationConfirmConfig
                 })
-            helpCenterVm.terminateInsuranceVm.start(with: contractsConfig)
+            Task {
+                do {
+                    try await helpCenterVm.terminateInsuranceVm.start(with: contractsConfig)
+                } catch let exception {
+                    Toasts.shared.displayToastBar(toast: .init(type: .error, text: exception.localizedDescription))
+                }
+            }
         case .editCoInsured:
             helpCenterVm.editCoInsuredVm.start()
         case .upgradeCoverage:
