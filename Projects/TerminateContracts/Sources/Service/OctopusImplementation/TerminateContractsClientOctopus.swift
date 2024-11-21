@@ -34,7 +34,6 @@ public class TerminateContractsClientOctopus: TerminateContractsClient {
             input: terminationDateInput,
             context: terminationContext
         )
-        let dateToCopareTO = Date()
         async let dataTask = mutation.execute(\.flowTerminationDateNext.fragments.flowTerminationFragment.currentStep)
         try await Task.sleep(nanoseconds: 3_000_000_000)
         let data = try await dataTask
