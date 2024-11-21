@@ -3,7 +3,8 @@ import hCore
 
 public struct TerminationFlowSurveyStepModel: FlowStepModel {
     let id: String
-    let options: [TerminationFlowSurveyStepModelOption]
+    var options: [TerminationFlowSurveyStepModelOption]
+    var subTitleType: SurveyScreenSubtitleType
 }
 
 public struct TerminationFlowSurveyStepModelOption: FlowStepModel, Identifiable {

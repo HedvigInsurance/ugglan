@@ -1,11 +1,11 @@
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
 
 struct DisplayQuestionView: View {
-    @PresentableStore var store: TerminationContractStore
+    @EnvironmentObject var navigationVm: TerminationFlowNavigationViewModel
+
     let terminationQuestions: [TerminationQuestion] = [
         TerminationQuestion(
             question: L10n.terminationQ01,
@@ -46,7 +46,7 @@ struct DisplayQuestionView: View {
             .sectionContainerStyle(.transparent)
             VStack(spacing: 4) {
                 ForEach(
-                    store.state.isDeletion ? deletionQuestions : terminationQuestions,
+                    navigationVm.isDeletion ? deletionQuestions : terminationQuestions,
                     id: \.question
                 ) { question in
                     InfoExpandableView(
@@ -54,7 +54,7 @@ struct DisplayQuestionView: View {
                         text: question.answer,
                         questionClicked: {
                             let stringToLog =
-                                store.state.isDeletion
+                                navigationVm.isDeletion
                                 ? "deletion question clicked" : "termination question clicked"
                             log.info(stringToLog, attributes: ["question": question.questionTranslated])
                         }
@@ -74,6 +74,6 @@ struct DisplayQuestionView: View {
     }
 }
 
-#Preview{
+#Preview {
     DisplayQuestionView()
 }

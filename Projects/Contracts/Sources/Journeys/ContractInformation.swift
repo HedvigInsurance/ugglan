@@ -11,7 +11,6 @@ import hGraphQL
 
 struct ContractInformationView: View {
     @PresentableStore var store: ContractStore
-    @PresentableStore var terminationContractStore: TerminationContractStore
     @StateObject private var vm = ContractsInformationViewModel()
     @EnvironmentObject private var contractsNavigationVm: ContractsNavigationViewModel
 
@@ -320,15 +319,29 @@ struct ContractInformationView: View {
                         hButton.LargeButton(type: .ghost) {
                             if let contract {
                                 let config = TerminationConfirmConfig(contract: contract)
-                                contractsNavigationVm.terminateInsuranceVm.start(with: [config])
+                                Task {
+                                    withAnimation {
+                                        vm.cancelInsuranceState = .loading
+                                    }
+                                    do {
+                                        try await contractsNavigationVm.terminateInsuranceVm.start(with: [config])
+                                    } catch let exception {
+                                        Toasts.shared.displayToastBar(
+                                            toast: .init(type: .error, text: exception.localizedDescription)
+                                        )
+                                    }
+                                    withAnimation {
+                                        vm.cancelInsuranceState = .success
+                                    }
+                                }
                             }
                         } content: {
                             hText(L10n.terminationButton, style: .body1)
                                 .foregroundColor(hTextColor.Opaque.secondary)
                         }
-                        .trackLoading(TerminationContractStore.self, action: .getInitialStep)
                     }
                     .sectionContainerStyle(.transparent)
+                    .hButtonIsLoading(vm.cancelInsuranceState == .loading)
                 }
             }
         }
@@ -338,7 +351,7 @@ struct ContractInformationView: View {
 @MainActor
 private class ContractsInformationViewModel: ObservableObject {
     var cancellable: AnyCancellable?
-
+    @Published var cancelInsuranceState: ProcessingState = .success
     func getListToDisplay(contract: Contract) -> [CoInsuredListType] {
         return contract.coInsured
             .map {
