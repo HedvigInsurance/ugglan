@@ -107,7 +107,9 @@ public struct ContractsNavigation<Content: View>: View {
             )
             .environmentObject(contractsNavigationVm)
         }
-        .handleTerminateInsurance(vm: contractsNavigationVm.terminateInsuranceVm) { dismissType in
+        .handleTerminateInsurance(
+            vm: contractsNavigationVm.terminateInsuranceVm
+        ) { dismissType in
             redirectAction(.termination(action: dismissType))
             switch dismissType {
             case .done, .chat, .openFeedback:
@@ -118,10 +120,11 @@ public struct ContractsNavigation<Content: View>: View {
         }
     }
 }
-
+@MainActor
 public class ContractsNavigationViewModel: ObservableObject {
     public let contractsRouter = Router()
     let terminateInsuranceVm = TerminateInsuranceViewModel()
+
     @Published public var insurableLimit: InsurableLimits?
     @Published public var document: hPDFDocument?
     @Published public var editCoInsuredConfig: InsuredPeopleConfig?

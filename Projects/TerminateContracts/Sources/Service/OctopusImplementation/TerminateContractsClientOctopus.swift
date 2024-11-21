@@ -1,7 +1,19 @@
-import PresentableStore
+import Foundation
 import hCore
 import hGraphQL
 
+enum TerminationError: Error {
+    case missingContext
+}
+
+extension TerminationError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .missingContext:
+            return L10n.General.errorBody
+        }
+    }
+}
 public class TerminateContractsClientOctopus: TerminateContractsClient {
     public init() {}
 
@@ -17,21 +29,63 @@ public class TerminateContractsClientOctopus: TerminateContractsClient {
         inputDateToString: String,
         terminationContext: String
     ) async throws -> TerminateStepResponse {
-        let terminationDateInput = OctopusGraphQL.FlowTerminationDateInput(terminationDate: inputDateToString)
-        let mutation = OctopusGraphQL.FlowTerminationDateNextMutation(
-            input: terminationDateInput,
-            context: terminationContext
-        )
-        return try await mutation.execute(\.flowTerminationDateNext.fragments.flowTerminationFragment.currentStep)
+        var response: TerminateStepResponse!
+        var error: Error?
+        await withThrowingTaskGroup(of: Void.self) { group in
+            group.addTask {
+                try await Task.sleep(nanoseconds: 3_000_000_000)
+            }
+            group.addTask {
+                let terminationDateInput = OctopusGraphQL.FlowTerminationDateInput(terminationDate: inputDateToString)
+                let mutation = OctopusGraphQL.FlowTerminationDateNextMutation(
+                    input: terminationDateInput,
+                    context: terminationContext
+                )
+                do {
+                    response = try await mutation.execute(
+                        \.flowTerminationDateNext.fragments.flowTerminationFragment.currentStep
+                    )
+                } catch let exception {
+                    error = exception
+                }
+
+            }
+        }
+        if let error {
+            throw error
+        }
+        return response
     }
 
-    public func sendConfirmDelete(terminationContext: String) async throws -> TerminateStepResponse {
-        let store: TerminationContractStore = globalPresentableStoreContainer.get()
-        let mutation = OctopusGraphQL.FlowTerminationDeletionNextMutation(
-            context: terminationContext,
-            input: GraphQLNullable(optionalValue: store.state.terminationDeleteStep?.returnDeltionInput())
-        )
-        return try await mutation.execute(\.flowTerminationDeletionNext.fragments.flowTerminationFragment.currentStep)
+    public func sendConfirmDelete(
+        terminationContext: String,
+        model: TerminationFlowDeletionNextModel?
+    ) async throws -> TerminateStepResponse {
+        var response: TerminateStepResponse!
+        var error: Error?
+        await withThrowingTaskGroup(of: Void.self) { group in
+            group.addTask {
+                try await Task.sleep(nanoseconds: 3_000_000_000)
+            }
+            group.addTask {
+                let mutation = OctopusGraphQL.FlowTerminationDeletionNextMutation(
+                    context: terminationContext,
+                    input: GraphQLNullable(optionalValue: model?.returnDeletionInput())
+                )
+                do {
+                    response = try await mutation.execute(
+                        \.flowTerminationDeletionNext.fragments.flowTerminationFragment.currentStep
+                    )
+                } catch let exception {
+                    error = exception
+                }
+
+            }
+        }
+        if let error {
+            throw error
+        }
+        return response
     }
 
     public func sendSurvey(
@@ -55,19 +109,19 @@ protocol Into {
 }
 
 extension OctopusGraphQL.FlowTerminationFragment.CurrentStep: Into {
-    func into(with progress: Float) -> (action: TerminationContractAction, progress: Float?) {
+    func into(with progress: Float) -> (step: TerminationContractStep, progress: Float?) {
         if let step = self.asFlowTerminationDateStep?.fragments.flowTerminationDateStepFragment {
-            return (.stepModelAction(action: .setTerminationDateStep(model: .init(with: step))), progress)
+            return (step: .setTerminationDateStep(model: .init(with: step)), progress)
         } else if let step = self.asFlowTerminationDeletionStep?.fragments.flowTerminationDeletionFragment {
-            return (.stepModelAction(action: .setTerminationDeletion(model: .init(with: step))), progress)
+            return (step: .setTerminationDeletion(model: .init(with: step)), progress)
         } else if let step = self.asFlowTerminationFailedStep?.fragments.flowTerminationFailedFragment {
-            return (.stepModelAction(action: .setFailedStep(model: .init(with: step))), nil)
+            return (step: .setFailedStep(model: .init(with: step)), nil)
         } else if let step = self.asFlowTerminationSuccessStep?.fragments.flowTerminationSuccessFragment {
-            return (.stepModelAction(action: .setSuccessStep(model: .init(with: step))), nil)
+            return (step: .setSuccessStep(model: .init(with: step)), nil)
         } else if let step = self.asFlowTerminationSurveyStep?.fragments.flowTerminationSurveyStepFragment {
-            return (.stepModelAction(action: .setTerminationSurveyStep(model: .init(with: step))), progress)
+            return (step: .setTerminationSurveyStep(model: .init(with: step)), progress)
         } else {
-            return (.navigationAction(action: .openTerminationUpdateAppScreen), nil)
+            return (step: .openTerminationUpdateAppScreen, nil)
         }
     }
 }
@@ -77,15 +131,15 @@ extension GraphQLMutation {
         _ keyPath: KeyPath<Self.Data, TerminationStep>
     ) async throws -> TerminateStepResponse
     where
-        TerminationStep.To == (action: TerminationContractAction, progress: Float?),
+        TerminationStep.To == (step: TerminationContractStep, progress: Float?),
         Self.Data: TerminationStepContext & TerminationStepProgress
     {
         let octopus: hOctopus = Dependencies.shared.resolve()
         let data = try await octopus.client.perform(mutation: self)
         let context = data.getContext()
         let progress = data.getProgress()
-        let actionWithNewProgress = data[keyPath: keyPath].into(with: progress)
-        return .init(context: context, action: actionWithNewProgress.action, progress: actionWithNewProgress.progress)
+        let stepWithNewProgress = data[keyPath: keyPath].into(with: progress)
+        return .init(context: context, step: stepWithNewProgress.step, progress: stepWithNewProgress.progress)
     }
 }
 
@@ -188,6 +242,7 @@ extension TerminationFlowSurveyStepModel {
         }
         id = data.id
         self.options = options
+        self.subTitleType = .default
     }
 }
 
@@ -283,7 +338,7 @@ extension TerminationFlowDeletionNextModel {
         self.id = data.id
     }
 
-    public func returnDeltionInput() -> OctopusGraphQL.FlowTerminationDeletionInput {
+    public func returnDeletionInput() -> OctopusGraphQL.FlowTerminationDeletionInput {
         return OctopusGraphQL.FlowTerminationDeletionInput(confirmed: true)
     }
 }

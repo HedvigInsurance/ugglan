@@ -10,7 +10,7 @@ public struct PaymentHistoryView: View {
     @EnvironmentObject var router: Router
 
     public var body: some View {
-        LoadingViewWithContent(
+        LoadingStoreViewWithContent(
             PaymentStore.self,
             [.getHistory],
             [.getHistory]
