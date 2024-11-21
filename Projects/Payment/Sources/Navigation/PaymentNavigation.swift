@@ -44,13 +44,9 @@ public struct PaymentsNavigation<Content: View>: View {
                                 switch redirectType {
                                 case .forever:
                                     redirect(.forever)
-                                case let .openUrl(url):
-                                    redirect(.openUrl(url: url))
                                 }
                             }
                             .configureTitle(L10n.paymentsDiscountsSectionTitle)
-                    case let .openUrl(url):
-                        redirect(.openUrl(url: url))
                     case .history:
                         PaymentHistoryView()
                             .configureTitle(L10n.paymentHistoryTitle)
@@ -103,7 +99,7 @@ private enum PaymentsDetentActions: TrackingViewNameProtocol {
 public enum PaymentsRouterAction: Hashable {
     case discounts
     case history
-    case openUrl(url: URL)
+    //    case openUrl(url: URL)
 }
 
 extension PaymentsRouterAction: TrackingViewNameProtocol {
@@ -113,15 +109,15 @@ extension PaymentsRouterAction: TrackingViewNameProtocol {
             return .init(describing: PaymentsDiscountsRootView.self)
         case .history:
             return .init(describing: PaymentHistoryView.self)
-        case .openUrl:
-            return ""
+        //        case .openUrl:
+        //            return ""
         }
     }
 }
 
 public enum PaymentsRedirectType: Hashable {
     case forever
-    case openUrl(url: URL)
+    //    case openUrl(url: URL)
 }
 
 extension PaymentsRedirectType: TrackingViewNameProtocol {
@@ -129,12 +125,10 @@ extension PaymentsRedirectType: TrackingViewNameProtocol {
         switch self {
         case .forever:
             return "Forever"
-        case .openUrl:
-            return ""
         }
     }
 }
 
-#Preview{
+#Preview {
     PaymentsNavigation(paymentsNavigationVm: .init(), redirect: { redirectType in })
 }

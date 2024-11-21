@@ -182,11 +182,6 @@ struct LoggedInNavigation: View {
             case .forever:
                 ForeverNavigation(useOwnNavigation: false)
                     .hideToolbar()
-            case let .openUrl(url):
-                EmptyView()
-                    .onAppear {
-                        vm.openUrl(url: url)
-                    }
             }
         }
         .environmentObject(paymentsRouter)
