@@ -81,6 +81,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, Equatable, Id
     @Published var isConfirmTerminationPresented = false
     @Published var isProcessingPresented = false
     @Published var infoText: String?
+    @Published var redirectActionLoadingState: ProcessingState = .success
     let initialStep: TerminationFlowActions
     var configs: [TerminationConfirmConfig] = []
     weak var terminateInsuranceViewModel: TerminateInsuranceViewModel?
@@ -109,8 +110,13 @@ public class TerminationFlowNavigationViewModel: ObservableObject, Equatable, Id
                     let input = ChangeTierInputData(source: source, contractId: contractId)
                     Task { @MainActor [weak self] in
                         do {
+                            withAnimation {
+                                redirectActionLoadingState = .loading
+                            }
                             let newInput = try await ChangeTierNavigationViewModel.getTiers(input: input)
-
+                            withAnimation {
+                                redirectActionLoadingState = .success
+                            }
                             DispatchQueue.main.async { [weak self] in
                                 self?.terminateInsuranceViewModel?.changeTierInput = .existingIntent(
                                     intent: newInput,
@@ -226,48 +232,57 @@ public class TerminationFlowNavigationViewModel: ObservableObject, Equatable, Id
     public func sendConfirmDelete(
         context: String,
         model: TerminationFlowDeletionNextModel?
-    ) async -> TerminateStepResponse? {
-        withAnimation {
-            confirmTerminationState = .loading
-        }
-        do {
-            let data = try await terminateContractsService.sendConfirmDelete(terminationContext: context, model: model)
+    ) {
+        Task {
+            isProcessingPresented = true
             withAnimation {
-                confirmTerminationState = .success
+                confirmTerminationState = .loading
             }
-            return data
-        } catch let error {
-            withAnimation {
-                confirmTerminationState = .error(
-                    errorMessage: error.localizedDescription
+            do {
+                let data = try await terminateContractsService.sendConfirmDelete(
+                    terminationContext: context,
+                    model: model
                 )
+                withAnimation {
+                    confirmTerminationState = .success
+                }
+                isProcessingPresented = false
+                navigate(data: data, fromSelectInsurance: false)
+            } catch let error {
+                withAnimation {
+                    confirmTerminationState = .error(
+                        errorMessage: error.localizedDescription
+                    )
+                }
             }
         }
-        return nil
     }
 
     @MainActor
-    public func sendTerminationDate(inputDateToString: String, context: String) async -> TerminateStepResponse? {
-        withAnimation {
-            confirmTerminationState = .loading
-        }
-        do {
-            let data = try await terminateContractsService.sendTerminationDate(
-                inputDateToString: inputDateToString,
-                terminationContext: context
-            )
+    public func sendTerminationDate(inputDateToString: String, context: String) {
+        Task {
+            isProcessingPresented = true
             withAnimation {
-                confirmTerminationState = .success
+                confirmTerminationState = .loading
             }
-            return data
-        } catch let error {
-            withAnimation {
-                confirmTerminationState = .error(
-                    errorMessage: error.localizedDescription
+            do {
+                let data = try await terminateContractsService.sendTerminationDate(
+                    inputDateToString: inputDateToString,
+                    terminationContext: context
                 )
+                withAnimation {
+                    confirmTerminationState = .success
+                }
+                navigate(data: data, fromSelectInsurance: false)
+                isProcessingPresented = false
+            } catch let error {
+                withAnimation {
+                    confirmTerminationState = .error(
+                        errorMessage: error.localizedDescription
+                    )
+                }
             }
         }
-        return nil
     }
 }
 

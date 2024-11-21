@@ -22,31 +22,17 @@ struct ConfirmTerminationScreen: View {
                         buttonTitle: L10n.terminationFlowConfirmButton,
                         buttonAction: {
                             if terminationNavigationVm.isDeletion {
-                                Task {
-                                    let step = await terminationNavigationVm.sendConfirmDelete(
-                                        context: terminationNavigationVm.currentContext ?? "",
-                                        model: terminationNavigationVm.terminationDeleteStepModel
-                                    )
-
-                                    if let step {
-                                        terminationNavigationVm.navigate(data: step, fromSelectInsurance: false)
-                                    }
-                                }
+                                terminationNavigationVm.sendConfirmDelete(
+                                    context: terminationNavigationVm.currentContext ?? "",
+                                    model: terminationNavigationVm.terminationDeleteStepModel
+                                )
                             } else {
-                                terminationNavigationVm.isProcessingPresented = true
-                                Task {
-                                    let step = await terminationNavigationVm.sendTerminationDate(
-                                        inputDateToString: terminationNavigationVm.terminationDateStepModel?.date?
-                                            .localDateString ?? "",
-                                        context: terminationNavigationVm.currentContext ?? ""
-                                    )
-
-                                    if let step {
-                                        terminationNavigationVm.navigate(data: step, fromSelectInsurance: false)
-                                    }
-                                }
+                                terminationNavigationVm.sendTerminationDate(
+                                    inputDateToString: terminationNavigationVm.terminationDateStepModel?.date?
+                                        .localDateString ?? "",
+                                    context: terminationNavigationVm.currentContext ?? ""
+                                )
                             }
-
                             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                                 self.isHidden = true
                             }

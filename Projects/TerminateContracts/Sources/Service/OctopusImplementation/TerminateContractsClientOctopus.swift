@@ -20,25 +20,63 @@ public class TerminateContractsClientOctopus: TerminateContractsClient {
         inputDateToString: String,
         terminationContext: String
     ) async throws -> TerminateStepResponse {
-        try await Task.sleep(nanoseconds: 2_000_000_000)
-        throw TerminationError.invalidInput
-        let terminationDateInput = OctopusGraphQL.FlowTerminationDateInput(terminationDate: inputDateToString)
-        let mutation = OctopusGraphQL.FlowTerminationDateNextMutation(
-            input: terminationDateInput,
-            context: terminationContext
-        )
-        return try await mutation.execute(\.flowTerminationDateNext.fragments.flowTerminationFragment.currentStep)
+        var response: TerminateStepResponse!
+        var error: Error?
+        await withThrowingTaskGroup(of: Void.self) { group in
+            group.addTask {
+                try await Task.sleep(nanoseconds: 3_000_000_000)
+            }
+            group.addTask {
+                let terminationDateInput = OctopusGraphQL.FlowTerminationDateInput(terminationDate: inputDateToString)
+                let mutation = OctopusGraphQL.FlowTerminationDateNextMutation(
+                    input: terminationDateInput,
+                    context: terminationContext
+                )
+                do {
+                    response = try await mutation.execute(
+                        \.flowTerminationDateNext.fragments.flowTerminationFragment.currentStep
+                    )
+                } catch let exception {
+                    error = exception
+                }
+
+            }
+        }
+        if let error {
+            throw error
+        }
+        return response
     }
 
     public func sendConfirmDelete(
         terminationContext: String,
         model: TerminationFlowDeletionNextModel?
     ) async throws -> TerminateStepResponse {
-        let mutation = OctopusGraphQL.FlowTerminationDeletionNextMutation(
-            context: terminationContext,
-            input: GraphQLNullable(optionalValue: model?.returnDeletionInput())
-        )
-        return try await mutation.execute(\.flowTerminationDeletionNext.fragments.flowTerminationFragment.currentStep)
+        var response: TerminateStepResponse!
+        var error: Error?
+        await withThrowingTaskGroup(of: Void.self) { group in
+            group.addTask {
+                try await Task.sleep(nanoseconds: 3_000_000_000)
+            }
+            group.addTask {
+                let mutation = OctopusGraphQL.FlowTerminationDeletionNextMutation(
+                    context: terminationContext,
+                    input: GraphQLNullable(optionalValue: model?.returnDeletionInput())
+                )
+                do {
+                    response = try await mutation.execute(
+                        \.flowTerminationDeletionNext.fragments.flowTerminationFragment.currentStep
+                    )
+                } catch let exception {
+                    error = exception
+                }
+
+            }
+        }
+        if let error {
+            throw error
+        }
+        return response
     }
 
     public func sendSurvey(
