@@ -3,7 +3,6 @@ import hCore
 import hCoreUI
 
 struct ConfirmTerminationScreen: View {
-    @State private var isHidden = false
     @EnvironmentObject var terminationNavigationVm: TerminationFlowNavigationViewModel
     @EnvironmentObject var confirmTerminationVm: ConfirmTerminationViewModel
 
@@ -21,35 +20,7 @@ struct ConfirmTerminationScreen: View {
                     .init(
                         buttonTitle: L10n.terminationFlowConfirmButton,
                         buttonAction: {
-                            if terminationNavigationVm.isDeletion {
-                                Task {
-                                    let step = await terminationNavigationVm.sendConfirmDelete(
-                                        context: terminationNavigationVm.currentContext ?? "",
-                                        model: terminationNavigationVm.terminationDeleteStepModel
-                                    )
-
-                                    if let step {
-                                        terminationNavigationVm.navigate(data: step, fromSelectInsurance: false)
-                                    }
-                                }
-                            } else {
-                                terminationNavigationVm.isProcessingPresented = true
-                                Task {
-                                    let step = await terminationNavigationVm.sendTerminationDate(
-                                        inputDateToString: terminationNavigationVm.terminationDateStepModel?.date?
-                                            .localDateString ?? "",
-                                        context: terminationNavigationVm.currentContext ?? ""
-                                    )
-
-                                    if let step {
-                                        terminationNavigationVm.navigate(data: step, fromSelectInsurance: false)
-                                    }
-                                }
-                            }
-
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                self.isHidden = true
-                            }
+                            terminationNavigationVm.sendConfirmTermination()
                         }
                     ),
                 dismissButton: .init(
@@ -62,7 +33,6 @@ struct ConfirmTerminationScreen: View {
         )
         .hExtraTopPadding
         .hDisableScroll
-        .hide($isHidden)
     }
 
     var terminationText: String {

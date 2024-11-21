@@ -5,6 +5,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
+@MainActor
 public class TerminationFlowNavigationViewModel: ObservableObject, Equatable, Identifiable {
     public static func == (lhs: TerminationFlowNavigationViewModel, rhs: TerminationFlowNavigationViewModel) -> Bool {
         return lhs.id == rhs.id
@@ -81,6 +82,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, Equatable, Id
     @Published var isConfirmTerminationPresented = false
     @Published var isProcessingPresented = false
     @Published var infoText: String?
+    @Published var redirectActionLoadingState: ProcessingState = .success
     let initialStep: TerminationFlowActions
     var configs: [TerminationConfirmConfig] = []
     weak var terminateInsuranceViewModel: TerminateInsuranceViewModel?
@@ -109,8 +111,13 @@ public class TerminationFlowNavigationViewModel: ObservableObject, Equatable, Id
                     let input = ChangeTierInputData(source: source, contractId: contractId)
                     Task { @MainActor [weak self] in
                         do {
+                            withAnimation {
+                                redirectActionLoadingState = .loading
+                            }
                             let newInput = try await ChangeTierNavigationViewModel.getTiers(input: input)
-
+                            withAnimation {
+                                redirectActionLoadingState = .success
+                            }
                             DispatchQueue.main.async { [weak self] in
                                 self?.terminateInsuranceViewModel?.changeTierInput = .existingIntent(
                                     intent: newInput,
@@ -198,6 +205,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, Equatable, Id
             router.push(TerminationFlowRouterActions.terminationDate(model: model))
         case let .setTerminationDeletion(model):
             terminationDeleteStepModel = model
+            router.push(TerminationFlowRouterActions.terminationDate(model: nil))
         case let .setSuccessStep(model):
             successStepModel = model
             router.push(TerminationFlowFinalRouterActions.success(model: model))
@@ -222,52 +230,72 @@ public class TerminationFlowNavigationViewModel: ObservableObject, Equatable, Id
 
     @Published var confirmTerminationState: ProcessingState = .loading
 
-    @MainActor
-    public func sendConfirmDelete(
-        context: String,
-        model: TerminationFlowDeletionNextModel?
-    ) async -> TerminateStepResponse? {
-        withAnimation {
-            confirmTerminationState = .loading
+    public func sendConfirmTermination() {
+        if isDeletion {
+            sendConfirmDelete()
+        } else {
+            sendTerminationDate()
         }
-        do {
-            let data = try await terminateContractsService.sendConfirmDelete(terminationContext: context, model: model)
-            withAnimation {
-                confirmTerminationState = .success
-            }
-            return data
-        } catch let error {
-            withAnimation {
-                confirmTerminationState = .error(
-                    errorMessage: error.localizedDescription
-                )
-            }
-        }
-        return nil
     }
 
     @MainActor
-    public func sendTerminationDate(inputDateToString: String, context: String) async -> TerminateStepResponse? {
-        withAnimation {
-            confirmTerminationState = .loading
-        }
-        do {
-            let data = try await terminateContractsService.sendTerminationDate(
-                inputDateToString: inputDateToString,
-                terminationContext: context
-            )
+    public func sendConfirmDelete() {
+        Task {
+            isProcessingPresented = true
             withAnimation {
-                confirmTerminationState = .success
+                confirmTerminationState = .loading
             }
-            return data
-        } catch let error {
-            withAnimation {
-                confirmTerminationState = .error(
-                    errorMessage: error.localizedDescription
+            do {
+                guard let currentContext else {
+                    throw TerminationError.missingContext
+                }
+                let data = try await terminateContractsService.sendConfirmDelete(
+                    terminationContext: currentContext,
+                    model: terminationDeleteStepModel
                 )
+                withAnimation {
+                    confirmTerminationState = .success
+                }
+                isProcessingPresented = false
+                navigate(data: data, fromSelectInsurance: false)
+            } catch let error {
+                withAnimation {
+                    confirmTerminationState = .error(
+                        errorMessage: error.localizedDescription
+                    )
+                }
             }
         }
-        return nil
+    }
+
+    @MainActor
+    public func sendTerminationDate() {
+        Task {
+            isProcessingPresented = true
+            withAnimation {
+                confirmTerminationState = .loading
+            }
+            do {
+                guard let currentContext else {
+                    throw TerminationError.missingContext
+                }
+                let data = try await terminateContractsService.sendTerminationDate(
+                    inputDateToString: terminationDateStepModel?.date?.localDateString ?? "",
+                    terminationContext: currentContext
+                )
+                withAnimation {
+                    confirmTerminationState = .success
+                }
+                navigate(data: data, fromSelectInsurance: false)
+                isProcessingPresented = false
+            } catch let error {
+                withAnimation {
+                    confirmTerminationState = .error(
+                        errorMessage: error.localizedDescription
+                    )
+                }
+            }
+        }
     }
 }
 

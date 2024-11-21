@@ -95,7 +95,7 @@ struct TerminationSurveyScreen: View {
                         }
                     )
                 ])
-                .hButtonIsLoading(vm.viewState == .loading)
+                .hButtonIsLoading(terminationFlowNavigationViewModel.redirectActionLoadingState == .loading)
         case .redirect(let redirect):
             InfoCard(text: redirect.description, type: .campaign)
                 .buttons([
