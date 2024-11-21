@@ -7,7 +7,7 @@ import hGraphQL
 struct HeaderView: View {
     @EnvironmentObject var foreverNavigationVm: ForeverNavigationViewModel
     let didPressInfo: () -> Void
-    
+
     var body: some View {
         hSection {
             VStack(spacing: 16) {
@@ -17,9 +17,9 @@ struct HeaderView: View {
                 }
                 let data = foreverNavigationVm.foreverData
                 if let grossAmount = data?.grossAmount,
-                   let netAmount = data?.netAmount,
-                   let monthlyDiscountPerReferral = data?.monthlyDiscountPerReferral,
-                   let monthlyDiscount = data?.monthlyDiscount
+                    let netAmount = data?.netAmount,
+                    let monthlyDiscountPerReferral = data?.monthlyDiscountPerReferral,
+                    let monthlyDiscount = data?.monthlyDiscount
                 {
                     PieChartView(
                         state: .init(
@@ -30,7 +30,7 @@ struct HeaderView: View {
                         newPrice: netAmount.formattedAmount
                     )
                     .frame(width: 215, height: 215, alignment: .center)
-                    
+
                     if monthlyDiscount.value > 0 {
                         // Discount present
                         PriceSectionView(monthlyDiscount: monthlyDiscount, didPressInfo: didPressInfo)
