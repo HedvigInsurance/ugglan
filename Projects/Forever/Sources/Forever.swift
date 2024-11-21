@@ -24,7 +24,7 @@ public struct ForeverView: View {
     public init() {}
 
     public var body: some View {
-        LoadingViewWithContent(ForeverStore.self, [.fetchForeverData], [.fetch]) {
+        LoadingStoreViewWithContent(ForeverStore.self, [.fetchForeverData], [.fetch]) {
             ScrollViewReader { value in
                 hForm {
                     VStack(spacing: 0) {

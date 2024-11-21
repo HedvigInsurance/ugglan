@@ -1,5 +1,4 @@
 import Foundation
-import PresentableStore
 import SwiftUI
 
 public struct ModalPresentationSourceWrapper<Content: View>: UIViewRepresentable {

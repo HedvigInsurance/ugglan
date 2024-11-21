@@ -16,7 +16,7 @@ public struct PaymentsView: View {
     }
 
     public var body: some View {
-        LoadingViewWithContent(
+        LoadingStoreViewWithContent(
             PaymentStore.self,
             [.getPaymentData],
             [.load, .fetchPaymentStatus]
