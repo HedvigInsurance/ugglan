@@ -205,6 +205,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, Equatable, Id
             router.push(TerminationFlowRouterActions.terminationDate(model: model))
         case let .setTerminationDeletion(model):
             terminationDeleteStepModel = model
+            router.push(TerminationFlowRouterActions.terminationDate(model: nil))
         case let .setSuccessStep(model):
             successStepModel = model
             router.push(TerminationFlowFinalRouterActions.success(model: model))
