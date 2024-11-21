@@ -1,9 +1,18 @@
-import PresentableStore
+import Foundation
 import hCore
 import hGraphQL
 
 enum TerminationError: Error {
-    case invalidInput
+    case missingContext
+}
+
+extension TerminationError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .missingContext:
+            return L10n.General.errorBody
+        }
+    }
 }
 public class TerminateContractsClientOctopus: TerminateContractsClient {
     public init() {}

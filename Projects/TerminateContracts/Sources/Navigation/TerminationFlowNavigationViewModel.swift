@@ -5,6 +5,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
+@MainActor
 public class TerminationFlowNavigationViewModel: ObservableObject, Equatable, Identifiable {
     public static func == (lhs: TerminationFlowNavigationViewModel, rhs: TerminationFlowNavigationViewModel) -> Bool {
         return lhs.id == rhs.id
@@ -228,20 +229,28 @@ public class TerminationFlowNavigationViewModel: ObservableObject, Equatable, Id
 
     @Published var confirmTerminationState: ProcessingState = .loading
 
+    public func sendConfirmTermination() {
+        if isDeletion {
+            sendConfirmDelete()
+        } else {
+            sendTerminationDate()
+        }
+    }
+
     @MainActor
-    public func sendConfirmDelete(
-        context: String,
-        model: TerminationFlowDeletionNextModel?
-    ) {
+    public func sendConfirmDelete() {
         Task {
             isProcessingPresented = true
             withAnimation {
                 confirmTerminationState = .loading
             }
             do {
+                guard let currentContext else {
+                    throw TerminationError.missingContext
+                }
                 let data = try await terminateContractsService.sendConfirmDelete(
-                    terminationContext: context,
-                    model: model
+                    terminationContext: currentContext,
+                    model: terminationDeleteStepModel
                 )
                 withAnimation {
                     confirmTerminationState = .success
@@ -259,16 +268,19 @@ public class TerminationFlowNavigationViewModel: ObservableObject, Equatable, Id
     }
 
     @MainActor
-    public func sendTerminationDate(inputDateToString: String, context: String) {
+    public func sendTerminationDate() {
         Task {
             isProcessingPresented = true
             withAnimation {
                 confirmTerminationState = .loading
             }
             do {
+                guard let currentContext else {
+                    throw TerminationError.missingContext
+                }
                 let data = try await terminateContractsService.sendTerminationDate(
-                    inputDateToString: inputDateToString,
-                    terminationContext: context
+                    inputDateToString: terminationDateStepModel?.date?.localDateString ?? "",
+                    terminationContext: currentContext
                 )
                 withAnimation {
                     confirmTerminationState = .success
