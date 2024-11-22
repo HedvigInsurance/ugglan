@@ -47,6 +47,8 @@ extension GraphQLEnum<OctopusGraphQL.InsuranceDocumentType> {
                 return .privacyPolicy
             case .termsAndConditions:
                 return .termsAndConditions
+            case .scarTable:
+                return .unknown
             }
         case .unknown:
             return .unknown
