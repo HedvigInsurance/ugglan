@@ -3,7 +3,14 @@ import hCore
 import hCoreUI
 
 public struct ChangeAddonScreen: View {
-    @StateObject var changeAddonVm = ChangeAddonViewModel()
+    @EnvironmentObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
+    @ObservedObject var changeAddonVm: ChangeAddonViewModel
+
+    public init(
+        changeAddonVm: ChangeAddonViewModel
+    ) {
+        self.changeAddonVm = changeAddonVm
+    }
 
     public var body: some View {
         hForm {}
@@ -32,7 +39,7 @@ public struct ChangeAddonScreen: View {
                             .init(
                                 buttonTitle: "Learn more",
                                 buttonAction: {
-                                    /* TODO: IMPLEMENT */
+                                    changeAddonNavigationVm.isLearnMorePresented = true
                                 }
                             )
                         ])
@@ -53,7 +60,7 @@ public struct ChangeAddonScreen: View {
     @ViewBuilder
     private var addOnSection: some View {
         VStack(spacing: .padding4) {
-            ForEach(changeAddonVm.addons) { addon in
+            ForEach(changeAddonVm.addons ?? []) { addon in
                 hSection {
                     hRadioField(
                         id: addon.id.uuidString,
@@ -93,7 +100,8 @@ public struct ChangeAddonScreen: View {
                     value: String(changeAddonVm.selectedCoverageDay ?? 0),
                     placeHolder: "Välj skydd"
                 ) {
-                    /* TODO: OPEN SELECTION SHEET */
+                    let id = changeAddonVm.selectedAddonId
+                    changeAddonNavigationVm.isChangeCoverageDaysPresented = changeAddonVm.getAddonFor(id: id ?? "")
                 }
                 .padding(.leading, -48)
                 .padding(.trailing, -24)
@@ -104,14 +112,14 @@ public struct ChangeAddonScreen: View {
     }
 }
 
-class ChangeAddonViewModel: ObservableObject {
+public class ChangeAddonViewModel: ObservableObject {
     @Inject var addonService: AddonsClient
     @Published var selectedAddonId: String?
     @Published var selectedCoverageDay: Int?
-    @Published var addons: [AddonModel] = []
+    @Published var addons: [AddonModel]?
 
     var hasCoverageDays: Bool {
-        let selectedAddOn = addons.first(where: { $0.id.uuidString == selectedAddonId })
+        let selectedAddOn = addons?.first(where: { $0.id.uuidString == selectedAddonId })
         return selectedAddOn?.coverageDays?.count ?? 0 > 0
     }
 
@@ -121,21 +129,27 @@ class ChangeAddonViewModel: ObservableObject {
         }
     }
 
-    @MainActor
-    private func getAddons() async {
-        do {
-            let data = try await addonService.getAddons()
+    func getAddonFor(id: String) -> AddonModel? {
+        return addons?.first(where: { $0.id.uuidString == selectedAddonId })
+    }
 
-            withAnimation {
-                self.addons = data
+    func getAddons() async {
+        Task { @MainActor in
+            do {
+                let data = try await addonService.getAddons()
+
+                withAnimation {
+                    self.addons = data
+                }
+            } catch {
+
             }
-        } catch {
-
         }
     }
 }
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
-    return ChangeAddonScreen()
+    return ChangeAddonScreen(changeAddonVm: .init())
+        .environmentObject(ChangeAddonNavigationViewModel(input: .init(contractId: "contractId")))
 }
