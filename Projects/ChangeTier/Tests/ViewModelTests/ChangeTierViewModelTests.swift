@@ -260,8 +260,8 @@ final class ChangeTierViewModelTests: XCTestCase {
         )
         self.vm = model
         model.fetchTiers()
-        await model.setTier(for: "max")
-        await model.setDeductible(for: model.selectedTier?.quotes.first?.id ?? "")
+        model.setTier(for: "max")
+        model.setDeductible(for: model.selectedTier?.quotes.first?.id ?? "")
         assert(model.selectedQuote == nil)
         assert(model.selectedTier == nil)
         assert(model.canEditTier == false)
@@ -270,6 +270,7 @@ final class ChangeTierViewModelTests: XCTestCase {
         assert(model.displayName == nil)
         assert(model.activationDate == nil)
         assert(model.selectedTier == nil)
+        try await Task.sleep(nanoseconds: 100_000)
         if case .error(let errorMessage) = model.viewState {
             assert(errorMessage == ChangeTierError.somethingWentWrong.localizedDescription)
         } else {

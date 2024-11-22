@@ -1,14 +1,15 @@
 import PresentableStore
-import XCTest
+@preconcurrency import XCTest
 import hCore
 
 @testable import Home
 
+@MainActor
 final class HomeTests: XCTestCase {
     weak var sut: MockHomeService?
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         globalPresentableStoreContainer.deletePersistanceContainer()
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         sut = nil
@@ -108,7 +109,7 @@ final class HomeTests: XCTestCase {
     }
 
     func testHomeStoreWithMultipleActionsAtOnce() async throws {
-        for i in 1...10 {
+        for i in 1...50 {
             try await iteratedStoreTest(iteration: i)
         }
         try await Task.sleep(nanoseconds: 100_000_000)
@@ -160,7 +161,7 @@ final class HomeTests: XCTestCase {
         store.send(.fetchImportantMessages)
         store.send(.fetchQuickActions)
         store.send(.fetchChatNotifications)
-        try await Task.sleep(nanoseconds: 300_000_000)
+        try await Task.sleep(nanoseconds: 100_000_000)
 
         assert(store.state.memberContractState == memberState.contractState)
         assert(store.state.futureStatus == memberState.futureState)

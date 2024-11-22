@@ -1,20 +1,19 @@
 import PresentableStore
-import XCTest
+@preconcurrency import XCTest
 
 @testable import Contracts
 
+@MainActor
 final class ContractStoreTests: XCTestCase {
     weak var store: ContractStore?
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         globalPresentableStoreContainer.deletePersistanceContainer()
     }
-
+    @MainActor
     override func tearDown() async throws {
-        await waitUntil(description: "Store deinited successfully") {
-            self.store == nil
-        }
+        assert(self.store == nil)
     }
 
     func testFetchCrossSalesSuccess() async {
@@ -108,6 +107,7 @@ final class ContractStoreTests: XCTestCase {
 
 }
 
+@MainActor
 extension XCTestCase {
     public func waitUntil(description: String, closure: @escaping () -> Bool) async {
         let exc = expectation(description: description)
@@ -126,8 +126,9 @@ extension XCTestCase {
     }
 }
 
+@MainActor
 extension ContractsStack {
-    fileprivate static var getDefault: ContractsStack = .init(
+    fileprivate static let getDefault: ContractsStack = .init(
         activeContracts: [
             .init(
                 id: "id",
@@ -167,8 +168,9 @@ extension ContractsStack {
     )
 }
 
+@MainActor
 extension CrossSell {
-    fileprivate static var getDefault: [CrossSell] = [
+    fileprivate static let getDefault: [CrossSell] = [
         .init(
             title: "car",
             description: "description",

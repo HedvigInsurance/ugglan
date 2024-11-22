@@ -2,6 +2,7 @@ import hCore
 
 @testable import Claims
 
+@MainActor
 struct MockData {
     @discardableResult
     static func createMockFetchClaimService(
@@ -207,7 +208,7 @@ enum ClaimsError: Error {
     case error
 }
 
-typealias FetchClaims = () async throws -> [ClaimModel]
+typealias FetchClaims = @Sendable () async throws -> [ClaimModel]
 typealias FetchFiles = () async throws -> [String: [hCore.File]]
 
 class MockFetchClaimService: hFetchClaimClient {

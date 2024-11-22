@@ -1,21 +1,21 @@
 import PresentableStore
-import XCTest
+@preconcurrency import XCTest
 
 @testable import Profile
 @testable import hCore
 
+@MainActor
 final class ProfileStoreTests: XCTestCase {
     weak var store: ProfileStore?
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         globalPresentableStoreContainer.deletePersistanceContainer()
     }
 
     override func tearDown() async throws {
-        try await waitUntil(description: "Store deinited successfully") {
-            self.store == nil
-        }
+        try await super.tearDown()
+        assert(store == nil)
     }
 
     func testFetchProfileSuccess() async throws {
@@ -36,9 +36,7 @@ final class ProfileStoreTests: XCTestCase {
         let store = ProfileStore()
         self.store = store
         await store.sendAsync(.fetchProfileState)
-        try await waitUntil(description: "loading state") {
-            store.loadingState[.fetchProfileState] == nil
-        }
+        assert(store.loadingState[.fetchProfileState] == nil)
         try await Task.sleep(nanoseconds: 30_000_000)
 
         assert(store.state.memberDetails == memberData)
@@ -57,9 +55,7 @@ final class ProfileStoreTests: XCTestCase {
         let store = ProfileStore()
         self.store = store
         await store.sendAsync(.fetchProfileState)
-        try await waitUntil(description: "loading state") {
-            store.loadingState[.fetchProfileState] != nil
-        }
+        assert(store.loadingState[.fetchProfileState] != nil)
         assert(store.state.memberDetails == nil)
         assert(store.state.partnerData == nil)
         assert(store.state.hasTravelCertificates == false)
@@ -103,9 +99,7 @@ final class ProfileStoreTests: XCTestCase {
         self.store = store
         await store.sendAsync(.fetchMemberDetails)
         try await Task.sleep(nanoseconds: 30_000_000)
-        try await waitUntil(description: "loading state") {
-            store.loadingState[.fetchMemberDetails] != nil
-        }
+        assert(store.loadingState[.fetchMemberDetails] != nil)
         assert(store.state.memberDetails == nil)
         assert(store.state.hasTravelCertificates == false)
 
@@ -125,11 +119,7 @@ final class ProfileStoreTests: XCTestCase {
         self.store = store
         await store.sendAsync(.updateLanguage)
         try await Task.sleep(nanoseconds: 30_000_000)
-
-        try await waitUntil(description: "loading state") {
-            store.loadingState[.updateLanguage] == nil
-        }
-
+        assert(store.loadingState[.updateLanguage] == nil)
         assert(Localization.Locale.currentLocale.value == .init(locale))
 
         assert(mockService.events.count == 1)
@@ -147,9 +137,7 @@ final class ProfileStoreTests: XCTestCase {
         let store = ProfileStore()
         self.store = store
         await store.sendAsync(.updateLanguage)
-        try await waitUntil(description: "loading state") {
-            store.loadingState[.updateLanguage] != nil
-        }
+        assert(store.loadingState[.updateLanguage] != nil)
         assert(Localization.Locale.currentLocale.value == .init(locale))
 
         assert(mockService.events.count == 1)

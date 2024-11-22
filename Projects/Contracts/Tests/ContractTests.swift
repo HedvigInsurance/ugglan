@@ -1,15 +1,11 @@
-import XCTest
+@preconcurrency import XCTest
 import hCore
 
 @testable import Contracts
 
+@MainActor
 final class ContractsTests: XCTestCase {
     weak var sut: MockContractService?
-
-    override func setUp() {
-        super.setUp()
-        sut = nil
-    }
 
     override func tearDown() async throws {
         Dependencies.shared.remove(for: FetchContractsClient.self)

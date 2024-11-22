@@ -1,15 +1,15 @@
-import XCTest
+@preconcurrency import XCTest
 import hCore
 
 @testable import Payment
 @testable import hCoreUI
 
+@MainActor
 final class CampaignViewModelTests: XCTestCase {
     weak var sut: MockCampaignService?
 
     override func setUp() {
         super.setUp()
-        sut = nil
     }
 
     override func tearDown() async throws {

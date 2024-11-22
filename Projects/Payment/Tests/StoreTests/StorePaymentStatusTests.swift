@@ -1,23 +1,23 @@
 import PresentableStore
-import XCTest
+@preconcurrency import XCTest
 
 @testable import Payment
 
+@MainActor
 final class StorePaymentStatusTests: XCTestCase {
     weak var store: PaymentStore?
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         globalPresentableStoreContainer.deletePersistanceContainer()
     }
 
     override func tearDown() async throws {
-        await waitUntil(description: "Store deinited successfully") {
-            self.store == nil
-        }
+        try await super.tearDown()
+        XCTAssertNil(store)
     }
 
-    func testFetchPaymentStatusSuccess() async {
+    func testFetchPaymentStatusSuccess() async throws {
         let statusData: PaymentStatusData = .init(
             status: .active,
             displayName: "display name",
@@ -30,10 +30,8 @@ final class StorePaymentStatusTests: XCTestCase {
         let store = PaymentStore()
         self.store = store
         await store.sendAsync(.fetchPaymentStatus)
-
-        await waitUntil(description: "loading state") {
-            store.loadingState[.getPaymentStatus] == nil
-        }
+        try await Task.sleep(nanoseconds: 100_000_000)
+        XCTAssertNil(store.loadingState[.getPaymentStatus])
         assert(store.state.paymentStatusData == statusData)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getPaymentStatusData)
@@ -46,10 +44,7 @@ final class StorePaymentStatusTests: XCTestCase {
         let store = PaymentStore()
         self.store = store
         await store.sendAsync(.fetchPaymentStatus)
-
-        await waitUntil(description: "loading state") {
-            store.loadingState[.getPaymentStatus] != nil
-        }
+        assert(store.loadingState[.getPaymentStatus] != nil)
         assert(store.state.paymentDiscountsData == nil)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getPaymentStatusData)

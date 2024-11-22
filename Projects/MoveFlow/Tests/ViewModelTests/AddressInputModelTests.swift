@@ -1,12 +1,13 @@
 import PresentableStore
-import XCTest
+@preconcurrency import XCTest
 import hCore
 
 @testable import MoveFlow
 
+@MainActor
 final class AddressInputModelTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     }
 

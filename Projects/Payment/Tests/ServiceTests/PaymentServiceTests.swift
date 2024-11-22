@@ -1,14 +1,14 @@
-import XCTest
+@preconcurrency import XCTest
 import hCore
 
 @testable import Payment
 
+@MainActor
 final class PaymentServiceTests: XCTestCase {
     weak var sut: MockPaymentService?
 
     override func setUp() {
         super.setUp()
-        sut = nil
     }
 
     override func tearDown() async throws {

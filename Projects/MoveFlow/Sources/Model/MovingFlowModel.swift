@@ -5,7 +5,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct MovingFlowModel: Codable, Equatable, Hashable {
+public struct MovingFlowModel: Codable, Equatable, Hashable, Sendable {
     let id: String
     let isApartmentAvailableforStudent: Bool
     let maxApartmentNumberCoInsured: Int?

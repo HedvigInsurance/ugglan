@@ -401,7 +401,7 @@ public struct QuoteDisplayItem: Identifiable {
     }
 }
 
-public struct FAQ: Codable, Equatable, Hashable {
+public struct FAQ: Codable, Equatable, Hashable, Sendable {
     public var title: String
     public var description: String?
 

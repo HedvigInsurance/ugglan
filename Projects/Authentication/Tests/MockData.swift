@@ -3,6 +3,7 @@ import hCore
 
 @testable import Authentication
 
+@MainActor
 struct MockData {
     static func createAuthenticationService(
         submitAuth: @escaping Submit = { otpState in

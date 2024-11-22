@@ -1,11 +1,12 @@
 import PresentableStore
-import XCTest
+@preconcurrency import XCTest
 import hCore
 
 @testable import Claims
 @testable import Contracts
 @testable import Profile
 
+@MainActor
 final class DeleteAccountViewModelTests: XCTestCase {
     weak var sut: MockProfileService?
     weak var claimsStore: ClaimsStore?
@@ -20,8 +21,8 @@ final class DeleteAccountViewModelTests: XCTestCase {
         hasTravelCertificate: true
     )
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         globalPresentableStoreContainer.deletePersistanceContainer()
         sut = nil
     }

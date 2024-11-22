@@ -79,7 +79,6 @@ public enum HomeLoadingType: LoadingProtocol {
     case fetchQuickActions
 }
 
-@MainActor
 public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadingType> {
     @Inject var homeService: HomeClient
 
@@ -151,12 +150,12 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         case let .setQuickActions(quickActions):
             removeLoading(for: .fetchQuickActions)
             newState.quickActions = quickActions
-        //            setToolbarTypes(&newState)
+            setToolbarTypes(&newState)
         case let .hideImportantMessage(id):
             newState.hidenImportantMessages.append(id)
         case let .setChatNotification(hasNew):
             newState.showChatNotification = hasNew
-        //            setToolbarTypes(&newState)
+            setToolbarTypes(&newState)
         case let .setChatNotificationTimeStamp(sentAt):
             newState.latestChatTimeStamp = sentAt
             newState.showChatNotification = false

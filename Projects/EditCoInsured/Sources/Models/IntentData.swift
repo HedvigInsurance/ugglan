@@ -1,7 +1,7 @@
 import Foundation
 import hGraphQL
 
-public struct Intent {
+public struct Intent: Sendable {
     let activationDate: String
     let currentPremium: MonetaryAmount
     let newPremium: MonetaryAmount

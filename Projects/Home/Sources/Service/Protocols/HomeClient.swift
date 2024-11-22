@@ -14,7 +14,7 @@ public struct MemberState: Sendable {
     let futureState: FutureStatus
 }
 
-public struct MessageState {
+public struct MessageState: Sendable {
     let hasNewMessages: Bool
     let hasSentOrRecievedAtLeastOneMessage: Bool
     let lastMessageTimeStamp: Date?

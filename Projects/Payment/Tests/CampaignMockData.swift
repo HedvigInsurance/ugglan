@@ -2,6 +2,7 @@ import hCore
 
 @testable import Payment
 
+@MainActor
 struct MockCampaignData {
     static func createMockCampaignService(
         removeCampaign: @escaping RemoveCampaign = {},

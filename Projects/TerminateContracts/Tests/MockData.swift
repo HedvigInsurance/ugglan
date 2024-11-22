@@ -3,6 +3,7 @@ import hCore
 
 @testable import TerminateContracts
 
+@MainActor
 struct MockData {
     @discardableResult
     static func createMockTerminateContractsService(

@@ -269,7 +269,7 @@ public class PresentableStoreContainer: NSObject {
 @MainActor
 public var globalPresentableStoreContainer = PresentableStoreContainer()
 
-public protocol LoadingProtocol: Codable & Equatable & Hashable {}
+public protocol LoadingProtocol: Codable & Equatable & Hashable & Sendable {}
 
 public enum LoadingState<T>: Codable & Equatable & Hashable & Sendable
 where T: Codable & Equatable & Hashable & Sendable {

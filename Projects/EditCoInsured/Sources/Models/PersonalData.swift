@@ -1,6 +1,6 @@
 import Foundation
 
-public struct PersonalData {
+public struct PersonalData: Sendable {
     public var firstName: String
     public var lastName: String
     public let fullname: String

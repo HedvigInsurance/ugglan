@@ -3,16 +3,16 @@ import hCore
 
 @testable import Authentication
 
+@MainActor
 final class AuthenticationTests: XCTestCase {
     weak var sut: MockAuthenticationService?
 
     override func setUp() {
         super.setUp()
-        sut = nil
     }
 
     override func tearDown() async throws {
-        await Dependencies.shared.remove(for: AuthenticationClient.self)
+        Dependencies.shared.remove(for: AuthenticationClient.self)
         try await Task.sleep(nanoseconds: 100)
 
         XCTAssertNil(sut)

@@ -1,14 +1,15 @@
-import XCTest
+@preconcurrency import XCTest
 import hCore
 import hCoreUI
 
 @testable import Forever
 
+@MainActor
 final class ForeverTests: XCTestCase {
     weak var sut: MockForeverService?
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         sut = nil
     }
 
