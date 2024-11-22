@@ -3,7 +3,6 @@ import hCore
 import hCoreUI
 
 public struct ChangeAddonScreen: View {
-    @State var selectedAddon: String?
     @StateObject var changeAddonVm = ChangeAddonViewModel()
 
     public var body: some View {
@@ -29,6 +28,14 @@ public struct ChangeAddonScreen: View {
                             text: "Click to learn more about our extended travel coverage Reseskydd Plus",
                             type: .neutral
                         )
+                        .buttons([
+                            .init(
+                                buttonTitle: "Learn more",
+                                buttonAction: {
+                                    /* TODO: IMPLEMENT */
+                                }
+                            )
+                        ])
 
                         hButton.LargeButton(type: .primary) {
                             /* TODO: IMPLEMENT */
@@ -53,7 +60,7 @@ public struct ChangeAddonScreen: View {
                         leftView: {
                             getLeftView(for: addon).asAnyView
                         },
-                        selected: $selectedAddon,
+                        selected: $changeAddonVm.selectedAddonId,
                         error: .constant(nil),
                         useAnimation: true
                     )
@@ -77,13 +84,36 @@ public struct ChangeAddonScreen: View {
                 hText(subTitle, style: .label)
                     .foregroundColor(hTextColor.Opaque.secondary)
             }
+
+            if changeAddonVm.selectedAddonId == addon.id.uuidString && changeAddonVm.hasCoverageDays {
+
+                let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
+
+                DropdownView(
+                    value: String(changeAddonVm.selectedCoverageDay ?? 0),
+                    placeHolder: "Välj skydd"
+                ) {
+                    /* TODO: OPEN SELECTION SHEET */
+                }
+                .padding(.leading, -48)
+                .padding(.trailing, -24)
+                .padding(.top, .padding16)
+                .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary])
+            }
         }
     }
 }
 
 class ChangeAddonViewModel: ObservableObject {
     @Inject var addonService: AddonsClient
+    @Published var selectedAddonId: String?
+    @Published var selectedCoverageDay: Int?
     @Published var addons: [AddonModel] = []
+
+    var hasCoverageDays: Bool {
+        let selectedAddOn = addons.first(where: { $0.id.uuidString == selectedAddonId })
+        return selectedAddOn?.coverageDays?.count ?? 0 > 0
+    }
 
     init() {
         Task {

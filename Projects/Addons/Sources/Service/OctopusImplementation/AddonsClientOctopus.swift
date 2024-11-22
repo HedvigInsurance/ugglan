@@ -1,4 +1,4 @@
-public class AddonsClientDemo: AddonsClient {
+public class AddonsClientOctopus: AddonsClient {
     public init() {}
 
     public func getAddons() async throws -> [AddonModel] {
