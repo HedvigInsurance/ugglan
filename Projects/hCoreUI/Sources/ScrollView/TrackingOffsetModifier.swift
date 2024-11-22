@@ -62,7 +62,7 @@ public class SetOffsetViewModel: ObservableObject {
             var x: CGFloat = 0
             if let scrollView {
                 if scrollView.frame.width + animationProperties.offset.x > scrollView.contentSize.width {
-                    x = scrollView.contentSize.width - scrollView.frame.width
+                    x = max(scrollView.contentSize.width - scrollView.frame.width, 0)
                 } else {
                     x = animationProperties.offset.x
                 }
