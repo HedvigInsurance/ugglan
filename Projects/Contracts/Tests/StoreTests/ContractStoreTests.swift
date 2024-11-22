@@ -13,7 +13,10 @@ final class ContractStoreTests: XCTestCase {
     }
     @MainActor
     override func tearDown() async throws {
-        assert(self.store == nil)
+        try await super.tearDown()
+        await waitUntil(description: "Store deinit") {
+            self.store == nil
+        }
     }
 
     func testFetchCrossSalesSuccess() async {
@@ -24,10 +27,9 @@ final class ContractStoreTests: XCTestCase {
         self.store = store
         await store.sendAsync(.fetchCrossSale)
         await waitUntil(description: "loading state") {
-            store.loadingState[.fetchCrossSell] == nil
+            store.loadingState[.fetchCrossSell] == nil && store.state.crossSells == CrossSell.getDefault
         }
 
-        assert(store.state.crossSells == CrossSell.getDefault)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getCrossSell)
     }
@@ -108,25 +110,6 @@ final class ContractStoreTests: XCTestCase {
 }
 
 @MainActor
-extension XCTestCase {
-    public func waitUntil(description: String, closure: @escaping () -> Bool) async {
-        let exc = expectation(description: description)
-        if closure() {
-            exc.fulfill()
-        } else {
-            try! await Task.sleep(nanoseconds: 100_000_000)
-            Task {
-                await self.waitUntil(description: description, closure: closure)
-                if closure() {
-                    exc.fulfill()
-                }
-            }
-        }
-        await fulfillment(of: [exc], timeout: 2)
-    }
-}
-
-@MainActor
 extension ContractsStack {
     fileprivate static let getDefault: ContractsStack = .init(
         activeContracts: [
@@ -188,4 +171,23 @@ extension CrossSell {
             type: .home
         ),
     ]
+}
+
+@MainActor
+extension XCTestCase {
+    public func waitUntil(description: String, closure: @escaping () -> Bool) async {
+        let exc = expectation(description: description)
+        if closure() {
+            exc.fulfill()
+        } else {
+            try! await Task.sleep(nanoseconds: 100_000_000)
+            Task {
+                await self.waitUntil(description: description, closure: closure)
+                if closure() {
+                    exc.fulfill()
+                }
+            }
+        }
+        await fulfillment(of: [exc], timeout: 2)
+    }
 }

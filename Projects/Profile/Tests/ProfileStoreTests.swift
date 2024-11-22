@@ -15,7 +15,9 @@ final class ProfileStoreTests: XCTestCase {
 
     override func tearDown() async throws {
         try await super.tearDown()
-        assert(store == nil)
+        try await waitUntil(description: "deinitStore") {
+            self.store == nil
+        }
     }
 
     func testFetchProfileSuccess() async throws {
@@ -37,14 +39,11 @@ final class ProfileStoreTests: XCTestCase {
         self.store = store
         await store.sendAsync(.fetchProfileState)
         assert(store.loadingState[.fetchProfileState] == nil)
-        try await Task.sleep(nanoseconds: 30_000_000)
-
-        assert(store.state.memberDetails == memberData)
-        assert(store.state.partnerData == partnerData)
-        assert(store.state.hasTravelCertificates == memberData.isTravelCertificateEnabled)
-
-        assert(mockService.events.count == 1)
-        assert(mockService.events.first == .getProfileState)
+        try await waitUntil(description: "check state") {
+            store.state.memberDetails == memberData && store.state.partnerData == partnerData
+                && store.state.hasTravelCertificates == memberData.isTravelCertificateEnabled
+                && mockService.events.count == 1 && mockService.events.first == .getProfileState
+        }
     }
 
     func testFetchProfileFailure() async throws {
@@ -81,13 +80,12 @@ final class ProfileStoreTests: XCTestCase {
         let store = ProfileStore()
         self.store = store
         await store.sendAsync(.fetchMemberDetails)
-        try await Task.sleep(nanoseconds: 100_000_000)
-        assert(store.loadingState[.fetchMemberDetails] == nil)
-        assert(store.state.memberDetails == memberData)
-        assert(store.state.hasTravelCertificates == false)
 
-        assert(mockService.events.count == 1)
-        assert(mockService.events.first == .getMemberDetails)
+        try await waitUntil(description: "check state") {
+            store.loadingState[.fetchMemberDetails] == nil && store.state.memberDetails == memberData
+                && store.state.hasTravelCertificates == false && mockService.events.count == 1
+                && mockService.events.first == .getMemberDetails
+        }
     }
 
     func testFetchMemberDetailsFailure() async throws {
@@ -98,13 +96,11 @@ final class ProfileStoreTests: XCTestCase {
         let store = ProfileStore()
         self.store = store
         await store.sendAsync(.fetchMemberDetails)
-        try await Task.sleep(nanoseconds: 30_000_000)
-        assert(store.loadingState[.fetchMemberDetails] != nil)
-        assert(store.state.memberDetails == nil)
-        assert(store.state.hasTravelCertificates == false)
-
-        assert(mockService.events.count == 1)
-        assert(mockService.events.first == .getMemberDetails)
+        try await waitUntil(description: "check state") {
+            store.loadingState[.fetchMemberDetails] != nil && store.state.memberDetails == nil
+                && store.state.hasTravelCertificates == false && mockService.events.count == 1
+                && mockService.events.first == .getMemberDetails
+        }
     }
 
     func testUpdateLanguageSuccess() async throws {
@@ -118,12 +114,10 @@ final class ProfileStoreTests: XCTestCase {
         let store = ProfileStore()
         self.store = store
         await store.sendAsync(.updateLanguage)
-        try await Task.sleep(nanoseconds: 30_000_000)
-        assert(store.loadingState[.updateLanguage] == nil)
-        assert(Localization.Locale.currentLocale.value == .init(locale))
-
-        assert(mockService.events.count == 1)
-        assert(mockService.events.first == .updateLanguage)
+        try await waitUntil(description: "check state") {
+            store.loadingState[.updateLanguage] == nil && Localization.Locale.currentLocale.value == .init(locale)
+                && mockService.events.count == 1 && mockService.events.first == .updateLanguage
+        }
     }
 
     func testUpdateLanguageFailure() async throws {
@@ -145,6 +139,7 @@ final class ProfileStoreTests: XCTestCase {
     }
 }
 
+@MainActor
 extension XCTestCase {
     public func waitUntil(description: String, closure: @escaping () -> Bool) async throws {
         let exc = expectation(description: description)

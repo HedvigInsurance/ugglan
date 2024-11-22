@@ -88,15 +88,19 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
     ) async {
         switch action {
         case .fetchImportantMessages:
+            print("STORE TEST SEND: fetchImportantMessages 3")
             do {
                 let messages = try await self.homeService.getImportantMessages()
+                print("STORE TEST SEND: fetchImportantMessages setImportantMessages")
                 send(.setImportantMessages(messages: messages))
             } catch {
 
             }
         case .fetchMemberState:
+            print("STORE TEST SEND: fetchMemberState 3")
             do {
                 let memberData = try await self.homeService.getMemberState()
+                print("STORE TEST SEND: fetchMemberState setMemberContractState")
                 send(
                     .setMemberContractState(
                         state: memberData.contractState,
@@ -109,16 +113,21 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                 self.setError(L10n.General.errorBody, for: .fetchQuickActions)
             }
         case .fetchQuickActions:
+            print("STORE TEST SEND: fetchQuickActions 3")
             do {
                 let quickActions = try await self.homeService.getQuickActions()
+                print("STORE TEST SEND: fetchQuickActions setQuickActions")
                 send(.setQuickActions(quickActions: quickActions))
             } catch {
                 self.setError(L10n.General.errorBody, for: .fetchQuickActions)
             }
         case .fetchChatNotifications:
+            print("STORE TEST SEND: fetchChatNotifications 3")
             do {
                 let chatMessagesState = try await self.homeService.getMessagesState()
+                print("STORE TEST SEND: fetchChatNotifications setChatNotification")
                 send(.setChatNotification(hasNew: chatMessagesState.hasNewMessages))
+                print("STORE TEST SEND: fetchChatNotifications setHasSentOrRecievedAtLeastOneMessage")
                 send(
                     .setHasSentOrRecievedAtLeastOneMessage(
                         hasSent: chatMessagesState.hasSentOrRecievedAtLeastOneMessage
@@ -136,7 +145,6 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
 
     public override func reduce(_ state: HomeState, _ action: HomeAction) async -> HomeState {
         var newState = state
-
         switch action {
         case .setMemberContractState(let memberState, let contracts):
             newState.memberContractState = memberState
@@ -150,21 +158,26 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         case let .setQuickActions(quickActions):
             removeLoading(for: .fetchQuickActions)
             newState.quickActions = quickActions
+            print("STORE TEST SEND: SET TOOLBAR TYPES setQuickActions")
             setToolbarTypes(&newState)
         case let .hideImportantMessage(id):
             newState.hidenImportantMessages.append(id)
         case let .setChatNotification(hasNew):
             newState.showChatNotification = hasNew
+            print("STORE TEST SEND: SET TOOLBAR TYPES setChatNotification")
             setToolbarTypes(&newState)
         case let .setChatNotificationTimeStamp(sentAt):
             newState.latestChatTimeStamp = sentAt
             newState.showChatNotification = false
+            print("STORE TEST SEND: SET TOOLBAR TYPES setChatNotificationTimeStamp")
             setToolbarTypes(&newState)
         case let .setHasSentOrRecievedAtLeastOneMessage(hasSent):
             newState.hasSentOrRecievedAtLeastOneMessage = hasSent
+            print("STORE TEST SEND: SET TOOLBAR TYPES setHasSentOrRecievedAtLeastOneMessage")
             setToolbarTypes(&newState)
         case let .setChatNotificationConversationTimeStamp(timeStamp):
             newState.latestConversationTimeStamp = timeStamp
+            print("STORE TEST SEND: SET TOOLBAR TYPES setChatNotificationConversationTimeStamp")
             setToolbarTypes(&newState)
         default:
             break
@@ -173,9 +186,8 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         return newState
     }
 
-    nonisolated(unsafe)
-        private func setToolbarTypes(_ state: inout HomeState)
-    {
+    private func setToolbarTypes(_ state: inout HomeState) {
+        print("STORE TEST SEND: SET TOOLBAR TYPES")
         var types: [ToolbarOptionType] = []
         types.append(.newOffer)
 
