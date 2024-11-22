@@ -1,4 +1,5 @@
 import PresentableStore
+import Combine
 import SwiftUI
 import hCore
 import hCoreUI
@@ -16,11 +17,11 @@ public struct PaymentsView: View {
     }
 
     public var body: some View {
-        LoadingStoreViewWithContent(
-            PaymentStore.self,
-            [.getPaymentData],
-            [.load, .fetchPaymentStatus]
-        ) {
+//        LoadingStoreViewWithContent(
+//            PaymentStore.self,
+//            [.getPaymentData],
+//            [.load, .fetchPaymentStatus]
+//        ) {
             hForm {
                 VStack(spacing: 8) {
                     upcomingPayment
@@ -55,7 +56,6 @@ public struct PaymentsView: View {
             .onPullToRefresh {
                 await store.sendAsync(.fetchPaymentStatus)
             }
-        }
     }
 
     private var upcomingPayment: some View {
@@ -188,6 +188,23 @@ public struct PaymentsView: View {
                 .sectionContainerStyle(.transparent)
             }
         }
+    }
+}
+
+public class PaymentsViewModel: ObservableObject {
+    @Published var viewState: ProcessingState = .loading
+    @PresentableStore var store: PaymentStore
+    @Published var cancellable: AnyCancellable?
+    
+    init() {
+        cancellable = store.actionSignal
+            .receive(on: RunLoop.main)
+            .sink { _ in
+            } receiveValue: { [weak self] action in
+                if action == . {
+                    self?.viewState = .success
+                }
+            }
     }
 }
 

@@ -1,4 +1,5 @@
 import Apollo
+import Combine
 import Foundation
 import PresentableStore
 import SwiftUI
@@ -10,6 +11,7 @@ struct ContractTable: View {
     @PresentableStore var store: ContractStore
     let showTerminated: Bool
     @State var onlyTerminatedInsurances = false
+    @StateObject var vm = ContractTableViewModel()
 
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
     @EnvironmentObject var router: Router
@@ -35,39 +37,15 @@ struct ContractTable: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            LoadingStoreViewWithContent(ContractStore.self, [.fetchContracts], [.fetchContracts], showLoading: false) {
-                hSection {
-                    PresentableStoreLens(
-                        ContractStore.self,
-                        getter: { state in
-                            getContractsToShow(for: state)
-
-                        }
-                    ) { contracts in
-                        VStack(spacing: .padding8) {
-                            ForEach(contracts, id: \.id) { contract in
-                                ContractRow(
-                                    image: contract.pillowType?.bgImage,
-                                    terminationMessage: contract.terminationMessage,
-                                    contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
-                                    contractExposureName: contract.exposureDisplayName,
-                                    activeFrom: contract.upcomingChangedAgreement?.activeFrom,
-                                    activeInFuture: contract.activeInFuture,
-                                    masterInceptionDate: contract.masterInceptionDate,
-                                    tierDisplayName: contract.currentAgreement?.productVariant.displayNameTier,
-                                    onClick: {
-                                        router.push(contract)
-                                    }
-                                )
-                                .fixedSize(horizontal: false, vertical: true)
-                                .transition(.slide)
-                            }
-                        }
-                    }
-                }
-                .presentableStoreLensAnimation(.spring())
-                .sectionContainerStyle(.transparent)
-            }
+            successView.loading($vm.viewState, showLoading: false)
+                .hErrorViewButtonConfig(
+                    .init(
+                        actionButton: .init(buttonAction: {
+                            store.send(.fetchContracts)
+                        }),
+                        dismissButton: nil
+                    )
+                )
             if !showTerminated {
                 VStack(spacing: 24) {
                     movingToANewHomeView
@@ -111,6 +89,40 @@ struct ContractTable: View {
         }
     }
 
+    private var successView: some View {
+        hSection {
+            PresentableStoreLens(
+                ContractStore.self,
+                getter: { state in
+                    getContractsToShow(for: state)
+
+                }
+            ) { contracts in
+                VStack(spacing: .padding8) {
+                    ForEach(contracts, id: \.id) { contract in
+                        ContractRow(
+                            image: contract.pillowType?.bgImage,
+                            terminationMessage: contract.terminationMessage,
+                            contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
+                            contractExposureName: contract.exposureDisplayName,
+                            activeFrom: contract.upcomingChangedAgreement?.activeFrom,
+                            activeInFuture: contract.activeInFuture,
+                            masterInceptionDate: contract.masterInceptionDate,
+                            tierDisplayName: contract.currentAgreement?.productVariant.displayNameTier,
+                            onClick: {
+                                router.push(contract)
+                            }
+                        )
+                        .fixedSize(horizontal: false, vertical: true)
+                        .transition(.slide)
+                    }
+                }
+            }
+        }
+        .presentableStoreLensAnimation(.spring())
+        .sectionContainerStyle(.transparent)
+    }
+
     @ViewBuilder
     private var movingToANewHomeView: some View {
         PresentableStoreLens(
@@ -140,5 +152,22 @@ struct ContractTable: View {
                 }
             }
         }
+    }
+}
+
+public class ContractTableViewModel: ObservableObject {
+    @Published var viewState: ProcessingState = .loading
+    @PresentableStore var store: ContractStore
+    @Published var cancellable: AnyCancellable?
+
+    init() {
+        cancellable = store.actionSignal
+            .receive(on: RunLoop.main)
+            .sink { _ in
+            } receiveValue: { [weak self] action in
+                if action == .fetchContracts {
+                    self?.viewState = .success
+                }
+            }
     }
 }

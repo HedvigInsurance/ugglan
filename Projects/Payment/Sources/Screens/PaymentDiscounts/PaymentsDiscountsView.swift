@@ -182,22 +182,22 @@ struct PaymentsDiscountViewNoDiscounts_Previews: PreviewProvider {
 struct PaymentsDiscountsRootView: View {
     @PresentableStore var store: PaymentStore
     var body: some View {
-        LoadingStoreViewWithContent(
+        //        LoadingStoreViewWithContent(
+        //            PaymentStore.self,
+        //            [.getDiscountsData],
+        //            [.fetchDiscountsData]
+        //        ) {
+        PresentableStoreLens(
             PaymentStore.self,
-            [.getDiscountsData],
-            [.fetchDiscountsData]
-        ) {
-            PresentableStoreLens(
-                PaymentStore.self,
-                getter: { state in
-                    state.paymentDiscountsData
-                }
-            ) { paymentDiscountsData in
-                if let paymentDiscountsData {
-                    PaymentsDiscountsView(data: paymentDiscountsData)
-                }
+            getter: { state in
+                state.paymentDiscountsData
+            }
+        ) { paymentDiscountsData in
+            if let paymentDiscountsData {
+                PaymentsDiscountsView(data: paymentDiscountsData)
             }
         }
+        //        }
     }
 }
 
