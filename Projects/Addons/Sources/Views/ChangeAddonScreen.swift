@@ -4,6 +4,7 @@ import hCoreUI
 
 public struct ChangeAddonScreen: View {
     @State var selectedAddon: String?
+    @StateObject var changeAddonVm = ChangeAddonViewModel()
 
     public var body: some View {
         hForm {}
@@ -44,17 +45,8 @@ public struct ChangeAddonScreen: View {
 
     @ViewBuilder
     private var addOnSection: some View {
-        let addons: [Addon] = [
-            .init(title: "Reseskydd", subTitle: nil, tag: "Ingår"),
-            .init(
-                title: "Reseskydd Plus",
-                subTitle: "För dig som reser mycket, bagageskydd, hjälp överallt i världen 24/7.",
-                tag: "+ 49 kr/mo"
-            ),
-        ]
-
         VStack(spacing: .padding4) {
-            ForEach(addons) { addon in
+            ForEach(changeAddonVm.addons) { addon in
                 hSection {
                     hRadioField(
                         id: addon.id.uuidString,
@@ -72,7 +64,7 @@ public struct ChangeAddonScreen: View {
         }
     }
 
-    private func getLeftView(for addon: Addon) -> some View {
+    private func getLeftView(for addon: AddonModel) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
                 hText(addon.title)
@@ -89,13 +81,31 @@ public struct ChangeAddonScreen: View {
     }
 }
 
-public struct Addon: Identifiable {
-    public var id = UUID()
-    let title: String
-    let subTitle: String?
-    let tag: String
+class ChangeAddonViewModel: ObservableObject {
+    @Inject var addonService: AddonsClient
+    @Published var addons: [AddonModel] = []
+
+    init() {
+        Task {
+            await getAddons()
+        }
+    }
+
+    @MainActor
+    private func getAddons() async {
+        do {
+            let data = try await addonService.getAddons()
+
+            withAnimation {
+                self.addons = data
+            }
+        } catch {
+
+        }
+    }
 }
 
 #Preview {
-    ChangeAddonScreen()
+    Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
+    return ChangeAddonScreen()
 }
