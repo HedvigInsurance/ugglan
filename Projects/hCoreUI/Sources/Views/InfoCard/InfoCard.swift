@@ -28,25 +28,39 @@ public struct InfoCard: View {
                     .padding(.leading, .padding8)
                     .hUseLightMode
             } else {
-                VStack(alignment: .leading) {
-                    hText(text, style: .label)
-                        .foregroundColor(type.textColor)
-                        .multilineTextAlignment(.leading)
-                    if let buttonsConfig {
-                        if buttonsConfig.count > 1 {
-                            HStack(spacing: 4) {
-                                ForEach(buttonsConfig, id: \.buttonTitle) { config in
-                                    hButton.SmallButton(type: .secondaryAlt) {
-                                        config.buttonAction()
-                                    } content: {
-                                        hText(config.buttonTitle, style: .label)
-                                            .frame(maxWidth: .infinity)
-                                    }
-                                    .hUseLightMode
+                switch type {
+                case .neutral:
+                    buttonsView
+                default:
+                    buttonsView
+                        .hUseLightMode
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, .padding12)
+        .padding(.horizontal, .padding16)
+        .modifier(NotificationStyle(type: type))
+        .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private var buttonsView: some View {
+        VStack(alignment: .leading) {
+            hText(text, style: .label)
+                .foregroundColor(type.textColor)
+                .multilineTextAlignment(.leading)
+            if let buttonsConfig {
+                if buttonsConfig.count > 1 {
+                    HStack(spacing: 4) {
+                        ForEach(buttonsConfig, id: \.buttonTitle) { config in
+                            if type == .neutral {
+                                hButton.SmallButton(type: .secondary) {
+                                    config.buttonAction()
+                                } content: {
+                                    hText(config.buttonTitle, style: .label)
+                                        .frame(maxWidth: .infinity)
                                 }
-                            }
-                        } else {
-                            ForEach(buttonsConfig, id: \.buttonTitle) { config in
+                            } else {
                                 hButton.SmallButton(type: .secondaryAlt) {
                                     config.buttonAction()
                                 } content: {
@@ -57,16 +71,29 @@ public struct InfoCard: View {
                             }
                         }
                     }
+                } else {
+                    ForEach(buttonsConfig, id: \.buttonTitle) { config in
+                        if type == .neutral {
+                            hButton.SmallButton(type: .secondary) {
+                                config.buttonAction()
+                            } content: {
+                                hText(config.buttonTitle, style: .label)
+                                    .frame(maxWidth: .infinity)
+                            }
+                        } else {
+                            hButton.SmallButton(type: .secondaryAlt) {
+                                config.buttonAction()
+                            } content: {
+                                hText(config.buttonTitle, style: .label)
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .hUseLightMode
+                        }
+                    }
                 }
-                .padding(.leading, .padding8)
-                .hUseLightMode
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, .padding12)
-        .padding(.horizontal, .padding16)
-        .modifier(NotificationStyle(type: type))
-        .fixedSize(horizontal: false, vertical: true)
+        .padding(.leading, .padding8)
     }
 }
 
@@ -109,6 +136,16 @@ struct InfoCard_Previews: PreviewProvider {
                         Text("Testing custom texzt view")
 
                     }
+
+                InfoCard(text: L10n.changeAddressCoverageInfoText, type: .neutral)
+                    .buttons([
+                        .init(
+                            buttonTitle: "Title",
+                            buttonAction: {
+
+                            }
+                        )
+                    ])
             }
         }
     }

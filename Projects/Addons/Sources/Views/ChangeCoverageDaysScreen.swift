@@ -90,7 +90,7 @@ extension ChangeCoverageDaysScreen: TitleView {
     @ViewBuilder
     private var titleView: some View {
         VStack(alignment: .leading, spacing: 0) {
-            hText("addon.title", style: .heading1)
+            hText(self.addon.title, style: .heading1)
                 .foregroundColor(hTextColor.Opaque.primary)
             hText("Välj din skyddsnivå", style: .heading1)
                 .foregroundColor(hTextColor.Opaque.secondary)
