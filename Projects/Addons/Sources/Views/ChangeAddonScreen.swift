@@ -45,7 +45,7 @@ public struct ChangeAddonScreen: View {
                         ])
 
                         hButton.LargeButton(type: .primary) {
-                            /* TODO: IMPLEMENT */
+                            changeAddonNavigationVm.router.push(ChangeAddonRouterActions.summary)
                         } content: {
                             hText(L10n.generalContinueButton)
                         }
@@ -68,7 +68,7 @@ public struct ChangeAddonScreen: View {
                             getLeftView(for: addon).asAnyView
                         },
                         selected: $changeAddonVm.selectedAddonId,
-                        error: .constant(nil),
+                        error: nil,
                         useAnimation: true
                     )
                     .hFieldSize(.medium)
@@ -95,7 +95,6 @@ public struct ChangeAddonScreen: View {
             if changeAddonVm.selectedAddonId == addon.id.uuidString && changeAddonVm.hasCoverageDays {
 
                 let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
-
                 DropdownView(
                     value: String(changeAddonVm.getSelectedCoverageDays?.nbOfDays ?? 0) + " dagar",
                     placeHolder: "Välj skydd"

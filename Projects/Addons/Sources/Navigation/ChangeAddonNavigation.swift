@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import hCore
 import hCoreUI
 
 public struct ChangeAddonInput {
@@ -29,6 +30,10 @@ public class ChangeAddonNavigationViewModel: ObservableObject {
     }
 }
 
+enum ChangeAddonRouterActions {
+    case summary
+}
+
 public struct ChangeAddonNavigation: View {
     @ObservedObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
     let input: ChangeAddonInput
@@ -48,6 +53,16 @@ public struct ChangeAddonNavigation: View {
         ) {
             ChangeAddonScreen(changeAddonVm: changeAddonNavigationVm.changeAddonVm)
                 .withDismissButton()
+                .routerDestination(for: ChangeAddonRouterActions.self) { action in
+                    switch action {
+                    case .summary:
+                        ChangeAddonSummaryScreen(
+                            changeAddonNavigationVm: changeAddonNavigationVm
+                        )
+                        .configureTitle(L10n.offerUpdateSummaryTitle)
+                        .withDismissButton()
+                    }
+                }
         }
         .environmentObject(changeAddonNavigationVm)
         .detent(
@@ -72,6 +87,15 @@ public struct ChangeAddonNavigation: View {
                     tracking: ChangeAddonTrackingType.changeCoverageDaysScreen
                 )
                 .environmentObject(changeAddonNavigationVm)
+        }
+    }
+}
+
+extension ChangeAddonRouterActions: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .summary:
+            return .init(describing: ChangeAddonRouterActions.self)
         }
     }
 }
