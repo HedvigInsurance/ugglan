@@ -10,7 +10,6 @@ struct CoInsuredProcessingScreen: View {
     @EnvironmentObject private var editCoInsuredViewModel: EditCoInsuredViewModel
     @ObservedObject private var intentViewModel: IntentViewModel
     @StateObject var router = Router()
-
     init(
         showSuccessScreen: Bool,
         intentVM: IntentViewModel
@@ -20,35 +19,33 @@ struct CoInsuredProcessingScreen: View {
     }
 
     var body: some View {
-        RouterHost(router: router, options: [.navigationBarHidden], tracking: self) {
-            ProcessingStateView(
-                showSuccessScreen: showSuccessScreen,
-                loadingViewText: L10n.contractAddCoinsuredProcessing,
-                successViewTitle: L10n.contractAddCoinsuredUpdatedTitle,
-                successViewBody: L10n.contractAddCoinsuredUpdatedLabel(
-                    intentViewModel.intent.activationDate.localDateToDate?
-                        .displayDateDDMMMYYYYFormat ?? ""
-                ),
-                successViewButtonAction: nil,
-                onAppearLoadingView: {
-                    editCoInsuredNavigation.showProgressScreenWithSuccess = false
-                    editCoInsuredNavigation.showProgressScreenWithoutSuccess = false
-                    editCoInsuredNavigation.editCoInsuredConfig = nil
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak editCoInsuredViewModel] in
-                        editCoInsuredViewModel?.checkForAlert()
-                    }
-                    EditCoInsuredViewModel.updatedCoInsuredForContractId.send(
-                        intentViewModel.contractId
-                    )
+        ProcessingStateView(
+            showSuccessScreen: showSuccessScreen,
+            loadingViewText: L10n.contractAddCoinsuredProcessing,
+            successViewTitle: L10n.contractAddCoinsuredUpdatedTitle,
+            successViewBody: L10n.contractAddCoinsuredUpdatedLabel(
+                intentViewModel.intent.activationDate.localDateToDate?
+                    .displayDateDDMMMYYYYFormat ?? ""
+            ),
+            successViewButtonAction: nil,
+            onAppearLoadingView: {
+                editCoInsuredNavigation.showProgressScreenWithSuccess = false
+                editCoInsuredNavigation.showProgressScreenWithoutSuccess = false
+                editCoInsuredNavigation.editCoInsuredConfig = nil
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak editCoInsuredViewModel] in
+                    editCoInsuredViewModel?.checkForAlert()
+                }
+                EditCoInsuredViewModel.updatedCoInsuredForContractId.send(
+                    intentViewModel.contractId
+                )
 
-                },
-                state: $intentViewModel.viewState
-            )
-            .hSuccessBottomAttachedView {
-                customBottomSuccessView
-            }
-            .hErrorViewButtonConfig(errorButtons)
+            },
+            state: $intentViewModel.viewState
+        )
+        .hSuccessBottomAttachedView {
+            customBottomSuccessView
         }
+        .hErrorViewButtonConfig(errorButtons)
     }
 
     private var errorButtons: ErrorViewButtonConfig {
