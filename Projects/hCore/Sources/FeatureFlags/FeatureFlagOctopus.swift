@@ -61,7 +61,7 @@ public class FeatureFlagsUnleash: FeatureFlags {
                 self?.handleUpdate()
             }
         log.info("Started loading unleash experiments")
-        emailPreferencesEnabled = Localization.Locale.currentLocale.value.market == .se
+
         do {
             try await unleashClient?.start(printToConsole: true)
             log.info("Successfully loaded unleash experiments")
