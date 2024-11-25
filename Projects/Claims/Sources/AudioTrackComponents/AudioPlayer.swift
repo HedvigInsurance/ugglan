@@ -23,9 +23,23 @@ class AudioPlayer: NSObject, ObservableObject {
         case finished
     }
 
-    private(set) var playbackState: PlaybackState = .idle {
+    var playbackState: PlaybackState = .idle {
         didSet {
             objectWillChange.send(self)
+            switch playbackState {
+            case .idle:
+                break
+            case .playing(let paused):
+                if paused, audioPlayer?.rate != 0 {
+                    audioPlayer?.pause()
+                }
+            case .error:
+                break
+            case .loading:
+                break
+            case .finished:
+                break
+            }
         }
     }
 
@@ -64,6 +78,14 @@ class AudioPlayer: NSObject, ObservableObject {
         audioPlayer?.addObserver(self, forKeyPath: "timeControlStatus", options: [.old, .new], context: nil)
     }
 
+    func setProgress(to progress: Double) {
+        if let duration = audioPlayer?.currentItem?.duration {
+            let time = duration.seconds * progress
+            audioPlayer?.seek(to: CMTimeMakeWithSeconds(time, preferredTimescale: 1000))
+            self.progress = progress
+        }
+    }
+
     private func startPlaying() {
         let session = AVAudioSession.sharedInstance()
 
@@ -75,36 +97,43 @@ class AudioPlayer: NSObject, ObservableObject {
             try? session.setCategory(.playback)
             try? session.setActive(true)
         }
-        if let url {
+        if (audioPlayer?.currentItem) != nil {
+            switch playbackState {
+            case .finished:
+                audioPlayer?.seek(to: CMTimeMakeWithSeconds(0, preferredTimescale: 1000))
+            default:
+                break
+            }
+        } else if let url {
             let playerItem = AVPlayerItem(url: url)
             audioPlayer = AVPlayer(playerItem: playerItem)
             addAudioPlayerNotificationObserver()
-
-            audioPlayer?
-                .addPeriodicTimeObserver(
-                    forInterval: CMTime(value: 1, timescale: 50),
-                    queue: .main,
-                    using: { [weak self] time in
-                        guard let self = self, let item = self.audioPlayer?.currentItem else { return }
-
-                        switch item.status {
-                        case .readyToPlay:
-                            let duration = CMTimeGetSeconds(item.duration)
-                            let timeInFloat = CMTimeGetSeconds(time)
-                            self.progress = timeInFloat / duration
-                        case .failed:
-                            break
-                        case .unknown:
-                            break
-                        default:
-                            self.playbackState = .error(message: "Unknown playback error")
-                        }
-                    }
-                )
-
-            audioPlayer?.actionAtItemEnd = .pause
-            audioPlayer?.play()
         }
+        audioPlayer?
+            .addPeriodicTimeObserver(
+                forInterval: CMTime(value: 1, timescale: 50),
+                queue: .main,
+                using: { [weak self] time in
+                    print(time)
+                    guard let self = self, let item = self.audioPlayer?.currentItem else { return }
+                    print(item.status)
+                    switch item.status {
+                    case .readyToPlay:
+                        let duration = CMTimeGetSeconds(item.duration)
+                        let timeInFloat = CMTimeGetSeconds(time)
+                        self.progress = timeInFloat / duration
+                    case .failed:
+                        break
+                    case .unknown:
+                        break
+                    default:
+                        self.playbackState = .error(message: "Unknown playback error")
+                    }
+                }
+            )
+
+        audioPlayer?.actionAtItemEnd = .pause
+        audioPlayer?.play()
     }
 
     override func observeValue(
