@@ -282,7 +282,7 @@ private class CustomTextView: UITextView, UITextViewDelegate {
 
     override func paste(_ sender: Any?) {
         if let action = (sender as? UIKeyCommand)?.action, action == #selector(UIResponder.paste(_:)) {
-            if let images = UIPasteboard.general.images {
+            if let images = UIPasteboard.general.images, images.count > 0 {
                 for image in images {
                     if let data = image.jpegData(compressionQuality: 0.9) {
                         let file = File(
@@ -318,6 +318,10 @@ private class CustomTextView: UITextView, UITextViewDelegate {
         if action == #selector(UIResponder.paste(_:)) {
             if let imagesFileTypes = UIPasteboard.typeListImage as? [String],
                 UIPasteboard.general.contains(pasteboardTypes: imagesFileTypes)
+            {
+                return true
+            } else if let urlTypes = UIPasteboard.typeListURL as? [String],
+                UIPasteboard.general.contains(pasteboardTypes: urlTypes)
             {
                 return true
             }

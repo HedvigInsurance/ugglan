@@ -29,7 +29,14 @@ public class EditCoInsuredClientOctopus: EditCoInsuredClient {
 
     public func sendMidtermChangeIntentCommit(commitId: String) async throws {
         let mutation = OctopusGraphQL.MidtermChangeIntentCommitMutation(intentId: commitId)
-        let data = try await octopus.client.perform(mutation: mutation)
+        let delayTask = Task {
+            try await Task.sleep(nanoseconds: 3_000_000_000)
+        }
+        let clientTask = Task {
+            try await octopus.client.perform(mutation: mutation)
+        }
+        try await delayTask.value
+        let data = try await clientTask.value
         if let error = data.midtermChangeIntentCommit.userError {
             throw EditCoInsuredError.serviceError(message: error.message ?? L10n.General.errorBody)
         }
