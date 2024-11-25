@@ -1,5 +1,4 @@
 import Foundation
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -49,27 +48,20 @@ extension Referral {
 }
 
 struct InvitationTable: View {
-    @PresentableStore var store: ForeverStore
+    @EnvironmentObject var foreverNavigationVm: ForeverNavigationViewModel
 
     var body: some View {
-        PresentableStoreLens(
-            ForeverStore.self,
-            getter: { state in
-                state.foreverData
+        if let foreverData = foreverNavigationVm.foreverData,
+            !foreverData.referrals.isEmpty || foreverData.referredBy != nil
+                || foreverData.otherDiscounts?.floatAmount ?? 0 > 0
+                || foreverData.grossAmount.amount != foreverData.netAmount.amount
+        {
+            hSection(getInvitationRows(for: foreverData), id: \.id) { row in
+                row.view
             }
-        ) { foreverData in
-            if let foreverData,
-                !foreverData.referrals.isEmpty || foreverData.referredBy != nil
-                    || foreverData.otherDiscounts?.floatAmount ?? 0 > 0
-                    || foreverData.grossAmount.amount != foreverData.netAmount.amount
-            {
-                hSection(getInvitationRows(for: foreverData), id: \.id) { row in
-                    row.view
-                }
-                .hSectionWithoutHorizontalPadding
-                .sectionContainerStyle(.transparent)
-                .padding(.vertical, .padding16)
-            }
+            .hSectionWithoutHorizontalPadding
+            .sectionContainerStyle(.transparent)
+            .padding(.vertical, .padding16)
         }
     }
     private func getInvitationRows(for foreverData: ForeverData) -> [(id: String, view: AnyView)] {
@@ -123,31 +115,9 @@ struct InvitationRow: View {
 }
 
 struct InvitationTable_Previews: PreviewProvider {
-    @PresentableStore static var store: ForeverStore
-
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
         return InvitationTable()
-            .onAppear {
-                store.send(
-                    .setForeverData(
-                        data: .init(
-                            grossAmount: .sek(200),
-                            netAmount: .sek(160),
-                            otherDiscounts: .sek(20),
-                            discountCode: "CODE",
-                            monthlyDiscount: .sek(20),
-                            referrals: [
-                                .init(name: "First", activeDiscount: .sek(10), status: .active),
-                                .init(name: "Second", activeDiscount: .sek(10), status: .pending),
-                                .init(name: "Third", activeDiscount: .sek(10), status: .terminated),
-                            ],
-                            referredBy: .init(name: "", activeDiscount: nil, status: .active),
-                            monthlyDiscountPerReferral: .sek(10)
-                        )
-                    )
-                )
-            }
     }
 }
 

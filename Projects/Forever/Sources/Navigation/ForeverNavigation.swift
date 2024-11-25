@@ -1,4 +1,3 @@
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -6,12 +5,14 @@ import hGraphQL
 
 @MainActor
 public class ForeverNavigationViewModel: ObservableObject {
-    @Published public var isChangeCodePresented = false
+    @Published var isChangeCodePresented = false
+    @Published var foreverData: ForeverData?
+    @Published var foreverVm = ForeverViewModel()
+
     var modalPresentationSourceWrapperViewModel = ModalPresentationSourceWrapperViewModel()
 
     func shareCode(code: String) {
-        let store: ForeverStore = globalPresentableStoreContainer.get()
-        let discount = store.state.foreverData?.monthlyDiscountPerReferral.formattedAmount
+        let discount = foreverData?.monthlyDiscountPerReferral.formattedAmount
         let url =
             "\(hGraphQL.Environment.current.webBaseURL)/\(hCore.Localization.Locale.currentLocale.value.webPath)/forever/\(code)"
         let message = L10n.referralSmsMessage(discount ?? "", url)
@@ -62,7 +63,7 @@ public struct ForeverNavigation: View {
             presented: $foreverNavigationVm.isChangeCodePresented,
             style: [.height]
         ) {
-            ChangeCodeView()
+            ChangeCodeView(foreverNavigationVm: foreverNavigationVm)
                 .routerDestination(for: ForeverRouterActions.self, options: .hidesBackButton) { routerAction in
                     switch routerAction {
                     case .success:
