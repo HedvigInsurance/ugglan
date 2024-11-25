@@ -3,17 +3,32 @@ import hCore
 import hCoreUI
 
 public struct ChangeCoverageDaysScreen: View {
-    @EnvironmentObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
+    @ObservedObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
+
     let addon: AddonModel
-    @State var selectedDays: String?
+    @State var selectedDaysId: String?
+
+    init(
+        addon: AddonModel,
+        changeAddonNavigationVm: ChangeAddonNavigationViewModel
+    ) {
+        self.addon = addon
+        self.changeAddonNavigationVm = changeAddonNavigationVm
+
+        if let selectedDays = changeAddonNavigationVm.changeAddonVm.selectedCoverageDayId {
+            self._selectedDaysId = State(initialValue: String(selectedDays))
+        } else {
+            self._selectedDaysId = State(initialValue: addon.coverageDays?.first?.id.uuidString)
+        }
+    }
 
     public var body: some View {
         hForm {
             VStack(spacing: .padding4) {
-                ForEach(addon.coverageDays ?? [], id: \.title) { coverageDay in
+                ForEach(addon.coverageDays ?? [], id: \.self) { coverageDay in
                     hSection {
                         hRadioField(
-                            id: coverageDay.title,
+                            id: coverageDay.id.uuidString,
                             itemModel: nil,
                             leftView: {
                                 HStack {
@@ -28,7 +43,7 @@ public struct ChangeCoverageDaysScreen: View {
                                 }
                                 .asAnyView
                             },
-                            selected: $selectedDays,
+                            selected: $selectedDaysId,
                             error: .constant(nil),
                             useAnimation: true
                         )
@@ -37,34 +52,21 @@ public struct ChangeCoverageDaysScreen: View {
                     }
                 }
             }
-            .padding(.top, 32)
-
+            .padding(.top, .padding16)
         }
-        .hFormTitle(
-            title: .init(
-                .small,
-                .heading1,
-                addon.title,
-                alignment: .leading
-            ),
-            subTitle: .init(
-                .small,
-                .heading1,
-                "Välj din skyddsnivå"
-            )
-        )
         .hDisableScroll
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: .padding8) {
                     hButton.LargeButton(type: .primary) {
-                        /* TODO: IMPLEMENT */
+                        changeAddonNavigationVm.changeAddonVm.selectedCoverageDayId = selectedDaysId
+                        changeAddonNavigationVm.isChangeCoverageDaysPresented = nil
                     } content: {
                         hText(L10n.generalConfirm)
                     }
 
                     hButton.LargeButton(type: .ghost) {
-                        /* TODO: IMPLEMENT */
+                        changeAddonNavigationVm.isChangeCoverageDaysPresented = nil
                     } content: {
                         hText(L10n.generalCancelButton)
                     }
@@ -73,6 +75,28 @@ public struct ChangeCoverageDaysScreen: View {
             .sectionContainerStyle(.transparent)
             .padding(.top, 16)
         }
+        .configureTitleView(self)
+    }
+}
+
+extension ChangeCoverageDaysScreen: TitleView {
+    public func getTitleView() -> UIView {
+        let view: UIView = UIHostingController(rootView: titleView).view
+        view.backgroundColor = .clear
+        view.isUserInteractionEnabled = true
+        return view
+    }
+
+    @ViewBuilder
+    private var titleView: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            hText("addon.title", style: .heading1)
+                .foregroundColor(hTextColor.Opaque.primary)
+            hText("Välj din skyddsnivå", style: .heading1)
+                .foregroundColor(hTextColor.Opaque.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.top, .padding8)
     }
 }
 
@@ -86,6 +110,7 @@ public struct ChangeCoverageDaysScreen: View {
                 .init(nbOfDays: 45, title: "Travel Plus 45 days", price: 49),
                 .init(nbOfDays: 60, title: "Travel Plus 60 days", price: 79),
             ]
-        )
+        ),
+        changeAddonNavigationVm: .init(input: .init(contractId: "contractId"))
     )
 }

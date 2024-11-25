@@ -97,14 +97,14 @@ public struct ChangeAddonScreen: View {
                 let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
 
                 DropdownView(
-                    value: String(changeAddonVm.selectedCoverageDay ?? 0),
+                    value: String(changeAddonVm.getSelectedCoverageDays?.nbOfDays ?? 0) + " dagar",
                     placeHolder: "Välj skydd"
                 ) {
                     let id = changeAddonVm.selectedAddonId
                     changeAddonNavigationVm.isChangeCoverageDaysPresented = changeAddonVm.getAddonFor(id: id ?? "")
                 }
                 .padding(.leading, -48)
-                .padding(.trailing, -24)
+                .padding(.trailing, -16)
                 .padding(.top, .padding16)
                 .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary])
             }
@@ -114,8 +114,13 @@ public struct ChangeAddonScreen: View {
 
 public class ChangeAddonViewModel: ObservableObject {
     @Inject var addonService: AddonsClient
-    @Published var selectedAddonId: String?
-    @Published var selectedCoverageDay: Int?
+    @Published var selectedAddonId: String? {
+        didSet {
+            selectedCoverageDayId =
+                selectedCoverageDayId ?? getAddonFor(id: selectedAddonId ?? "")?.coverageDays?.first?.id.uuidString
+        }
+    }
+    @Published var selectedCoverageDayId: String?
     @Published var addons: [AddonModel]?
 
     var hasCoverageDays: Bool {
@@ -126,6 +131,10 @@ public class ChangeAddonViewModel: ObservableObject {
     init() {
         Task {
             await getAddons()
+
+            self._selectedAddonId = Published(
+                initialValue: addons?.first(where: { $0.coverageDays == nil })?.id.uuidString
+            )
         }
     }
 
@@ -133,17 +142,25 @@ public class ChangeAddonViewModel: ObservableObject {
         return addons?.first(where: { $0.id.uuidString == selectedAddonId })
     }
 
+    var getSelectedCoverageDays: CoverageDays? {
+        let selectedAddon = getAddonFor(id: selectedAddonId ?? "")
+        let coverageDay = selectedAddon?.coverageDays?
+            .first(where: {
+                $0.id.uuidString == selectedCoverageDayId
+            })
+        return coverageDay
+    }
+
+    @MainActor
     func getAddons() async {
-        Task { @MainActor in
-            do {
-                let data = try await addonService.getAddons()
+        do {
+            let data = try await addonService.getAddons()
 
-                withAnimation {
-                    self.addons = data
-                }
-            } catch {
-
+            withAnimation {
+                self.addons = data
             }
+        } catch {
+
         }
     }
 }

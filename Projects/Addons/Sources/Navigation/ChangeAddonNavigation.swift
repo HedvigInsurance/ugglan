@@ -17,7 +17,7 @@ public class ChangeAddonNavigationViewModel: ObservableObject {
     @Published public var isLearnMorePresented = false
     @Published public var isChangeCoverageDaysPresented: AddonModel?
 
-    @Published var changeAddonVm: ChangeAddonViewModel?
+    @Published var changeAddonVm = ChangeAddonViewModel()
 
     let input: ChangeAddonInput
     let router = Router()
@@ -46,7 +46,7 @@ public struct ChangeAddonNavigation: View {
             options: [],
             tracking: ChangeAddonTrackingType.changeAddonScreen
         ) {
-            ChangeAddonScreen(changeAddonVm: changeAddonNavigationVm.changeAddonVm ?? .init())
+            ChangeAddonScreen(changeAddonVm: changeAddonNavigationVm.changeAddonVm)
                 .withDismissButton()
         }
         .environmentObject(changeAddonNavigationVm)
@@ -63,10 +63,15 @@ public struct ChangeAddonNavigation: View {
         }
         .detent(
             item: $changeAddonNavigationVm.isChangeCoverageDaysPresented,
-            style: [.height, .large],
+            style: [.height],
             options: .constant(.alwaysOpenOnTop)
         ) { addOn in
-            ChangeCoverageDaysScreen(addon: addOn)
+            ChangeCoverageDaysScreen(addon: addOn, changeAddonNavigationVm: changeAddonNavigationVm)
+                .embededInNavigation(
+                    options: .navigationType(type: .large),
+                    tracking: ChangeAddonTrackingType.changeCoverageDaysScreen
+                )
+                .environmentObject(changeAddonNavigationVm)
         }
     }
 }
@@ -76,8 +81,11 @@ private enum ChangeAddonTrackingType: TrackingViewNameProtocol {
         switch self {
         case .changeAddonScreen:
             return .init(describing: ChangeAddonScreen.self)
+        case .changeCoverageDaysScreen:
+            return .init(describing: ChangeCoverageDaysScreen.self)
         }
     }
 
     case changeAddonScreen
+    case changeCoverageDaysScreen
 }
