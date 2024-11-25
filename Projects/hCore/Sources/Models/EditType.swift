@@ -3,6 +3,7 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
     case coInsured
     case changeTier
     case cancellation
+    case addon
 
     public var title: String {
         switch self {
@@ -10,6 +11,7 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
         case .changeAddress: return L10n.InsuranceDetails.changeAddressButton
         case .changeTier: return L10n.InsuranceDetails.changeCoverage
         case .cancellation: return L10n.hcQuickActionsCancellationTitle
+        case .addon: return "Addon"
         }
     }
 
@@ -23,6 +25,8 @@ public enum EditType: String, Codable, Hashable, CaseIterable {
             return L10n.hcQuickActionsUpgradeCoverageSubtitle
         case .cancellation:
             return L10n.hcQuickActionsTerminationSubtitle
+        case .addon:
+            return "Edit addon"
         }
     }
 

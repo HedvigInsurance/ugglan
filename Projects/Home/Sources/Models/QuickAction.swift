@@ -10,6 +10,7 @@ public enum QuickAction: Codable, Equatable, Hashable {
     case changeAddress
     case editCoInsured
     case upgradeCoverage
+    case addon
     case cancellation
 
     public var displayTitle: String {
@@ -32,6 +33,8 @@ public enum QuickAction: Codable, Equatable, Hashable {
             return L10n.hcQuickActionsUpgradeCoverageTitle
         case .cancellation:
             return L10n.hcQuickActionsTerminationTitle
+        case .addon:
+            return "Edit addon"
         }
     }
 
@@ -55,6 +58,8 @@ public enum QuickAction: Codable, Equatable, Hashable {
             return L10n.hcQuickActionsUpgradeCoverageSubtitle
         case .cancellation:
             return L10n.hcQuickActionsTerminationSubtitle
+        case .addon:
+            return ""
         }
     }
 
@@ -84,6 +89,8 @@ extension QuickAction {
             return .changeTier
         case .cancellation:
             return .cancellation
+        case .addon:
+            return .addon
         }
     }
 }
@@ -99,6 +106,8 @@ extension EditType {
             return .upgradeCoverage
         case .cancellation:
             return .cancellation
+        case .addon:
+            return .addon
         }
     }
 }

@@ -80,6 +80,8 @@ public struct ContractsNavigation<Content: View>: View {
                         )
                     case .cancellation:
                         break
+                    case .addon:
+                        break
                     }
                 }
             )

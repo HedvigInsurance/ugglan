@@ -60,9 +60,14 @@ public class HomeClientOctopus: HomeClient {
             contractAction.append(.cancellation)
         }
 
+        if featureFlags.isAddonsEnabled {
+            contractAction.append(.addon)
+        }
+
         if actions?.isChangeTierEnabled == true && featureFlags.isTiersEnabled {
             contractAction.append(.upgradeCoverage)
         }
+
         if !contractAction.isEmpty {
             quickActions.append(.editInsurance(actions: .init(quickActions: contractAction)))
         }

@@ -27,6 +27,7 @@ public class FeatureFlagsUnleash: FeatureFlags {
     public var osVersionTooLow: Bool = false
     public var emailPreferencesEnabled: Bool = false
     public var isTiersEnabled: Bool = false
+    public var isAddonsEnabled: Bool = false
     public var movingFlowVersion: MovingFlowVersion?
     public var isMovingFlowEnabled: Bool { movingFlowVersion != nil }
 
@@ -130,6 +131,11 @@ public class FeatureFlagsUnleash: FeatureFlags {
         let enableTiersKey = "enable_tiers"
         isTiersEnabled = unleashClient.isEnabled(name: enableTiersKey)
         featureFlags[enableTiersKey] = isTiersEnabled
+
+        let enableAddonsKey = "enable_addons"
+        isAddonsEnabled = unleashClient.isEnabled(name: enableAddonsKey)
+        featureFlags[enableAddonsKey] = isAddonsEnabled
+
         let paymentTypeKey = "payment_type"
         let paymentTypeName = unleashClient.getVariant(name: paymentTypeKey).name
         if paymentTypeName == "trustly" {
