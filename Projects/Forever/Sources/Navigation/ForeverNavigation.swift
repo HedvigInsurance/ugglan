@@ -4,10 +4,9 @@ import hCoreUI
 import hGraphQL
 
 public class ForeverNavigationViewModel: ObservableObject {
-    @Published public var isChangeCodePresented = false
-
-    @Published public var foreverData: ForeverData?
-    @Published public var foreverVm = ForeverViewModel()
+    @Published var isChangeCodePresented = false
+    @Published var foreverData: ForeverData?
+    @Published var foreverVm = ForeverViewModel()
 
     var modalPresentationSourceWrapperViewModel = ModalPresentationSourceWrapperViewModel()
 
