@@ -684,7 +684,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                     let conversations = try await conversationClient.getConversations()
                     let isValidConversation = conversations.first(where: { $0.id == conversationId })
 
-                    if let conversationId, let isValidConversation {
+                    if let conversationId, isValidConversation != nil {
                         NotificationCenter.default.post(
                             name: .openChat,
                             object: ChatType.conversationId(id: conversationId)
