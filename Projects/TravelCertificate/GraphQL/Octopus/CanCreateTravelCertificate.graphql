@@ -1,7 +1,0 @@
-query CanCreateTravelCertificate {
-  currentMember {
-    activeContracts {
-      supportsTravelCertificate
-    }
-  }
-}

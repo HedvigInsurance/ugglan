@@ -5,7 +5,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
+public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
     public init(
         id: String,
         status: ClaimStatus,
@@ -75,7 +75,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         }
     }
 
-    public enum ClaimStatus: String, Codable, CaseIterable {
+    public enum ClaimStatus: String, Codable, CaseIterable, Sendable {
         case none
         case submitted
         case beingHandled
@@ -110,7 +110,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable {
         }
     }
 
-    public enum ClaimOutcome: String, Codable, CaseIterable {
+    public enum ClaimOutcome: String, Codable, CaseIterable, Sendable {
         case paid
         case notCompensated
         case notCovered

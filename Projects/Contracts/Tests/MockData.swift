@@ -3,6 +3,7 @@ import hCore
 
 @testable import Contracts
 
+@MainActor
 struct MockData {
     static func createMockContractsService(
         fetchContracts: @escaping FetchContracts = {

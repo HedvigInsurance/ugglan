@@ -21,7 +21,7 @@ enum ProfileRowType {
             return L10n.TravelCertificate.cardTitle
         }
     }
-
+    @MainActor
     var icon: UIImage {
         switch self {
         case .myInfo:

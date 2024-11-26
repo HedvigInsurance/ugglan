@@ -53,6 +53,7 @@ public struct PDFPreview: View {
     }
 }
 
+@MainActor
 private class PDFPreviewViewModel: ObservableObject {
     let document: hPDFDocument
     @Published var isLoading = false
@@ -104,18 +105,19 @@ private class PDFPreviewViewModel: ObservableObject {
         } catch let error {
             print("\(#function): *** Error while writing to temporary file. \(error.localizedDescription)")
         }
+        Task { @MainActor in
+            let viewController = UIActivityViewController(
+                activityItems: [thingToShare],
+                applicationActivities: nil
+            )
 
-        let viewController = UIActivityViewController(
-            activityItems: [thingToShare],
-            applicationActivities: nil
-        )
+            if let popover = viewController.popoverPresentationController, let sourceRect = navItem?.bounds {
+                popover.sourceView = navItem!.view
+                popover.sourceRect = sourceRect
+            }
 
-        if let popover = viewController.popoverPresentationController, let sourceRect = navItem?.bounds {
-            popover.sourceView = navItem!.view
-            popover.sourceRect = sourceRect
+            UIApplication.shared.getTopViewController()?.present(viewController, animated: true)
         }
-
-        UIApplication.shared.getTopViewController()?.present(viewController, animated: true)
     }
 
     private func getPathForFile() -> URL {

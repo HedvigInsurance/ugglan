@@ -1,18 +1,20 @@
 import PresentableStore
-import XCTest
+@preconcurrency import XCTest
 
 @testable import Contracts
 
+@MainActor
 final class ContractStoreTests: XCTestCase {
     weak var store: ContractStore?
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         globalPresentableStoreContainer.deletePersistanceContainer()
     }
-
+    @MainActor
     override func tearDown() async throws {
-        await waitUntil(description: "Store deinited successfully") {
+        try await super.tearDown()
+        await waitUntil(description: "Store deinit") {
             self.store == nil
         }
     }
@@ -25,10 +27,9 @@ final class ContractStoreTests: XCTestCase {
         self.store = store
         await store.sendAsync(.fetchCrossSale)
         await waitUntil(description: "loading state") {
-            store.loadingState[.fetchCrossSell] == nil
+            store.loadingState[.fetchCrossSell] == nil && store.state.crossSells == CrossSell.getDefault
         }
 
-        assert(store.state.crossSells == CrossSell.getDefault)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getCrossSell)
     }
@@ -108,26 +109,9 @@ final class ContractStoreTests: XCTestCase {
 
 }
 
-extension XCTestCase {
-    public func waitUntil(description: String, closure: @escaping () -> Bool) async {
-        let exc = expectation(description: description)
-        if closure() {
-            exc.fulfill()
-        } else {
-            try! await Task.sleep(nanoseconds: 100_000_000)
-            Task {
-                await self.waitUntil(description: description, closure: closure)
-                if closure() {
-                    exc.fulfill()
-                }
-            }
-        }
-        await fulfillment(of: [exc], timeout: 2)
-    }
-}
-
+@MainActor
 extension ContractsStack {
-    fileprivate static var getDefault: ContractsStack = .init(
+    fileprivate static let getDefault: ContractsStack = .init(
         activeContracts: [
             .init(
                 id: "id",
@@ -167,8 +151,9 @@ extension ContractsStack {
     )
 }
 
+@MainActor
 extension CrossSell {
-    fileprivate static var getDefault: [CrossSell] = [
+    fileprivate static let getDefault: [CrossSell] = [
         .init(
             title: "car",
             description: "description",
@@ -186,4 +171,23 @@ extension CrossSell {
             type: .home
         ),
     ]
+}
+
+@MainActor
+extension XCTestCase {
+    public func waitUntil(description: String, closure: @escaping () -> Bool) async {
+        let exc = expectation(description: description)
+        if closure() {
+            exc.fulfill()
+        } else {
+            try! await Task.sleep(nanoseconds: 100_000_000)
+            Task {
+                await self.waitUntil(description: description, closure: closure)
+                if closure() {
+                    exc.fulfill()
+                }
+            }
+        }
+        await fulfillment(of: [exc], timeout: 2)
+    }
 }

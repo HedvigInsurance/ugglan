@@ -3,6 +3,7 @@ import Foundation
 import hCore
 import hGraphQL
 
+@MainActor
 public class EditCoInsuredService {
     @Inject var service: EditCoInsuredClient
 
@@ -31,13 +32,16 @@ public class EditCoInsuredClientOctopus: EditCoInsuredClient {
         let delayTask = Task {
             try await Task.sleep(nanoseconds: 3_000_000_000)
         }
-        let clientTask = Task {
-            try await octopus.client.perform(mutation: mutation)
+        let clientTask = Task { @MainActor in
+            let data = try await octopus.client.perform(mutation: mutation)
+            if let error = data.midtermChangeIntentCommit.userError {
+                return error.message
+            }
+            return nil
         }
         try await delayTask.value
-        let data = try await clientTask.value
-        if let error = data.midtermChangeIntentCommit.userError {
-            throw EditCoInsuredError.serviceError(message: error.message ?? L10n.General.errorBody)
+        if let error = try await clientTask.value {
+            throw EditCoInsuredError.serviceError(message: error)
         }
     }
 

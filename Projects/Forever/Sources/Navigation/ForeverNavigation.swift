@@ -3,6 +3,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
+@MainActor
 public class ForeverNavigationViewModel: ObservableObject {
     @Published var isChangeCodePresented = false
     @Published var foreverData: ForeverData?

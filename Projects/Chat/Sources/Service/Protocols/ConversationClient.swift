@@ -2,11 +2,13 @@ import Foundation
 import hCore
 import hCoreUI
 
+@MainActor
 public protocol ConversationsClient {
     func getConversations() async throws -> [Conversation]
     func createConversation(with id: UUID) async throws -> Conversation
 }
 
+@MainActor
 public protocol ConversationClient {
     func getConversationMessages(
         for conversationId: String,
@@ -37,6 +39,7 @@ public struct ConversationMessagesData {
         return L10n.chatConversationQuestionTitle
     }
 
+    @MainActor
     var subtitle: String? {
         if isLegacy { return nil }
         guard let date = createdAt?.localDateToIso8601Date?.displayDateDDMMMYYYYFormat else {

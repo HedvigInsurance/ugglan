@@ -3,6 +3,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+@MainActor
 class EditCoInsuredNavigationViewModel: ObservableObject {
     init(
         config: InsuredPeopleConfig

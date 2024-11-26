@@ -139,6 +139,7 @@ public struct HelpCenterStartView: View {
     }
 }
 
+@MainActor
 class HelpCenterStartViewModel: NSObject, ObservableObject {
     let helpCenterModel: HelpCenterModel
     @PresentableStore var store: HomeStore

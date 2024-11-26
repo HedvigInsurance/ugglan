@@ -6,7 +6,7 @@ import hCoreUI
 import hGraphQL
 
 @MainActor
-public class TerminationFlowNavigationViewModel: ObservableObject, Equatable, Identifiable {
+public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurrency Equatable, Identifiable {
     public static func == (lhs: TerminationFlowNavigationViewModel, rhs: TerminationFlowNavigationViewModel) -> Bool {
         return lhs.id == rhs.id
     }
@@ -112,11 +112,11 @@ public class TerminationFlowNavigationViewModel: ObservableObject, Equatable, Id
                     Task { @MainActor [weak self] in
                         do {
                             withAnimation {
-                                redirectActionLoadingState = .loading
+                                self?.redirectActionLoadingState = .loading
                             }
                             let newInput = try await ChangeTierNavigationViewModel.getTiers(input: input)
                             withAnimation {
-                                redirectActionLoadingState = .success
+                                self?.redirectActionLoadingState = .success
                             }
                             DispatchQueue.main.async { [weak self] in
                                 self?.terminateInsuranceViewModel?.changeTierInput = .existingIntent(
@@ -174,7 +174,6 @@ public class TerminationFlowNavigationViewModel: ObservableObject, Equatable, Id
     @Published var failedStepModel: TerminationFlowFailedNextModel?
     @Published var terminationSurveyStepModel: TerminationFlowSurveyStepModel?
     @Published var config: TerminationConfirmConfig?
-    @Published var confirmTerminationVm: ConfirmTerminationViewModel?
 
     var isDeletion: Bool {
         terminationDeleteStepModel != nil
@@ -516,7 +515,6 @@ struct TerminationFlowNavigation: View {
     private func openConfirmTerminationScreen() -> some View {
         ConfirmTerminationScreen()
             .withDismissButton()
-            .environmentObject(vm.confirmTerminationVm ?? .init())
     }
 
     private func openSetTerminationDatePickerScreen() -> some View {

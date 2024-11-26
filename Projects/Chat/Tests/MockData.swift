@@ -2,6 +2,7 @@ import Foundation
 
 @testable import Chat
 
+@MainActor
 struct MockData {
     static func createMockChatService(
         fetchNewMessages: @escaping FetchNewMessages = {

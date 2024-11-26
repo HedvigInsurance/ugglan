@@ -1,4 +1,4 @@
-public struct MonetaryAmount: Equatable, Hashable, Codable {
+public struct MonetaryAmount: Equatable, Hashable, Codable, Sendable {
     public init(
         amount: String,
         currency: String

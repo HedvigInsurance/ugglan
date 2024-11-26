@@ -33,6 +33,7 @@ struct ChangeCodeView: View {
     }
 }
 
+@MainActor
 class ChangeCodeViewModel: ObservableObject {
     @Inject var foreverService: ForeverClient
     @Published var inputVm: TextInputViewModel
@@ -57,12 +58,10 @@ class ChangeCodeViewModel: ObservableObject {
         }
     }
 
-    @MainActor
     private func dismissRouter() async throws {
         self.router?.dismiss()
     }
 
-    @MainActor
     private func handleOnSave(text: String) async throws {
         try await self.foreverService.changeCode(code: text)
         self.foreverData = try await foreverVm.fetchForeverData()

@@ -1,14 +1,14 @@
-import XCTest
+@preconcurrency import XCTest
 import hCore
 
 @testable import Claims
 
+@MainActor
 final class FetchClaimsTests: XCTestCase {
     weak var sut: MockFetchClaimService?
 
     override func setUp() {
         super.setUp()
-        sut = nil
     }
 
     override func tearDown() async throws {

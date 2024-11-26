@@ -3,7 +3,7 @@ import PhotosUI
 import SwiftUI
 import UniformTypeIdentifiers
 
-public struct File: Codable, Equatable, Identifiable, Hashable {
+public struct File: Codable, Equatable, Identifiable, Hashable, Sendable {
     public let id: String
     public let size: Double
     public let mimeType: MimeType
@@ -54,7 +54,7 @@ public struct File: Codable, Equatable, Identifiable, Hashable {
     }
 }
 
-public enum FileSource: Codable, Equatable, Hashable {
+public enum FileSource: Codable, Equatable, Hashable, Sendable {
     case data(data: Data)
     case url(url: URL)
     case localFile(results: PHPickerResult?)
@@ -179,61 +179,82 @@ extension NSItemProvider {
     }
 }
 
+@MainActor
 extension NSItemProvider {
-    public func getFile(onFileResolved: @escaping (File) -> Void) {
+    public func getFile() async -> File? {
         let name = self.suggestedName ?? ""
-        if self.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
-            self.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { url, error in
-                if let url, let data = FileManager.default.contents(atPath: url.relativePath),
-                    let image = UIImage(data: data),
-                    let data = image.jpegData(compressionQuality: 0.9)
-                {
-                    let file = File(
-                        id: UUID().uuidString,
-                        size: Double(data.count),
-                        mimeType: .JPEG,
-                        name: name,
-                        source: .data(data: data)
-                    )
-                    onFileResolved(file)
-                }
-            }
-        } else if self.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
-            self.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { videoUrl, error in
-                if let videoUrl, let data = FileManager.default.contents(atPath: videoUrl.relativePath),
-                    let mimeType = UTType(filenameExtension: videoUrl.pathExtension)?.preferredMIMEType
-                {
-                    Task {
-                        let mimeType = MimeType.findBy(mimeType: mimeType)
+        return await withCheckedContinuation { inCont in
+            if self.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
+                self.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { url, error in
+                    if let url, let data = FileManager.default.contents(atPath: url.relativePath),
+                        let image = UIImage(data: data),
+                        let data = image.jpegData(compressionQuality: 0.9)
+                    {
                         let file = File(
                             id: UUID().uuidString,
                             size: Double(data.count),
-                            mimeType: mimeType,
+                            mimeType: .JPEG,
                             name: name,
                             source: .data(data: data)
                         )
-                        onFileResolved(file)
+                        Task { @MainActor in
+                            inCont.resume(with: .success(file))
+                        }
+                    } else {
+                        inCont.resume(with: .success(nil))
                     }
                 }
-            }
-        } else if self.hasItemConformingToTypeIdentifier(UTType.item.identifier) {
-            self.loadFileRepresentation(forTypeIdentifier: UTType.item.identifier) { itemUrl, error in
-                if let itemUrl, let data = FileManager.default.contents(atPath: itemUrl.relativePath),
-                    let mimeType = UTType(filenameExtension: itemUrl.pathExtension)?.preferredMIMEType
-                {
-                    Task {
-                        let mimeType = MimeType.findBy(mimeType: mimeType)
-                        let file = File(
-                            id: UUID().uuidString,
-                            size: Double(data.count),
-                            mimeType: mimeType,
-                            name: name,
-                            source: .data(data: data)
-                        )
-                        onFileResolved(file)
+            } else if self.hasItemConformingToTypeIdentifier(UTType.movie.identifier) {
+                self.loadFileRepresentation(forTypeIdentifier: UTType.movie.identifier) { videoUrl, error in
+                    if let videoUrl, let data = FileManager.default.contents(atPath: videoUrl.relativePath),
+                        let mimeType = UTType(filenameExtension: videoUrl.pathExtension)?.preferredMIMEType
+                    {
+                        Task {
+                            let mimeType = MimeType.findBy(mimeType: mimeType)
+                            let file = File(
+                                id: UUID().uuidString,
+                                size: Double(data.count),
+                                mimeType: mimeType,
+                                name: name,
+                                source: .data(data: data)
+                            )
+                            Task { @MainActor in
+                                inCont.resume(with: .success(file))
+                            }
+                        }
+                    } else {
+                        inCont.resume(with: .success(nil))
                     }
                 }
+            } else if self.hasItemConformingToTypeIdentifier(UTType.item.identifier) {
+                self.loadFileRepresentation(forTypeIdentifier: UTType.item.identifier) { itemUrl, error in
+                    if let itemUrl, let data = FileManager.default.contents(atPath: itemUrl.relativePath),
+                        let mimeType = UTType(filenameExtension: itemUrl.pathExtension)?.preferredMIMEType
+                    {
+                        Task {
+                            let mimeType = MimeType.findBy(mimeType: mimeType)
+                            let file = File(
+                                id: UUID().uuidString,
+                                size: Double(data.count),
+                                mimeType: mimeType,
+                                name: name,
+                                source: .data(data: data)
+                            )
+                            Task { @MainActor in
+                                inCont.resume(with: .success(file))
+                            }
+                        }
+                    } else {
+                        inCont.resume(with: .success(nil))
+                    }
+                }
+            } else {
+                inCont.resume(with: .success(nil))
             }
         }
     }
+}
+
+extension PHPickerResult: @unchecked @retroactive Sendable {
+
 }

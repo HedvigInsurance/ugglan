@@ -8,7 +8,7 @@ import hCoreUI
 public struct AppInfoView: View {
     @State var showSubmitBugAlert = false
     @State var hasPressedSubmitBugOk = false
-
+    @StateObject private var vm = AppInfoViewModel()
     public init() {}
 
     public var body: some View {
@@ -76,7 +76,6 @@ public struct AppInfoView: View {
     }
 
     private var deviceId: some View {
-        let deviceId = ApolloClient.getDeviceIdentifier()
         return hRow {
             hText(L10n.AppInfo.deviceIdLabel)
                 .foregroundColor(hTextColor.Opaque.primary)
@@ -85,16 +84,20 @@ public struct AppInfoView: View {
         .withCustomAccessory {
             HStack {
                 Spacer(minLength: 20)
-                hText(deviceId, style: .label)
-                    .minimumScaleFactor(0.2)
-                    .lineLimit(1)
-                    .foregroundColor(hTextColor.Opaque.secondary)
-                    .frame(maxHeight: .infinity, alignment: .center)
+                if let deviceId = vm.deviceId {
+                    hText(deviceId, style: .label)
+                        .minimumScaleFactor(0.2)
+                        .lineLimit(1)
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                        .frame(maxHeight: .infinity, alignment: .center)
+                }
             }
         }
         .onTap {
-            UIPasteboard.general.string = deviceId
-            showToaster()
+            if let deviceId = vm.deviceId {
+                UIPasteboard.general.string = deviceId
+                showToaster()
+            }
         }
     }
 
@@ -136,6 +139,18 @@ public struct AppInfoView: View {
                 text: L10n.General.copied
             )
         )
+    }
+}
+
+@MainActor
+class AppInfoViewModel: ObservableObject {
+    @Published var deviceId: String?
+
+    init() {
+        Task {
+            let deviceId = await ApolloClient.getDeviceIdentifier()
+            self.deviceId = deviceId
+        }
     }
 }
 

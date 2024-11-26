@@ -112,6 +112,7 @@ extension LoggingAction {
     }
 }
 
+@MainActor
 class InterceptingURLSessionClient: URLSessionClient {
     override func sendRequest(
         _ request: URLRequest,

@@ -4,6 +4,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
+@MainActor
 public protocol ChatServiceProtocol {
     func getNewMessages() async throws -> ChatData
     func getPreviousMessages() async throws -> ChatData

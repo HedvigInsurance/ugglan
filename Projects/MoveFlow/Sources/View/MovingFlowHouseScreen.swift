@@ -246,7 +246,8 @@ enum MovingFlowHouseFieldType: hTextFieldFocusStateCompliant {
 }
 
 public typealias ExtraBuildingType = String
-public class HouseInformationInputModel: ObservableObject, Equatable, Identifiable {
+@MainActor
+public class HouseInformationInputModel: ObservableObject, @preconcurrency Equatable, Identifiable {
     public static func == (lhs: HouseInformationInputModel, rhs: HouseInformationInputModel) -> Bool {
         return true
     }

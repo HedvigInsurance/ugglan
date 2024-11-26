@@ -3,6 +3,7 @@ import SwiftUI
 
 class FontBundleToken {}
 
+@MainActor
 public enum Fonts {
     private static let hedvigLettersStandardFontName = "HedvigLetters-Standard"
     private static let hedvigLettersBigFontName = "HedvigLetters-Big"

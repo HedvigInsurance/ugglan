@@ -3,6 +3,7 @@ import Foundation
 import hCore
 import hGraphQL
 
+@MainActor
 public class hPaymentService {
     @Inject var client: hPaymentClient
 

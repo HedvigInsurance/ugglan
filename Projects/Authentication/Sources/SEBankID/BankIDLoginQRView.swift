@@ -109,6 +109,7 @@ public struct BankIDLoginQRView: View {
     }
 }
 
+@MainActor
 class BankIDViewModel: ObservableObject {
     @Published var showAlert: Bool = false
     @Published var token: String?
@@ -205,7 +206,9 @@ class BankIDViewModel: ObservableObject {
     }
 
     deinit {
-        cancelLogin()
+        Task { @MainActor [weak self] in
+            self?.observeLoginTask?.cancel()
+        }
     }
 
     @MainActor

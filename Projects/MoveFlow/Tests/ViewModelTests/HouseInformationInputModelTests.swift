@@ -1,15 +1,15 @@
 import PresentableStore
-import XCTest
+@preconcurrency import XCTest
 import hCore
 
 @testable import MoveFlow
 
+@MainActor
 final class HouseInformationInputModelTests: XCTestCase {
     weak var sut: MockMoveFlowService?
 
-    override func setUp() {
-        super.setUp()
-        sut = nil
+    override func setUp() async throws {
+        try await super.setUp()
     }
 
     override func tearDown() async throws {

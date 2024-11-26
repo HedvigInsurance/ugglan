@@ -522,7 +522,7 @@ extension View {
     }
 }
 
-public struct SubmitClaimOption: OptionSet, Hashable {
+public struct SubmitClaimOption: OptionSet, Hashable, Sendable {
     public let rawValue: UInt
 
     public init(rawValue: UInt) {
@@ -546,7 +546,7 @@ public struct SubmitClaimOption: OptionSet, Hashable {
     }
 }
 
-public enum ClaimsOrigin: Codable, Equatable, Hashable {
+public enum ClaimsOrigin: Codable, Equatable, Hashable, Sendable {
     case generic
     case commonClaims(id: String)
     case commonClaimsWithOption(id: String, optionId: String)

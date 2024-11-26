@@ -50,6 +50,7 @@ struct HomeBottomScrollView: View {
     }
 }
 
+@MainActor
 class HomeBottomScrollViewModel: ObservableObject {
     @Published var items = [InfoCardView]()
     private var localItems = Set<InfoCardView>() {
@@ -185,14 +186,15 @@ class HomeBottomScrollViewModel: ObservableObject {
     }
 
     private func handleDeleteRequests(memberId: String) {
-        let members = ApolloClient.retreiveMembersWithDeleteRequests()
-        let store: ContractStore = globalPresentableStoreContainer.get()
-        handleItem(
-            .deletedView,
-            with: members.contains(memberId)
-                && (store.state.activeContracts.count == 0 && store.state.pendingContracts.count == 0)
-        )
-
+        Task {
+            let members = ApolloClient.retreiveMembersWithDeleteRequests()
+            let store: ContractStore = globalPresentableStoreContainer.get()
+            handleItem(
+                .deletedView,
+                with: members.contains(memberId)
+                    && (store.state.activeContracts.count == 0 && store.state.pendingContracts.count == 0)
+            )
+        }
     }
 
     private func handleMissingCoInsured() {

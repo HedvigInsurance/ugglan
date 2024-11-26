@@ -219,6 +219,7 @@ public struct SubmitClaimCheckoutScreen: View {
     }
 }
 
+@MainActor
 public class SubmitClaimCheckoutViewModel: ObservableObject {
     @Inject private var service: SubmitClaimClient
     @Published var viewState: ProcessingState = .success

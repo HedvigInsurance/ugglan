@@ -3,6 +3,7 @@ import hCore
 
 @testable import Home
 
+@MainActor
 struct MockData {
     @discardableResult
     static func createMockHomeService(
@@ -40,7 +41,7 @@ struct MockData {
 typealias FetchImportantMessages = () async throws -> [ImportantMessage]
 typealias FetchMemberState = () async throws -> MemberState
 typealias FetchQuickActions = () async throws -> [QuickAction]
-typealias FetchLatestMessageState = () async throws -> Home.MessageState
+typealias FetchLatestMessageState = @Sendable () async throws -> Home.MessageState
 
 class MockHomeService: HomeClient {
     var events = [Event]()

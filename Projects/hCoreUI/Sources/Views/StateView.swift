@@ -49,6 +49,7 @@ struct StateView: View {
     }
 }
 
+@MainActor
 enum StateType {
     case error
     case information

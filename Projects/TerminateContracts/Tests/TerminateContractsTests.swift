@@ -1,16 +1,16 @@
 import Foundation
-import XCTest
+@preconcurrency import XCTest
 import hCore
 
 @testable import TerminateContracts
 
+@MainActor
 final class TerminateContractsTests: XCTestCase {
     weak var sut: MockTerminateContractsService?
     let context = "context"
 
-    override func setUp() {
-        super.setUp()
-        sut = nil
+    override func setUp() async throws {
+        try await super.setUp()
     }
 
     override func tearDown() async throws {

@@ -1,5 +1,6 @@
 import hCore
 
-public protocol FileUploaderClient {
+@MainActor
+public protocol FileUploaderClient: Sendable {
     func upload(flowId: String, file: UploadFile) async throws -> UploadFileResponseModel
 }

@@ -6,6 +6,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
+@MainActor
 public class ChatScreenViewModel: ObservableObject {
     @Published var messages: [Message] = []
     @Published var lastDeliveredMessage: Message?
@@ -75,23 +76,27 @@ public class ChatScreenViewModel: ObservableObject {
             [weak self] notification in
             guard let self = self else { return }
             if let deepLinkUrl = notification.object as? URL {
-                if let deepLink = DeepLink.getType(from: deepLinkUrl), deepLink == .helpCenter {
-                    log.addUserAction(
-                        type: .custom,
-                        name: "Help center opened from the chat",
-                        error: nil,
-                        attributes: ["haveSentAMessage": self.haveSentAMessage]
-                    )
+                Task { @MainActor in
+                    if let deepLink = DeepLink.getType(from: deepLinkUrl), deepLink == .helpCenter {
+                        log.addUserAction(
+                            type: .custom,
+                            name: "Help center opened from the chat",
+                            error: nil,
+                            attributes: ["haveSentAMessage": self.haveSentAMessage]
+                        )
+                    }
                 }
             }
         }
     }
 
     deinit {
-        if let openDeepLinkObserver {
-            NotificationCenter.default.removeObserver(openDeepLinkObserver)
+        Task { @MainActor [weak self] in
+            if let openDeepLinkObserver = self?.openDeepLinkObserver {
+                NotificationCenter.default.removeObserver(openDeepLinkObserver)
+            }
+            NotificationCenter.default.post(name: .chatClosed, object: nil)
         }
-        NotificationCenter.default.post(name: .chatClosed, object: nil)
     }
 
     @MainActor
@@ -207,7 +212,7 @@ public class ChatScreenViewModel: ObservableObject {
         let store: ChatStore = globalPresentableStoreContainer.get()
         if !store.state.askedForPushNotificationsPermission {
             store.send(.checkPushNotificationStatus)
-            Task {
+            Task { @MainActor in
                 await chatNavigationVm?.checkForPushNotificationStatus()
             }
         }

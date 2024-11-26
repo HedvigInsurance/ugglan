@@ -62,6 +62,7 @@ extension ContractState {
     }
 }
 
+@MainActor
 extension ContractStore: ExistingCoInsured {
     public func get(contractId: String) -> [EditCoInsuredShared.CoInsuredModel] {
         return state.fetchAllCoInsuredNotInContract(contractId: contractId)

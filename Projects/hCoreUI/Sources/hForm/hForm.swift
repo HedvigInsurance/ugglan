@@ -353,6 +353,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
     }
 }
 
+@MainActor
 private class hFormVM: ObservableObject {
     weak var scrollView: UIScrollView? {
         didSet {
@@ -383,7 +384,8 @@ struct hForm_Previews: PreviewProvider {
 }
 
 //MARK: Enviroment keys
-private struct EnvironmentHFormContentPosition: EnvironmentKey {
+@MainActor
+private struct EnvironmentHFormContentPosition: @preconcurrency EnvironmentKey {
     static let defaultValue: ContentPosition = .top
 }
 
@@ -406,7 +408,8 @@ public enum ContentPosition {
     case bottom
 }
 
-private struct EnvironmentHFormBottomAttachedView: EnvironmentKey {
+@MainActor
+private struct EnvironmentHFormBottomAttachedView: @preconcurrency EnvironmentKey {
     static let defaultValue: AnyView? = nil
 }
 
@@ -445,7 +448,8 @@ public enum hFormBottomBackgroundStyle {
     case gradient(from: any hColor, to: any hColor)
 }
 
-private struct EnvironmentHFormBottomBackgorundColor: EnvironmentKey {
+@MainActor
+private struct EnvironmentHFormBottomBackgorundColor: @preconcurrency EnvironmentKey {
     static let defaultValue: hFormBottomBackgroundStyle = hFormBottomBackgroundStyle.transparent
 }
 
@@ -496,7 +500,8 @@ extension View {
     }
 }
 
-private struct EnvironmentHFormTitle: EnvironmentKey {
+@MainActor
+private struct EnvironmentHFormTitle: @preconcurrency EnvironmentKey {
     static let defaultValue: (title: hTitle, subTitle: hTitle?)? = nil
 }
 

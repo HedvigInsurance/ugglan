@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 
+@MainActor
 public enum hButton {
     public struct LargeButton<Content: View>: View {
         var type: hButtonConfigurationType
@@ -457,7 +458,7 @@ public enum hButtonConfigurationType {
 }
 
 private struct EnvironmentHButtonConfigurationType: EnvironmentKey {
-    static let defaultValue = hButtonConfigurationType.primary
+    nonisolated(unsafe) static let defaultValue = hButtonConfigurationType.primary
 }
 
 extension EnvironmentValues {

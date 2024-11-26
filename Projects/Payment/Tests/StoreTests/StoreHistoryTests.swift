@@ -1,20 +1,19 @@
 import PresentableStore
-import XCTest
+@preconcurrency import XCTest
 
 @testable import Payment
 
+@MainActor
 final class StoreHistoryTests: XCTestCase {
     weak var store: PaymentStore?
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         globalPresentableStoreContainer.deletePersistanceContainer()
     }
 
     override func tearDown() async throws {
-        await waitUntil(description: "Store deinited successfully") {
-            self.store == nil
-        }
+        assert(store == nil)
     }
 
     func testGetHistorySuccess() async throws {
@@ -47,9 +46,7 @@ final class StoreHistoryTests: XCTestCase {
         let store = PaymentStore()
         self.store = store
         await store.sendAsync(.getHistory)
-        await waitUntil(description: "loading state") {
-            store.loadingState[.getHistory] != nil
-        }
+        assert(store.loadingState[.getHistory] != nil)
         assert(store.state.paymentHistory.isEmpty)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getPaymentHistoryData)

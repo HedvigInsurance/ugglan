@@ -1,9 +1,10 @@
-import XCTest
+@preconcurrency import XCTest
 import hCore
 
 @testable import ChangeTier
 @testable import hCoreUI
 
+@MainActor
 final class ChangeTierViewModelTests: XCTestCase {
     weak var sut: MockChangeTierService?
     weak var vm: ChangeTierViewModel?
@@ -52,8 +53,8 @@ final class ChangeTierViewModelTests: XCTestCase {
         ),
     ]
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         sut = nil
     }
@@ -259,8 +260,8 @@ final class ChangeTierViewModelTests: XCTestCase {
         )
         self.vm = model
         model.fetchTiers()
-        await model.setTier(for: "max")
-        await model.setDeductible(for: model.selectedTier?.quotes.first?.id ?? "")
+        model.setTier(for: "max")
+        model.setDeductible(for: model.selectedTier?.quotes.first?.id ?? "")
         assert(model.selectedQuote == nil)
         assert(model.selectedTier == nil)
         assert(model.canEditTier == false)
@@ -269,6 +270,7 @@ final class ChangeTierViewModelTests: XCTestCase {
         assert(model.displayName == nil)
         assert(model.activationDate == nil)
         assert(model.selectedTier == nil)
+        try await Task.sleep(nanoseconds: 100_000)
         if case .error(let errorMessage) = model.viewState {
             assert(errorMessage == ChangeTierError.somethingWentWrong.localizedDescription)
         } else {

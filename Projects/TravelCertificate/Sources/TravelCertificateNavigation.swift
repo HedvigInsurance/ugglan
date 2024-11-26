@@ -6,6 +6,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+@MainActor
 public class TravelCertificateNavigationViewModel: ObservableObject {
     public init() {}
     @Published var isDocumentPresented: TravelCertificateModel?

@@ -227,6 +227,7 @@ public class SubmitClaimClientOctopus: SubmitClaimClient {
     }
 }
 
+@MainActor
 extension GraphQLMutation {
     fileprivate func execute<ClaimStep: Into>(
         _ keyPath: KeyPath<Self.Data, ClaimStep>
@@ -274,7 +275,8 @@ extension SubmitClaimError: LocalizedError {
     }
 }
 
-private protocol Into {
+@MainActor
+private protocol Into<To> where To: Sendable {
     associatedtype To
     func into() -> To
 }
@@ -662,6 +664,7 @@ extension FlowClaimDateOfOccurenceStepModel {
         self.maxDate = data.maxDate
     }
 
+    @MainActor
     func getMaxDate() -> Date {
         return maxDate?.localDateToDate ?? Date()
     }
