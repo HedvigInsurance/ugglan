@@ -82,11 +82,9 @@ class AudioPlayer: NSObject, @preconcurrency ObservableObject {
     func setProgress(to progress: Double) {
         if let duration = audioPlayer?.currentItem?.duration {
             let time = duration.seconds * progress
-            print("OPOPOP \(time)")
             audioPlayer?.seek(to: CMTimeMakeWithSeconds(time, preferredTimescale: 1000))
             self.progress = progress
         } else {
-            print("OPOPOP 1")
             startPlaying()
         }
     }
