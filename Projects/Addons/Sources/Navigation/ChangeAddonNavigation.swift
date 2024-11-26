@@ -14,6 +14,7 @@ public struct ChangeAddonInput {
     }
 }
 
+@MainActor
 public class ChangeAddonNavigationViewModel: ObservableObject {
     @Published public var isLearnMorePresented = false
     @Published public var isChangeCoverageDaysPresented: AddonModel?
