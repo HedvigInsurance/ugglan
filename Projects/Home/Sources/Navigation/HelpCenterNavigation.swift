@@ -116,7 +116,11 @@ public struct HelpCenterNavigation<Content: View>: View {
         .modally(
             presented: $helpCenterVm.quickActions.isChangeAddonPresented
         ) {
-            ChangeAddonNavigation(input: .init(contractId: "contractId"))
+
+            let contractStore: ContractStore = globalPresentableStoreContainer.get()
+            let firstContractId = contractStore.state.activeContracts.first?.id
+
+            ChangeAddonNavigation(input: .init(contractId: firstContractId ?? ""))
         }
         .detent(
             presented: $helpCenterVm.quickActions.isSickAbroadPresented,

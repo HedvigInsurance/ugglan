@@ -1,0 +1,7 @@
+query GetContract($contractId: UUID!) {
+  contract(id: $contractId) {
+    currentAgreement {
+        ...AgreementFragment
+    }
+  }
+}

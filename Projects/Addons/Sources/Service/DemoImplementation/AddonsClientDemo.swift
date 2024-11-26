@@ -17,4 +17,20 @@ public class AddonsClientDemo: AddonsClient {
 
         return addons
     }
+
+    public func getContract(contractId: String) async throws -> AddonContract {
+        let contractData: AddonContract = .init(
+            contractId: "contractId",
+            displayItems: [
+                .init(title: "title1", value: "value1"),
+                .init(title: "title2", value: "value2"),
+            ],
+            documents: [],
+            insurableLimits: [
+                .init(label: "limit", limit: "", description: "description")
+            ],
+            typeOfContract: .seApartmentBrf
+        )
+        return contractData
+    }
 }

@@ -18,16 +18,13 @@ public struct ChangeAddonInput {
 public class ChangeAddonNavigationViewModel: ObservableObject {
     @Published public var isLearnMorePresented = false
     @Published public var isChangeCoverageDaysPresented: AddonModel?
-
-    @Published var changeAddonVm = ChangeAddonViewModel()
-
-    let input: ChangeAddonInput
+    @Published var changeAddonVm: ChangeAddonViewModel
     let router = Router()
 
     public init(
         input: ChangeAddonInput
     ) {
-        self.input = input
+        changeAddonVm = ChangeAddonViewModel(contractId: input.contractId)
     }
 }
 

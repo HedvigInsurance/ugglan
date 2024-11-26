@@ -1,4 +1,9 @@
+import hCore
+@preconcurrency import hGraphQL
+
 public class AddonsClientOctopus: AddonsClient {
+    @Inject @preconcurrency var octopus: hOctopus
+
     public init() {}
 
     public func getAddons() throws -> [AddonModel] {
@@ -16,5 +21,22 @@ public class AddonsClientOctopus: AddonsClient {
         ]
 
         return addons
+    }
+
+    public func getContract(contractId: String) async throws -> AddonContract {
+        let contractsQuery = OctopusGraphQL.GetContractQuery(contractId: contractId)
+
+        let contractResponse = try await octopus.client.fetch(
+            query: contractsQuery,
+            cachePolicy: .fetchIgnoringCacheCompletely
+        )
+
+        let contract = contractResponse.contract
+
+        let contractData: AddonContract = .init(
+            contractId: contractId,
+            data: contract.currentAgreement.fragments.agreementFragment
+        )
+        return contractData
     }
 }

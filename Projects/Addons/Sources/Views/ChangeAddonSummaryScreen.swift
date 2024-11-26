@@ -21,11 +21,33 @@ struct ChangeAddonSummaryScreen: View {
 extension ChangeAddonViewModel {
     func asQuoteSummaryViewModel(changeAddonNavigationVm: ChangeAddonNavigationViewModel) -> QuoteSummaryViewModel {
 
-        /* TODO: IMPLEMENT */
-        let vm = QuoteSummaryViewModel(contract: [], total: .init(amount: "220", currency: "SEK")) {
+        let vm = QuoteSummaryViewModel(
+            contract: [
+                .init(
+                    id: self.contractInformation?.contractId ?? "",
+                    displayName: "Reseskydd plus",
+                    exposureName: "Tilläggsförsäkring",
+                    newPremium: .init(amount: "49", currency: "SEK"),
+                    currentPremium: .init(amount: "149", currency: "SEK"),
+                    documents: self.contractInformation?.documents ?? [],
+                    onDocumentTap: { document in
+
+                    },
+                    displayItems: self.contractInformation?.displayItems ?? [],
+                    insuranceLimits: self.contractInformation?.insurableLimits ?? [],
+                    typeOfContract: self.contractInformation?.typeOfContract
+                )
+            ],
+            total: .init(amount: "220", currency: "SEK")
+        ) {
 
         }
 
         return vm
     }
+}
+
+#Preview {
+    Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
+    return ChangeAddonSummaryScreen(changeAddonNavigationVm: .init(input: .init(contractId: "")))
 }

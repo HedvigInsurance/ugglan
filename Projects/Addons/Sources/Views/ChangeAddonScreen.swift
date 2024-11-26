@@ -121,15 +121,17 @@ public class ChangeAddonViewModel: ObservableObject {
     }
     @Published var selectedCoverageDayId: String?
     @Published var addons: [AddonModel]?
+    @Published var contractInformation: AddonContract?
 
     var hasCoverageDays: Bool {
         let selectedAddOn = addons?.first(where: { $0.id.uuidString == selectedAddonId })
         return selectedAddOn?.coverageDays?.count ?? 0 > 0
     }
 
-    init() {
+    init(contractId: String) {
         Task {
             await getAddons()
+            await getContractInformation(contractId: contractId)
 
             self._selectedAddonId = Published(
                 initialValue: addons?.first(where: { $0.coverageDays == nil })?.id.uuidString
@@ -162,10 +164,23 @@ public class ChangeAddonViewModel: ObservableObject {
 
         }
     }
+
+    @MainActor
+    func getContractInformation(contractId: String) async {
+        do {
+            let data = try await addonService.getContract(contractId: contractId)
+
+            withAnimation {
+                self.contractInformation = data
+            }
+        } catch {
+
+        }
+    }
 }
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
-    return ChangeAddonScreen(changeAddonVm: .init())
+    return ChangeAddonScreen(changeAddonVm: .init(contractId: ""))
         .environmentObject(ChangeAddonNavigationViewModel(input: .init(contractId: "contractId")))
 }
