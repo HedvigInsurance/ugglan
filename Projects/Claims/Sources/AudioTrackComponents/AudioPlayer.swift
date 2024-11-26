@@ -26,7 +26,6 @@ class AudioPlayer: NSObject, @preconcurrency ObservableObject {
 
     var playbackState: PlaybackState = .idle {
         didSet {
-            objectWillChange.send(self)
             switch playbackState {
             case .idle:
                 break
@@ -41,6 +40,7 @@ class AudioPlayer: NSObject, @preconcurrency ObservableObject {
             case .finished:
                 break
             }
+            objectWillChange.send(self)
         }
     }
 
@@ -100,42 +100,33 @@ class AudioPlayer: NSObject, @preconcurrency ObservableObject {
             try? session.setCategory(.playback)
             try? session.setActive(true)
         }
-        if (audioPlayer?.currentItem) != nil {
-            switch playbackState {
-            case .finished:
-                audioPlayer?.seek(to: CMTimeMakeWithSeconds(0, preferredTimescale: 1000))
-            default:
-                break
-            }
-        } else if let url {
+        if let url {
             let playerItem = AVPlayerItem(url: url)
             audioPlayer = AVPlayer(playerItem: playerItem)
             addAudioPlayerNotificationObserver()
-        }
-        audioPlayer?
-            .addPeriodicTimeObserver(
-                forInterval: CMTime(value: 1, timescale: 50),
-                queue: .main,
-                using: { [weak self] time in
-                    Task { @MainActor in
-                        guard let self = self, let item = self.audioPlayer?.currentItem else { return }
-                        print(item.status)
-                        switch item.status {
-                        case .readyToPlay:
-                            let duration = CMTimeGetSeconds(item.duration)
-                            let timeInFloat = CMTimeGetSeconds(time)
-                            self.progress = timeInFloat / duration
-                        case .failed:
-                            break
-                        case .unknown:
-                            break
-                        default:
-                            self.playbackState = .error(message: "Unknown playback error")
+            audioPlayer?
+                .addPeriodicTimeObserver(
+                    forInterval: CMTime(value: 1, timescale: 50),
+                    queue: .main,
+                    using: { [weak self] time in
+                        Task { @MainActor in
+                            guard let self = self, let item = self.audioPlayer?.currentItem else { return }
+                            switch item.status {
+                            case .readyToPlay:
+                                let duration = CMTimeGetSeconds(item.duration)
+                                let timeInFloat = CMTimeGetSeconds(time)
+                                self.progress = timeInFloat / duration
+                            case .failed:
+                                break
+                            case .unknown:
+                                break
+                            default:
+                                self.playbackState = .error(message: "Unknown playback error")
+                            }
                         }
                     }
-                }
-            )
-
+                )
+        }
         audioPlayer?.actionAtItemEnd = .pause
         audioPlayer?.play()
     }
