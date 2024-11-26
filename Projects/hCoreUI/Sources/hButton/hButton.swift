@@ -427,7 +427,7 @@ extension View {
 }
 
 //MARK: hButtonStyle
-public enum hButtonConfigurationType {
+public enum hButtonConfigurationType: Sendable {
     case primary
     case primaryAlt
     case secondary
@@ -458,7 +458,7 @@ public enum hButtonConfigurationType {
 }
 
 private struct EnvironmentHButtonConfigurationType: EnvironmentKey {
-    nonisolated(unsafe) static let defaultValue = hButtonConfigurationType.primary
+    static let defaultValue = hButtonConfigurationType.primary
 }
 
 extension EnvironmentValues {
