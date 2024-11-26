@@ -39,24 +39,26 @@ public class ClaimsNavigationViewModel: ObservableObject {
     @Published var currentClaimId: String? {
         didSet {
             do {
-                var isDir: ObjCBool = true
-                if FileManager.default.fileExists(
-                    atPath: claimsAudioRecordingRootPath.relativePath,
-                    isDirectory: &isDir
-                ) {
-                    let content = try FileManager.default
-                        .contentsOfDirectory(atPath: claimsAudioRecordingRootPath.relativePath)
-                        .filter({ URL(string: $0)?.pathExtension == AudioRecorder.audioFileExtension })
-                    try content.forEach({
-                        try FileManager.default.removeItem(
-                            atPath: claimsAudioRecordingRootPath.appendingPathComponent($0).relativePath
+                if oldValue != currentClaimId {
+                    var isDir: ObjCBool = true
+                    if FileManager.default.fileExists(
+                        atPath: claimsAudioRecordingRootPath.relativePath,
+                        isDirectory: &isDir
+                    ) {
+                        let content = try FileManager.default
+                            .contentsOfDirectory(atPath: claimsAudioRecordingRootPath.relativePath)
+                            .filter({ URL(string: $0)?.pathExtension == AudioRecorder.audioFileExtension })
+                        try content.forEach({
+                            try FileManager.default.removeItem(
+                                atPath: claimsAudioRecordingRootPath.appendingPathComponent($0).relativePath
+                            )
+                        })
+                    } else {
+                        try FileManager.default.createDirectory(
+                            at: claimsAudioRecordingRootPath,
+                            withIntermediateDirectories: true
                         )
-                    })
-                } else {
-                    try FileManager.default.createDirectory(
-                        at: claimsAudioRecordingRootPath,
-                        withIntermediateDirectories: true
-                    )
+                    }
                 }
             } catch _ {}
         }

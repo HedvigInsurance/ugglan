@@ -8,9 +8,15 @@ struct TrackPlayerView: View {
     var body: some View {
         switch audioPlayer.playbackState {
         case .error:
-            PlaybackFailedView {
-                audioPlayer.togglePlaying()
-            }
+            InfoCard(text: L10n.ClaimStatusDetail.InfoError.body, type: .attention)
+                .buttons([
+                    .init(
+                        buttonTitle: L10n.ClaimStatusDetail.InfoError.button,
+                        buttonAction: {
+                            audioPlayer.togglePlaying()
+                        }
+                    )
+                ])
         default:
             TrackPlayer(
                 audioPlayer: audioPlayer
