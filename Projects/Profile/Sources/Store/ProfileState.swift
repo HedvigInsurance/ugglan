@@ -33,7 +33,7 @@ public struct ProfileState: StateProtocol {
                 let status = settings.authorizationStatus.rawValue
                 Task {
                     let store: ProfileStore = await globalPresentableStoreContainer.get()
-                    await store.send(.setPushNotificationStatus(status: status))
+                    store.send(.setPushNotificationStatus(status: status))
 
                 }
             }

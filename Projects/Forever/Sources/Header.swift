@@ -68,17 +68,5 @@ struct HeaderView_Previews2: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
         return HeaderView {}
-            .onAppear {
-                let foreverData = ForeverData(
-                    grossAmount: .sek(200),
-                    netAmount: .sek(160),
-                    otherDiscounts: .sek(40),
-                    discountCode: "CODE2",
-                    monthlyDiscount: .sek(10),
-                    referrals: [],
-                    referredBy: .init(name: "", activeDiscount: nil, status: .active),
-                    monthlyDiscountPerReferral: .sek(10)
-                )
-            }
     }
 }
