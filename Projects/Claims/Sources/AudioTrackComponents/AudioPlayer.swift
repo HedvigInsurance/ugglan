@@ -1,6 +1,7 @@
 import AVFoundation
 import Combine
 import Foundation
+import SwiftUI
 import hCore
 
 @MainActor
@@ -15,6 +16,7 @@ class AudioPlayer: NSObject, @preconcurrency ObservableObject {
     let objectWillChange = PassthroughSubject<AudioPlayer, Never>()
     var audioPlayer: AVPlayer?
     let sampleHeights: [Int]
+    var observerStatus: NSKeyValueObservation?
 
     enum PlaybackState: Equatable {
         case idle
@@ -40,19 +42,25 @@ class AudioPlayer: NSObject, @preconcurrency ObservableObject {
             case .finished:
                 break
             }
-            objectWillChange.send(self)
+            withAnimation {
+                objectWillChange.send(self)
+            }
         }
     }
 
     private(set) var progress: Double = 0 {
         didSet {
-            objectWillChange.send(self)
+            withAnimation {
+                objectWillChange.send(self)
+            }
         }
     }
 
     var url: URL? {
         didSet {
-            objectWillChange.send(self)
+            withAnimation {
+                objectWillChange.send(self)
+            }
         }
     }
 
@@ -126,7 +134,21 @@ class AudioPlayer: NSObject, @preconcurrency ObservableObject {
                         }
                     }
                 )
+
+            // in your method where you setup your player item
+            observerStatus = playerItem.observe(
+                \.status,
+                changeHandler: { [weak self] (item, value) in
+                    debugPrint("status: \(item.status.rawValue)")
+                    if item.status == .failed {
+                        Task { @MainActor in
+                            self?.playbackState = .error(message: "Unknown playback error")
+                        }
+                    }
+                }
+            )
         }
+
         audioPlayer?.actionAtItemEnd = .pause
         audioPlayer?.play()
     }

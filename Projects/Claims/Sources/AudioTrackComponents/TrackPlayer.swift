@@ -80,7 +80,9 @@ struct TrackPlayer: View {
                             }
                         }
                         .onDisappear {
-                            audioPlayer.playbackState = .playing(paused: true)
+                            if audioPlayer.playbackState == .playing(paused: false) {
+                                audioPlayer.playbackState = .playing(paused: true)
+                            }
                         }
 
                 }
