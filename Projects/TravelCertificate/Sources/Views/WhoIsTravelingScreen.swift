@@ -71,6 +71,7 @@ struct WhoIsTravelingScreen: View {
     }
 }
 
+@MainActor
 class WhoIsTravelingViewModel: ObservableObject {
     let specification: TravelInsuranceContractSpecification
     let coInsuredModelData: [CoInsuredModel]

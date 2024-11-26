@@ -2,7 +2,7 @@ import Foundation
 import hCore
 import hCoreUI
 
-public struct TravelInsuranceContractSpecification: Codable, Equatable, Hashable {
+public struct TravelInsuranceContractSpecification: Codable, Equatable, Hashable, Sendable {
     let contractId: String
     let minStartDate: Date
     let maxStartDate: Date
@@ -39,6 +39,7 @@ public struct PolicyCoinsuredPersonModel: Codable, Equatable, Hashable {
     var birthDate: String? = nil
 }
 
+@MainActor
 public struct TravelCertificateModel: Codable, Equatable, Hashable, Identifiable {
     public let id: String
     let date: Date

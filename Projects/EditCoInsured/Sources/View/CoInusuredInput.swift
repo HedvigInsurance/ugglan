@@ -457,6 +457,7 @@ enum CoInsuredInputType: hTextFieldFocusStateCompliant {
     case birthDay
 }
 
+@MainActor
 public class CoInusuredInputViewModel: ObservableObject {
     @Published var personalData: PersonalData
     @Published var noSSN = false
@@ -564,6 +565,7 @@ public class CoInusuredInputViewModel: ObservableObject {
     }
 }
 
+@MainActor
 public class IntentViewModel: ObservableObject {
     @Published var intent = Intent(
         activationDate: "",

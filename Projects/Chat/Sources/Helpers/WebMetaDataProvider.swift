@@ -1,6 +1,7 @@
 import Foundation
-import LinkPresentation
+@preconcurrency import LinkPresentation
 
+@MainActor
 class WebMetaDataProvider {
     static let shared = WebMetaDataProvider()
     private init() {}
@@ -20,28 +21,33 @@ class WebMetaDataProvider {
                         if let metadata {
                             if #available(iOS 16.0, *) {
                                 if let imageProvider = metadata.imageProvider {
+                                    let title = metadata.title ?? ""
                                     _ =
                                         imageProvider
                                         .loadDataRepresentation(
                                             for: .image,
                                             completionHandler: { [weak self] data, error in
-                                                if let data, let image = UIImage(data: data) {
-                                                    self?.cache[url] = WebMetaDataProviderData(
-                                                        title: metadata.title ?? "",
-                                                        image: image
-                                                    )
-                                                } else {
-                                                    self?.cache[url] = WebMetaDataProviderData(
-                                                        title: metadata.title ?? "",
-                                                        image: nil
-                                                    )
-                                                }
-                                                if let data = self?.cache[url], let data = data {
-                                                    inCont.resume(returning: data)
-                                                } else {
-                                                    inCont.resume(
-                                                        throwing: WebMetaDataProviderError.somethingWentWrong(url: url)
-                                                    )
+                                                Task { @MainActor in
+                                                    if let data, let image = UIImage(data: data) {
+                                                        self?.cache[url] = WebMetaDataProviderData(
+                                                            title: title,
+                                                            image: image
+                                                        )
+                                                    } else {
+                                                        self?.cache[url] = WebMetaDataProviderData(
+                                                            title: title,
+                                                            image: nil
+                                                        )
+                                                    }
+                                                    if let data = self?.cache[url], let data = data {
+                                                        inCont.resume(returning: data)
+                                                    } else {
+                                                        inCont.resume(
+                                                            throwing: WebMetaDataProviderError.somethingWentWrong(
+                                                                url: url
+                                                            )
+                                                        )
+                                                    }
                                                 }
                                             }
                                         )
@@ -94,7 +100,7 @@ extension WebMetaDataProvider.WebMetaDataProviderError: LocalizedError {
     }
 }
 
-struct WebMetaDataProviderData {
+struct WebMetaDataProviderData: Sendable {
     let title: String
     let image: UIImage?
 

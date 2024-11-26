@@ -1,6 +1,7 @@
 import hCore
 import hGraphQL
 
+@MainActor
 public class hCampaignService {
     @Inject var service: hCampaignClient
 

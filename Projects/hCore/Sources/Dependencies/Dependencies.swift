@@ -2,6 +2,7 @@ import Apollo
 import Foundation
 import hGraphQL
 
+@MainActor
 public class Dependencies {
     public static var shared = Dependencies()
     private var modules = [String: Module]()
@@ -26,6 +27,7 @@ public class Dependencies {
     }
 }
 
+@MainActor
 public struct Module {
     fileprivate let name: String
     fileprivate let resolve: () -> Any
@@ -40,10 +42,13 @@ public struct Module {
 }
 
 /// Resolves an instance from the dependency injection container.
+@MainActor
 @propertyWrapper public struct Inject<Value> {
     private let name: String?
 
-    public var wrappedValue: Value { Dependencies.shared.resolve(for: name) }
+    public var wrappedValue: Value {
+        Dependencies.shared.resolve(for: name)
+    }
 
     public init() { name = nil }
 

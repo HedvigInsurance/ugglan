@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct PaymentData: Codable, Equatable, Hashable {
+public struct PaymentData: Codable, Equatable, Hashable, Sendable {
     let id: String
     let payment: PaymentStack
     let status: PaymentStatus
@@ -14,7 +14,7 @@ public struct PaymentData: Codable, Equatable, Hashable {
     //had to add as an array since we can't nest same struct type here
     let addedToThePayment: [PaymentData]?
 
-    struct PaymentStack: Codable, Equatable, Hashable {
+    struct PaymentStack: Codable, Equatable, Hashable, Sendable {
         let gross: MonetaryAmount
         let net: MonetaryAmount
         let carriedAdjustment: MonetaryAmount?
@@ -22,7 +22,7 @@ public struct PaymentData: Codable, Equatable, Hashable {
         let date: ServerBasedDate
     }
 
-    enum PaymentStatus: Codable, Equatable, Hashable {
+    enum PaymentStatus: Codable, Equatable, Hashable, Sendable {
         case upcoming
         case success
         case pending
@@ -47,7 +47,7 @@ public struct PaymentData: Codable, Equatable, Hashable {
         }
     }
 
-    struct ContractPaymentDetails: Codable, Equatable, Identifiable, Hashable {
+    struct ContractPaymentDetails: Codable, Equatable, Identifiable, Hashable, Sendable {
         let id: String
         let title: String
         let subtitle: String
@@ -55,7 +55,7 @@ public struct PaymentData: Codable, Equatable, Hashable {
         let periods: [PeriodInfo]
     }
 
-    struct PeriodInfo: Codable, Equatable, Identifiable, Hashable {
+    struct PeriodInfo: Codable, Equatable, Identifiable, Hashable, Sendable {
         let id: String
         let from: ServerBasedDate
         let to: ServerBasedDate
@@ -63,12 +63,13 @@ public struct PaymentData: Codable, Equatable, Hashable {
         let isOutstanding: Bool
         let desciption: String?
 
+        @MainActor
         var fromToDate: String {
             return "\(from.displayDateShort) - \(to.displayDateShort)"
         }
     }
 
-    struct PaymentDetails: Codable, Equatable, Hashable {
+    struct PaymentDetails: Codable, Equatable, Hashable, Sendable {
         typealias KeyValue = (key: String, value: String)
         let paymentMethod: String
         let account: String
@@ -91,7 +92,7 @@ public struct PaymentData: Codable, Equatable, Hashable {
     }
 }
 
-public struct Discount: Codable, Equatable, Identifiable, Hashable {
+public struct Discount: Codable, Equatable, Identifiable, Hashable, Sendable {
     public let id: String
     let code: String
     let amount: MonetaryAmount?
@@ -100,6 +101,7 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable {
     let validUntil: ServerBasedDate?
     let canBeDeleted: Bool
 
+    @MainActor
     var isValid: Bool {
         if let validUntil = validUntil?.localDateToDate {
             let components = Calendar.current.dateComponents(
@@ -114,7 +116,7 @@ public struct Discount: Codable, Equatable, Identifiable, Hashable {
     }
 }
 
-public struct AffectedInsurance: Codable, Equatable, Identifiable, Hashable {
+public struct AffectedInsurance: Codable, Equatable, Identifiable, Hashable, Sendable {
     public let id: String
     let displayName: String
 }

@@ -1,6 +1,7 @@
 import Foundation
 import hCore
 
+@MainActor
 public protocol ChangeTierClient {
     func getTier(input: ChangeTierInputData) async throws -> ChangeTierIntentModel
     func commitTier(quoteId: String) async throws

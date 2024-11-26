@@ -35,7 +35,7 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
         }
     }
 
-    public override func reduce(_ state: ContractState, _ action: ContractAction) -> ContractState {
+    public override func reduce(_ state: ContractState, _ action: ContractAction) async -> ContractState {
         var newState = state
         switch action {
         case .fetchContracts:

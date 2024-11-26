@@ -1,14 +1,15 @@
 import PresentableStore
-import XCTest
+@preconcurrency import XCTest
 import hCore
 
 @testable import Home
 
+@MainActor
 final class HomeTests: XCTestCase {
     weak var sut: MockHomeService?
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         globalPresentableStoreContainer.deletePersistanceContainer()
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         sut = nil
@@ -108,14 +109,13 @@ final class HomeTests: XCTestCase {
     }
 
     func testHomeStoreWithMultipleActionsAtOnce() async throws {
-        for i in 1...10 {
+        for i in 1...50 {
             try await iteratedStoreTest(iteration: i)
+            globalPresentableStoreContainer.deletePersistanceContainer()
         }
-        try await Task.sleep(nanoseconds: 100_000_000)
     }
 
     func iteratedStoreTest(iteration: Int) async throws {
-        globalPresentableStoreContainer.deletePersistanceContainer()
         let messageState = Home.MessageState(
             hasNewMessages: Bool.random(),
             hasSentOrRecievedAtLeastOneMessage: Bool.random(),
@@ -160,8 +160,18 @@ final class HomeTests: XCTestCase {
         store.send(.fetchImportantMessages)
         store.send(.fetchQuickActions)
         store.send(.fetchChatNotifications)
-        try await Task.sleep(nanoseconds: 300_000_000)
 
+        await waitUntil(description: "Check home state") {
+            store.state.memberContractState == memberState.contractState
+                && store.state.futureStatus == memberState.futureState && store.state.contracts == memberState.contracts
+                && store.state.importantMessages == importantMessages && store.state.quickActions.count == 2
+                && store.state.toolbarOptionTypes.count == (messageState.hasSentOrRecievedAtLeastOneMessage ? 3 : 2)
+                && store.state.hidenImportantMessages.count == 0 && store.state.upcomingRenewalContracts == []
+                && store.state.showChatNotification == messageState.hasNewMessages
+                && store.state.hasSentOrRecievedAtLeastOneMessage == messageState.hasSentOrRecievedAtLeastOneMessage
+                && (store.state.latestConversationTimeStamp == messageState.lastMessageTimeStamp
+                    || store.state.latestConversationTimeStamp == storeInitialLatestConversationTimeStamp)
+        }
         assert(store.state.memberContractState == memberState.contractState)
         assert(store.state.futureStatus == memberState.futureState)
         assert(store.state.contracts == memberState.contracts)
@@ -176,5 +186,24 @@ final class HomeTests: XCTestCase {
             store.state.latestConversationTimeStamp == messageState.lastMessageTimeStamp
                 || store.state.latestConversationTimeStamp == storeInitialLatestConversationTimeStamp
         )
+    }
+}
+
+@MainActor
+extension XCTestCase {
+    public func waitUntil(description: String, closure: @escaping () -> Bool) async {
+        let exc = expectation(description: description)
+        if closure() {
+            exc.fulfill()
+        } else {
+            try! await Task.sleep(nanoseconds: 10_000_000)
+            Task {
+                await self.waitUntil(description: description, closure: closure)
+                if closure() {
+                    exc.fulfill()
+                }
+            }
+        }
+        await fulfillment(of: [exc], timeout: 2)
     }
 }

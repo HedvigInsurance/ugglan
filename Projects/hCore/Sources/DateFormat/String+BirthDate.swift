@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 extension String {
     // converts to a 12 digit personal number
     public var calculate12DigitSSN: String {

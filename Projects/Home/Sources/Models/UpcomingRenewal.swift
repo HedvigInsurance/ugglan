@@ -1,6 +1,6 @@
 import Foundation
 
-public struct UpcomingRenewal: Codable, Equatable {
+public struct UpcomingRenewal: Codable, Equatable, Sendable {
     let renewalDate: String?
     let draftCertificateUrl: String?
 

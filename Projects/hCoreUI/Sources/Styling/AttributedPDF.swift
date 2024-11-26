@@ -2,6 +2,7 @@ import Foundation
 import SwiftUI
 import hCore
 
+@MainActor
 public struct AttributedPDF {
 
     public init() {}

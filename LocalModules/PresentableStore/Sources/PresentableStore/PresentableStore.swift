@@ -1,7 +1,8 @@
-import Combine
+@preconcurrency import Combine
 import Foundation
 
 @propertyWrapper
+@MainActor
 public struct PresentableStore<S: Store> {
     public var wrappedValue: S { globalPresentableStoreContainer.get() }
 
@@ -12,14 +13,18 @@ public protocol EmptyInitable {
     init()
 }
 
-public protocol StateProtocol: Codable & EmptyInitable & Equatable {}
-public protocol ActionProtocol: Codable & Equatable {}
+public protocol StateProtocol: Codable & EmptyInitable & Equatable & Sendable {}
+public protocol ActionProtocol: Codable & Equatable & Sendable {}
 
-open class StateStore<State: StateProtocol, Action: ActionProtocol>: Store {
+@globalActor public actor StoreActor {
+    public static let shared = StoreActor()
+}
+
+open class StateStore<State: StateProtocol, Action: ActionProtocol>: Store where State: Sendable, Action: Sendable {
     let stateWriteSignal: CurrentValueSubject<State, Never>
     let actionCallbacker: PassthroughSubject<Action, Never> = .init()
-
-    public var logger: (_ message: String) -> Void = { _ in }
+    private var lastTimeSaved: Date?
+    public var logger: @Sendable (_ message: String) -> Void = { _ in }
 
     public var state: State {
         stateWriteSignal.value
@@ -37,7 +42,7 @@ open class StateStore<State: StateProtocol, Action: ActionProtocol>: Store {
         fatalError("Must be overrided by subclass")
     }
 
-    open func reduce(_ state: State, _ action: Action) -> State {
+    open func reduce(_ state: State, _ action: Action) async -> State {
         fatalError("Must be overrided by subclass")
     }
 
@@ -45,68 +50,61 @@ open class StateStore<State: StateProtocol, Action: ActionProtocol>: Store {
         self.stateWriteSignal.value = state
     }
 
-    private lazy var serialQueue = DispatchQueue(label: "quoue.\(String(describing: self))", qos: .default)
+    nonisolated(unsafe)
+        private func getQueue() -> DispatchQueue
+    {
+        return DispatchQueue(label: "quoue.\(String(describing: self))", qos: .default)
+    }
+
     /// Sends an action to the store, which is then reduced to produce a new state
     public func send(_ action: Action) {
-        logger("🦄 \(String(describing: Self.self)): sending \(action)")
-        serialQueue.async { [weak self] in
-            guard let self = self else { return }
-            let previousState = stateWriteSignal.value
-            let semaphore = DispatchSemaphore(value: 0)
-            let newValue = reduce(stateWriteSignal.value, action)
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                self.stateWriteSignal.value = newValue
-                semaphore.signal()
-            }
-            semaphore.wait()
-            actionCallbacker.send(action)
-
-            if newValue != previousState {
-                logger("🦄 \(String(describing: Self.self)): new state \n \(newValue)")
-                DispatchQueue.global(qos: .background)
+        Task { [weak self] in
+            await withCheckedContinuation {
+                (inCont: CheckedContinuation<Void, Never>) -> Void in
+                self?.getQueue()
                     .async { [weak self] in
                         guard let self = self else { return }
-                        Self.persist(self.stateWriteSignal.value)
+                        let semaphore = DispatchSemaphore(value: 0)
+                        Task { [weak self] in
+                            guard let self else {
+                                semaphore.signal()
+                                return
+                            }
+                            await self.sendAsync(action)
+                            semaphore.signal()
+                        }
+                        semaphore.wait()
+                        inCont.resume()
                     }
             }
-            Task { [weak self] in
-                guard let self = self else { return }
-                await effects(
-                    {
-                        self.stateWriteSignal.value
-                    },
-                    action
-                )
-                semaphore.signal()
-            }
-            semaphore.wait()
         }
     }
 
     public func sendAsync(_ action: Action) async {
-        logger("🦄 \(String(describing: Self.self)): sending \(action)")
+        await logger("🦄 \(String(describing: Self.self)): sending \(action)")
+        let task = Task { @MainActor in
+            let previousState = stateWriteSignal.value
+            stateWriteSignal.value = await reduce(stateWriteSignal.value, action)
+            actionCallbacker.send(action)
+            let newState = stateWriteSignal.value
 
-        let previousState = stateWriteSignal.value
+            if newState != previousState {
+                logger("🦄 \(String(describing: Self.self)): new state \n \(newState)")
+                let value = self.stateWriteSignal.value
+                DispatchQueue.global(qos: .background)
+                    .async {
+                        Self.persist(value)
+                    }
+            }
+            await effects(
+                {
+                    self.stateWriteSignal.value
+                },
+                action
+            )
 
-        stateWriteSignal.value = reduce(stateWriteSignal.value, action)
-        actionCallbacker.send(action)
-        let newState = stateWriteSignal.value
-
-        if newState != previousState {
-            logger("🦄 \(String(describing: Self.self)): new state \n \(newState)")
-            DispatchQueue.global(qos: .background)
-                .async { [weak self] in
-                    guard let self = self else { return }
-                    Self.persist(self.stateWriteSignal.value)
-                }
         }
-        await effects(
-            {
-                self.stateWriteSignal.value
-            },
-            action
-        )
+        await task.value
     }
 
     public required init() {
@@ -118,13 +116,16 @@ open class StateStore<State: StateProtocol, Action: ActionProtocol>: Store {
     }
 }
 
+@MainActor
 public protocol Store {
     associatedtype State: StateProtocol
     associatedtype Action: ActionProtocol
 
+    @MainActor
     static func getKey() -> UnsafeMutablePointer<Int>
 
-    var logger: (_ message: String) -> Void { get set }
+    @MainActor
+    var logger: @Sendable (_ message: String) -> Void { get set }
     var state: State { get }
     var stateSignal: AnyPublisher<State, Never> { get }
     var actionSignal: AnyPublisher<Action, Never> { get }
@@ -132,14 +133,19 @@ public protocol Store {
     /// WARNING: Use this to set the state to the provided state BUT only for mocking purposes
     func setState(_ state: State)
 
-    func reduce(_ state: State, _ action: Action) -> State
+    @MainActor
+    func reduce(_ state: State, _ action: Action) async -> State
+    @MainActor
     func effects(_ getState: @escaping () -> State, _ action: Action) async
-    func send(_ action: Action)
-    func send(_ action: Action) async
+    nonisolated(unsafe)
+        func send(_ action: Action)
+    @StoreActor
+    func sendAsync(_ action: Action) async
 
     init()
 }
 
+@MainActor
 var pointers: [String: UnsafeMutablePointer<Int>] = [:]
 
 var storePersistenceDirectory: URL {
@@ -149,6 +155,7 @@ var storePersistenceDirectory: URL {
 }
 
 extension Store {
+    @MainActor
     public static func getKey() -> UnsafeMutablePointer<Int> {
         let key = String(describing: Self.self)
 
@@ -159,13 +166,17 @@ extension Store {
         return pointers[key]!
     }
 
-    static var persistenceURL: URL {
+    nonisolated(unsafe)
+        static var persistenceURL: URL
+    {
         let docURL = storePersistenceDirectory
         try? FileManager.default.createDirectory(at: docURL, withIntermediateDirectories: true, attributes: nil)
         return docURL.appendingPathComponent(String(describing: Self.self))
     }
 
-    public static func persist(_ value: State) {
+    nonisolated(unsafe)
+        public static func persist(_ value: State)
+    {
         let encoder = JSONEncoder()
         if let encoded = try? encoder.encode(value) {
             do {
@@ -215,6 +226,7 @@ public protocol Debugger {
     func registerStore<S: Store>(_ store: S)
 }
 
+@MainActor
 public class PresentableStoreContainer: NSObject {
     public func get<S: Store>() -> S {
         if let store: S = associatedValue(forKey: S.getKey()) {
@@ -247,21 +259,24 @@ public class PresentableStoreContainer: NSObject {
     }
 
     public var debugger: Debugger? = nil
-    public var logger: (_ message: String) -> Void = { message in
+    public var logger: @Sendable (_ message: String) -> Void = { message in
         print(message)
     }
 }
 
 /// Set this to automatically populate all presentables with your global PresentableStoreContainer
+@MainActor
 public var globalPresentableStoreContainer = PresentableStoreContainer()
 
-public protocol LoadingProtocol: Codable & Equatable & Hashable {}
+public protocol LoadingProtocol: Codable & Equatable & Hashable & Sendable {}
 
-public enum LoadingState<T>: Codable & Equatable & Hashable where T: Codable & Equatable & Hashable {
+public enum LoadingState<T>: Codable & Equatable & Hashable & Sendable
+where T: Codable & Equatable & Hashable & Sendable {
     case loading
     case error(error: T)
 }
 
+@MainActor
 public protocol StoreLoading {
     associatedtype Loading: LoadingProtocol
     var loadingState: [Loading: LoadingState<String>] { get }
@@ -277,10 +292,11 @@ public protocol StoreLoading {
     init()
 }
 
+@MainActor
 open class LoadingStateStore<State: StateProtocol, Action: ActionProtocol, Loading: LoadingProtocol>: StateStore<
     State, Action
 >, StoreLoading
-{
+where State: Sendable, Action: Sendable {
     public var loadingState: [Loading: LoadingState<String>] {
         return loadingStates
     }
@@ -297,32 +313,19 @@ open class LoadingStateStore<State: StateProtocol, Action: ActionProtocol, Loadi
     }
 
     public func removeLoading(for action: Loading) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            self.loadingStates.removeValue(forKey: action)
-            self.loadingWriteSignal.value = self.loadingStates
-        }
+        self.loadingStates.removeValue(forKey: action)
     }
 
     public func setLoading(for action: Loading) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            self.loadingStates[action] = .loading
-        }
+        self.loadingStates[action] = .loading
     }
 
     public func setError(_ error: String, for action: Loading) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            self.loadingStates[action] = .error(error: error)
-        }
+        self.loadingStates[action] = .error(error: error)
     }
 
     public func reset() {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            loadingStates.removeAll()
-        }
+        loadingStates.removeAll()
     }
 
     public required init() {

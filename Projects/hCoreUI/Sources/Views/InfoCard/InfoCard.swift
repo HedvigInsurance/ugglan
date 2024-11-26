@@ -158,6 +158,7 @@ public enum InfoCardType {
     case campaign
     case disabled
 
+    @MainActor
     var image: UIImage {
         switch self {
         case .info:
@@ -175,7 +176,7 @@ public enum InfoCardType {
 }
 
 private struct EnvironmentCardButtonsConfig: EnvironmentKey {
-    static let defaultValue: [InfoCardButtonConfig]? = nil
+    nonisolated(unsafe) static let defaultValue: [InfoCardButtonConfig]? = nil
 }
 
 extension EnvironmentValues {
@@ -202,7 +203,7 @@ public struct InfoCardButtonConfig {
 }
 
 private struct EnvironmentInfoCardCustomView: EnvironmentKey {
-    static let defaultValue: AnyView? = nil
+    nonisolated(unsafe) static let defaultValue: AnyView? = nil
 }
 
 extension EnvironmentValues {
@@ -219,7 +220,7 @@ extension View {
 }
 
 private struct EnvironmentInfoCardLayoutStyle: EnvironmentKey {
-    static let defaultValue: InfoCardLayoutStyle = .defaultStyle
+    nonisolated(unsafe) static let defaultValue: InfoCardLayoutStyle = .defaultStyle
 }
 
 extension EnvironmentValues {

@@ -3,7 +3,7 @@ import ProjectDescriptionHelpers
 
 let project = Project.framework(
     name: "MoveFlow",
-    targets: Set([.framework, .tests, .example]),
+    targets: Set([.framework, .tests, .example, .swift6]),
     projects: ["hCore", "hCoreUI", "hGraphQL", "Contracts"],
     dependencies: ["CoreDependencies", "ResourceBundledDependencies"],
     sdks: [],

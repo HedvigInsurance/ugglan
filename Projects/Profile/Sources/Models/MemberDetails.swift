@@ -1,7 +1,7 @@
 import Foundation
 import hGraphQL
 
-public struct MemberDetails: Codable, Equatable, Identifiable, Hashable {
+public struct MemberDetails: Codable, Equatable, Identifiable, Hashable, Sendable {
     public var id: String
     public var phone: String?
     public var email: String?

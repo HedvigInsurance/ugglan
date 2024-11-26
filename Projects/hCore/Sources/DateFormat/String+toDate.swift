@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 extension String {
     public var localDateToDate: Date? {
         return Dependencies.dateService.localDateStringFormatter.date(from: self)

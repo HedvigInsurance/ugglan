@@ -4,7 +4,6 @@ import hCoreUI
 
 struct ConfirmTerminationScreen: View {
     @EnvironmentObject var terminationNavigationVm: TerminationFlowNavigationViewModel
-    @EnvironmentObject var confirmTerminationVm: ConfirmTerminationViewModel
 
     init() {}
 
@@ -43,10 +42,6 @@ struct ConfirmTerminationScreen: View {
             terminationNavigationVm.terminationDateStepModel?.date?.displayDateDDMMMYYYYFormat ?? ""
         )
     }
-}
-
-class ConfirmTerminationViewModel: ObservableObject {
-    @Inject private var service: TerminateContractsClient
 }
 
 struct TerminationDeleteScreen_Previews: PreviewProvider {

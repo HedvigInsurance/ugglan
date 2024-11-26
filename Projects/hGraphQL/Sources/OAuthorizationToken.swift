@@ -18,3 +18,7 @@ public struct OAuthorizationToken: Codable {
         self.refreshTokenExpirationDate = refreshTokenExpirationDate
     }
 }
+
+extension OAuthorizationToken: Sendable {
+
+}

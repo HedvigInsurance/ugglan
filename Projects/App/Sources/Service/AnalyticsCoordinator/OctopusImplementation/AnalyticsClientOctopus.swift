@@ -4,6 +4,7 @@ import SwiftUI
 import hCore
 import hGraphQL
 
+@MainActor
 public class AnalyticsService {
     @Inject var client: AnalyticsClient
 
@@ -33,14 +34,17 @@ struct AnalyticsClientOctopus: AnalyticsClient {
     }
 
     func setWith(userId: String) {
-        let deviceModel = UIDevice.modelName
-        Datadog.setUserInfo(
-            id: userId,
-            extraInfo: [
-                "device_id": ApolloClient.getDeviceIdentifier(),
-                "member_id": userId,
-                "device_model": deviceModel,
-            ]
-        )
+        Task {
+            let device_id = await ApolloClient.getDeviceIdentifier()
+            let deviceModel = UIDevice.modelName
+            Datadog.setUserInfo(
+                id: userId,
+                extraInfo: [
+                    "device_id": device_id,
+                    "member_id": userId,
+                    "device_model": deviceModel,
+                ]
+            )
+        }
     }
 }

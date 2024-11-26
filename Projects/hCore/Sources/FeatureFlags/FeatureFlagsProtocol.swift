@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 public protocol FeatureFlags {
     var isEditCoInsuredEnabled: Bool { get set }
     var isTravelInsuranceEnabled: Bool { get set }
@@ -32,6 +33,7 @@ public enum MovingFlowVersion: String {
     case v2
 }
 
+@MainActor
 extension Dependencies {
     static public func featureFlags() -> FeatureFlags {
         let featureFlags: FeatureFlags = shared.resolve()

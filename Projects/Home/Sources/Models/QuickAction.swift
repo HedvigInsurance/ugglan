@@ -1,7 +1,7 @@
 import Foundation
 import hCore
 
-public enum QuickAction: Codable, Equatable, Hashable {
+public enum QuickAction: Codable, Equatable, Hashable, Sendable {
     case sickAbroad(partners: [SickAbroadPartner])
     case firstVet(partners: [FirstVetPartner])
     case editInsurance(actions: EditInsuranceActionsWrapper)
@@ -112,7 +112,7 @@ extension EditType {
     }
 }
 
-public struct EditInsuranceActionsWrapper: Codable, Equatable, Hashable, Identifiable {
+public struct EditInsuranceActionsWrapper: Codable, Equatable, Hashable, Identifiable, Sendable {
     public let id: String
     let quickActions: [QuickAction]
 
@@ -122,14 +122,14 @@ public struct EditInsuranceActionsWrapper: Codable, Equatable, Hashable, Identif
     }
 }
 
-public struct SickAbroadPartner: Codable, Equatable, Hashable, Identifiable {
+public struct SickAbroadPartner: Codable, Equatable, Hashable, Identifiable, Sendable {
     public let id: String
     public let imageUrl: String?
     public let phoneNumber: String?
     public let url: String?
 }
 
-public struct FirstVetPartner: Codable, Equatable, Hashable, Identifiable {
+public struct FirstVetPartner: Codable, Equatable, Hashable, Identifiable, Sendable {
     public let id: String
     let buttonTitle: String?
     let description: String?

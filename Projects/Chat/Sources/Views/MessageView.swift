@@ -172,6 +172,7 @@ struct LinkView: View {
     }
 }
 
+@MainActor
 class LinkViewModel: ObservableObject {
     @Published var webMetaDataProviderData: WebMetaDataProviderData?
     @Published var error: String?
@@ -179,9 +180,7 @@ class LinkViewModel: ObservableObject {
 
     init(url: URL) {
         self.url = url
-        Task {
-            await getData()
-        }
+        getData()
 
     }
 
@@ -227,6 +226,7 @@ struct ActionView: View {
     }
 }
 
+@MainActor
 extension URL {
     public var contractName: String? {
         guard let urlComponents = URLComponents(url: self, resolvingAgainstBaseURL: false) else { return nil }

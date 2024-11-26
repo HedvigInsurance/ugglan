@@ -43,7 +43,7 @@ struct ResendOTPCode: View {
         .padding(.top, 44)
     }
 }
-
+@MainActor
 class ResendOTPCodeViewModel: ObservableObject {
     private var authenticationService = AuthenticationService()
     @Published var canResendAtText: String = ""

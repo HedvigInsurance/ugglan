@@ -8,6 +8,7 @@ let project = Project.framework(
         .tests,
         .example,
         .testing,
+        .swift6,
     ]),
     projects: [
         "hCore",

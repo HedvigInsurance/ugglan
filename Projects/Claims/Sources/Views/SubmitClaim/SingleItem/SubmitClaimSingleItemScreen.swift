@@ -110,6 +110,7 @@ public struct SubmitClaimSingleItemScreen: View {
     }
 }
 
+@MainActor
 public class SubmitClaimSingleItemViewModel: ObservableObject {
     @Inject private var service: SubmitClaimClient
     @Published var viewState: ProcessingState = .success

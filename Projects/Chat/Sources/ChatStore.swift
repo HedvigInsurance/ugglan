@@ -23,7 +23,7 @@ final public class ChatStore: StateStore<ChatState, ChatAction> {
         _ action: ChatAction
     ) async {}
 
-    public override func reduce(_ state: ChatState, _ action: ChatAction) -> ChatState {
+    public override func reduce(_ state: ChatState, _ action: ChatAction) async -> ChatState {
         var newState = state
         switch action {
         case .checkPushNotificationStatus:

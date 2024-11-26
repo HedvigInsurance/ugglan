@@ -53,6 +53,7 @@ public struct InfoViewHolder: View {
         }
     }
 
+    @MainActor
     public enum InfoButtonType {
         case regular
         case navigation

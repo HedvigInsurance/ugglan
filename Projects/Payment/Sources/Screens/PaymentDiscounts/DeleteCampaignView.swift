@@ -74,6 +74,7 @@ struct DeleteCampaignView: View {
     }
 }
 
+@MainActor
 class DeleteCampaignViewModel: ObservableObject {
     let discount: Discount
     private var campaignService = hCampaignService()

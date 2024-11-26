@@ -3,7 +3,7 @@ import SwiftUI
 import hCore
 import hGraphQL
 
-public struct CoInsuredModel: Codable, Hashable, Equatable {
+public struct CoInsuredModel: Codable, Hashable, Equatable, Sendable {
     public let SSN: String?
     public let hasMissingInfo: Bool
     public var firstName: String?
@@ -36,6 +36,7 @@ public struct CoInsuredModel: Codable, Hashable, Equatable {
         self.terminatesOn = data.terminatesOn
     }
 
+    @MainActor
     public init(
         firstName: String? = nil,
         lastName: String? = nil,

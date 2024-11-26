@@ -1,6 +1,6 @@
 import Foundation
 
-public struct RouterDestionationOptions: OptionSet {
+public struct RouterDestionationOptions: OptionSet, Sendable {
     public let rawValue: UInt
     public init(rawValue: UInt) {
         self.rawValue = rawValue

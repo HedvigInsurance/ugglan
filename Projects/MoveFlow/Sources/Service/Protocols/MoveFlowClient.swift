@@ -1,6 +1,7 @@
 import hCore
 import hGraphQL
 
+@MainActor
 public protocol MoveFlowClient {
     func sendMoveIntent() async throws -> MovingFlowModel
     func requestMoveIntent(

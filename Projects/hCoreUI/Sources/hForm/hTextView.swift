@@ -579,7 +579,8 @@ private class TextView: UITextView, UITextViewDelegate {
     }
 }
 
-private struct SafeAreaInsetsKey: EnvironmentKey {
+@MainActor
+private struct SafeAreaInsetsKey: @preconcurrency EnvironmentKey {
     static var defaultValue: EdgeInsets {
         let keyWindow = UIApplication.shared.connectedScenes
             .filter({ $0.activationState == .foregroundActive })

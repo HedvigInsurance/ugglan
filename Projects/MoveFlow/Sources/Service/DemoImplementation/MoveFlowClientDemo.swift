@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 public class MoveFlowClientDemo: MoveFlowClient {
     public func sendMoveIntent() async throws -> MovingFlowModel {
         return MovingFlowModel(

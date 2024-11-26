@@ -6,7 +6,7 @@ public enum AuthError: Error {
     case refreshFailed
 }
 
-class HeadersInterceptor: ApolloInterceptor {
+class HeadersInterceptor: @preconcurrency ApolloInterceptor {
     var id: String
     let acceptLanguageHeader: String
     let userAgent: String
@@ -21,7 +21,7 @@ class HeadersInterceptor: ApolloInterceptor {
         self.deviceIdentifier = deviceIdentifier
         self.id = UUID().uuidString
     }
-
+    @MainActor
     func interceptAsync<Operation: GraphQLOperation>(
         chain: RequestChain,
         request: HTTPRequest<Operation>,
@@ -39,8 +39,19 @@ class HeadersInterceptor: ApolloInterceptor {
                     "hedvig-device-id": deviceIdentifier,
                     "Hedvig-TimeZone": TimeZone.current.identifier,
                 ]
-                if let token = try ApolloClient.retreiveToken() {
-                    httpAdditionalHeaders["Authorization"] = "Bearer " + token.accessToken
+                try await withUnsafeThrowingContinuation { inCont in
+                    do {
+                        Task {
+                            do {
+                                let token = try await ApolloClient.retreiveToken()!
+                                inCont.resume(returning: ())
+                                httpAdditionalHeaders["Authorization"] = "Bearer " + token.accessToken
+                            } catch let exception {
+                                inCont.resume(throwing: exception)
+                            }
+                        }
+
+                    }
                 }
 
                 httpAdditionalHeaders.forEach { key, value in request.addHeader(name: key, value: value) }

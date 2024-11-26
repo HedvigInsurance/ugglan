@@ -1,9 +1,10 @@
-import XCTest
+@preconcurrency import XCTest
 import hCore
 
 @testable import ChangeTier
 @testable import hCoreUI
 
+@MainActor
 final class CompareTierVireModelTests: XCTestCase {
     weak var sut: MockChangeTierService?
     weak var vm: CompareTierViewModel?
@@ -52,8 +53,8 @@ final class CompareTierVireModelTests: XCTestCase {
         ),
     ]
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         sut = nil
     }

@@ -1,13 +1,14 @@
-import XCTest
+@preconcurrency import XCTest
 import hCore
 
 @testable import TravelCertificate
 
+@MainActor
 final class TravelCertificateTests: XCTestCase {
     weak var sut: MockTravelInsuranceService?
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         sut = nil
     }
 

@@ -24,6 +24,7 @@ public struct ModalPresentationSourceWrapper<Content: View>: UIViewRepresentable
     }
 }
 
+@MainActor
 public class ModalPresentationSourceWrapperViewModel: ObservableObject {
     weak var view: UIView?
 

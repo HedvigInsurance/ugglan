@@ -126,6 +126,7 @@ struct LanguageAndMarketPickerView_Previews: PreviewProvider {
     }
 }
 
+@MainActor
 class LanguageAndMarketPickerViewModel: ObservableObject {
     @Published var selectedLocale = Localization.Locale.currentLocale.value
     @Published var selectedLocaleCode: String? = Localization.Locale.currentLocale.value.rawValue

@@ -1,4 +1,4 @@
-public struct InsurableLimits: Codable, Hashable, Identifiable {
+public struct InsurableLimits: Codable, Hashable, Identifiable, Sendable {
     public var id: String?
     public let label: String
     public let limit: String

@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 
+@MainActor
 extension UIColor {
     public func asImage(_ size: CGSize = CGSize(width: 1, height: 1 / UIScreen.main.scale)) -> UIImage {
         UIGraphicsBeginImageContext(size)

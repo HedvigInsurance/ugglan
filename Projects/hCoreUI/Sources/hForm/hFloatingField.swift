@@ -132,8 +132,8 @@ struct hFloatingField_Previews: PreviewProvider {
     }
 }
 
-private struct EnvironmentHCFieldTrailingView: EnvironmentKey {
-    static let defaultValue: AnyView? = nil
+private struct EnvironmentHCFieldTrailingView: @preconcurrency EnvironmentKey {
+    @MainActor static let defaultValue: AnyView? = nil
 }
 
 extension EnvironmentValues {

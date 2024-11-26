@@ -112,7 +112,8 @@ public struct ErrorViewButtonConfig {
     }
 }
 
-private struct ErrorViewButtonConfigKey: EnvironmentKey {
+@MainActor
+private struct ErrorViewButtonConfigKey: @preconcurrency EnvironmentKey {
     static let defaultValue: ErrorViewButtonConfig? = nil
 }
 

@@ -24,6 +24,7 @@ struct AddCampaignCodeView: View {
     }
 }
 
+@MainActor
 class AddCampaingCodeViewModel: ObservableObject {
     let inputVm: TextInputViewModel
     var errorMessage: String?

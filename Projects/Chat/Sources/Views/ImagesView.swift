@@ -43,52 +43,56 @@ struct ImagesView: View {
         }
         .frame(height: 264)
         .onAppear {
-            vm.fetchData()
+            Task {
+                await vm.fetchData()
+            }
         }
     }
 }
 
+@MainActor
 class ImagesViewModel: ObservableObject {
     @Published var files = [PHAsset]()
     @Published var permissionNotGranted = false
     var sendMessage: (_ message: Message) -> Void = { _ in }
     init() {}
 
-    func fetchData() {
-        PHPhotoLibrary.requestAuthorization(for: .readWrite) { [weak self] (status) in
-            switch status {
-            case .notDetermined, .restricted, .denied:
-                DispatchQueue.main.async {
-                    withAnimation {
-                        self?.permissionNotGranted = true
-                    }
-                }
-            case .authorized, .limited:
-                var list = [PHAsset]()
-                let fetchOptions = PHFetchOptions()
-                fetchOptions.sortDescriptors = [
-                    NSSortDescriptor(key: "creationDate", ascending: false)
-                ]
-                fetchOptions.fetchLimit = 50
-
-                let imageAssets = PHAsset.fetchAssets(with: .image, options: fetchOptions)
-
-                imageAssets.enumerateObjects { asset, _, _ in
-                    list.append(asset)
-                }
-
-                let videoAssets = PHAsset.fetchAssets(with: .video, options: fetchOptions)
-
-                videoAssets.enumerateObjects { asset, _, _ in
-                    list.append(asset)
-                }
-
-                DispatchQueue.main.async {
-                    self?.files = list
-                }
-            @unknown default:
-                break
+    func fetchData() async {
+        let status = await PHPhotoLibrary.requestAuthorization(for: .readWrite)
+        switch status {
+        case .notDetermined, .restricted, .denied:
+            withAnimation {
+                self.permissionNotGranted = true
             }
+        case .authorized, .limited:
+            var list = [PHAsset]()
+            let fetchOptions = PHFetchOptions()
+            fetchOptions.sortDescriptors = [
+                NSSortDescriptor(key: "creationDate", ascending: false)
+            ]
+            fetchOptions.fetchLimit = 50
+
+            let imageAssets = PHAsset.fetchAssets(
+                with: .image,
+                options: fetchOptions
+            )
+
+            imageAssets.enumerateObjects { asset, _, _ in
+                list.append(asset)
+            }
+
+            let videoAssets = PHAsset.fetchAssets(
+                with: .video,
+                options: fetchOptions
+            )
+
+            videoAssets.enumerateObjects { asset, _, _ in
+                list.append(asset)
+            }
+
+            self.files = list
+        @unknown default:
+            break
         }
     }
     func openSettings() {
@@ -180,6 +184,7 @@ struct PHPAssetPreview: View {
     }
 }
 
+@MainActor
 extension PHAsset {
     enum GenerateFileUploadError: Error {
         case failedToGenerateFileName,
@@ -208,10 +213,10 @@ extension PHAsset {
                         ) { exportSession, _ in
                             exportSession?.outputFileType = AVFileType.mp4
                             exportSession?.outputURL = FileUploadManager().getPathForData(for: id)
-
+                            let url = exportSession?.outputURL
                             exportSession?
                                 .exportAsynchronously(completionHandler: {
-                                    guard let url = exportSession?.outputURL else {
+                                    guard let url = url else {
                                         inCont.resume(throwing: GenerateFileUploadError.failedToGetVideoURL)
                                         return
                                     }

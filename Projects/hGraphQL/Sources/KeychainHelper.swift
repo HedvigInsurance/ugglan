@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 final public class KeychainHelper {
 
     static let standard = KeychainHelper()
@@ -25,7 +26,7 @@ final public class KeychainHelper {
     ///   - key: Key which has to be queried
     ///   - type: Transforms the data from keychain to this required type T which has to be a `Codable`
     /// - Returns: Object from the keychain of the type specified
-    public func read<T>(key: String, type: T.Type) throws -> T? where T: Codable {
+    public func read<T>(key: String, type: T.Type) async throws -> T? where T: Codable {
         guard let data = try read(key: key) else {
             return nil
         }
@@ -40,7 +41,7 @@ final public class KeychainHelper {
 
     /// Deletes key from the keychain
     /// - Parameter key: Specifies key which has to be removed from the keychain
-    public func delete(key: String) {
+    public func delete(key: String) async {
         let query =
             [
                 kSecAttrService: key,

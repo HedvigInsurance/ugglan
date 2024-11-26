@@ -362,6 +362,7 @@ struct ShowTagList: View {
     }
 }
 
+@MainActor
 public class SelectClaimEntrypointViewModel: ObservableObject {
     @Inject private var service: hFetchEntrypointsClient
     @Published var viewState: ProcessingState = .loading
