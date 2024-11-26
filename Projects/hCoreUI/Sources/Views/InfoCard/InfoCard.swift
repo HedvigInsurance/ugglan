@@ -139,7 +139,7 @@ public enum InfoCardType {
 }
 
 private struct EnvironmentCardButtonsConfig: EnvironmentKey {
-    nonisolated(unsafe) static let defaultValue: [InfoCardButtonConfig]? = nil
+    static let defaultValue: [InfoCardButtonConfig]? = nil
 }
 
 extension EnvironmentValues {
@@ -155,11 +155,11 @@ extension InfoCard {
     }
 }
 
-public struct InfoCardButtonConfig {
+public struct InfoCardButtonConfig: Sendable {
     let buttonTitle: String
-    let buttonAction: () -> Void
+    let buttonAction: @MainActor @Sendable () -> Void
 
-    public init(buttonTitle: String, buttonAction: @escaping () -> Void) {
+    public init(buttonTitle: String, buttonAction: @MainActor @Sendable @escaping () -> Void) {
         self.buttonTitle = buttonTitle
         self.buttonAction = buttonAction
     }
