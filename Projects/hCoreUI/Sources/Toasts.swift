@@ -134,8 +134,10 @@ public class Toasts {
     private func showNext() {
         if let toast = list.first {
             let viewToShow = ToastUIView(model: toast) { [weak self] in
-                self?.list.removeFirst()
-                self?.showNext()
+                Task { @MainActor in
+                    self?.list.removeFirst()
+                    self?.showNext()
+                }
             }
             if let viewToShowFrom = UIApplication.shared.getWindow() {
                 viewToShowFrom.addSubview(viewToShow)
@@ -148,13 +150,12 @@ public class Toasts {
 
 }
 
-@MainActor
 private class ToastUIView: UIView {
-    nonisolated(unsafe) private let onDeinit: () -> Void
+    private let onDeinit: @Sendable () -> Void
     private let model: ToastBar
     private var timerSubscription: Cancellable?
     private var offsetForPanGesture: CGFloat = 0
-    init(model: ToastBar, onDeinit: @MainActor @escaping () -> Void) {
+    init(model: ToastBar, onDeinit: @Sendable @escaping () -> Void) {
         let toastBarView = ToastBarView(toastModel: model)
         let vc = hHostingController(rootView: toastBarView, contentName: "")
         self.model = model
@@ -259,7 +260,7 @@ private class ToastUIView: UIView {
     }
 
     deinit {
-        onDeinit()
+        self.onDeinit()
     }
 }
 
