@@ -3,6 +3,7 @@ import hCore
 
 @testable import MoveFlow
 
+@MainActor
 struct MockData {
     static func createMockMoveFlowService(
         submitMoveIntent: @escaping SubmitMoveIntent = {
@@ -55,7 +56,7 @@ struct MockData {
     }
 }
 
-typealias SubmitMoveIntent = () async throws -> MovingFlowModel
+typealias SubmitMoveIntent = @Sendable () async throws -> MovingFlowModel
 typealias MoveIntentRequest = (String, AddressInputModel, HouseInformationInputModel) async throws -> MovingFlowModel
 typealias MoveIntentConfirm = (String, String?) async throws -> Void
 

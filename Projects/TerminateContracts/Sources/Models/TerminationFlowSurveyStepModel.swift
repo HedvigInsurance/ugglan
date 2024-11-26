@@ -45,7 +45,7 @@ struct TerminationFlowSurveyStepFeedback: FlowStepModel {
     let isRequired: Bool
 }
 
-public enum SurveyScreenSubtitleType: Codable {
+public enum SurveyScreenSubtitleType: Codable, Sendable {
     case `default`
     case generic
 

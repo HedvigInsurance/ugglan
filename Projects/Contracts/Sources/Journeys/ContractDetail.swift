@@ -96,6 +96,7 @@ public struct ContractDetail: View {
     }
 }
 
+@MainActor
 class ContractDetailsViewModel: ObservableObject {
     private let id: String
     @PresentableStore var store: ContractStore

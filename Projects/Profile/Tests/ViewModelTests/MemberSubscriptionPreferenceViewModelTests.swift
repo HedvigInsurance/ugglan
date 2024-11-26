@@ -1,15 +1,16 @@
 import PresentableStore
-import XCTest
+@preconcurrency import XCTest
 import hCore
 
 @testable import Profile
 
+@MainActor
 final class MemberSubscriptionPreferenceViewModelTests: XCTestCase {
     weak var sut: MockProfileService?
 
-    override func setUp() {
+    override func setUp() async throws {
         UserDefaults.standard.removeObject(forKey: MemberSubscriptionPreferenceViewModel.userDefaultsKey)
-        super.setUp()
+        try await super.setUp()
         globalPresentableStoreContainer.deletePersistanceContainer()
         sut = nil
     }
@@ -32,9 +33,7 @@ final class MemberSubscriptionPreferenceViewModelTests: XCTestCase {
         let currentValue = model.isUnsubscribed
         await model.toggleSubscription()
         try await Task.sleep(nanoseconds: 300_000_000)
-        try await waitUntil(description: "check isUnsubscribed") {
-            model.isLoading == false && model.isUnsubscribed == !currentValue
-        }
+        assert(model.isLoading == false && model.isUnsubscribed == !currentValue)
     }
 
     func testToggleSubscriptionFailure() async {

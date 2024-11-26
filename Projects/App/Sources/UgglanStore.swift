@@ -21,7 +21,7 @@ final class UgglanStore: StateStore<UgglanState, UgglanAction> {
         _ action: UgglanAction
     ) async {}
 
-    override func reduce(_ state: UgglanState, _ action: UgglanAction) -> UgglanState {
+    override func reduce(_ state: UgglanState, _ action: UgglanAction) async -> UgglanState {
         var newState = state
 
         switch action {

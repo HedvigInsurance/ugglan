@@ -4,6 +4,7 @@ import hCore
 @testable import EditCoInsured
 @testable import EditCoInsuredShared
 
+@MainActor
 struct MockData {
     @discardableResult
     static func createMockEditCoInsuredService(
@@ -35,7 +36,7 @@ struct MockData {
 
 typealias SendMidtermChangeIntent = (String) async throws -> Void
 typealias FetchPersonalInformation = (String) async throws -> PersonalData?
-typealias SendIntent = (String, [EditCoInsuredShared.CoInsuredModel]) async throws -> Intent
+typealias SendIntent = @Sendable (String, [EditCoInsuredShared.CoInsuredModel]) async throws -> Intent
 
 class MockEditCoInsuredService: EditCoInsuredClient {
     var events = [Event]()

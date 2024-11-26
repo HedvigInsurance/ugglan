@@ -8,6 +8,7 @@ public enum FeatureTarget {
     case example
     case testing
     case generateAssets
+    case swift6
 }
 
 extension Project {
@@ -20,15 +21,21 @@ extension Project {
         includesGraphQL: Bool = false
     ) -> Project {
 
+        let settings: [String: SettingValue] = {
+            if targets.contains(.swift6) {
+                return ["SWIFT_VERSION": "6.0.2"]
+            }
+            return [:]
+        }()
         let frameworkConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
-                settings: [String: SettingValue](),
+                settings: settings,
                 xcconfig: .relativeToRoot("Configurations/iOS/iOS-Framework-Debug.xcconfig")
             ),
             .release(
                 name: "Release",
-                settings: [String: SettingValue](),
+                settings: settings,
                 xcconfig: .relativeToRoot("Configurations/iOS/iOS-Framework-Release.xcconfig")
             ),
         ]
@@ -36,36 +43,36 @@ extension Project {
         let testsConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
-                settings: [String: SettingValue](),
+                settings: settings,
                 xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")
             ),
             .release(
                 name: "Release",
-                settings: [String: SettingValue](),
+                settings: settings,
                 xcconfig: .relativeToRoot("Configurations/iOS/iOS-Base.xcconfig")
             ),
         ]
         let appConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
-                settings: [String: SettingValue](),
+                settings: settings,
                 xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
             ),
             .release(
                 name: "Release",
-                settings: [String: SettingValue](),
+                settings: settings,
                 xcconfig: .relativeToRoot("Configurations/iOS/iOS-Application.xcconfig")
             ),
         ]
         let projectConfigurations: [Configuration] = [
             .debug(
                 name: "Debug",
-                settings: [String: SettingValue](),
+                settings: settings,
                 xcconfig: .relativeToRoot("Configurations/Base/Configurations/Debug.xcconfig")
             ),
             .release(
                 name: "Release",
-                settings: [String: SettingValue](),
+                settings: settings,
                 xcconfig: .relativeToRoot("Configurations/Base/Configurations/Release.xcconfig")
             ),
         ]

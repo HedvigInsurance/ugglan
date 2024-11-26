@@ -2,6 +2,7 @@ import Foundation
 import PresentableStore
 import hGraphQL
 
+@MainActor
 extension PaymentHistoryListData {
     static func getHistory(
         with data: OctopusGraphQL.PaymentHistoryDataQuery.Data.CurrentMember
@@ -40,6 +41,7 @@ extension PaymentHistoryListData {
     }
 }
 
+@MainActor
 extension PaymentData {
     init(
         with data: OctopusGraphQL.MemberChargeFragment,

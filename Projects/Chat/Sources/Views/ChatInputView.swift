@@ -2,6 +2,7 @@ import Combine
 import Photos
 import PhotosUI
 import SwiftUI
+@preconcurrency import UIKit
 import hCore
 import hCoreUI
 
@@ -103,6 +104,7 @@ struct ChatInputView: View {
     }
 }
 
+@MainActor
 class ChatInputViewModel: NSObject, ObservableObject {
     @Published var inputText: String = ""
     @Published var keyboardIsShown = false {
@@ -194,6 +196,7 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
     }
 }
 
+@MainActor
 private class CustomTextView: UITextView, UITextViewDelegate {
     @Binding private var inputText: String
     @Binding private var height: CGFloat
@@ -296,8 +299,10 @@ private class CustomTextView: UITextView, UITextViewDelegate {
             } else if let urls = UIPasteboard.general.urls, urls.count > 0 {
                 for url in urls {
                     if let contentProvider = NSItemProvider(contentsOf: url) {
-                        contentProvider.getFile { [weak self] file in
-                            self?.onPaste?(file)
+                        Task { [weak self] in
+                            if let file = await contentProvider.getFile() {
+                                self?.onPaste?(file)
+                            }
                         }
                     }
                 }

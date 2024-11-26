@@ -221,7 +221,7 @@ struct ContractInformationView: View {
     private func upatedContractView(_ contract: Contract) -> some View {
         if let upcomingRenewal = contract.upcomingRenewal,
             let days = upcomingRenewal.renewalDate.localDateToDate?.daysBetween(start: Date()),
-            let url = URL(string: upcomingRenewal.certificateUrl)
+            URL(string: upcomingRenewal.certificateUrl) != nil
         {
             hSection {
                 InfoCard(
@@ -244,7 +244,7 @@ struct ContractInformationView: View {
             }
             .padding(.top, .padding8)
         } else if let upcomingChangedAgreement = contract.upcomingChangedAgreement,
-            let url = URL(string: upcomingChangedAgreement.certificateUrl)
+            URL(string: upcomingChangedAgreement.certificateUrl) != nil
         {
             hSection {
                 HStack {
@@ -348,6 +348,7 @@ struct ContractInformationView: View {
     }
 }
 
+@MainActor
 private class ContractsInformationViewModel: ObservableObject {
     var cancellable: AnyCancellable?
     @Published var cancelInsuranceState: ProcessingState = .success

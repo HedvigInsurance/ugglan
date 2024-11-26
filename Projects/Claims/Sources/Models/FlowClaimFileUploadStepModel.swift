@@ -20,7 +20,7 @@ public struct FlowClaimFileUploadStepModel: FlowClaimStepModel {
     }
 }
 
-public struct FlowClaimFileUploadStepFileModel: Codable, Equatable, Hashable {
+public struct FlowClaimFileUploadStepFileModel: Codable, Equatable, Hashable, Sendable {
     let fileId: String
     let signedUrl: String
     let mimeType: String

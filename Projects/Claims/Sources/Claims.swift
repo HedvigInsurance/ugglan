@@ -6,6 +6,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
+@MainActor
 public struct Claims {
     @StateObject var vm = ClaimsViewModel()
 
@@ -13,7 +14,6 @@ public struct Claims {
 }
 
 extension Claims: View {
-    @ViewBuilder
     public var body: some View {
         VStack {
             if vm.claims.isEmpty {
@@ -35,6 +35,7 @@ extension Claims: View {
     }
 }
 
+@MainActor
 class ClaimsViewModel: ObservableObject {
     @PresentableStore private var store: ClaimsStore
     private var pollTimerCancellable: AnyCancellable?
@@ -47,8 +48,8 @@ class ClaimsViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .map(\.claims)
             .removeDuplicates()
-            .sink { state in
-                self.claims = state ?? []
+            .sink { [weak self] state in
+                self?.claims = state ?? []
             }
         claims = store.state.claims ?? []
     }
@@ -60,13 +61,9 @@ class ClaimsViewModel: ObservableObject {
     private func configureTimer() {
         pollTimerCancellable = Timer.publish(every: TimeInterval(refreshOn), on: .main, in: .common)
             .autoconnect()
-            .sink(receiveValue: { [weak self] _ in
-                //added this check here because we have major memory leak in the tabjourney so when we logout this vm is still alive
-                //TODO: remove after we fix memory leak
-                if ApplicationContext.shared.isLoggedIn {
+            .sink(receiveValue: { _ in
+                Task { [weak self] in
                     self?.fetch()
-                } else {
-                    self?.pollTimerCancellable?.cancel()
                 }
             })
     }

@@ -5,6 +5,7 @@ import SwiftUI
 import hCore
 import hGraphQL
 
+@MainActor
 struct Impersonate {
     var authenticationService = AuthenticationService()
 

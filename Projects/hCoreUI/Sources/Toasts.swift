@@ -116,6 +116,7 @@ public struct ToastBarView: View {
     }
 }
 
+@MainActor
 public class Toasts {
     public static let shared = Toasts()
     var list = [ToastBar]()
@@ -147,12 +148,13 @@ public class Toasts {
 
 }
 
+@MainActor
 private class ToastUIView: UIView {
-    private let onDeinit: () -> Void
+    nonisolated(unsafe) private let onDeinit: () -> Void
     private let model: ToastBar
     private var timerSubscription: Cancellable?
     private var offsetForPanGesture: CGFloat = 0
-    init(model: ToastBar, onDeinit: @escaping () -> Void) {
+    init(model: ToastBar, onDeinit: @MainActor @escaping () -> Void) {
         let toastBarView = ToastBarView(toastModel: model)
         let vc = hHostingController(rootView: toastBarView, contentName: "")
         self.model = model

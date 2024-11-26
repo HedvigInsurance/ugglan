@@ -4,6 +4,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
+@MainActor
 extension Referral {
     @hColorBuilder var statusColor: some hColor {
         switch self.status {

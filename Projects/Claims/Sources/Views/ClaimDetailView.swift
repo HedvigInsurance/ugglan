@@ -94,8 +94,7 @@ public struct ClaimDetailView: View {
         }
         .sheet(isPresented: $showCamera) {
             CameraPickerView { image in
-                guard let data = image.jpegData(compressionQuality: 0.9),
-                    let thumbnailData = image.jpegData(compressionQuality: 0.1)
+                guard let data = image.jpegData(compressionQuality: 0.9)
                 else { return }
                 let file = File(
                     id: UUID().uuidString,
@@ -388,6 +387,7 @@ struct ClaimDetailView_Previews: PreviewProvider {
     }
 }
 
+@MainActor
 public class ClaimDetailViewModel: ObservableObject {
     @PresentableStore var store: ClaimsStore
     @Published var claim: ClaimModel

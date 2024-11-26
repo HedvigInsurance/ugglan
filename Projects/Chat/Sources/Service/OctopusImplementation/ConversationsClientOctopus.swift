@@ -118,6 +118,7 @@ public class ConversationClientOctopus: ConversationClient {
     }
 }
 
+@MainActor
 extension OctopusGraphQL.ConversationFragment {
     func asConversation(type: ConversationType) -> Conversation {
         return .init(
@@ -134,6 +135,7 @@ extension OctopusGraphQL.ConversationFragment {
     }
 }
 
+@MainActor
 extension OctopusGraphQL.MessageFragment {
     func asMessage() -> Message {
         return .init(

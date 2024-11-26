@@ -107,6 +107,7 @@ struct MovingFlowTypeOfHome_Previews: PreviewProvider {
     }
 }
 
+@MainActor
 class MovingFlowHousingTypeViewModel: ObservableObject {
     @Inject private var service: MoveFlowClient
     @Published var selectedHousingType: String? = HousingType.apartment.rawValue

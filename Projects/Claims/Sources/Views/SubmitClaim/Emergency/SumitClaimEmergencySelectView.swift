@@ -76,6 +76,7 @@ struct SumitClaimEmergencySelectView: View {
     }
 }
 
+@MainActor
 public class SumitClaimEmergencySelectViewModel: ObservableObject {
     @Inject private var service: SubmitClaimClient
     @Published var state: ProcessingState = .success

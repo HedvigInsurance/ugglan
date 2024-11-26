@@ -2,6 +2,7 @@ import Foundation
 import hCore
 import hGraphQL
 
+@MainActor
 public class EditCoInsuredSharedService {
     @Inject var service: EditCoInsuredSharedClient
 

@@ -3,6 +3,7 @@ import Foundation
 import SwiftUI
 import hCore
 
+@MainActor
 func setGrabber(on presentationController: UIPresentationController, to value: Bool) {
     if #available(iOS 17.0, *) {
         let grabberKey = ["_", "setWants", "Grabber:"]
@@ -19,8 +20,10 @@ func setGrabber(on presentationController: UIPresentationController, to value: B
     }
 }
 
+@MainActor
 var detentIndexKey = ["_", "indexOf", "CurrentDetent"].joined()
 
+@MainActor
 func getDetentIndex(on presentationController: UIPresentationController) -> Int {
     presentationController.value(forKey: detentIndexKey) as? Int ?? 0
 }
@@ -56,7 +59,7 @@ extension Notification {
     }
 }
 
-public struct PresentationOptions: OptionSet {
+public struct PresentationOptions: OptionSet, Sendable {
     public let rawValue: Int
     public init(rawValue: Int) {
         self.rawValue = rawValue
@@ -269,6 +272,7 @@ public enum Detent: Equatable {
         _ containerViewBlock: (_ viewController: UIViewController, _ containerView: UIView) -> CGFloat
     )
 
+    @MainActor
     public static var height: Detent {
         .custom("scrollViewContentSize") { viewController, containerView in
             let allScrollViewDescendants = viewController.view.allDescendants(ofType: UIScrollView.self)
@@ -329,6 +333,7 @@ public enum Detent: Equatable {
         }
     }
 
+    @MainActor
     private static func findNavigationController(from vc: UIViewController?) -> UINavigationController? {
 
         if let viewController = vc?.children.first(where: { $0.isKind(of: UINavigationController.self) })
@@ -339,12 +344,14 @@ public enum Detent: Equatable {
         return nil
     }
 
+    @MainActor
     public static var preferredContentSize: Detent {
         .custom("preferredContentSize") { viewController, _ in
             viewController.preferredContentSize.height
         }
     }
 
+    @MainActor
     static func set(
         _ detents: [Detent],
         on presentationController: UIPresentationController,
@@ -513,14 +520,18 @@ public class PassThroughEffectView: UIVisualEffectView {
     }
 }
 
+@MainActor
 public protocol ParentChildRelational {
     associatedtype Member: ParentChildRelational where Member.Member == Member
     var parent: Member? { get }
     var children: [Member] { get }
 }
 
+@MainActor
 extension UIView: ParentChildRelational {
+    @MainActor
     public var parent: UIView? { return superview }
+    @MainActor
     public var children: [UIView] { return subviews }
 }
 

@@ -45,6 +45,7 @@ public struct ShapeEnvironmentRedraw<Content: View>: View {
     }
 }
 
+@MainActor
 extension Shape {
     public func fill<S>(_ content: S, style: FillStyle = FillStyle()) -> some View where S: hColor {
         ShapeEnvironmentRedraw { colorScheme, userInterfaceLevel in
@@ -65,6 +66,7 @@ extension Shape {
     }
 }
 
+@MainActor
 extension InsettableShape {
     public func strokeBorder<S>(_ content: S, lineWidth: CGFloat = 1) -> some View where S: hColor {
         ShapeEnvironmentRedraw { colorScheme, userInterfaceLevel in
@@ -265,7 +267,9 @@ public struct hColorBase: hColor, View {
     }
 }
 
+@MainActor
 public struct hTextColor {
+    @MainActor
     public struct Opaque {
         public static var primary: some hColor {
             hColorScheme(
@@ -315,6 +319,7 @@ public struct hTextColor {
         }
     }
 
+    @MainActor
     public struct Translucent {
         public static var primary: some hColor {
             hColorScheme(
@@ -373,6 +378,7 @@ public struct hTextColor {
         }
     }
 
+    @MainActor
     public struct Color {
         public static var action: some hColor {
             hRedColor.red600
@@ -384,7 +390,9 @@ public struct hTextColor {
     }
 }
 
+@MainActor
 public struct hButtonColor {
+    @MainActor
     public struct Primary {
         public static var resting: some hColor {
             hColorScheme(
@@ -408,6 +416,7 @@ public struct hButtonColor {
         }
     }
 
+    @MainActor
     public struct PrimaryAlt {
         public static var resting: some hColor {
             hColorScheme(
@@ -431,6 +440,7 @@ public struct hButtonColor {
         }
     }
 
+    @MainActor
     public struct Secondary {
         public static var resting: some hColor {
             hColorScheme(
@@ -454,6 +464,7 @@ public struct hButtonColor {
         }
     }
 
+    @MainActor
     public struct SecondaryAlt {
         public static var resting: some hColor {
             hColorScheme(
@@ -477,6 +488,7 @@ public struct hButtonColor {
         }
     }
 
+    @MainActor
     public struct Ghost {
         public static var resting: some hColor {
             hColorScheme(
@@ -501,7 +513,10 @@ public struct hButtonColor {
     }
 }
 
+@MainActor
 public struct hFillColor {
+
+    @MainActor
     public struct Opaque {
         public static var primary: some hColor {
             hColorScheme(
@@ -547,6 +562,7 @@ public struct hFillColor {
         }
     }
 
+    @MainActor
     public struct Translucent {
         public static var primary: some hColor {
             hColorScheme(
@@ -593,7 +609,9 @@ public struct hFillColor {
     }
 }
 
+@MainActor
 public struct hSurfaceColor {
+    @MainActor
     public struct Opaque {
         public static var primary: some hColor {
             hColorScheme(
@@ -610,6 +628,7 @@ public struct hSurfaceColor {
         }
     }
 
+    @MainActor
     public struct Translucent {
         public static var primary: some hColor {
             hColorScheme(
@@ -634,6 +653,7 @@ public struct hSurfaceColor {
     }
 }
 
+@MainActor
 public struct hBackgroundColor {
     public static var primary: some hColor {
         hColorScheme(
@@ -672,6 +692,7 @@ public struct hBackgroundColor {
     }
 }
 
+@MainActor
 public struct hBorderColor {
     public static var primary: some hColor {
         hColorScheme(
@@ -692,7 +713,9 @@ public struct hBorderColor {
     }
 }
 
+@MainActor
 public struct hSignalColor {
+    @MainActor
     public struct Red {
         public static var fill: some hColor {
             hColorScheme(
@@ -723,6 +746,7 @@ public struct hSignalColor {
         }
     }
 
+    @MainActor
     public struct Amber {
         public static var fill: some hColor {
             hColorScheme(
@@ -753,6 +777,7 @@ public struct hSignalColor {
         }
     }
 
+    @MainActor
     public struct Green {
         public static var fill: some hColor {
             hColorScheme(
@@ -783,6 +808,7 @@ public struct hSignalColor {
         }
     }
 
+    @MainActor
     public struct Blue {
         public static var fill: some hColor {
             hColorScheme(
@@ -813,6 +839,7 @@ public struct hSignalColor {
         }
     }
 
+    @MainActor
     public struct Grey {
         public static var element: some hColor {
             hColorScheme(
@@ -823,7 +850,9 @@ public struct hSignalColor {
     }
 }
 
+@MainActor
 public struct hHighlightColor {
+    @MainActor
     public struct Pink {
         public static var fillOne: some hColor {
             hColorScheme(
@@ -847,6 +876,7 @@ public struct hHighlightColor {
         }
     }
 
+    @MainActor
     public struct Yellow {
         public static var fillOne: some hColor {
             hColorScheme(
@@ -870,6 +900,7 @@ public struct hHighlightColor {
         }
     }
 
+    @MainActor
     public struct Green {
         public static var fillOne: some hColor {
             hColorScheme(
@@ -893,6 +924,7 @@ public struct hHighlightColor {
         }
     }
 
+    @MainActor
     public struct Teal {
         public static var fillOne: some hColor {
             hColorScheme(
@@ -916,6 +948,7 @@ public struct hHighlightColor {
         }
     }
 
+    @MainActor
     public struct Blue {
         public static var fillOne: some hColor {
             hColorScheme(
@@ -939,6 +972,7 @@ public struct hHighlightColor {
         }
     }
 
+    @MainActor
     public struct Purple {
         public static var fillOne: some hColor {
             hColorScheme(
@@ -962,6 +996,7 @@ public struct hHighlightColor {
         }
     }
 
+    @MainActor
     public struct Amber {
         public static var fillOne: some hColor {
             hColorScheme(
@@ -985,6 +1020,7 @@ public struct hHighlightColor {
         }
     }
 
+    @MainActor
     public struct Red {
         public static var fillOne: some hColor {
             hColorScheme(
@@ -1009,6 +1045,7 @@ public struct hHighlightColor {
     }
 }
 
+@MainActor
 public struct hGrayscaleOpaqueColor {
     public static var greyScale50: some hColor {
         hColorScheme(
@@ -1096,6 +1133,7 @@ public struct hGrayscaleOpaqueColor {
     }
 }
 
+@MainActor
 public struct hGrayscaleTranslucentLight {
     public static var greyScaleTranslucent50: some hColor {
         hColorScheme(
@@ -1182,6 +1220,7 @@ public struct hGrayscaleTranslucentLight {
     }
 }
 
+@MainActor
 public struct hGrayscaleTranslucentDark {
     public static var greyScaleTranslucent50: some hColor {
         return hColorScheme(
@@ -1268,6 +1307,7 @@ public struct hGrayscaleTranslucentDark {
     }
 }
 
+@MainActor
 public struct hGrayscaleTranslucent {
     public static var greyScaleTranslucent50: some hColor {
         return hColorScheme(
@@ -1375,6 +1415,7 @@ public struct hGrayscaleTranslucent {
     }
 }
 
+@MainActor
 public struct hGreenColor {
     public static var green50: some hColor {
         hColorScheme(
@@ -1443,6 +1484,7 @@ public struct hGreenColor {
     }
 }
 
+@MainActor
 public struct hYellowColor {
     public static var yellow50: some hColor {
         hColorScheme(
@@ -1511,6 +1553,7 @@ public struct hYellowColor {
     }
 }
 
+@MainActor
 public struct hAmberColor {
     public static var amber50: some hColor {
         hColorScheme(
@@ -1579,6 +1622,7 @@ public struct hAmberColor {
     }
 }
 
+@MainActor
 public struct hRedColor {
     public static var red50: some hColor {
         hColorScheme(
@@ -1647,6 +1691,7 @@ public struct hRedColor {
     }
 }
 
+@MainActor
 public struct hPinkColor {
     public static var pink50: some hColor {
         hColorScheme(
@@ -1715,6 +1760,7 @@ public struct hPinkColor {
     }
 }
 
+@MainActor
 public struct hPurpleColor {
     public static var purple50: some hColor {
         hColorScheme(
@@ -1783,6 +1829,7 @@ public struct hPurpleColor {
     }
 }
 
+@MainActor
 public struct hBlueColor {
     public static var blue50: some hColor {
         hColorScheme(
@@ -1851,6 +1898,7 @@ public struct hBlueColor {
     }
 }
 
+@MainActor
 public struct hTealColor {
     public static var teal50: some hColor {
         hColorScheme(
@@ -1919,6 +1967,7 @@ public struct hTealColor {
     }
 }
 
+@MainActor
 public struct hBlurColor {
     public static var blurOne: some hColor {
         hColorScheme(

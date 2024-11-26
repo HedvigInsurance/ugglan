@@ -213,7 +213,8 @@ public enum hSectionContainerStyle {
     case black
 }
 
-private struct EnvironmentHSectionContainerStyle: EnvironmentKey {
+@MainActor
+private struct EnvironmentHSectionContainerStyle: @preconcurrency EnvironmentKey {
     static let defaultValue = hSectionContainerStyle.opaque
 }
 

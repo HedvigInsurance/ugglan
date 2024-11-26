@@ -1,6 +1,7 @@
 import hCore
 import hGraphQL
 
+@MainActor
 public class NotificationService {
     @Inject var service: NotificationClient
 

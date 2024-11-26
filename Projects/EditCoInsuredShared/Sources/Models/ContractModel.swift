@@ -105,7 +105,7 @@ public struct ProductVariant: Codable, Hashable {
         self.displayName = data.displayName
     }
 }
-
+@MainActor
 extension InsuredPeopleConfig {
     public init(
         contract: Contract,

@@ -3,12 +3,12 @@ import hCore
 
 @testable import Authentication
 
+@MainActor
 final class AuthenticationTests: XCTestCase {
     weak var sut: MockAuthenticationService?
 
     override func setUp() {
         super.setUp()
-        sut = nil
     }
 
     override func tearDown() async throws {

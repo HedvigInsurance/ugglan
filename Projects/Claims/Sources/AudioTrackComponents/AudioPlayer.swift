@@ -3,7 +3,8 @@ import Combine
 import Foundation
 import hCore
 
-class AudioPlayer: NSObject, ObservableObject {
+@MainActor
+class AudioPlayer: NSObject, @preconcurrency ObservableObject {
     internal init(
         url: URL?
     ) {
@@ -81,8 +82,12 @@ class AudioPlayer: NSObject, ObservableObject {
     func setProgress(to progress: Double) {
         if let duration = audioPlayer?.currentItem?.duration {
             let time = duration.seconds * progress
+            print("OPOPOP \(time)")
             audioPlayer?.seek(to: CMTimeMakeWithSeconds(time, preferredTimescale: 1000))
             self.progress = progress
+        } else {
+            print("OPOPOP 1")
+            startPlaying()
         }
     }
 
@@ -114,20 +119,21 @@ class AudioPlayer: NSObject, ObservableObject {
                 forInterval: CMTime(value: 1, timescale: 50),
                 queue: .main,
                 using: { [weak self] time in
-                    print(time)
-                    guard let self = self, let item = self.audioPlayer?.currentItem else { return }
-                    print(item.status)
-                    switch item.status {
-                    case .readyToPlay:
-                        let duration = CMTimeGetSeconds(item.duration)
-                        let timeInFloat = CMTimeGetSeconds(time)
-                        self.progress = timeInFloat / duration
-                    case .failed:
-                        break
-                    case .unknown:
-                        break
-                    default:
-                        self.playbackState = .error(message: "Unknown playback error")
+                    Task { @MainActor in
+                        guard let self = self, let item = self.audioPlayer?.currentItem else { return }
+                        print(item.status)
+                        switch item.status {
+                        case .readyToPlay:
+                            let duration = CMTimeGetSeconds(item.duration)
+                            let timeInFloat = CMTimeGetSeconds(time)
+                            self.progress = timeInFloat / duration
+                        case .failed:
+                            break
+                        case .unknown:
+                            break
+                        default:
+                            self.playbackState = .error(message: "Unknown playback error")
+                        }
                     }
                 }
             )
@@ -149,16 +155,14 @@ class AudioPlayer: NSObject, ObservableObject {
         {
             let oldStatus = AVPlayer.TimeControlStatus(rawValue: oldValue)
             let newStatus = AVPlayer.TimeControlStatus(rawValue: newValue)
-
-            if newStatus == .playing {
-                self.playbackState = .playing(paused: false)
-            } else if newStatus == .paused && playbackState != .finished {
-                self.playbackState = .playing(paused: true)
-            }
-
-            if newStatus != oldStatus, newStatus != .playing && newStatus != .paused {
-                DispatchQueue.main.async { [weak self] in
-                    self?.playbackState = .loading
+            Task { @MainActor in
+                if newStatus == .playing {
+                    self.playbackState = .playing(paused: false)
+                } else if newStatus == .paused && playbackState != .finished {
+                    self.playbackState = .playing(paused: true)
+                }
+                if newStatus != oldStatus, newStatus != .playing && newStatus != .paused {
+                    self.playbackState = .loading
                 }
             }
         }

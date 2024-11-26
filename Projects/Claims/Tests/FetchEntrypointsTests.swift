@@ -1,17 +1,14 @@
-import XCTest
+@preconcurrency import XCTest
 import hCore
 
 @testable import Claims
 
+@MainActor
 final class FetchEntrypointsTests: XCTestCase {
     weak var sut: MockFetchEntrypointsService?
 
-    override func setUp() {
-        super.setUp()
-        sut = nil
-    }
-
     override func tearDown() async throws {
+        try await super.tearDown()
         Dependencies.shared.remove(for: hFetchEntrypointsClient.self)
         try await Task.sleep(nanoseconds: 100)
 

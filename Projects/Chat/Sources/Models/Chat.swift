@@ -1,7 +1,7 @@
 import Foundation
 import hCore
 
-public struct ChatData {
+public struct ChatData: Sendable {
     let conversationId: String
     let hasPreviousMessage: Bool
     let messages: [Message]

@@ -272,6 +272,7 @@ enum MovingFlowNewAddressViewFieldType: hTextFieldFocusStateCompliant, Codable {
 
 }
 
+@MainActor
 public class AddressInputModel: ObservableObject {
     @Inject private var service: MoveFlowClient
     @Published var moveFromAddressId: String?

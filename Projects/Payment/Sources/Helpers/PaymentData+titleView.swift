@@ -12,6 +12,7 @@ extension PaymentData: TitleView {
     }
 }
 
+@MainActor
 extension PaymentData {
 
     fileprivate var getTitle: String {

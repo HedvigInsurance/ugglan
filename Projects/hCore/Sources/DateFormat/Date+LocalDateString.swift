@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 extension Date {
     public var localDateString: String {
         Dependencies.dateService.localDateStringFormatter.string(from: self)
@@ -56,8 +57,8 @@ extension Calendar {
     }
 }
 
+@MainActor
 public class DateService {
-
     public init() {}
     let localDateStringFormatter: DateFormatter = {
         let formatter = DateFormatter()

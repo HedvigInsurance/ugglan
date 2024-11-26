@@ -148,11 +148,11 @@ public struct ForeverView: View {
     }
 }
 
+@MainActor
 public class ForeverViewModel: ObservableObject {
     @Inject var foreverService: ForeverClient
     @Published var viewState: ProcessingState = .loading
 
-    @MainActor
     func fetchForeverData() async throws -> ForeverData? {
         withAnimation {
             viewState = .loading

@@ -5,13 +5,14 @@ import SwiftUI
 import hCore
 import hGraphQL
 
+@MainActor
 public class hClaimFileUploadService {
     @Inject var client: hClaimFileUploadClient
 
     public func upload(
         endPoint: String,
         files: [File],
-        withProgress: ((_ progress: Double) -> Void)?
+        withProgress: (@Sendable (_ progress: Double) -> Void)?
     ) async throws -> [ClaimFileUploadResponse] {
         log.info("hClaimFileUploadService: upload", error: nil, attributes: nil)
         return try await client.upload(endPoint: endPoint, files: files, withProgress: withProgress)
@@ -22,7 +23,7 @@ extension NetworkClient: hClaimFileUploadClient {
     public func upload(
         endPoint: String,
         files: [File],
-        withProgress: ((_ progress: Double) -> Void)?
+        withProgress: (@Sendable (_ progress: Double) -> Void)?
     ) async throws -> [ClaimFileUploadResponse] {
         let request = try await ClaimsRequest.uploadFile(endPoint: endPoint, files: files).asRequest()
         var observation: NSKeyValueObservation?
@@ -88,12 +89,12 @@ extension NetworkClient: hClaimFileUploadClient {
     }
 }
 
-public struct ClaimFileUploadResponse: Codable {
+public struct ClaimFileUploadResponse: Codable, Sendable {
     let file: FileUpload?
     let error: String?
 }
 
-struct FileUpload: Codable {
+struct FileUpload: Codable, Sendable {
     let fileId: String
     let name: String
     let mimeType: String
@@ -147,7 +148,7 @@ enum ClaimsRequest {
         }
         request.httpMethod = self.methodType
         try await TokenRefresher.shared.refreshIfNeeded()
-        let headers = ApolloClient.headers()
+        let headers = await ApolloClient.headers()
         headers.forEach { element in
             request.setValue(element.value, forHTTPHeaderField: element.key)
         }

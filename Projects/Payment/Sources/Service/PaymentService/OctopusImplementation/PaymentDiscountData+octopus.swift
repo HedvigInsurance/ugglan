@@ -2,6 +2,7 @@ import Foundation
 import PresentableStore
 import hGraphQL
 
+@MainActor
 extension PaymentDiscountsData {
     init(with data: OctopusGraphQL.DiscountsQuery.Data) {
         self.discounts = data.currentMember.redeemedCampaigns.filter({ $0.type == .voucher })
@@ -10,6 +11,7 @@ extension PaymentDiscountsData {
     }
 }
 
+@MainActor
 extension Discount {
     init(with data: OctopusGraphQL.DiscountsQuery.Data.CurrentMember.RedeemedCampaign) {
         let store: PaymentStore = globalPresentableStoreContainer.get()

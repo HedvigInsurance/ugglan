@@ -3,6 +3,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+@MainActor
 public class PaymentsNavigationViewModel: ObservableObject {
 
     public init() {}

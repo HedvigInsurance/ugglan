@@ -3,7 +3,10 @@ import Foundation
 import SwiftUI
 import hCore
 
+@MainActor
 extension UIColor {
+
+    @MainActor
     private enum BrandColorBase {
         static let grayScale25 = UIColor(hexString: "FAFAFA")
         static let grayScale50 = UIColor(hexString: "F5F5F5")
@@ -40,6 +43,7 @@ extension UIColor {
 
         case datePickerSelectionColor
 
+        @MainActor
         func color(with style: UIUserInterfaceStyle?) -> UIColor {
             switch self {
             case let .primaryBackground(negative):
@@ -99,10 +103,13 @@ extension UIColor {
                 })
             }
         }
+
+        @MainActor
         var color: UIColor {
             return self.color(with: nil)
         }
 
+        @MainActor
         private var font: UIFont {
             switch self {
             case .primaryBackground: return Fonts.fontFor(style: .heading3)

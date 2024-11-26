@@ -1,4 +1,4 @@
-public struct TerminationConfirmConfig: Codable & Equatable & Hashable {
+public struct TerminationConfirmConfig: Codable & Equatable & Hashable & Sendable {
     public var contractId: String
     public var contractDisplayName: String
     public var contractExposureName: String

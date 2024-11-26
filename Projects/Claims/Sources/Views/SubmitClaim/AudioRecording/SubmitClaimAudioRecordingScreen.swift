@@ -272,6 +272,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
     }
 }
 
+@MainActor
 public class SubmitClaimAudioRecordingScreenModel: ObservableObject {
     @Inject private var service: SubmitClaimClient
     @Inject var fileUploaderClient: FileUploaderClient

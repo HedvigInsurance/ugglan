@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-@UIApplicationMain class AppDelegate: UIResponder, UIApplicationDelegate {
+@main class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     internal func application(

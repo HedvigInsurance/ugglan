@@ -1,6 +1,7 @@
 import Foundation
 import hGraphQL
 
+@MainActor
 extension PaymentStatusData {
     init(data: OctopusGraphQL.PaymentInformationQuery.Data) {
         self.status = {

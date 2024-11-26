@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 
+@MainActor
 public final class NetworkClient {
     public let sessionClient: URLSession
     public init() {
@@ -8,7 +9,9 @@ public final class NetworkClient {
         self.sessionClient = URLSession(configuration: config)
     }
 
-    public func handleResponse<T>(data: Data?, response: URLResponse?, error: Error?) throws -> T? where T: Decodable {
+    nonisolated(unsafe)
+        public func handleResponse<T>(data: Data?, response: URLResponse?, error: Error?) throws -> T?
+    where T: Decodable & Sendable {
         if error != nil {
             throw NetworkError.networkError(message: L10n.General.errorBody)
         }

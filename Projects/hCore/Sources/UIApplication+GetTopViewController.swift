@@ -65,6 +65,7 @@ extension UIApplication {
     ///
     /// - Returns: If the top presented ViewController is NavigationViewController
     /// returns last ViewController
+    @MainActor
     public func getTopVisibleVc(from vc: UIViewController? = nil) -> UIViewController? {
         if let vc = vc ?? getRootViewController() {
             if let presentedVc = vc.presentedViewController {

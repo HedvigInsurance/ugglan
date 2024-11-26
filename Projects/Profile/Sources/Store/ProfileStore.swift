@@ -47,7 +47,7 @@ public final class ProfileStore: LoadingStateStore<ProfileState, ProfileAction, 
         }
     }
 
-    public override func reduce(_ state: ProfileState, _ action: ProfileAction) -> ProfileState {
+    public override func reduce(_ state: ProfileState, _ action: ProfileAction) async -> ProfileState {
         var newState = state
         switch action {
         case .fetchProfileState:

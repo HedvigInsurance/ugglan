@@ -1,9 +1,11 @@
 import Combine
 import PresentableStore
 import SwiftUI
+@preconcurrency import UserNotifications
 import hCore
 import hCoreUI
 
+@MainActor
 public class ChatNavigationViewModel: ObservableObject {
     @Published var isFilePresented: DocumentPreviewModel.DocumentPreviewType?
     @Published var isAskForPushNotificationsPresented = false
@@ -16,10 +18,9 @@ public class ChatNavigationViewModel: ObservableObject {
     }
 
     private var toastPublisher: AnyCancellable?
-    @MainActor
     func checkForPushNotificationStatus() async {
-        let settings = await UNUserNotificationCenter.current().notificationSettings()
-        switch settings.authorizationStatus {
+        let status = await UNUserNotificationCenter.current().notificationSettings()
+        switch status.authorizationStatus {
         case .notDetermined:
             self.isAskForPushNotificationsPresented = true
         case .denied:

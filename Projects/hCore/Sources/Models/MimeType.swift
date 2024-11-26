@@ -1,6 +1,6 @@
 import Foundation
 
-public enum MimeType: Codable, Equatable, Hashable {
+public enum MimeType: Codable, Equatable, Hashable, Sendable {
     case PDF
     case DOCX
     case PPTX
