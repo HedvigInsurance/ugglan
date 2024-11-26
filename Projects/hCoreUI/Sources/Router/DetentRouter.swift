@@ -142,7 +142,9 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                 vc.transitioningDelegate = delegate
                 vc.modalPresentationStyle = .custom
                 vc.onDeinit = {
-                    presented = false
+                    Task { @MainActor in
+                        presented = false
+                    }
                 }
                 presentationViewModel.presentingVC = vc
                 vcToPresent?.present(vc, animated: true)
@@ -159,13 +161,13 @@ class PresentationViewModel: ObservableObject {
 }
 
 @MainActor
-public class hHostingController<Content: View>: UIHostingController<Content> {
+public class hHostingController<Content: View>: UIHostingController<Content>, Sendable {
     var onViewWillLayoutSubviews: () -> Void = {}
     var onViewDidLayoutSubviews: () -> Void = {}
     var onViewWillAppear: () -> Void = {}
     var onViewWillDisappear: () -> Void = {}
     private let key = UUID().uuidString
-    nonisolated(unsafe) var onDeinit: () -> Void = {}
+    var onDeinit: @Sendable () -> Void = {}
     private let contentName: String?
     public init(rootView: Content, contentName: String? = nil) {
         self.contentName = contentName
@@ -206,7 +208,7 @@ public class hHostingController<Content: View>: UIHostingController<Content> {
     }
 
     deinit {
-        onDeinit()
+        self.onDeinit()
     }
 
     @objc func onCloseButton() {
@@ -246,5 +248,5 @@ extension String {
     }
 }
 
-nonisolated(unsafe) public var logStartView: ((_ key: String, _ name: String) -> Void) = { _, _ in }
-nonisolated(unsafe) public var logStopView: ((_ key: String) -> Void) = { _ in }
+@MainActor public var logStartView: ((_ key: String, _ name: String) -> Void) = { _, _ in }
+@MainActor public var logStopView: ((_ key: String) -> Void) = { _ in }

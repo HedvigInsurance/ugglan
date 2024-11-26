@@ -3,7 +3,7 @@ import ProjectDescriptionHelpers
 
 let project = Project.framework(
     name: "TerminateContracts",
-    targets: Set([.framework, .tests, .example, .swift6]),
+    targets: Set([.framework, .tests, .example]),
     projects: ["hCore", "hCoreUI", "ChangeTier"],
     sdks: [],
     includesGraphQL: false

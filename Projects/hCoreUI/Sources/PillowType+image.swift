@@ -58,7 +58,7 @@ public enum TypeOfContract: String, Codable, CaseIterable, Sendable {
         }) {
             return mostLikelyTypeOfContract
         }
-        Task {
+        Task { @MainActor in
             log.warn(
                 "Got an unknown type of contract \(typeOfContract) that couldn't be resolved.",
                 error: nil,
