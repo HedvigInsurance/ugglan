@@ -6,19 +6,37 @@ public class AddonsClientOctopus: AddonsClient {
 
     public init() {}
 
-    public func getAddons() throws -> [AddonModel] {
-        let addons: [AddonModel] = [
-            .init(title: "Reseskydd", subTitle: nil, tag: "Ingår", coverageDays: nil),
+    public func getAddons() async throws -> AddonModel {
+        let addons: AddonModel =
             .init(
-                title: "Reseskydd Plus",
-                subTitle: "För dig som reser mycket, bagageskydd, hjälp överallt i världen 24/7.",
-                tag: "+ 49 kr/mo",
-                coverageDays: [
-                    .init(nbOfDays: 45, title: "Travel Plus 45 days", price: 49),
-                    .init(nbOfDays: 60, title: "Travel Plus 60 days", price: 79),
+                title: "Reseskydd",
+                subTitle: "sub title",
+                options: [
+                    .init(
+                        title: "reseskydd",
+                        subtitle: "",
+                        price: nil,
+                        subOptions: []
+                    ),
+                    .init(
+                        title: "Reseskydd Plus",
+                        subtitle: "",
+                        price: .init(amount: "79", currency: "SEK"),
+                        subOptions: [
+                            .init(
+                                title: "Travel Plus 45 days",
+                                subtitle: "45",
+                                price: .init(amount: 49, currency: "SEK")
+                            ),
+                            .init(
+                                title: "Travel Plus 60 days",
+                                subtitle: "60",
+                                price: .init(amount: 79, currency: "SEK")
+                            ),
+                        ]
+                    ),
                 ]
-            ),
-        ]
+            )
 
         return addons
     }

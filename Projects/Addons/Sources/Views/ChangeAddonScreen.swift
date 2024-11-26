@@ -60,14 +60,14 @@ public struct ChangeAddonScreen: View {
     @ViewBuilder
     private var addOnSection: some View {
         VStack(spacing: .padding4) {
-            ForEach(changeAddonVm.addons ?? []) { addon in
+            ForEach(changeAddonVm.addonOptions ?? []) { addonOption in
                 hSection {
                     hRadioField(
-                        id: addon.id.uuidString,
+                        id: addonOption.id.uuidString,
                         leftView: {
-                            getLeftView(for: addon).asAnyView
+                            getLeftView(for: addonOption).asAnyView
                         },
-                        selected: $changeAddonVm.selectedAddonId,
+                        selected: $changeAddonVm.selectedAddonOptionId,
                         error: nil,
                         useAnimation: true
                     )
@@ -78,29 +78,36 @@ public struct ChangeAddonScreen: View {
         }
     }
 
-    private func getLeftView(for addon: AddonModel) -> some View {
+    private func getLeftView(for addonOption: AddonOptionModel) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                hText(addon.title)
+                hText(addonOption.title ?? "")
                     .fixedSize()
                 Spacer()
-                hPill(text: addon.tag, color: .grey(translucent: true), colorLevel: .one)
-                    .hFieldSize(.small)
+
+                hPill(
+                    text: addonOption.price?.formattedAmountPerMonth ?? "Ingår",
+                    color: .grey(translucent: true),
+                    colorLevel: .one
+                )
+                .hFieldSize(.small)
             }
-            if let subTitle = addon.subTitle {
+            if let subTitle = addonOption.subtitle {
                 hText(subTitle, style: .label)
                     .foregroundColor(hTextColor.Opaque.secondary)
             }
 
-            if changeAddonVm.selectedAddonId == addon.id.uuidString && changeAddonVm.hasCoverageDays {
+            if changeAddonVm.selectedAddonOptionId == addonOption.id.uuidString && changeAddonVm.hasSubOptions {
 
                 let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
                 DropdownView(
-                    value: String(changeAddonVm.getSelectedCoverageDays?.nbOfDays ?? 0) + " dagar",
+                    value: String(changeAddonVm.getSelectedSubOption?.subtitle ?? "") + " dagar",
                     placeHolder: "Välj skydd"
                 ) {
-                    let id = changeAddonVm.selectedAddonId
-                    changeAddonNavigationVm.isChangeCoverageDaysPresented = changeAddonVm.getAddonFor(id: id ?? "")
+                    let id = changeAddonVm.selectedAddonOptionId
+                    changeAddonNavigationVm.isChangeCoverageDaysPresented = changeAddonVm.getAddonOptionFor(
+                        id: id ?? ""
+                    )
                 }
                 .padding(.leading, -48)
                 .padding(.trailing, -16)
@@ -113,19 +120,20 @@ public struct ChangeAddonScreen: View {
 
 public class ChangeAddonViewModel: ObservableObject {
     @Inject var addonService: AddonsClient
-    @Published var selectedAddonId: String? {
+    @Published var selectedAddonOptionId: String? {
         didSet {
-            selectedCoverageDayId =
-                selectedCoverageDayId ?? getAddonFor(id: selectedAddonId ?? "")?.coverageDays?.first?.id.uuidString
+            selectedSubOptionId =
+                selectedSubOptionId
+                ?? getAddonOptionFor(id: selectedAddonOptionId ?? "")?.subOptions.first?.id.uuidString
         }
     }
-    @Published var selectedCoverageDayId: String?
-    @Published var addons: [AddonModel]?
+    @Published var selectedSubOptionId: String?
+    @Published var addonOptions: [AddonOptionModel]?
     @Published var contractInformation: AddonContract?
 
-    var hasCoverageDays: Bool {
-        let selectedAddOn = addons?.first(where: { $0.id.uuidString == selectedAddonId })
-        return selectedAddOn?.coverageDays?.count ?? 0 > 0
+    var hasSubOptions: Bool {
+        let selectedAddonOption = addonOptions?.first(where: { $0.id.uuidString == selectedAddonOptionId })
+        return selectedAddonOption?.subOptions.count ?? 0 > 0
     }
 
     init(contractId: String) {
@@ -133,23 +141,23 @@ public class ChangeAddonViewModel: ObservableObject {
             await getAddons()
             await getContractInformation(contractId: contractId)
 
-            self._selectedAddonId = Published(
-                initialValue: addons?.first(where: { $0.coverageDays == nil })?.id.uuidString
+            self._selectedAddonOptionId = Published(
+                initialValue: addonOptions?.first(where: { $0.subOptions.isEmpty })?.id.uuidString
             )
         }
     }
 
-    func getAddonFor(id: String) -> AddonModel? {
-        return addons?.first(where: { $0.id.uuidString == selectedAddonId })
+    func getAddonOptionFor(id: String) -> AddonOptionModel? {
+        return addonOptions?.first(where: { $0.id.uuidString == selectedAddonOptionId })
     }
 
-    var getSelectedCoverageDays: CoverageDays? {
-        let selectedAddon = getAddonFor(id: selectedAddonId ?? "")
-        let coverageDay = selectedAddon?.coverageDays?
+    var getSelectedSubOption: AddonSubOptionModel? {
+        let selectedAddonOption = getAddonOptionFor(id: selectedAddonOptionId ?? "")
+        let subOption = selectedAddonOption?.subOptions
             .first(where: {
-                $0.id.uuidString == selectedCoverageDayId
+                $0.id.uuidString == selectedSubOptionId
             })
-        return coverageDay
+        return subOption
     }
 
     @MainActor
@@ -158,7 +166,7 @@ public class ChangeAddonViewModel: ObservableObject {
             let data = try await addonService.getAddons()
 
             withAnimation {
-                self.addons = data
+                self.addonOptions = data.options
             }
         } catch {
 

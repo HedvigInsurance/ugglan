@@ -5,37 +5,37 @@ import hCoreUI
 public struct ChangeCoverageDaysScreen: View {
     @ObservedObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
 
-    let addon: AddonModel
-    @State var selectedDaysId: String?
+    let addonOption: AddonOptionModel
+    @State var selectedSubOptionId: String?
 
     init(
-        addon: AddonModel,
+        addonOption: AddonOptionModel,
         changeAddonNavigationVm: ChangeAddonNavigationViewModel
     ) {
-        self.addon = addon
+        self.addonOption = addonOption
         self.changeAddonNavigationVm = changeAddonNavigationVm
 
-        if let selectedDays = changeAddonNavigationVm.changeAddonVm.selectedCoverageDayId {
-            self._selectedDaysId = State(initialValue: String(selectedDays))
+        if let selectedSubOption = changeAddonNavigationVm.changeAddonVm.selectedSubOptionId {
+            self._selectedSubOptionId = State(initialValue: String(selectedSubOption))
         } else {
-            self._selectedDaysId = State(initialValue: addon.coverageDays?.first?.id.uuidString)
+            self._selectedSubOptionId = State(initialValue: addonOption.subOptions.first?.id.uuidString)
         }
     }
 
     public var body: some View {
         hForm {
             VStack(spacing: .padding4) {
-                ForEach(addon.coverageDays ?? [], id: \.self) { coverageDay in
+                ForEach(addonOption.subOptions, id: \.id) { subOption in
                     hSection {
                         hRadioField(
-                            id: coverageDay.id.uuidString,
+                            id: subOption.id.uuidString,
                             itemModel: nil,
                             leftView: {
                                 HStack {
-                                    hText(coverageDay.title)
+                                    hText(subOption.title ?? "")
                                     Spacer()
                                     hPill(
-                                        text: "+ \(coverageDay.nbOfDays) kr/mo",
+                                        text: "+ " + subOption.price.formattedAmountPerMonth,
                                         color: .grey(translucent: true),
                                         colorLevel: .one
                                     )
@@ -43,7 +43,7 @@ public struct ChangeCoverageDaysScreen: View {
                                 }
                                 .asAnyView
                             },
-                            selected: $selectedDaysId,
+                            selected: $selectedSubOptionId,
                             error: .constant(nil),
                             useAnimation: true
                         )
@@ -59,7 +59,7 @@ public struct ChangeCoverageDaysScreen: View {
             hSection {
                 VStack(spacing: .padding8) {
                     hButton.LargeButton(type: .primary) {
-                        changeAddonNavigationVm.changeAddonVm.selectedCoverageDayId = selectedDaysId
+                        changeAddonNavigationVm.changeAddonVm.selectedSubOptionId = selectedSubOptionId
                         changeAddonNavigationVm.isChangeCoverageDaysPresented = nil
                     } content: {
                         hText(L10n.generalConfirm)
@@ -90,7 +90,7 @@ extension ChangeCoverageDaysScreen: TitleView {
     @ViewBuilder
     private var titleView: some View {
         VStack(alignment: .leading, spacing: 0) {
-            hText(self.addon.title, style: .heading1)
+            hText(self.addonOption.title ?? "", style: .heading1)
                 .foregroundColor(hTextColor.Opaque.primary)
             hText("Välj din skyddsnivå", style: .heading1)
                 .foregroundColor(hTextColor.Opaque.secondary)
@@ -102,15 +102,20 @@ extension ChangeCoverageDaysScreen: TitleView {
 
 #Preview {
     ChangeCoverageDaysScreen(
-        addon: .init(
-            title: "title",
-            subTitle: "subTitle",
-            tag: "+ 46 kr/mo",
-            coverageDays: [
-                .init(nbOfDays: 45, title: "Travel Plus 45 days", price: 49),
-                .init(nbOfDays: 60, title: "Travel Plus 60 days", price: 79),
+        addonOption: .init(
+            title: "Reseskydd",
+            subtitle: "subtitle",
+            price: nil,
+            subOptions: [
+                .init(
+                    title: "subOption",
+                    subtitle: "",
+                    price: .init(amount: "79", currency: "SEK")
+                )
             ]
         ),
-        changeAddonNavigationVm: .init(input: .init(contractId: "contractId"))
+        changeAddonNavigationVm: .init(
+            input: .init(contractId: "contractId")
+        )
     )
 }

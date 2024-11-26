@@ -17,7 +17,7 @@ public struct ChangeAddonInput {
 @MainActor
 public class ChangeAddonNavigationViewModel: ObservableObject {
     @Published public var isLearnMorePresented = false
-    @Published public var isChangeCoverageDaysPresented: AddonModel?
+    @Published public var isChangeCoverageDaysPresented: AddonOptionModel?
     @Published var changeAddonVm: ChangeAddonViewModel
     let router = Router()
 
@@ -79,7 +79,7 @@ public struct ChangeAddonNavigation: View {
             style: [.height],
             options: .constant(.alwaysOpenOnTop)
         ) { addOn in
-            ChangeCoverageDaysScreen(addon: addOn, changeAddonNavigationVm: changeAddonNavigationVm)
+            ChangeCoverageDaysScreen(addonOption: addOn, changeAddonNavigationVm: changeAddonNavigationVm)
                 .embededInNavigation(
                     options: .navigationType(type: .large),
                     tracking: ChangeAddonTrackingType.changeCoverageDaysScreen
