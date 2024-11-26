@@ -165,8 +165,9 @@ public struct InfoCardButtonConfig: Sendable {
     }
 }
 
-private struct EnvironmentInfoCardCustomView: EnvironmentKey {
-    nonisolated(unsafe) static let defaultValue: AnyView? = nil
+@MainActor
+private struct EnvironmentInfoCardCustomView: @preconcurrency EnvironmentKey {
+    static let defaultValue: AnyView? = nil
 }
 
 extension EnvironmentValues {
@@ -183,7 +184,7 @@ extension View {
 }
 
 private struct EnvironmentInfoCardLayoutStyle: EnvironmentKey {
-    nonisolated(unsafe) static let defaultValue: InfoCardLayoutStyle = .defaultStyle
+    static let defaultValue: InfoCardLayoutStyle = .defaultStyle
 }
 
 extension EnvironmentValues {
@@ -199,7 +200,7 @@ extension View {
     }
 }
 
-public enum InfoCardLayoutStyle {
+public enum InfoCardLayoutStyle: Sendable {
     case defaultStyle
     case bannerStyle
 }
