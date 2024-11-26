@@ -28,14 +28,16 @@ extension NetworkClient: ChatFileUploaderClient {
         let response = try await withCheckedThrowingContinuation {
             (inCont: CheckedContinuation<[ChatUploadFileResponseModel], Error>) -> Void in
             let task = self.sessionClient.dataTask(with: request) { [weak self] (data, response, error) in
-                do {
-                    if let uploadedFiles: [ChatUploadFileResponseModel] = try self?
-                        .handleResponse(data: data, response: response, error: error)
-                    {
-                        inCont.resume(returning: uploadedFiles)
+                Task {
+                    do {
+                        if let uploadedFiles: [ChatUploadFileResponseModel] = try await self?
+                            .handleResponse(data: data, response: response, error: error)
+                        {
+                            inCont.resume(returning: uploadedFiles)
+                        }
+                    } catch let error {
+                        inCont.resume(throwing: error)
                     }
-                } catch let error {
-                    inCont.resume(throwing: error)
                 }
             }
 

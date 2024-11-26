@@ -3,7 +3,7 @@ import StoreKit
 import SwiftUI
 
 public class hNavigationBaseController: UINavigationController {
-    nonisolated(unsafe) var onDeinit: (() -> Void)?
+    var onDeinit: (@Sendable () -> Void)?
 
     deinit {
         self.onDeinit?()

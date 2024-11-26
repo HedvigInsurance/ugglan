@@ -134,7 +134,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func setupPresentableStoreLogger() {
         globalPresentableStoreContainer.logger = { message in
-            log.info(message)
+            Task { @MainActor in
+                log.info(message)
+            }
         }
     }
 

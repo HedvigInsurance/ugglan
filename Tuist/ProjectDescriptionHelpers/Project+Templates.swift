@@ -8,7 +8,6 @@ public enum FeatureTarget {
     case example
     case testing
     case generateAssets
-    case swift6
 }
 
 extension Project {
@@ -22,10 +21,7 @@ extension Project {
     ) -> Project {
 
         let settings: [String: SettingValue] = {
-            if targets.contains(.swift6) {
-                return ["SWIFT_VERSION": "6.0.2"]
-            }
-            return [:]
+            ["SWIFT_VERSION": "6.0.2"]
         }()
         let frameworkConfigurations: [Configuration] = [
             .debug(

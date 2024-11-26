@@ -3,7 +3,7 @@ import ProjectDescriptionHelpers
 
 let project = Project.framework(
     name: "hCore",
-    targets: Set([.framework, .frameworkResources, .swift6]),
+    targets: Set([.framework, .frameworkResources]),
     projects: ["hGraphQL"],
     sdks: [],
     includesGraphQL: false
