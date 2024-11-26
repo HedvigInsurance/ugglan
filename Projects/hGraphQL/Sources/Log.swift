@@ -154,8 +154,8 @@ extension Logging {
         self.addUserAction(type: type, name: name, error: error, attributes: attributes)
     }
 }
-
-nonisolated(unsafe) public var log: (any Logging)! = DemoLogger()
+@MainActor
+public var log: (any Logging)! = DemoLogger()
 
 class DemoLogger: Logging {
     func debug(_ message: String, error: Error?, attributes: [AttributeKey: AttributeValue]?) {

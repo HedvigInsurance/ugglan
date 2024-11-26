@@ -222,7 +222,9 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
             }
         }
         navigation.onDeinit = { [weak router] in
-            router?.builders.removeAll()
+            Task { @MainActor in
+                router?.builders.removeAll()
+            }
         }
 
         router.onDismiss = { [weak navigation] in

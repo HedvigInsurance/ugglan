@@ -9,8 +9,7 @@ public final class NetworkClient {
         self.sessionClient = URLSession(configuration: config)
     }
 
-    nonisolated(unsafe)
-        public func handleResponse<T>(data: Data?, response: URLResponse?, error: Error?) throws -> T?
+    public func handleResponse<T>(data: Data?, response: URLResponse?, error: Error?) async throws -> T?
     where T: Decodable & Sendable {
         if error != nil {
             throw NetworkError.networkError(message: L10n.General.errorBody)

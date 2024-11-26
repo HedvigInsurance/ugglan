@@ -3,7 +3,7 @@ import ProjectDescriptionHelpers
 
 let project = Project.framework(
     name: "EditCoInsuredShared",
-    targets: Set([.framework, .swift6]),
+    targets: Set([.framework]),
     projects: ["hCore", "hCoreUI"],
     sdks: [],
     includesGraphQL: true

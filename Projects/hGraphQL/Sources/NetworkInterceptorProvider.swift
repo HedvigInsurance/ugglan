@@ -3,7 +3,7 @@
 import Foundation
 
 /// use to override the URLSessionClient used by apollo
-nonisolated(unsafe) public var urlSessionClientProvider: () -> URLSessionClient = {
+@MainActor public var urlSessionClientProvider: () -> URLSessionClient = {
     URLSessionClient()
 }
 
