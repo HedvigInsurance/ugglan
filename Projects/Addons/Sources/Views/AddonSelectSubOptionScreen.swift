@@ -2,7 +2,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct ChangeCoverageDaysScreen: View {
+struct AddonSelectSubOptionScreen: View {
     @ObservedObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
 
     let addonOption: AddonOptionModel
@@ -18,17 +18,17 @@ public struct ChangeCoverageDaysScreen: View {
         if let selectedSubOption = changeAddonNavigationVm.changeAddonVm.selectedSubOptionId {
             self._selectedSubOptionId = State(initialValue: String(selectedSubOption))
         } else {
-            self._selectedSubOptionId = State(initialValue: addonOption.subOptions.first?.id.uuidString)
+            self._selectedSubOptionId = State(initialValue: addonOption.subOptions.first?.id)
         }
     }
 
-    public var body: some View {
+    var body: some View {
         hForm {
             VStack(spacing: .padding4) {
                 ForEach(addonOption.subOptions, id: \.id) { subOption in
                     hSection {
                         hRadioField(
-                            id: subOption.id.uuidString,
+                            id: subOption.id,
                             itemModel: nil,
                             leftView: {
                                 HStack {
@@ -79,7 +79,7 @@ public struct ChangeCoverageDaysScreen: View {
     }
 }
 
-extension ChangeCoverageDaysScreen: TitleView {
+extension AddonSelectSubOptionScreen: TitleView {
     public func getTitleView() -> UIView {
         let view: UIView = UIHostingController(rootView: titleView).view
         view.backgroundColor = .clear
@@ -101,13 +101,15 @@ extension ChangeCoverageDaysScreen: TitleView {
 }
 
 #Preview {
-    ChangeCoverageDaysScreen(
+    AddonSelectSubOptionScreen(
         addonOption: .init(
+            id: "Resesydd",
             title: "Reseskydd",
             subtitle: "subtitle",
             price: nil,
             subOptions: [
                 .init(
+                    id: "subOption",
                     title: "subOption",
                     subtitle: "",
                     price: .init(amount: "79", currency: "SEK")

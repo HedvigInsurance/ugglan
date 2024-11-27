@@ -15,8 +15,8 @@ public struct ChangeAddonInput {
 
 @MainActor
 public class ChangeAddonNavigationViewModel: ObservableObject {
-    @Published public var isLearnMorePresented = false
-    @Published public var isChangeCoverageDaysPresented: AddonOptionModel?
+    @Published var isLearnMorePresented: InfoViewDataModel?
+    @Published var isChangeCoverageDaysPresented: AddonOptionModel?
     @Published var changeAddonVm: ChangeAddonViewModel
     let router = Router()
 
@@ -33,12 +33,10 @@ enum ChangeAddonRouterActions {
 
 public struct ChangeAddonNavigation: View {
     @ObservedObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
-    let input: ChangeAddonInput
 
     public init(
         input: ChangeAddonInput
     ) {
-        self.input = input
         self.changeAddonNavigationVm = .init(input: input)
     }
 
@@ -63,25 +61,30 @@ public struct ChangeAddonNavigation: View {
         }
         .environmentObject(changeAddonNavigationVm)
         .detent(
-            presented: $changeAddonNavigationVm.isLearnMorePresented,
+            item: $changeAddonNavigationVm.isLearnMorePresented,
             style: [.height],
             options: .constant(.alwaysOpenOnTop)
-        ) {
+        ) { infoViewModel in
             InfoView(
-                title: "What is Reseskydd Plus?",
-                description:
-                    "Med reseskyddet som ingår i din hemförsäkring får du hjälp vid olycksfall och akut sjukdom eller tandbesvär som kräver sjukvård under din resa.\n\nSkyddet gäller också om ni tvingas evakuera resmålet på grund av det utbryter krig, naturkatastrof eller epidemi. Du kan även få ersättning om du måste avbryta resan på grund av att något allvarligt har hänt med en närstående hemma."
+                title: infoViewModel.title ?? "",
+                description: infoViewModel.description ?? ""
             )
+
+            //            InfoView(
+            //                title: "What is Reseskydd Plus?",
+            //                description:
+            //                    "Med reseskyddet som ingår i din hemförsäkring får du hjälp vid olycksfall och akut sjukdom eller tandbesvär som kräver sjukvård under din resa.\n\nSkyddet gäller också om ni tvingas evakuera resmålet på grund av det utbryter krig, naturkatastrof eller epidemi. Du kan även få ersättning om du måste avbryta resan på grund av att något allvarligt har hänt med en närstående hemma."
+            //            )
         }
         .detent(
             item: $changeAddonNavigationVm.isChangeCoverageDaysPresented,
             style: [.height],
             options: .constant(.alwaysOpenOnTop)
         ) { addOn in
-            ChangeCoverageDaysScreen(addonOption: addOn, changeAddonNavigationVm: changeAddonNavigationVm)
+            AddonSelectSubOptionScreen(addonOption: addOn, changeAddonNavigationVm: changeAddonNavigationVm)
                 .embededInNavigation(
                     options: .navigationType(type: .large),
-                    tracking: ChangeAddonTrackingType.changeCoverageDaysScreen
+                    tracking: ChangeAddonTrackingType.selectSubOptionScreen
                 )
                 .environmentObject(changeAddonNavigationVm)
         }
@@ -102,11 +105,11 @@ private enum ChangeAddonTrackingType: TrackingViewNameProtocol {
         switch self {
         case .changeAddonScreen:
             return .init(describing: ChangeAddonScreen.self)
-        case .changeCoverageDaysScreen:
-            return .init(describing: ChangeCoverageDaysScreen.self)
+        case .selectSubOptionScreen:
+            return .init(describing: AddonSelectSubOptionScreen.self)
         }
     }
 
     case changeAddonScreen
-    case changeCoverageDaysScreen
+    case selectSubOptionScreen
 }

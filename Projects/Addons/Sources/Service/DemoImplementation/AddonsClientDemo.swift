@@ -1,31 +1,36 @@
 public class AddonsClientDemo: AddonsClient {
     public init() {}
 
-    public func getAddons() async throws -> AddonModel {
+    public func getAddon() async throws -> AddonModel {
         let addons: AddonModel =
             .init(
+                id: "Reseskydd",
                 title: "Reseskydd",
                 subTitle: "sub title",
                 options: [
                     .init(
-                        title: "reseskydd",
+                        id: "Reseskydd",
+                        title: "Reseskydd",
                         subtitle: "",
                         price: nil,
                         subOptions: []
                     ),
                     .init(
+                        id: "Reseskydd Plus",
                         title: "Reseskydd Plus",
                         subtitle: "",
                         price: .init(amount: "79", currency: "SEK"),
                         subOptions: [
                             .init(
+                                id: "45",
                                 title: "Travel Plus 45 days",
-                                subtitle: "subtitle",
+                                subtitle: "40",
                                 price: .init(amount: "49", currency: "SEK")
                             ),
                             .init(
+                                id: "60",
                                 title: "Travel Plus 60 days",
-                                subtitle: "subtitle",
+                                subtitle: "60",
                                 price: .init(amount: "79", currency: "SEK")
                             ),
                         ]

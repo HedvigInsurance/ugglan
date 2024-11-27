@@ -2,7 +2,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct ChangeAddonScreen: View {
+struct ChangeAddonScreen: View {
     @EnvironmentObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
     @ObservedObject var changeAddonVm: ChangeAddonViewModel
 
@@ -12,7 +12,7 @@ public struct ChangeAddonScreen: View {
         self.changeAddonVm = changeAddonVm
     }
 
-    public var body: some View {
+    var body: some View {
         hForm {}
             .hFormTitle(
                 title: .init(
@@ -39,7 +39,11 @@ public struct ChangeAddonScreen: View {
                             .init(
                                 buttonTitle: "Learn more",
                                 buttonAction: {
-                                    changeAddonNavigationVm.isLearnMorePresented = true
+                                    changeAddonNavigationVm.isLearnMorePresented = .init(
+                                        title: "What is Reseskydd Plus?",
+                                        description:
+                                            "Med reseskyddet som ingår i din hemförsäkring får du hjälp vid olycksfall och akut sjukdom eller tandbesvär som kräver sjukvård under din resa.\n\nSkyddet gäller också om ni tvingas evakuera resmålet på grund av det utbryter krig, naturkatastrof eller epidemi. Du kan även få ersättning om du måste avbryta resan på grund av att något allvarligt har hänt med en närstående hemma."
+                                    )
                                 }
                             )
                         ])
@@ -63,7 +67,7 @@ public struct ChangeAddonScreen: View {
             ForEach(changeAddonVm.addonOptions ?? []) { addonOption in
                 hSection {
                     hRadioField(
-                        id: addonOption.id.uuidString,
+                        id: addonOption.id,
                         leftView: {
                             getLeftView(for: addonOption).asAnyView
                         },
@@ -73,7 +77,7 @@ public struct ChangeAddonScreen: View {
                     )
                     .hFieldLeftAttachedView
                     .hFieldAttachToBottom {
-                        if changeAddonVm.selectedAddonOptionId == addonOption.id.uuidString
+                        if changeAddonVm.selectedAddonOptionId == addonOption.id
                             && changeAddonVm.hasSubOptions
                         {
 
@@ -131,7 +135,7 @@ public class ChangeAddonViewModel: ObservableObject {
         didSet {
             selectedSubOptionId =
                 selectedSubOptionId
-                ?? getAddonOptionFor(id: selectedAddonOptionId ?? "")?.subOptions.first?.id.uuidString
+                ?? getAddonOptionFor(id: selectedAddonOptionId ?? "")?.subOptions.first?.id
         }
     }
     @Published var selectedSubOptionId: String?
@@ -139,7 +143,7 @@ public class ChangeAddonViewModel: ObservableObject {
     @Published var contractInformation: AddonContract?
 
     var hasSubOptions: Bool {
-        let selectedAddonOption = addonOptions?.first(where: { $0.id.uuidString == selectedAddonOptionId })
+        let selectedAddonOption = addonOptions?.first(where: { $0.id == selectedAddonOptionId })
         return selectedAddonOption?.subOptions.count ?? 0 > 0
     }
 
@@ -149,20 +153,20 @@ public class ChangeAddonViewModel: ObservableObject {
             await getContractInformation(contractId: contractId)
 
             self._selectedAddonOptionId = Published(
-                initialValue: addonOptions?.first(where: { $0.subOptions.isEmpty })?.id.uuidString
+                initialValue: addonOptions?.first(where: { $0.subOptions.isEmpty })?.id
             )
         }
     }
 
     func getAddonOptionFor(id: String) -> AddonOptionModel? {
-        return addonOptions?.first(where: { $0.id.uuidString == selectedAddonOptionId })
+        return addonOptions?.first(where: { $0.id == selectedAddonOptionId })
     }
 
     var getSelectedSubOption: AddonSubOptionModel? {
         let selectedAddonOption = getAddonOptionFor(id: selectedAddonOptionId ?? "")
         let subOption = selectedAddonOption?.subOptions
             .first(where: {
-                $0.id.uuidString == selectedSubOptionId
+                $0.id == selectedSubOptionId
             })
         return subOption
     }
@@ -170,7 +174,7 @@ public class ChangeAddonViewModel: ObservableObject {
     @MainActor
     func getAddons() async {
         do {
-            let data = try await addonService.getAddons()
+            let data = try await addonService.getAddon()
 
             withAnimation {
                 self.addonOptions = data.options

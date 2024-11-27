@@ -1,37 +1,42 @@
 import hCore
-@preconcurrency import hGraphQL
+import hGraphQL
 
 public class AddonsClientOctopus: AddonsClient {
-    @Inject @preconcurrency var octopus: hOctopus
+    @Inject var octopus: hOctopus
 
     public init() {}
 
-    public func getAddons() async throws -> AddonModel {
+    public func getAddon() async throws -> AddonModel {
         let addons: AddonModel =
             .init(
+                id: "Reseskydd",
                 title: "Reseskydd",
                 subTitle: "sub title",
                 options: [
                     .init(
-                        title: "reseskydd",
+                        id: "Reseskydd",
+                        title: "Reseskydd",
                         subtitle: "",
                         price: nil,
                         subOptions: []
                     ),
                     .init(
+                        id: "Reseskydd Plus",
                         title: "Reseskydd Plus",
                         subtitle: "",
                         price: .init(amount: "79", currency: "SEK"),
                         subOptions: [
                             .init(
+                                id: "45",
                                 title: "Travel Plus 45 days",
-                                subtitle: "45",
-                                price: .init(amount: 49, currency: "SEK")
+                                subtitle: "40",
+                                price: .init(amount: "49", currency: "SEK")
                             ),
                             .init(
+                                id: "60",
                                 title: "Travel Plus 60 days",
                                 subtitle: "60",
-                                price: .init(amount: 79, currency: "SEK")
+                                price: .init(amount: "79", currency: "SEK")
                             ),
                         ]
                     ),
@@ -42,7 +47,7 @@ public class AddonsClientOctopus: AddonsClient {
     }
 
     public func getContract(contractId: String) async throws -> AddonContract {
-        let contractsQuery = OctopusGraphQL.GetContractQuery(contractId: contractId)
+        let contractsQuery = OctopusGraphQL.GetContractForAddonQuery(contractId: contractId)
 
         let contractResponse = try await octopus.client.fetch(
             query: contractsQuery,
