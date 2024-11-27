@@ -4,7 +4,6 @@ import hCore
 import hCoreUI
 
 public struct ChangeAddonInput {
-    @EnvironmentObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
     let contractId: String
 
     public init(

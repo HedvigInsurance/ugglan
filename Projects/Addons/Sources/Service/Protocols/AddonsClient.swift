@@ -1,6 +1,7 @@
 import hCoreUI
 import hGraphQL
 
+@MainActor
 public protocol AddonsClient {
     func getAddons() async throws -> AddonModel
     func getContract(contractId: String) async throws -> AddonContract

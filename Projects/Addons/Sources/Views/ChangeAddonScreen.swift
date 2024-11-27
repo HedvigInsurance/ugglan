@@ -118,8 +118,10 @@ public struct ChangeAddonScreen: View {
     }
 }
 
+@MainActor
 public class ChangeAddonViewModel: ObservableObject {
-    @Inject var addonService: AddonsClient
+    @Inject private var addonService: AddonsClient
+
     @Published var selectedAddonOptionId: String? {
         didSet {
             selectedSubOptionId =
