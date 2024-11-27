@@ -60,7 +60,7 @@ struct MovingFlowAddressScreen: View {
                 }
                 .disabled(vm.viewState == .loading)
                 hSection {
-                    InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
+                    InfoCard(text: L10n.changeAddressCoverageInfoText(30), type: .info)
                 }
                 hSection {
                     hButton.LargeButton(type: .primary) {

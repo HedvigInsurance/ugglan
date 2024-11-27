@@ -101,7 +101,7 @@ struct InfoCard_Previews: PreviewProvider {
     static var previews: some View {
         hSection {
             VStack {
-                InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
+                InfoCard(text: L10n.changeAddressCoverageInfoText(30), type: .info)
                     .buttons([
                         .init(
                             buttonTitle: "Title",
@@ -117,7 +117,7 @@ struct InfoCard_Previews: PreviewProvider {
                         ),
                     ])
 
-                InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
+                InfoCard(text: L10n.changeAddressCoverageInfoText(30), type: .info)
                     .buttons([
                         .init(
                             buttonTitle: "Title",
@@ -127,10 +127,10 @@ struct InfoCard_Previews: PreviewProvider {
                         )
                     ])
 
-                InfoCard(text: L10n.changeAddressCoverageInfoText, type: .attention)
+                InfoCard(text: L10n.changeAddressCoverageInfoText(30), type: .attention)
 
-                InfoCard(text: L10n.changeAddressCoverageInfoText, type: .campaign)
-                InfoCard(text: L10n.changeAddressCoverageInfoText, type: .error)
+                InfoCard(text: L10n.changeAddressCoverageInfoText(30), type: .campaign)
+                InfoCard(text: L10n.changeAddressCoverageInfoText(30), type: .error)
                 InfoCard(text: "", type: .error)
                     .hInfoCardCustomView {
                         Text("Testing custom texzt view")
