@@ -20,15 +20,16 @@ struct ChangeAddonSummaryScreen: View {
 
 extension ChangeAddonViewModel {
     func asQuoteSummaryViewModel(changeAddonNavigationVm: ChangeAddonNavigationViewModel) -> QuoteSummaryViewModel {
-
+        
+        let newPremium = changeAddonNavigationVm.changeAddonVm.selectedSubOption?.price ?? changeAddonNavigationVm.changeAddonVm.selectedOption ?.price
         let vm = QuoteSummaryViewModel(
             contract: [
                 .init(
                     id: self.contractInformation?.contractId ?? "",
-                    displayName: "Reseskydd plus",
-                    exposureName: "Tilläggsförsäkring",
-                    newPremium: .init(amount: "49", currency: "SEK"),
-                    currentPremium: .init(amount: "149", currency: "SEK"),
+                    displayName: changeAddonNavigationVm.changeAddonVm.contractInformation?.contractName ?? "",
+                    exposureName: changeAddonNavigationVm.changeAddonVm.contractInformation?.activationDate,
+                    newPremium: newPremium,
+                    currentPremium: changeAddonNavigationVm.changeAddonVm.contractInformation?.currentPremium.formattedAmount,
                     documents: self.contractInformation?.documents ?? [],
                     onDocumentTap: { document in
 

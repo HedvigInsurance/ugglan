@@ -95,13 +95,13 @@ struct ChangeAddonScreen: View {
                         leftView: {
                             getLeftView(for: addonOption).asAnyView
                         },
-                        selected: $changeAddonVm.selectedAddonOption,
+                        selected: $changeAddonVm.selectedOption,
                         error: nil,
                         useAnimation: true
                     )
                     .hFieldLeftAttachedView
                     .hFieldAttachToBottom {
-                        if changeAddonVm.selectedAddonOption == addonOption
+                        if changeAddonVm.selectedOption == addonOption
                             && changeAddonVm.hasSubOptions
                         {
 
@@ -112,7 +112,7 @@ struct ChangeAddonScreen: View {
                                 placeHolder: "Välj skydd"
                             ) {
                                 changeAddonNavigationVm.isChangeCoverageDaysPresented =
-                                    changeAddonVm.selectedAddonOption
+                                    changeAddonVm.selectedOption
                             }
                             .padding(.top, .padding16)
                             .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary])
@@ -153,11 +153,11 @@ public class ChangeAddonViewModel: ObservableObject {
     @Inject private var addonService: AddonsClient
     @Published var viewState: ProcessingState = .loading
 
-    @Published var selectedAddonOption: AddonOptionModel? {
+    @Published var selectedOption: AddonOptionModel? {
         didSet {
             selectedSubOption =
                 selectedSubOption
-                ?? selectedAddonOption?.subOptions.first
+                ?? selectedOption?.subOptions.first
         }
     }
 
@@ -167,7 +167,7 @@ public class ChangeAddonViewModel: ObservableObject {
     @Published var informationText: String?
 
     var hasSubOptions: Bool {
-        return selectedAddonOption?.subOptions.count ?? 0 > 0
+        return selectedOption?.subOptions.count ?? 0 > 0
     }
 
     init(contractId: String) {
@@ -175,7 +175,7 @@ public class ChangeAddonViewModel: ObservableObject {
             await getAddons()
             await getContractInformation(contractId: contractId)
 
-            self._selectedAddonOption = Published(
+            self._selectedOption = Published(
                 initialValue: addonOptions?.first(where: { $0.subOptions.isEmpty })
             )
         }

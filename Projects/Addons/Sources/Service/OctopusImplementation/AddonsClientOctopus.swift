@@ -1,3 +1,4 @@
+import Foundation
 import hCore
 import hGraphQL
 
@@ -50,18 +51,20 @@ public class AddonsClientOctopus: AddonsClient {
     }
 
     public func getContract(contractId: String) async throws -> AddonContract {
-        let contractsQuery = OctopusGraphQL.GetContractForAddonQuery(contractId: contractId)
-
-        let contractResponse = try await octopus.client.fetch(
-            query: contractsQuery,
-            cachePolicy: .fetchIgnoringCacheCompletely
-        )
-
-        let contract = contractResponse.contract
-
         let contractData: AddonContract = .init(
-            contractId: contractId,
-            data: contract.currentAgreement.fragments.agreementFragment
+            contractId: "contractId",
+            contractName: "Reseskydd plus",
+            displayItems: [
+                .init(title: "title1", value: "value1"),
+                .init(title: "title2", value: "value2"),
+            ],
+            documents: [],
+            insurableLimits: [
+                .init(label: "limit", limit: "", description: "description")
+            ],
+            typeOfContract: .seApartmentBrf,
+            activationDate: Date(),
+            currentPremium: .init(amount: "220", currency: "SEK")
         )
         return contractData
     }

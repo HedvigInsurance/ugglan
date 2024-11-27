@@ -1,3 +1,5 @@
+import Foundation
+
 public class AddonsClientDemo: AddonsClient {
     public init() {}
 
@@ -47,6 +49,7 @@ public class AddonsClientDemo: AddonsClient {
     public func getContract(contractId: String) async throws -> AddonContract {
         let contractData: AddonContract = .init(
             contractId: "contractId",
+            contractName: "Reseskydd plus",
             displayItems: [
                 .init(title: "title1", value: "value1"),
                 .init(title: "title2", value: "value2"),
@@ -55,7 +58,9 @@ public class AddonsClientDemo: AddonsClient {
             insurableLimits: [
                 .init(label: "limit", limit: "", description: "description")
             ],
-            typeOfContract: .seApartmentBrf
+            typeOfContract: .seApartmentBrf,
+            activationDate: Date(),
+            currentPremium: .init(amount: "220", currency: "SEK")
         )
         return contractData
     }
