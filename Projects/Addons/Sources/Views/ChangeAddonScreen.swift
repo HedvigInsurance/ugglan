@@ -31,22 +31,24 @@ struct ChangeAddonScreen: View {
                 VStack(spacing: .padding8) {
                     addOnSection
                     hSection {
-                        InfoCard(
-                            text: "Click to learn more about our extended travel coverage Reseskydd Plus",
-                            type: .neutral
-                        )
-                        .buttons([
-                            .init(
-                                buttonTitle: "Learn more",
-                                buttonAction: {
-                                    changeAddonNavigationVm.isLearnMorePresented = .init(
-                                        title: "What is Reseskydd Plus?",
-                                        description:
-                                            "Med reseskyddet som ingår i din hemförsäkring får du hjälp vid olycksfall och akut sjukdom eller tandbesvär som kräver sjukvård under din resa.\n\nSkyddet gäller också om ni tvingas evakuera resmålet på grund av det utbryter krig, naturkatastrof eller epidemi. Du kan även få ersättning om du måste avbryta resan på grund av att något allvarligt har hänt med en närstående hemma."
-                                    )
-                                }
+                        if let informationText = changeAddonVm.informationText {
+                            InfoCard(
+                                text: informationText,
+                                type: .neutral
                             )
-                        ])
+                            .buttons([
+                                .init(
+                                    buttonTitle: "Learn more",
+                                    buttonAction: {
+                                        changeAddonNavigationVm.isLearnMorePresented = .init(
+                                            title: "What is Reseskydd Plus?",
+                                            description:
+                                                "Med reseskyddet som ingår i din hemförsäkring får du hjälp vid olycksfall och akut sjukdom eller tandbesvär som kräver sjukvård under din resa.\n\nSkyddet gäller också om ni tvingas evakuera resmålet på grund av det utbryter krig, naturkatastrof eller epidemi. Du kan även få ersättning om du måste avbryta resan på grund av att något allvarligt har hänt med en närstående hemma."
+                                        )
+                                    }
+                                )
+                            ])
+                        }
 
                         hButton.LargeButton(type: .primary) {
                             changeAddonNavigationVm.router.push(ChangeAddonRouterActions.summary)
@@ -67,35 +69,32 @@ struct ChangeAddonScreen: View {
             ForEach(changeAddonVm.addonOptions ?? []) { addonOption in
                 hSection {
                     hRadioField(
-                        id: addonOption.id,
+                        id: addonOption,
                         leftView: {
                             getLeftView(for: addonOption).asAnyView
                         },
-                        selected: $changeAddonVm.selectedAddonOptionId,
+                        selected: $changeAddonVm.selectedAddonOption,
                         error: nil,
                         useAnimation: true
                     )
                     .hFieldLeftAttachedView
                     .hFieldAttachToBottom {
-                        if changeAddonVm.selectedAddonOptionId == addonOption.id
+                        if changeAddonVm.selectedAddonOption == addonOption
                             && changeAddonVm.hasSubOptions
                         {
 
                             let colorScheme: ColorScheme =
                                 UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
                             DropdownView(
-                                value: String(changeAddonVm.getSelectedSubOption?.subtitle ?? "") + " dagar",
+                                value: String(changeAddonVm.selectedSubOption?.title ?? ""),
                                 placeHolder: "Välj skydd"
                             ) {
-                                let id = changeAddonVm.selectedAddonOptionId
-                                changeAddonNavigationVm.isChangeCoverageDaysPresented = changeAddonVm.getAddonOptionFor(
-                                    id: id ?? ""
-                                )
+                                changeAddonNavigationVm.isChangeCoverageDaysPresented =
+                                    changeAddonVm.selectedAddonOption
                             }
                             .padding(.top, .padding16)
                             .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary])
                             .hSectionWithoutHorizontalPadding
-
                         }
                     }
                 }
@@ -113,7 +112,7 @@ struct ChangeAddonScreen: View {
                 Spacer()
 
                 hPill(
-                    text: addonOption.price?.formattedAmountPerMonth ?? "Ingår",
+                    text: addonOption.getPillDisplayText,
                     color: .grey(translucent: true),
                     colorLevel: .one
                 )
@@ -131,19 +130,20 @@ struct ChangeAddonScreen: View {
 public class ChangeAddonViewModel: ObservableObject {
     @Inject private var addonService: AddonsClient
 
-    @Published var selectedAddonOptionId: String? {
+    @Published var selectedAddonOption: AddonOptionModel? {
         didSet {
-            selectedSubOptionId =
-                selectedSubOptionId
-                ?? getAddonOptionFor(id: selectedAddonOptionId ?? "")?.subOptions.first?.id
+            selectedSubOption =
+                selectedSubOption
+                ?? selectedAddonOption?.subOptions.first
         }
     }
-    @Published var selectedSubOptionId: String?
+
+    @Published var selectedSubOption: AddonSubOptionModel?
     @Published var addonOptions: [AddonOptionModel]?
     @Published var contractInformation: AddonContract?
+    @Published var informationText: String?
 
     var hasSubOptions: Bool {
-        let selectedAddonOption = addonOptions?.first(where: { $0.id == selectedAddonOptionId })
         return selectedAddonOption?.subOptions.count ?? 0 > 0
     }
 
@@ -152,23 +152,10 @@ public class ChangeAddonViewModel: ObservableObject {
             await getAddons()
             await getContractInformation(contractId: contractId)
 
-            self._selectedAddonOptionId = Published(
-                initialValue: addonOptions?.first(where: { $0.subOptions.isEmpty })?.id
+            self._selectedAddonOption = Published(
+                initialValue: addonOptions?.first(where: { $0.subOptions.isEmpty })
             )
         }
-    }
-
-    func getAddonOptionFor(id: String) -> AddonOptionModel? {
-        return addonOptions?.first(where: { $0.id == selectedAddonOptionId })
-    }
-
-    var getSelectedSubOption: AddonSubOptionModel? {
-        let selectedAddonOption = getAddonOptionFor(id: selectedAddonOptionId ?? "")
-        let subOption = selectedAddonOption?.subOptions
-            .first(where: {
-                $0.id == selectedSubOptionId
-            })
-        return subOption
     }
 
     @MainActor
@@ -178,6 +165,7 @@ public class ChangeAddonViewModel: ObservableObject {
 
             withAnimation {
                 self.addonOptions = data.options
+                self.informationText = data.informationText
             }
         } catch {
 

@@ -6,7 +6,6 @@ struct AddonSelectSubOptionScreen: View {
     @ObservedObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
 
     let addonOption: AddonOptionModel
-    @State var selectedSubOptionId: String?
 
     init(
         addonOption: AddonOptionModel,
@@ -15,10 +14,8 @@ struct AddonSelectSubOptionScreen: View {
         self.addonOption = addonOption
         self.changeAddonNavigationVm = changeAddonNavigationVm
 
-        if let selectedSubOption = changeAddonNavigationVm.changeAddonVm.selectedSubOptionId {
-            self._selectedSubOptionId = State(initialValue: String(selectedSubOption))
-        } else {
-            self._selectedSubOptionId = State(initialValue: addonOption.subOptions.first?.id)
+        if changeAddonNavigationVm.changeAddonVm.selectedSubOption == nil {
+            changeAddonNavigationVm.changeAddonVm.selectedSubOption = addonOption.subOptions.first
         }
     }
 
@@ -28,7 +25,7 @@ struct AddonSelectSubOptionScreen: View {
                 ForEach(addonOption.subOptions, id: \.id) { subOption in
                     hSection {
                         hRadioField(
-                            id: subOption.id,
+                            id: subOption,
                             itemModel: nil,
                             leftView: {
                                 HStack {
@@ -43,7 +40,7 @@ struct AddonSelectSubOptionScreen: View {
                                 }
                                 .asAnyView
                             },
-                            selected: $selectedSubOptionId,
+                            selected: $changeAddonNavigationVm.changeAddonVm.selectedSubOption,
                             error: .constant(nil),
                             useAnimation: true
                         )
@@ -59,7 +56,7 @@ struct AddonSelectSubOptionScreen: View {
             hSection {
                 VStack(spacing: .padding8) {
                     hButton.LargeButton(type: .primary) {
-                        changeAddonNavigationVm.changeAddonVm.selectedSubOptionId = selectedSubOptionId
+                        //                        changeAddonNavigationVm.changeAddonVm.selectedSubOptionId = selectedSubOptionId
                         changeAddonNavigationVm.isChangeCoverageDaysPresented = nil
                     } content: {
                         hText(L10n.generalConfirm)
@@ -114,7 +111,8 @@ extension AddonSelectSubOptionScreen: TitleView {
                     subtitle: "",
                     price: .init(amount: "79", currency: "SEK")
                 )
-            ]
+            ],
+            isAlreadyIncluded: false
         ),
         changeAddonNavigationVm: .init(
             input: .init(contractId: "contractId")

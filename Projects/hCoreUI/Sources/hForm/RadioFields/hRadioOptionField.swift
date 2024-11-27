@@ -1,13 +1,13 @@
 import SwiftUI
 import hCore
 
-public struct hRadioOptionSelectedView: View {
-    @Binding var selectedValue: String?
+public struct hRadioOptionSelectedView<T>: View where T: Equatable {
+    @Binding var selectedValue: T?
     @Environment(\.isEnabled) var enabled
     @Environment(\.hUseCheckbox) var useCheckbox
-    let value: String
+    let value: T
 
-    public init(selectedValue: Binding<String?>, value: String) {
+    public init(selectedValue: Binding<T?>, value: T) {
         self._selectedValue = selectedValue
         self.value = value
     }

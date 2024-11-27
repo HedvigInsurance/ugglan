@@ -12,13 +12,15 @@ public class AddonsClientOctopus: AddonsClient {
                 id: "Reseskydd",
                 title: "Reseskydd",
                 subTitle: "sub title",
+                informationText: "information text",
                 options: [
                     .init(
                         id: "Reseskydd",
                         title: "Reseskydd",
                         subtitle: "",
                         price: nil,
-                        subOptions: []
+                        subOptions: [],
+                        isAlreadyIncluded: true
                     ),
                     .init(
                         id: "Reseskydd Plus",
@@ -38,7 +40,8 @@ public class AddonsClientOctopus: AddonsClient {
                                 subtitle: "60",
                                 price: .init(amount: "79", currency: "SEK")
                             ),
-                        ]
+                        ],
+                        isAlreadyIncluded: false
                     ),
                 ]
             )

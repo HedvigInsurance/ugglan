@@ -7,13 +7,15 @@ public class AddonsClientDemo: AddonsClient {
                 id: "Reseskydd",
                 title: "Reseskydd",
                 subTitle: "sub title",
+                informationText: "information text",
                 options: [
                     .init(
                         id: "Reseskydd",
                         title: "Reseskydd",
                         subtitle: "",
                         price: nil,
-                        subOptions: []
+                        subOptions: [],
+                        isAlreadyIncluded: true
                     ),
                     .init(
                         id: "Reseskydd Plus",
@@ -33,7 +35,8 @@ public class AddonsClientDemo: AddonsClient {
                                 subtitle: "60",
                                 price: .init(amount: "79", currency: "SEK")
                             ),
-                        ]
+                        ],
+                        isAlreadyIncluded: false
                     ),
                 ]
             )
