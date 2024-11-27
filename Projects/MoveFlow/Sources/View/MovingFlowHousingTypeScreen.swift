@@ -51,7 +51,7 @@ public struct MovingFlowHousingTypeScreen: View {
                                     )
                                 }
                             }
-                            InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
+                            InfoCard(text: L10n.changeAddressCoverageInfoText(30), type: .info)
                             hButton.LargeButton(type: .primary) {
                                 continuePressed()
                             } content: {
