@@ -13,6 +13,28 @@ struct ChangeAddonScreen: View {
     }
 
     var body: some View {
+        successView.loading($changeAddonVm.viewState)
+            .hErrorViewButtonConfig(
+                .init(
+                    actionButton: .init(
+                        buttonAction: {
+                            Task {
+                                await changeAddonVm.getAddons()
+                            }
+                        }
+                    ),
+                    dismissButton:
+                        .init(
+                            buttonTitle: L10n.generalCloseButton,
+                            buttonAction: {
+                                changeAddonNavigationVm.router.dismiss()
+                            }
+                        )
+                )
+            )
+    }
+
+    private var successView: some View {
         hForm {}
             .hFormTitle(
                 title: .init(
@@ -129,6 +151,7 @@ struct ChangeAddonScreen: View {
 @MainActor
 public class ChangeAddonViewModel: ObservableObject {
     @Inject private var addonService: AddonsClient
+    @Published var viewState: ProcessingState = .loading
 
     @Published var selectedAddonOption: AddonOptionModel? {
         didSet {
@@ -158,30 +181,38 @@ public class ChangeAddonViewModel: ObservableObject {
         }
     }
 
-    @MainActor
     func getAddons() async {
+        withAnimation {
+            self.viewState = .loading
+        }
+
         do {
             let data = try await addonService.getAddon()
 
             withAnimation {
                 self.addonOptions = data.options
                 self.informationText = data.informationText
+                self.viewState = .success
             }
-        } catch {
-
+        } catch let exception {
+            self.viewState = .error(errorMessage: exception.localizedDescription)
         }
     }
 
-    @MainActor
     func getContractInformation(contractId: String) async {
+        withAnimation {
+            self.viewState = .loading
+        }
+
         do {
             let data = try await addonService.getContract(contractId: contractId)
 
             withAnimation {
                 self.contractInformation = data
+                self.viewState = .success
             }
-        } catch {
-
+        } catch let exception {
+            self.viewState = .error(errorMessage: exception.localizedDescription)
         }
     }
 }
