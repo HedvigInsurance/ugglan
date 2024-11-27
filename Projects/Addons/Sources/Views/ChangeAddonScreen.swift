@@ -71,10 +71,33 @@ public struct ChangeAddonScreen: View {
                         error: nil,
                         useAnimation: true
                     )
-                    .hFieldSize(.medium)
                     .hFieldLeftAttachedView
+                    .hFieldAttachToBottom {
+                        if changeAddonVm.selectedAddonOptionId == addonOption.id.uuidString
+                            && changeAddonVm.hasSubOptions
+                        {
+
+                            let colorScheme: ColorScheme =
+                                UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
+                            DropdownView(
+                                value: String(changeAddonVm.getSelectedSubOption?.subtitle ?? "") + " dagar",
+                                placeHolder: "Välj skydd"
+                            ) {
+                                let id = changeAddonVm.selectedAddonOptionId
+                                changeAddonNavigationVm.isChangeCoverageDaysPresented = changeAddonVm.getAddonOptionFor(
+                                    id: id ?? ""
+                                )
+                            }
+                            .padding(.top, .padding16)
+                            .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary])
+                            .hSectionWithoutHorizontalPadding
+
+                        }
+                    }
                 }
+                .hFieldSize(.medium)
             }
+
         }
     }
 
@@ -95,24 +118,6 @@ public struct ChangeAddonScreen: View {
             if let subTitle = addonOption.subtitle {
                 hText(subTitle, style: .label)
                     .foregroundColor(hTextColor.Opaque.secondary)
-            }
-
-            if changeAddonVm.selectedAddonOptionId == addonOption.id.uuidString && changeAddonVm.hasSubOptions {
-
-                let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
-                DropdownView(
-                    value: String(changeAddonVm.getSelectedSubOption?.subtitle ?? "") + " dagar",
-                    placeHolder: "Välj skydd"
-                ) {
-                    let id = changeAddonVm.selectedAddonOptionId
-                    changeAddonNavigationVm.isChangeCoverageDaysPresented = changeAddonVm.getAddonOptionFor(
-                        id: id ?? ""
-                    )
-                }
-                .padding(.leading, -48)
-                .padding(.trailing, -16)
-                .padding(.top, .padding16)
-                .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary])
             }
         }
     }
