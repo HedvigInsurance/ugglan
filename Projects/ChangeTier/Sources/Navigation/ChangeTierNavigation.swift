@@ -4,6 +4,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
+@MainActor
 public class ChangeTierNavigationViewModel: ObservableObject {
     @Published public var isEditTierPresented = false
     @Published public var isEditDeductiblePresented = false

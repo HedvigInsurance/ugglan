@@ -1,6 +1,6 @@
 import hGraphQL
 
-public struct Perils: Codable, Equatable, Hashable {
+public struct Perils: Codable, Equatable, Hashable, Sendable {
     public let id: String?
     public let title: String
     public let description: String

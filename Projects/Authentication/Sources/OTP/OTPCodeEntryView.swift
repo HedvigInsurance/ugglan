@@ -86,7 +86,7 @@ public struct OTPCodeEntryView: View {
         }
     }
 }
-
+@MainActor
 class OTPCodeEntryViewModel: ObservableObject {
     private var authenticationService = AuthenticationService()
     @hTextFieldFocusState var focusCodeField: Bool? = true
@@ -94,8 +94,8 @@ class OTPCodeEntryViewModel: ObservableObject {
     func check(otpState: OTPState) {
         let code = otpState.code
         Task {
-            let generator = await UIImpactFeedbackGenerator(style: .light)
-            await generator.impactOccurred()
+            let generator = UIImpactFeedbackGenerator(style: .light)
+            generator.impactOccurred()
         }
         otpState.codeErrorMessage = nil
         if code.count == 6 {

@@ -23,6 +23,7 @@ struct ConnectPayment: ViewModifier {
     }
 }
 
+@MainActor
 public class ConnectPaymentViewModel: ObservableObject {
     @Published var setupTypeNavigationModel: SetupTypeNavigationModel?
     public init() {}

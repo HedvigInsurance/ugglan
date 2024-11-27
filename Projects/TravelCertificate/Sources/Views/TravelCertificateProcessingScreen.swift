@@ -59,6 +59,7 @@ struct TravelCertificateProcessingScreen: View {
     }
 }
 
+@MainActor
 class ProcessingViewModel: ObservableObject {
     var service = TravelInsuranceService()
     @Published var isLoading = true
@@ -85,12 +86,13 @@ class ProcessingViewModel: ObservableObject {
                     email: startDateViewModel.email
                 )
                 do {
-                    async let request = try await self.service.submitForm(dto: dto)
-                    async let minimumTime: () = try Task.sleep(nanoseconds: 3_000_000_000)
-                    let data = try await [request, minimumTime] as [Any]
-                    if let url = data[0] as? URL {
-                        downloadUrl = url
+                    let minimumTime = Task {
+                        try await Task.sleep(nanoseconds: 3_000_000_000)
                     }
+                    let url = try await self.service.submitForm(dto: dto)
+                    try await minimumTime.value
+
+                    downloadUrl = url
                     AskForRating().askForReview()
                 } catch _ {
                     error = L10n.General.errorBody
@@ -133,7 +135,7 @@ class ProcessingViewModel: ObservableObject {
     func present(activity: UIActivityViewController) {
 
     }
-
+    @MainActor
     var fileName: String {
         "\("Travel Insurance Certificate") \(Date().localDateString)\(".pdf")"
     }

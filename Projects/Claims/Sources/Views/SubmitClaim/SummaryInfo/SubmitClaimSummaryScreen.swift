@@ -187,6 +187,7 @@ struct SubmitClaimSummaryScreen_Previews: PreviewProvider {
     }
 }
 
+@MainActor
 class SubmitClaimSummaryScreenViewModel: ObservableObject {
     let model: FilesUploadViewModel?
     @Inject private var service: SubmitClaimClient

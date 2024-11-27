@@ -477,53 +477,11 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isChangeTierPresented: ChangeTierContractsInput?
     @Published var isEuroBonusPresented = false
     @Published var isUrlPresented: URL?
-    private var openDeepLinkObserver: NSObjectProtocol?
-    private var registerForPushNotificationsObserver: NSObjectProtocol?
-    private var handlePushNotificationObserver: NSObjectProtocol?
-    private var chatClosedObserver: NSObjectProtocol?
 
     private var cancellables = Set<AnyCancellable>()
     weak var tabBar: UITabBarController?
     init() {
-        openDeepLinkObserver = NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) {
-            [weak self] notification in
-            let deepLinkUrl = notification.object as? URL
-            self?.handleDeepLinks(deepLinkUrl: deepLinkUrl)
-        }
-
-        registerForPushNotificationsObserver = NotificationCenter.default.addObserver(
-            forName: .registerForPushNotifications,
-            object: nil,
-            queue: nil
-        ) {
-            [weak self]
-            notification in
-            guard let self = self else { return }
-            UIApplication.shared.appDelegate.registerForPushNotifications {}
-        }
-
-        handlePushNotificationObserver = NotificationCenter.default.addObserver(
-            forName: .handlePushNotification,
-            object: nil,
-            queue: nil
-        ) {
-            [weak self]
-            notification in
-            if self?.hasLaunchFinished.value == true {
-                self?.handle(notification: notification)
-            } else {
-                self?.hasLaunchFinishedCancellable = self?.hasLaunchFinished.filter({ $0 })
-                    .sink { value in
-                        self?.handle(notification: notification)
-                        self?.hasLaunchFinishedCancellable = nil
-                    }
-            }
-        }
-        chatClosedObserver = NotificationCenter.default.addObserver(forName: .chatClosed, object: nil, queue: nil) {
-            notification in
-            let store: HomeStore = globalPresentableStoreContainer.get()
-            store.send(.fetchChatNotifications)
-        }
+        setupObservers()
 
         EditCoInsuredViewModel.updatedCoInsuredForContractId
             .receive(on: RunLoop.main)
@@ -548,6 +506,56 @@ class LoggedInNavigationViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellables)
+    }
+
+    private func setupObservers() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(openDeepLinkNotification),
+            name: .openDeepLink,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(registerForPushNotification),
+            name: .registerForPushNotifications,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handlePushNotification),
+            name: .handlePushNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(self, selector: #selector(chatClosed), name: .chatClosed, object: nil)
+    }
+
+    @objc func openDeepLinkNotification(notification: Notification) {
+        let deepLinkUrl = notification.object as? URL
+        self.handleDeepLinks(deepLinkUrl: deepLinkUrl)
+    }
+
+    @objc func registerForPushNotification(notification: Notification) {
+        Task {
+            await UIApplication.shared.appDelegate.registerForPushNotifications()
+        }
+    }
+
+    @objc func handlePushNotification(notification: Notification) {
+        if self.hasLaunchFinished.value == true {
+            self.handle(notification: notification)
+        } else {
+            self.hasLaunchFinishedCancellable = self.hasLaunchFinished.filter({ $0 })
+                .sink { [weak self] value in
+                    self?.handle(notification: notification)
+                    self?.hasLaunchFinishedCancellable = nil
+                }
+        }
+    }
+
+    @objc func chatClosed(notification: Notification) {
+        let store: HomeStore = globalPresentableStoreContainer.get()
+        store.send(.fetchChatNotifications)
     }
 
     private func handle(notification: Notification) {
@@ -676,7 +684,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                     let conversations = try await conversationClient.getConversations()
                     let isValidConversation = conversations.first(where: { $0.id == conversationId })
 
-                    if let conversationId, let isValidConversation {
+                    if let conversationId, isValidConversation != nil {
                         NotificationCenter.default.post(
                             name: .openChat,
                             object: ChatType.conversationId(id: conversationId)
@@ -770,18 +778,6 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     deinit {
-        if let openDeepLinkObserver = openDeepLinkObserver {
-            NotificationCenter.default.removeObserver(openDeepLinkObserver)
-        }
-        if let registerForPushNotificationsObserver = registerForPushNotificationsObserver {
-            NotificationCenter.default.removeObserver(registerForPushNotificationsObserver)
-        }
-        if let handlePushNotificationObserver = handlePushNotificationObserver {
-            NotificationCenter.default.removeObserver(handlePushNotificationObserver)
-        }
-        if let chatClosedObserver = chatClosedObserver {
-            NotificationCenter.default.removeObserver(chatClosedObserver)
-        }
         NotificationCenter.default.removeObserver(self)
     }
 }

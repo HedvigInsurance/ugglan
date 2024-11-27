@@ -24,7 +24,8 @@ public struct ForeverView: View {
     public init() {}
 
     public var body: some View {
-        successView.loading($foreverVm.viewState)
+        successView
+            .loading($foreverVm.viewState)
             .hErrorViewButtonConfig(
                 .init(
                     actionButton: .init(buttonAction: {
@@ -112,7 +113,7 @@ public struct ForeverView: View {
             }
         }
         .onPullToRefresh {
-            Task {
+            Task { @MainActor in
                 let data = try await foreverVm.fetchForeverData()
                 if let data {
                     foreverNavigationVm.foreverData = data
@@ -147,11 +148,11 @@ public struct ForeverView: View {
     }
 }
 
+@MainActor
 public class ForeverViewModel: ObservableObject {
     @Inject var foreverService: ForeverClient
     @Published var viewState: ProcessingState = .loading
 
-    @MainActor
     func fetchForeverData() async throws -> ForeverData? {
         withAnimation {
             viewState = .loading

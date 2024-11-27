@@ -3,7 +3,9 @@ import SwiftUI
 
 public struct ImpactGenerator {
     public static func soft() {
-        let generator = UIImpactFeedbackGenerator(style: .soft)
-        generator.impactOccurred()
+        Task {
+            let generator = await UIImpactFeedbackGenerator(style: .soft)
+            await generator.impactOccurred()
+        }
     }
 }

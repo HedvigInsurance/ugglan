@@ -1,14 +1,15 @@
-import Apollo
-import ApolloAPI
+@preconcurrency import Apollo
+@preconcurrency import ApolloAPI
 import Foundation
 
 /// use to override the URLSessionClient used by apollo
-public var urlSessionClientProvider: () -> URLSessionClient = {
+@MainActor public var urlSessionClientProvider: () -> URLSessionClient = {
     URLSessionClient()
 }
 
+@MainActor
 class NetworkInterceptorProvider: DefaultInterceptorProvider {
-    let acceptLanguageHeader: () -> String
+    nonisolated(unsafe) var acceptLanguageHeader: () -> String
     let userAgent: String
     let deviceIdentifier: String
 

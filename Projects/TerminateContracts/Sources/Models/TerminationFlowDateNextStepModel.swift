@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol FlowStepModel: Codable, Equatable, Hashable {}
+public protocol FlowStepModel: Codable, Equatable, Hashable, Sendable {}
 
 public struct TerminationFlowDateNextStepModel: FlowStepModel {
     let id: String

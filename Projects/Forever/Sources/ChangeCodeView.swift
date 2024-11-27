@@ -4,9 +4,9 @@ import hCoreUI
 import hGraphQL
 
 struct ChangeCodeView: View {
-    @StateObject var vm: ChangeCodeViewModel
-    @EnvironmentObject var router: Router
-    @ObservedObject var foreverNavigationVm: ForeverNavigationViewModel
+    @ObservedObject private var vm: ChangeCodeViewModel
+    @EnvironmentObject private var router: Router
+    @ObservedObject private var foreverNavigationVm: ForeverNavigationViewModel
 
     init(
         foreverNavigationVm: ForeverNavigationViewModel
@@ -19,7 +19,7 @@ struct ChangeCodeView: View {
             title: L10n.ReferralsEmpty.Code.headline
         )
 
-        self._vm = StateObject(wrappedValue: .init(inputVm: inputVm, foreverVm: foreverNavigationVm.foreverVm))
+        self.vm = .init(inputVm: inputVm, foreverVm: foreverNavigationVm.foreverVm)
     }
 
     var body: some View {
@@ -33,6 +33,7 @@ struct ChangeCodeView: View {
     }
 }
 
+@MainActor
 class ChangeCodeViewModel: ObservableObject {
     @Inject var foreverService: ForeverClient
     @Published var inputVm: TextInputViewModel
@@ -57,12 +58,10 @@ class ChangeCodeViewModel: ObservableObject {
         }
     }
 
-    @MainActor
     private func dismissRouter() async throws {
         self.router?.dismiss()
     }
 
-    @MainActor
     private func handleOnSave(text: String) async throws {
         try await self.foreverService.changeCode(code: text)
         self.foreverData = try await foreverVm.fetchForeverData()

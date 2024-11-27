@@ -20,7 +20,7 @@ public struct FlowClaimConfirmEmergencyStepModel: FlowClaimStepModel {
     }
 }
 
-public struct FlowClaimConfirmEmergencyOption: Codable, Equatable, Hashable {
+public struct FlowClaimConfirmEmergencyOption: Codable, Equatable, Hashable, Sendable {
     let displayName: String
     let value: Bool
 

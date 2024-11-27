@@ -2,6 +2,7 @@ import Foundation
 import hCore
 import hGraphQL
 
+@MainActor
 public class hFetchClaimService {
     @Inject var client: hFetchClaimClient
 
@@ -59,6 +60,7 @@ extension ClaimModel {
         self.conversation = nil
     }
 
+    @MainActor
     fileprivate init(
         claim: OctopusGraphQL.ClaimsQueryWithConversationQuery.Data.CurrentMember.Claim
     ) {

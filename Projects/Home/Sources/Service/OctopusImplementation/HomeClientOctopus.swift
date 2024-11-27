@@ -131,6 +131,7 @@ public class HomeClientOctopus: HomeClient {
     }
 }
 
+@MainActor
 extension OctopusGraphQL.HomeQuery.Data.CurrentMember {
     var futureStatus: FutureStatus {
         let localDate = Date().localDateString.localDateToDate ?? Date()
@@ -152,6 +153,7 @@ extension OctopusGraphQL.HomeQuery.Data.CurrentMember {
 }
 
 extension OctopusGraphQL.HomeQuery.Data.CurrentMember {
+    @MainActor
     var homeState: MemberContractState {
         if isFuture {
             return .future
@@ -166,6 +168,7 @@ extension OctopusGraphQL.HomeQuery.Data.CurrentMember {
         return activeContracts.count == 0 && pendingContracts.count == 0
     }
 
+    @MainActor
     private var isFuture: Bool {
         let hasActiveContractsInFuture = activeContracts.allSatisfy { contract in
             return contract.currentAgreement.activeFrom.localDateToDate?.daysBetween(start: Date()) ?? 0 > 0

@@ -157,6 +157,7 @@ public struct ClaimFilesView: View {
     }
 }
 
+@MainActor
 class ClaimFilesViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var success = false
@@ -179,7 +180,7 @@ class ClaimFilesViewModel: ObservableObject {
         self.fileGridViewModel = .init(files: files, options: options)
         self.fileGridViewModel.onDelete = { [weak self] file in
             Task {
-                await self?.removeFile(id: file.id)
+                self?.removeFile(id: file.id)
             }
         }
     }
@@ -298,7 +299,7 @@ class ClaimFilesViewModel: ObservableObject {
 
     }
 }
-
+@MainActor
 struct FilePicker {
     static func showAlert(closure: @escaping (_ selected: SelectedFileInputType) -> Void) {
         let alert = UIAlertController(

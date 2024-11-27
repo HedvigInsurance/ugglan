@@ -5,12 +5,13 @@ import SwiftUI
 import hCore
 import hGraphQL
 
+@MainActor
 public class ChatFileUploaderService {
     @Inject var client: ChatFileUploaderClient
 
     func upload(
         files: [File],
-        withProgress: ((_ progress: Double) -> Void)?
+        withProgress: (@Sendable (_ progress: Double) -> Void)?
     ) async throws -> [ChatUploadFileResponseModel] {
         log.info("ChatFileUploaderService: upload", error: nil, attributes: nil)
         return try await client.upload(files: files, withProgress: withProgress)
@@ -20,21 +21,23 @@ public class ChatFileUploaderService {
 extension NetworkClient: ChatFileUploaderClient {
     public func upload(
         files: [File],
-        withProgress: ((_ progress: Double) -> Void)?
+        withProgress: (@Sendable (_ progress: Double) -> Void)?
     ) async throws -> [ChatUploadFileResponseModel] {
         let request = try await FileUploadRequest.uploadFile(files: files).asRequest()
         var observation: NSKeyValueObservation?
         let response = try await withCheckedThrowingContinuation {
             (inCont: CheckedContinuation<[ChatUploadFileResponseModel], Error>) -> Void in
             let task = self.sessionClient.dataTask(with: request) { [weak self] (data, response, error) in
-                do {
-                    if let uploadedFiles: [ChatUploadFileResponseModel] = try self?
-                        .handleResponse(data: data, response: response, error: error)
-                    {
-                        inCont.resume(returning: uploadedFiles)
+                Task {
+                    do {
+                        if let uploadedFiles: [ChatUploadFileResponseModel] = try await self?
+                            .handleResponse(data: data, response: response, error: error)
+                        {
+                            inCont.resume(returning: uploadedFiles)
+                        }
+                    } catch let error {
+                        inCont.resume(throwing: error)
                     }
-                } catch let error {
-                    inCont.resume(throwing: error)
                 }
             }
 
@@ -92,7 +95,7 @@ enum FileUploadRequest {
         }
         request.httpMethod = self.methodType
         try await TokenRefresher.shared.refreshIfNeeded()
-        let headers = ApolloClient.headers()
+        let headers = await ApolloClient.headers()
         headers.forEach { element in
             request.setValue(element.value, forHTTPHeaderField: element.key)
         }

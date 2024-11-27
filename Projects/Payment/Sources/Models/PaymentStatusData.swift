@@ -2,7 +2,7 @@ import Foundation
 import hCore
 import hGraphQL
 
-public struct PaymentStatusData: Codable, Equatable {
+public struct PaymentStatusData: Codable, Equatable, Sendable {
     public var status: PayinMethodStatus = .active
     let displayName: String?
     let descriptor: String?
@@ -36,7 +36,7 @@ extension GraphQLEnum<OctopusGraphQL.MemberPaymentConnectionStatus> {
     }
 }
 
-public enum PayinMethodStatus: Equatable {
+public enum PayinMethodStatus: Equatable, Sendable {
     case active
     case noNeedToConnect
     case needsSetup

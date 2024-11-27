@@ -1,3 +1,4 @@
+@MainActor
 public protocol SubmitClaimClient {
     func startClaim(entrypointId: String?, entrypointOptionId: String?) async throws -> SubmitClaimStepResponse
     func updateContact(
@@ -41,21 +42,21 @@ public protocol SubmitClaimClient {
     ) async throws -> SubmitClaimStepResponse
 }
 
-public struct SubmitClaimStepResponse {
+public struct SubmitClaimStepResponse: Sendable {
     let claimId: String
     let context: String
     let progress: Float?
     let step: SubmitClaimStep
 }
 
-public enum SubmitClaimStep: Equatable {
-    public struct DateOfOccurrencePlusLocationStepModels: Hashable, Equatable {
+public enum SubmitClaimStep: Equatable, Sendable {
+    public struct DateOfOccurrencePlusLocationStepModels: Hashable, Equatable, Sendable {
         let dateOfOccurencePlusLocationModel: FlowClaimDateOfOccurrencePlusLocationStepModel?
         var dateOfOccurrenceModel: FlowClaimDateOfOccurenceStepModel?
         var locationModel: FlowClaimLocationStepModel?
     }
 
-    public struct SummaryStepModels: Hashable {
+    public struct SummaryStepModels: Hashable, Sendable {
         let summaryStep: FlowClaimSummaryStepModel?
         let singleItemStepModel: FlowClaimSingleItemStepModel?
         let dateOfOccurenceModel: FlowClaimDateOfOccurenceStepModel

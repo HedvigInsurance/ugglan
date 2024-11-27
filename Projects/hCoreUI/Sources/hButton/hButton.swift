@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 
+@MainActor
 public enum hButton {
     public struct LargeButton<Content: View>: View {
         var type: hButtonConfigurationType
@@ -426,7 +427,7 @@ extension View {
 }
 
 //MARK: hButtonStyle
-public enum hButtonConfigurationType {
+public enum hButtonConfigurationType: Sendable {
     case primary
     case primaryAlt
     case secondary

@@ -1,6 +1,7 @@
 import SwiftUI
 import UIKit
 
+@MainActor
 public enum NotificationType {
     case info
     case attention

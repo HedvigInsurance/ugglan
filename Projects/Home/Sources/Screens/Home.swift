@@ -148,6 +148,7 @@ extension HomeView {
     }
 }
 
+@MainActor
 class HomeVM: ObservableObject {
     @Published var memberContractState: MemberContractState = .loading
     private(set) var homeBottomScrollViewModel: HomeBottomScrollViewModel
@@ -174,9 +175,13 @@ class HomeVM: ObservableObject {
 
     func fetch() {
         let store: HomeStore = globalPresentableStoreContainer.get()
+        print("STORE TEST SEND: fetchMemberState 1")
         store.send(.fetchMemberState)
+        print("STORE TEST SEND: fetchImportantMessages 1")
         store.send(.fetchImportantMessages)
+        print("STORE TEST SEND: fetchQuickActions 1")
         store.send(.fetchQuickActions)
+        print("STORE TEST SEND: fetchChatNotifications 1")
         store.send(.fetchChatNotifications)
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         contractStore.send(.fetch)
@@ -195,15 +200,22 @@ class HomeVM: ObservableObject {
             }
     }
     private func addObserverForApplicationDidBecomeActive() {
-        if ApplicationContext.shared.isLoggedIn {
-            NotificationCenter.default.addObserver(
-                forName: UIApplication.didBecomeActiveNotification,
-                object: nil,
-                queue: OperationQueue.main,
-                using: { [weak self] _ in
-                    self?.fetch()
-                }
-            )
+        Task {
+            let isLoggedIn = await ApplicationContext.shared.isLoggedIn
+            if isLoggedIn {
+                NotificationCenter.default.addObserver(
+                    self,
+                    selector: #selector(notification),
+                    name: UIApplication.didBecomeActiveNotification,
+                    object: nil
+                )
+            }
+        }
+    }
+
+    @objc func notification(notification: Notification) {
+        Task { [weak self] in
+            self?.fetch()
         }
     }
 

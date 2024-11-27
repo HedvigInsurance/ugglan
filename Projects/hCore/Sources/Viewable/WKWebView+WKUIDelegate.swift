@@ -1,5 +1,5 @@
-import Combine
-import WebKit
+@preconcurrency import Combine
+@preconcurrency import WebKit
 
 public class WebViewDelegate: NSObject, WKNavigationDelegate, WKUIDelegate {
     private let actionPublishedSubject = PassthroughSubject<WKNavigationAction, Never>()
@@ -36,15 +36,16 @@ public class WebViewDelegate: NSObject, WKNavigationDelegate, WKUIDelegate {
             \.isLoading,
             options: [.new],
             changeHandler: { _, change in
-                self.isLoadingSubject.send(change.newValue ?? false)
+                Task { @MainActor in
+                    self.isLoadingSubject.send(change.newValue ?? false)
+                }
             }
         )
     }
-
     public func webView(
         _ webView: WKWebView,
         didReceive challenge: URLAuthenticationChallenge,
-        completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
+        completionHandler: @escaping @MainActor (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
     ) {
         self.challengeReceiveSubject.send(challenge)
 

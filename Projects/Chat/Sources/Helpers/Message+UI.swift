@@ -1,6 +1,7 @@
 import Foundation
 import hCoreUI
 
+@MainActor
 extension Message {
     @hColorBuilder
     func bgColor(conversationStatus: ConversationStatus) -> some hColor {

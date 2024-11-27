@@ -1,9 +1,10 @@
 import Foundation
-import XCTest
+@preconcurrency import XCTest
 
 @testable import EditCoInsured
 @testable import EditCoInsuredShared
 
+@MainActor
 final class ContractsEditInsuredCompleteListTests: XCTestCase {
 
     override func setUp() {
@@ -220,7 +221,7 @@ final class ContractsEditInsuredCompleteListTests: XCTestCase {
         XCTAssert(list[1] == CoInsuredModel.testMemberWithBirthdate1)
     }
 }
-
+@MainActor
 extension CoInsuredModel {
     static let testMemberWithSSN1 = CoInsuredModel(
         firstName: "Test",

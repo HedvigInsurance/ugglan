@@ -1,7 +1,8 @@
-import XCTest
+@preconcurrency import XCTest
 
 @testable import Chat
 
+@MainActor
 final class TestChatViewModelIsConversationOpen: XCTestCase {
 
     weak var sut: MockConversationService?
@@ -9,7 +10,8 @@ final class TestChatViewModelIsConversationOpen: XCTestCase {
         super.setUp()
     }
 
-    override func tearDownWithError() throws {
+    override func tearDown() async throws {
+        try await super.tearDown()
         XCTAssertNil(sut)
     }
 

@@ -1,6 +1,8 @@
 import Foundation
 
 public typealias ServerBasedDate = String
+
+@MainActor
 extension ServerBasedDate {
     public var displayDate: String {
         self.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""

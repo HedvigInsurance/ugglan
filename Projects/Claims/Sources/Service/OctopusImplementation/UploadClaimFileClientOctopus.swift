@@ -5,13 +5,14 @@ import SwiftUI
 import hCore
 import hGraphQL
 
+@MainActor
 public class hClaimFileUploadService {
     @Inject var client: hClaimFileUploadClient
 
     public func upload(
         endPoint: String,
         files: [File],
-        withProgress: ((_ progress: Double) -> Void)?
+        withProgress: (@Sendable (_ progress: Double) -> Void)?
     ) async throws -> [ClaimFileUploadResponse] {
         log.info("hClaimFileUploadService: upload", error: nil, attributes: nil)
         return try await client.upload(endPoint: endPoint, files: files, withProgress: withProgress)
@@ -22,60 +23,66 @@ extension NetworkClient: hClaimFileUploadClient {
     public func upload(
         endPoint: String,
         files: [File],
-        withProgress: ((_ progress: Double) -> Void)?
+        withProgress: (@Sendable (_ progress: Double) -> Void)?
     ) async throws -> [ClaimFileUploadResponse] {
         let request = try await ClaimsRequest.uploadFile(endPoint: endPoint, files: files).asRequest()
         var observation: NSKeyValueObservation?
         let response = try await withCheckedThrowingContinuation {
             (inCont: CheckedContinuation<[ClaimFileUploadResponse], Error>) -> Void in
             let task = self.sessionClient.dataTask(with: request) { [weak self] (data, response, error) in
-                do {
-                    if let uploadedFiles: [ClaimFileUploadResponse] = try self?
-                        .handleResponse(data: data, response: response, error: error)
-                    {
-                        for file in uploadedFiles.compactMap({ $0.file }).enumerated() {
-                            let localFileSource = files[file.offset].source
-                            switch localFileSource {
-                            case let .localFile(results):
-                                if let results = results {
-                                    Task { @MainActor in
-                                        if MimeType.findBy(mimeType: file.element.mimeType).isImage,
-                                            let data = try? await results.itemProvider.getData(),
-                                            let image = UIImage(data: data.data)
-                                        {
-                                            let processor = DownsamplingImageProcessor(
-                                                size: CGSize(width: 300, height: 300)
-                                            )
-                                            var options = KingfisherParsedOptionsInfo.init(nil)
-                                            options.processor = processor
-                                            try? await ImageCache.default.store(
-                                                image,
-                                                forKey: file.element.fileId,
-                                                options: options
-                                            )
+                Task {
+                    do {
+                        if let uploadedFiles: [ClaimFileUploadResponse] = try await self?
+                            .handleResponse(data: data, response: response, error: error)
+                        {
+                            for file in uploadedFiles.compactMap({ $0.file }).enumerated() {
+                                let localFileSource = files[file.offset].source
+                                switch localFileSource {
+                                case let .localFile(results):
+                                    if let results = results {
+                                        Task { @MainActor in
+                                            if MimeType.findBy(mimeType: file.element.mimeType).isImage,
+                                                let data = try? await results.itemProvider.getData(),
+                                                let image = UIImage(data: data.data)
+                                            {
+                                                let processor = DownsamplingImageProcessor(
+                                                    size: CGSize(width: 300, height: 300)
+                                                )
+                                                var options = KingfisherParsedOptionsInfo.init(nil)
+                                                options.processor = processor
+                                                try? await ImageCache.default.store(
+                                                    image,
+                                                    forKey: file.element.fileId,
+                                                    options: options
+                                                )
+                                            }
                                         }
                                     }
-                                }
-                            case .url(_):
-                                break
-                            case .data(let data):
-                                if MimeType.findBy(mimeType: file.element.mimeType).isImage,
-                                    let image = UIImage(data: data)
-                                {
-                                    let processor = DownsamplingImageProcessor(
-                                        size: CGSize(width: 300, height: 300)
-                                    )
-                                    var options = KingfisherParsedOptionsInfo.init(nil)
-                                    options.processor = processor
-                                    ImageCache.default.store(image, forKey: file.element.fileId, options: options)
+                                case .url(_):
+                                    break
+                                case .data(let data):
+                                    if MimeType.findBy(mimeType: file.element.mimeType).isImage,
+                                        let image = UIImage(data: data)
+                                    {
+                                        let processor = DownsamplingImageProcessor(
+                                            size: CGSize(width: 300, height: 300)
+                                        )
+                                        var options = KingfisherParsedOptionsInfo.init(nil)
+                                        options.processor = processor
+                                        try? await ImageCache.default.store(
+                                            image,
+                                            forKey: file.element.fileId,
+                                            options: options
+                                        )
+                                    }
                                 }
                             }
-                        }
 
-                        inCont.resume(returning: uploadedFiles)
+                            inCont.resume(returning: uploadedFiles)
+                        }
+                    } catch let error {
+                        inCont.resume(throwing: error)
                     }
-                } catch let error {
-                    inCont.resume(throwing: error)
                 }
             }
             observation = task.progress.observe(\.fractionCompleted) { progress, _ in
@@ -88,12 +95,12 @@ extension NetworkClient: hClaimFileUploadClient {
     }
 }
 
-public struct ClaimFileUploadResponse: Codable {
+public struct ClaimFileUploadResponse: Codable, Sendable {
     let file: FileUpload?
     let error: String?
 }
 
-struct FileUpload: Codable {
+struct FileUpload: Codable, Sendable {
     let fileId: String
     let name: String
     let mimeType: String
@@ -147,7 +154,7 @@ enum ClaimsRequest {
         }
         request.httpMethod = self.methodType
         try await TokenRefresher.shared.refreshIfNeeded()
-        let headers = ApolloClient.headers()
+        let headers = await ApolloClient.headers()
         headers.forEach { element in
             request.setValue(element.value, forHTTPHeaderField: element.key)
         }

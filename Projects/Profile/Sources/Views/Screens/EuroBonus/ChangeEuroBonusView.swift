@@ -26,6 +26,7 @@ struct ChangeEuroBonusView_Previews: PreviewProvider {
     }
 }
 
+@MainActor
 private class ChangeEurobonusViewModel: ObservableObject {
     let inputVm: TextInputViewModel
     var profileService = ProfileService()

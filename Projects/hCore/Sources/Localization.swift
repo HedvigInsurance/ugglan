@@ -1,18 +1,21 @@
-import Combine
+@preconcurrency import Combine
 import Foundation
 import hGraphQL
 
+@MainActor
 public enum Localization {
+    @MainActor
     public enum Locale: String, CaseIterable, Hashable {
         //        public static var currentLocale: Locale = .sv_SE
-        public static var currentLocale = CurrentValueSubject<Locale, Never>(.sv_SE)
+        nonisolated(unsafe)
+            public static var currentLocale = CurrentValueSubject<Locale, Never>(.sv_SE)
         case sv_SE
         case en_SE
         case en_NO
         case nb_NO
         case da_DK
         case en_DK
-
+        @MainActor
         public enum Market: String, Codable, CaseIterable {
             case no = "NO"
             case se = "SE"
@@ -43,7 +46,9 @@ public enum Localization {
             }
         }
 
-        public var market: Market {
+        nonisolated(unsafe)
+            public var market: Market
+        {
             switch self {
             case .sv_SE, .en_SE: return .se
             case .en_NO, .nb_NO: return .no
@@ -105,9 +110,13 @@ public enum Localization {
             }
         }
 
-        public var foundation: Foundation.Locale { Foundation.Locale(identifier: lprojCode) }
+        nonisolated(unsafe)
+            public var foundation: Foundation.Locale
+        { Foundation.Locale(identifier: lprojCode) }
 
-        public var lprojCode: String {
+        nonisolated(unsafe)
+            public var lprojCode: String
+        {
             switch self {
             case .sv_SE: return "sv-SE"
             case .en_SE: return "en-SE"

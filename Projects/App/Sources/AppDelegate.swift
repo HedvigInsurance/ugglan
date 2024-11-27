@@ -15,11 +15,12 @@ import Profile
 import SwiftUI
 import TerminateContracts
 import TravelCertificate
-import UserNotifications
+@preconcurrency import UserNotifications
 import hCore
 import hCoreUI
 import hGraphQL
 
+@MainActor
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var cancellables = Set<AnyCancellable>()
     private var localizationObserverTask: AnyCancellable?
@@ -50,10 +51,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let authenticationService = AuthenticationService()
             do {
                 try await authenticationService.logout()
-                ApolloClient.deleteToken()
+                await ApolloClient.deleteToken()
                 clearData()
             } catch _ {
-                ApolloClient.deleteToken()
+                await ApolloClient.deleteToken()
                 clearData()
             }
         }
@@ -68,41 +69,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidEnterBackground(_ application: UIApplication) {
     }
 
-    func configureAppBadgeTracking() {
-        NotificationCenter.default.addObserver(
-            forName: UIApplication.willEnterForegroundNotification,
-            object: nil,
-            queue: nil
-        ) { [weak self] _ in
-            self?.resetBadge()
-        }
-
-        NotificationCenter.default.addObserver(
-            forName: UIApplication.didEnterBackgroundNotification,
-            object: nil,
-            queue: nil
-        ) { [weak self] _ in
-            self?.resetBadge()
-        }
-
-        NotificationCenter.default.addObserver(
-            forName: UIApplication.willTerminateNotification,
-            object: nil,
-            queue: nil
-        ) { [weak self] _ in
-            self?.resetBadge()
-        }
-    }
-
-    func resetBadge() {
-        UserDefaults(suiteName: "group.\(Bundle.main.bundleIdentifier!)")?.set(1, forKey: "count")
-        if #available(iOS 16.0, *) {
-            UNUserNotificationCenter.current().setBadgeCount(0)
-        } else {
-            UIApplication.shared.applicationIconBadgeNumber = 0
-        }
-    }
-
     func application(
         _: UIApplication,
         continue userActivity: NSUserActivity,
@@ -113,33 +79,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
 
-    func registerForPushNotifications(completed: @escaping () -> Void) {
-        UNUserNotificationCenter.current()
-            .getNotificationSettings { settings in
-                let store: ProfileStore = globalPresentableStoreContainer.get()
-                store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
-                guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
-                    return
-                }
-                if settings.authorizationStatus == .denied {
-                    DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
-                }
+    func registerForPushNotifications() async {
+        let settings = await UNUserNotificationCenter.current().notificationSettings()
+        let store: ProfileStore = globalPresentableStoreContainer.get()
+        store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+        guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+            return
+        }
+        if settings.authorizationStatus == .denied {
+            DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
+        } else {
+            do {
+                let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+                _ = try await UNUserNotificationCenter.current().requestAuthorization(options: authOptions)
+            } catch _ {
+
             }
-
-        let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
-        UNUserNotificationCenter.current()
-            .requestAuthorization(
-                options: authOptions,
-                completionHandler: { _, _ in
-                    UNUserNotificationCenter.current()
-                        .getNotificationSettings { settings in
-                            let store: ProfileStore = globalPresentableStoreContainer.get()
-                            store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
-                        }
-                    completed()
-                }
-            )
-
+            let settings = await UNUserNotificationCenter.current().notificationSettings()
+            let store: ProfileStore = globalPresentableStoreContainer.get()
+            store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
+        }
     }
 
     func handleURL(url: URL) {
@@ -148,7 +107,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let store: UgglanStore = globalPresentableStoreContainer.get()
             store.send(.setIsDemoMode(to: false))
             Task {
-                setupSession()
+                await setupSession()
                 await impersonate.impersonate(with: url)
 
             }
@@ -175,12 +134,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func setupPresentableStoreLogger() {
         globalPresentableStoreContainer.logger = { message in
-            log.info(message)
+            Task { @MainActor in
+                log.info(message)
+            }
         }
     }
 
-    func setupSession() {
-        ApolloClient.initNetwworkClients()
+    func setupSession() async {
+        await ApolloClient.initNetwworkClients()
         ApolloClient.initAndRegisterClient()
         urlSessionClientProvider = {
             return InterceptingURLSessionClient()
@@ -206,7 +167,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         Localization.Locale.currentLocale.send(ApplicationState.preferredLocale)
-        setupSession()
+        window.rootViewController = UIViewController()
+        window.makeKeyAndVisible()
+        DefaultStyling.installCustom()
+
+        UNUserNotificationCenter.current().delegate = self
+        observeNotificationsSettings()
+        return true
+    }
+
+    func initialSetup() async {
+        await setupSession()
         TokenRefresher.shared.onRefresh = { token in
             let authService = AuthenticationService()
             try await authService.exchange(refreshToken: token)
@@ -241,13 +212,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
             }
         }
-
-        window.rootViewController = UIViewController()
-        window.makeKeyAndVisible()
-        DefaultStyling.installCustom()
-
-        UNUserNotificationCenter.current().delegate = self
-        observeNotificationsSettings()
-        return true
     }
 }

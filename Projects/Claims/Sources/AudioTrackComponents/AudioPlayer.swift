@@ -1,9 +1,11 @@
 import AVFoundation
 import Combine
 import Foundation
+import SwiftUI
 import hCore
 
-class AudioPlayer: NSObject, ObservableObject {
+@MainActor
+class AudioPlayer: NSObject, @preconcurrency ObservableObject {
     internal init(
         url: URL?
     ) {
@@ -14,6 +16,7 @@ class AudioPlayer: NSObject, ObservableObject {
     let objectWillChange = PassthroughSubject<AudioPlayer, Never>()
     var audioPlayer: AVPlayer?
     let sampleHeights: [Int]
+    var observerStatus: NSKeyValueObservation?
 
     enum PlaybackState: Equatable {
         case idle
@@ -23,21 +26,41 @@ class AudioPlayer: NSObject, ObservableObject {
         case finished
     }
 
-    private(set) var playbackState: PlaybackState = .idle {
+    var playbackState: PlaybackState = .idle {
         didSet {
-            objectWillChange.send(self)
+            switch playbackState {
+            case .idle:
+                break
+            case .playing(let paused):
+                if paused, audioPlayer?.rate != 0 {
+                    audioPlayer?.pause()
+                }
+            case .error:
+                break
+            case .loading:
+                break
+            case .finished:
+                break
+            }
+            withAnimation {
+                objectWillChange.send(self)
+            }
         }
     }
 
     private(set) var progress: Double = 0 {
         didSet {
-            objectWillChange.send(self)
+            withAnimation {
+                objectWillChange.send(self)
+            }
         }
     }
 
     var url: URL? {
         didSet {
-            objectWillChange.send(self)
+            withAnimation {
+                objectWillChange.send(self)
+            }
         }
     }
 
@@ -64,6 +87,16 @@ class AudioPlayer: NSObject, ObservableObject {
         audioPlayer?.addObserver(self, forKeyPath: "timeControlStatus", options: [.old, .new], context: nil)
     }
 
+    func setProgress(to progress: Double) {
+        if let duration = audioPlayer?.currentItem?.duration {
+            let time = duration.seconds * progress
+            audioPlayer?.seek(to: CMTimeMakeWithSeconds(time, preferredTimescale: 1000))
+            self.progress = progress
+        } else {
+            startPlaying()
+        }
+    }
+
     private func startPlaying() {
         let session = AVAudioSession.sharedInstance()
 
@@ -79,32 +112,45 @@ class AudioPlayer: NSObject, ObservableObject {
             let playerItem = AVPlayerItem(url: url)
             audioPlayer = AVPlayer(playerItem: playerItem)
             addAudioPlayerNotificationObserver()
-
             audioPlayer?
                 .addPeriodicTimeObserver(
                     forInterval: CMTime(value: 1, timescale: 50),
                     queue: .main,
                     using: { [weak self] time in
-                        guard let self = self, let item = self.audioPlayer?.currentItem else { return }
-
-                        switch item.status {
-                        case .readyToPlay:
-                            let duration = CMTimeGetSeconds(item.duration)
-                            let timeInFloat = CMTimeGetSeconds(time)
-                            self.progress = timeInFloat / duration
-                        case .failed:
-                            break
-                        case .unknown:
-                            break
-                        default:
-                            self.playbackState = .error(message: "Unknown playback error")
+                        Task { @MainActor in
+                            guard let self = self, let item = self.audioPlayer?.currentItem else { return }
+                            switch item.status {
+                            case .readyToPlay:
+                                let duration = CMTimeGetSeconds(item.duration)
+                                let timeInFloat = CMTimeGetSeconds(time)
+                                self.progress = timeInFloat / duration
+                            case .failed:
+                                break
+                            case .unknown:
+                                break
+                            default:
+                                self.playbackState = .error(message: "Unknown playback error")
+                            }
                         }
                     }
                 )
 
-            audioPlayer?.actionAtItemEnd = .pause
-            audioPlayer?.play()
+            // in your method where you setup your player item
+            observerStatus = playerItem.observe(
+                \.status,
+                changeHandler: { [weak self] (item, value) in
+                    debugPrint("status: \(item.status.rawValue)")
+                    if item.status == .failed {
+                        Task { @MainActor in
+                            self?.playbackState = .error(message: "Unknown playback error")
+                        }
+                    }
+                }
+            )
         }
+
+        audioPlayer?.actionAtItemEnd = .pause
+        audioPlayer?.play()
     }
 
     override func observeValue(
@@ -120,16 +166,14 @@ class AudioPlayer: NSObject, ObservableObject {
         {
             let oldStatus = AVPlayer.TimeControlStatus(rawValue: oldValue)
             let newStatus = AVPlayer.TimeControlStatus(rawValue: newValue)
-
-            if newStatus == .playing {
-                self.playbackState = .playing(paused: false)
-            } else if newStatus == .paused && playbackState != .finished {
-                self.playbackState = .playing(paused: true)
-            }
-
-            if newStatus != oldStatus, newStatus != .playing && newStatus != .paused {
-                DispatchQueue.main.async { [weak self] in
-                    self?.playbackState = .loading
+            Task { @MainActor in
+                if newStatus == .playing {
+                    self.playbackState = .playing(paused: false)
+                } else if newStatus == .paused && playbackState != .finished {
+                    self.playbackState = .playing(paused: true)
+                }
+                if newStatus != oldStatus, newStatus != .playing && newStatus != .paused {
+                    self.playbackState = .loading
                 }
             }
         }

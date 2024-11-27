@@ -52,6 +52,7 @@ public struct FlowClaimSingleItemStepModel: FlowClaimStepModel {
         self.purchasePriceApplicable = purchasePriceApplicable
     }
 
+    @MainActor
     init(
         with data: OctopusGraphQL.FlowClaimSingleItemStepFragment
     ) {
@@ -86,6 +87,7 @@ public struct FlowClaimSingleItemStepModel: FlowClaimStepModel {
         self.defaultItemProblems = data.selectedItemProblems
     }
 
+    @MainActor
     public func returnSingleItemInfo(purchasePrice: Double?) -> OctopusGraphQL.FlowClaimSingleItemInput {
         let itemBrandInput: OctopusGraphQL.FlowClaimItemBrandInput? = {
             if selectedItemModel != nil {
@@ -182,7 +184,7 @@ public struct FlowClaimSingleItemStepModel: FlowClaimStepModel {
     }
 }
 
-public struct ClaimFlowItemBrandOptionModel: Codable, Equatable, Hashable {
+public struct ClaimFlowItemBrandOptionModel: Codable, Equatable, Hashable, Sendable {
     let displayName: String
     let itemBrandId: String
     let itemTypeId: String
@@ -206,7 +208,7 @@ public struct ClaimFlowItemBrandOptionModel: Codable, Equatable, Hashable {
     }
 }
 
-public struct ClaimFlowItemModelOptionModel: Codable, Equatable, Hashable {
+public struct ClaimFlowItemModelOptionModel: Codable, Equatable, Hashable, Sendable {
     let displayName: String
     let itemBrandId: String
     let itemTypeId: String
@@ -234,7 +236,7 @@ public struct ClaimFlowItemModelOptionModel: Codable, Equatable, Hashable {
     }
 }
 
-public struct ClaimFlowItemProblemOptionModel: Codable, Equatable, Hashable {
+public struct ClaimFlowItemProblemOptionModel: Codable, Equatable, Hashable, Sendable {
     let displayName: String
     let itemProblemId: String
 
@@ -254,6 +256,14 @@ public struct ClaimFlowItemProblemOptionModel: Codable, Equatable, Hashable {
     }
 }
 
+//<<<<<<< HEAD:Projects/Claims/Sources/Models/FlowClamSingleItemStepModel.swift
+//public enum SelectedModel: Codable, Equatable, Hashable, Sendable {
+//    case model(ClaimFlowItemModelOptionModel)
+//    case custom(brand: ClaimFlowItemBrandOptionModel, name: String)
+//}
+//
+//=======
+//>>>>>>> main:Projects/Claims/Sources/Models/FlowClaimSingleItemStepModel.swift
 extension ClaimFlowItemBrandOptionModel: TrackingViewNameProtocol {
     public var nameForTracking: String {
         return .init(describing: ModelPickerView.self)

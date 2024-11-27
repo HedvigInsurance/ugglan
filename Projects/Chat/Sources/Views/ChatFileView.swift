@@ -94,7 +94,7 @@ struct ChatFileView: View {
                     do {
                         let data = try await results.itemProvider.getData()
                         chatNavigationVm.isFilePresented = .data(data: data.data, mimeType: data.mimeType)
-                    } catch let exception {
+                    } catch _ {
 
                     }
                 }

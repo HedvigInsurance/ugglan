@@ -46,6 +46,7 @@ struct ContractDocumentsView: View {
     }
 }
 
+@MainActor
 private class ContractsDocumentViewModel: ObservableObject {
     var cancellable: AnyCancellable?
 }

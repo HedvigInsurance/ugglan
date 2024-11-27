@@ -2,6 +2,7 @@ import Combine
 import Photos
 import PhotosUI
 import SwiftUI
+@preconcurrency import UIKit
 import hCore
 import hCoreUI
 
@@ -103,6 +104,7 @@ struct ChatInputView: View {
     }
 }
 
+@MainActor
 class ChatInputViewModel: NSObject, ObservableObject {
     @Published var inputText: String = ""
     @Published var keyboardIsShown = false {
@@ -194,6 +196,7 @@ struct CustomTextViewRepresentable: UIViewRepresentable {
     }
 }
 
+@MainActor
 private class CustomTextView: UITextView, UITextViewDelegate {
     @Binding private var inputText: String
     @Binding private var height: CGFloat
@@ -279,7 +282,7 @@ private class CustomTextView: UITextView, UITextViewDelegate {
 
     override func paste(_ sender: Any?) {
         if let action = (sender as? UIKeyCommand)?.action, action == #selector(UIResponder.paste(_:)) {
-            if let images = UIPasteboard.general.images {
+            if let images = UIPasteboard.general.images, images.count > 0 {
                 for image in images {
                     if let data = image.jpegData(compressionQuality: 0.9) {
                         let file = File(
@@ -296,8 +299,10 @@ private class CustomTextView: UITextView, UITextViewDelegate {
             } else if let urls = UIPasteboard.general.urls, urls.count > 0 {
                 for url in urls {
                     if let contentProvider = NSItemProvider(contentsOf: url) {
-                        contentProvider.getFile { [weak self] file in
-                            self?.onPaste?(file)
+                        Task { [weak self] in
+                            if let file = await contentProvider.getFile() {
+                                self?.onPaste?(file)
+                            }
                         }
                     }
                 }
@@ -313,6 +318,10 @@ private class CustomTextView: UITextView, UITextViewDelegate {
         if action == #selector(UIResponder.paste(_:)) {
             if let imagesFileTypes = UIPasteboard.typeListImage as? [String],
                 UIPasteboard.general.contains(pasteboardTypes: imagesFileTypes)
+            {
+                return true
+            } else if let urlTypes = UIPasteboard.typeListURL as? [String],
+                UIPasteboard.general.contains(pasteboardTypes: urlTypes)
             {
                 return true
             }

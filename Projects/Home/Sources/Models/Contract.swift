@@ -1,6 +1,6 @@
 import Foundation
 
-public struct HomeContract: Codable, Equatable, Identifiable {
+public struct HomeContract: Codable, Equatable, Identifiable, Sendable {
     public var id: String?
     var upcomingRenewal: UpcomingRenewal?
     var displayName: String

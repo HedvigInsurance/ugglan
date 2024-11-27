@@ -115,7 +115,9 @@ private struct ModallySizeModifier<SwiftUIContent>: ViewModifier where SwiftUICo
                 vc.modalPresentationStyle = .overFullScreen
                 vc.transitioningDelegate = .none
                 vc.onDeinit = {
-                    presented = false
+                    Task { @MainActor in
+                        presented = false
+                    }
                 }
                 presentationViewModel.presentingVC = vc
                 vcToPresent?.present(vc, animated: true)

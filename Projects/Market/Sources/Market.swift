@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public enum Market: String, CaseIterable, Codable {
+public enum Market: String, CaseIterable, Codable, Sendable {
     case sweden = "SE"
     case norway = "NO"
     case denmark = "DK"
@@ -24,7 +24,7 @@ public enum Market: String, CaseIterable, Codable {
         case .denmark: return L10n.marketDenmark
         }
     }
-
+    @MainActor
     public var icon: UIImage {
         switch self {
         case .norway: return hCoreUIAssets.flagNO.image

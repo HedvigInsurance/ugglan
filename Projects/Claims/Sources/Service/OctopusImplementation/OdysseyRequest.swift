@@ -3,7 +3,7 @@ import Foundation
 import hCore
 import hGraphQL
 
-enum OdysseyRequest {
+enum OdysseyRequest: Sendable {
     case uploadAudioFile(flowId: String, file: UploadFile)
 
     var baseUrl: URL {
@@ -35,7 +35,7 @@ enum OdysseyRequest {
         }
         request.httpMethod = self.methodType
         try await TokenRefresher.shared.refreshIfNeeded()
-        var headers = ApolloClient.headers()
+        var headers = await ApolloClient.headers()
         headers["Odyssey-Platform"] = "ios"
         headers.forEach { element in
             request.setValue(element.value, forHTTPHeaderField: element.key)

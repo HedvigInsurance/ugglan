@@ -3,7 +3,7 @@ import SwiftUI
 import hCore
 import hGraphQL
 
-public enum TypeOfContract: String, Codable, CaseIterable {
+public enum TypeOfContract: String, Codable, CaseIterable, Sendable {
     case seHouse = "SE_HOUSE"
     case seApartmentBrf = "SE_APARTMENT_BRF"
     case seApartmentRent = "SE_APARTMENT_RENT"
@@ -58,12 +58,13 @@ public enum TypeOfContract: String, Codable, CaseIterable {
         }) {
             return mostLikelyTypeOfContract
         }
-
-        log.warn(
-            "Got an unknown type of contract \(typeOfContract) that couldn't be resolved.",
-            error: nil,
-            attributes: nil
-        )
+        Task { @MainActor in
+            log.warn(
+                "Got an unknown type of contract \(typeOfContract) that couldn't be resolved.",
+                error: nil,
+                attributes: nil
+            )
+        }
         return .unknown
     }
 
@@ -159,6 +160,7 @@ public enum TypeOfContract: String, Codable, CaseIterable {
     }
 }
 
+@MainActor
 extension PillowType {
     public var bgImage: UIImage {
         asset.image

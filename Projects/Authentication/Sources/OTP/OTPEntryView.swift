@@ -46,7 +46,7 @@ public struct OTPEntryView: View {
         }
     }
 }
-
+@MainActor
 class OTPEntryViewModel: ObservableObject {
     var authenticationService = AuthenticationService()
     @hTextFieldFocusState var focusInputField = false

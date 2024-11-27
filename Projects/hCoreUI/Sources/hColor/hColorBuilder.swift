@@ -58,6 +58,7 @@ public struct EitherHColor<Left: hColor, Right: hColor>: hColor {
     }
 }
 
+@MainActor
 @resultBuilder
 public struct hColorBuilder {
     public static func buildBlock<Color: hColor>(_ color: Color) -> some hColor {

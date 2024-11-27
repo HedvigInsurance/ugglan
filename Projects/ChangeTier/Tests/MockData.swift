@@ -3,6 +3,7 @@ import hCore
 
 @testable import ChangeTier
 
+@MainActor
 struct MockData {
     @discardableResult
     static func createMockChangeTier(
@@ -35,10 +36,10 @@ struct MockData {
     }
 }
 
-typealias GetTier = (ChangeTier.ChangeTierInputData) async throws(ChangeTier.ChangeTierError) ->
+typealias GetTier = @MainActor (ChangeTier.ChangeTierInputData) async throws(ChangeTier.ChangeTierError) ->
     ChangeTier.ChangeTierIntentModel
-typealias CommitTier = (String) async throws(ChangeTier.ChangeTierError) -> Void
-typealias CompareProductVariants = ([String]) async throws -> ProductVariantComparison
+typealias CommitTier = @MainActor (String) async throws(ChangeTier.ChangeTierError) -> Void
+typealias CompareProductVariants = @MainActor ([String]) async throws -> ProductVariantComparison
 
 class MockChangeTierService: ChangeTierClient {
     var events = [Event]()

@@ -92,6 +92,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
     }
 }
 
+@MainActor
 public class SubmitClaimOccurrencePlusLocationViewModel: ObservableObject {
     @Inject private var service: SubmitClaimClient
     @Published var viewState: ProcessingState = .success

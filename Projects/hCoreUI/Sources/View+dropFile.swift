@@ -17,8 +17,10 @@ struct OnFileDropModifier: ViewModifier {
             content
                 .onDrop(of: [UTType.item], isTargeted: $isTargetedForDropdown) { providers in
                     for item in providers {
-                        item.getFile { file in
-                            onFileDrop(file)
+                        Task {
+                            if let file = await item.getFile() {
+                                onFileDrop(file)
+                            }
                         }
                     }
                     return true
