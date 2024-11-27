@@ -32,6 +32,7 @@ public enum LoadingAction: LoadingProtocol {
     case getDiscountsData
     case getHistory
 }
+
 public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, LoadingAction> {
     @Inject var paymentService: hPaymentClient
 
@@ -80,19 +81,16 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
             removeLoading(for: .getPaymentData)
             newState.paymentData = data
         case .fetchPaymentStatus:
-            setLoading(for: .getPaymentStatus)
+            break
         case let .setPaymentStatus(data):
-            removeLoading(for: .getPaymentStatus)
             newState.paymentStatusData = data
         case .fetchDiscountsData:
-            setLoading(for: .getDiscountsData)
+            break
         case let .setDiscountsData(data):
-            removeLoading(for: .getDiscountsData)
             newState.paymentDiscountsData = data
         case .getHistory:
-            setLoading(for: .getHistory)
+            break
         case let .setHistory(data):
-            removeLoading(for: .getHistory)
             newState.paymentHistory = data
         }
         return newState

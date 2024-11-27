@@ -1,5 +1,5 @@
-import PresentableStore
 import Combine
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -9,6 +9,7 @@ public struct PaymentsView: View {
     @PresentableStore var store: PaymentStore
     @EnvironmentObject var router: Router
     @EnvironmentObject var paymentNavigationVm: PaymentsNavigationViewModel
+    @StateObject var vm = PaymentsViewModel()
 
     public init() {
         let store: PaymentStore = globalPresentableStoreContainer.get()
@@ -17,45 +18,53 @@ public struct PaymentsView: View {
     }
 
     public var body: some View {
-//        LoadingStoreViewWithContent(
-//            PaymentStore.self,
-//            [.getPaymentData],
-//            [.load, .fetchPaymentStatus]
-//        ) {
-            hForm {
-                VStack(spacing: 8) {
-                    upcomingPayment
-                    PresentableStoreLens(
-                        PaymentStore.self,
-                        getter: { state in
-                            state.paymentStatusData
-                        }
-                    ) { statusData in
-                        if let displayName = statusData?.displayName, let descriptor = statusData?.descriptor {
-                            hSection {
-                                discounts
-                                paymentHistory
-                                connectedPaymentMethod(displayName: displayName, descriptor: descriptor)
-                            }
-                        } else {
-                            hSection {
-                                discounts
-                                paymentHistory
-                            }
-                        }
+        successView.loading($vm.viewState, showLoading: false)
+            .hErrorViewButtonConfig(
+                .init(
+                    actionButton: .init(buttonAction: {
+                        store.send(.load)
+                        store.send(.fetchPaymentStatus)
+                    }),
+                    dismissButton: nil
+                )
+            )
+    }
 
+    private var successView: some View {
+        hForm {
+            VStack(spacing: 8) {
+                upcomingPayment
+                PresentableStoreLens(
+                    PaymentStore.self,
+                    getter: { state in
+                        state.paymentStatusData
                     }
-                    .sectionContainerStyle(.transparent)
+                ) { statusData in
+                    if let displayName = statusData?.displayName, let descriptor = statusData?.descriptor {
+                        hSection {
+                            discounts
+                            paymentHistory
+                            connectedPaymentMethod(displayName: displayName, descriptor: descriptor)
+                        }
+                    } else {
+                        hSection {
+                            discounts
+                            paymentHistory
+                        }
+                    }
 
                 }
-                .padding(.vertical, .padding8)
+                .sectionContainerStyle(.transparent)
+
             }
-            .hFormAttachToBottom {
-                bottomPart
-            }
-            .onPullToRefresh {
-                await store.sendAsync(.fetchPaymentStatus)
-            }
+            .padding(.vertical, .padding8)
+        }
+        .hFormAttachToBottom {
+            bottomPart
+        }
+        .onPullToRefresh {
+            await store.sendAsync(.fetchPaymentStatus)
+        }
     }
 
     private var upcomingPayment: some View {
@@ -191,17 +200,18 @@ public struct PaymentsView: View {
     }
 }
 
+@MainActor
 public class PaymentsViewModel: ObservableObject {
     @Published var viewState: ProcessingState = .loading
     @PresentableStore var store: PaymentStore
     @Published var cancellable: AnyCancellable?
-    
+
     init() {
         cancellable = store.actionSignal
             .receive(on: RunLoop.main)
             .sink { _ in
             } receiveValue: { [weak self] action in
-                if action == . {
+                if action == .load || action == .fetchPaymentStatus {
                     self?.viewState = .success
                 }
             }

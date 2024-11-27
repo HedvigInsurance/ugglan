@@ -155,6 +155,7 @@ struct ContractTable: View {
     }
 }
 
+@MainActor
 public class ContractTableViewModel: ObservableObject {
     @Published var viewState: ProcessingState = .loading
     @PresentableStore var store: ContractStore

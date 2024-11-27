@@ -22,7 +22,10 @@ public struct PaymentHistoryView: View {
                     dismissButton: nil
                 )
             )
-
+            .task {
+                let store: PaymentStore = globalPresentableStoreContainer.get()
+                store.send(.getHistory)
+            }
     }
 
     private var successView: some View {
@@ -103,10 +106,6 @@ public struct PaymentHistoryView: View {
             }
         }
         .presentableStoreLensAnimation(.default)
-        .task {
-            let store: PaymentStore = globalPresentableStoreContainer.get()
-            store.send(.getHistory)
-        }
     }
 
     @hColorBuilder
@@ -119,18 +118,38 @@ public struct PaymentHistoryView: View {
     }
 }
 
+@MainActor
 public class PaymentsHistoryViewModel: ObservableObject {
     @Published var viewState: ProcessingState = .loading
     @PresentableStore var store: PaymentStore
-    @Published var cancellable: AnyCancellable?
+    @Published var actionCancellable: AnyCancellable?
+    @Published var loadingCancellable: AnyCancellable?
 
     init() {
-        cancellable = store.actionSignal
+        actionCancellable = store.actionSignal
             .receive(on: RunLoop.main)
             .sink { _ in
             } receiveValue: { [weak self] action in
-                if action == .getHistory {
+                switch action {
+                case .setHistory:
                     self?.viewState = .success
+                default:
+                    break
+                }
+            }
+
+        loadingCancellable = store.loadingSignal
+            .receive(on: RunLoop.main)
+            .sink { _ in
+            } receiveValue: { [weak self] action in
+                let getAction = action.first(where: { $0.key == .getHistory })
+
+                switch getAction?.value {
+                case let .error(errorMessage):
+                    self?.viewState = .error(errorMessage: errorMessage)
+                case .loading:
+                    self?.viewState = .loading
+                default: break
                 }
             }
     }
