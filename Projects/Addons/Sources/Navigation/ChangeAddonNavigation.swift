@@ -47,7 +47,7 @@ public struct ChangeAddonNavigation: View {
             tracking: ChangeAddonTrackingType.changeAddonScreen
         ) {
             ChangeAddonScreen(changeAddonVm: changeAddonNavigationVm.changeAddonVm)
-                .withDismissButton()
+                .withAlertDismiss()
                 .routerDestination(for: ChangeAddonRouterActions.self) { action in
                     switch action {
                     case .summary:
@@ -55,7 +55,7 @@ public struct ChangeAddonNavigation: View {
                             changeAddonNavigationVm: changeAddonNavigationVm
                         )
                         .configureTitle(L10n.offerUpdateSummaryTitle)
-                        .withDismissButton()
+                        .withAlertDismiss()
                     }
                 }
         }

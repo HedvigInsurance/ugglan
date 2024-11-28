@@ -9,7 +9,7 @@ public class AddonsClientDemo: AddonsClient {
                 id: "Reseskydd",
                 title: "Reseskydd",
                 subTitle: "sub title",
-                informationText: "information text",
+                informationText: "Click to learn more about our extended travel coverage Reseskydd Plus",
                 options: [
                     .init(
                         id: "Reseskydd",
