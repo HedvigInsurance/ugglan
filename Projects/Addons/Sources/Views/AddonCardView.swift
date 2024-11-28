@@ -1,9 +1,16 @@
 import SwiftUI
 import hCoreUI
 
-struct AddonCardView: View {
+public struct AddonCardView: View {
+    let openAddon: () -> Void
 
-    var body: some View {
+    public init(
+        openAddon: @escaping () -> Void
+    ) {
+        self.openAddon = openAddon
+    }
+
+    public var body: some View {
         hSection {
             hRow {
                 VStack(alignment: .leading) {
@@ -22,6 +29,7 @@ struct AddonCardView: View {
                             hText("Learn more")
                         }
                         hButton.SmallButton(type: .primary) {
+                            openAddon()
                         } content: {
                             hText("Explore options")
                         }
@@ -36,5 +44,5 @@ struct AddonCardView: View {
 }
 
 #Preview {
-    AddonCardView()
+    AddonCardView(openAddon: {})
 }

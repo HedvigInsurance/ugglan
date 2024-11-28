@@ -80,8 +80,6 @@ public struct ContractsNavigation<Content: View>: View {
                         )
                     case .cancellation:
                         break
-                    case .addon:
-                        break
                     }
                 }
             )
@@ -93,6 +91,9 @@ public struct ContractsNavigation<Content: View>: View {
         }
         .modally(item: $contractsNavigationVm.changeTierInput) { input in
             redirect(.changeTier(input: input))
+        }
+        .modally(presented: $contractsNavigationVm.isAddonPresented) {
+            redirect(.addon)
         }
         .detent(
             item: $contractsNavigationVm.insuranceUpdate,
@@ -135,6 +136,7 @@ public class ContractsNavigationViewModel: ObservableObject {
     @Published public var insuranceUpdate: Contract?
     @Published public var isChangeAddressPresented = false
     @Published public var changeTierInput: ChangeTierInput?
+    @Published public var isAddonPresented = false
 
     public var editCoInsuredVm = EditCoInsuredViewModel(
         existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
@@ -148,6 +150,7 @@ public enum RedirectType {
     case movingFlow
     case pdf(document: hPDFDocument)
     case changeTier(input: ChangeTierInput)
+    case addon
 }
 
 public enum RedirectAction {

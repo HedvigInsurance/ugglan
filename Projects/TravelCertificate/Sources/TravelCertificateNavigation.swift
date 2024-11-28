@@ -1,3 +1,4 @@
+import Addons
 import Contracts
 import EditCoInsuredShared
 import Foundation
@@ -11,6 +12,7 @@ public class TravelCertificateNavigationViewModel: ObservableObject {
     public init() {}
     @Published var isDocumentPresented: TravelCertificateModel?
     @Published var isStartDateScreenPresented: TravelInsuranceSpecificationNavigationModel?
+    @Published var isAddonPresented = false
 
     var startDateViewModel: StartDateViewModel?
     var whoIsTravelingViewModel: WhoIsTravelingViewModel?
@@ -116,6 +118,12 @@ public struct TravelCertificateNavigation: View {
             PDFPreview(
                 document: .init(displayName: model.title, url: model.url.absoluteString, type: .unknown)
             )
+        }
+        .modally(
+            presented: $vm.isAddonPresented,
+            options: .constant(.withoutGrabber)
+        ) {
+            ChangeAddonNavigation(input: .init(contractId: ""))
         }
         .modally(
             item: $vm.isStartDateScreenPresented,

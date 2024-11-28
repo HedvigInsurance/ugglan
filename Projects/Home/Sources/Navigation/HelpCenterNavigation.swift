@@ -29,7 +29,6 @@ public class HelpCenterNavigationViewModel: ObservableObject {
         var isFirstVetPresented = false
         var isSickAbroadPresented = false
         var isChangeTierPresented: ChangeTierContractsInput?
-        var isChangeAddonPresented = false
     }
 
     public init() {}
@@ -112,15 +111,6 @@ public struct HelpCenterNavigation<Content: View>: View {
             item: $helpCenterVm.quickActions.isChangeTierPresented
         ) { input in
             ChangeTierNavigation(input: input)
-        }
-        .modally(
-            presented: $helpCenterVm.quickActions.isChangeAddonPresented
-        ) {
-
-            let contractStore: ContractStore = globalPresentableStoreContainer.get()
-            let firstContractId = contractStore.state.activeContracts.first?.id
-
-            ChangeAddonNavigation(input: .init(contractId: firstContractId ?? ""))
         }
         .detent(
             presented: $helpCenterVm.quickActions.isSickAbroadPresented,
@@ -246,8 +236,6 @@ public struct HelpCenterNavigation<Content: View>: View {
             helpCenterVm.quickActions.isFirstVetPresented = true
         case .sickAbroad:
             helpCenterVm.quickActions.isSickAbroadPresented = true
-        case .addon:
-            helpCenterVm.quickActions.isChangeAddonPresented = true
         }
     }
 

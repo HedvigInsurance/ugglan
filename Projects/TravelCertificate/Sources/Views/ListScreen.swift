@@ -1,3 +1,4 @@
+import Addons
 import Foundation
 import PresentableStore
 import SwiftUI
@@ -52,6 +53,12 @@ public struct ListScreen: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: 16) {
+                    if Dependencies.featureFlags().isAddonsEnabled {
+                        AddonCardView(openAddon: {
+                            travelCertificateNavigationVm.isAddonPresented = true
+                        })
+                    }
+
                     InfoCard(text: L10n.TravelCertificate.startDateInfo(45), type: .info)
                     if vm.canCreateTravelInsurance {
                         hButton.LargeButton(type: .secondary) {
@@ -141,4 +148,9 @@ class ListScreenViewModel: ObservableObject {
         }
         isLoading = false
     }
+}
+
+#Preview {
+    ListScreen(infoButtonPlacement: .automatic)
+        .environmentObject(TravelCertificateNavigationViewModel())
 }

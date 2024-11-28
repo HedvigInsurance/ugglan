@@ -1,3 +1,4 @@
+import Addons
 import Apollo
 import Foundation
 import PresentableStore
@@ -70,6 +71,14 @@ struct ContractTable: View {
             }
             if !showTerminated {
                 VStack(spacing: 24) {
+                    hSection {
+                        if Dependencies.featureFlags().isAddonsEnabled {
+                            AddonCardView(openAddon: {
+                                contractsNavigationVm.isAddonPresented = true
+                            })
+                        }
+                    }
+
                     movingToANewHomeView
                     CrossSellingStack(withHeader: true)
 
