@@ -1,4 +1,3 @@
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -89,7 +88,6 @@ struct MovingFlowAddressScreen: View {
             )
         )
         .sectionContainerStyle(.transparent)
-        .presentableStoreLensAnimation(.default)
     }
 
     func addressField() -> some View {

@@ -1,4 +1,3 @@
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -67,7 +66,6 @@ struct MovingFlowHouseScreen: View {
             )
         )
         .sectionContainerStyle(.transparent)
-        .presentableStoreLensAnimation(.default)
     }
 
     private var yearOfConstructionField: some View {
