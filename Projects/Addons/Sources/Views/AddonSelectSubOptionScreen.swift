@@ -13,10 +13,6 @@ struct AddonSelectSubOptionScreen: View {
     ) {
         self.addonOption = addonOption
         self.changeAddonNavigationVm = changeAddonNavigationVm
-
-        if changeAddonNavigationVm.changeAddonVm.selectedSubOption == nil {
-            changeAddonNavigationVm.changeAddonVm.selectedSubOption = addonOption.subOptions.first
-        }
     }
 
     var body: some View {
@@ -56,7 +52,6 @@ struct AddonSelectSubOptionScreen: View {
             hSection {
                 VStack(spacing: .padding8) {
                     hButton.LargeButton(type: .primary) {
-                        //                        changeAddonNavigationVm.changeAddonVm.selectedSubOptionId = selectedSubOptionId
                         changeAddonNavigationVm.isChangeCoverageDaysPresented = nil
                     } content: {
                         hText(L10n.generalConfirm)
