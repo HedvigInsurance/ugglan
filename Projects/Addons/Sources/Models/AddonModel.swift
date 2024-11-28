@@ -6,7 +6,7 @@ public struct AddonModel: Identifiable, Equatable, Hashable {
     let title: String
     let subTitle: String?
     let informationText: String
-    let options: [AddonOptionModel]?
+    let options: [AddonOptionModel]
 }
 
 public struct AddonOptionModel: Identifiable, Equatable, Hashable {
@@ -16,10 +16,6 @@ public struct AddonOptionModel: Identifiable, Equatable, Hashable {
     let price: MonetaryAmount?
     let subOptions: [AddonSubOptionModel]
     let isAlreadyIncluded: Bool
-
-    var getPillDisplayText: String {
-        isAlreadyIncluded ? "Ingår" : price?.formattedAmountPerMonth ?? ""
-    }
 }
 
 public struct AddonSubOptionModel: Identifiable, Equatable, Hashable {

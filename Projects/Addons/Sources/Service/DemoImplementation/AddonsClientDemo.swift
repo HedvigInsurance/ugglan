@@ -12,17 +12,9 @@ public class AddonsClientDemo: AddonsClient {
                 informationText: "Click to learn more about our extended travel coverage Reseskydd Plus",
                 options: [
                     .init(
-                        id: "Reseskydd",
-                        title: "Reseskydd",
-                        subtitle: "",
-                        price: nil,
-                        subOptions: [],
-                        isAlreadyIncluded: true
-                    ),
-                    .init(
                         id: "Reseskydd Plus",
                         title: "Reseskydd Plus",
-                        subtitle: "",
+                        subtitle: "For those who travel often: luggage protection and 24/7 assistance worldwide",
                         price: .init(amount: "79", currency: "SEK"),
                         subOptions: [
                             .init(
@@ -39,7 +31,7 @@ public class AddonsClientDemo: AddonsClient {
                             ),
                         ],
                         isAlreadyIncluded: false
-                    ),
+                    )
                 ]
             )
 

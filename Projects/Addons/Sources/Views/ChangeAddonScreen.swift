@@ -90,34 +90,8 @@ struct ChangeAddonScreen: View {
         VStack(spacing: .padding4) {
             ForEach(changeAddonVm.addonOptions ?? []) { addonOption in
                 hSection {
-                    hRadioField(
-                        id: addonOption,
-                        leftView: {
-                            getLeftView(for: addonOption).asAnyView
-                        },
-                        selected: $changeAddonVm.selectedOption,
-                        error: nil,
-                        useAnimation: true
-                    )
-                    .hFieldLeftAttachedView
-                    .hFieldAttachToBottom {
-                        if changeAddonVm.selectedOption == addonOption
-                            && changeAddonVm.hasSubOptions
-                        {
-
-                            let colorScheme: ColorScheme =
-                                UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
-                            DropdownView(
-                                value: String(changeAddonVm.selectedSubOption?.title ?? ""),
-                                placeHolder: "Välj skydd"
-                            ) {
-                                changeAddonNavigationVm.isChangeCoverageDaysPresented =
-                                    changeAddonVm.selectedOption
-                            }
-                            .padding(.top, .padding16)
-                            .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary])
-                            .hSectionWithoutHorizontalPadding
-                        }
+                    hRow {
+                        getAddonOptionView(for: addonOption)
                     }
                 }
                 .hFieldSize(.medium)
@@ -126,7 +100,7 @@ struct ChangeAddonScreen: View {
         }
     }
 
-    private func getLeftView(for addonOption: AddonOptionModel) -> some View {
+    private func getAddonOptionView(for addonOption: AddonOptionModel) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
                 hText(addonOption.title ?? "")
@@ -134,7 +108,7 @@ struct ChangeAddonScreen: View {
                 Spacer()
 
                 hPill(
-                    text: addonOption.getPillDisplayText,
+                    text: "+ " + (addonOption.price?.formattedAmountPerMonth ?? ""),
                     color: .grey(translucent: true),
                     colorLevel: .one
                 )
@@ -143,7 +117,20 @@ struct ChangeAddonScreen: View {
             if let subTitle = addonOption.subtitle {
                 hText(subTitle, style: .label)
                     .foregroundColor(hTextColor.Opaque.secondary)
+                    .padding(.top, .padding8)
             }
+
+            let colorScheme: ColorScheme =
+                UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
+            DropdownView(
+                value: String(changeAddonVm.selectedSubOption?.title ?? ""),
+                placeHolder: "Välj skydd"
+            ) {
+                changeAddonNavigationVm.isChangeCoverageDaysPresented = addonOption
+            }
+            .padding(.top, .padding16)
+            .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary])
+            .hSectionWithoutHorizontalPadding
         }
     }
 }
@@ -152,32 +139,15 @@ struct ChangeAddonScreen: View {
 public class ChangeAddonViewModel: ObservableObject {
     @Inject private var addonService: AddonsClient
     @Published var viewState: ProcessingState = .loading
-
-    @Published var selectedOption: AddonOptionModel? {
-        didSet {
-            selectedSubOption =
-                selectedSubOption
-                ?? selectedOption?.subOptions.first
-        }
-    }
-
     @Published var selectedSubOption: AddonSubOptionModel?
     @Published var addonOptions: [AddonOptionModel]?
     @Published var contractInformation: AddonContract?
     @Published var informationText: String?
 
-    var hasSubOptions: Bool {
-        return selectedOption?.subOptions.count ?? 0 > 0
-    }
-
     init(contractId: String) {
         Task {
             await getAddons()
             await getContractInformation(contractId: contractId)
-
-            self._selectedOption = Published(
-                initialValue: addonOptions?.first(where: { $0.subOptions.isEmpty })
-            )
         }
     }
 

@@ -24,7 +24,6 @@ extension ChangeAddonViewModel {
 
         let newPremium =
             changeAddonNavigationVm.changeAddonVm.selectedSubOption?.price
-            ?? changeAddonNavigationVm.changeAddonVm.selectedOption?.price
 
         let vm = QuoteSummaryViewModel(
             contract: [
@@ -45,8 +44,7 @@ extension ChangeAddonViewModel {
                 )
             ],
             total: .init(
-                amount: (changeAddonNavigationVm.changeAddonVm.selectedSubOption?.price.formattedAmount
-                    ?? changeAddonNavigationVm.changeAddonVm.selectedOption?.price?.formattedAmount) ?? "",
+                amount: changeAddonNavigationVm.changeAddonVm.selectedSubOption?.price.formattedAmount ?? "",
                 currency: "SEK"
             )
         ) {
