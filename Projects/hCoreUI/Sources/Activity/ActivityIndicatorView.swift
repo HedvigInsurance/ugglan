@@ -171,7 +171,8 @@ struct LoadingViewWithContentForProcessingState: ViewModifier {
                 content.transition(.opacity.animation(.easeInOut(duration: 0.2)))
             case .error(let errorMessage):
                 GenericErrorView(
-                    description: errorMessage
+                    description: errorMessage,
+                    useForm: false
                 )
                 .transition(.opacity.animation(.easeInOut(duration: 0.2)))
             }

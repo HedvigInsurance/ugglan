@@ -5,14 +5,14 @@ import hCore
 
 @MainActor
 final class FetchClaimsTests: XCTestCase {
-    weak var sut: MockFetchClaimService?
+    weak var sut: MockFetchClaimsService?
 
     override func setUp() {
         super.setUp()
     }
 
     override func tearDown() async throws {
-        Dependencies.shared.remove(for: hFetchClaimClient.self)
+        Dependencies.shared.remove(for: hFetchClaimsClient.self)
         try await Task.sleep(nanoseconds: 100)
 
         XCTAssertNil(sut)
