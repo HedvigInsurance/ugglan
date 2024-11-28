@@ -69,12 +69,6 @@ public struct ChangeAddonNavigation: View {
                 title: infoViewModel.title ?? "",
                 description: infoViewModel.description ?? ""
             )
-
-            //            InfoView(
-            //                title: "What is Reseskydd Plus?",
-            //                description:
-            //                    "Med reseskyddet som ingår i din hemförsäkring får du hjälp vid olycksfall och akut sjukdom eller tandbesvär som kräver sjukvård under din resa.\n\nSkyddet gäller också om ni tvingas evakuera resmålet på grund av det utbryter krig, naturkatastrof eller epidemi. Du kan även få ersättning om du måste avbryta resan på grund av att något allvarligt har hänt med en närstående hemma."
-            //            )
         }
         .detent(
             item: $changeAddonNavigationVm.isChangeCoverageDaysPresented,

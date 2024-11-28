@@ -8,6 +8,7 @@ public protocol AddonsClient {
     func getContract(contractId: String) async throws -> AddonContract
 }
 
+@MainActor
 public struct AddonContract {
     let contractId: String
     let contractName: String

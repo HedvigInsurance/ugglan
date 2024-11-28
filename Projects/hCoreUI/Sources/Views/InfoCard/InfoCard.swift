@@ -137,7 +137,7 @@ struct InfoCard_Previews: PreviewProvider {
 
                     }
 
-                InfoCard(text: L10n.changeAddressCoverageInfoText, type: .neutral)
+                InfoCard(text: L10n.changeAddressCoverageInfoText(30), type: .neutral)
                     .buttons([
                         .init(
                             buttonTitle: "Title",
