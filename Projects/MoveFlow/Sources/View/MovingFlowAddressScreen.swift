@@ -59,8 +59,10 @@ struct MovingFlowAddressScreen: View {
                     }
                 }
                 .disabled(vm.viewState == .loading)
-                hSection {
-                    InfoCard(text: L10n.changeAddressCoverageInfoText(30), type: .info)
+                if let days = movingFlowNavigationVm.movingFlowVm?.oldAddressCoverageDurationDays {
+                    hSection {
+                        InfoCard(text: L10n.changeAddressCoverageInfoText(days), type: .info)
+                    }
                 }
                 hSection {
                     hButton.LargeButton(type: .primary) {

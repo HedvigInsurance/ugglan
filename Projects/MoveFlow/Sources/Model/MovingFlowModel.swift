@@ -76,6 +76,10 @@ public struct MovingFlowModel: Codable, Equatable, Hashable, Sendable {
         }
     }
 
+    var oldAddressCoverageDurationDays: Int? {
+        currentHomeAddresses.first?.oldAddressCoverageDurationDays
+    }
+
 }
 
 enum MovingFlowError: Error {
@@ -99,6 +103,7 @@ struct MoveAddress: Codable, Equatable, Hashable {
     let street: String
     let postalCode: String
     let city: String?
+    let oldAddressCoverageDurationDays: Int?
 }
 
 struct MovingFlowQuote: Codable, Equatable, Hashable {
