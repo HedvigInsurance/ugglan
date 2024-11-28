@@ -81,15 +81,17 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
             removeLoading(for: .getPaymentData)
             newState.paymentData = data
         case .fetchPaymentStatus:
-            break
+            setLoading(for: .getPaymentStatus)
         case let .setPaymentStatus(data):
+            removeLoading(for: .getPaymentStatus)
             newState.paymentStatusData = data
         case .fetchDiscountsData:
-            break
+            setLoading(for: .getDiscountsData)
         case let .setDiscountsData(data):
+            removeLoading(for: .getDiscountsData)
             newState.paymentDiscountsData = data
         case .getHistory:
-            break
+            setLoading(for: .getHistory)
         case let .setHistory(data):
             newState.paymentHistory = data
         }
