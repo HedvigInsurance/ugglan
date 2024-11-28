@@ -44,7 +44,11 @@ extension ChangeAddonViewModel {
                     typeOfContract: self.contractInformation?.typeOfContract
                 )
             ],
-            total: .init(amount: "220", currency: "SEK")
+            total: .init(
+                amount: (changeAddonNavigationVm.changeAddonVm.selectedSubOption?.price.formattedAmount
+                    ?? changeAddonNavigationVm.changeAddonVm.selectedOption?.price?.formattedAmount) ?? "",
+                currency: "SEK"
+            )
         ) {
 
         }
