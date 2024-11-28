@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 struct SupportView: View {
-    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @EnvironmentObject var router: Router
     let openChat: () -> Void
 
     var body: some View {
@@ -17,7 +17,7 @@ struct SupportView: View {
                     .multilineTextAlignment(.center)
             }
             hButton.MediumButton(type: .primary) {
-                claimsNavigationVm.router.dismiss()
+                router.dismiss()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     openChat()
                 }

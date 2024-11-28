@@ -37,7 +37,7 @@ struct MovingFlowHouseScreen: View {
                     }
                     .disabled(houseInformationInputvm.viewState == .loading)
                     hSection {
-                        InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
+                        InfoCard(text: L10n.changeAddressCoverageInfoText(30), type: .info)
                     }
                     hSection {
                         hButton.LargeButton(type: .primary) {
