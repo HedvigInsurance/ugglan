@@ -159,7 +159,6 @@ struct ContractTable: View {
 public class ContractTableViewModel: ObservableObject {
     @Published var viewState: ProcessingState = .loading
     @PresentableStore var store: ContractStore
-    @Published var cancellable: AnyCancellable?
     @Published var actionCancellable: AnyCancellable?
     @Published var loadingCancellable: AnyCancellable?
 

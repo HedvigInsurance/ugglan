@@ -1,3 +1,4 @@
+import Combine
 import Forever
 import PresentableStore
 import SwiftUI
@@ -181,12 +182,21 @@ struct PaymentsDiscountViewNoDiscounts_Previews: PreviewProvider {
 
 struct PaymentsDiscountsRootView: View {
     @PresentableStore var store: PaymentStore
+    @StateObject var vm = PaymentsDiscountsRootViewModel()
+
     var body: some View {
-        //        LoadingStoreViewWithContent(
-        //            PaymentStore.self,
-        //            [.getDiscountsData],
-        //            [.fetchDiscountsData]
-        //        ) {
+        successView.loading($vm.viewState)
+            .hErrorViewButtonConfig(
+                .init(
+                    actionButton: .init(buttonAction: {
+                        store.send(.fetchDiscountsData)
+                    }),
+                    dismissButton: nil
+                )
+            )
+    }
+
+    private var successView: some View {
         PresentableStoreLens(
             PaymentStore.self,
             getter: { state in
@@ -197,7 +207,40 @@ struct PaymentsDiscountsRootView: View {
                 PaymentsDiscountsView(data: paymentDiscountsData)
             }
         }
-        //        }
+    }
+}
+
+@MainActor
+class PaymentsDiscountsRootViewModel: ObservableObject {
+    @Published var viewState: ProcessingState = .loading
+    @PresentableStore var store: PaymentStore
+    @Published var actionCancellable: AnyCancellable?
+    @Published var loadingCancellable: AnyCancellable?
+
+    init() {
+        actionCancellable = store.actionSignal
+            .receive(on: RunLoop.main)
+            .sink { _ in
+            } receiveValue: { [weak self] action in
+                if action == .fetchDiscountsData {
+                    self?.viewState = .success
+                }
+            }
+
+        loadingCancellable = store.loadingSignal
+            .receive(on: RunLoop.main)
+            .sink { _ in
+            } receiveValue: { [weak self] action in
+                let getAction = action.first(where: { $0.key == .getDiscountsData })
+
+                switch getAction?.value {
+                case let .error(errorMessage):
+                    self?.viewState = .error(errorMessage: errorMessage)
+                case .loading:
+                    self?.viewState = .loading
+                default: break
+                }
+            }
     }
 }
 

@@ -204,15 +204,31 @@ public struct PaymentsView: View {
 public class PaymentsViewModel: ObservableObject {
     @Published var viewState: ProcessingState = .loading
     @PresentableStore var store: PaymentStore
-    @Published var cancellable: AnyCancellable?
+    @Published var actionCancellable: AnyCancellable?
+    @Published var loadingCancellable: AnyCancellable?
 
     init() {
-        cancellable = store.actionSignal
+        actionCancellable = store.actionSignal
             .receive(on: RunLoop.main)
             .sink { _ in
             } receiveValue: { [weak self] action in
                 if action == .load || action == .fetchPaymentStatus {
                     self?.viewState = .success
+                }
+            }
+
+        loadingCancellable = store.loadingSignal
+            .receive(on: RunLoop.main)
+            .sink { _ in
+            } receiveValue: { [weak self] action in
+                let getAction = action.first(where: { $0.key == .getPaymentStatus })
+
+                switch getAction?.value {
+                case let .error(errorMessage):
+                    self?.viewState = .error(errorMessage: errorMessage)
+                case .loading:
+                    self?.viewState = .loading
+                default: break
                 }
             }
     }
