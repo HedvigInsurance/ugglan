@@ -85,7 +85,14 @@ struct SubmitClaimFilesUploadScreen: View {
                 }
             } else {
                 hForm {}
-                    .hFormTitle(title: .init(.standard, .displayXSLong, L10n.claimsFileUploadTitle))
+                    .hFormTitle(
+                        title: .init(
+                            .small,
+                            .heading2,
+                            L10n.claimsFileUploadTitle,
+                            alignment: .leading
+                        )
+                    )
                     .hFormAttachToBottom {
                         hSection {
                             VStack(spacing: 16) {
