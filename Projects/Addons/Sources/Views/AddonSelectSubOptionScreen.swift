@@ -13,6 +13,10 @@ struct AddonSelectSubOptionScreen: View {
     ) {
         self.addonOption = addonOption
         self.changeAddonNavigationVm = changeAddonNavigationVm
+
+        if changeAddonNavigationVm.changeAddonVm.selectedSubOption == nil {
+            changeAddonNavigationVm.changeAddonVm.selectedSubOption = addonOption.subOptions.first
+        }
     }
 
     var body: some View {

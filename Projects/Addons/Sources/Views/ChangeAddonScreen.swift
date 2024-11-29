@@ -148,6 +148,10 @@ public class ChangeAddonViewModel: ObservableObject {
         Task {
             await getAddons()
             await getContractInformation(contractId: contractId)
+
+            self._selectedSubOption = Published(
+                initialValue: addonOptions?.first?.subOptions.first
+            )
         }
     }
 
