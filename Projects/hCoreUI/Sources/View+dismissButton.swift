@@ -83,19 +83,14 @@ private struct CloseButtonModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .toolbar {
-                ToolbarItem(
-                    placement: .topBarTrailing
-
-                ) {
-                    Button {
-                        vm.vc?.dismiss(animated: true)
-                    } label: {
-                        hCoreUIAssets.close.view
-                            .offset(y: CGFloat(-reducedTopSpacing))
-                    }
-                    .foregroundColor(hTextColor.Opaque.primary)
+            .setToolbarTrailing {
+                Button {
+                    vm.vc?.dismiss(animated: true)
+                } label: {
+                    hCoreUIAssets.close.view
+                        .offset(y: CGFloat(-reducedTopSpacing))
                 }
+                .foregroundColor(hTextColor.Opaque.primary)
             }
             .introspect(.viewController, on: .iOS(.v13...)) { vc in
                 vm.vc = vc

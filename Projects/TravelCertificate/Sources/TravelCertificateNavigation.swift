@@ -89,11 +89,11 @@ public struct TravelCertificateNavigation: View {
     private var getListScreen: some View {
         if infoButtonPlacement == .trailing {
             showListScreen(
-                infoButtonPlacement: .topBarTrailing
+                infoButtonPlacement: infoButtonPlacement
             )
         } else {
             showListScreen(
-                infoButtonPlacement: .topBarLeading
+                infoButtonPlacement: infoButtonPlacement
             )
             .withDismissButton()
         }
@@ -162,7 +162,7 @@ public struct TravelCertificateNavigation: View {
     }
 
     private func showListScreen(
-        infoButtonPlacement: ToolbarItemPlacement
+        infoButtonPlacement: ListToolBarPlacement
     ) -> some View {
         ListScreen(
             infoButtonPlacement: infoButtonPlacement

@@ -10,10 +10,10 @@ public struct ListScreen: View {
     @EnvironmentObject var router: Router
     @EnvironmentObject var travelCertificateNavigationVm: TravelCertificateNavigationViewModel
 
-    let infoButtonPlacement: ToolbarItemPlacement
+    let infoButtonPlacement: ListToolBarPlacement
 
     public init(
-        infoButtonPlacement: ToolbarItemPlacement
+        infoButtonPlacement: ListToolBarPlacement
     ) {
         self.infoButtonPlacement = infoButtonPlacement
     }
@@ -73,17 +73,13 @@ public struct ListScreen: View {
             }
         }
         .loading($vm.isLoading, $vm.error)
-        .toolbar {
-            ToolbarItem(
-                placement: infoButtonPlacement
-            ) {
-                InfoViewHolder(
-                    title: L10n.TravelCertificate.Info.title,
-                    description: L10n.TravelCertificate.Info.subtitle,
-                    type: .navigation
-                )
-                .foregroundColor(hTextColor.Opaque.primary)
-            }
+        .applyInfoButton(withPlacement: infoButtonPlacement) {
+            InfoViewHolder(
+                title: L10n.TravelCertificate.Info.title,
+                description: L10n.TravelCertificate.Info.subtitle,
+                type: .navigation
+            )
+            .foregroundColor(hTextColor.Opaque.primary)
         }
         .sectionContainerStyle(.transparent)
         .onAppear {
@@ -116,6 +112,25 @@ public struct ListScreen: View {
             }
             withAnimation {
                 vm.isCreateNewLoading = false
+            }
+        }
+    }
+}
+
+extension View {
+    @ViewBuilder
+    fileprivate func applyInfoButton<Content: View>(
+        withPlacement: ListToolBarPlacement,
+        @ViewBuilder content: @escaping () -> Content
+    ) -> some View {
+        switch withPlacement {
+        case .leading:
+            self.setToolbarLeading {
+                content()
+            }
+        case .trailing:
+            self.setToolbarTrailing {
+                content()
             }
         }
     }
