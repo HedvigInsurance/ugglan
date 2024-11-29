@@ -42,7 +42,14 @@ struct SelectContractView: View {
             )
         )
         .padding(.bottom, .padding16)
-        .hFormTitle(title: .init(.small, .displayXSLong, L10n.claimTriagingAboutTitile))
+        .hFormTitle(
+            title: .init(
+                .small,
+                .heading2,
+                L10n.claimTriagingAboutTitile,
+                alignment: .leading
+            )
+        )
         .hButtonIsLoading(vm.state == .loading)
         .claimErrorTrackerForState($vm.state)
         .hDisableScroll

@@ -166,15 +166,32 @@ class MainNavigationViewModel: ObservableObject {
     }
 
     func configureAppBadgeTracking() {
-        //        NotificationCenter.default.addObserver(self, selector: #selector(resetBadge), name: UIApplication.willEnterForegroundNotification, object: nil)
-        //        NotificationCenter.default.addObserver(self, selector: #selector(resetBadge), name: UIApplication.didEnterBackgroundNotification, object: nil)
-        //        NotificationCenter.default.addObserver(self, selector: #selector(resetBadge), name: UIApplication.willTerminateNotification, object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(resetBadge),
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(resetBadge),
+            name: UIApplication.didEnterBackgroundNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(resetBadge),
+            name: UIApplication.willTerminateNotification,
+            object: nil
+        )
     }
 
     @objc func resetBadge(notification: Notification) {
         UserDefaults(suiteName: "group.\(Bundle.main.bundleIdentifier!)")?.set(1, forKey: "count")
         if #available(iOS 16.0, *) {
-            UNUserNotificationCenter.current().setBadgeCount(0)
+            Task {
+                try await UNUserNotificationCenter.current().setBadgeCount(0)
+            }
         } else {
             UIApplication.shared.applicationIconBadgeNumber = 0
         }

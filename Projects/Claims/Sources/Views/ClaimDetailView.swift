@@ -320,29 +320,26 @@ public struct ClaimDetailView: View {
 
     private func showFilePickerAlert() {
         FilePicker.showAlert { selected in
-            switch selected {
-            case .camera:
-                showCamera = true
-            case .imagePicker:
-                PHPhotoLibrary.requestAuthorization(for: .readWrite) { (status) in
-                    switch status {
+            Task {
+                switch selected {
+                case .camera:
+                    showCamera = true
+                case .imagePicker:
+                    let access = await PHPhotoLibrary.requestAuthorization(for: .readWrite)
+                    switch access {
                     case .notDetermined, .restricted, .denied:
                         guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
                             return
                         }
-                        DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
+                        await UIApplication.shared.open(settingsUrl)
                     case .authorized, .limited:
-                        DispatchQueue.main.async {
-                            showImagePicker = true
-                        }
+                        showImagePicker = true
                     @unknown default:
-                        DispatchQueue.main.async {
-                            showImagePicker = true
-                        }
+                        showImagePicker = true
                     }
+                case .filePicker:
+                    showFilePicker = true
                 }
-            case .filePicker:
-                showFilePicker = true
             }
         }
     }

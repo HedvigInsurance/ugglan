@@ -185,6 +185,7 @@ extension MoveAddress {
         street = data.street
         postalCode = data.postalCode
         city = data.city
+        oldAddressCoverageDurationDays = data.oldAddressCoverageDurationDays
     }
 }
 
