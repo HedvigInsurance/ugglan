@@ -54,9 +54,19 @@ public struct ListScreen: View {
             hSection {
                 VStack(spacing: 16) {
                     if Dependencies.featureFlags().isAddonsEnabled {
-                        AddonCardView(openAddon: {
-                            travelCertificateNavigationVm.isAddonPresented = true
-                        })
+                        AddonCardView(
+                            openAddon: {
+                                travelCertificateNavigationVm.isAddonPresented = true
+                            },
+                            addon: .init(
+                                id: "id",
+                                title: "Travel Plus",
+                                tag: "Popular",
+                                subTitle: "Extended travel insurance with extra coverage for your travels",
+                                informationText: "",
+                                options: []
+                            )
+                        )
                     }
 
                     InfoCard(text: L10n.TravelCertificate.startDateInfo(45), type: .info)
@@ -166,6 +176,6 @@ class ListScreenViewModel: ObservableObject {
 }
 
 #Preview {
-    ListScreen(infoButtonPlacement: .automatic)
+    ListScreen(infoButtonPlacement: .trailing)
         .environmentObject(TravelCertificateNavigationViewModel())
 }

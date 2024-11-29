@@ -96,6 +96,9 @@ public struct ContractsNavigation<Content: View>: View {
         .modally(item: $contractsNavigationVm.isAddonPresented) { input in
             redirect(.addon(input: input))
         }
+        .modally(item: $contractsNavigationVm.isAddonInfoSheetPresented) { infoModel in
+            InfoView(title: infoModel.title ?? "", description: infoModel.title ?? "")
+        }
         .detent(
             item: $contractsNavigationVm.insuranceUpdate,
             style: [.height]
@@ -138,6 +141,7 @@ public class ContractsNavigationViewModel: ObservableObject {
     @Published public var isChangeAddressPresented = false
     @Published public var changeTierInput: ChangeTierInput?
     @Published public var isAddonPresented: ChangeAddonInput?
+    @Published public var isAddonInfoSheetPresented: InfoViewDataModel?
 
     public var editCoInsuredVm = EditCoInsuredViewModel(
         existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)

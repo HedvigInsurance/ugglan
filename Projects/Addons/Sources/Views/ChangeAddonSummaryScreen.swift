@@ -33,20 +33,21 @@ extension ChangeAddonViewModel {
                     exposureName: changeAddonNavigationVm.changeAddonVm.contractInformation?.activationDate
                         .localDateString ?? "",
                     newPremium: newPremium,
-                    currentPremium: changeAddonNavigationVm.changeAddonVm.contractInformation?.currentPremium,
+                    currentPremium: nil,
                     documents: self.contractInformation?.documents ?? [],
                     onDocumentTap: { document in
 
                     },
                     displayItems: self.contractInformation?.displayItems ?? [],
                     insuranceLimits: self.contractInformation?.insurableLimits ?? [],
-                    typeOfContract: self.contractInformation?.typeOfContract
+                    typeOfContract: nil
                 )
             ],
             total: .init(
                 amount: changeAddonNavigationVm.changeAddonVm.selectedSubOption?.price.formattedAmount ?? "",
                 currency: "SEK"
-            )
+            ),
+            isAddon: true
         ) {
 
         }

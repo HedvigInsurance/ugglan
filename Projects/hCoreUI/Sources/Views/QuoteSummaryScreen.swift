@@ -7,6 +7,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     let total: MonetaryAmount
     let FAQModel: (title: String, subtitle: String, questions: [FAQ])?
     let onConfirmClick: () -> Void
+    let isAddon: Bool
 
     public struct ContractInfo: Identifiable {
         public let id: String
@@ -51,11 +52,13 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         contract: [ContractInfo],
         total: MonetaryAmount,
         FAQModel: (title: String, subtitle: String, questions: [FAQ])? = nil,
+        isAddon: Bool? = false,
         onConfirmClick: @escaping () -> Void
     ) {
         self.contracts = contract
         self.total = total
         self.FAQModel = FAQModel
+        self.isAddon = isAddon ?? false
         self.onConfirmClick = onConfirmClick
     }
 }
@@ -104,7 +107,7 @@ public struct QuoteSummaryScreen: View {
             }
             .hFormAttachToBottom {
                 VStack {
-                    if vm.contracts.count > 1 {
+                    if vm.contracts.count > 1 || vm.isAddon {
                         noticeComponent
                             .padding(.top, .padding16)
                     }
@@ -199,8 +202,10 @@ public struct QuoteSummaryScreen: View {
         hSection {
             InfoCard(
                 text:
-                    L10n.changeAddressOtherInsurancesInfoText,
-                type: .info
+                    vm.isAddon
+                    ? "Some copy about that the addon will be bound to your contract period and can’t be removed unless full insurance is terminated."
+                    : L10n.changeAddressOtherInsurancesInfoText,
+                type: vm.isAddon ? .neutral : .info
             )
         }
         .sectionContainerStyle(.transparent)
@@ -286,7 +291,18 @@ public struct QuoteSummaryScreen: View {
                 HStack {
                     hText(L10n.tierFlowTotal)
                     Spacer()
-                    hText(vm.total.formattedAmountPerMonth)
+
+                    let amount = vm.total.formattedAmountPerMonth
+
+                    if vm.isAddon {
+                        VStack(alignment: .trailing, spacing: 0) {
+                            hText("+" + amount)
+                            hText("Added to your total monthly premium", style: .label)
+                                .foregroundColor(hTextColor.Opaque.secondary)
+                        }
+                    } else {
+                        hText(amount)
+                    }
                 }
                 VStack(spacing: .padding8) {
                     hButton.LargeButton(type: .primary) {
