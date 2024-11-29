@@ -9,8 +9,8 @@ struct AddonProcessingScreen: View {
     var body: some View {
         ProcessingStateView(
             loadingViewText: L10n.tierFlowCommitProcessingLoadingTitle,
-            successViewTitle: "Added successfully",
-            successViewBody: "Your updates will be effective from tomorrow.",
+            successViewTitle: L10n.addonFlowSuccessTitle,
+            successViewBody: L10n.addonFlowSuccessSubtitle,
             successViewButtonAction: {
                 addonNavigationVm.router.dismiss()
             },
