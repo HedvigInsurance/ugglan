@@ -135,8 +135,8 @@ struct LoggedInNavigation: View {
                         store.send(.fetchContracts)
                     }
                 }
-            case .addon:
-                ChangeAddonNavigation(input: .init(contractId: ""))
+            case let .addon(input: input):
+                ChangeAddonNavigation(input: input)
             }
         } redirectAction: { action in
             switch action {

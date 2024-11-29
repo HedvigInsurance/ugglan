@@ -3,13 +3,21 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct ChangeAddonInput {
-    let contractId: String
+public struct ChangeAddonInput: Identifiable, Equatable {
+    public var id: String {
+        contractId ?? ""
+    }
+
+    let contractId: String?
 
     public init(
-        contractId: String
+        contractId: String?
     ) {
         self.contractId = contractId
+    }
+
+    public static func == (lhs: ChangeAddonInput, rhs: ChangeAddonInput) -> Bool {
+        return lhs.id == rhs.id
     }
 }
 
@@ -23,7 +31,7 @@ public class ChangeAddonNavigationViewModel: ObservableObject {
     public init(
         input: ChangeAddonInput
     ) {
-        changeAddonVm = ChangeAddonViewModel(contractId: input.contractId)
+        changeAddonVm = ChangeAddonViewModel(contractId: input.contractId ?? "")
     }
 }
 

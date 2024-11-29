@@ -74,7 +74,7 @@ struct ContractTable: View {
                     hSection {
                         if Dependencies.featureFlags().isAddonsEnabled {
                             AddonCardView(openAddon: {
-                                contractsNavigationVm.isAddonPresented = true
+                                contractsNavigationVm.isAddonPresented = .init(contractId: nil)
                             })
                         }
                     }
