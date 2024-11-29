@@ -15,7 +15,14 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
 
     public var body: some View {
         hForm {}
-            .hFormTitle(title: .init(.small, .displayXSLong, L10n.claimsConfirmNumberTitle))
+            .hFormTitle(
+                title: .init(
+                    .small,
+                    .heading2,
+                    L10n.claimsConfirmNumberTitle,
+                    alignment: .leading
+                )
+            )
             .hFormAttachToBottom {
                 hSection {
                     VStack(spacing: 16) {

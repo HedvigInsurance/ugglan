@@ -12,33 +12,39 @@ public struct SubmitClaimSingleItemScreen: View {
     public init() {}
 
     public var body: some View {
-        hForm {
-        }
-        .hFormTitle(title: .init(.small, .displayXSLong, L10n.claimsSingleItemDetails))
-        .hFormAttachToBottom {
-            hSection {
-                getFields(singleItemStep: claimsNavigationVm.singleItemModel)
-                hButton.LargeButton(type: .primary) {
-                    let singleItemModel = claimsNavigationVm.singleItemModel
-                    Task {
-                        let step = await vm.singleItemRequest(
-                            context: claimsNavigationVm.currentClaimContext ?? "",
-                            model: singleItemModel
-                        )
+        hForm {}
+            .hFormTitle(
+                title: .init(
+                    .small,
+                    .heading2,
+                    L10n.claimsSingleItemDetails,
+                    alignment: .leading
+                )
+            )
+            .hFormAttachToBottom {
+                hSection {
+                    getFields(singleItemStep: claimsNavigationVm.singleItemModel)
+                    hButton.LargeButton(type: .primary) {
+                        let singleItemModel = claimsNavigationVm.singleItemModel
+                        Task {
+                            let step = await vm.singleItemRequest(
+                                context: claimsNavigationVm.currentClaimContext ?? "",
+                                model: singleItemModel
+                            )
 
-                        if let step {
-                            claimsNavigationVm.navigate(data: step)
+                            if let step {
+                                claimsNavigationVm.navigate(data: step)
+                            }
                         }
+                    } content: {
+                        hText(L10n.generalContinueButton)
                     }
-                } content: {
-                    hText(L10n.generalContinueButton)
+                    .hButtonIsLoading(vm.viewState == .loading)
+                    .disabled(vm.viewState == .loading)
                 }
-                .hButtonIsLoading(vm.viewState == .loading)
-                .disabled(vm.viewState == .loading)
+                .sectionContainerStyle(.transparent)
             }
-            .sectionContainerStyle(.transparent)
-        }
-        .claimErrorTrackerForState($vm.viewState)
+            .claimErrorTrackerForState($vm.viewState)
     }
 
     @ViewBuilder

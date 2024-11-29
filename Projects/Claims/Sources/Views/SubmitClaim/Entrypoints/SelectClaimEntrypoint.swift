@@ -17,7 +17,14 @@ public struct SelectClaimEntrypointGroup: View {
 
     public var body: some View {
         hForm {}
-            .hFormTitle(title: .init(.small, .displayXSLong, L10n.claimTriagingNavigationTitle))
+            .hFormTitle(
+                title: .init(
+                    .small,
+                    .heading2,
+                    L10n.claimTriagingNavigationTitle,
+                    alignment: .leading
+                )
+            )
             .hDisableScroll
             .hFormAttachToBottom {
                 VStack {
@@ -104,53 +111,59 @@ struct SelectClaimEntrypointType: View {
     public init() {}
 
     var body: some View {
-        hForm {
-        }
-        .hFormTitle(title: .init(.small, .displayXSLong, L10n.claimsTriagingWhatHappenedTitle))
-        .hDisableScroll
-        .hFormAttachToBottom {
-            ShowTagList(
-                tagsToShow: entrypointsToStringArray(
-                    entrypoints: claimsNavigationVm.entrypoints.selectedEntrypoints ?? []
-                ),
-                onTap: { tag in
-                    selectedClaimEntrypoint = tag
-                    for claimEntrypoint in claimsNavigationVm.entrypoints.selectedEntrypoints ?? [] {
-                        if claimEntrypoint.displayName == selectedClaimEntrypoint {
-                            claimOptions = claimEntrypoint.options
-                        }
-                    }
-                },
-                onButtonClick: {
-                    if selectedClaimEntrypoint != nil {
-                        claimsNavigationVm.previousProgress = claimsNavigationVm.progress
-                        claimsNavigationVm.progress = 0.2
-
-                        claimsNavigationVm.entrypoints.selectedEntrypointOptions = claimOptions
-                        claimsNavigationVm.entrypoints.selectedEntrypointId = mapNametoEntrypointId(
-                            input: claimsNavigationVm.entrypoints.selectedEntrypoints ?? []
-                        )
-
-                        if claimOptions.isEmpty {
-                            buttonIsLoading = true
-                            Task {
-                                await claimsNavigationVm.startClaimRequest(
-                                    entrypointId: claimsNavigationVm.entrypoints.selectedEntrypointId,
-                                    entrypointOptionId: nil
-                                )
-                                buttonIsLoading = false
-                            }
-
-                        } else {
-                            router.push(ClaimsRouterActions.triagingOption)
-                        }
-                    }
-                },
-                oldValue: $selectedClaimEntrypoint,
-                buttonIsLoading: $buttonIsLoading
+        hForm {}
+            .hFormTitle(
+                title: .init(
+                    .small,
+                    .heading2,
+                    L10n.claimsTriagingWhatHappenedTitle,
+                    alignment: .leading
+                )
             )
-        }
-        .claimErrorTrackerForState($claimsNavigationVm.startClaimState)
+            .hDisableScroll
+            .hFormAttachToBottom {
+                ShowTagList(
+                    tagsToShow: entrypointsToStringArray(
+                        entrypoints: claimsNavigationVm.entrypoints.selectedEntrypoints ?? []
+                    ),
+                    onTap: { tag in
+                        selectedClaimEntrypoint = tag
+                        for claimEntrypoint in claimsNavigationVm.entrypoints.selectedEntrypoints ?? [] {
+                            if claimEntrypoint.displayName == selectedClaimEntrypoint {
+                                claimOptions = claimEntrypoint.options
+                            }
+                        }
+                    },
+                    onButtonClick: {
+                        if selectedClaimEntrypoint != nil {
+                            claimsNavigationVm.previousProgress = claimsNavigationVm.progress
+                            claimsNavigationVm.progress = 0.2
+
+                            claimsNavigationVm.entrypoints.selectedEntrypointOptions = claimOptions
+                            claimsNavigationVm.entrypoints.selectedEntrypointId = mapNametoEntrypointId(
+                                input: claimsNavigationVm.entrypoints.selectedEntrypoints ?? []
+                            )
+
+                            if claimOptions.isEmpty {
+                                buttonIsLoading = true
+                                Task {
+                                    await claimsNavigationVm.startClaimRequest(
+                                        entrypointId: claimsNavigationVm.entrypoints.selectedEntrypointId,
+                                        entrypointOptionId: nil
+                                    )
+                                    buttonIsLoading = false
+                                }
+
+                            } else {
+                                router.push(ClaimsRouterActions.triagingOption)
+                            }
+                        }
+                    },
+                    oldValue: $selectedClaimEntrypoint,
+                    buttonIsLoading: $buttonIsLoading
+                )
+            }
+            .claimErrorTrackerForState($claimsNavigationVm.startClaimState)
 
     }
 
@@ -192,37 +205,43 @@ struct SelectClaimEntrypointOption: View {
     public init() {}
 
     var body: some View {
-        hForm {
-        }
-        .hFormTitle(title: .init(.small, .displayXSLong, L10n.claimsTriagingWhatItemTitle))
-        .hDisableScroll
-        .hFormAttachToBottom {
-            ShowTagList(
-                tagsToShow: entrypointOptionsToStringArray(
-                    input: claimsNavigationVm.entrypoints.selectedEntrypointOptions ?? []
-                ),
-                onTap: { tag in
-                    selectedClaimOption = tag
-                },
-                onButtonClick: {
-                    if selectedClaimOption != nil {
-                        buttonIsLoading = true
-                        Task {
-                            await claimsNavigationVm.startClaimRequest(
-                                entrypointId: claimsNavigationVm.entrypoints.selectedEntrypointId ?? "",
-                                entrypointOptionId: mapNametoEntrypointOptionId(
-                                    input: claimsNavigationVm.entrypoints.selectedEntrypointOptions ?? []
-                                )
-                            )
-                            buttonIsLoading = false
-                        }
-                    }
-                },
-                oldValue: $selectedClaimOption,
-                buttonIsLoading: $buttonIsLoading
+        hForm {}
+            .hFormTitle(
+                title: .init(
+                    .small,
+                    .heading2,
+                    L10n.claimsTriagingWhatItemTitle,
+                    alignment: .leading
+                )
             )
-        }
-        .claimErrorTrackerForState($claimsNavigationVm.startClaimState)
+            .hDisableScroll
+            .hFormAttachToBottom {
+                ShowTagList(
+                    tagsToShow: entrypointOptionsToStringArray(
+                        input: claimsNavigationVm.entrypoints.selectedEntrypointOptions ?? []
+                    ),
+                    onTap: { tag in
+                        selectedClaimOption = tag
+                    },
+                    onButtonClick: {
+                        if selectedClaimOption != nil {
+                            buttonIsLoading = true
+                            Task {
+                                await claimsNavigationVm.startClaimRequest(
+                                    entrypointId: claimsNavigationVm.entrypoints.selectedEntrypointId ?? "",
+                                    entrypointOptionId: mapNametoEntrypointOptionId(
+                                        input: claimsNavigationVm.entrypoints.selectedEntrypointOptions ?? []
+                                    )
+                                )
+                                buttonIsLoading = false
+                            }
+                        }
+                    },
+                    oldValue: $selectedClaimOption,
+                    buttonIsLoading: $buttonIsLoading
+                )
+            }
+            .claimErrorTrackerForState($claimsNavigationVm.startClaimState)
 
     }
 
