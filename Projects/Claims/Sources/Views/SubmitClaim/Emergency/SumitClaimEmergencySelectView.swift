@@ -6,16 +6,23 @@ struct SumitClaimEmergencySelectView: View {
     @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
     @StateObject var vm = SumitClaimEmergencySelectViewModel()
     @State var selectedValue: Bool = true
-    let title: () -> String
+    let title: String
 
     init(
-        title: @escaping () -> String
+        title: String
     ) {
         self.title = title
     }
     var body: some View {
         hForm {}
-            .hFormTitle(title: .init(.small, .displayXSLong, title()))
+            .hFormTitle(
+                title: .init(
+                    .small,
+                    .heading2,
+                    title,
+                    alignment: .leading
+                )
+            )
             .hFormAttachToBottom {
                 hSection {
                     VStack(spacing: 16) {
@@ -103,8 +110,6 @@ public class SumitClaimEmergencySelectViewModel: ObservableObject {
 
 struct SumitClaimEmergencySelectScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SumitClaimEmergencySelectView {
-            return L10n.submitClaimEmergencyTitle
-        }
+        SumitClaimEmergencySelectView(title: L10n.submitClaimEmergencyTitle)
     }
 }

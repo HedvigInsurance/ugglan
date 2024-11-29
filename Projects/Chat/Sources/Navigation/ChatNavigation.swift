@@ -48,7 +48,7 @@ public class ChatNavigationViewModel: ObservableObject {
 
 public enum ChatRedirectViewType: Hashable {
     case notification
-    case claimDetail(id: String)
+    case claimDetailForConversationId(id: String)
 }
 
 extension ChatRedirectViewType: TrackingViewNameProtocol {
@@ -56,7 +56,7 @@ extension ChatRedirectViewType: TrackingViewNameProtocol {
         switch self {
         case .notification:
             return "AskForPushNotifications"
-        case .claimDetail:
+        case .claimDetailForConversationId:
             return "ClaimDetailView"
         }
     }
@@ -94,8 +94,8 @@ public struct ChatNavigation<Content: View>: View {
                     ChatScreen(
                         vm: .init(
                             chatService: ConversationService(conversationId: conversationId),
-                            onTitleTap: { claimId in
-                                router.push(ChatRedirectViewType.claimDetail(id: claimId))
+                            onTitleTap: {
+                                router.push(ChatRedirectViewType.claimDetailForConversationId(id: conversationId))
                             }
                         )
                     )

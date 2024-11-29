@@ -32,6 +32,7 @@ public enum LoadingAction: LoadingProtocol {
     case getDiscountsData
     case getHistory
 }
+
 public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, LoadingAction> {
     @Inject var paymentService: hPaymentClient
 

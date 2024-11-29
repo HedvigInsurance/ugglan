@@ -1,0 +1,7 @@
+query ClaimFromConversation($conversationId: UUID!) {
+  conversation(id: $conversationId) {
+    claim {
+        ...ClaimFragment
+    }
+  }
+}

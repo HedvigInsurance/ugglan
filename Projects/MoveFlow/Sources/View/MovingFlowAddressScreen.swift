@@ -1,4 +1,3 @@
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -18,7 +17,7 @@ struct MovingFlowAddressScreen: View {
     var body: some View {
         switch vm.selectedHousingType {
         case .apartment, .rental:
-            form.loadingButtonWithErrorHandling($vm.viewState)
+            form.loadingWithButtonLoading($vm.viewState)
                 .hErrorViewButtonConfig(
                     .init(
                         actionButton: .init(buttonAction: {
@@ -59,8 +58,10 @@ struct MovingFlowAddressScreen: View {
                     }
                 }
                 .disabled(vm.viewState == .loading)
-                hSection {
-                    InfoCard(text: L10n.changeAddressCoverageInfoText(30), type: .info)
+                if let days = movingFlowNavigationVm.movingFlowVm?.oldAddressCoverageDurationDays {
+                    hSection {
+                        InfoCard(text: L10n.changeAddressCoverageInfoText(days), type: .info)
+                    }
                 }
                 hSection {
                     hButton.LargeButton(type: .primary) {
@@ -89,7 +90,6 @@ struct MovingFlowAddressScreen: View {
             )
         )
         .sectionContainerStyle(.transparent)
-        .presentableStoreLensAnimation(.default)
     }
 
     func addressField() -> some View {

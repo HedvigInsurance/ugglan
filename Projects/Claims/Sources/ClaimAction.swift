@@ -8,7 +8,7 @@ public indirect enum ClaimsAction: ActionProtocol, Hashable, Sendable {
     case submitNewClaim(from: ClaimsOrigin)
     case fetchClaims
     case setClaims(claims: [ClaimModel])
-    case setFiles(files: [String: [File]])
+    case setFilesForClaim(claimId: String, files: [File])
     case setLoadingState(action: ClaimsAction, state: LoadingState<String>?)
     case refreshFiles
 }
