@@ -9,7 +9,7 @@ struct MovingFlowHouseScreen: View {
     @EnvironmentObject var router: Router
 
     var body: some View {
-        form.loadingButtonWithErrorHandling($houseInformationInputvm.viewState)
+        form.loadingWithButtonLoading($houseInformationInputvm.viewState)
             .hErrorViewButtonConfig(
                 .init(
                     actionButton: .init(buttonAction: {

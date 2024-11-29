@@ -66,7 +66,7 @@ struct LoadingViewWithContentForProcessingState: ViewModifier {
     }
 }
 
-struct LoadingViewForButtonForProcessingState: ViewModifier {
+struct LoadingViewWithButtonLoadingForProcessingState: ViewModifier {
     @Binding var state: ProcessingState
     public func body(content: Content) -> some View {
         ZStack {
@@ -103,7 +103,7 @@ extension View {
         modifier(LoadingViewWithContentForProcessingState(state: state))
     }
 
-    public func loadingButtonWithErrorHandling(_ state: Binding<ProcessingState>) -> some View {
-        modifier(LoadingViewForButtonForProcessingState(state: state))
+    public func loadingWithButtonLoading(_ state: Binding<ProcessingState>) -> some View {
+        modifier(LoadingViewWithButtonLoadingForProcessingState(state: state))
     }
 }

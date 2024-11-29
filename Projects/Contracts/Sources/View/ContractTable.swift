@@ -38,7 +38,7 @@ struct ContractTable: View {
     var body: some View {
         VStack(spacing: 0) {
             successView.loading($vm.viewState)
-                .loadingButtonWithErrorHandling($vm.viewState)
+                .loadingWithButtonLoading($vm.viewState)
                 .hErrorViewButtonConfig(
                     .init(
                         actionButton: .init(buttonAction: {
