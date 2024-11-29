@@ -28,15 +28,13 @@ public struct ProfileState: StateProtocol {
     }
 
     public init() {
-        UNUserNotificationCenter.current()
-            .getNotificationSettings { settings in
-                let status = settings.authorizationStatus.rawValue
-                Task {
-                    let store: ProfileStore = await globalPresentableStoreContainer.get()
-                    store.send(.setPushNotificationStatus(status: status))
+        Task {
+            let settings = await UNUserNotificationCenter.current().notificationSettings()
+            let status = settings.authorizationStatus.rawValue
+            let store: ProfileStore = await globalPresentableStoreContainer.get()
+            store.send(.setPushNotificationStatus(status: status))
 
-                }
-            }
+        }
     }
 
     public func pushNotificationCurrentStatus() -> UNAuthorizationStatus {
