@@ -320,7 +320,7 @@ public struct ClaimDetailView: View {
 
     private func showFilePickerAlert() {
         FilePicker.showAlert { selected in
-            Task {
+            Task { @MainActor in
                 switch selected {
                 case .camera:
                     showCamera = true
