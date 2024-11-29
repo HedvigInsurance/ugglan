@@ -93,6 +93,7 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
         case .getHistory:
             setLoading(for: .getHistory)
         case let .setHistory(data):
+            removeLoading(for: .getHistory)
             newState.paymentHistory = data
         }
         return newState

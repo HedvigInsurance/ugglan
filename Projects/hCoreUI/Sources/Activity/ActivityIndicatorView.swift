@@ -37,16 +37,13 @@ struct LoadingViewWithContent: ViewModifier {
 
 struct LoadingViewWithContentForProcessingState: ViewModifier {
     @Binding var state: ProcessingState
-    var showLoading: Bool
 
     public func body(content: Content) -> some View {
         ZStack {
             BackgroundView().edgesIgnoringSafeArea(.all)
             switch state {
             case .loading:
-                if showLoading {
-                    loadingIndicatorView.transition(.opacity.animation(.easeInOut(duration: 0.2)))
-                }
+                loadingIndicatorView.transition(.opacity.animation(.easeInOut(duration: 0.2)))
             case .success:
                 content.transition(.opacity.animation(.easeInOut(duration: 0.2)))
             case .error(let errorMessage):
@@ -102,8 +99,8 @@ extension View {
         modifier(LoadingViewWithContent(isLoading: isLoading, error: error))
     }
 
-    public func loading(_ state: Binding<ProcessingState>, showLoading: Bool? = true) -> some View {
-        modifier(LoadingViewWithContentForProcessingState(state: state, showLoading: showLoading ?? true))
+    public func loading(_ state: Binding<ProcessingState>) -> some View {
+        modifier(LoadingViewWithContentForProcessingState(state: state))
     }
 
     public func loadingButtonWithErrorHandling(_ state: Binding<ProcessingState>) -> some View {

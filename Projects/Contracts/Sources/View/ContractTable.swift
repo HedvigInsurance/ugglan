@@ -37,7 +37,8 @@ struct ContractTable: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            successView.loading($vm.viewState, showLoading: false)
+            successView.loading($vm.viewState)
+                .loadingButtonWithErrorHandling($vm.viewState)
                 .hErrorViewButtonConfig(
                     .init(
                         actionButton: .init(buttonAction: {
@@ -159,31 +160,21 @@ struct ContractTable: View {
 public class ContractTableViewModel: ObservableObject {
     @Published var viewState: ProcessingState = .loading
     @PresentableStore var store: ContractStore
-    @Published var actionCancellable: AnyCancellable?
     @Published var loadingCancellable: AnyCancellable?
 
     init() {
-        actionCancellable = store.actionSignal
-            .receive(on: RunLoop.main)
-            .sink { _ in
-            } receiveValue: { [weak self] action in
-                if action == .fetchContracts {
-                    self?.viewState = .success
-                }
-            }
-
         loadingCancellable = store.loadingSignal
             .receive(on: RunLoop.main)
             .sink { _ in
             } receiveValue: { [weak self] action in
                 let getAction = action.first(where: { $0.key == .fetchContracts })
-
                 switch getAction?.value {
                 case let .error(errorMessage):
                     self?.viewState = .error(errorMessage: errorMessage)
                 case .loading:
                     self?.viewState = .loading
-                default: break
+                default:
+                    self?.viewState = .success
                 }
             }
     }
