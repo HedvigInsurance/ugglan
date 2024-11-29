@@ -483,13 +483,17 @@ public class ClaimDetailViewModel: ObservableObject {
 
     private func setupToolbarOptionType(for claimModel: ClaimModel?) {
         guard let claimModel, let conversation = claimModel.conversation else {
-            self.toolbarOptionType = []
+            withAnimation {
+                self.toolbarOptionType = []
+            }
             return
         }
         let hasNewMessage = conversation.hasNewMessage
         let timeStamp = conversation.newestMessage?.sentAt
-        self.toolbarOptionType =
-            hasNewMessage ? [.chatNotification(lastMessageTimeStamp: timeStamp ?? Date())] : [.chat]
+        withAnimation {
+            self.toolbarOptionType =
+                hasNewMessage ? [.chatNotification(lastMessageTimeStamp: timeStamp ?? Date())] : [.chat]
+        }
     }
 
     func fetchClaimDetails() {

@@ -423,7 +423,7 @@ struct HomeTab: View {
                             )
                         case let .claimDetailForConversationId(id):
                             let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
-                            let claim = claimStore.state.claim(for: id)
+                            let claim = claimStore.state.claimFromConversation(for: id)
                             ClaimDetailView(claim: claim, type: .conversation(id: id))
                                 .configureTitle(L10n.claimsYourClaim)
                         }
