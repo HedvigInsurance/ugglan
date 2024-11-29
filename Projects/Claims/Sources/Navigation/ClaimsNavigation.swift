@@ -293,9 +293,9 @@ public struct ClaimsNavigation: View {
                         case .deflect:
                             openDeflectStepScreen()
                         case .emergencySelect:
-                            SumitClaimEmergencySelectView(title: {
-                                claimsNavigationVm.emergencyConfirmModel?.text ?? ""
-                            })
+                            SumitClaimEmergencySelectView(
+                                title: claimsNavigationVm.emergencyConfirmModel?.text ?? ""
+                            )
                         case .uploadFiles:
                             SubmitClaimFilesUploadScreen(claimsNavigationVm: claimsNavigationVm)
                         case .checkOutNoRepair:
