@@ -160,23 +160,27 @@ public struct hPHPickerResultImageDataProvider: ImageDataProvider {
     }
 
     public func data(handler: @escaping @Sendable (Result<Data, any Error>) -> Void) {
-        pickerResult.itemProvider.loadDataRepresentation(forTypeIdentifier: contentType.identifier) { data, error in
-            if let error {
-                handler(.failure(PHPickerResultImageDataProviderError.pickerProviderError(error)))
-                return
-            }
+        Task { @MainActor in
+            pickerResult.itemProvider.loadDataRepresentation(forTypeIdentifier: contentType.identifier) { data, error in
+                Task { @MainActor in
+                    if let error {
+                        handler(.failure(PHPickerResultImageDataProviderError.pickerProviderError(error)))
+                        return
+                    }
 
-            guard let data else {
-                handler(.failure(PHPickerResultImageDataProviderError.invalidImage))
-                return
-            }
+                    guard let data else {
+                        handler(.failure(PHPickerResultImageDataProviderError.invalidImage))
+                        return
+                    }
 
-            if contentType == UTType.image, let image = UIImage(data: data),
-                let compresedImage = image.jpegData(compressionQuality: 0.05)
-            {
-                handler(.success(compresedImage))
-            } else {
-                handler(.success(data))
+                    if contentType == UTType.image, let image = UIImage(data: data),
+                        let compresedImage = image.jpegData(compressionQuality: 0.05)
+                    {
+                        handler(.success(compresedImage))
+                    } else {
+                        handler(.success(data))
+                    }
+                }
             }
         }
     }
