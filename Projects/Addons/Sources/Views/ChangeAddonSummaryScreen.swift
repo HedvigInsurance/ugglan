@@ -49,7 +49,7 @@ extension ChangeAddonViewModel {
             ),
             isAddon: true
         ) {
-
+            changeAddonNavigationVm.router.push(ChangeAddonRouterActionsWithoutBackButton.commitAddon)
         }
 
         return vm
