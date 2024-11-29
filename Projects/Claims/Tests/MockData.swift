@@ -28,12 +28,12 @@ struct MockData {
         fetchFiles: @escaping FetchFiles = {
             [:]
         }
-    ) -> MockFetchClaimService {
-        let service = MockFetchClaimService(
+    ) -> MockFetchClaimsService {
+        let service = MockFetchClaimsService(
             fetch: fetch,
             fetchFiles: fetchFiles
         )
-        Dependencies.shared.add(module: Module { () -> hFetchClaimClient in service })
+        Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in service })
         return service
     }
 
@@ -211,7 +211,7 @@ enum ClaimsError: Error {
 typealias FetchClaims = @Sendable () async throws -> [ClaimModel]
 typealias FetchFiles = () async throws -> [String: [hCore.File]]
 
-class MockFetchClaimService: hFetchClaimClient {
+class MockFetchClaimsService: hFetchClaimsClient {
     var events = [Event]()
     var fetch: FetchClaims
     var fetchFiles: FetchFiles

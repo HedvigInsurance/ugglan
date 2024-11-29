@@ -290,7 +290,7 @@ struct HomeTab: View {
                 }
             )
             .routerDestination(for: ClaimModel.self, options: [.hidesBottomBarWhenPushed]) { claim in
-                ClaimDetailView(claim: claim, fromChat: false)
+                ClaimDetailView(claim: claim, type: .claim(id: claim.id))
                     .environmentObject(homeNavigationVm)
                     .configureTitle(L10n.claimsYourClaim)
             }
@@ -421,13 +421,11 @@ struct HomeTab: View {
                                     onDone()
                                 }
                             )
-                        case let .claimDetail(id):
+                        case let .claimDetailForConversationId(id):
                             let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
-                            if let claim = claimStore.state.claim(for: id) {
-                                ClaimDetailView(claim: claim, fromChat: true)
-                                    .configureTitle(L10n.claimsYourClaim)
-
-                            }
+                            let claim = claimStore.state.claimFromConversation(for: id)
+                            ClaimDetailView(claim: claim, type: .conversation(id: id))
+                                .configureTitle(L10n.claimsYourClaim)
                         }
                     }
                 )

@@ -1,0 +1,10 @@
+query ClaimFilesFromConversation($conversationId: UUID!) {
+  conversation(id: $conversationId) {
+    claim {
+        id
+        files {
+            ...FileFragment
+        }
+    }
+  }
+}
