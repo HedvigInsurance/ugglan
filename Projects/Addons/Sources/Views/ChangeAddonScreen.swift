@@ -60,7 +60,7 @@ struct ChangeAddonScreen: View {
                             )
                             .buttons([
                                 .init(
-                                    buttonTitle: "Learn more",
+                                    buttonTitle: L10n.addonFlowLearnMoreButton,
                                     buttonAction: {
                                         changeAddonNavigationVm.isLearnMorePresented = .init(
                                             title: "What is Reseskydd Plus?",
@@ -75,7 +75,7 @@ struct ChangeAddonScreen: View {
                         hButton.LargeButton(type: .primary) {
                             changeAddonNavigationVm.router.push(ChangeAddonRouterActions.summary)
                         } content: {
-                            hText(L10n.generalContinueButton)
+                            hText(L10n.addonFlowAddToInsuranceButton)
                         }
                         .padding(.top, .padding16)
                     }
@@ -124,7 +124,7 @@ struct ChangeAddonScreen: View {
                 UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
             DropdownView(
                 value: String(changeAddonVm.selectedSubOption?.title ?? ""),
-                placeHolder: "Välj skydd"
+                placeHolder: L10n.addonFlowSelectDaysPlaceholder
             ) {
                 changeAddonNavigationVm.isChangeCoverageDaysPresented = addonOption
             }

@@ -203,7 +203,7 @@ public struct QuoteSummaryScreen: View {
             InfoCard(
                 text:
                     vm.isAddon
-                    ? "Some copy about that the addon will be bound to your contract period and can’t be removed unless full insurance is terminated."
+                    ? L10n.addonFlowSummaryInfoText
                     : L10n.changeAddressOtherInsurancesInfoText,
                 type: vm.isAddon ? .neutral : .info
             )
@@ -297,7 +297,7 @@ public struct QuoteSummaryScreen: View {
                     if vm.isAddon {
                         VStack(alignment: .trailing, spacing: 0) {
                             hText("+" + amount)
-                            hText("Added to your total monthly premium", style: .label)
+                            hText(L10n.addonFlowSummaryPriceSubtitle, style: .label)
                                 .foregroundColor(hTextColor.Opaque.secondary)
                         }
                     } else {
@@ -308,7 +308,7 @@ public struct QuoteSummaryScreen: View {
                     hButton.LargeButton(type: .primary) {
                         vm.onConfirmClick()
                     } content: {
-                        hText(L10n.changeAddressAcceptOffer)
+                        hText(vm.isAddon ? L10n.addonFlowSummaryConfirmButton : L10n.changeAddressAcceptOffer)
                     }
 
                     if !isEmptyFaq {

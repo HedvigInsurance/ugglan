@@ -1,4 +1,5 @@
 import SwiftUI
+import hCore
 import hCoreUI
 
 public struct AddonCardView: View {
@@ -31,7 +32,7 @@ public struct AddonCardView: View {
                     hButton.SmallButton(type: .secondary) {
                         openAddon()
                     } content: {
-                        hText("See your price")
+                        hText(L10n.addonFlowSeePriceButton)
                     }
                 }
             }
