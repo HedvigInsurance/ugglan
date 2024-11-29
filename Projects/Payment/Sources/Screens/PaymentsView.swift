@@ -18,7 +18,7 @@ public struct PaymentsView: View {
     }
 
     public var body: some View {
-        successView.loading($vm.viewState)
+        successView
             .loadingWithButtonLoading($vm.viewState)
             .hErrorViewButtonConfig(
                 .init(
