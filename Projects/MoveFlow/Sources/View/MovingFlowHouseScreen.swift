@@ -1,4 +1,3 @@
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -10,7 +9,7 @@ struct MovingFlowHouseScreen: View {
     @EnvironmentObject var router: Router
 
     var body: some View {
-        form.loadingButtonWithErrorHandling($houseInformationInputvm.viewState)
+        form.loadingWithButtonLoading($houseInformationInputvm.viewState)
             .hErrorViewButtonConfig(
                 .init(
                     actionButton: .init(buttonAction: {
@@ -69,7 +68,6 @@ struct MovingFlowHouseScreen: View {
             )
         )
         .sectionContainerStyle(.transparent)
-        .presentableStoreLensAnimation(.default)
     }
 
     private var yearOfConstructionField: some View {

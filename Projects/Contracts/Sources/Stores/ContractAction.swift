@@ -30,6 +30,7 @@ public enum ContractLoadingAction: LoadingProtocol {
     case fetchNameFromSSN
     case fetchCrossSell
 }
+
 @MainActor
 extension EditType {
     public static func getTypes(for contract: Contract) -> [EditType] {

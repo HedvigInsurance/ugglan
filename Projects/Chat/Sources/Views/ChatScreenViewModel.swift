@@ -30,12 +30,12 @@ public class ChatScreenViewModel: ObservableObject {
     private var isFetching = false
     private var haveSentAMessage = false
     private var openDeepLinkObserver: NSObjectProtocol?
-    private var onTitleTap: (String) -> Void?
+    private var onTitleTap: () -> Void?
     private var claimId: String?
     private var sendingMessagesIds = [String]()
     public init(
         chatService: ChatServiceProtocol,
-        onTitleTap: @escaping (String) -> Void = { claimId in }
+        onTitleTap: @escaping () -> Void = {}
     ) {
         self.chatService = chatService
         self.onTitleTap = onTitleTap
@@ -344,7 +344,7 @@ extension ChatScreenViewModel: TitleView {
 
     @objc private func handleTapGesture() {
         if let claimId {
-            self.onTitleTap(claimId)
+            self.onTitleTap()
         }
     }
 
