@@ -163,15 +163,8 @@ public struct hPHPickerResultImageDataProvider: ImageDataProvider {
     public func data(handler: @escaping @Sendable (Result<Data, any Error>) -> Void) {
         Task {
             do {
-                let data = try await pickerResult.itemProvider.loadItem(forTypeIdentifier: UTType.image.identifier)
-                if let image = data as? UIImage, let imageData = image.jpegData(compressionQuality: 0.8) {
-                    handler(.success(imageData))
-                } else if let url = data as? URL {
-                    let imageData = try Data(contentsOf: url)
-                    handler(.success(imageData))
-                } else {
-                    handler(.failure(PHPickerResultImageDataProviderError.invalidImage))
-                }
+                let results = try await pickerResult.itemProvider.getData()
+                handler(.success(results.data))
 
             } catch {
                 handler(.failure(PHPickerResultImageDataProviderError.pickerProviderError(error)))
