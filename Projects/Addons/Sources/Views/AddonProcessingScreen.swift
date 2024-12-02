@@ -23,7 +23,7 @@ struct AddonProcessingScreen: View {
         .init(
             actionButton: .init(
                 buttonAction: {
-                    /* TODO: COMMIT ADDON */
+                    addonNavigationVm.changeAddonVm.submitAddons()
                 }
             ),
             dismissButton:
