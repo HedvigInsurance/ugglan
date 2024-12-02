@@ -272,7 +272,7 @@ struct CompareOnRowTap: ViewModifier {
 
 @MainActor
 class CompareTierViewModel: ObservableObject {
-    @Inject private var service: ChangeTierClient
+    private let service = ChangeTierService()
     @Published var viewState: ProcessingState = .loading
     @Published var selectedTier: Tier?
     @Published var tiers: [Tier]

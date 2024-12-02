@@ -6,7 +6,7 @@ import hGraphQL
 
 @MainActor
 public class ChangeTierViewModel: ObservableObject {
-    @Inject private var service: ChangeTierClient
+    private let service = ChangeTierService()
     @Published var viewState: ProcessingState = .loading
     @Published var missingQuotes = false
     @Published var displayName: String?
