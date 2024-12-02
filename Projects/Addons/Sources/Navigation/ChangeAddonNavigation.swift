@@ -70,7 +70,8 @@ public struct ChangeAddonNavigation: View {
                         .withAlertDismiss()
                     }
                 }
-                .routerDestination(for: ChangeAddonRouterActionsWithoutBackButton.self) { action in
+                .routerDestination(for: ChangeAddonRouterActionsWithoutBackButton.self, options: [.hidesBackButton]) {
+                    action in
                     switch action {
                     case .commitAddon:
                         AddonProcessingScreen(vm: changeAddonNavigationVm.changeAddonVm)
