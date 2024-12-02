@@ -10,7 +10,7 @@ public class ClaimsNavigationViewModel: ObservableObject {
     @Published public var isPriceInputPresented = false
     @Published public var isDamagePickerPresented = false
     @Published public var isCheckoutTransferringPresented = false
-    @Published public var isInfoViewPresented: InfoViewModel?
+    @Published public var isInfoViewPresented: InfoViewDataModel?
     @Published public var isClaimFilesPresented: ClaimsFileModel?
 
     @Published var entrypoints: EntrypointState = .init()
@@ -499,12 +499,6 @@ private enum ClaimsDetentType: TrackingViewNameProtocol {
     case priceInput
     case damagePicker
     case locationPicker
-}
-
-public struct InfoViewModel: Equatable, Identifiable {
-    public var id: String?
-    let title: String?
-    let description: String?
 }
 
 public struct ClaimsFileModel: Equatable, Identifiable {

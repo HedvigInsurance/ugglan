@@ -1,3 +1,4 @@
+import Addons
 import Foundation
 import PresentableStore
 import SwiftUI
@@ -9,10 +10,10 @@ public struct ListScreen: View {
     @EnvironmentObject var router: Router
     @EnvironmentObject var travelCertificateNavigationVm: TravelCertificateNavigationViewModel
 
-    let infoButtonPlacement: ToolbarItemPlacement
+    let infoButtonPlacement: ListToolBarPlacement
 
     public init(
-        infoButtonPlacement: ToolbarItemPlacement
+        infoButtonPlacement: ListToolBarPlacement
     ) {
         self.infoButtonPlacement = infoButtonPlacement
     }
@@ -52,6 +53,22 @@ public struct ListScreen: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: 16) {
+                    if Dependencies.featureFlags().isAddonsEnabled {
+                        AddonCardView(
+                            openAddon: {
+                                travelCertificateNavigationVm.isAddonPresented = true
+                            },
+                            addon: .init(
+                                id: "id",
+                                title: "Travel Plus",
+                                subTitle: "Extended travel insurance with extra coverage for your travels",
+                                tag: "Popular",
+                                informationText: "",
+                                options: []
+                            )
+                        )
+                    }
+
                     InfoCard(text: L10n.TravelCertificate.startDateInfo(45), type: .info)
                     if vm.canCreateTravelInsurance {
                         hButton.LargeButton(type: .secondary) {
@@ -66,17 +83,13 @@ public struct ListScreen: View {
             }
         }
         .loading($vm.isLoading, $vm.error)
-        .toolbar {
-            ToolbarItem(
-                placement: infoButtonPlacement
-            ) {
-                InfoViewHolder(
-                    title: L10n.TravelCertificate.Info.title,
-                    description: L10n.TravelCertificate.Info.subtitle,
-                    type: .navigation
-                )
-                .foregroundColor(hTextColor.Opaque.primary)
-            }
+        .applyInfoButton(withPlacement: infoButtonPlacement) {
+            InfoViewHolder(
+                title: L10n.TravelCertificate.Info.title,
+                description: L10n.TravelCertificate.Info.subtitle,
+                type: .navigation
+            )
+            .foregroundColor(hTextColor.Opaque.primary)
         }
         .sectionContainerStyle(.transparent)
         .onAppear {
@@ -114,6 +127,25 @@ public struct ListScreen: View {
     }
 }
 
+extension View {
+    @ViewBuilder
+    fileprivate func applyInfoButton<Content: View>(
+        withPlacement: ListToolBarPlacement,
+        @ViewBuilder content: @escaping () -> Content
+    ) -> some View {
+        switch withPlacement {
+        case .leading:
+            self.setToolbarLeading {
+                content()
+            }
+        case .trailing:
+            self.setToolbarTrailing {
+                content()
+            }
+        }
+    }
+}
+
 @MainActor
 class ListScreenViewModel: ObservableObject {
     var service = TravelInsuranceService()
@@ -141,4 +173,9 @@ class ListScreenViewModel: ObservableObject {
         }
         isLoading = false
     }
+}
+
+#Preview {
+    ListScreen(infoButtonPlacement: .trailing)
+        .environmentObject(TravelCertificateNavigationViewModel())
 }
