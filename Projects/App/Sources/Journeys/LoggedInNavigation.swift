@@ -479,6 +479,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isEuroBonusPresented = false
     @Published var isUrlPresented: URL?
 
+    private var deeplinkToBeOpenedAfterLogin: URL?
     private var cancellables = Set<AnyCancellable>()
     weak var tabBar: UITabBarController?
     init() {
@@ -533,7 +534,11 @@ class LoggedInNavigationViewModel: ObservableObject {
 
     @objc func openDeepLinkNotification(notification: Notification) {
         let deepLinkUrl = notification.object as? URL
-        self.handleDeepLinks(deepLinkUrl: deepLinkUrl)
+        if ApplicationState.currentState == .loggedIn {
+            self.handleDeepLinks(deepLinkUrl: deepLinkUrl)
+        } else {
+            self.deeplinkToBeOpenedAfterLogin = deepLinkUrl
+        }
     }
 
     @objc func registerForPushNotification(notification: Notification) {
@@ -596,6 +601,13 @@ class LoggedInNavigationViewModel: ObservableObject {
                 let contractId = userInfo?["contractId"] as? String
                 handleChangeTier(contractId: contractId)
             }
+        }
+    }
+
+    func actionAfterLogin() {
+        if let deeplinkToBeOpenedAfterLogin {
+            handleDeepLinks(deepLinkUrl: deeplinkToBeOpenedAfterLogin)
+            self.deeplinkToBeOpenedAfterLogin = nil
         }
     }
 

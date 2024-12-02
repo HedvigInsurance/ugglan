@@ -112,6 +112,7 @@ class MainNavigationViewModel: ObservableObject {
                     withAnimation {
                         hasLaunchFinished = true
                     }
+                    loggedInVm.actionAfterLogin()
                 case .notLoggedIn:
                     await ApplicationContext.shared.setValue(to: false)
                     notLoggedInVm = .init()
