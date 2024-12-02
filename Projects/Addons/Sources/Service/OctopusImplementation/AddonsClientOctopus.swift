@@ -2,6 +2,26 @@ import Foundation
 import hCore
 import hGraphQL
 
+@MainActor
+public class AddonsService {
+    @Inject var service: AddonsClient
+
+    public func getAddon() async throws -> AddonModel {
+        log.info("AddonsService: getAddon", error: nil, attributes: nil)
+        return try await service.getAddon()
+    }
+
+    public func getContract(contractId: String) async throws -> AddonContract {
+        log.info("AddonsService: getContract", error: nil, attributes: nil)
+        return try await service.getContract(contractId: contractId)
+    }
+
+    public func submitAddon() async throws {
+        log.info("AddonsService: submitAddon", error: nil, attributes: nil)
+        return try await service.submitAddon()
+    }
+}
+
 public class AddonsClientOctopus: AddonsClient {
     @Inject var octopus: hOctopus
 
@@ -61,4 +81,6 @@ public class AddonsClientOctopus: AddonsClient {
         )
         return contractData
     }
+
+    public func submitAddon() async throws {}
 }

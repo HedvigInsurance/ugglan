@@ -57,4 +57,6 @@ public class AddonsClientDemo: AddonsClient {
         )
         return contractData
     }
+
+    public func submitAddon() async throws {}
 }
