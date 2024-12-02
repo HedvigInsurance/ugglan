@@ -85,9 +85,9 @@ extension AddonSelectSubOptionScreen: TitleView {
     @ViewBuilder
     private var titleView: some View {
         VStack(alignment: .leading, spacing: 0) {
-            hText("Select days", style: .heading1)
+            hText(L10n.addonFlowSelectSuboptionTitle, style: .heading1)
                 .foregroundColor(hTextColor.Opaque.primary)
-            hText("Pick the right fit for your travel needs", style: .heading1)
+            hText(L10n.addonFlowSelectSuboptionSubtitle, style: .heading1)
                 .foregroundColor(hTextColor.Opaque.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
