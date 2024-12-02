@@ -401,7 +401,7 @@ public struct QuoteSummaryScreen: View {
     }
 }
 
-public struct QuoteDisplayItem: Identifiable {
+public struct QuoteDisplayItem: Identifiable, Equatable {
     public let id: String?
     let displayTitle: String
     let displayValue: String

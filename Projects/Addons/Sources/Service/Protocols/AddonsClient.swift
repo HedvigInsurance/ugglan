@@ -16,7 +16,14 @@ public enum AddonsError: Error {
 }
 
 @MainActor
-public struct AddonContract {
+public struct AddonContract: @preconcurrency Equatable {
+    public static func == (lhs: AddonContract, rhs: AddonContract) -> Bool {
+        return lhs.contractId == rhs.contractId && lhs.contractName == rhs.contractName
+            && lhs.displayItems == rhs.displayItems && lhs.documents == rhs.documents
+            && lhs.insurableLimits == rhs.insurableLimits && lhs.typeOfContract == rhs.typeOfContract
+            && lhs.activationDate == rhs.activationDate && lhs.currentPremium == rhs.currentPremium
+    }
+
     let contractId: String
     let contractName: String
     let displayItems: [QuoteDisplayItem]
