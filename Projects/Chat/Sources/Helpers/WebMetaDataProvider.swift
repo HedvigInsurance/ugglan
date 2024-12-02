@@ -60,3 +60,7 @@ struct WebMetaDataProviderData: Sendable {
         self.image = image
     }
 }
+
+extension LPLinkMetadata: @unchecked @retroactive Sendable {
+
+}
