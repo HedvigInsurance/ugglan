@@ -77,7 +77,7 @@ struct AddonSelectSubOptionScreen: View {
 }
 
 extension AddonSelectSubOptionScreen: TitleView {
-    public func getTitleView() -> UIView {
+    func getTitleView() -> UIView {
         let view: UIView = UIHostingController(rootView: titleView).view
         view.backgroundColor = .clear
         view.isUserInteractionEnabled = true

@@ -6,7 +6,7 @@ struct ChangeAddonScreen: View {
     @EnvironmentObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
     @ObservedObject var changeAddonVm: ChangeAddonViewModel
 
-    public init(
+    init(
         changeAddonVm: ChangeAddonViewModel
     ) {
         self.changeAddonVm = changeAddonVm
