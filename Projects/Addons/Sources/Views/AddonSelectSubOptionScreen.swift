@@ -109,8 +109,7 @@ extension AddonSelectSubOptionScreen: TitleView {
                     subtitle: "",
                     price: .init(amount: "79", currency: "SEK")
                 )
-            ],
-            isAlreadyIncluded: false
+            ]
         ),
         changeAddonNavigationVm: .init(
             input: .init(contractId: "contractId")

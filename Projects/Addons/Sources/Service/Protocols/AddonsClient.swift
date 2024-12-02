@@ -9,6 +9,12 @@ public protocol AddonsClient {
     func submitAddon() async throws
 }
 
+public enum AddonsError: Error {
+    case emptyList
+    case somethingWentWrong
+    case submitError
+}
+
 @MainActor
 public struct AddonContract {
     let contractId: String

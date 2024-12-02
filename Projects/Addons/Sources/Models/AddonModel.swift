@@ -34,7 +34,6 @@ public struct AddonOptionModel: Identifiable, Equatable, Hashable {
     let subtitle: String?
     let price: MonetaryAmount?
     let subOptions: [AddonSubOptionModel]
-    let isAlreadyIncluded: Bool
 }
 
 @MainActor

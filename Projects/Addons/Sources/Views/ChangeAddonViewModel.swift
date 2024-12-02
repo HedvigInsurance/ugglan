@@ -45,10 +45,9 @@ public class ChangeAddonViewModel: ObservableObject {
         withAnimation {
             self.submittingAddonsViewState = .loading
         }
-
-        /* TODO: REMOVE DELAY WHEN IMPLEMENTATION IS IN PLACE */
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+        Task { @MainActor in
             do {
+                try await addonService.submitAddon()
                 /** TODO: IMPLEMENT  **/
                 withAnimation {
                     self.submittingAddonsViewState = .success
