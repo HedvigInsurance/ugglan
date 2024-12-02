@@ -1,6 +1,7 @@
 import Foundation
 import hGraphQL
 
+@MainActor
 public struct AddonModel: Identifiable, Equatable, Hashable {
     public let id: String
     let title: String
@@ -26,6 +27,7 @@ public struct AddonModel: Identifiable, Equatable, Hashable {
     }
 }
 
+@MainActor
 public struct AddonOptionModel: Identifiable, Equatable, Hashable {
     public let id: String
     let title: String?
@@ -35,6 +37,7 @@ public struct AddonOptionModel: Identifiable, Equatable, Hashable {
     let isAlreadyIncluded: Bool
 }
 
+@MainActor
 public struct AddonSubOptionModel: Identifiable, Equatable, Hashable {
     public let id: String
     let title: String?
