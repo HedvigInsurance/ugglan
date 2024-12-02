@@ -14,7 +14,7 @@ struct AddonProcessingScreen: View {
             successViewButtonAction: {
                 addonNavigationVm.router.dismiss()
             },
-            state: $vm.viewState
+            state: $vm.submittingAddonsViewState
         )
         .hErrorViewButtonConfig(errorButtons)
     }

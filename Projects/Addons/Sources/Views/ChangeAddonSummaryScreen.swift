@@ -49,6 +49,7 @@ extension ChangeAddonViewModel {
             ),
             isAddon: true
         ) {
+            changeAddonNavigationVm.changeAddonVm.submitAddons()
             changeAddonNavigationVm.router.push(ChangeAddonRouterActionsWithoutBackButton.commitAddon)
         }
 
