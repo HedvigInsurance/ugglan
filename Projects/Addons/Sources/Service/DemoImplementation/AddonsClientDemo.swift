@@ -30,8 +30,7 @@ public class AddonsClientDemo: AddonsClient {
                                 subtitle: nil,
                                 price: .init(amount: "79", currency: "SEK")
                             ),
-                        ],
-                        isAlreadyIncluded: false
+                        ]
                     )
                 ]
             )
