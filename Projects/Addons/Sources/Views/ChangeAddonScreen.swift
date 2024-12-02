@@ -40,13 +40,13 @@ struct ChangeAddonScreen: View {
                 title: .init(
                     .small,
                     .body2,
-                    "Utöka ditt reseskydd",
+                    L10n.addonFlowTitle,
                     alignment: .leading
                 ),
                 subTitle: .init(
                     .small,
                     .body2,
-                    "Lorem ipsum dolor sit amet our"
+                    L10n.addonFlowSubtitle
                 )
             )
             .hFormAttachToBottom {
