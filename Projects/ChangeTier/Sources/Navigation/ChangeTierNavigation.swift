@@ -52,8 +52,8 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     }
 
     public static func getTiers(input: ChangeTierInputData) async throws -> ChangeTierIntentModel {
-        let client: ChangeTierClient = Dependencies.shared.resolve()
-        let data = try await client.getTier(input: input)
+        let service = ChangeTierService()
+        let data = try await service.getTier(input: input)
         return data
     }
 
@@ -107,7 +107,7 @@ public enum ChangeTierInput: Identifiable, Equatable {
     case contractWithSource(data: ChangeTierInputData)
     case existingIntent(intent: ChangeTierIntentModel, onSelect: (((Tier, Quote)) -> Void)?)
 }
-public struct ChangeTierInputData: Equatable, Identifiable {
+public struct ChangeTierInputData: Equatable, Identifiable, Codable {
     public var id: String {
         contractId
     }
@@ -162,7 +162,7 @@ extension ChangeTierContract: TrackingViewNameProtocol {
     }
 }
 
-public enum ChangeTierSource {
+public enum ChangeTierSource: Codable {
     case changeTier
     case betterPrice
     case betterCoverage
