@@ -24,7 +24,9 @@ public class ConversationService: ChatServiceProtocol {
     }
 
     public func getNewMessages() async throws -> ChatData {
-        log.info("\(ConversationService.self) getConversationMessages", error: nil, attributes: [:])
+        var attributes: [String: Encodable] = [:]
+        attributes["newerToken"] = newerToken
+        log.info("\(ConversationService.self): getNewMessages", error: nil, attributes: attributes)
         let data = try await client.getConversationMessages(
             for: conversationId,
             olderToken: nil,
@@ -47,7 +49,9 @@ public class ConversationService: ChatServiceProtocol {
     }
 
     public func getPreviousMessages() async throws -> ChatData {
-        log.info("\(ConversationService.self) getConversationMessages", error: nil, attributes: [:])
+        var attributes: [String: Encodable] = [:]
+        attributes["olderToken"] = olderToken
+        log.info("\(ConversationService.self): getPreviousMessages", error: nil, attributes: attributes)
         let data = try await client.getConversationMessages(
             for: conversationId,
             olderToken: olderToken,
@@ -68,6 +72,7 @@ public class ConversationService: ChatServiceProtocol {
     }
 
     public func send(message: Message) async throws -> Message {
+        log.info("\(ConversationService.self): send \(message.id)", error: nil, attributes: [:])
         return try await client.send(message: message, for: conversationId)
     }
 }
@@ -82,7 +87,7 @@ public class NewConversationService: ChatServiceProtocol {
     }
 
     public func getNewMessages() async throws -> ChatData {
-        log.info("\(NewConversationService.self) getConversationMessages", error: nil, attributes: [:])
+        log.info("\(NewConversationService.self): getNewMessages", error: nil, attributes: [:])
         if let conversationService = conversationService {
             return try await conversationService.getNewMessages()
         }
@@ -99,7 +104,7 @@ public class NewConversationService: ChatServiceProtocol {
     }
 
     public func getPreviousMessages() async throws -> ChatData {
-        log.info("\(NewConversationService.self) getConversationMessages", error: nil, attributes: [:])
+        log.info("\(NewConversationService.self) getPreviousMessages", error: nil, attributes: [:])
         if let conversationService = conversationService {
             return try await conversationService.getPreviousMessages()
         }
@@ -116,7 +121,7 @@ public class NewConversationService: ChatServiceProtocol {
     }
 
     public func send(message: Message) async throws -> Message {
-        log.info("\(NewConversationService.self) send message", error: nil, attributes: [:])
+        log.info("\(NewConversationService.self) send message \(message.id)", error: nil, attributes: [:])
 
         if conversationService == nil && generatingConversation == false {
             generatingConversation = true
