@@ -28,18 +28,16 @@ public class ChangeAddonViewModel: ObservableObject {
             self.fetchAddonsViewState = .loading
         }
 
-        Task { @MainActor in
-            do {
-                let data = try await addonService.getAddon()
+        do {
+            let data = try await addonService.getAddon()
 
-                withAnimation {
-                    self.addonOptions = data.options
-                    self.informationText = data.informationText
-                    self.fetchAddonsViewState = .success
-                }
-            } catch let exception {
-                self.fetchAddonsViewState = .error(errorMessage: exception.localizedDescription)
+            withAnimation {
+                self.addonOptions = data.options
+                self.informationText = data.informationText
+                self.fetchAddonsViewState = .success
             }
+        } catch let exception {
+            self.fetchAddonsViewState = .error(errorMessage: exception.localizedDescription)
         }
     }
 
