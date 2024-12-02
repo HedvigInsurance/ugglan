@@ -109,7 +109,7 @@ struct ChangeAddonScreen: View {
                 Spacer()
 
                 hPill(
-                    text: "+ " + (changeAddonVm.selectedSubOption?.price.formattedAmountPerMonth ?? ""),
+                    text: L10n.addonFlowPriceLabel(changeAddonVm.selectedSubOption?.price.amount ?? ""),
                     color: .grey(translucent: true),
                     colorLevel: .one
                 )
