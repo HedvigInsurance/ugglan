@@ -57,7 +57,7 @@ struct AddonSelectSubOptionScreen: View {
                     hButton.LargeButton(type: .primary) {
                         changeAddonNavigationVm.isChangeCoverageDaysPresented = nil
                     } content: {
-                        hText(L10n.generalSelectButton)
+                        hText(L10n.addonFlowSelectButton)
                     }
 
                     hButton.LargeButton(type: .ghost) {
