@@ -128,7 +128,7 @@ final class ChangeTierViewModelTests: XCTestCase {
         assert(model.selectedTier == nil)
 
         if case .error(let errorMessage) = model.viewState {
-            assert(errorMessage != nil)
+
         } else {
             assertionFailure("not proper state")
         }
@@ -161,7 +161,7 @@ final class ChangeTierViewModelTests: XCTestCase {
         self.vm = model
         model.fetchTiers()
         try await Task.sleep(nanoseconds: 30_000_000)
-        await model.setTier(for: "max")
+        model.setTier(for: "max")
         assert(model.selectedTier?.name == "max")
         assert(model.selectedTier == tiers[1])
         assert(model.tiers == tiers)
@@ -189,7 +189,7 @@ final class ChangeTierViewModelTests: XCTestCase {
         self.vm = model
         model.fetchTiers()
         try await Task.sleep(nanoseconds: 30_000_000)
-        await model.setTier(for: "max")
+        model.setTier(for: "max")
         assert(model.selectedTier == nil)
         assert(model.canEditTier == false)
         assert(model.tiers.isEmpty)
@@ -230,8 +230,8 @@ final class ChangeTierViewModelTests: XCTestCase {
         )
         self.vm = model
         try await Task.sleep(nanoseconds: 30_000_000)
-        await model.setTier(for: "max")
-        await model.setDeductible(for: model.selectedTier?.quotes.first?.id ?? "")
+        model.setTier(for: "max")
+        model.setDeductible(for: model.selectedTier?.quotes.first?.id ?? "")
         assert(model.selectedQuote != nil)
         assert(model.selectedQuote?.id == model.selectedTier?.quotes.first?.id)
         assert(model.selectedTier == tiers[1])
