@@ -14,7 +14,7 @@ struct ChangeAddonScreen: View {
     }
 
     var body: some View {
-        successView.loading($changeAddonVm.viewState)
+        successView.loading($changeAddonVm.fetchAddonsViewState)
             .hErrorViewButtonConfig(
                 .init(
                     actionButton: .init(

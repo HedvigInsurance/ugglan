@@ -39,6 +39,10 @@ enum ChangeAddonRouterActions {
     case summary
 }
 
+enum ChangeAddonRouterActionsWithoutBackButton {
+    case commitAddon
+}
+
 public struct ChangeAddonNavigation: View {
     @ObservedObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
 
@@ -64,6 +68,13 @@ public struct ChangeAddonNavigation: View {
                         )
                         .configureTitle(L10n.offerUpdateSummaryTitle)
                         .withAlertDismiss()
+                    }
+                }
+                .routerDestination(for: ChangeAddonRouterActionsWithoutBackButton.self, options: [.hidesBackButton]) {
+                    action in
+                    switch action {
+                    case .commitAddon:
+                        AddonProcessingScreen(vm: changeAddonNavigationVm.changeAddonVm)
                     }
                 }
         }
@@ -97,7 +108,16 @@ extension ChangeAddonRouterActions: TrackingViewNameProtocol {
     var nameForTracking: String {
         switch self {
         case .summary:
-            return .init(describing: ChangeAddonRouterActions.self)
+            return .init(describing: ChangeAddonSummaryScreen.self)
+        }
+    }
+}
+
+extension ChangeAddonRouterActionsWithoutBackButton: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .commitAddon:
+            return .init(describing: AddonProcessingScreen.self)
         }
     }
 }

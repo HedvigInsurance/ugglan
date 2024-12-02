@@ -5,7 +5,8 @@ import hCoreUI
 @MainActor
 public class ChangeAddonViewModel: ObservableObject {
     @Inject private var addonService: AddonsClient
-    @Published var viewState: ProcessingState = .loading
+    @Published var fetchAddonsViewState: ProcessingState = .loading
+    @Published var submittingAddonsViewState: ProcessingState = .loading
     @Published var selectedSubOption: AddonSubOptionModel?
     @Published var addonOptions: [AddonOptionModel]?
     @Published var contractInformation: AddonContract?
@@ -24,7 +25,7 @@ public class ChangeAddonViewModel: ObservableObject {
 
     func getAddons() async {
         withAnimation {
-            self.viewState = .loading
+            self.fetchAddonsViewState = .loading
         }
 
         do {
@@ -33,16 +34,34 @@ public class ChangeAddonViewModel: ObservableObject {
             withAnimation {
                 self.addonOptions = data.options
                 self.informationText = data.informationText
-                self.viewState = .success
+                self.fetchAddonsViewState = .success
             }
         } catch let exception {
-            self.viewState = .error(errorMessage: exception.localizedDescription)
+            self.fetchAddonsViewState = .error(errorMessage: exception.localizedDescription)
+        }
+    }
+
+    func submitAddons() {
+        withAnimation {
+            self.submittingAddonsViewState = .loading
+        }
+
+        /* TODO: REMOVE DELAY WHEN IMPLEMENTATION IS IN PLACE */
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            do {
+                /** TODO: IMPLEMENT  **/
+                withAnimation {
+                    self.submittingAddonsViewState = .success
+                }
+            } catch let exception {
+                self.submittingAddonsViewState = .error(errorMessage: exception.localizedDescription)
+            }
         }
     }
 
     func getContractInformation(contractId: String) async {
         withAnimation {
-            self.viewState = .loading
+            self.fetchAddonsViewState = .loading
         }
 
         do {
@@ -50,10 +69,10 @@ public class ChangeAddonViewModel: ObservableObject {
 
             withAnimation {
                 self.contractInformation = data
-                self.viewState = .success
+                self.fetchAddonsViewState = .success
             }
         } catch let exception {
-            self.viewState = .error(errorMessage: exception.localizedDescription)
+            self.fetchAddonsViewState = .error(errorMessage: exception.localizedDescription)
         }
     }
 }
