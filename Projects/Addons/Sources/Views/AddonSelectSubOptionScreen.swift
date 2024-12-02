@@ -31,7 +31,7 @@ struct AddonSelectSubOptionScreen: View {
                                     hText(subOption.title ?? "")
                                     Spacer()
                                     hPill(
-                                        text: "+ " + subOption.price.formattedAmountPerMonth,
+                                        text: L10n.addonFlowPriceLabel(subOption.price.amount),
                                         color: .grey(translucent: true),
                                         colorLevel: .one
                                     )
