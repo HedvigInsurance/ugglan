@@ -84,6 +84,9 @@ public struct ProcessingStateView: View {
             }
         case let .error(errorMessage):
             errorView(errorMessage: errorMessage)
+                .onAppear {
+                    vm.progress = 0
+                }
         }
     }
 
@@ -115,6 +118,7 @@ public struct ProcessingStateView: View {
             title: L10n.somethingWentWrong,
             description: errorMessage
         )
+        .hFormDontUseInitialAnimation
         .hErrorViewButtonConfig(errorViewButtonConfig)
     }
 

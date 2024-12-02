@@ -17,9 +17,11 @@ public struct ContractInformation: View {
 
     public var body: some View {
         HStack(spacing: .padding12) {
-            Image(uiImage: pillowImage ?? hCoreUIAssets.pillowHome.image)
-                .resizable()
-                .frame(width: 48, height: 48)
+            if let pillowImage {
+                Image(uiImage: pillowImage)
+                    .resizable()
+                    .frame(width: 48, height: 48)
+            }
             VStack(alignment: .leading, spacing: 0) {
                 hText(displayName ?? "", style: .heading1)
                 hText(exposureName ?? "", style: .body1)

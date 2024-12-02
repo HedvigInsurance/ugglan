@@ -10,40 +10,33 @@ public class AddonsClientOctopus: AddonsClient {
     public func getAddon() async throws -> AddonModel {
         let addons: AddonModel =
             .init(
-                id: "Reseskydd",
-                title: "Reseskydd",
-                subTitle: "sub title",
+                id: "Travel Plus",
+                title: "Travel Plus",
+                subTitle: "Extended travel insurance with extra coverage for your travels",
+                tag: "Popular",
                 informationText: "Click to learn more about our extended travel coverage Reseskydd Plus",
                 options: [
                     .init(
-                        id: "Reseskydd",
-                        title: "Reseskydd",
-                        subtitle: "",
-                        price: nil,
-                        subOptions: [],
-                        isAlreadyIncluded: true
-                    ),
-                    .init(
-                        id: "Reseskydd Plus",
-                        title: "Reseskydd Plus",
-                        subtitle: "",
+                        id: "Travel Plus",
+                        title: "Travel Plus",
+                        subtitle: "For those who travel often: luggage protection and 24/7 assistance worldwide",
                         price: .init(amount: "79", currency: "SEK"),
                         subOptions: [
                             .init(
                                 id: "45",
-                                title: "Travel Plus 45 days",
-                                subtitle: "40",
+                                title: "45 days",
+                                subtitle: nil,
                                 price: .init(amount: "49", currency: "SEK")
                             ),
                             .init(
                                 id: "60",
-                                title: "Travel Plus 60 days",
-                                subtitle: "60",
+                                title: "60 days",
+                                subtitle: nil,
                                 price: .init(amount: "79", currency: "SEK")
                             ),
                         ],
                         isAlreadyIncluded: false
-                    ),
+                    )
                 ]
             )
 

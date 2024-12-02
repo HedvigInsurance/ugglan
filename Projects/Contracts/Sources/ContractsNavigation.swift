@@ -1,3 +1,4 @@
+import Addons
 import ChangeTier
 import EditCoInsuredShared
 import Foundation
@@ -80,8 +81,6 @@ public struct ContractsNavigation<Content: View>: View {
                         )
                     case .cancellation:
                         break
-                    case .addon:
-                        break
                     }
                 }
             )
@@ -93,6 +92,9 @@ public struct ContractsNavigation<Content: View>: View {
         }
         .modally(item: $contractsNavigationVm.changeTierInput) { input in
             redirect(.changeTier(input: input))
+        }
+        .modally(item: $contractsNavigationVm.isAddonPresented) { input in
+            redirect(.addon(input: input))
         }
         .detent(
             item: $contractsNavigationVm.insuranceUpdate,
@@ -135,6 +137,7 @@ public class ContractsNavigationViewModel: ObservableObject {
     @Published public var insuranceUpdate: Contract?
     @Published public var isChangeAddressPresented = false
     @Published public var changeTierInput: ChangeTierInput?
+    @Published public var isAddonPresented: ChangeAddonInput?
 
     public var editCoInsuredVm = EditCoInsuredViewModel(
         existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
@@ -148,6 +151,7 @@ public enum RedirectType {
     case movingFlow
     case pdf(document: hPDFDocument)
     case changeTier(input: ChangeTierInput)
+    case addon(input: ChangeAddonInput)
 }
 
 public enum RedirectAction {

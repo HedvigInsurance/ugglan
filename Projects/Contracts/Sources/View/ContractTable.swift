@@ -1,3 +1,4 @@
+import Addons
 import Apollo
 import Combine
 import Foundation
@@ -49,6 +50,25 @@ struct ContractTable: View {
                 )
             if !showTerminated {
                 VStack(spacing: 24) {
+                    hSection {
+                        if Dependencies.featureFlags().isAddonsEnabled {
+                            AddonCardView(
+                                openAddon: {
+                                    contractsNavigationVm.isAddonPresented = .init(contractId: nil)
+                                },
+                                addon: .init(
+                                    id: "id",
+                                    title: "Travel Plus",
+                                    subTitle: "Extended travel insurance with extra coverage for your travels",
+                                    tag: "Popular",
+                                    informationText: "",
+                                    options: []
+                                )
+                            )
+                        }
+                    }
+                    .sectionContainerStyle(.transparent)
+
                     movingToANewHomeView
                     CrossSellingStack(withHeader: true)
 

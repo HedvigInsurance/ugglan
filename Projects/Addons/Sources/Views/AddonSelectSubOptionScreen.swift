@@ -4,7 +4,6 @@ import hCoreUI
 
 struct AddonSelectSubOptionScreen: View {
     @ObservedObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
-
     let addonOption: AddonOptionModel
 
     init(
@@ -56,10 +55,9 @@ struct AddonSelectSubOptionScreen: View {
             hSection {
                 VStack(spacing: .padding8) {
                     hButton.LargeButton(type: .primary) {
-                        //                        changeAddonNavigationVm.changeAddonVm.selectedSubOptionId = selectedSubOptionId
                         changeAddonNavigationVm.isChangeCoverageDaysPresented = nil
                     } content: {
-                        hText(L10n.generalConfirm)
+                        hText(L10n.generalSelectButton)
                     }
 
                     hButton.LargeButton(type: .ghost) {
@@ -87,9 +85,9 @@ extension AddonSelectSubOptionScreen: TitleView {
     @ViewBuilder
     private var titleView: some View {
         VStack(alignment: .leading, spacing: 0) {
-            hText(self.addonOption.title ?? "", style: .heading1)
+            hText("Select days", style: .heading1)
                 .foregroundColor(hTextColor.Opaque.primary)
-            hText("Välj din skyddsnivå", style: .heading1)
+            hText("Pick the right fit for your travel needs", style: .heading1)
                 .foregroundColor(hTextColor.Opaque.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)

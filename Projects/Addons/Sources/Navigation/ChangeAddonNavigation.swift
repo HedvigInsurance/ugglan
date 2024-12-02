@@ -3,13 +3,21 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-public struct ChangeAddonInput {
-    let contractId: String
+public struct ChangeAddonInput: Identifiable, Equatable {
+    public var id: String {
+        contractId ?? ""
+    }
+
+    let contractId: String?
 
     public init(
-        contractId: String
+        contractId: String?
     ) {
         self.contractId = contractId
+    }
+
+    public static func == (lhs: ChangeAddonInput, rhs: ChangeAddonInput) -> Bool {
+        return lhs.id == rhs.id
     }
 }
 
@@ -23,12 +31,16 @@ class ChangeAddonNavigationViewModel: ObservableObject {
     public init(
         input: ChangeAddonInput
     ) {
-        changeAddonVm = ChangeAddonViewModel(contractId: input.contractId)
+        changeAddonVm = ChangeAddonViewModel(contractId: input.contractId ?? "")
     }
 }
 
 enum ChangeAddonRouterActions {
     case summary
+}
+
+enum ChangeAddonRouterActionsWithoutBackButton {
+    case commitAddon
 }
 
 public struct ChangeAddonNavigation: View {
@@ -56,6 +68,13 @@ public struct ChangeAddonNavigation: View {
                         )
                         .configureTitle(L10n.offerUpdateSummaryTitle)
                         .withAlertDismiss()
+                    }
+                }
+                .routerDestination(for: ChangeAddonRouterActionsWithoutBackButton.self, options: [.hidesBackButton]) {
+                    action in
+                    switch action {
+                    case .commitAddon:
+                        AddonProcessingScreen(vm: changeAddonNavigationVm.changeAddonVm)
                     }
                 }
         }
@@ -89,7 +108,16 @@ extension ChangeAddonRouterActions: TrackingViewNameProtocol {
     var nameForTracking: String {
         switch self {
         case .summary:
-            return .init(describing: ChangeAddonRouterActions.self)
+            return .init(describing: ChangeAddonSummaryScreen.self)
+        }
+    }
+}
+
+extension ChangeAddonRouterActionsWithoutBackButton: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        switch self {
+        case .commitAddon:
+            return .init(describing: AddonProcessingScreen.self)
         }
     }
 }

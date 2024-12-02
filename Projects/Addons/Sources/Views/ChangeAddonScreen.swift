@@ -5,6 +5,7 @@ import hCoreUI
 struct ChangeAddonScreen: View {
     @EnvironmentObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
     @ObservedObject var changeAddonVm: ChangeAddonViewModel
+    @SwiftUI.Environment(\.colorScheme) private var colorScheme
 
     init(
         changeAddonVm: ChangeAddonViewModel
@@ -13,7 +14,7 @@ struct ChangeAddonScreen: View {
     }
 
     var body: some View {
-        successView.loading($changeAddonVm.viewState)
+        successView.loading($changeAddonVm.fetchAddonsViewState)
             .hErrorViewButtonConfig(
                 .init(
                     actionButton: .init(
@@ -40,13 +41,13 @@ struct ChangeAddonScreen: View {
                 title: .init(
                     .small,
                     .body2,
-                    "Utöka ditt reseskydd",
+                    L10n.addonFlowTitle,
                     alignment: .leading
                 ),
                 subTitle: .init(
                     .small,
                     .body2,
-                    "Lorem ipsum dolor sit amet our"
+                    L10n.addonFlowSubtitle
                 )
             )
             .hFormAttachToBottom {
@@ -60,7 +61,7 @@ struct ChangeAddonScreen: View {
                             )
                             .buttons([
                                 .init(
-                                    buttonTitle: "Learn more",
+                                    buttonTitle: L10n.addonFlowLearnMoreButton,
                                     buttonAction: {
                                         changeAddonNavigationVm.isLearnMorePresented = .init(
                                             title: "What is Reseskydd Plus?",
@@ -75,7 +76,7 @@ struct ChangeAddonScreen: View {
                         hButton.LargeButton(type: .primary) {
                             changeAddonNavigationVm.router.push(ChangeAddonRouterActions.summary)
                         } content: {
-                            hText(L10n.generalContinueButton)
+                            hText(L10n.addonFlowAddToInsuranceButton)
                         }
                         .padding(.top, .padding16)
                     }
@@ -90,34 +91,8 @@ struct ChangeAddonScreen: View {
         VStack(spacing: .padding4) {
             ForEach(changeAddonVm.addonOptions ?? []) { addonOption in
                 hSection {
-                    hRadioField(
-                        id: addonOption,
-                        leftView: {
-                            getLeftView(for: addonOption).asAnyView
-                        },
-                        selected: $changeAddonVm.selectedOption,
-                        error: nil,
-                        useAnimation: true
-                    )
-                    .hFieldLeftAttachedView
-                    .hFieldAttachToBottom {
-                        if changeAddonVm.selectedOption == addonOption
-                            && changeAddonVm.hasSubOptions
-                        {
-
-                            let colorScheme: ColorScheme =
-                                UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
-                            DropdownView(
-                                value: String(changeAddonVm.selectedSubOption?.title ?? ""),
-                                placeHolder: "Välj skydd"
-                            ) {
-                                changeAddonNavigationVm.isChangeCoverageDaysPresented =
-                                    changeAddonVm.selectedOption
-                            }
-                            .padding(.top, .padding16)
-                            .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary])
-                            .hSectionWithoutHorizontalPadding
-                        }
+                    hRow {
+                        getAddonOptionView(for: addonOption)
                     }
                 }
                 .hFieldSize(.medium)
@@ -126,7 +101,7 @@ struct ChangeAddonScreen: View {
         }
     }
 
-    private func getLeftView(for addonOption: AddonOptionModel) -> some View {
+    private func getAddonOptionView(for addonOption: AddonOptionModel) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
                 hText(addonOption.title ?? "")
@@ -134,7 +109,7 @@ struct ChangeAddonScreen: View {
                 Spacer()
 
                 hPill(
-                    text: addonOption.getPillDisplayText,
+                    text: "+ " + (changeAddonVm.selectedSubOption?.price.formattedAmountPerMonth ?? ""),
                     color: .grey(translucent: true),
                     colorLevel: .one
                 )
@@ -143,76 +118,18 @@ struct ChangeAddonScreen: View {
             if let subTitle = addonOption.subtitle {
                 hText(subTitle, style: .label)
                     .foregroundColor(hTextColor.Opaque.secondary)
+                    .padding(.top, .padding8)
             }
-        }
-    }
-}
 
-@MainActor
-public class ChangeAddonViewModel: ObservableObject {
-    @Inject private var addonService: AddonsClient
-    @Published var viewState: ProcessingState = .loading
-
-    @Published var selectedOption: AddonOptionModel? {
-        didSet {
-            selectedSubOption =
-                selectedSubOption
-                ?? selectedOption?.subOptions.first
-        }
-    }
-
-    @Published var selectedSubOption: AddonSubOptionModel?
-    @Published var addonOptions: [AddonOptionModel]?
-    @Published var contractInformation: AddonContract?
-    @Published var informationText: String?
-
-    var hasSubOptions: Bool {
-        return selectedOption?.subOptions.count ?? 0 > 0
-    }
-
-    init(contractId: String) {
-        Task {
-            await getAddons()
-            await getContractInformation(contractId: contractId)
-
-            self._selectedOption = Published(
-                initialValue: addonOptions?.first(where: { $0.subOptions.isEmpty })
-            )
-        }
-    }
-
-    func getAddons() async {
-        withAnimation {
-            self.viewState = .loading
-        }
-
-        do {
-            let data = try await addonService.getAddon()
-
-            withAnimation {
-                self.addonOptions = data.options
-                self.informationText = data.informationText
-                self.viewState = .success
+            DropdownView(
+                value: String(changeAddonVm.selectedSubOption?.title ?? ""),
+                placeHolder: L10n.addonFlowSelectDaysPlaceholder
+            ) {
+                changeAddonNavigationVm.isChangeCoverageDaysPresented = addonOption
             }
-        } catch let exception {
-            self.viewState = .error(errorMessage: exception.localizedDescription)
-        }
-    }
-
-    func getContractInformation(contractId: String) async {
-        withAnimation {
-            self.viewState = .loading
-        }
-
-        do {
-            let data = try await addonService.getContract(contractId: contractId)
-
-            withAnimation {
-                self.contractInformation = data
-                self.viewState = .success
-            }
-        } catch let exception {
-            self.viewState = .error(errorMessage: exception.localizedDescription)
+            .padding(.top, .padding16)
+            .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary])
+            .hSectionWithoutHorizontalPadding
         }
     }
 }
