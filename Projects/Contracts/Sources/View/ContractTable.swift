@@ -59,8 +59,8 @@ struct ContractTable: View {
                                 addon: .init(
                                     id: "id",
                                     title: "Travel Plus",
-                                    tag: "Popular",
                                     subTitle: "Extended travel insurance with extra coverage for your travels",
+                                    tag: "Popular",
                                     informationText: "",
                                     options: []
                                 )

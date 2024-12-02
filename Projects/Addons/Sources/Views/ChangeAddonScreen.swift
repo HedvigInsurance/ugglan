@@ -5,6 +5,7 @@ import hCoreUI
 struct ChangeAddonScreen: View {
     @EnvironmentObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
     @ObservedObject var changeAddonVm: ChangeAddonViewModel
+    @SwiftUI.Environment(\.colorScheme) private var colorScheme
 
     public init(
         changeAddonVm: ChangeAddonViewModel
@@ -108,7 +109,7 @@ struct ChangeAddonScreen: View {
                 Spacer()
 
                 hPill(
-                    text: "+ " + (addonOption.price?.formattedAmountPerMonth ?? ""),
+                    text: "+ " + (changeAddonVm.selectedSubOption?.price.formattedAmountPerMonth ?? ""),
                     color: .grey(translucent: true),
                     colorLevel: .one
                 )
@@ -120,8 +121,6 @@ struct ChangeAddonScreen: View {
                     .padding(.top, .padding8)
             }
 
-            let colorScheme: ColorScheme =
-                UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
             DropdownView(
                 value: String(changeAddonVm.selectedSubOption?.title ?? ""),
                 placeHolder: L10n.addonFlowSelectDaysPlaceholder
