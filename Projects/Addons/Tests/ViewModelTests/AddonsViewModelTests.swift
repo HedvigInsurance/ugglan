@@ -49,7 +49,6 @@ final class AddonsViewModelTests: XCTestCase {
         self.sut = mockService
 
         let model = ChangeAddonViewModel(contractId: "contractId")
-        model.fetchAddonsViewState = .loading
 
         self.vm = model
 
@@ -138,6 +137,7 @@ final class AddonsViewModelTests: XCTestCase {
         assert(model.contractInformation?.documents == contractModel.documents)
         assert(model.contractInformation?.insurableLimits == contractModel.insurableLimits)
         assert(model.contractInformation?.typeOfContract == contractModel.typeOfContract)
+        assert(mockService.events.count == 2)
         assert(model.fetchAddonsViewState == .success)
     }
 

@@ -11,6 +11,7 @@ public class ChangeAddonViewModel: ObservableObject {
     @Published var addonOptions: [AddonOptionModel]?
     @Published var contractInformation: AddonContract?
     @Published var informationText: String?
+    @Published var activationDate: Date?
 
     init(contractId: String) {
         Task {
@@ -45,15 +46,13 @@ public class ChangeAddonViewModel: ObservableObject {
         withAnimation {
             self.submittingAddonsViewState = .loading
         }
-        Task { @MainActor in
-            do {
-                try await addonService.submitAddon()
-                withAnimation {
-                    self.submittingAddonsViewState = .success
-                }
-            } catch let exception {
-                self.submittingAddonsViewState = .error(errorMessage: exception.localizedDescription)
+        do {
+            try await addonService.submitAddon()
+            withAnimation {
+                self.submittingAddonsViewState = .success
             }
+        } catch let exception {
+            self.submittingAddonsViewState = .error(errorMessage: exception.localizedDescription)
         }
     }
 
