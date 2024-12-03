@@ -46,7 +46,7 @@ final class AddonsServiceTests: XCTestCase {
 
         self.sut = mockService
 
-        let respondedAddonData = try! await mockService.getAddon()
+        let respondedAddonData = try await mockService.getAddon()
 
         assert(respondedAddonData == addonModel)
     }
@@ -83,7 +83,7 @@ final class AddonsServiceTests: XCTestCase {
 
         self.sut = mockService
 
-        let responedContractData = try! await mockService.getContract(contractId: contractId)
+        let responedContractData = try await mockService.getContract(contractId: contractId)
 
         assert(responedContractData == contractModel)
     }
