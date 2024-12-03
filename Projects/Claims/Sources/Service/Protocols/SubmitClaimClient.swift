@@ -1,44 +1,147 @@
+import hCore
+import hGraphQL
+
+@MainActor
+class SubmitClaimService {
+    @Inject var client: SubmitClaimClient
+
+    func startClaim(entrypointId: String?, entrypointOptionId: String?) async throws -> SubmitClaimStepResponse {
+        log.info(
+            "\(SubmitClaimService.self): start claim for entrypointId: \(entrypointId ?? "--"), entrypointOptionId: \(entrypointOptionId ?? "--")"
+        )
+        let data = try await client.startClaim(entrypointId: entrypointId, entrypointOptionId: entrypointOptionId)
+        return data
+    }
+
+    func updateContact(
+        phoneNumber: String,
+        context: String,
+        model: FlowClaimPhoneNumberStepModel
+    ) async throws -> SubmitClaimStepResponse {
+        log.info("\(SubmitClaimService.self): update contact for phoneNumber: \(phoneNumber)")
+        let data = try await client.updateContact(phoneNumber: phoneNumber, context: context, model: model)
+        return data
+    }
+
+    func dateOfOccurrenceAndLocationRequest(
+        context: String,
+        model: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels
+    ) async throws -> SubmitClaimStepResponse {
+        log.info("\(SubmitClaimService.self): dateOfOccurrenceAndLocationRequest \(model)")
+        let data = try await client.dateOfOccurrenceAndLocationRequest(context: context, model: model)
+        return data
+    }
+
+    func submitAudioRecording(
+        type: SubmitAudioRecordingType,
+        context: String,
+        currentClaimId: String,
+        model: FlowClaimAudioRecordingStepModel
+    ) async throws -> SubmitClaimStepResponse {
+        log.info("\(SubmitClaimService.self): submitAudioRecording")
+        let data = try await client.submitAudioRecording(
+            type: type,
+            context: context,
+            currentClaimId: currentClaimId,
+            model: model
+        )
+        return data
+    }
+
+    func singleItemRequest(
+        context: String,
+        model: FlowClaimSingleItemStepModel
+    ) async throws -> SubmitClaimStepResponse {
+        log.info("\(SubmitClaimService.self): singleItemRequest \(model)")
+        let data = try await client.singleItemRequest(context: context, model: model)
+        return data
+    }
+
+    func summaryRequest(
+        context: String,
+        model: SubmitClaimStep.SummaryStepModels
+    ) async throws -> SubmitClaimStepResponse {
+        log.info("\(SubmitClaimService.self): summaryRequest")
+        let data = try await client.summaryRequest(context: context, model: model)
+        return data
+    }
+
+    func singleItemCheckoutRequest(
+        context: String,
+        model: FlowClaimSingleItemCheckoutStepModel
+    ) async throws -> SubmitClaimStepResponse {
+        log.info("\(SubmitClaimService.self): singleItemCheckoutRequest \(model)")
+        let data = try await client.singleItemCheckoutRequest(context: context, model: model)
+        return data
+    }
+
+    func contractSelectRequest(
+        contractId: String,
+        context: String,
+        model: FlowClaimContractSelectStepModel
+    ) async throws -> SubmitClaimStepResponse {
+        log.info("\(SubmitClaimService.self): contractSelectRequest \(contractId)")
+        let data = try await client.contractSelectRequest(contractId: contractId, context: context, model: model)
+        return data
+    }
+
+    func emergencyConfirmRequest(isEmergency: Bool, context: String) async throws -> SubmitClaimStepResponse {
+        log.info("\(SubmitClaimService.self): emergencyConfirmRequest \(isEmergency)")
+        let data = try await client.emergencyConfirmRequest(isEmergency: isEmergency, context: context)
+        return data
+    }
+
+    func submitFileUpload(
+        ids: [String],
+        context: String,
+        model: FlowClaimFileUploadStepModel
+    ) async throws -> SubmitClaimStepResponse {
+        log.info("\(SubmitClaimService.self): submitFileUpload \(ids)")
+        let data = try await client.submitFileUpload(ids: ids, context: context, model: model)
+        return data
+    }
+}
+
 @MainActor
 public protocol SubmitClaimClient {
     func startClaim(entrypointId: String?, entrypointOptionId: String?) async throws -> SubmitClaimStepResponse
     func updateContact(
         phoneNumber: String,
         context: String,
-        model: FlowClaimPhoneNumberStepModel?
+        model: FlowClaimPhoneNumberStepModel
     ) async throws -> SubmitClaimStepResponse
     func dateOfOccurrenceAndLocationRequest(
         context: String,
-        model: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels?
+        model: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels
     ) async throws -> SubmitClaimStepResponse
     func submitAudioRecording(
         type: SubmitAudioRecordingType,
-        fileUploaderClient: FileUploaderClient,
         context: String,
         currentClaimId: String,
-        model: FlowClaimAudioRecordingStepModel?
+        model: FlowClaimAudioRecordingStepModel
     ) async throws -> SubmitClaimStepResponse
     func singleItemRequest(
         context: String,
-        model: FlowClaimSingleItemStepModel?
+        model: FlowClaimSingleItemStepModel
     ) async throws -> SubmitClaimStepResponse
     func summaryRequest(
         context: String,
-        model: SubmitClaimStep.SummaryStepModels?
+        model: SubmitClaimStep.SummaryStepModels
     ) async throws -> SubmitClaimStepResponse
     func singleItemCheckoutRequest(
         context: String,
-        model: FlowClaimSingleItemCheckoutStepModel?
+        model: FlowClaimSingleItemCheckoutStepModel
     ) async throws -> SubmitClaimStepResponse
     func contractSelectRequest(
         contractId: String,
         context: String,
-        model: FlowClaimContractSelectStepModel?
+        model: FlowClaimContractSelectStepModel
     ) async throws -> SubmitClaimStepResponse
     func emergencyConfirmRequest(isEmergency: Bool, context: String) async throws -> SubmitClaimStepResponse
     func submitFileUpload(
         ids: [String],
         context: String,
-        model: FlowClaimFileUploadStepModel?
+        model: FlowClaimFileUploadStepModel
     ) async throws -> SubmitClaimStepResponse
 }
 
@@ -47,6 +150,7 @@ public struct SubmitClaimStepResponse: Sendable {
     let context: String
     let progress: Float?
     let step: SubmitClaimStep
+    let nextStepId: String
 }
 
 public enum SubmitClaimStep: Equatable, Sendable {

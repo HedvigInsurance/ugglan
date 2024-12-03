@@ -34,7 +34,7 @@ public class ClaimsNavigationViewModel: ObservableObject {
     @Published var selectClaimEntrypointVm = SelectClaimEntrypointViewModel()
     @Published var startClaimState = ProcessingState.success
     var router = Router()
-    @Inject private var submitClaimService: SubmitClaimClient
+    private let submitClaimService = SubmitClaimService()
 
     @Published var currentClaimId: String? {
         didSet {
