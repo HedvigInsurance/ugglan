@@ -42,21 +42,17 @@ public class ChangeAddonViewModel: ObservableObject {
         }
     }
 
-    func submitAddons() {
+    func submitAddons() async {
         withAnimation {
             self.submittingAddonsViewState = .loading
         }
-
-        /* TODO: REMOVE DELAY WHEN IMPLEMENTATION IS IN PLACE */
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-            do {
-                /** TODO: IMPLEMENT  **/
-                withAnimation {
-                    self.submittingAddonsViewState = .success
-                }
-            } catch let exception {
-                self.submittingAddonsViewState = .error(errorMessage: exception.localizedDescription)
+        do {
+            try await addonService.submitAddon()
+            withAnimation {
+                self.submittingAddonsViewState = .success
             }
+        } catch let exception {
+            self.submittingAddonsViewState = .error(errorMessage: exception.localizedDescription)
         }
     }
 
