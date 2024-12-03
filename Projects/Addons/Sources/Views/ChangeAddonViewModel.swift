@@ -11,6 +11,7 @@ public class ChangeAddonViewModel: ObservableObject {
     @Published var addonOptions: [AddonOptionModel]?
     @Published var contractInformation: AddonContract?
     @Published var informationText: String?
+    @Published var activationDate: Date?
 
     init(contractId: String) {
         Task {
