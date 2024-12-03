@@ -41,14 +41,13 @@ public class ChangeAddonViewModel: ObservableObject {
         }
     }
 
-    func submitAddons() {
+    func submitAddons() async {
         withAnimation {
             self.submittingAddonsViewState = .loading
         }
         Task { @MainActor in
             do {
                 try await addonService.submitAddon()
-                /** TODO: IMPLEMENT  **/
                 withAnimation {
                     self.submittingAddonsViewState = .success
                 }

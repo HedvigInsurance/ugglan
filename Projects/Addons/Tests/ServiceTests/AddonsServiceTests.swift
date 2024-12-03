@@ -7,19 +7,13 @@ import hCore
 final class AddonsServiceTests: XCTestCase {
     weak var sut: MockAddonsService?
 
-    override func setUp() async throws {
-        try await super.setUp()
-        sut = nil
-    }
-
     override func tearDown() async throws {
+        try await super.tearDown()
         Dependencies.shared.remove(for: AddonsClient.self)
-        try await Task.sleep(nanoseconds: 100)
-
         XCTAssertNil(sut)
     }
 
-    func testFetchAddonDataSuccess() async {
+    func testFetchAddonDataSuccess() async throws {
         let selectedSubOption = AddonSubOptionModel(
             id: "subOptionId",
             title: "sub option title",
@@ -57,7 +51,7 @@ final class AddonsServiceTests: XCTestCase {
         assert(respondedAddonData == addonModel)
     }
 
-    func testFetchContractDataSuccess() async {
+    func testFetchContractDataSuccess() async throws {
         let contractId = "contractId"
 
         let contractModel = AddonContract(
