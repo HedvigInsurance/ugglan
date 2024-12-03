@@ -45,15 +45,13 @@ public class ChangeAddonViewModel: ObservableObject {
         withAnimation {
             self.submittingAddonsViewState = .loading
         }
-        Task { @MainActor in
-            do {
-                try await addonService.submitAddon()
-                withAnimation {
-                    self.submittingAddonsViewState = .success
-                }
-            } catch let exception {
-                self.submittingAddonsViewState = .error(errorMessage: exception.localizedDescription)
+        do {
+            try await addonService.submitAddon()
+            withAnimation {
+                self.submittingAddonsViewState = .success
             }
+        } catch let exception {
+            self.submittingAddonsViewState = .error(errorMessage: exception.localizedDescription)
         }
     }
 
