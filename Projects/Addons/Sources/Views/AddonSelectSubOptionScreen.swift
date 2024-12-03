@@ -100,13 +100,12 @@ extension AddonSelectSubOptionScreen: TitleView {
         addonOption: .init(
             id: "Resesydd",
             title: "Reseskydd",
-            subtitle: "subtitle",
+            description: "subtitle",
             price: nil,
             subOptions: [
                 .init(
                     id: "subOption",
                     title: "subOption",
-                    subtitle: "",
                     price: .init(amount: "79", currency: "SEK")
                 )
             ]

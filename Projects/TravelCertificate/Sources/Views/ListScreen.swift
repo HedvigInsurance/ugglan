@@ -61,9 +61,10 @@ public struct ListScreen: View {
                             addon: .init(
                                 id: "id",
                                 title: "Travel Plus",
-                                subTitle: "Extended travel insurance with extra coverage for your travels",
+                                description: "Extended travel insurance with extra coverage for your travels",
                                 tag: "Popular",
                                 informationText: "",
+                                activationDate: Date(),
                                 options: []
                             )
                         )

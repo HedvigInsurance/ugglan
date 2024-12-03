@@ -115,7 +115,7 @@ struct ChangeAddonScreen: View {
                 )
                 .hFieldSize(.small)
             }
-            if let subTitle = addonOption.subtitle {
+            if let subTitle = addonOption.description {
                 hText(subTitle, style: .label)
                     .foregroundColor(hTextColor.Opaque.secondary)
                     .padding(.top, .padding8)

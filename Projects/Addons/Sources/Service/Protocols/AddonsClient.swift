@@ -4,9 +4,9 @@ import hGraphQL
 
 @MainActor
 public protocol AddonsClient {
-    func getAddon() async throws -> AddonModel
+    func getAddon(contractId: String) async throws -> AddonModel
     func getContract(contractId: String) async throws -> AddonContract
-    func submitAddon() async throws
+    func submitAddon(quoteId: String, addonId: String) async throws
 }
 
 public enum AddonsError: Error {

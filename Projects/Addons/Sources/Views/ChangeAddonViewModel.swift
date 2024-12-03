@@ -12,6 +12,8 @@ public class ChangeAddonViewModel: ObservableObject {
     @Published var contractInformation: AddonContract?
     @Published var informationText: String?
     @Published var activationDate: Date?
+    @Published var addonId: String?
+    @Published var quoteId: String?
 
     init(contractId: String) {
         Task {
@@ -30,11 +32,13 @@ public class ChangeAddonViewModel: ObservableObject {
         }
 
         do {
-            let data = try await addonService.getAddon()
+            let data = try await addonService.getAddon(contractId: contractInformation?.contractId ?? "")
 
             withAnimation {
                 self.addonOptions = data.options
                 self.informationText = data.informationText
+                self.activationDate = data.activationDate
+                self.addonId = data.id
                 self.fetchAddonsViewState = .success
             }
         } catch let exception {
@@ -47,7 +51,7 @@ public class ChangeAddonViewModel: ObservableObject {
             self.submittingAddonsViewState = .loading
         }
         do {
-            try await addonService.submitAddon()
+            try await addonService.submitAddon(quoteId: quoteId ?? "", addonId: addonId ?? "")
             withAnimation {
                 self.submittingAddonsViewState = .success
             }

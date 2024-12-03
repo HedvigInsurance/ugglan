@@ -24,7 +24,7 @@ public struct AddonCardView: View {
                         hPill(text: addon.tag, color: .green, colorLevel: .one)
                             .hFieldSize(.small)
                     }
-                    if let subTitle = addon.subTitle {
+                    if let subTitle = addon.description {
                         hText(subTitle, style: .label)
                             .foregroundColor(hTextColor.Translucent.secondary)
                     }
@@ -52,9 +52,10 @@ public struct AddonCardView: View {
             addon: .init(
                 id: "id",
                 title: "Travel Plus",
-                subTitle: "Extended travel insurance with extra coverage for your travels",
+                description: "Extended travel insurance with extra coverage for your travels",
                 tag: "Popular",
                 informationText: "",
+                activationDate: Date(),
                 options: []
             )
         )
