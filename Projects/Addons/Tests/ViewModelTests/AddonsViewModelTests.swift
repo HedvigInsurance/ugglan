@@ -8,14 +8,9 @@ final class AddonsViewModelTests: XCTestCase {
     weak var sut: MockAddonsService?
     weak var vm: ChangeAddonViewModel?
 
-    override func setUp() async throws {
-        try await super.setUp()
-        sut = nil
-    }
-
     override func tearDown() async throws {
+        try await super.tearDown()
         Dependencies.shared.remove(for: AddonsClient.self)
-        try await Task.sleep(nanoseconds: 20_000_000)
         XCTAssertNil(sut)
         XCTAssertNil(vm)
     }
@@ -57,7 +52,6 @@ final class AddonsViewModelTests: XCTestCase {
         model.fetchAddonsViewState = .loading
 
         self.vm = model
-        await model.getAddons()
 
         try await Task.sleep(nanoseconds: 30_000_000)
         assert(model.addonOptions == addonModel.options)
@@ -83,7 +77,6 @@ final class AddonsViewModelTests: XCTestCase {
         let model = ChangeAddonViewModel(contractId: "contractId")
 
         self.vm = model
-        await model.getAddons()
 
         try await Task.sleep(nanoseconds: 30_000_000)
         assert(model.addonOptions == nil)
@@ -134,7 +127,6 @@ final class AddonsViewModelTests: XCTestCase {
         let model = ChangeAddonViewModel(contractId: contractId)
 
         self.vm = model
-        await model.getContractInformation(contractId: contractId)
 
         try await Task.sleep(nanoseconds: 30_000_000)
         assert(model.contractInformation?.activationDate == contractModel.activationDate)
@@ -161,7 +153,6 @@ final class AddonsViewModelTests: XCTestCase {
         let model = ChangeAddonViewModel(contractId: contractId)
 
         self.vm = model
-        await model.getContractInformation(contractId: contractId)
 
         try await Task.sleep(nanoseconds: 30_000_000)
         assert(model.contractInformation?.activationDate == nil)
@@ -189,7 +180,7 @@ final class AddonsViewModelTests: XCTestCase {
         let model = ChangeAddonViewModel(contractId: "contractId")
 
         self.vm = model
-        model.submitAddons()
+        await model.submitAddons()
 
         try await Task.sleep(nanoseconds: 30_000_000)
         assert(model.submittingAddonsViewState == .success)
@@ -213,7 +204,7 @@ final class AddonsViewModelTests: XCTestCase {
         let model = ChangeAddonViewModel(contractId: "contractId")
 
         self.vm = model
-        model.submitAddons()
+        await model.submitAddons()
 
         try await Task.sleep(nanoseconds: 30_000_000)
         if case .error(let errorMessage) = model.submittingAddonsViewState {

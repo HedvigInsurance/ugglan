@@ -15,15 +15,7 @@ public enum AddonsError: Error {
     case submitError
 }
 
-@MainActor
-public struct AddonContract: @preconcurrency Equatable {
-    public static func == (lhs: AddonContract, rhs: AddonContract) -> Bool {
-        return lhs.contractId == rhs.contractId && lhs.contractName == rhs.contractName
-            && lhs.displayItems == rhs.displayItems && lhs.documents == rhs.documents
-            && lhs.insurableLimits == rhs.insurableLimits && lhs.typeOfContract == rhs.typeOfContract
-            && lhs.activationDate == rhs.activationDate && lhs.currentPremium == rhs.currentPremium
-    }
-
+public struct AddonContract: Equatable, Sendable {
     let contractId: String
     let contractName: String
     let displayItems: [QuoteDisplayItem]
@@ -36,7 +28,7 @@ public struct AddonContract: @preconcurrency Equatable {
     public init(
         contractId: String,
         data: OctopusGraphQL.AgreementFragment
-    ) {
+    ) async {
         self.contractId = contractId
         self.contractName = data.productVariant.displayName
         self.displayItems = data.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) })
@@ -45,7 +37,7 @@ public struct AddonContract: @preconcurrency Equatable {
         })
         self.insurableLimits = data.productVariant.insurableLimits.map({ .init($0) })
         self.typeOfContract = TypeOfContract.resolve(for: data.productVariant.typeOfContract)
-        self.activationDate = data.activeFrom.localDateToDate ?? Date()
+        self.activationDate = await data.activeFrom.localDateToDate ?? Date()
         self.currentPremium = .init(fragment: data.premium.fragments.moneyFragment)
     }
 

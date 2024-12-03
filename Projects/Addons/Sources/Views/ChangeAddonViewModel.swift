@@ -41,7 +41,7 @@ public class ChangeAddonViewModel: ObservableObject {
         }
     }
 
-    func submitAddons() {
+    func submitAddons() async {
         withAnimation {
             self.submittingAddonsViewState = .loading
         }

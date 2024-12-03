@@ -23,7 +23,9 @@ struct AddonProcessingScreen: View {
         .init(
             actionButton: .init(
                 buttonAction: {
-                    addonNavigationVm.changeAddonVm.submitAddons()
+                    Task {
+                        await addonNavigationVm.changeAddonVm.submitAddons()
+                    }
                 }
             ),
             dismissButton:
