@@ -48,7 +48,6 @@ public class ChangeAddonViewModel: ObservableObject {
         Task { @MainActor in
             do {
                 try await addonService.submitAddon()
-                /** TODO: IMPLEMENT  **/
                 withAnimation {
                     self.submittingAddonsViewState = .success
                 }
