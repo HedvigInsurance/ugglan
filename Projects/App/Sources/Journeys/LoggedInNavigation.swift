@@ -807,14 +807,12 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     private func handleAddon(url: URL) {
-        //if id is contractId
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         if let contractId = getContractId(from: url),
             let contract: Contracts.Contract = contractStore.state.contractForId(contractId)
         {
             self.isAddonPresented = .init(contractId: contractId)
         } else if let addonId = getAddonId(from: url) {
-            //if id is addonId
             self.isAddonPresented = .init(addonId: addonId)
         }
     }
