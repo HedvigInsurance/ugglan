@@ -10,7 +10,6 @@ public class ChangeAddonViewModel: ObservableObject {
     @Published var selectedSubOption: AddonSubOptionModel?
     @Published var addonOptions: [AddonOptionModel]?
     @Published var contractInformation: AddonContract?
-    @Published var informationText: String?
     @Published var activationDate: Date?
     @Published var addonId: String?
     @Published var quoteId: String?
@@ -36,7 +35,6 @@ public class ChangeAddonViewModel: ObservableObject {
 
             withAnimation {
                 self.addonOptions = data.options
-                self.informationText = data.informationText
                 self.activationDate = data.activationDate
                 self.addonId = data.id
                 self.fetchAddonsViewState = .success

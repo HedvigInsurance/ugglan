@@ -61,7 +61,6 @@ struct ContractTable: View {
                                     title: "Travel Plus",
                                     description: "Extended travel insurance with extra coverage for your travels",
                                     tag: "Popular",
-                                    informationText: "",
                                     activationDate: Date(),
                                     options: []
                                 )

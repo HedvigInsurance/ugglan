@@ -6,7 +6,6 @@ public struct AddonModel: Identifiable, Equatable, Hashable, Sendable {
     let title: String
     let description: String?
     let tag: String
-    let informationText: String
     let activationDate: Date?
     let options: [AddonOptionModel]
 
@@ -15,7 +14,6 @@ public struct AddonModel: Identifiable, Equatable, Hashable, Sendable {
         title: String,
         description: String?,
         tag: String,
-        informationText: String,
         activationDate: Date?,
         options: [AddonOptionModel]
     ) {
@@ -23,7 +21,6 @@ public struct AddonModel: Identifiable, Equatable, Hashable, Sendable {
         self.title = title
         self.description = description
         self.tag = tag
-        self.informationText = informationText
         self.activationDate = activationDate
         self.options = options
     }

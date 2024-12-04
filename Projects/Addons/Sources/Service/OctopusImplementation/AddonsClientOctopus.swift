@@ -34,7 +34,6 @@ public class AddonsClientOctopus: AddonsClient {
                 title: "Travel Plus",
                 description: "Extended travel insurance with extra coverage for your travels",
                 tag: "Popular",
-                informationText: "Click to learn more about our extended travel coverage Reseskydd Plus",
                 activationDate: Date(),
                 options: [
                     .init(

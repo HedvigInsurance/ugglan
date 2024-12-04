@@ -54,24 +54,22 @@ struct ChangeAddonScreen: View {
                 VStack(spacing: .padding8) {
                     addOnSection
                     hSection {
-                        if let informationText = changeAddonVm.informationText {
-                            InfoCard(
-                                text: informationText,
-                                type: .neutral
+                        InfoCard(
+                            text: L10n.addonFlowTravelInformationCardText,
+                            type: .neutral
+                        )
+                        .buttons([
+                            .init(
+                                buttonTitle: L10n.addonFlowLearnMoreButton,
+                                buttonAction: {
+                                    changeAddonNavigationVm.isLearnMorePresented = .init(
+                                        title: L10n.addonFlowTravelInformationTitle,
+                                        description: L10n.addonFlowTravelInformationDescription
+                                    )
+                                }
                             )
-                            .buttons([
-                                .init(
-                                    buttonTitle: L10n.addonFlowLearnMoreButton,
-                                    buttonAction: {
-                                        changeAddonNavigationVm.isLearnMorePresented = .init(
-                                            title: "What is Reseskydd Plus?",
-                                            description:
-                                                "Med reseskyddet som ingår i din hemförsäkring får du hjälp vid olycksfall och akut sjukdom eller tandbesvär som kräver sjukvård under din resa.\n\nSkyddet gäller också om ni tvingas evakuera resmålet på grund av det utbryter krig, naturkatastrof eller epidemi. Du kan även få ersättning om du måste avbryta resan på grund av att något allvarligt har hänt med en närstående hemma."
-                                        )
-                                    }
-                                )
-                            ])
-                        }
+                        ])
+                        //                        }
 
                         hButton.LargeButton(type: .primary) {
                             changeAddonNavigationVm.router.push(ChangeAddonRouterActions.summary)
