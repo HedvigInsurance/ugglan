@@ -65,6 +65,8 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
                 terminationDateStepModel = model
             case let .surveyStep(model):
                 terminationSurveyStepModel = model
+            case .summary:
+                break
             }
         case .final(let action):
             switch action {
@@ -330,6 +332,9 @@ struct TerminationFlowNavigation: View {
                             openSurveyScreen(model: model ?? .init(id: "", options: [], subTitleType: .default))
                         case .selectInsurance:
                             openSelectInsuranceScreen()
+                        case .summary:
+                            TerminationSummaryScreen()
+                                .withDismissButton()
                         }
                     }
                     .resetProgressOnDismiss(to: vm.previousProgress, for: $vm.progress)
@@ -394,6 +399,9 @@ struct TerminationFlowNavigation: View {
                 openSurveyScreen(model: model ?? .init(id: "", options: [], subTitleType: .default))
             case .selectInsurance:
                 openSelectInsuranceScreen()
+            case .summary:
+                TerminationSummaryScreen()
+                    .withDismissButton()
             }
         case let .final(action):
             switch action {
@@ -458,7 +466,8 @@ struct TerminationFlowNavigation: View {
                             contractId: selectedContract.contractId,
                             contractDisplayName: selectedContract.contractDisplayName,
                             contractExposureName: selectedContract.contractExposureName,
-                            activeFrom: selectedContract.activeFrom
+                            activeFrom: selectedContract.activeFrom,
+                            typeOfContract: selectedContract.typeOfContract
                         )
                         Task {
                             vm.hasSelectInsuranceStep = true
@@ -624,6 +633,7 @@ public enum TerminationFlowRouterActions: Hashable {
     case selectInsurance(configs: [TerminationConfirmConfig])
     case terminationDate(model: TerminationFlowDateNextStepModel?)
     case surveyStep(model: TerminationFlowSurveyStepModel?)
+    case summary
 }
 
 extension TerminationFlowRouterActions: TrackingViewNameProtocol {
@@ -635,6 +645,8 @@ extension TerminationFlowRouterActions: TrackingViewNameProtocol {
             return .init(describing: SetTerminationDateLandingScreen.self)
         case .surveyStep:
             return .init(describing: TerminationSurveyScreen.self)
+        case .summary:
+            return .init(describing: TerminationSummaryScreen.self)
         }
     }
 }

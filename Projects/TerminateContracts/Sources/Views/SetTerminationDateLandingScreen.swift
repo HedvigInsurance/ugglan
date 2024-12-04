@@ -48,10 +48,11 @@ struct SetTerminationDateLandingScreen: View {
 
                             hSection {
                                 VStack(spacing: 16) {
-                                    hButton.LargeButton(type: .primary) { [weak terminationNavigationVm] in
-                                        terminationNavigationVm?.isConfirmTerminationPresented = true
+                                    hButton.LargeButton(type: .primary) {
+                                        [weak terminationNavigationVm] in
+                                        terminationNavigationVm?.router.push(TerminationFlowRouterActions.summary)
                                     } content: {
-                                        hText(L10n.terminationButton, style: .body1)
+                                        hText(L10n.generalContinueButton, style: .body1)
                                     }
                                     .disabled(
                                         vm.isCancelButtonDisabled(

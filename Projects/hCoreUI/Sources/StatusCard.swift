@@ -49,7 +49,8 @@ where MainContent: View, BottomContent: View {
             bottomComponent()
                 .padding(.horizontal, .padding16)
         }
-        .padding(.vertical, .padding16)
+        .padding(.top, .padding16)
+        .padding(.bottom, cardWithoutSpacing ? 0 : .padding16)
         .background(
             RoundedRectangle(cornerRadius: .cornerRadiusXL)
                 .fill(hSurfaceColor.Opaque.primary)
