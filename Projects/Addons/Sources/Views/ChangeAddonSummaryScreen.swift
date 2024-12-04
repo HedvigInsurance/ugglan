@@ -22,30 +22,26 @@ struct ChangeAddonSummaryScreen: View {
 extension ChangeAddonViewModel {
     func asQuoteSummaryViewModel(changeAddonNavigationVm: ChangeAddonNavigationViewModel) -> QuoteSummaryViewModel {
 
-        let newPremium =
-            changeAddonNavigationVm.changeAddonVm.selectedQuote?.price
-
         let vm = QuoteSummaryViewModel(
             contract: [
                 .init(
                     id: self.contractId ?? "",
                     displayName: self.selectedQuote?.productVariant.displayName ?? "",
-                    exposureName: self.activationDate?.localDateString ?? "",
-                    newPremium: newPremium,
+                    exposureName: L10n.addonFlowSummaryActiveFrom(
+                        self.addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
+                    ),
+                    newPremium: self.selectedQuote?.price,
                     currentPremium: nil,
                     documents: self.selectedQuote?.productVariant.documents ?? [],
                     onDocumentTap: { document in
-
+                        changeAddonNavigationVm.document = document
                     },
                     displayItems: [], /* TODO: ADD */
                     insuranceLimits: self.selectedQuote?.productVariant.insurableLimits ?? [],
                     typeOfContract: nil
                 )
             ],
-            total: .init(
-                amount: self.selectedQuote?.price?.formattedAmount ?? "",
-                currency: "SEK"
-            ),
+            total: self.selectedQuote?.price ?? .init(amount: 0, currency: "SEK"),
             isAddon: true
         ) {
             Task {

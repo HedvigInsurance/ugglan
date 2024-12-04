@@ -27,7 +27,7 @@ public class AddonsClientOctopus: AddonsClient {
         let addons: AddonOffer = .init(
             titleDisplayName: "Travel Plus",
             description: "Extended travel insurance with extra coverage for your travels",
-            activationDate: "2025-01-15".localDateToDate,
+            activationDate: "2024-12-15".localDateToDate,
             quotes: [
                 .init(
                     id: "45",
@@ -78,7 +78,7 @@ public class AddonsClientOctopus: AddonsClient {
                             .init(displayName: "dodument2", url: "", type: .termsAndConditions),
                             .init(displayName: "dodument3", url: "", type: .preSaleInfo),
                         ],
-                        displayName: "display name",
+                        displayName: "Travel plus",
                         displayNameTier: nil,
                         tierDescription: nil
                     )

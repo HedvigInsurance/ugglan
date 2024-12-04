@@ -10,7 +10,7 @@ struct AddonProcessingScreen: View {
         ProcessingStateView(
             loadingViewText: L10n.tierFlowCommitProcessingLoadingTitle,
             successViewTitle: L10n.addonFlowSuccessTitle,
-            successViewBody: L10n.addonFlowSuccessSubtitle(vm.activationDate?.localDateString ?? ""),
+            successViewBody: L10n.addonFlowSuccessSubtitle(vm.activationDate?.displayDateDDMMMYYYYFormat ?? ""),
             successViewButtonAction: {
                 addonNavigationVm.router.dismiss()
             },

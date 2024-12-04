@@ -2,6 +2,7 @@ import Foundation
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 public struct ChangeAddonInput: Identifiable, Equatable {
     public var id: String {
@@ -26,6 +27,8 @@ class ChangeAddonNavigationViewModel: ObservableObject {
     @Published var isLearnMorePresented: InfoViewDataModel?
     @Published var isChangeCoverageDaysPresented: AddonOffer?
     @Published var changeAddonVm: ChangeAddonViewModel
+    @Published var document: hPDFDocument?
+
     let router = Router()
 
     public init(
@@ -100,6 +103,12 @@ public struct ChangeAddonNavigation: View {
                     tracking: ChangeAddonTrackingType.selectSubOptionScreen
                 )
                 .environmentObject(changeAddonNavigationVm)
+        }
+        .detent(
+            item: $changeAddonNavigationVm.document,
+            style: [.large]
+        ) { document in
+            PDFPreview(document: document)
         }
     }
 }
