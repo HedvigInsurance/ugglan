@@ -7,33 +7,22 @@ import hCore
 struct MockData {
     @discardableResult
     static func createMockAddonsService(
-        fetchAddon: @escaping FetchAddon = {
+        fetchAddon: @escaping FetchAddon = { contractId in
             return .init(
                 id: "id",
                 title: "title",
-                subTitle: "subTitle",
+                description: "subTitle",
                 tag: "tag",
-                informationText: "information text",
+                activationDate: Date(),
                 options: []
             )
         },
-        fetchContract: @escaping FetchContract = { contractId in
-            .init(
-                contractId: contractId,
-                contractName: "contract name",
-                displayItems: [],
-                documents: [],
-                insurableLimits: [],
-                typeOfContract: nil,
-                activationDate: Date(),
-                currentPremium: .init(amount: "220", currency: "SEK")
-            )
-        },
-        addonSubmit: @escaping AddonSubmit = {}
+        addonSubmit: @escaping AddonSubmit = { quoteId, addonId in
+
+        }
     ) -> MockAddonsService {
         let service = MockAddonsService(
             fetchAddon: fetchAddon,
-            fetchContract: fetchContract,
             addonSubmit: addonSubmit
         )
         Dependencies.shared.add(module: Module { () -> AddonsClient in service })
@@ -41,47 +30,36 @@ struct MockData {
     }
 }
 
-typealias FetchAddon = () async throws -> AddonModel
-typealias FetchContract = (String) async throws -> AddonContract
-typealias AddonSubmit = () async throws -> Void
+typealias FetchAddon = (String) async throws -> AddonOffer
+typealias AddonSubmit = (String, String) async throws -> Void
 
 class MockAddonsService: AddonsClient {
     var events = [Event]()
 
     var fetchAddon: FetchAddon
-    var fetchContract: FetchContract
     var addonSubmit: AddonSubmit
 
     enum Event {
         case getAddon
-        case getContract
         case submitAddon
     }
 
     init(
         fetchAddon: @escaping FetchAddon,
-        fetchContract: @escaping FetchContract,
         addonSubmit: @escaping AddonSubmit
     ) {
         self.fetchAddon = fetchAddon
-        self.fetchContract = fetchContract
         self.addonSubmit = addonSubmit
     }
 
-    func getAddon() async throws -> AddonModel {
+    func getAddon(contractId: String) async throws -> AddonOffer {
         events.append(.getAddon)
-        let data = try await fetchAddon()
+        let data = try await fetchAddon(contractId)
         return data
     }
 
-    func getContract(contractId: String) async throws -> AddonContract {
-        events.append(.getContract)
-        let data = try await fetchContract(contractId)
-        return data
-    }
-
-    func submitAddon() async throws {
+    func submitAddon(quoteId: String, addonId: String) async throws {
         events.append(.submitAddon)
-        try await addonSubmit()
+        try await addonSubmit(quoteId, addonId)
     }
 }

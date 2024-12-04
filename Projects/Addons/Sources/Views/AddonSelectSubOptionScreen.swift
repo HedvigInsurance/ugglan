@@ -4,34 +4,35 @@ import hCoreUI
 
 struct AddonSelectSubOptionScreen: View {
     @ObservedObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
-    let addonOption: AddonOptionModel
+    let addonOffer: AddonOffer
 
     init(
-        addonOption: AddonOptionModel,
+        addonOffer: AddonOffer,
         changeAddonNavigationVm: ChangeAddonNavigationViewModel
     ) {
-        self.addonOption = addonOption
+        self.addonOffer = addonOffer
         self.changeAddonNavigationVm = changeAddonNavigationVm
 
-        if changeAddonNavigationVm.changeAddonVm.selectedSubOption == nil {
-            changeAddonNavigationVm.changeAddonVm.selectedSubOption = addonOption.subOptions.first
+        if changeAddonNavigationVm.changeAddonVm.selectedQuote == nil {
+            changeAddonNavigationVm.changeAddonVm.selectedQuote = addonOffer.quotes.first
+
         }
     }
 
     var body: some View {
         hForm {
             VStack(spacing: .padding4) {
-                ForEach(addonOption.subOptions, id: \.id) { subOption in
+                ForEach(addonOffer.quotes, id: \.id) { quote in
                     hSection {
                         hRadioField(
-                            id: subOption,
+                            id: quote,
                             itemModel: nil,
                             leftView: {
                                 HStack {
-                                    hText(subOption.title ?? "")
+                                    hText(quote.displayName ?? "")
                                     Spacer()
                                     hPill(
-                                        text: L10n.addonFlowPriceLabel(subOption.price.amount),
+                                        text: L10n.addonFlowPriceLabel(quote.price?.amount ?? ""),
                                         color: .grey(translucent: true),
                                         colorLevel: .one
                                     )
@@ -39,7 +40,7 @@ struct AddonSelectSubOptionScreen: View {
                                 }
                                 .asAnyView
                             },
-                            selected: $changeAddonNavigationVm.changeAddonVm.selectedSubOption,
+                            selected: $changeAddonNavigationVm.changeAddonVm.selectedQuote,
                             error: .constant(nil),
                             useAnimation: true
                         )
@@ -97,17 +98,65 @@ extension AddonSelectSubOptionScreen: TitleView {
 
 #Preview {
     AddonSelectSubOptionScreen(
-        addonOption: .init(
-            id: "Resesydd",
-            title: "Reseskydd",
-            description: "subtitle",
-            price: nil,
-            subOptions: [
+        addonOffer: .init(
+            titleDisplayName: "Travel Plus",
+            description: "Extended travel insurance with extra coverage for your travels",
+            activationDate: "2025-01-15".localDateToDate,
+            quotes: [
                 .init(
-                    id: "subOption",
-                    title: "subOption",
-                    price: .init(amount: "79", currency: "SEK")
-                )
+                    id: "45",
+                    displayName: "45 days",
+                    quoteId: "quoteId45",
+                    addonId: "addonId45",
+                    price: .init(amount: "49", currency: "SEK"),
+                    productVariant: .init(
+                        termsVersion: "",
+                        typeOfContract: "",
+                        partner: nil,
+                        perils: [],
+                        insurableLimits: [
+                            .init(label: "limit1", limit: "limit1", description: "description"),
+                            .init(label: "limit2", limit: "limit2", description: "description"),
+                            .init(label: "limit3", limit: "limit3", description: "description"),
+                            .init(label: "limit4", limit: "limit4", description: "description"),
+                        ],
+                        documents: [
+                            .init(displayName: "dodument1", url: "", type: .generalTerms),
+                            .init(displayName: "dodument2", url: "", type: .termsAndConditions),
+                            .init(displayName: "dodument3", url: "", type: .preSaleInfo),
+                        ],
+                        displayName: "display name",
+                        displayNameTier: nil,
+                        tierDescription: nil
+                    )
+                ),
+                .init(
+                    id: "60",
+                    displayName: "60 days",
+                    quoteId: "quoteId60",
+                    addonId: "addonId60",
+                    price: .init(amount: "79", currency: "SEK"),
+                    productVariant: .init(
+                        termsVersion: "",
+                        typeOfContract: "",
+                        partner: nil,
+                        perils: [],
+                        insurableLimits: [
+                            .init(label: "limit1", limit: "limit1", description: "description"),
+                            .init(label: "limit2", limit: "limit2", description: "description"),
+                            .init(label: "limit3", limit: "limit3", description: "description"),
+                            .init(label: "limit4", limit: "limit4", description: "description"),
+                        ],
+                        documents: [
+                            .init(displayName: "dodument1", url: "", type: .generalTerms),
+                            .init(displayName: "dodument2", url: "", type: .termsAndConditions),
+                            .init(displayName: "dodument3", url: "", type: .preSaleInfo),
+                        ],
+                        displayName: "display name",
+                        displayNameTier: nil,
+                        tierDescription: nil
+                    )
+                ),
             ]
         ),
         changeAddonNavigationVm: .init(

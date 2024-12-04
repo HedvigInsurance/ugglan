@@ -7,20 +7,17 @@ public class ChangeAddonViewModel: ObservableObject {
     var addonService = AddonsService()
     @Published var fetchAddonsViewState: ProcessingState = .loading
     @Published var submittingAddonsViewState: ProcessingState = .loading
-    @Published var selectedSubOption: AddonSubOptionModel?
-    @Published var addonOptions: [AddonOptionModel]?
-    @Published var contractInformation: AddonContract?
+    @Published var selectedQuote: AddonQuote?
+    @Published var addonOffer: AddonOffer?
     @Published var activationDate: Date?
-    @Published var addonId: String?
-    @Published var quoteId: String?
+    @Published var contractId: String?
 
     init(contractId: String) {
         Task {
             await getAddons()
-            await getContractInformation(contractId: contractId)
 
-            self._selectedSubOption = Published(
-                initialValue: addonOptions?.first?.subOptions.first
+            self._selectedQuote = Published(
+                initialValue: addonOffer?.quotes.first
             )
         }
     }
@@ -31,12 +28,10 @@ public class ChangeAddonViewModel: ObservableObject {
         }
 
         do {
-            let data = try await addonService.getAddon(contractId: contractInformation?.contractId ?? "")
+            let data = try await addonService.getAddon(contractId: contractId ?? "")
 
             withAnimation {
-                self.addonOptions = data.options
-                self.activationDate = data.activationDate
-                self.addonId = data.id
+                self.addonOffer = data
                 self.fetchAddonsViewState = .success
             }
         } catch let exception {
@@ -49,29 +44,16 @@ public class ChangeAddonViewModel: ObservableObject {
             self.submittingAddonsViewState = .loading
         }
         do {
-            try await addonService.submitAddon(quoteId: quoteId ?? "", addonId: addonId ?? "")
+            let data = try await addonService.submitAddon(
+                quoteId: selectedQuote?.quoteId ?? "",
+                addonId: selectedQuote?.addonId ?? ""
+            )
             withAnimation {
+                self.activationDate = data
                 self.submittingAddonsViewState = .success
             }
         } catch let exception {
             self.submittingAddonsViewState = .error(errorMessage: exception.localizedDescription)
-        }
-    }
-
-    func getContractInformation(contractId: String) async {
-        withAnimation {
-            self.fetchAddonsViewState = .loading
-        }
-
-        do {
-            let data = try await addonService.getContract(contractId: contractId)
-
-            withAnimation {
-                self.contractInformation = data
-                self.fetchAddonsViewState = .success
-            }
-        } catch let exception {
-            self.fetchAddonsViewState = .error(errorMessage: exception.localizedDescription)
         }
     }
 }

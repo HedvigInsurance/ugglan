@@ -23,34 +23,33 @@ extension ChangeAddonViewModel {
     func asQuoteSummaryViewModel(changeAddonNavigationVm: ChangeAddonNavigationViewModel) -> QuoteSummaryViewModel {
 
         let newPremium =
-            changeAddonNavigationVm.changeAddonVm.selectedSubOption?.price
+            changeAddonNavigationVm.changeAddonVm.selectedQuote?.price
 
         let vm = QuoteSummaryViewModel(
             contract: [
                 .init(
-                    id: self.contractInformation?.contractId ?? "",
-                    displayName: changeAddonNavigationVm.changeAddonVm.contractInformation?.contractName ?? "",
-                    exposureName: changeAddonNavigationVm.changeAddonVm.contractInformation?.activationDate
-                        .localDateString ?? "",
+                    id: self.contractId ?? "",
+                    displayName: self.selectedQuote?.productVariant.displayName ?? "",
+                    exposureName: self.activationDate?.localDateString ?? "",
                     newPremium: newPremium,
                     currentPremium: nil,
-                    documents: self.contractInformation?.documents ?? [],
+                    documents: self.selectedQuote?.productVariant.documents ?? [],
                     onDocumentTap: { document in
 
                     },
-                    displayItems: self.contractInformation?.displayItems ?? [],
-                    insuranceLimits: self.contractInformation?.insurableLimits ?? [],
+                    displayItems: [], /* TODO: ADD */
+                    insuranceLimits: self.selectedQuote?.productVariant.insurableLimits ?? [],
                     typeOfContract: nil
                 )
             ],
             total: .init(
-                amount: changeAddonNavigationVm.changeAddonVm.selectedSubOption?.price.formattedAmount ?? "",
+                amount: self.selectedQuote?.price?.formattedAmount ?? "",
                 currency: "SEK"
             ),
             isAddon: true
         ) {
             Task {
-                await changeAddonNavigationVm.changeAddonVm.submitAddons()
+                await self.submitAddons()
             }
             changeAddonNavigationVm.router.push(ChangeAddonRouterActionsWithoutBackButton.commitAddon)
         }

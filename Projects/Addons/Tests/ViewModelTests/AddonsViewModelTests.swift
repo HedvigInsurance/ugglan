@@ -23,7 +23,7 @@ final class AddonsViewModelTests: XCTestCase {
             price: .init(amount: "79", currency: "SEK")
         )
 
-        let addonModel: AddonModel = .init(
+        let addonModel: AddonOffer = .init(
             id: "addonId",
             title: "title",
             subTitle: "subTitle",

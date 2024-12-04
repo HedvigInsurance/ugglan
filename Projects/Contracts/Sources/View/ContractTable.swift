@@ -57,12 +57,11 @@ struct ContractTable: View {
                                     contractsNavigationVm.isAddonPresented = .init(contractId: nil)
                                 },
                                 addon: .init(
-                                    id: "id",
-                                    title: "Travel Plus",
-                                    description: "Extended travel insurance with extra coverage for your travels",
-                                    tag: "Popular",
-                                    activationDate: Date(),
-                                    options: []
+                                    contractIds: ["contractId"],
+                                    titleDisplayName: "Travel Plus",
+                                    descriptionDisplayName:
+                                        "Extended travel insurance with extra coverage for your travels",
+                                    isPopular: true
                                 )
                             )
                         }
