@@ -14,10 +14,12 @@ class FetchClaimDetailsService {
     }
 
     func get() async throws -> ClaimModel {
-        try await client.get(for: type)
+        log.info("\(FetchClaimDetailsService.self): get for \(type)", error: nil, attributes: nil)
+        return try await client.get(for: type)
     }
     func getFiles() async throws -> (claimId: String, files: [File]) {
-        try await client.getFiles(for: type)
+        log.info("\(FetchClaimDetailsService.self): getFiles for \(type)", error: nil, attributes: nil)
+        return try await client.getFiles(for: type)
     }
 }
 
