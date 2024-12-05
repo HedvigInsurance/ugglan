@@ -51,7 +51,7 @@ public class AddonsClientOctopus: AddonsClient {
                             .init(displayName: "dodument2", url: "", type: .termsAndConditions),
                             .init(displayName: "dodument3", url: "", type: .preSaleInfo),
                         ],
-                        displayName: "display name",
+                        displayName: "Travel Plus",
                         displayNameTier: nil,
                         tierDescription: nil
                     )

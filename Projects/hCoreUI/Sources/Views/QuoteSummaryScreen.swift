@@ -160,14 +160,13 @@ public struct QuoteSummaryScreen: View {
                         )
 
                         let index = selectedContracts.firstIndex(of: contract.id)
-                        let isExpanded = index != nil
+                        let isExpanded = vm.isAddon ? true : (index != nil)
                         VStack(spacing: 0) {
                             detailsView(for: contract, isExpanded: isExpanded)
                                 .frame(height: isExpanded ? nil : 0, alignment: .top)
                                 .clipped()
 
-                            if contract.shouldShowDetails {
-
+                            if contract.shouldShowDetails && !vm.isAddon {
                                 hButton.MediumButton(
                                     type: .secondary
                                 ) {
@@ -205,7 +204,7 @@ public struct QuoteSummaryScreen: View {
                     vm.isAddon
                     ? L10n.addonFlowSummaryInfoText
                     : L10n.changeAddressOtherInsurancesInfoText,
-                type: vm.isAddon ? .neutral : .info
+                type: .info
             )
         }
         .sectionContainerStyle(.transparent)
@@ -251,7 +250,7 @@ public struct QuoteSummaryScreen: View {
                 }
             }
         }
-        .padding(.bottom, isExpanded ? .padding16 : 0)
+        .padding(.bottom, (isExpanded && !vm.isAddon) ? .padding16 : 0)
     }
 
     func rowItem(for displayItem: QuoteDisplayItem) -> some View {

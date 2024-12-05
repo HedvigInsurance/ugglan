@@ -29,6 +29,8 @@ public struct ChangeAddonInput: Identifiable, Equatable {
 class ChangeAddonNavigationViewModel: ObservableObject {
     @Published var isLearnMorePresented: InfoViewDataModel?
     @Published var isChangeCoverageDaysPresented: AddonOffer?
+    @Published var isConfirmAddonPresented = false
+    @Published var isAddonProcessingPresented = false
     @Published var changeAddonVm: ChangeAddonViewModel
     @Published var document: hPDFDocument?
 
@@ -43,10 +45,6 @@ class ChangeAddonNavigationViewModel: ObservableObject {
 
 enum ChangeAddonRouterActions {
     case summary
-}
-
-enum ChangeAddonRouterActionsWithoutBackButton {
-    case commitAddon
 }
 
 public struct ChangeAddonNavigation: View {
@@ -76,15 +74,14 @@ public struct ChangeAddonNavigation: View {
                         .withAlertDismiss()
                     }
                 }
-                .routerDestination(for: ChangeAddonRouterActionsWithoutBackButton.self, options: [.hidesBackButton]) {
-                    action in
-                    switch action {
-                    case .commitAddon:
-                        AddonProcessingScreen(vm: changeAddonNavigationVm.changeAddonVm)
-                    }
-                }
         }
         .environmentObject(changeAddonNavigationVm)
+        .modally(
+            presented: $changeAddonNavigationVm.isAddonProcessingPresented
+        ) {
+            AddonProcessingScreen(vm: changeAddonNavigationVm.changeAddonVm)
+                .environmentObject(changeAddonNavigationVm)
+        }
         .detent(
             item: $changeAddonNavigationVm.isLearnMorePresented,
             style: [.height],
@@ -108,6 +105,18 @@ public struct ChangeAddonNavigation: View {
                 .environmentObject(changeAddonNavigationVm)
         }
         .detent(
+            presented: $changeAddonNavigationVm.isConfirmAddonPresented,
+            style: [.height],
+            options: .constant(.alwaysOpenOnTop),
+            content: {
+                ConfirmChangeAddonScreen()
+                    .embededInNavigation(
+                        tracking: ChangeAddonTrackingType.confirmAddonScreen
+                    )
+                    .environmentObject(changeAddonNavigationVm)
+            }
+        )
+        .detent(
             item: $changeAddonNavigationVm.document,
             style: [.large]
         ) { document in
@@ -125,15 +134,6 @@ extension ChangeAddonRouterActions: TrackingViewNameProtocol {
     }
 }
 
-extension ChangeAddonRouterActionsWithoutBackButton: TrackingViewNameProtocol {
-    var nameForTracking: String {
-        switch self {
-        case .commitAddon:
-            return .init(describing: AddonProcessingScreen.self)
-        }
-    }
-}
-
 private enum ChangeAddonTrackingType: TrackingViewNameProtocol {
     var nameForTracking: String {
         switch self {
@@ -141,9 +141,12 @@ private enum ChangeAddonTrackingType: TrackingViewNameProtocol {
             return .init(describing: ChangeAddonScreen.self)
         case .selectSubOptionScreen:
             return .init(describing: AddonSelectSubOptionScreen.self)
+        case .confirmAddonScreen:
+            return .init(describing: ConfirmChangeAddonScreen.self)
         }
     }
 
     case changeAddonScreen
     case selectSubOptionScreen
+    case confirmAddonScreen
 }

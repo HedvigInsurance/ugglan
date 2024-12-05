@@ -47,7 +47,7 @@ extension ChangeAddonViewModel {
             Task {
                 await self.submitAddons()
             }
-            changeAddonNavigationVm.router.push(ChangeAddonRouterActionsWithoutBackButton.commitAddon)
+            changeAddonNavigationVm.isConfirmAddonPresented = true
         }
 
         return vm
