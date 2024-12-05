@@ -36,7 +36,7 @@ extension ChangeAddonViewModel {
                     onDocumentTap: { document in
                         changeAddonNavigationVm.document = document
                     },
-                    displayItems: [], /* TODO: ADD */
+                    displayItems: [],
                     insuranceLimits: self.selectedQuote?.productVariant.insurableLimits ?? [],
                     typeOfContract: nil
                 )
