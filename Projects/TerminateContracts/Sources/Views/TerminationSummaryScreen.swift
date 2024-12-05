@@ -24,6 +24,8 @@ struct TerminationSummaryScreen: View {
                 )
             )
             .hFormAttachToBottom {
+                let withAddonView = Dependencies.featureFlags().isAddonsEnabled
+
                 VStack(spacing: .padding16) {
                     hSection {
                         StatusCard(
@@ -31,11 +33,14 @@ struct TerminationSummaryScreen: View {
                             mainContent: mainContent,
                             title: nil,
                             subTitle: nil,
-                            bottomComponent: {
-                                bottomContent
-                            }
+                            bottomComponent: !withAddonView
+                                ? nil
+                                : {
+                                    bottomContent
+                                }
                         )
                         .hCardWithoutSpacing
+                        .hCardWithDivider
                     }
 
                     hSection {
@@ -76,33 +81,30 @@ struct TerminationSummaryScreen: View {
     }
 
     @ViewBuilder
-    private var bottomContent: some View {
-        if Dependencies.featureFlags().isAddonsEnabled {
-            VStack(alignment: .leading, spacing: 0) {
-                hText(L10n.terminationAddonCoverageTitle)
-                Group {
-                    HStack {
-                        hText("Travel Plus")
-                        Spacer()
-                        hText("45 days")
-                    }
-                    HStack {
-                        hText("Bicycle Plus")
-                        Spacer()
-                        hText("Pinarello Dogma FG1...")
-                    }
+    private var bottomContent: (some View)? {
+        VStack(alignment: .leading, spacing: 0) {
+            hText(L10n.terminationAddonCoverageTitle)
+            Group {
+                HStack {
+                    hText("Travel Plus")
+                    Spacer()
+                    hText("45 days")
                 }
-                .foregroundColor(hTextColor.Opaque.secondary)
+                HStack {
+                    hText("Bicycle Plus")
+                    Spacer()
+                    hText("Pinarello Dogma FG1...")
+                }
             }
-            .padding(.top, .padding16)
-        } else {
-            EmptyView()
+            .foregroundColor(hTextColor.Opaque.secondary)
         }
+        //        .padding(.bottom, .padding16)
     }
 }
 
 #Preview {
-    TerminationSummaryScreen()
+    Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlagsDemo() })
+    return TerminationSummaryScreen()
         .environmentObject(
             TerminationFlowNavigationViewModel(
                 configs: [

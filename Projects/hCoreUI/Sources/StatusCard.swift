@@ -8,15 +8,16 @@ where MainContent: View, BottomContent: View {
     let mainContent: MainContent?
     let title: String?
     let subTitle: String?
-    let bottomComponent: () -> BottomContent
+    let bottomComponent: (() -> BottomContent)?
     @Environment(\.hCardWithoutSpacing) var cardWithoutSpacing
+    @Environment(\.hCardWithDivider) var withDivider
 
     public init(
         onSelected: (() -> Void)? = nil,
         mainContent: MainContent? = nil,
         title: String? = nil,
         subTitle: String? = nil,
-        bottomComponent: @escaping () -> BottomContent
+        bottomComponent: (() -> BottomContent)?
     ) {
         self.onSelected = onSelected
         self.mainContent = mainContent
@@ -45,12 +46,21 @@ where MainContent: View, BottomContent: View {
 
             }
             .padding(.horizontal, .padding16)
-            Spacer().frame(height: cardWithoutSpacing ? 0 : 16)
-            bottomComponent()
-                .padding(.horizontal, .padding16)
+
+            if withDivider && bottomComponent != nil {
+                hRowDivider()
+                    .foregroundColor(hSurfaceColor.Translucent.primary)
+                Spacer().frame(height: .padding16)
+            }
+
+            Spacer().frame(height: cardWithoutSpacing ? 0 : .padding16)
+            if let bottomComponent {
+                bottomComponent()
+                    .padding(.horizontal, .padding16)
+            }
         }
         .padding(.top, .padding16)
-        .padding(.bottom, cardWithoutSpacing ? 0 : .padding16)
+        .padding(.bottom, bottomComponent == nil ? 0 : .padding16)
         .background(
             RoundedRectangle(cornerRadius: .cornerRadiusXL)
                 .fill(hSurfaceColor.Opaque.primary)
@@ -119,5 +129,22 @@ extension EnvironmentValues {
 extension View {
     public var hCardWithoutSpacing: some View {
         self.environment(\.hCardWithoutSpacing, true)
+    }
+}
+
+private struct EnvironmentHCardWithDivider: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    public var hCardWithDivider: Bool {
+        get { self[EnvironmentHCardWithDivider.self] }
+        set { self[EnvironmentHCardWithDivider.self] = newValue }
+    }
+}
+
+extension View {
+    public var hCardWithDivider: some View {
+        self.environment(\.hCardWithDivider, true)
     }
 }
