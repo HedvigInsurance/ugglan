@@ -6,15 +6,18 @@ import hGraphQL
 
 public struct ChangeAddonInput: Identifiable, Equatable {
     public var id: String {
-        contractId ?? ""
+        contractId ?? addonId ?? ""
     }
 
     let contractId: String?
+    let addonId: String?
 
     public init(
-        contractId: String?
+        contractId: String? = nil,
+        addonId: String? = nil
     ) {
         self.contractId = contractId
+        self.addonId = addonId
     }
 
     public static func == (lhs: ChangeAddonInput, rhs: ChangeAddonInput) -> Bool {
