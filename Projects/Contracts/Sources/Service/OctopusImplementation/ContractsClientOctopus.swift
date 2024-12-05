@@ -1,3 +1,4 @@
+import Addons
 import Foundation
 import hCore
 import hGraphQL
@@ -51,5 +52,15 @@ public class FetchContractsClientOctopus: FetchContractsClient {
         return crossSells.currentMember.fragments.crossSellFragment.crossSells.compactMap({
             CrossSell($0)
         })
+    }
+
+    public func getAddonBannerModel() async throws -> AddonBannerModel? {
+        return .init(
+            contractIds: ["contractId"],
+            titleDisplayName: "Travel Plus",
+            descriptionDisplayName:
+                "Extended travel insurance with extra coverage for your travels",
+            isPopular: true
+        )
     }
 }
