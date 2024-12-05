@@ -33,7 +33,8 @@ public class ChangeTierViewModel: ObservableObject {
         let isTierValid = selectedTier != nil
         let hasSelectedValues = isTierValid && isDeductibleValid
 
-        return hasSelectedValues && !(selectedTierIsSameAsCurrent && selectedDeductibleIsSameAsCurrent)
+        let isValid = hasSelectedValues && !(selectedTierIsSameAsCurrent && selectedDeductibleIsSameAsCurrent)
+        return isValid
     }
 
     var showDeductibleField: Bool {
@@ -118,11 +119,10 @@ public class ChangeTierViewModel: ObservableObject {
                     self.canEditTier = data.canEditTier
                 }
 
+                self.selectedQuote = data.selectedQuote ?? currentQuote
                 if selectedTier?.quotes.count == 1 {
-                    self.selectedQuote = selectedTier?.quotes.first
                     self.canEditDeductible = false
                 } else {
-                    self.selectedQuote = data.selectedQuote ?? currentQuote
                     self.canEditDeductible = true
                 }
 
