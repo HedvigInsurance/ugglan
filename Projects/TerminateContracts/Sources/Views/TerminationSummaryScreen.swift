@@ -24,7 +24,9 @@ struct TerminationSummaryScreen: View {
                 )
             )
             .hFormAttachToBottom {
-                let withAddonView = Dependencies.featureFlags().isAddonsEnabled
+                let withAddonView =
+                    Dependencies.featureFlags().isAddonsEnabled
+                    && terminationNavigationVm.config?.addonDisplayItems != nil
 
                 VStack(spacing: .padding16) {
                     hSection {
@@ -36,7 +38,7 @@ struct TerminationSummaryScreen: View {
                             bottomComponent: !withAddonView
                                 ? nil
                                 : {
-                                    bottomContent
+                                    addonContent
                                 }
                         )
                         .hCardWithoutSpacing
@@ -81,23 +83,22 @@ struct TerminationSummaryScreen: View {
     }
 
     @ViewBuilder
-    private var bottomContent: (some View)? {
+    private var addonContent: (some View)? {
         VStack(alignment: .leading, spacing: 0) {
             hText(L10n.terminationAddonCoverageTitle)
-            Group {
-                HStack {
-                    hText("Travel Plus")
-                    Spacer()
-                    hText("45 days")
-                }
-                HStack {
-                    hText("Bicycle Plus")
-                    Spacer()
-                    hText("Pinarello Dogma FG1...")
-                }
+            ForEach(terminationNavigationVm.config?.addonDisplayItems ?? [], id: \.self) { item in
+                getRow(for: item)
             }
-            .foregroundColor(hTextColor.Opaque.secondary)
         }
+    }
+
+    private func getRow(for item: AddonDisplayItem) -> some View {
+        HStack {
+            hText(item.title)
+            Spacer()
+            hText(item.value)
+        }
+        .foregroundColor(hTextColor.Opaque.secondary)
     }
 }
 
@@ -113,6 +114,29 @@ struct TerminationSummaryScreen: View {
                         contractExposureName: "Bellmansgsatan 19A",
                         activeFrom: "2024-12-15",
                         typeOfContract: .seApartmentBrf
+                    )
+                ],
+                terminateInsuranceViewModel: .init()
+            )
+        )
+}
+
+#Preview("PreviewWithAddon") {
+    Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlagsDemo() })
+    return TerminationSummaryScreen()
+        .environmentObject(
+            TerminationFlowNavigationViewModel(
+                configs: [
+                    .init(
+                        contractId: "",
+                        contractDisplayName: "Homeowner",
+                        contractExposureName: "Bellmansgsatan 19A",
+                        activeFrom: "2024-12-15",
+                        typeOfContract: .seApartmentBrf,
+                        addonDisplayItems: [
+                            .init(title: "Travel Plus", value: "45 days"),
+                            .init(title: "Bicycle Plus", value: "Pinarello Dogma FG1..."),
+                        ]
                     )
                 ],
                 terminateInsuranceViewModel: .init()
