@@ -109,7 +109,6 @@ public struct Quote: Codable, Hashable, Identifiable, Sendable {
     let deductablePercentage: Int?
     let subTitle: String?
     let premium: MonetaryAmount
-
     let displayItems: [DisplayItem]
     public let productVariant: ProductVariant?
 
