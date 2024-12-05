@@ -1,3 +1,4 @@
+import Addons
 import Foundation
 
 public struct TravelInsuranceClientDemo: TravelInsuranceClient {
@@ -10,7 +11,10 @@ public struct TravelInsuranceClientDemo: TravelInsuranceClient {
     public func submitForm(dto: TravelInsuranceFormDTO) async throws -> URL {
         throw TravelInsuranceError.missingURL
     }
-    public func getList() async throws -> (list: [TravelCertificateModel], canAddTravelInsurance: Bool) {
+
+    public func getList() async throws -> (
+        list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBannerModel?
+    ) {
         throw TravelInsuranceError.missingURL
     }
 }

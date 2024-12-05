@@ -1,11 +1,12 @@
 import Foundation
+import Addons
 import hCore
 
 @MainActor
 public protocol TravelInsuranceClient {
     func getSpecifications() async throws -> [TravelInsuranceContractSpecification]
     func submitForm(dto: TravelInsuranceFormDTO) async throws -> URL
-    func getList() async throws -> (list: [TravelCertificateModel], canAddTravelInsurance: Bool)
+    func getList() async throws -> (list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBannerModel?)
 }
 
 public struct TravelInsuranceFormDTO: Encodable {

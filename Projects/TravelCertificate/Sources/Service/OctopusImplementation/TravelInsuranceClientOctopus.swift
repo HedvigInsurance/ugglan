@@ -1,3 +1,4 @@
+import Addons
 import Foundation
 import hCore
 import hGraphQL
@@ -16,7 +17,9 @@ public class TravelInsuranceService {
         return try await service.submitForm(dto: dto)
     }
 
-    public func getList() async throws -> (list: [TravelCertificateModel], canAddTravelInsurance: Bool) {
+    public func getList() async throws -> (
+        list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBannerModel?
+    ) {
         log.info("TravelInsuranceService: getList", error: nil, attributes: nil)
         return try await service.getList()
     }
@@ -65,7 +68,9 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
         }
     }
 
-    public func getList() async throws -> (list: [TravelCertificateModel], canAddTravelInsurance: Bool) {
+    public func getList() async throws -> (
+        list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBannerModel?
+    ) {
         let query = OctopusGraphQL.TravelCertificatesQuery()
         do {
             let data = try await self.octopus.client.fetch(
@@ -78,7 +83,16 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
             let canAddTravelInsuranceData = !data.currentMember.activeContracts
                 .filter({ $0.supportsTravelCertificate }).isEmpty
 
-            return (listData, canAddTravelInsuranceData)
+            /* TODO: REPLACE WITH REAL DATA */
+            let addonBannerModelData = AddonBannerModel(
+                contractIds: ["contractId"],
+                titleDisplayName: "Travel Plus",
+                descriptionDisplayName:
+                    "Extended travel insurance with extra coverage for your travels",
+                isPopular: true
+            )
+
+            return (listData, canAddTravelInsuranceData, addonBannerModelData)
         } catch let ex {
             throw ex
         }
