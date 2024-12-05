@@ -83,16 +83,30 @@ public class ChangeTierViewModel: ObservableObject {
             do {
                 let data = try await getData()
                 self.currentTier = data.currentTier
+                self.currentQuote = data.currentQuote
 
                 if let currentTier, !data.tiers.contains(where: { $0.name == currentTier.name }) {
                     self.tiers = [currentTier] + data.tiers
                 } else {
-                    self.tiers = data.tiers
+
+                    if let currentQuote {
+                        var currentTierInList: Tier? = data.tiers.first(where: { $0 == currentTier })
+                        let tiersWithoutCurrentTier: [Tier] = data.tiers.filter({ $0 != currentTier })
+
+                        let currentTierQuotes: [Quote] = [currentQuote] + (currentTierInList?.quotes ?? [])
+                        currentTierInList?.quotes = currentTierQuotes
+                        self.currentTier = currentTierInList
+
+                        if let currentTierInList {
+                            self.tiers = [currentTierInList] + tiersWithoutCurrentTier
+                        }
+                    } else {
+                        self.tiers = data.tiers
+                    }
                 }
                 self.displayName = data.displayName
                 self.exposureName = data.tiers.first?.exposureName
                 self.currentPremium = data.currentPremium
-                self.currentQuote = data.currentQuote
                 self.activationDate = data.activationDate
                 self.typeOfContract = data.typeOfContract
 

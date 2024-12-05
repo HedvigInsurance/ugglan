@@ -71,7 +71,7 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable, Sendable {
     public var id: String
     let name: String
     let level: Int
-    public let quotes: [Quote]
+    public var quotes: [Quote]
     let exposureName: String?
 
     public init(
