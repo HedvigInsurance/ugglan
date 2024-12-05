@@ -9,16 +9,14 @@ struct MockData {
     static func createMockAddonsService(
         fetchAddon: @escaping FetchAddon = { contractId in
             return .init(
-                id: "id",
-                title: "title",
-                description: "subTitle",
-                tag: "tag",
+                titleDisplayName: "title",
+                description: "description",
                 activationDate: Date(),
-                options: []
+                quotes: []
             )
         },
         addonSubmit: @escaping AddonSubmit = { quoteId, addonId in
-
+            return .init()
         }
     ) -> MockAddonsService {
         let service = MockAddonsService(
@@ -31,7 +29,7 @@ struct MockData {
 }
 
 typealias FetchAddon = (String) async throws -> AddonOffer
-typealias AddonSubmit = (String, String) async throws -> Void
+typealias AddonSubmit = (String, String) async throws -> Date?
 
 class MockAddonsService: AddonsClient {
     var events = [Event]()
@@ -58,8 +56,9 @@ class MockAddonsService: AddonsClient {
         return data
     }
 
-    func submitAddon(quoteId: String, addonId: String) async throws {
+    func submitAddon(quoteId: String, addonId: String) async throws -> Date? {
         events.append(.submitAddon)
-        try await addonSubmit(quoteId, addonId)
+        let data = try await addonSubmit(quoteId, addonId)
+        return data
     }
 }
