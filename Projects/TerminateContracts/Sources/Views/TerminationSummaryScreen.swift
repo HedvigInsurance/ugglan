@@ -20,7 +20,7 @@ struct TerminationSummaryScreen: View {
                 subTitle: .init(
                     .small,
                     .heading2,
-                    "Review and confirm"
+                    L10n.terminationFlowSummarySubtitle
                 )
             )
             .hFormAttachToBottom {
@@ -49,7 +49,7 @@ struct TerminationSummaryScreen: View {
                             hButton.LargeButton(type: .ghost) { [weak terminationNavigationVm] in
                                 terminationNavigationVm?.router.dismiss()
                             } content: {
-                                hText("Keep insurance")
+                                hText(L10n.terminationKeepInsuranceButton)
                             }
                         }
                     }
@@ -68,8 +68,8 @@ struct TerminationSummaryScreen: View {
             .resizable()
             .frame(width: 48, height: 48)
             VStack(alignment: .leading, spacing: 0) {
-                hText(terminationNavigationVm.config?.contractDisplayName ?? "Homeowner")
-                hText(terminationNavigationVm.config?.contractExposureName ?? "Bellmansgsatan 19A")
+                hText(terminationNavigationVm.config?.contractDisplayName ?? "")
+                hText(terminationNavigationVm.config?.contractExposureName ?? "")
                     .foregroundColor(hTextColor.Opaque.secondary)
             }
         }
@@ -79,7 +79,7 @@ struct TerminationSummaryScreen: View {
     private var bottomContent: some View {
         if Dependencies.featureFlags().isAddonsEnabled {
             VStack(alignment: .leading, spacing: 0) {
-                hText("Extra coverage")
+                hText(L10n.terminationAddonCoverageTitle)
                 Group {
                     HStack {
                         hText("Travel Plus")
@@ -108,8 +108,8 @@ struct TerminationSummaryScreen: View {
                 configs: [
                     .init(
                         contractId: "",
-                        contractDisplayName: "display name",
-                        contractExposureName: "exposure name",
+                        contractDisplayName: "Homeowner",
+                        contractExposureName: "Bellmansgsatan 19A",
                         activeFrom: "2024-12-15",
                         typeOfContract: .seApartmentBrf
                     )

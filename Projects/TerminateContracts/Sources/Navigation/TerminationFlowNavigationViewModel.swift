@@ -333,8 +333,7 @@ struct TerminationFlowNavigation: View {
                         case .selectInsurance:
                             openSelectInsuranceScreen()
                         case .summary:
-                            TerminationSummaryScreen()
-                                .withDismissButton()
+                            openTerminationSummaryScreen()
                         }
                     }
                     .resetProgressOnDismiss(to: vm.previousProgress, for: $vm.progress)
@@ -400,8 +399,7 @@ struct TerminationFlowNavigation: View {
             case .selectInsurance:
                 openSelectInsuranceScreen()
             case .summary:
-                TerminationSummaryScreen()
-                    .withDismissButton()
+                openTerminationSummaryScreen()
             }
         case let .final(action):
             switch action {
@@ -523,6 +521,11 @@ struct TerminationFlowNavigation: View {
 
     private func openConfirmTerminationScreen() -> some View {
         ConfirmTerminationScreen()
+            .withDismissButton()
+    }
+
+    private func openTerminationSummaryScreen() -> some View {
+        TerminationSummaryScreen()
             .withDismissButton()
     }
 
