@@ -77,9 +77,13 @@ public struct ChangeAddonNavigation: View {
         }
         .environmentObject(changeAddonNavigationVm)
         .modally(
-            presented: $changeAddonNavigationVm.isAddonProcessingPresented
+            presented: $changeAddonNavigationVm.isAddonProcessingPresented,
+            options: .constant(.alwaysOpenOnTop)
         ) {
             AddonProcessingScreen(vm: changeAddonNavigationVm.changeAddonVm)
+                .embededInNavigation(
+                    tracking: ChangeAddonTrackingType.processing
+                )
                 .environmentObject(changeAddonNavigationVm)
         }
         .detent(
@@ -143,10 +147,13 @@ private enum ChangeAddonTrackingType: TrackingViewNameProtocol {
             return .init(describing: AddonSelectSubOptionScreen.self)
         case .confirmAddonScreen:
             return .init(describing: ConfirmChangeAddonScreen.self)
+        case .processing:
+            return .init(describing: AddonProcessingScreen.self)
         }
     }
 
     case changeAddonScreen
     case selectSubOptionScreen
     case confirmAddonScreen
+    case processing
 }

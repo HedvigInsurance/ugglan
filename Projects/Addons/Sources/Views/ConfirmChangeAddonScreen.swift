@@ -23,7 +23,6 @@ public struct ConfirmChangeAddonScreen: View {
                         }
                         VStack(spacing: .padding8) {
                             hButton.LargeButton(type: .primary) {
-                                //                            addonNavigationVm.router.push(ChangeAddonRouterActionsWithoutBackButton.commitAddon)
                                 addonNavigationVm.isAddonProcessingPresented = true
                                 addonNavigationVm.isConfirmAddonPresented = false
                             } content: {
