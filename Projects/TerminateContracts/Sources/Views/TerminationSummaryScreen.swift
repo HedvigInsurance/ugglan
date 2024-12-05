@@ -98,7 +98,6 @@ struct TerminationSummaryScreen: View {
             }
             .foregroundColor(hTextColor.Opaque.secondary)
         }
-        //        .padding(.bottom, .padding16)
     }
 }
 
