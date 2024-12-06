@@ -21,20 +21,6 @@ struct ChangeAddonSummaryScreen: View {
 
 extension ChangeAddonViewModel {
     func asQuoteSummaryViewModel(changeAddonNavigationVm: ChangeAddonNavigationViewModel) -> QuoteSummaryViewModel {
-
-        let currentPrice = self.addonOffer?.currentAddon?.price
-        let newPrice = self.selectedQuote?.price
-        let diffValue: Float = {
-            if let currentPrice, let newPrice {
-                return newPrice.value - currentPrice.value
-            } else {
-                return 0
-            }
-        }()
-
-        let totalPrice =
-            (currentPrice != nil && diffValue != 0) ? .init(amount: String(diffValue), currency: "SEK") : newPrice
-
         let vm = QuoteSummaryViewModel(
             contract: [
                 .init(
@@ -49,13 +35,18 @@ extension ChangeAddonViewModel {
                     onDocumentTap: { document in
                         changeAddonNavigationVm.document = document
                     },
-                    displayItems: self.selectedQuote?.displayItems
-                        .map({ .init(title: $0.displayTitle, value: $0.displayValue) }) ?? [],
+                    displayItems: self.compareAddonDisplayItems(
+                        currentDisplayItems: self.addonOffer?.currentAddon?.displayItems ?? [],
+                        newDisplayItems: self.selectedQuote?.displayItems ?? []
+                    ),
                     insuranceLimits: [],
                     typeOfContract: nil
                 )
             ],
-            total: totalPrice ?? .init(amount: 0, currency: "SEK"),
+            total: getTotalPrice(
+                currentPrice: self.addonOffer?.currentAddon?.price,
+                newPrice: self.selectedQuote?.price
+            ),
             isAddon: true
         ) {
             Task {

@@ -258,6 +258,17 @@ public struct QuoteSummaryScreen: View {
         HStack(alignment: .top) {
             hText(displayItem.displayTitle)
             Spacer()
+
+            if let oldValue = displayItem.displayValueOld, oldValue != displayItem.displayValue {
+                if #available(iOS 16.0, *) {
+                    hText(oldValue)
+                        .strikethrough()
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                } else {
+                    hText(oldValue)
+                }
+            }
+
             hText(displayItem.displayValue)
                 .multilineTextAlignment(.trailing)
         }
@@ -405,14 +416,17 @@ public struct QuoteDisplayItem: Identifiable, Equatable, Sendable {
     public let id: String?
     let displayTitle: String
     let displayValue: String
+    let displayValueOld: String?
 
     public init(
         title displayTitle: String,
         value displayValue: String,
+        displayValueOld: String? = nil,
         id: String? = nil
     ) {
         self.displayTitle = displayTitle
         self.displayValue = displayValue
+        self.displayValueOld = displayValueOld
         self.id = id
     }
 }
