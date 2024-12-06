@@ -59,14 +59,16 @@ struct SubmitClaimCheckoutTransferringScreen: View {
             actionButton: .init(
                 buttonTitle: L10n.generalRetry,
                 buttonAction: {
-                    Task {
-                        let step = await claimsNavigationVm.submitClaimCheckoutVm.singleItemRequest(
-                            context: claimsNavigationVm.currentClaimContext ?? "",
-                            model: claimsNavigationVm.singleItemCheckoutModel
-                        )
+                    if let model = claimsNavigationVm.singleItemCheckoutModel {
+                        Task {
+                            let step = await claimsNavigationVm.submitClaimCheckoutVm.singleItemRequest(
+                                context: claimsNavigationVm.currentClaimContext ?? "",
+                                model: model
+                            )
 
-                        if let step {
-                            claimsNavigationVm.navigate(data: step)
+                            if let step {
+                                claimsNavigationVm.navigate(data: step)
+                            }
                         }
                     }
                 }
