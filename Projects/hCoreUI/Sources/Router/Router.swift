@@ -228,6 +228,16 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
         }
 
         router.onDismiss = { [weak navigation] in
+            /// If we have presentedView controllers,
+            /// take the screenshot of top one and add it to navigation to avoid odd dismissing
+            /// dismiss presented view controllers without animations
+            if navigation?.presentedViewController != nil,
+                let vc = getTopPresentedVcFor(vc: navigation),
+                let viewToAdd = vc.view.snapshotView(afterScreenUpdates: false)
+            {
+                navigation?.view.addSubview(viewToAdd)
+                dismissPresentedVcFor(vc: navigation)
+            }
             navigation?.dismiss(animated: true)
         }
 
@@ -236,6 +246,20 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
 
     public func updateUIViewController(_ uiViewController: UINavigationController, context: Context) {}
     public typealias UIViewControllerType = UINavigationController
+
+    private func dismissPresentedVcFor(vc: UIViewController?) {
+        if let presentedViewController = vc?.presentedViewController {
+            dismissPresentedVcFor(vc: presentedViewController)
+            presentedViewController.dismiss(animated: false)
+        }
+    }
+
+    private func getTopPresentedVcFor(vc: UIViewController?) -> UIViewController? {
+        if let presentedViewController = vc?.presentedViewController {
+            return getTopPresentedVcFor(vc: presentedViewController)
+        }
+        return vc
+    }
 }
 
 public struct ViewRouterOptions: OptionSet {
