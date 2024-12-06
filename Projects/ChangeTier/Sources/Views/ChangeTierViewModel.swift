@@ -33,7 +33,8 @@ public class ChangeTierViewModel: ObservableObject {
         let isTierValid = selectedTier != nil
         let hasSelectedValues = isTierValid && isDeductibleValid
 
-        return hasSelectedValues && !(selectedTierIsSameAsCurrent && selectedDeductibleIsSameAsCurrent)
+        let isValid = hasSelectedValues && !(selectedTierIsSameAsCurrent && selectedDeductibleIsSameAsCurrent)
+        return isValid
     }
 
     var showDeductibleField: Bool {
@@ -82,12 +83,31 @@ public class ChangeTierViewModel: ObservableObject {
         Task { @MainActor in
             do {
                 let data = try await getData()
-                self.tiers = data.tiers
+                self.currentTier = data.currentTier
+                self.currentQuote = data.currentQuote
+
+                if let currentTier, !data.tiers.contains(where: { $0.name == currentTier.name }) {
+                    self.tiers = [currentTier] + data.tiers
+                } else {
+
+                    if let currentQuote {
+                        var currentTierInList: Tier? = data.tiers.first(where: { $0 == currentTier })
+                        let tiersWithoutCurrentTier: [Tier] = data.tiers.filter({ $0 != currentTier })
+
+                        let currentTierQuotes: [Quote] = [currentQuote] + (currentTierInList?.quotes ?? [])
+                        currentTierInList?.quotes = currentTierQuotes
+                        self.currentTier = currentTierInList
+
+                        if let currentTierInList {
+                            self.tiers = [currentTierInList] + tiersWithoutCurrentTier
+                        }
+                    } else {
+                        self.tiers = data.tiers
+                    }
+                }
                 self.displayName = data.displayName
                 self.exposureName = data.tiers.first?.exposureName
                 self.currentPremium = data.currentPremium
-                self.currentTier = data.currentTier
-                self.currentQuote = data.currentQuote
                 self.activationDate = data.activationDate
                 self.typeOfContract = data.typeOfContract
 
@@ -99,11 +119,10 @@ public class ChangeTierViewModel: ObservableObject {
                     self.canEditTier = data.canEditTier
                 }
 
+                self.selectedQuote = data.selectedQuote ?? currentQuote
                 if selectedTier?.quotes.count == 1 {
-                    self.selectedQuote = selectedTier?.quotes.first
                     self.canEditDeductible = false
                 } else {
-                    self.selectedQuote = data.selectedQuote ?? currentQuote
                     self.canEditDeductible = true
                 }
 

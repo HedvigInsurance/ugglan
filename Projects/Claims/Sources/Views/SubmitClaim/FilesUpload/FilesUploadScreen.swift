@@ -200,7 +200,7 @@ public class FilesUploadViewModel: ObservableObject {
     @ObservedObject var fileGridViewModel: FileGridViewModel
     private var delayTimer: AnyCancellable?
     private var initObservers = [AnyCancellable]()
-    @Inject var submitClaimService: SubmitClaimClient
+    private let submitClaimService = SubmitClaimService()
 
     init(model: FlowClaimFileUploadStepModel) {
         self.model = model
