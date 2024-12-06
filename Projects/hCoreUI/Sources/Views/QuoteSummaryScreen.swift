@@ -263,10 +263,9 @@ public struct QuoteSummaryScreen: View {
                 if #available(iOS 16.0, *) {
                     hText(oldValue)
                         .strikethrough()
-                        .foregroundColor(hTextColor.Opaque.secondary)
                 } else {
                     hText(oldValue)
-                        .foregroundColor(hTextColor.Opaque.secondary)
+                        .foregroundColor(hTextColor.Opaque.tertiary)
                 }
             }
 
