@@ -49,7 +49,7 @@ public class AddonsClientOctopus: AddonsClient {
                     .init(displayName: "dodument2", url: "", type: .termsAndConditions),
                     .init(displayName: "dodument3", url: "", type: .preSaleInfo),
                 ],
-                displayName: "display name",
+                displayName: "Travel Plus",
                 displayNameTier: nil,
                 tierDescription: nil
             )
@@ -68,8 +68,9 @@ public class AddonsClientOctopus: AddonsClient {
                     quoteId: "quoteId60",
                     addonId: "addonId60",
                     displayItems: [
-                        .init(displayTitle: "Coverage", displaySubtitle: nil, displayValue: "45 days"),
+                        .init(displayTitle: "Coverage", displaySubtitle: nil, displayValue: "60 days"),
                         .init(displayTitle: "Insured people", displaySubtitle: nil, displayValue: "You+1"),
+                        .init(displayTitle: "Test", displaySubtitle: nil, displayValue: "60 days"),
                     ],
                     price: .init(amount: "79", currency: "SEK"),
                     productVariant: .init(

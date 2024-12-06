@@ -21,7 +21,6 @@ struct ChangeAddonSummaryScreen: View {
 
 extension ChangeAddonViewModel {
     func asQuoteSummaryViewModel(changeAddonNavigationVm: ChangeAddonNavigationViewModel) -> QuoteSummaryViewModel {
-
         let vm = QuoteSummaryViewModel(
             contract: [
                 .init(
@@ -31,17 +30,23 @@ extension ChangeAddonViewModel {
                         self.addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
                     ),
                     newPremium: self.selectedQuote?.price,
-                    currentPremium: nil,
+                    currentPremium: self.addonOffer?.currentAddon?.price,
                     documents: self.selectedQuote?.productVariant.documents ?? [],
                     onDocumentTap: { document in
                         changeAddonNavigationVm.document = document
                     },
-                    displayItems: [],
-                    insuranceLimits: self.selectedQuote?.productVariant.insurableLimits ?? [],
+                    displayItems: self.compareAddonDisplayItems(
+                        currentDisplayItems: self.addonOffer?.currentAddon?.displayItems ?? [],
+                        newDisplayItems: self.selectedQuote?.displayItems ?? []
+                    ),
+                    insuranceLimits: [],
                     typeOfContract: nil
                 )
             ],
-            total: self.selectedQuote?.price ?? .init(amount: 0, currency: "SEK"),
+            total: getTotalPrice(
+                currentPrice: self.addonOffer?.currentAddon?.price,
+                newPrice: self.selectedQuote?.price
+            ),
             isAddon: true
         ) {
             Task {
@@ -55,6 +60,7 @@ extension ChangeAddonViewModel {
 }
 
 #Preview {
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
     return ChangeAddonSummaryScreen(changeAddonNavigationVm: .init(input: .init(contractId: "")))
 }

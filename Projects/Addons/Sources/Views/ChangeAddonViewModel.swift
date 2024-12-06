@@ -1,6 +1,7 @@
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 @MainActor
 public class ChangeAddonViewModel: ObservableObject {
@@ -55,5 +56,36 @@ public class ChangeAddonViewModel: ObservableObject {
         } catch let exception {
             self.submittingAddonsViewState = .error(errorMessage: exception.localizedDescription)
         }
+    }
+
+    func compareAddonDisplayItems(
+        currentDisplayItems: [AddonQuote.AddonDisplayItem],
+        newDisplayItems: [AddonQuote.AddonDisplayItem]
+    ) -> [QuoteDisplayItem] {
+        let displayItems: [QuoteDisplayItem] = newDisplayItems.map { item in
+            if let matchingDisplayItem = currentDisplayItems.first(where: { $0.displayTitle == item.displayTitle }) {
+                return .init(
+                    title: item.displayTitle,
+                    value: item.displayValue,
+                    displayValueOld: matchingDisplayItem.displayValue
+                )
+            }
+            return .init(title: item.displayTitle, value: item.displayValue)
+        }
+        return displayItems
+    }
+
+    func getTotalPrice(currentPrice: MonetaryAmount?, newPrice: MonetaryAmount?) -> MonetaryAmount {
+        let diffValue: Float = {
+            if let currentPrice, let newPrice {
+                return newPrice.value - currentPrice.value
+            } else {
+                return 0
+            }
+        }()
+
+        let totalPrice =
+            (currentPrice != nil && diffValue != 0) ? .init(amount: String(diffValue), currency: "SEK") : newPrice
+        return totalPrice ?? .init(amount: 0, currency: "SEK")
     }
 }
