@@ -469,7 +469,8 @@ extension Contract {
             contractId: id,
             contractDisplayName: currentAgreement?.productVariant.displayName ?? "",
             contractExposureName: exposureDisplayName,
-            activeFrom: currentAgreement?.activeFrom
+            activeFrom: currentAgreement?.activeFrom,
+            typeOfContract: TypeOfContract.resolve(for: currentAgreement?.productVariant.typeOfContract ?? "")
         )
     }
 }
