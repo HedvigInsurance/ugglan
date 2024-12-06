@@ -21,8 +21,8 @@ public struct AddonCardView: View {
                     HStack {
                         hText(addon.titleDisplayName)
                         Spacer()
-                        if addon.isPopular {
-                            hPill(text: L10n.addonBadge, color: .green, colorLevel: .one)
+                        if let badge = addon.badges.first {
+                            hPill(text: badge, color: .green, colorLevel: .one)
                                 .hFieldSize(.small)
                         }
                     }
@@ -53,7 +53,7 @@ public struct AddonCardView: View {
                 contractIds: [""],
                 titleDisplayName: "Travel Plus",
                 descriptionDisplayName: "Extended travel insurance with extra coverage for your travels",
-                isPopular: true
+                badges: ["Popular"]
             )
         )
     }

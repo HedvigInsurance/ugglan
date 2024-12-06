@@ -60,7 +60,7 @@ public class FetchContractsClientOctopus: FetchContractsClient {
             titleDisplayName: "Travel Plus",
             descriptionDisplayName:
                 "Extended travel insurance with extra coverage for your travels",
-            isPopular: true
+            badges: ["Popular"]
         )
     }
 }
