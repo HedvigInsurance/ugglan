@@ -266,6 +266,7 @@ public struct QuoteSummaryScreen: View {
                         .foregroundColor(hTextColor.Opaque.secondary)
                 } else {
                     hText(oldValue)
+                        .foregroundColor(hTextColor.Opaque.secondary)
                 }
             }
 
