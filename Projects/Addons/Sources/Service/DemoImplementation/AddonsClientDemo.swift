@@ -3,57 +3,84 @@ import Foundation
 public class AddonsClientDemo: AddonsClient {
     public init() {}
 
-    public func getAddon(contractId: String) async throws -> AddonModel {
-        let addons: AddonModel =
-            .init(
-                id: "Travel Plus",
-                title: "Travel Plus",
-                description: "Extended travel insurance with extra coverage for your travels",
-                tag: "Popular",
-                activationDate: Date(),
-                options: [
-                    .init(
-                        id: "Travel Plus",
-                        title: "Travel Plus",
-                        description: "For those who travel often: luggage protection and 24/7 assistance worldwide",
-                        price: .init(amount: "79", currency: "SEK"),
-                        subOptions: [
-                            .init(
-                                id: "45",
-                                title: "45 days",
-                                price: .init(amount: "49", currency: "SEK")
-                            ),
-                            .init(
-                                id: "60",
-                                title: "60 days",
-                                price: .init(amount: "79", currency: "SEK")
-                            ),
-                        ]
-                    )
-                ]
+    public func getAddon(contractId: String) async throws -> AddonOffer {
+        let currentAddon: AddonQuote = .init(
+            id: "45",
+            displayName: "45 days",
+            quoteId: "quoteId45",
+            addonId: "addonId45",
+            displayItems: [
+                .init(displayTitle: "Coverage", displaySubtitle: nil, displayValue: "45 days"),
+                .init(displayTitle: "Insured people", displaySubtitle: nil, displayValue: "You+1"),
+            ],
+            price: .init(amount: "49", currency: "SEK"),
+            productVariant: .init(
+                termsVersion: "",
+                typeOfContract: "",
+                partner: nil,
+                perils: [],
+                insurableLimits: [
+                    .init(label: "limit1", limit: "limit1", description: "description"),
+                    .init(label: "limit2", limit: "limit2", description: "description"),
+                    .init(label: "limit3", limit: "limit3", description: "description"),
+                    .init(label: "limit4", limit: "limit4", description: "description"),
+                ],
+                documents: [
+                    .init(displayName: "dodument1", url: "", type: .generalTerms),
+                    .init(displayName: "dodument2", url: "", type: .termsAndConditions),
+                    .init(displayName: "dodument3", url: "", type: .preSaleInfo),
+                ],
+                displayName: "display name",
+                displayNameTier: nil,
+                tierDescription: nil
             )
+        )
+
+        let addons: AddonOffer = .init(
+            titleDisplayName: "Travel Plus",
+            description: "Extended travel insurance with extra coverage for your travels",
+            activationDate: "2025-01-15".localDateToDate,
+            currentAddon: currentAddon,
+            quotes: [
+                currentAddon,
+                .init(
+                    id: "60",
+                    displayName: "60 days",
+                    quoteId: "quoteId60",
+                    addonId: "addonId60",
+                    displayItems: [
+                        .init(displayTitle: "Coverage", displaySubtitle: nil, displayValue: "60 days"),
+                        .init(displayTitle: "Insured people", displaySubtitle: nil, displayValue: "You+1"),
+                    ],
+                    price: .init(amount: "79", currency: "SEK"),
+                    productVariant: .init(
+                        termsVersion: "",
+                        typeOfContract: "",
+                        partner: nil,
+                        perils: [],
+                        insurableLimits: [
+                            .init(label: "limit1", limit: "limit1", description: "description"),
+                            .init(label: "limit2", limit: "limit2", description: "description"),
+                            .init(label: "limit3", limit: "limit3", description: "description"),
+                            .init(label: "limit4", limit: "limit4", description: "description"),
+                        ],
+                        documents: [
+                            .init(displayName: "dodument1", url: "", type: .generalTerms),
+                            .init(displayName: "dodument2", url: "", type: .termsAndConditions),
+                            .init(displayName: "dodument3", url: "", type: .preSaleInfo),
+                        ],
+                        displayName: "display name",
+                        displayNameTier: nil,
+                        tierDescription: nil
+                    )
+                ),
+            ]
+        )
 
         return addons
     }
 
-    public func getContract(contractId: String) async throws -> AddonContract {
-        let contractData: AddonContract = .init(
-            contractId: "contractId",
-            contractName: "Reseskydd plus",
-            displayItems: [
-                .init(title: "title1", value: "value1"),
-                .init(title: "title2", value: "value2"),
-            ],
-            documents: [],
-            insurableLimits: [
-                .init(label: "limit", limit: "", description: "description")
-            ],
-            typeOfContract: .seApartmentBrf,
-            activationDate: Date(),
-            currentPremium: .init(amount: "220", currency: "SEK")
-        )
-        return contractData
+    public func submitAddon(quoteId: String, addonId: String) async throws -> Date? {
+        return "2025-01-15".localDateToDate
     }
-
-    public func submitAddon(quoteId: String, addonId: String) async throws {}
 }

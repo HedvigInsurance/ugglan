@@ -22,35 +22,30 @@ struct ChangeAddonSummaryScreen: View {
 extension ChangeAddonViewModel {
     func asQuoteSummaryViewModel(changeAddonNavigationVm: ChangeAddonNavigationViewModel) -> QuoteSummaryViewModel {
 
-        let newPremium =
-            changeAddonNavigationVm.changeAddonVm.selectedSubOption?.price
-
         let vm = QuoteSummaryViewModel(
             contract: [
                 .init(
-                    id: self.contractInformation?.contractId ?? "",
-                    displayName: changeAddonNavigationVm.changeAddonVm.contractInformation?.contractName ?? "",
-                    exposureName: changeAddonNavigationVm.changeAddonVm.contractInformation?.activationDate
-                        .localDateString ?? "",
-                    newPremium: newPremium,
+                    id: self.contractId ?? "",
+                    displayName: self.selectedQuote?.productVariant.displayName ?? "",
+                    exposureName: L10n.addonFlowSummaryActiveFrom(
+                        self.addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
+                    ),
+                    newPremium: self.selectedQuote?.price,
                     currentPremium: nil,
-                    documents: self.contractInformation?.documents ?? [],
+                    documents: self.selectedQuote?.productVariant.documents ?? [],
                     onDocumentTap: { document in
-
+                        changeAddonNavigationVm.document = document
                     },
-                    displayItems: self.contractInformation?.displayItems ?? [],
-                    insuranceLimits: self.contractInformation?.insurableLimits ?? [],
+                    displayItems: [],
+                    insuranceLimits: self.selectedQuote?.productVariant.insurableLimits ?? [],
                     typeOfContract: nil
                 )
             ],
-            total: .init(
-                amount: changeAddonNavigationVm.changeAddonVm.selectedSubOption?.price.formattedAmount ?? "",
-                currency: "SEK"
-            ),
+            total: self.selectedQuote?.price ?? .init(amount: 0, currency: "SEK"),
             isAddon: true
         ) {
             Task {
-                await changeAddonNavigationVm.changeAddonVm.submitAddons()
+                await self.submitAddons()
             }
             changeAddonNavigationVm.router.push(ChangeAddonRouterActionsWithoutBackButton.commitAddon)
         }

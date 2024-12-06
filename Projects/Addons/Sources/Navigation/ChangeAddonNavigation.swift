@@ -2,18 +2,22 @@ import Foundation
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 public struct ChangeAddonInput: Identifiable, Equatable {
     public var id: String {
-        contractId ?? ""
+        contractId ?? addonId ?? ""
     }
 
     let contractId: String?
+    let addonId: String?
 
     public init(
-        contractId: String?
+        contractId: String? = nil,
+        addonId: String? = nil
     ) {
         self.contractId = contractId
+        self.addonId = addonId
     }
 
     public static func == (lhs: ChangeAddonInput, rhs: ChangeAddonInput) -> Bool {
@@ -24,8 +28,10 @@ public struct ChangeAddonInput: Identifiable, Equatable {
 @MainActor
 class ChangeAddonNavigationViewModel: ObservableObject {
     @Published var isLearnMorePresented: InfoViewDataModel?
-    @Published var isChangeCoverageDaysPresented: AddonOptionModel?
+    @Published var isChangeCoverageDaysPresented: AddonOffer?
     @Published var changeAddonVm: ChangeAddonViewModel
+    @Published var document: hPDFDocument?
+
     let router = Router()
 
     public init(
@@ -94,12 +100,18 @@ public struct ChangeAddonNavigation: View {
             style: [.height],
             options: .constant(.alwaysOpenOnTop)
         ) { addOn in
-            AddonSelectSubOptionScreen(addonOption: addOn, changeAddonNavigationVm: changeAddonNavigationVm)
+            AddonSelectSubOptionScreen(addonOffer: addOn, changeAddonNavigationVm: changeAddonNavigationVm)
                 .embededInNavigation(
                     options: .navigationType(type: .large),
                     tracking: ChangeAddonTrackingType.selectSubOptionScreen
                 )
                 .environmentObject(changeAddonNavigationVm)
+        }
+        .detent(
+            item: $changeAddonNavigationVm.document,
+            style: [.large]
+        ) { document in
+            PDFPreview(document: document)
         }
     }
 }
