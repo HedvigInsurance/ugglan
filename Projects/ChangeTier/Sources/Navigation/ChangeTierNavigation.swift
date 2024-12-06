@@ -237,8 +237,15 @@ public struct ChangeTierNavigation: View {
             )
         }
         .modally(presented: $changeTierNavigationVm.isCompareTiersPresented) {
+
+            let currentTier = changeTierNavigationVm.vm.currentTier
+
             CompareTierScreen(
-                vm: .init(tiers: changeTierNavigationVm.vm.tiers, selectedTier: changeTierNavigationVm.vm.selectedTier)
+                vm: .init(
+                    tiers: changeTierNavigationVm.vm.tiers,
+                    selectedTier: changeTierNavigationVm.vm.selectedTier,
+                    currentTier: currentTier
+                )
             )
             .withDismissButton()
             .embededInNavigation(

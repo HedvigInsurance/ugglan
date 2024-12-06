@@ -118,15 +118,17 @@ public struct SubmitClaimAudioRecordingScreen: View {
                             hButton.LargeButton(type: .primary) {
                                 onSubmit(url)
                                 Task {
-                                    let step = await audioRecordingVm.submitAudioRecording(
-                                        context: claimsNavigationVm.currentClaimContext ?? "",
-                                        currentClaimId: claimsNavigationVm.currentClaimId ?? "",
-                                        type: .audio(url: url),
-                                        model: claimsNavigationVm.audioRecordingModel
-                                    )
+                                    if let model = claimsNavigationVm.audioRecordingModel {
+                                        let step = await audioRecordingVm.submitAudioRecording(
+                                            context: claimsNavigationVm.currentClaimContext ?? "",
+                                            currentClaimId: claimsNavigationVm.currentClaimId ?? "",
+                                            type: .audio(url: url),
+                                            model: model
+                                        )
 
-                                    if let step {
-                                        claimsNavigationVm.navigate(data: step)
+                                        if let step {
+                                            claimsNavigationVm.navigate(data: step)
+                                        }
                                     }
                                 }
                             } content: {
@@ -212,15 +214,17 @@ public struct SubmitClaimAudioRecordingScreen: View {
                     UIApplication.dismissKeyboard()
                     if validate() {
                         Task {
-                            let step = await audioRecordingVm.submitAudioRecording(
-                                context: claimsNavigationVm.currentClaimContext ?? "",
-                                currentClaimId: claimsNavigationVm.currentClaimId ?? "",
-                                type: .text(text: inputText),
-                                model: claimsNavigationVm.audioRecordingModel
-                            )
+                            if let model = claimsNavigationVm.audioRecordingModel {
+                                let step = await audioRecordingVm.submitAudioRecording(
+                                    context: claimsNavigationVm.currentClaimContext ?? "",
+                                    currentClaimId: claimsNavigationVm.currentClaimId ?? "",
+                                    type: .text(text: inputText),
+                                    model: model
+                                )
 
-                            if let step {
-                                claimsNavigationVm.navigate(data: step)
+                                if let step {
+                                    claimsNavigationVm.navigate(data: step)
+                                }
                             }
                         }
                     }
@@ -274,8 +278,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
 
 @MainActor
 public class SubmitClaimAudioRecordingScreenModel: ObservableObject {
-    @Inject private var service: SubmitClaimClient
-    @Inject var fileUploaderClient: FileUploaderClient
+    private let service = SubmitClaimService()
     @Published public var viewState: ProcessingState = .success
 
     @MainActor
@@ -283,7 +286,7 @@ public class SubmitClaimAudioRecordingScreenModel: ObservableObject {
         context: String,
         currentClaimId: String,
         type: SubmitAudioRecordingType,
-        model: FlowClaimAudioRecordingStepModel?
+        model: FlowClaimAudioRecordingStepModel
     ) async -> SubmitClaimStepResponse? {
         withAnimation {
             self.viewState = .loading
@@ -292,7 +295,6 @@ public class SubmitClaimAudioRecordingScreenModel: ObservableObject {
         do {
             let data = try await service.submitAudioRecording(
                 type: type,
-                fileUploaderClient: fileUploaderClient,
                 context: context,
                 currentClaimId: currentClaimId,
                 model: model
