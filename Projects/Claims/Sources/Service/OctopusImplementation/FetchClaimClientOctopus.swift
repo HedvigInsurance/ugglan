@@ -2,15 +2,6 @@ import Foundation
 import hCore
 import hGraphQL
 
-@MainActor
-public class hFetchClaimService {
-    @Inject var client: hFetchClaimsClient
-    public func get() async throws -> [ClaimModel] {
-        log.info("hFetchClaimService: get", error: nil, attributes: nil)
-        return try await client.get()
-    }
-}
-
 public class FetchClaimsClientOctopus: hFetchClaimsClient {
     @Inject var octopus: hOctopus
 

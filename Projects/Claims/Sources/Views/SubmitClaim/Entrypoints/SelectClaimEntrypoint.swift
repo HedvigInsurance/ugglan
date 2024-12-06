@@ -383,7 +383,7 @@ struct ShowTagList: View {
 
 @MainActor
 public class SelectClaimEntrypointViewModel: ObservableObject {
-    @Inject private var service: hFetchEntrypointsClient
+    private var service = FetchEntrypointsService()
     @Published var viewState: ProcessingState = .loading
     @Published var claimEntrypointGroups: [ClaimEntryPointGroupResponseModel] = []
     @Published var claimEntrypoints: [ClaimEntryPointResponseModel] = []

@@ -45,23 +45,45 @@ public class ChangeTierClientOctopus: ChangeTierClient {
             /* get filtered tiers  */
             let filteredTiers = getFilteredTiers(currentContract: currentContract, intent: intent)
 
-            /* get current tier if any matching */
-            let currentTier: Tier? = filteredTiers.first(where: {
-                $0.name.lowercased() == intent.agreementToChange.tierName?.lowercased()
-            })
+            /* get current tier */
+            let currentTier: Tier =
+                filteredTiers.first(where: {
+                    $0.name.lowercased() == intent.agreementToChange.tierName?.lowercased()
+                })
+                ?? Tier(
+                    id: intent.agreementToChange.tierName ?? "",
+                    name: intent.agreementToChange.tierName?.capitalized ?? "",
+                    level: intent.agreementToChange.tierLevel ?? 0,
+                    quotes: [
+                        .init(
+                            id: "currentTier",
+                            quoteAmount: .init(
+                                optionalFragment: intent.agreementToChange.deductible?.amount.fragments.moneyFragment
+                            ),
+                            quotePercentage: intent.agreementToChange.deductible?.percentage,
+                            subTitle: nil,
+                            premium: .init(fragment: intent.agreementToChange.premium.fragments.moneyFragment),
+                            displayItems: [],
+                            productVariant: .init(
+                                data: intent.agreementToChange.productVariant.fragments.productVariantFragment
+                            )
+                        )
+                    ],
+                    exposureName: currentContract.exposureDisplayName
+                )
 
-            /* get current deductible if any matching */
+            /* get current deductible */
             let deductible = agreementToChange.deductible
             let currentDeductible: Quote? = {
-                if let deductible = deductible, currentTier != nil {
+                if let deductible {
                     return Quote(
                         id: "current",
                         quoteAmount: .init(fragment: deductible.amount.fragments.moneyFragment),
                         quotePercentage: (deductible.percentage == 0) ? nil : deductible.percentage,
                         subTitle: (deductible.displayText == "") ? nil : deductible.displayText,
                         premium: .init(fragment: agreementToChange.premium.fragments.moneyFragment),
-                        displayItems: currentTier?.quotes.first?.displayItems ?? [],
-                        productVariant: currentTier?.quotes.first?.productVariant
+                        displayItems: currentTier.quotes.first?.displayItems ?? [],
+                        productVariant: currentTier.quotes.first?.productVariant
                     )
                 }
                 return nil

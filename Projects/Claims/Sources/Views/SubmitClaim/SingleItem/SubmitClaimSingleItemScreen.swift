@@ -25,15 +25,16 @@ public struct SubmitClaimSingleItemScreen: View {
                 hSection {
                     getFields(singleItemStep: claimsNavigationVm.singleItemModel)
                     hButton.LargeButton(type: .primary) {
-                        let singleItemModel = claimsNavigationVm.singleItemModel
-                        Task {
-                            let step = await vm.singleItemRequest(
-                                context: claimsNavigationVm.currentClaimContext ?? "",
-                                model: singleItemModel
-                            )
+                        if let singleItemModel = claimsNavigationVm.singleItemModel {
+                            Task {
+                                let step = await vm.singleItemRequest(
+                                    context: claimsNavigationVm.currentClaimContext ?? "",
+                                    model: singleItemModel
+                                )
 
-                            if let step {
-                                claimsNavigationVm.navigate(data: step)
+                                if let step {
+                                    claimsNavigationVm.navigate(data: step)
+                                }
                             }
                         }
                     } content: {
@@ -118,11 +119,11 @@ public struct SubmitClaimSingleItemScreen: View {
 
 @MainActor
 public class SubmitClaimSingleItemViewModel: ObservableObject {
-    @Inject private var service: SubmitClaimClient
+    private let service = SubmitClaimService()
     @Published var viewState: ProcessingState = .success
 
     @MainActor
-    func singleItemRequest(context: String, model: FlowClaimSingleItemStepModel?) async -> SubmitClaimStepResponse? {
+    func singleItemRequest(context: String, model: FlowClaimSingleItemStepModel) async -> SubmitClaimStepResponse? {
         withAnimation {
             self.viewState = .loading
         }

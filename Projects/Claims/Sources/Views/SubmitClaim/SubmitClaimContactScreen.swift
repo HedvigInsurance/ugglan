@@ -41,13 +41,15 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
                                 }
                             } else {
                                 Task {
-                                    let step = await vm.phoneNumberRequest(
-                                        context: claimsNavigationVm.currentClaimContext ?? "",
-                                        model: claimsNavigationVm.phoneNumberModel
-                                    )
+                                    if let model = claimsNavigationVm.phoneNumberModel {
+                                        let step = await vm.phoneNumberRequest(
+                                            context: claimsNavigationVm.currentClaimContext ?? "",
+                                            model: model
+                                        )
 
-                                    if let step {
-                                        claimsNavigationVm.navigate(data: step)
+                                        if let step {
+                                            claimsNavigationVm.navigate(data: step)
+                                        }
                                     }
                                 }
                                 UIApplication.dismissKeyboard()
@@ -85,7 +87,7 @@ class SubmitClaimContractViewModel: ObservableObject {
     @Published var keyboardEnabled: Bool = false
     @Published var type: ClaimsFlowContactType?
     @Published var phoneNumberError: String?
-    @Inject private var service: SubmitClaimClient
+    private let service = SubmitClaimService()
     @Published var viewState: ProcessingState = .success
     private var phoneNumberCancellable: AnyCancellable?
     init(phoneNumber: String) {
@@ -106,7 +108,7 @@ class SubmitClaimContractViewModel: ObservableObject {
     @MainActor
     func phoneNumberRequest(
         context: String,
-        model: FlowClaimPhoneNumberStepModel?
+        model: FlowClaimPhoneNumberStepModel
     ) async -> SubmitClaimStepResponse? {
         withAnimation {
             self.viewState = .loading

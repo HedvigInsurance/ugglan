@@ -28,7 +28,8 @@ final class SubmitClaimTests: XCTestCase {
             claimId: "claimId",
             context: context,
             progress: 0.1,
-            step: .setPhoneNumber(model: model)
+            step: .setPhoneNumber(model: model),
+            nextStepId: ""
         )
 
         let mockService = MockData.createMockSubmitClaimService(
@@ -54,7 +55,8 @@ final class SubmitClaimTests: XCTestCase {
             claimId: "claimId",
             context: context,
             progress: 0.3,
-            step: .setDateOfOccurrencePlusLocation(model: model)
+            step: .setDateOfOccurrencePlusLocation(model: model),
+            nextStepId: ""
         )
 
         let mockService = MockData.createMockSubmitClaimService(
@@ -92,11 +94,12 @@ final class SubmitClaimTests: XCTestCase {
             claimId: "claimId",
             context: context,
             progress: 0.3,
-            step: .setAudioStep(model: model)
+            step: .setAudioStep(model: model),
+            nextStepId: ""
         )
 
         let mockService = MockData.createMockSubmitClaimService(
-            audioRecording: { type, fileUploaderClient, context, claimId, model in
+            audioRecording: { type, context, claimId, model in
                 audioRecordingResponse
             }
         )
@@ -104,7 +107,6 @@ final class SubmitClaimTests: XCTestCase {
 
         let respons = try! await mockService.audioRecording(
             audioRecordingType,
-            fileUploaderClient,
             context,
             claimId,
             model
@@ -116,7 +118,6 @@ final class SubmitClaimTests: XCTestCase {
     }
 
     func testSingleItemSuccess() async {
-        let purchasePrice = 11300.00
         let model = FlowClaimSingleItemStepModel(
             id: "id",
             availableItemBrandOptions: [],
@@ -132,7 +133,8 @@ final class SubmitClaimTests: XCTestCase {
             claimId: "claimId",
             context: context,
             progress: 0.3,
-            step: .setSingleItem(model: model)
+            step: .setSingleItem(model: model),
+            nextStepId: ""
         )
 
         let mockService = MockData.createMockSubmitClaimService(
@@ -163,7 +165,8 @@ final class SubmitClaimTests: XCTestCase {
             claimId: "claimId",
             context: context,
             progress: 0.3,
-            step: .setSummaryStep(model: model)
+            step: .setSummaryStep(model: model),
+            nextStepId: ""
         )
 
         let mockService = MockData.createMockSubmitClaimService(
@@ -198,7 +201,8 @@ final class SubmitClaimTests: XCTestCase {
             claimId: "claimId",
             context: context,
             progress: 0.3,
-            step: .setSingleItemCheckoutStep(model: model)
+            step: .setSingleItemCheckoutStep(model: model),
+            nextStepId: ""
         )
 
         let mockService = MockData.createMockSubmitClaimService(
@@ -223,7 +227,8 @@ final class SubmitClaimTests: XCTestCase {
             claimId: "claimId",
             context: context,
             progress: 0.3,
-            step: .setContractSelectStep(model: model)
+            step: .setContractSelectStep(model: model),
+            nextStepId: ""
         )
 
         let mockService = MockData.createMockSubmitClaimService(
@@ -248,7 +253,8 @@ final class SubmitClaimTests: XCTestCase {
             claimId: "claimId",
             context: context,
             progress: 0.3,
-            step: .setConfirmDeflectEmergencyStepModel(model: model)
+            step: .setConfirmDeflectEmergencyStepModel(model: model),
+            nextStepId: ""
         )
 
         let mockService = MockData.createMockSubmitClaimService(
@@ -273,7 +279,8 @@ final class SubmitClaimTests: XCTestCase {
             claimId: "claimId",
             context: context,
             progress: 0.3,
-            step: .setFileUploadStep(model: model)
+            step: .setFileUploadStep(model: model),
+            nextStepId: ""
         )
 
         let mockService = MockData.createMockSubmitClaimService(
