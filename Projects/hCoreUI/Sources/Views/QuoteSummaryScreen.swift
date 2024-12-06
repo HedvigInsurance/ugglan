@@ -158,6 +158,7 @@ public struct QuoteSummaryScreen: View {
                             newPremium: contract.newPremium,
                             currentPremium: contract.currentPremium
                         )
+                        .hWithStrikeThroughPrice(setTo: vm.isAddon ? true : false)
 
                         let index = selectedContracts.firstIndex(of: contract.id)
                         let isExpanded = vm.isAddon ? true : (index != nil)
