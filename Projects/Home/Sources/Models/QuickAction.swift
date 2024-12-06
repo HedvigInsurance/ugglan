@@ -55,6 +55,7 @@ public enum QuickAction: Codable, Equatable, Hashable, Sendable {
             return L10n.hcQuickActionsUpgradeCoverageSubtitle
         case .cancellation:
             return L10n.hcQuickActionsTerminationSubtitle
+
         }
     }
 

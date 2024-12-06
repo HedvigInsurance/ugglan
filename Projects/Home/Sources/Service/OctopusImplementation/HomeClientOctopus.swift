@@ -63,6 +63,7 @@ public class HomeClientOctopus: HomeClient {
         if actions?.isChangeTierEnabled == true && featureFlags.isTiersEnabled {
             contractAction.append(.upgradeCoverage)
         }
+
         if !contractAction.isEmpty {
             quickActions.append(.editInsurance(actions: .init(quickActions: contractAction)))
         }

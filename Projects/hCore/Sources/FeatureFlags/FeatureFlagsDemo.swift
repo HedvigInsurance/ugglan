@@ -18,6 +18,7 @@ public class FeatureFlagsDemo: FeatureFlags {
     public var osVersionTooLow: Bool = false
     public var emailPreferencesEnabled: Bool = false
     public var isTiersEnabled: Bool = false
+    public var isAddonsEnabled: Bool = false
     public var movingFlowVersion: MovingFlowVersion?
     public var isMovingFlowEnabled: Bool { movingFlowVersion != nil }
 
