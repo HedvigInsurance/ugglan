@@ -89,7 +89,7 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
                 titleDisplayName: "Travel Plus",
                 descriptionDisplayName:
                     "Extended travel insurance with extra coverage for your travels",
-                isPopular: true
+                badges: ["Popular"]
             )
 
             return (listData, canAddTravelInsuranceData, addonBannerModelData)
