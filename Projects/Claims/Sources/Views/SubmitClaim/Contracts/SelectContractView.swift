@@ -24,15 +24,16 @@ struct SelectContractView: View {
                 },
                 onSelected: { selectedContract in
                     if let object = selectedContract.first?.0 {
-                        Task {
-                            let step = await vm.contractSelectRequest(
-                                contractId: object.id,
-                                context: claimsNavigationVm.currentClaimContext ?? "",
-                                model: claimsNavigationVm.contractSelectModel
-                            )
-
-                            if let step {
-                                claimsNavigationVm.navigate(data: step)
+                        if let model = claimsNavigationVm.contractSelectModel {
+                            Task {
+                                let step = await vm.contractSelectRequest(
+                                    contractId: object.id,
+                                    context: claimsNavigationVm.currentClaimContext ?? "",
+                                    model: model
+                                )
+                                if let step {
+                                    claimsNavigationVm.navigate(data: step)
+                                }
                             }
                         }
                     }
@@ -58,14 +59,14 @@ struct SelectContractView: View {
 
 @MainActor
 public class SelectContractViewModel: ObservableObject {
-    @Inject private var service: SubmitClaimClient
+    private let service = SubmitClaimService()
     @Published var state: ProcessingState = .success
 
     @MainActor
     func contractSelectRequest(
         contractId: String,
         context: String,
-        model: FlowClaimContractSelectStepModel?
+        model: FlowClaimContractSelectStepModel
     ) async -> SubmitClaimStepResponse? {
         withAnimation {
             state = .loading
