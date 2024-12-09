@@ -8,6 +8,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     let FAQModel: (title: String, subtitle: String, questions: [FAQ])?
     let onConfirmClick: () -> Void
     let isAddon: Bool
+    let showNoticeCard: Bool
 
     public struct ContractInfo: Identifiable {
         public let id: String
@@ -60,6 +61,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         self.FAQModel = FAQModel
         self.isAddon = isAddon ?? false
         self.onConfirmClick = onConfirmClick
+        self.showNoticeCard = (contracts.count > 1 || isAddon ?? false)
     }
 }
 
@@ -107,7 +109,7 @@ public struct QuoteSummaryScreen: View {
             }
             .hFormAttachToBottom {
                 VStack {
-                    if vm.contracts.count > 1 || vm.isAddon {
+                    if vm.showNoticeCard {
                         noticeComponent
                             .padding(.top, .padding16)
                     }
