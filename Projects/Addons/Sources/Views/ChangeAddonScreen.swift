@@ -69,7 +69,6 @@ struct ChangeAddonScreen: View {
                                 }
                             )
                         ])
-                        //                        }
 
                         hButton.LargeButton(type: .primary) {
                             changeAddonNavigationVm.router.push(ChangeAddonRouterActions.summary)
