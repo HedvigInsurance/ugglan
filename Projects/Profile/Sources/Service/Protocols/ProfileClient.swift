@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 public protocol ProfileClient {
     func getProfileState() async throws -> (memberData: MemberDetails, partnerData: PartnerData?)
     func getMemberDetails() async throws -> MemberDetails

@@ -23,21 +23,22 @@ public struct SubmitClaimCheckoutScreen: View {
                         InfoCard(text: L10n.claimsCheckoutNotice, type: .info)
                     }
                     hButton.LargeButton(type: .primary) {
-                        claimsNavigationVm.isCheckoutTransferringPresented = true
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 7) {
-                            Task {
-                                let step = await vm.singleItemRequest(
-                                    context: claimsNavigationVm.currentClaimContext ?? "",
-                                    model: claimsNavigationVm.singleItemCheckoutModel
-                                )
+                        if let model = claimsNavigationVm.singleItemCheckoutModel {
+                            claimsNavigationVm.isCheckoutTransferringPresented = true
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 7) {
+                                Task {
+                                    let step = await vm.singleItemRequest(
+                                        context: claimsNavigationVm.currentClaimContext ?? "",
+                                        model: model
+                                    )
 
-                                if let step {
-                                    claimsNavigationVm.isCheckoutTransferringPresented = false
-                                    claimsNavigationVm.navigate(data: step)
+                                    if let step {
+                                        claimsNavigationVm.isCheckoutTransferringPresented = false
+                                        claimsNavigationVm.navigate(data: step)
+                                    }
                                 }
                             }
                         }
-
                     } content: {
                         hText(
                             L10n.Claims.Payout.Button.label(
@@ -219,14 +220,15 @@ public struct SubmitClaimCheckoutScreen: View {
     }
 }
 
+@MainActor
 public class SubmitClaimCheckoutViewModel: ObservableObject {
-    @Inject private var service: SubmitClaimClient
+    private let service = SubmitClaimService()
     @Published var viewState: ProcessingState = .success
 
     @MainActor
     func singleItemRequest(
         context: String,
-        model: FlowClaimSingleItemCheckoutStepModel?
+        model: FlowClaimSingleItemCheckoutStepModel
     ) async -> SubmitClaimStepResponse? {
         withAnimation {
             viewState = .loading

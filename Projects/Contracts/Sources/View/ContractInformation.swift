@@ -11,7 +11,6 @@ import hGraphQL
 
 struct ContractInformationView: View {
     @PresentableStore var store: ContractStore
-    @PresentableStore var terminationContractStore: TerminationContractStore
     @StateObject private var vm = ContractsInformationViewModel()
     @EnvironmentObject private var contractsNavigationVm: ContractsNavigationViewModel
 
@@ -49,6 +48,7 @@ struct ContractInformationView: View {
                             }
                             if contract.supportsCoInsured {
                                 hRowDivider()
+                                    .padding(.horizontal, 16)
                                 addCoInsuredView(contract: contract)
                             }
 
@@ -123,7 +123,6 @@ struct ContractInformationView: View {
                         }
                         .hWithoutDivider
                     }
-
                 }
 
                 if Dependencies.featureFlags().isEditCoInsuredEnabled {
@@ -222,7 +221,7 @@ struct ContractInformationView: View {
     private func upatedContractView(_ contract: Contract) -> some View {
         if let upcomingRenewal = contract.upcomingRenewal,
             let days = upcomingRenewal.renewalDate.localDateToDate?.daysBetween(start: Date()),
-            let url = URL(string: upcomingRenewal.certificateUrl)
+            URL(string: upcomingRenewal.certificateUrl) != nil
         {
             hSection {
                 InfoCard(
@@ -245,7 +244,7 @@ struct ContractInformationView: View {
             }
             .padding(.top, .padding8)
         } else if let upcomingChangedAgreement = contract.upcomingChangedAgreement,
-            let url = URL(string: upcomingChangedAgreement.certificateUrl)
+            URL(string: upcomingChangedAgreement.certificateUrl) != nil
         {
             hSection {
                 HStack {
@@ -320,24 +319,39 @@ struct ContractInformationView: View {
                         hButton.LargeButton(type: .ghost) {
                             if let contract {
                                 let config = TerminationConfirmConfig(contract: contract)
-                                contractsNavigationVm.terminateInsuranceVm.start(with: [config])
+                                Task {
+                                    withAnimation {
+                                        vm.cancelInsuranceState = .loading
+                                    }
+                                    do {
+                                        try await contractsNavigationVm.terminateInsuranceVm.start(with: [config])
+                                    } catch let exception {
+                                        Toasts.shared.displayToastBar(
+                                            toast: .init(type: .error, text: exception.localizedDescription)
+                                        )
+                                    }
+                                    withAnimation {
+                                        vm.cancelInsuranceState = .success
+                                    }
+                                }
                             }
                         } content: {
                             hText(L10n.terminationButton, style: .body1)
                                 .foregroundColor(hTextColor.Opaque.secondary)
                         }
-                        .trackLoading(TerminationContractStore.self, action: .getInitialStep)
                     }
                     .sectionContainerStyle(.transparent)
+                    .hButtonIsLoading(vm.cancelInsuranceState == .loading)
                 }
             }
         }
     }
 }
 
+@MainActor
 private class ContractsInformationViewModel: ObservableObject {
     var cancellable: AnyCancellable?
-
+    @Published var cancelInsuranceState: ProcessingState = .success
     func getListToDisplay(contract: Contract) -> [CoInsuredListType] {
         return contract.coInsured
             .map {

@@ -25,7 +25,14 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
 
     var body: some View {
         hForm {}
-            .hFormTitle(title: .init(.small, .displayXSLong, options.title))
+            .hFormTitle(
+                title: .init(
+                    .small,
+                    .heading2,
+                    options.title,
+                    alignment: .leading
+                )
+            )
             .hDisableScroll
             .hFormAttachToBottom {
                 VStack(spacing: 0) {
@@ -75,13 +82,15 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
     private var continueButton: some View {
         hButton.LargeButton(type: .primary) {
             Task {
-                let step = await vm.dateOfOccurrenceAndLocationRequest(
-                    context: claimsNavigationVm.currentClaimContext ?? "",
-                    model: claimsNavigationVm.occurrencePlusLocationModel
-                )
+                if let model = claimsNavigationVm.occurrencePlusLocationModel {
+                    let step = await vm.dateOfOccurrenceAndLocationRequest(
+                        context: claimsNavigationVm.currentClaimContext ?? "",
+                        model: model
+                    )
 
-                if let step {
-                    claimsNavigationVm.navigate(data: step)
+                    if let step {
+                        claimsNavigationVm.navigate(data: step)
+                    }
                 }
             }
         } content: {
@@ -92,14 +101,15 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
     }
 }
 
+@MainActor
 public class SubmitClaimOccurrencePlusLocationViewModel: ObservableObject {
-    @Inject private var service: SubmitClaimClient
+    private let service = SubmitClaimService()
     @Published var viewState: ProcessingState = .success
 
     @MainActor
     func dateOfOccurrenceAndLocationRequest(
         context: String,
-        model: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels?
+        model: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels
     ) async -> SubmitClaimStepResponse? {
         withAnimation {
             self.viewState = .loading

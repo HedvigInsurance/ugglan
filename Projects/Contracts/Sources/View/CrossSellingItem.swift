@@ -69,8 +69,8 @@ struct CrossSellingItem: View {
     }
 }
 
-struct CrossSellingItemPreviews: PreviewProvider {
-    static var itemWithImage = CrossSellingItem(
+#Preview {
+    CrossSellingItem(
         crossSell: .init(
             title: "Accident Insurance",
             description: "From 79 SEK/mo.",
@@ -83,7 +83,4 @@ struct CrossSellingItemPreviews: PreviewProvider {
             type: .accident
         )
     )
-    static var previews: some View {
-        itemWithImage.previewLayout(.sizeThatFits)
-    }
 }

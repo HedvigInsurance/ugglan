@@ -30,4 +30,9 @@ public struct ClaimsState: StateProtocol {
     public func claim(for id: String) -> ClaimModel? {
         self.claims?.first(where: { $0.id == id })
     }
+
+    @MainActor
+    public func claimFromConversation(for id: String) -> ClaimModel? {
+        self.claims?.first(where: { $0.conversation?.id == id })
+    }
 }

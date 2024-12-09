@@ -1,13 +1,12 @@
 import Foundation
-import PresentableStore
 import StoreKit
 import SwiftUI
 
 public class hNavigationBaseController: UINavigationController {
-    var onDeinit: (() -> Void)?
+    var onDeinit: (@Sendable () -> Void)?
 
     deinit {
-        onDeinit?()
+        self.onDeinit?()
     }
 }
 
@@ -129,6 +128,7 @@ class LargeNavBar: UINavigationBar {
     }
 }
 
+@MainActor
 public struct DefaultStyling {
     public static func applyCommonNavigationBarStyling(_ appearance: UINavigationBarAppearance) {
         appearance.titleTextAttributes = [
@@ -403,6 +403,7 @@ public struct DefaultStyling {
 
 final class ListTableView: UITableView {}
 
+@MainActor
 extension CGFloat {
     public static var cornerRadiusXS: CGFloat = 6
     public static var cornerRadiusS: CGFloat = 8

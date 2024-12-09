@@ -1,4 +1,3 @@
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -10,7 +9,7 @@ struct MovingFlowHouseScreen: View {
     @EnvironmentObject var router: Router
 
     var body: some View {
-        form.loadingButtonWithErrorHandling($houseInformationInputvm.viewState)
+        form.loadingWithButtonLoading($houseInformationInputvm.viewState)
             .hErrorViewButtonConfig(
                 .init(
                     actionButton: .init(buttonAction: {
@@ -36,8 +35,10 @@ struct MovingFlowHouseScreen: View {
                         extraBuildingTypes
                     }
                     .disabled(houseInformationInputvm.viewState == .loading)
-                    hSection {
-                        InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
+                    if let days = movingFlowNavigationVm.movingFlowVm?.oldAddressCoverageDurationDays {
+                        hSection {
+                            InfoCard(text: L10n.changeAddressCoverageInfoText(days), type: .info)
+                        }
                     }
                     hSection {
                         hButton.LargeButton(type: .primary) {
@@ -67,7 +68,6 @@ struct MovingFlowHouseScreen: View {
             )
         )
         .sectionContainerStyle(.transparent)
-        .presentableStoreLensAnimation(.default)
     }
 
     private var yearOfConstructionField: some View {
@@ -246,7 +246,8 @@ enum MovingFlowHouseFieldType: hTextFieldFocusStateCompliant {
 }
 
 public typealias ExtraBuildingType = String
-public class HouseInformationInputModel: ObservableObject, Equatable, Identifiable {
+@MainActor
+public class HouseInformationInputModel: ObservableObject, @preconcurrency Equatable, Identifiable {
     public static func == (lhs: HouseInformationInputModel, rhs: HouseInformationInputModel) -> Bool {
         return true
     }

@@ -1,15 +1,15 @@
-import XCTest
+@preconcurrency import XCTest
 import hCore
 
 @testable import Payment
 @testable import hCoreUI
 
+@MainActor
 final class CampaignViewModelTests: XCTestCase {
     weak var sut: MockCampaignService?
 
     override func setUp() {
         super.setUp()
-        sut = nil
     }
 
     override func tearDown() async throws {
@@ -22,7 +22,7 @@ final class CampaignViewModelTests: XCTestCase {
         let mockService = MockCampaignData.createMockCampaignService(
             addCampaign: {})
 
-        let paymentMockService = MockPaymentData.createMockPaymentService()
+        MockPaymentData.createMockPaymentService()
 
         self.sut = mockService
 
@@ -37,7 +37,7 @@ final class CampaignViewModelTests: XCTestCase {
         let mockService = MockCampaignData.createMockCampaignService(
             addCampaign: { throw MockCampaignError.failure })
 
-        let paymentMockService = MockPaymentData.createMockPaymentService()
+        MockPaymentData.createMockPaymentService()
 
         self.sut = mockService
 
@@ -53,7 +53,7 @@ final class CampaignViewModelTests: XCTestCase {
         let mockService = MockCampaignData.createMockCampaignService(
             removeCampaign: {})
 
-        let paymentMockService = MockPaymentData.createMockPaymentService()
+        MockPaymentData.createMockPaymentService()
 
         self.sut = mockService
 
@@ -79,7 +79,7 @@ final class CampaignViewModelTests: XCTestCase {
         let mockService = MockCampaignData.createMockCampaignService(
             removeCampaign: { throw MockCampaignError.failure })
 
-        let paymentMockService = MockPaymentData.createMockPaymentService()
+        MockPaymentData.createMockPaymentService()
 
         self.sut = mockService
 

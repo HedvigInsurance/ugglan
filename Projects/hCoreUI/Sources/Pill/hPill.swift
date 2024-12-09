@@ -87,6 +87,7 @@ public struct hPill: View {
     }
 }
 
+@MainActor
 public enum PillColor {
     case green
     case yellow

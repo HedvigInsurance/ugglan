@@ -4,6 +4,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
+@MainActor
 public class ProfileNavigationViewModel: ObservableObject {
     @Published public var isDeleteAccountPresented: MemberDetails?
     @Published var isDeleteAccountAlreadyRequestedPresented = false
@@ -13,8 +14,9 @@ public class ProfileNavigationViewModel: ObservableObject {
     public let profileRouter = Router()
 
     public func pushToProfile() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
-            self?.profileRouter.push(ProfileRouterType.myInfo)
+        Task {
+            try await Task.sleep(nanoseconds: 50_000_000)
+            self.profileRouter.push(ProfileRouterType.myInfo)
         }
     }
 
@@ -112,7 +114,7 @@ enum ProfileDetentType: TrackingViewNameProtocol {
         case .profile:
             return .init(describing: ProfileView.self)
         case .languagePicker:
-            return .init(describing: LanguagePickerView.self)
+            return .init(describing: PickLanguage.self)
         case .emailPreferences:
             return .init(describing: EmailPreferencesConfirmView.self)
         }
@@ -155,7 +157,7 @@ extension ProfileRedirectType: TrackingViewNameProtocol {
         case .deleteRequestLoading:
             return .init(describing: DeleteRequestLoadingView.self)
         case .pickLanguage:
-            return .init(describing: LanguagePickerView.self)
+            return .init(describing: PickLanguage.self)
         }
     }
 }

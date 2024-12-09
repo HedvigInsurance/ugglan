@@ -1,33 +1,53 @@
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 import hGraphQL
 
 struct ChangeCodeView: View {
-    @StateObject var vm = ChangeCodeViewModel()
-    @EnvironmentObject var router: Router
+    @ObservedObject private var vm: ChangeCodeViewModel
+    @EnvironmentObject private var router: Router
+    @ObservedObject private var foreverNavigationVm: ForeverNavigationViewModel
+
+    init(
+        foreverNavigationVm: ForeverNavigationViewModel
+    ) {
+        self.foreverNavigationVm = foreverNavigationVm
+
+        let inputVm = TextInputViewModel(
+            masking: .init(type: .none),
+            input: foreverNavigationVm.foreverData?.discountCode ?? "",
+            title: L10n.ReferralsEmpty.Code.headline
+        )
+
+        self.vm = .init(inputVm: inputVm, foreverVm: foreverNavigationVm.foreverVm)
+    }
 
     var body: some View {
         TextInputView(vm: vm.inputVm)
             .task {
                 vm.router = router
             }
+            .onChange(of: vm.foreverData) { newForeverData in
+                foreverNavigationVm.foreverData = newForeverData
+            }
     }
 }
 
+@MainActor
 class ChangeCodeViewModel: ObservableObject {
-    let inputVm: TextInputViewModel
     @Inject var foreverService: ForeverClient
-    var router: Router?
+    @Published var inputVm: TextInputViewModel
 
-    init() {
-        let store: ForeverStore = globalPresentableStoreContainer.get()
-        inputVm = TextInputViewModel(
-            masking: .init(type: .none),
-            input: store.state.foreverData?.discountCode ?? "",
-            title: L10n.ReferralsEmpty.Code.headline
-        )
+    var router: Router?
+    @Published var foreverData: ForeverData?
+    @Published var foreverVm: ForeverViewModel
+
+    init(
+        inputVm: TextInputViewModel,
+        foreverVm: ForeverViewModel
+    ) {
+        self.inputVm = inputVm
+        self.foreverVm = foreverVm
 
         inputVm.onSave = { [weak self] text in
             try await self?.handleOnSave(text: text)
@@ -38,22 +58,19 @@ class ChangeCodeViewModel: ObservableObject {
         }
     }
 
-    @MainActor
     private func dismissRouter() async throws {
         self.router?.dismiss()
     }
 
-    @MainActor
     private func handleOnSave(text: String) async throws {
         try await self.foreverService.changeCode(code: text)
-        let store: ForeverStore = globalPresentableStoreContainer.get()
-        store.send(.fetch)
+        self.foreverData = try await foreverVm.fetchForeverData()
         self.router?.push(ForeverRouterActions.success)
     }
 }
 
 struct ChangeCodeView_Previews: PreviewProvider {
     static var previews: some View {
-        ChangeCodeView()
+        ChangeCodeView(foreverNavigationVm: .init())
     }
 }

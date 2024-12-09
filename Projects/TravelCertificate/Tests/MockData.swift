@@ -3,6 +3,7 @@ import hCore
 
 @testable import TravelCertificate
 
+@MainActor
 struct MockData {
     static func createMockTravelInsuranceService(
         fetchSpecifications: @escaping FetchSpecifications = {

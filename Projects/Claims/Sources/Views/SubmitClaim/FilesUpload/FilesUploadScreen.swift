@@ -85,7 +85,14 @@ struct SubmitClaimFilesUploadScreen: View {
                 }
             } else {
                 hForm {}
-                    .hFormTitle(title: .init(.standard, .displayXSLong, L10n.claimsFileUploadTitle))
+                    .hFormTitle(
+                        title: .init(
+                            .small,
+                            .heading2,
+                            L10n.claimsFileUploadTitle,
+                            alignment: .leading
+                        )
+                    )
                     .hFormAttachToBottom {
                         hSection {
                             VStack(spacing: 16) {
@@ -176,6 +183,7 @@ struct SubmitClaimFilesUploadScreen: View {
     }
 }
 
+@MainActor
 public class FilesUploadViewModel: ObservableObject {
     @Published var hasFiles: Bool = false
     @Published var isLoading: Bool = false
@@ -192,7 +200,7 @@ public class FilesUploadViewModel: ObservableObject {
     @ObservedObject var fileGridViewModel: FileGridViewModel
     private var delayTimer: AnyCancellable?
     private var initObservers = [AnyCancellable]()
-    @Inject var submitClaimService: SubmitClaimClient
+    private let submitClaimService = SubmitClaimService()
 
     init(model: FlowClaimFileUploadStepModel) {
         self.model = model

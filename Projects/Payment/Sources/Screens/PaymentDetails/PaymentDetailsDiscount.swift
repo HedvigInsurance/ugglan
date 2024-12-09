@@ -91,6 +91,7 @@ struct PaymentDetailsDiscountView: View {
     }
 }
 
+@MainActor
 class PaymentDetailsDiscountViewModel: ObservableObject {
     let options: PaymentDetailsDiscountOptions
     let discount: Discount

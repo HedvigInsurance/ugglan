@@ -1,10 +1,10 @@
 import Foundation
 import hCore
 import hCoreUI
-import hGraphQL
+@preconcurrency import hGraphQL
 
 public class ChangeTierClientOctopus: ChangeTierClient {
-    @Inject var octopus: hOctopus
+    @Inject @preconcurrency var octopus: hOctopus
 
     public init() {}
 
@@ -24,17 +24,13 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                 source: .case(source)
             )
             let mutation = OctopusGraphQL.ChangeTierDeductibleCreateIntentMutation(input: input)
-            async let createIntentdata = try octopus.client.perform(mutation: mutation)
-
+            let createIntentResponse = try await octopus.client.perform(mutation: mutation)
             let contractsQuery = OctopusGraphQL.ContractQuery(contractId: input.contractId)
-            async let contractData = try octopus.client.fetch(
+
+            let contractResponse = try await octopus.client.fetch(
                 query: contractsQuery,
                 cachePolicy: .fetchIgnoringCacheCompletely
             )
-
-            let data = try await [createIntentdata, contractData] as [Any]
-            let createIntentResponse = data[0] as! OctopusGraphQL.ChangeTierDeductibleCreateIntentMutation.Data
-            let contractResponse = data[1] as! OctopusGraphQL.ContractQuery.Data
 
             if let error = createIntentResponse.changeTierDeductibleCreateIntent.userError, let message = error.message
             {
@@ -49,23 +45,45 @@ public class ChangeTierClientOctopus: ChangeTierClient {
             /* get filtered tiers  */
             let filteredTiers = getFilteredTiers(currentContract: currentContract, intent: intent)
 
-            /* get current tier if any matching */
-            let currentTier: Tier? = filteredTiers.first(where: {
-                $0.name.lowercased() == intent.agreementToChange.tierName?.lowercased()
-            })
+            /* get current tier */
+            let currentTier: Tier =
+                filteredTiers.first(where: {
+                    $0.name.lowercased() == intent.agreementToChange.tierName?.lowercased()
+                })
+                ?? Tier(
+                    id: intent.agreementToChange.tierName ?? "",
+                    name: intent.agreementToChange.tierName?.capitalized ?? "",
+                    level: intent.agreementToChange.tierLevel ?? 0,
+                    quotes: [
+                        .init(
+                            id: "currentTier",
+                            quoteAmount: .init(
+                                optionalFragment: intent.agreementToChange.deductible?.amount.fragments.moneyFragment
+                            ),
+                            quotePercentage: intent.agreementToChange.deductible?.percentage,
+                            subTitle: nil,
+                            premium: .init(fragment: intent.agreementToChange.premium.fragments.moneyFragment),
+                            displayItems: [],
+                            productVariant: .init(
+                                data: intent.agreementToChange.productVariant.fragments.productVariantFragment
+                            )
+                        )
+                    ],
+                    exposureName: currentContract.exposureDisplayName
+                )
 
-            /* get current deductible if any matching */
+            /* get current deductible */
             let deductible = agreementToChange.deductible
             let currentDeductible: Quote? = {
-                if let deductible = deductible, currentTier != nil {
+                if let deductible {
                     return Quote(
                         id: "current",
                         quoteAmount: .init(fragment: deductible.amount.fragments.moneyFragment),
                         quotePercentage: (deductible.percentage == 0) ? nil : deductible.percentage,
                         subTitle: (deductible.displayText == "") ? nil : deductible.displayText,
                         premium: .init(fragment: agreementToChange.premium.fragments.moneyFragment),
-                        displayItems: currentTier?.quotes.first?.displayItems ?? [],
-                        productVariant: currentTier?.quotes.first?.productVariant
+                        displayItems: currentTier.quotes.first?.displayItems ?? [],
+                        productVariant: currentTier.quotes.first?.productVariant
                     )
                 }
                 return nil
@@ -93,7 +111,6 @@ public class ChangeTierClientOctopus: ChangeTierClient {
             }
 
             return intentModel
-
         } catch let ex {
             if let ex = ex as? ChangeTierError {
                 throw ex
@@ -110,11 +127,9 @@ public class ChangeTierClientOctopus: ChangeTierClient {
             let delayTask = Task {
                 try await Task.sleep(nanoseconds: 3_000_000_000)
             }
-            let clientTask = Task {
-                try await octopus.client.perform(mutation: mutation)
-            }
+            let data = try await octopus.client.perform(mutation: mutation)
+
             try await delayTask.value
-            let data = try await clientTask.value
 
             if let userError = data.changeTierDeductibleCommitIntent.userError?.message {
                 throw ChangeTierError.errorMessage(message: userError)
@@ -202,7 +217,7 @@ public class ChangeTierClientOctopus: ChangeTierClient {
             )
 
             return productVariantComparision
-        } catch let ex {
+        } catch _ {
             throw ChangeTierError.somethingWentWrong
         }
     }

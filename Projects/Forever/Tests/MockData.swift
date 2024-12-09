@@ -3,6 +3,7 @@ import hCore
 
 @testable import Forever
 
+@MainActor
 struct MockData {
     static func createMockForeverService(
         fetchMemberReferralInformation: @escaping FetchMemberReferralInformation = {

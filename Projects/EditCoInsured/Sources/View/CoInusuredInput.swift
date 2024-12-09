@@ -1,6 +1,5 @@
 import Combine
 import EditCoInsuredShared
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -8,26 +7,25 @@ import hGraphQL
 
 struct CoInusuredInputScreen: View {
     @ObservedObject var insuredPeopleVm: InsuredPeopleNewScreenModel
-    @ObservedObject var intentVm: IntentViewModel
-    @PresentableStore var store: EditCoInsuredStore
     @ObservedObject var vm: CoInusuredInputViewModel
     let title: String
-    @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
+    @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @EnvironmentObject private var router: Router
-
+    @ObservedObject var intentViewModel: IntentViewModel
     public init(
         vm: CoInusuredInputViewModel,
-        title: String
+        title: String,
+        editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     ) {
-        let store: EditCoInsuredStore = globalPresentableStoreContainer.get()
-        insuredPeopleVm = store.coInsuredViewModel
-        intentVm = store.intentViewModel
+        self.editCoInsuredNavigation = editCoInsuredNavigation
+        insuredPeopleVm = editCoInsuredNavigation.coInsuredViewModel
         self.vm = vm
         self.title = title
 
         vm.SSNError = nil
-        intentVm.errorMessageForInput = nil
-        intentVm.errorMessageForCoinsuredList = nil
+        intentViewModel = editCoInsuredNavigation.intentViewModel
+        intentViewModel.errorMessageForInput = nil
+        intentViewModel.errorMessageForCoinsuredList = nil
 
         if vm.SSN != "" {
             vm.noSSN = false
@@ -49,8 +47,10 @@ struct CoInusuredInputScreen: View {
     }
 
     var body: some View {
-        if (vm.SSNError ?? intentVm.errorMessageForInput ?? intentVm.errorMessageForCoinsuredList) != nil {
-            CoInsuredInputErrorView(vm: vm)
+        if (vm.SSNError ?? intentViewModel.errorMessageForInput
+            ?? intentViewModel.errorMessageForCoinsuredList) != nil
+        {
+            CoInsuredInputErrorView(vm: vm, editCoInsuredNavigation: editCoInsuredNavigation)
         } else {
             mainView
                 .toolbar {
@@ -104,20 +104,20 @@ struct CoInusuredInputScreen: View {
                                             )
                                         }
                                     }()
-                                    await intentVm.getIntent(
+                                    await intentViewModel.getIntent(
                                         contractId: vm.contractId,
                                         origin: .coinsuredInput,
                                         coInsured: insuredPeopleVm.listForGettingIntentFor(
                                             removedCoInsured: coInsuredToDelete
                                         )
                                     )
-                                    if !intentVm.showErrorViewForCoInsuredInput {
-                                        store.coInsuredViewModel.removeCoInsured(coInsuredToDelete)
+                                    if !intentViewModel.showErrorViewForCoInsuredInput {
+                                        editCoInsuredNavigation.coInsuredViewModel.removeCoInsured(coInsuredToDelete)
                                         router.push(CoInsuredAction.delete)
                                     } else {
                                         // add back
                                         if vm.noSSN {
-                                            store.coInsuredViewModel.undoDeleted(
+                                            editCoInsuredNavigation.coInsuredViewModel.undoDeleted(
                                                 .init(
                                                     firstName: vm.personalData.firstName,
                                                     lastName: vm.personalData.lastName,
@@ -126,7 +126,7 @@ struct CoInusuredInputScreen: View {
                                                 )
                                             )
                                         } else {
-                                            store.coInsuredViewModel.undoDeleted(
+                                            editCoInsuredNavigation.coInsuredViewModel.undoDeleted(
                                                 .init(
                                                     firstName: vm.personalData.firstName,
                                                     lastName: vm.personalData.lastName,
@@ -141,7 +141,7 @@ struct CoInusuredInputScreen: View {
                                 hText(L10n.removeConfirmationButton)
                                     .transition(.opacity.animation(.easeOut))
                             }
-                            .hButtonIsLoading(vm.isLoading || intentVm.isLoading)
+                            .hButtonIsLoading(vm.isLoading || intentViewModel.isLoading)
                         } else {
                             hButton.LargeButton(type: .primary) {
                                 if !(buttonIsDisabled || vm.nameFetchedFromSSN || vm.noSSN) {
@@ -150,10 +150,10 @@ struct CoInusuredInputScreen: View {
                                     }
                                 } else if vm.nameFetchedFromSSN || vm.noSSN {
                                     Task {
-                                        if !intentVm.showErrorViewForCoInsuredInput {
+                                        if !intentViewModel.showErrorViewForCoInsuredInput {
                                             if vm.actionType == .edit {
                                                 if vm.noSSN {
-                                                    store.coInsuredViewModel.editCoInsured(
+                                                    editCoInsuredNavigation.coInsuredViewModel.editCoInsured(
                                                         .init(
                                                             firstName: vm.personalData.firstName,
                                                             lastName: vm.personalData.lastName,
@@ -162,7 +162,7 @@ struct CoInusuredInputScreen: View {
                                                         )
                                                     )
                                                 } else {
-                                                    store.coInsuredViewModel.editCoInsured(
+                                                    editCoInsuredNavigation.coInsuredViewModel.editCoInsured(
                                                         .init(
                                                             firstName: vm.personalData.firstName,
                                                             lastName: vm.personalData.lastName,
@@ -171,7 +171,7 @@ struct CoInusuredInputScreen: View {
                                                         )
                                                     )
                                                 }
-                                                await intentVm.getIntent(
+                                                await intentViewModel.getIntent(
                                                     contractId: vm.contractId,
                                                     origin: .coinsuredInput,
                                                     coInsured: insuredPeopleVm.completeList()
@@ -195,23 +195,25 @@ struct CoInusuredInputScreen: View {
                                                     }
                                                 }()
 
-                                                await intentVm.getIntent(
+                                                await intentViewModel.getIntent(
                                                     contractId: vm.contractId,
                                                     origin: .coinsuredInput,
                                                     coInsured: insuredPeopleVm.listForGettingIntentFor(
                                                         addCoInsured: coInsuredToAdd
                                                     )
                                                 )
-                                                if !intentVm.showErrorViewForCoInsuredInput {
+                                                if !editCoInsuredNavigation.intentViewModel
+                                                    .showErrorViewForCoInsuredInput
+                                                {
                                                     insuredPeopleVm.addCoInsured(coInsuredToAdd)
                                                 }
                                             }
 
-                                            if !intentVm.showErrorViewForCoInsuredInput {
+                                            if !intentViewModel.showErrorViewForCoInsuredInput {
                                                 router.push(CoInsuredAction.add)
                                             } else {
                                                 if vm.noSSN {
-                                                    store.coInsuredViewModel.removeCoInsured(
+                                                    editCoInsuredNavigation.coInsuredViewModel.removeCoInsured(
                                                         .init(
                                                             firstName: vm.personalData.firstName,
                                                             lastName: vm.personalData.lastName,
@@ -220,7 +222,7 @@ struct CoInusuredInputScreen: View {
                                                         )
                                                     )
                                                 } else {
-                                                    store.coInsuredViewModel.removeCoInsured(
+                                                    editCoInsuredNavigation.coInsuredViewModel.removeCoInsured(
                                                         .init(
                                                             firstName: vm.personalData.firstName,
                                                             lastName: vm.personalData.lastName,
@@ -239,7 +241,7 @@ struct CoInusuredInputScreen: View {
                                 hText(buttonDisplayText)
                                     .transition(.opacity.animation(.easeOut))
                             }
-                            .hButtonIsLoading(vm.isLoading || intentVm.isLoading)
+                            .hButtonIsLoading(vm.isLoading || intentViewModel.isLoading)
                         }
                     }
                 }
@@ -254,7 +256,7 @@ struct CoInusuredInputScreen: View {
                     }
                     .padding(.top, .padding4)
                     .padding(.bottom, .padding16)
-                    .disabled(vm.isLoading || intentVm.isLoading)
+                    .disabled(vm.isLoading || intentViewModel.isLoading)
                 }
                 .sectionContainerStyle(.transparent)
             }
@@ -285,7 +287,7 @@ struct CoInusuredInputScreen: View {
             toggleField
         }
         .hFieldSize(.small)
-        .disabled(vm.isLoading || intentVm.isLoading)
+        .disabled(vm.isLoading || intentViewModel.isLoading)
     }
 
     @ViewBuilder
@@ -425,7 +427,8 @@ struct CoInusuredInput_Previews: PreviewProvider {
     static var previews: some View {
         CoInusuredInputScreen(
             vm: .init(coInsuredModel: CoInsuredModel(), actionType: .add, contractId: ""),
-            title: "title"
+            title: "title",
+            editCoInsuredNavigation: .init(config: .init())
         )
     }
 }
@@ -454,6 +457,7 @@ enum CoInsuredInputType: hTextFieldFocusStateCompliant {
     case birthDay
 }
 
+@MainActor
 public class CoInusuredInputViewModel: ObservableObject {
     @Published var personalData: PersonalData
     @Published var noSSN = false
@@ -561,6 +565,7 @@ public class CoInusuredInputViewModel: ObservableObject {
     }
 }
 
+@MainActor
 public class IntentViewModel: ObservableObject {
     @Published var intent = Intent(
         activationDate: "",
@@ -576,10 +581,12 @@ public class IntentViewModel: ObservableObject {
     @Published var enterManually: Bool = false
     @Published var errorMessageForInput: String?
     @Published var errorMessageForCoinsuredList: String?
+    @Published var viewState: ProcessingState = .loading
+
     var fullName: String {
         return firstName + " " + lastName
     }
-    var editCoInsuredService = EditCoInsuredService()
+    var service = EditCoInsuredService()
 
     var showErrorViewForCoInsuredList: Bool {
         errorMessageForCoinsuredList != nil
@@ -599,7 +606,7 @@ public class IntentViewModel: ObservableObject {
             self.errorMessageForCoinsuredList = nil
         }
         do {
-            let data = try await editCoInsuredService.sendIntent(contractId: contractId, coInsured: coInsured)
+            let data = try await service.sendIntent(contractId: contractId, coInsured: coInsured)
             withAnimation {
                 self.intent = data
             }
@@ -621,5 +628,27 @@ public class IntentViewModel: ObservableObject {
     enum GetIntentOrigin {
         case coinsuredSelectList
         case coinsuredInput
+    }
+
+    @MainActor
+    func performCoInsuredChanges(commitId: String) async {
+        withAnimation {
+            viewState = .loading
+            self.isLoading = true
+        }
+        do {
+            try await service.sendMidtermChangeIntentCommit(commitId: commitId)
+            withAnimation {
+                self.viewState = .success
+            }
+            AskForRating().askForReview()
+        } catch let exception {
+            withAnimation {
+                viewState = .error(errorMessage: exception.localizedDescription)
+            }
+        }
+        withAnimation {
+            self.isLoading = false
+        }
     }
 }

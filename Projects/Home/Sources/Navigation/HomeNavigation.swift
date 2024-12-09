@@ -10,26 +10,28 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-extension String: TrackingViewNameProtocol {
+extension String: @retroactive TrackingViewNameProtocol {
     public var nameForTracking: String {
         return self
     }
 }
 
-public struct ChatConversation: Equatable, Identifiable {
+public struct ChatConversation: Equatable, Identifiable, Sendable {
     public var id: String?
     public var chatType: ChatType
 }
 
+@MainActor
 public class HomeNavigationViewModel: ObservableObject {
     public static var isChatPresented = false
     private var cancellables = Set<AnyCancellable>()
     public init() {
 
-        NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: OperationQueue.main) {
+        NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: nil) {
             [weak self] notification in
+
+            //            let openChatTask = await Task {
             var openChat: ChatConversation?
-            self?.openChatOptions = [.alwaysOpenOnTop, .withoutGrabber]
 
             if let chatType = notification.object as? ChatType {
                 switch chatType {
@@ -41,16 +43,17 @@ public class HomeNavigationViewModel: ObservableObject {
                     openChat = .init(chatType: .inbox)
                 }
             } else {
-                // fallback on inbox view
                 openChat = .init(chatType: .inbox)
             }
-
-            if self?.openChat == nil {
-                self?.openChat = openChat
-            } else if self?.openChat != openChat {
-                self?.openChat = nil
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+            Task { @MainActor in
+                self?.openChatOptions = [.alwaysOpenOnTop, .withoutGrabber]
+                if self?.openChat == nil {
                     self?.openChat = openChat
+                } else if self?.openChat != openChat {
+                    self?.openChat = nil
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                        self?.openChat = openChat
+                    }
                 }
             }
         }

@@ -1,9 +1,11 @@
 import Combine
 import PresentableStore
 import SwiftUI
+@preconcurrency import UserNotifications
 import hCore
 import hCoreUI
 
+@MainActor
 public class ChatNavigationViewModel: ObservableObject {
     @Published var isFilePresented: DocumentPreviewModel.DocumentPreviewType?
     @Published var isAskForPushNotificationsPresented = false
@@ -16,10 +18,9 @@ public class ChatNavigationViewModel: ObservableObject {
     }
 
     private var toastPublisher: AnyCancellable?
-    @MainActor
     func checkForPushNotificationStatus() async {
-        let settings = await UNUserNotificationCenter.current().notificationSettings()
-        switch settings.authorizationStatus {
+        let status = await UNUserNotificationCenter.current().notificationSettings()
+        switch status.authorizationStatus {
         case .notDetermined:
             self.isAskForPushNotificationsPresented = true
         case .denied:
@@ -47,7 +48,7 @@ public class ChatNavigationViewModel: ObservableObject {
 
 public enum ChatRedirectViewType: Hashable {
     case notification
-    case claimDetail(id: String)
+    case claimDetailForConversationId(id: String)
 }
 
 extension ChatRedirectViewType: TrackingViewNameProtocol {
@@ -55,7 +56,7 @@ extension ChatRedirectViewType: TrackingViewNameProtocol {
         switch self {
         case .notification:
             return "AskForPushNotifications"
-        case .claimDetail:
+        case .claimDetailForConversationId:
             return "ClaimDetailView"
         }
     }
@@ -93,8 +94,8 @@ public struct ChatNavigation<Content: View>: View {
                     ChatScreen(
                         vm: .init(
                             chatService: ConversationService(conversationId: conversationId),
-                            onTitleTap: { claimId in
-                                router.push(ChatRedirectViewType.claimDetail(id: claimId))
+                            onTitleTap: {
+                                router.push(ChatRedirectViewType.claimDetailForConversationId(id: conversationId))
                             }
                         )
                     )

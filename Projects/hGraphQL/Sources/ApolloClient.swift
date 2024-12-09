@@ -1,5 +1,5 @@
-import Apollo
-import ApolloWebSocket
+@preconcurrency import Apollo
+@preconcurrency import ApolloWebSocket
 import Disk
 import Foundation
 import SwiftUI
@@ -13,6 +13,7 @@ public struct hOctopus {
     public let store: ApolloStore
 }
 
+@MainActor
 extension ApolloClient {
     public static var acceptLanguageHeader: String = ""
     public static var bundle: Bundle?
@@ -27,8 +28,8 @@ extension ApolloClient {
 
     public static var cache = InMemoryNormalizedCache()
 
-    public static func headers() -> [String: String] {
-        if let token = try? ApolloClient.retreiveToken() {
+    public static func headers() async -> [String: String] {
+        if let token = try? await ApolloClient.retreiveToken() {
             return [
                 "Authorization": "Bearer " + token.accessToken,
                 "Accept-Language": acceptLanguageHeader,
@@ -38,7 +39,7 @@ extension ApolloClient {
         return ["Accept-Language": acceptLanguageHeader, "User-Agent": userAgent]
     }
 
-    public static func getDeviceIdentifier() -> String {
+    public static func getDeviceIdentifier() async -> String {
         let userDefaults = UserDefaults.standard
 
         let deviceKey = "hedvig-device-identifier"
@@ -54,10 +55,10 @@ extension ApolloClient {
         }
     }
 
-    static func createOctopusClient() -> hOctopus {
+    static func createOctopusClient() async -> hOctopus {
         let environment = Environment.current
 
-        _ = headers()
+        _ = await headers()
 
         let store = ApolloStore(cache: ApolloClient.cache)
 
@@ -65,7 +66,7 @@ extension ApolloClient {
             store: store,
             acceptLanguageHeader: { acceptLanguageHeader },
             userAgent: userAgent,
-            deviceIdentifier: getDeviceIdentifier()
+            deviceIdentifier: await getDeviceIdentifier()
         )
 
         let requestChainTransport = RequestChainNetworkTransport(
@@ -83,18 +84,18 @@ extension ApolloClient {
         return hOctopus(client: client, store: store)
     }
 
-    public static func createClient() -> hApollo {
+    public static func createClient() async -> hApollo {
         return hApollo(
-            octopus: createOctopusClient()
+            octopus: await createOctopusClient()
         )
     }
 
-    public static func deleteToken() {
-        KeychainHelper.standard.delete(key: "oAuthorizationToken")
+    public static func deleteToken() async {
+        await KeychainHelper.standard.delete(key: "oAuthorizationToken")
     }
 
-    public static func retreiveToken() throws -> OAuthorizationToken? {
-        try KeychainHelper.standard.read(key: "oAuthorizationToken", type: OAuthorizationToken.self)
+    public static func retreiveToken() async throws -> OAuthorizationToken? {
+        try await KeychainHelper.standard.read(key: "oAuthorizationToken", type: OAuthorizationToken.self)
     }
 
     public static func handleAuthTokenSuccessResult(result: AuthorizationTokenDto) {

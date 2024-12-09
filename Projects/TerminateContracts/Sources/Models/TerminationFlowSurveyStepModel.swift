@@ -3,7 +3,8 @@ import hCore
 
 public struct TerminationFlowSurveyStepModel: FlowStepModel {
     let id: String
-    let options: [TerminationFlowSurveyStepModelOption]
+    var options: [TerminationFlowSurveyStepModelOption]
+    var subTitleType: SurveyScreenSubtitleType
 }
 
 public struct TerminationFlowSurveyStepModelOption: FlowStepModel, Identifiable {
@@ -44,7 +45,7 @@ struct TerminationFlowSurveyStepFeedback: FlowStepModel {
     let isRequired: Bool
 }
 
-public enum SurveyScreenSubtitleType: Codable {
+public enum SurveyScreenSubtitleType: Codable, Sendable {
     case `default`
     case generic
 

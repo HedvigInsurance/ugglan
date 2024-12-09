@@ -25,6 +25,7 @@ public class TracingOffsetViewModel: ObservableObject {
     private var scrollOffsetCancellable: AnyCancellable?
     @Published public var currentOffset: CGPoint = .zero
 
+    @MainActor
     weak var scrollView: UIScrollView? {
         didSet {
             scrollOffsetCancellable = scrollView?.publisher(for: \.contentOffset)
@@ -57,32 +58,30 @@ public struct SetOffsetModifier: ViewModifier {
 }
 
 public class SetOffsetViewModel: ObservableObject {
+    @MainActor
     public func animate(with animationProperties: AnimationProperties) {
         let scrollTo: CGPoint = {
             var x: CGFloat = 0
             if let scrollView {
                 if scrollView.frame.width + animationProperties.offset.x > scrollView.contentSize.width {
-                    x = scrollView.contentSize.width - scrollView.frame.width
+                    x = max(scrollView.contentSize.width - scrollView.frame.width, 0)
                 } else {
                     x = animationProperties.offset.x
                 }
             }
             return .init(x: x, y: 0)
         }()
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            UIView.animate(
-                withDuration: animationProperties.duration,
-                delay: 0,
-                usingSpringWithDamping: animationProperties.damping,
-                initialSpringVelocity: 1,
-                options: .allowUserInteraction,
-                animations: {
-                    self.scrollView?.contentOffset = scrollTo
-                },
-                completion: nil
-            )
-        }
+        UIView.animate(
+            withDuration: animationProperties.duration,
+            delay: 0,
+            usingSpringWithDamping: animationProperties.damping,
+            initialSpringVelocity: 1,
+            options: .allowUserInteraction,
+            animations: {
+                self.scrollView?.contentOffset = scrollTo
+            },
+            completion: nil
+        )
     }
 
     weak var scrollView: UIScrollView?
@@ -103,7 +102,7 @@ public class SetOffsetViewModel: ObservableObject {
 }
 
 #Preview {
-    var vm = SetOffsetViewModel()
+    let vm = SetOffsetViewModel()
     ScrollView(.horizontal) {
         HStack {
             Rectangle().frame(width: 100)

@@ -76,6 +76,7 @@ struct MainNavigationJourney: App {
     }
 }
 
+@MainActor
 class MainNavigationViewModel: ObservableObject {
     @Published var hasLaunchFinished = false {
         didSet {
@@ -95,7 +96,7 @@ class MainNavigationViewModel: ObservableObject {
                 switch state {
                 case .loggedIn:
                     UIApplication.shared.registerForRemoteNotifications()
-                    ApplicationContext.shared.setValue(to: true)
+                    await ApplicationContext.shared.setValue(to: true)
                     withAnimation {
                         hasLaunchFinished = false
                     }
@@ -111,8 +112,9 @@ class MainNavigationViewModel: ObservableObject {
                     withAnimation {
                         hasLaunchFinished = true
                     }
+                    loggedInVm.actionAfterLogin()
                 case .notLoggedIn:
-                    ApplicationContext.shared.setValue(to: false)
+                    await ApplicationContext.shared.setValue(to: false)
                     notLoggedInVm = .init()
                     loggedInVm = .init()
                     appDelegate.logout()
@@ -129,6 +131,7 @@ class MainNavigationViewModel: ObservableObject {
     @MainActor
     init() {
         Task { @MainActor [weak self] in
+            await UIApplication.shared.appDelegate.initialSetup()
             await self?.checkForFeatureFlags()
             withAnimation(.easeInOut) {
                 self?.hasLaunchFinished = true
@@ -140,11 +143,13 @@ class MainNavigationViewModel: ObservableObject {
             }
         }
         if state == .loggedIn {
-            ApplicationContext.shared.setValue(to: true)
-            UIApplication.shared.registerForRemoteNotifications()
-            showLaunchScreen = false
+            Task {
+                await ApplicationContext.shared.setValue(to: true)
+                UIApplication.shared.registerForRemoteNotifications()
+                showLaunchScreen = false
+            }
         }
-        appDelegate.configureAppBadgeTracking()
+        configureAppBadgeTracking()
     }
 
     private func checkForFeatureFlags() async {
@@ -159,5 +164,41 @@ class MainNavigationViewModel: ObservableObject {
         } catch _ {
             //we just ignore error since we should let the member in
         }
+    }
+
+    func configureAppBadgeTracking() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(resetBadge),
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(resetBadge),
+            name: UIApplication.didEnterBackgroundNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(resetBadge),
+            name: UIApplication.willTerminateNotification,
+            object: nil
+        )
+    }
+
+    @objc func resetBadge(notification: Notification) {
+        UserDefaults(suiteName: "group.\(Bundle.main.bundleIdentifier!)")?.set(1, forKey: "count")
+        if #available(iOS 16.0, *) {
+            Task {
+                try await UNUserNotificationCenter.current().setBadgeCount(0)
+            }
+        } else {
+            UIApplication.shared.applicationIconBadgeNumber = 0
+        }
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 }

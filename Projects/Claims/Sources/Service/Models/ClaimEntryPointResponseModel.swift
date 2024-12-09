@@ -1,7 +1,7 @@
 import SwiftUI
 import hGraphQL
 
-public struct ClaimEntryPointGroupResponseModel: Codable, Equatable, Hashable {
+public struct ClaimEntryPointGroupResponseModel: Codable, Equatable, Hashable, Sendable {
     let id: String
     let displayName: String
     var entrypoints: [ClaimEntryPointResponseModel]
@@ -18,7 +18,7 @@ public struct ClaimEntryPointGroupResponseModel: Codable, Equatable, Hashable {
 
 }
 
-public struct ClaimEntryPointResponseModel: Codable, Equatable, Hashable {
+public struct ClaimEntryPointResponseModel: Codable, Equatable, Hashable, Sendable {
     let id: String
     let displayName: String
     var options: [ClaimEntryPointOptionResponseModel]
@@ -34,7 +34,7 @@ public struct ClaimEntryPointResponseModel: Codable, Equatable, Hashable {
     }
 }
 
-public struct ClaimEntryPointOptionResponseModel: Codable, Equatable, Hashable {
+public struct ClaimEntryPointOptionResponseModel: Codable, Equatable, Hashable, Sendable {
     let id: String
     let displayName: String
 

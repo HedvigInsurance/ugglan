@@ -4,25 +4,6 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct AnimatableMonetaryAmountModifier: AnimatableModifier {
-    var amount: MonetaryAmount
-
-    var animatableData: Float {
-        get { amount.value }
-        set { amount.amount = String(Int(newValue)) }
-    }
-
-    func body(content: Content) -> some View {
-        hText("\(amount.formattedAmount)", style: .heading2)
-    }
-}
-
-extension View {
-    func animatingAmountOverlay(for amount: MonetaryAmount) -> some View {
-        modifier(AnimatableMonetaryAmountModifier(amount: amount))
-    }
-}
-
 struct PriceSectionView: View {
     @State var monthlyDiscount: MonetaryAmount
     let didPressInfo: () -> Void

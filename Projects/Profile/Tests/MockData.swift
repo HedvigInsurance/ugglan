@@ -3,6 +3,7 @@ import hCore
 
 @testable import Profile
 
+@MainActor
 struct MockData {
     static func createMockProfileService(
         fetchProfileState: @escaping FetchProfileState = {

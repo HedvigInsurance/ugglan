@@ -49,15 +49,10 @@ struct AskForPushNotifications: View {
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
                 hButton.MediumButton(type: .primary) {
-                    let current = UNUserNotificationCenter.current()
-                    current.getNotificationSettings(completionHandler: { settings in
-                        DispatchQueue.main.async {
-                            UIApplication.shared.appDelegate
-                                .registerForPushNotifications {
-                                    onActionExecuted()
-                                }
-                        }
-                    })
+                    Task {
+                        await UIApplication.shared.appDelegate.registerForPushNotifications()
+                        onActionExecuted()
+                    }
                 } content: {
                     hText(L10n.claimsActivateNotificationsCta, style: .body1)
                 }

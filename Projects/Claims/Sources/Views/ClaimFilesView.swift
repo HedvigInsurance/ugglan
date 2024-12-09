@@ -111,29 +111,26 @@ public struct ClaimFilesView: View {
 
     private func showFilePickerAlert() {
         FilePicker.showAlert { selected in
-            switch selected {
-            case .camera:
-                showCamera = true
-            case .imagePicker:
-                PHPhotoLibrary.requestAuthorization(for: .readWrite) { (status) in
+            Task { @MainActor in
+                switch selected {
+                case .camera:
+                    showCamera = true
+                case .imagePicker:
+                    let status = await PHPhotoLibrary.requestAuthorization(for: .readWrite)
                     switch status {
                     case .notDetermined, .restricted, .denied:
                         guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
                             return
                         }
-                        DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
+                        await UIApplication.shared.open(settingsUrl)
                     case .authorized, .limited:
-                        DispatchQueue.main.async {
-                            showImagePicker = true
-                        }
+                        showImagePicker = true
                     @unknown default:
-                        DispatchQueue.main.async {
-                            showImagePicker = true
-                        }
+                        showImagePicker = true
                     }
+                case .filePicker:
+                    showFilePicker = true
                 }
-            case .filePicker:
-                showFilePicker = true
             }
         }
     }
@@ -157,6 +154,7 @@ public struct ClaimFilesView: View {
     }
 }
 
+@MainActor
 class ClaimFilesViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var success = false
@@ -166,7 +164,7 @@ class ClaimFilesViewModel: ObservableObject {
     let fileGridViewModel: FileGridViewModel
     private var onSuccess: (_ data: [ClaimFileUploadResponse]) -> Void
     var claimFileUploadService = hClaimFileUploadService()
-    var fetchClaimService = hFetchClaimService()
+    var fetchClaimService = FetchClaimService()
 
     init(
         endPoint: String,
@@ -179,7 +177,7 @@ class ClaimFilesViewModel: ObservableObject {
         self.fileGridViewModel = .init(files: files, options: options)
         self.fileGridViewModel.onDelete = { [weak self] file in
             Task {
-                await self?.removeFile(id: file.id)
+                self?.removeFile(id: file.id)
             }
         }
     }
@@ -298,7 +296,7 @@ class ClaimFilesViewModel: ObservableObject {
 
     }
 }
-
+@MainActor
 struct FilePicker {
     static func showAlert(closure: @escaping (_ selected: SelectedFileInputType) -> Void) {
         let alert = UIAlertController(

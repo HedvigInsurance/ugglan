@@ -6,6 +6,7 @@ struct EmailClient {
     var url: URL?
     var displayName: String
 
+    @MainActor
     var isInstalled: Bool {
         guard let url = url else {
             return false
@@ -14,6 +15,7 @@ struct EmailClient {
         return UIApplication.shared.canOpenURL(url)
     }
 
+    @MainActor
     func open() {
         guard isInstalled == true, let url = url else {
             return

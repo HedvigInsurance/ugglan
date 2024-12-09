@@ -1,6 +1,7 @@
 import Kingfisher
 import PhotosUI
 import SwiftUI
+import UniformTypeIdentifiers
 import hCore
 
 public struct FileView: View {
@@ -160,23 +161,13 @@ public struct hPHPickerResultImageDataProvider: ImageDataProvider {
     }
 
     public func data(handler: @escaping @Sendable (Result<Data, any Error>) -> Void) {
-        pickerResult.itemProvider.loadDataRepresentation(forTypeIdentifier: contentType.identifier) { data, error in
-            if let error {
+        Task {
+            do {
+                let results = try await pickerResult.itemProvider.getData()
+                handler(.success(results.data))
+
+            } catch {
                 handler(.failure(PHPickerResultImageDataProviderError.pickerProviderError(error)))
-                return
-            }
-
-            guard let data else {
-                handler(.failure(PHPickerResultImageDataProviderError.invalidImage))
-                return
-            }
-
-            if contentType == UTType.image, let image = UIImage(data: data),
-                let compresedImage = image.jpegData(compressionQuality: 0.05)
-            {
-                handler(.success(compresedImage))
-            } else {
-                handler(.success(data))
             }
         }
     }

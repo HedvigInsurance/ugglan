@@ -3,44 +3,37 @@ import hCore
 
 @testable import TerminateContracts
 
+@MainActor
 struct MockData {
     @discardableResult
     static func createMockTerminateContractsService(
         start: @escaping StartTermination = { contractId in
             .init(
                 context: "context",
-                action: .startTermination(
-                    config: .init(
-                        contractId: contractId,
-                        contractDisplayName: "contract display name",
-                        contractExposureName: "contract exposure name",
-                        activeFrom: nil
-                    )
-                ),
+                step: .setSuccessStep(model: .init(terminationDate: nil)),
                 progress: 0
             )
         },
         sendDate: @escaping SendTerminationDate = { inputDateToString, context in
             .init(
                 context: context,
-                action: .setTerminationDate(terminationDate: inputDateToString.localDateToDate ?? Date()),
+                step: .setTerminationDateStep(
+                    model: .init(id: "id", maxDate: "2025-11-11", minDate: Date().localDateString)
+                ),
                 progress: 0
             )
         },
-        confirmDelete: @escaping SendConfirmDelete = { context in
+        confirmDelete: @escaping SendConfirmDelete = { context, model in
             .init(
                 context: context,
-                action: .sendConfirmDelete,
+                step: .setTerminationDeletion(model: model ?? .init(id: "id")),
                 progress: 0
             )
         },
         surveySend: @escaping SendSurvey = { context, option, inputData in
             .init(
                 context: context,
-                action: .submitSurvey(
-                    option: option,
-                    feedback: inputData
-                ),
+                step: .setTerminationSurveyStep(model: .init(id: "id", options: [], subTitleType: .generic)),
                 progress: 0
             )
         }
@@ -62,7 +55,7 @@ enum TerminationError: Error {
 
 typealias StartTermination = (String) async throws -> TerminateStepResponse
 typealias SendTerminationDate = (String, String) async throws -> TerminateStepResponse
-typealias SendConfirmDelete = (String) async throws -> TerminateStepResponse
+typealias SendConfirmDelete = (String, TerminationFlowDeletionNextModel?) async throws -> TerminateStepResponse
 typealias SendSurvey = (String, String, String?) async throws -> TerminateStepResponse
 
 class MockTerminateContractsService: TerminateContractsClient {
@@ -107,9 +100,12 @@ class MockTerminateContractsService: TerminateContractsClient {
         return data
     }
 
-    func sendConfirmDelete(terminationContext: String) async throws -> TerminateStepResponse {
+    func sendConfirmDelete(
+        terminationContext: String,
+        model: TerminationFlowDeletionNextModel?
+    ) async throws -> TerminateStepResponse {
         events.append(.sendConfirmDelete)
-        let data = try await confirmDelete(terminationContext)
+        let data = try await confirmDelete(terminationContext, model)
         return data
     }
 

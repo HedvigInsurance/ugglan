@@ -48,11 +48,15 @@ public struct InfoCardScrollView<Content: View, cardItem: Identifiable & Equatab
         .background {
             GeometryReader { proxy in
                 Color.clear
-                    .onAppear {
-                        vm.updateWidth(with: proxy.size.width)
+                    .onAppear { [weak vm] in
+                        Task {
+                            await vm?.updateWidth(with: proxy.size.width)
+                        }
                     }
-                    .onChange(of: proxy.size) { size in
-                        vm.updateWidth(with: size.width)
+                    .onChange(of: proxy.size) { [weak vm] size in
+                        Task {
+                            await vm?.updateWidth(with: size.width)
+                        }
                     }
             }
         }
@@ -83,6 +87,7 @@ struct PrioritizedCard<Content: View, cardItem: Identifiable>: View {
     }
 }
 
+@MainActor
 public class InfoCardScrollViewModel: NSObject, ObservableObject {
     @Published var activeCard = 0
     @Published var calcOffset: CGFloat = 0
@@ -97,11 +102,11 @@ public class InfoCardScrollViewModel: NSObject, ObservableObject {
         self.spacing = spacing
     }
 
-    public func updateWidth(with cardWidth: CGFloat) {
+    public func updateWidth(with cardWidth: CGFloat) async {
         self.cardWidth = cardWidth
         self.cardWithSpacing = cardWidth + spacing
         if let scrollView {
-            calculateOffset(scrollView: scrollView)
+            await calculateOffset(scrollView: scrollView)
         }
 
     }
@@ -119,7 +124,9 @@ public class InfoCardScrollViewModel: NSObject, ObservableObject {
 extension InfoCardScrollViewModel: UIScrollViewDelegate {
     public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
-            calculateOffset(scrollView: scrollView)
+            Task {
+                await calculateOffset(scrollView: scrollView)
+            }
         }
     }
 
@@ -157,16 +164,16 @@ extension InfoCardScrollViewModel: UIScrollViewDelegate {
         }
     }
 
-    func calculateOffset(scrollView: UIScrollView) {
+    func calculateOffset(scrollView: UIScrollView) async {
         let offset = scrollView.contentOffset.x
-        var indexToScroll = Int(offset / cardWidth)
-        let valueOver = (offset - CGFloat(indexToScroll) * cardWithSpacing) / cardWithSpacing
+        var indexToScroll = Int(offset / self.cardWidth)
+        let valueOver = (offset - CGFloat(indexToScroll) * self.cardWithSpacing) / self.cardWithSpacing
         if valueOver > 0.5 {
             indexToScroll += 1
         }
         withAnimation {
-            activeCard = indexToScroll
+            self.activeCard = indexToScroll
         }
-        scrollView.setContentOffset(.init(x: CGFloat(indexToScroll) * cardWithSpacing, y: 0), animated: true)
+        scrollView.setContentOffset(.init(x: CGFloat(indexToScroll) * self.cardWithSpacing, y: 0), animated: true)
     }
 }

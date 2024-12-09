@@ -31,6 +31,7 @@ public enum ContractLoadingAction: LoadingProtocol {
     case fetchCrossSell
 }
 
+@MainActor
 extension EditType {
     public static func getTypes(for contract: Contract) -> [EditType] {
         var editTypes: [EditType] = []

@@ -4,6 +4,7 @@ import Profile
 import SwiftUI
 import hCore
 
+@MainActor
 extension AppDelegate {
     func setupFeatureFlags() async throws {
         try await Dependencies.featureFlags().setup(with: getContext)

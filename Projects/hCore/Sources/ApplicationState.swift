@@ -2,6 +2,7 @@ import Foundation
 import SwiftUI
 import hGraphQL
 
+@MainActor
 public struct ApplicationState {
     @AppStorage(key) public static var state: ApplicationState.Screen = .notLoggedIn
     public enum Screen: String {
@@ -40,13 +41,12 @@ public struct ApplicationState {
             if let preferredLocaleRawValue = UserDefaults.standard.value(forKey: preferredLocaleKey)
                 as? String, let preferredLocale = Localization.Locale(rawValue: preferredLocaleRawValue)
             {
-                setPreferredLocale(preferredLocale)
+                ApplicationState.setPreferredLocale(preferredLocale)
                 UserDefaults.standard.removeObject(forKey: preferredLocaleKey)
                 UserDefaults.standard.synchronize()
                 return preferredLocale
             }
         }
-
         let availableLanguages = Localization.Locale.allCases.map { $0.lprojCode }
 
         let bestMatchedLanguage = Bundle.preferredLocalizations(from: availableLanguages).first

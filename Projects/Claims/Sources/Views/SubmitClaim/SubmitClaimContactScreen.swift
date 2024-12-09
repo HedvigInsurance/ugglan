@@ -15,7 +15,14 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
 
     public var body: some View {
         hForm {}
-            .hFormTitle(title: .init(.small, .displayXSLong, L10n.claimsConfirmNumberTitle))
+            .hFormTitle(
+                title: .init(
+                    .small,
+                    .heading2,
+                    L10n.claimsConfirmNumberTitle,
+                    alignment: .leading
+                )
+            )
             .hFormAttachToBottom {
                 hSection {
                     VStack(spacing: 16) {
@@ -34,13 +41,15 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
                                 }
                             } else {
                                 Task {
-                                    let step = await vm.phoneNumberRequest(
-                                        context: claimsNavigationVm.currentClaimContext ?? "",
-                                        model: claimsNavigationVm.phoneNumberModel
-                                    )
+                                    if let model = claimsNavigationVm.phoneNumberModel {
+                                        let step = await vm.phoneNumberRequest(
+                                            context: claimsNavigationVm.currentClaimContext ?? "",
+                                            model: model
+                                        )
 
-                                    if let step {
-                                        claimsNavigationVm.navigate(data: step)
+                                        if let step {
+                                            claimsNavigationVm.navigate(data: step)
+                                        }
                                     }
                                 }
                                 UIApplication.dismissKeyboard()
@@ -64,6 +73,7 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
     }
 }
 
+@MainActor
 class SubmitClaimContractViewModel: ObservableObject {
     @Published var phoneNumber: String {
         didSet {
@@ -77,18 +87,28 @@ class SubmitClaimContractViewModel: ObservableObject {
     @Published var keyboardEnabled: Bool = false
     @Published var type: ClaimsFlowContactType?
     @Published var phoneNumberError: String?
-    @Inject private var service: SubmitClaimClient
+    private let service = SubmitClaimService()
     @Published var viewState: ProcessingState = .success
-
+    private var phoneNumberCancellable: AnyCancellable?
     init(phoneNumber: String) {
         self.phoneNumber = phoneNumber
         self.enableContinueButton = phoneNumber.isValidPhone || phoneNumber.isEmpty
+        phoneNumberCancellable = Publishers.CombineLatest($phoneNumber, $keyboardEnabled)
+            .receive(on: RunLoop.main)
+            .sink { _ in
+            } receiveValue: { [weak self] (phone, keyboardVisible) in
+                let isValidPhone = phone.isValidPhone
+                self?.enableContinueButton = isValidPhone || phone.isEmpty
+                self?.phoneNumberError =
+                    (self?.enableContinueButton ?? false || keyboardVisible)
+                    ? nil : L10n.myInfoPhoneNumberMalformedError
+            }
     }
 
     @MainActor
     func phoneNumberRequest(
         context: String,
-        model: FlowClaimPhoneNumberStepModel?
+        model: FlowClaimPhoneNumberStepModel
     ) async -> SubmitClaimStepResponse? {
         withAnimation {
             self.viewState = .loading

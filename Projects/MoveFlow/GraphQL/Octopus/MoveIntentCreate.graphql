@@ -31,6 +31,7 @@ fragment MoveAddressFragment on MoveAddress {
     street
     postalCode
     city
+    oldAddressCoverageDurationDays
 }
 
 fragment QuoteFragment on MoveIntent {

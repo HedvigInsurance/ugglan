@@ -3,8 +3,10 @@ import hCore
 
 @testable import Payment
 
+@MainActor
+
 struct MockPaymentData {
-    static func createMockPaymentService(
+    @discardableResult static func createMockPaymentService(
         fetchPaymentData: @escaping FetchPaymentData = {
             .init(
                 id: "id",

@@ -3,12 +3,12 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct PaymentDiscountsData: Codable, Equatable {
+public struct PaymentDiscountsData: Codable, Equatable, Sendable {
     let discounts: [Discount]
     let referralsData: ReferralsData
 }
 
-public struct ReferralsData: Equatable, Codable {
+public struct ReferralsData: Equatable, Codable, Sendable {
     let code: String
     let discountPerMember: MonetaryAmount
     let discount: MonetaryAmount
@@ -20,7 +20,7 @@ public struct ReferralsData: Equatable, Codable {
     }
 
 }
-public struct Referral: Equatable, Codable, Identifiable {
+public struct Referral: Equatable, Codable, Identifiable, Sendable {
     public let id: String
     let name: String
     let activeDiscount: MonetaryAmount?
@@ -41,7 +41,7 @@ public struct Referral: Equatable, Codable, Identifiable {
         self.invitedYou = invitedYou
     }
 
-    public enum State: String, Codable {
+    public enum State: String, Codable, Sendable {
         case terminated
         case pending
         case active
@@ -49,6 +49,7 @@ public struct Referral: Equatable, Codable, Identifiable {
     }
 }
 
+@MainActor
 extension Referral {
     @hColorBuilder var statusColor: some hColor {
         switch self.status {
@@ -85,6 +86,7 @@ extension Referral {
         }
     }
 
+    @MainActor
     var discountLabelText: String {
         switch self.status {
         case .active:

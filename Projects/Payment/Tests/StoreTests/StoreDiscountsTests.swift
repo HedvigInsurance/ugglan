@@ -1,20 +1,20 @@
 import PresentableStore
-import XCTest
+@preconcurrency import XCTest
 
 @testable import Payment
 
+@MainActor
 final class StoreDiscountsTests: XCTestCase {
     weak var store: PaymentStore?
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         globalPresentableStoreContainer.deletePersistanceContainer()
     }
 
     override func tearDown() async throws {
-        await waitUntil(description: "Store deinited successfully") {
-            self.store == nil
-        }
+        try await super.tearDown()
+        assert(store == nil)
     }
 
     func testFetchDiscountsSuccess() async throws {

@@ -3,10 +3,12 @@ import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import UIKit
 
+@MainActor
 public protocol TrackingViewNameProtocol {
     var nameForTracking: String { get }
 }
 
+@MainActor
 public class Router: ObservableObject {
     private var routes = [AnyHashable]()
     fileprivate var onPush:
@@ -139,7 +141,8 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
         router.onPush = { [weak router, weak navigation] options, view, name in
             guard let router = router else { return nil }
             let vc = hHostingController(rootView: view.environmentObject(router), contentName: name)
-            vc.onViewWillLayoutSubviews = { [weak vc] in guard let vc = vc else { return }
+            vc.onViewWillLayoutSubviews = { [weak vc] in
+                guard let vc = vc else { return }
                 if options.contains(.hidesBackButton) {
                     vc.navigationItem.setHidesBackButton(true, animated: true)
                 }
@@ -172,7 +175,8 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
                 }
             }
 
-            vc.onViewDidLayoutSubviews = { [weak vc] in guard let vc = vc else { return }
+            vc.onViewDidLayoutSubviews = { [weak vc] in
+                guard let vc = vc else { return }
                 if #available(iOS 16.0, *) {
                     vc.sheetPresentationController?
                         .animateChanges {
@@ -218,7 +222,9 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
             }
         }
         navigation.onDeinit = { [weak router] in
-            router?.builders.removeAll()
+            Task { @MainActor in
+                router?.builders.removeAll()
+            }
         }
 
         router.onDismiss = { [weak navigation] in
@@ -292,6 +298,7 @@ extension View {
     }
 }
 
+@MainActor
 public protocol TitleView {
     func getTitleView() -> UIView
 }

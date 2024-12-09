@@ -66,6 +66,15 @@ extension View {
     public func withDismissButton(reducedTopSpacing: Int = 0) -> some View {
         modifier(CloseButtonModifier(reducedTopSpacing: reducedTopSpacing))
     }
+
+    public func withAlertDismiss() -> some View {
+        self.withDismissButton(
+            title: L10n.General.areYouSure,
+            message: L10n.General.progressWillBeLostAlert,
+            confirmButton: L10n.General.yes,
+            cancelButton: L10n.General.no
+        )
+    }
 }
 
 private struct CloseButtonModifier: ViewModifier {

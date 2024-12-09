@@ -1,7 +1,7 @@
 import Foundation
 import hGraphQL
 
-public struct Referral: Hashable, Codable {
+public struct Referral: Hashable, Codable, Sendable {
     let name: String
     let activeDiscount: MonetaryAmount?
     let status: State
@@ -16,14 +16,14 @@ public struct Referral: Hashable, Codable {
         self.status = status
     }
 
-    public enum State: String, Codable {
+    public enum State: String, Codable, Sendable {
         case terminated
         case pending
         case active
     }
 }
 
-public struct ForeverData: Codable, Equatable {
+public struct ForeverData: Codable, Equatable, Sendable {
     public init(
         grossAmount: MonetaryAmount,
         netAmount: MonetaryAmount,

@@ -19,9 +19,12 @@ struct LoginNavigation: View {
             NotLoggedInView(vm: vm)
         }
         .detent(presented: $vm.showLanguagePicker, style: [.height]) {
-            LanguagePickerView()
+            PickLanguage()
                 .navigationTitle(L10n.loginLanguagePreferences)
-                .embededInNavigation(tracking: LoginDetentType.languagePicker)
+                .embededInNavigation(
+                    options: [.navigationType(type: .large)],
+                    tracking: LoginDetentType.languagePicker
+                )
         }
         .detent(presented: $vm.showLogin, style: [.large]) {
             Group {
@@ -58,7 +61,7 @@ private enum LoginDetentType: TrackingViewNameProtocol {
         case .notLoggedIn:
             return .init(describing: NotLoggedInView.self)
         case .languagePicker:
-            return .init(describing: LanguagePickerView.self)
+            return .init(describing: PickLanguage().self)
         }
     }
 
@@ -133,6 +136,7 @@ struct NotLoggedInView_Previews: PreviewProvider {
     }
 }
 
+@MainActor
 public class NotLoggedViewModel: ObservableObject {
     @PresentableStore var store: MarketStore
     @Published var blurHash: String = ""
@@ -172,21 +176,27 @@ public class NotLoggedViewModel: ObservableObject {
 
         self.bootStrapped = true
 
-        NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) {
-            [weak self] notification in
-            if let url = notification.object as? URL {
-                if url.relativePath.contains("login-failure") {
-                    self?.router.push(AuthentificationRouterType.error(message: L10n.authenticationBankidLoginError))
-                }
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(openDeeplingLink),
+            name: .openDeepLink,
+            object: nil
+        )
+    }
+
+    @objc func openDeeplingLink(_ notification: Notification) {
+        if let url = notification.object as? URL {
+            if url.relativePath.contains("login-failure") {
+                router.push(AuthentificationRouterType.error(message: L10n.authenticationBankidLoginError))
             }
         }
-
     }
 
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
 
+    @MainActor
     func onOnBoardPressed() {
         var webUrl = Environment.current.webBaseURL
         webUrl.appendPathComponent(Localization.Locale.currentLocale.value.webPath)

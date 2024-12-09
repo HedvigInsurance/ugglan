@@ -28,7 +28,7 @@ public struct ProductVariantComparison: Codable, Equatable, Hashable {
     }
 }
 
-public struct ChangeTierIntentModel: Codable, Equatable, Hashable {
+public struct ChangeTierIntentModel: Codable, Equatable, Hashable, Sendable {
     let displayName: String
     let activationDate: Date
     let tiers: [Tier]
@@ -67,12 +67,11 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable {
         //        self.productVariantComparision = productVariantComparision
     }
 }
-
-public struct Tier: Codable, Equatable, Hashable, Identifiable {
+public struct Tier: Codable, Equatable, Hashable, Identifiable, Sendable {
     public var id: String
     let name: String
     let level: Int
-    public let quotes: [Quote]
+    public var quotes: [Quote]
     let exposureName: String?
 
     public init(
@@ -89,6 +88,7 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable {
         self.exposureName = exposureName
     }
 
+    @MainActor
     func getPremiumLabel() -> String? {
         if quotes.count == 1 {
             return quotes.first?.premium.formattedAmountPerMonth
@@ -103,13 +103,12 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable {
     }
 }
 
-public struct Quote: Codable, Hashable, Identifiable {
+public struct Quote: Codable, Hashable, Identifiable, Sendable {
     public var id: String
     let deductableAmount: MonetaryAmount?
     let deductablePercentage: Int?
     let subTitle: String?
     let premium: MonetaryAmount
-
     let displayItems: [DisplayItem]
     public let productVariant: ProductVariant?
 
@@ -131,7 +130,7 @@ public struct Quote: Codable, Hashable, Identifiable {
         self.productVariant = productVariant
     }
 
-    public struct DisplayItem: Codable, Equatable, Hashable {
+    public struct DisplayItem: Codable, Equatable, Hashable, Sendable {
         public var id = UUID()
 
         public init(

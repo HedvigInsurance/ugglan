@@ -1,9 +1,10 @@
 import Apollo
 import Foundation
-import authlib
+@preconcurrency import authlib
 import hCore
 import hGraphQL
 
+@MainActor
 public class AuthenticationService {
     @Inject var client: AuthenticationClient
 
@@ -51,10 +52,20 @@ public class AuthenticationService {
 final public class AuthenticationClientAuthLib: AuthenticationClient {
     public init() {}
 
+    @MainActor
     private var networkAuthRepository: NetworkAuthRepository = {
         NetworkAuthRepository(
             environment: Environment.current.authEnvironment,
-            additionalHttpHeadersProvider: { ApolloClient.headers() },
+            additionalHttpHeadersProvider: {
+                var headers = [String: String]()
+                let semaphore = DispatchSemaphore(value: 0)
+                Task {
+                    headers = await ApolloClient.headers()
+                    semaphore.signal()
+                }
+                semaphore.wait()
+                return headers
+            },
             httpClientEngine: nil
         )
     }()
@@ -213,7 +224,7 @@ final public class AuthenticationClientAuthLib: AuthenticationClient {
 
     public func logout() async throws {
         do {
-            if let token = try ApolloClient.retreiveToken() {
+            if let token = try await ApolloClient.retreiveToken() {
                 let data = try await self.networkAuthRepository.revoke(token: token.refreshToken)
                 switch onEnum(of: data) {
                 case .error:

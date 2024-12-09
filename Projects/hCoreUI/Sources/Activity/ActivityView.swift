@@ -1,5 +1,4 @@
 import Foundation
-import PresentableStore
 import SwiftUI
 
 public struct ModalPresentationSourceWrapper<Content: View>: UIViewRepresentable {
@@ -25,6 +24,7 @@ public struct ModalPresentationSourceWrapper<Content: View>: UIViewRepresentable
     }
 }
 
+@MainActor
 public class ModalPresentationSourceWrapperViewModel: ObservableObject {
     weak var view: UIView?
 

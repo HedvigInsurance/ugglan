@@ -51,7 +51,9 @@ public struct MovingFlowHousingTypeScreen: View {
                                     )
                                 }
                             }
-                            InfoCard(text: L10n.changeAddressCoverageInfoText, type: .info)
+                            if let days = movingFlowNavigationVm.movingFlowVm?.oldAddressCoverageDurationDays {
+                                InfoCard(text: L10n.changeAddressCoverageInfoText(days), type: .info)
+                            }
                             hButton.LargeButton(type: .primary) {
                                 continuePressed()
                             } content: {
@@ -107,6 +109,7 @@ struct MovingFlowTypeOfHome_Previews: PreviewProvider {
     }
 }
 
+@MainActor
 class MovingFlowHousingTypeViewModel: ObservableObject {
     @Inject private var service: MoveFlowClient
     @Published var selectedHousingType: String? = HousingType.apartment.rawValue

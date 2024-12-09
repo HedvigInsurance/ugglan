@@ -1,7 +1,7 @@
 xcassets:
     - inputs: Projects/hCoreUI/Resources/Assets.xcassets
       outputs:
-        templateName: swift4
+        templateName: swift5
         output: Projects/hCoreUI/Sources/Derived/Assets.swift
         params:
           enumName: hCoreUIAssets

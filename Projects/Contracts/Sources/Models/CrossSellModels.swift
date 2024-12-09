@@ -3,7 +3,7 @@ import SwiftUI
 import hCoreUI
 import hGraphQL
 
-public struct CrossSell: Codable, Equatable, Hashable {
+public struct CrossSell: Codable, Equatable, Hashable, Sendable {
     public var typeOfContract: String
     public var title: String
     public var description: String
@@ -96,7 +96,7 @@ extension GraphQLEnum<OctopusGraphQL.CrossSellType> {
     }
 }
 
-public enum CrossSellType: Codable, Hashable {
+public enum CrossSellType: Codable, Hashable, Sendable {
     case car
     case home
     case accident

@@ -154,7 +154,7 @@ extension Logging {
         self.addUserAction(type: type, name: name, error: error, attributes: attributes)
     }
 }
-
+@MainActor
 public var log: (any Logging)! = DemoLogger()
 
 class DemoLogger: Logging {

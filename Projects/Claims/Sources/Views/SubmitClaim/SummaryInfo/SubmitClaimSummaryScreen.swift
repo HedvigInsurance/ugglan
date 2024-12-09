@@ -54,14 +54,16 @@ public struct SubmitClaimSummaryScreen: View {
                     InfoCard(text: L10n.claimsComplementClaim, type: .info)
                         .padding(.bottom, .padding8)
                     hButton.LargeButton(type: .primary) {
-                        Task {
-                            let step = await vm.summaryRequest(
-                                context: claimsNavigationVm.currentClaimContext ?? "",
-                                model: claimsNavigationVm.summaryModel
-                            )
+                        if let model = claimsNavigationVm.summaryModel {
+                            Task {
+                                let step = await vm.summaryRequest(
+                                    context: claimsNavigationVm.currentClaimContext ?? "",
+                                    model: model
+                                )
 
-                            if let step {
-                                claimsNavigationVm.navigate(data: step)
+                                if let step {
+                                    claimsNavigationVm.navigate(data: step)
+                                }
                             }
                         }
                     } content: {
@@ -187,9 +189,10 @@ struct SubmitClaimSummaryScreen_Previews: PreviewProvider {
     }
 }
 
+@MainActor
 class SubmitClaimSummaryScreenViewModel: ObservableObject {
     let model: FilesUploadViewModel?
-    @Inject private var service: SubmitClaimClient
+    private let service = SubmitClaimService()
     @Published var viewState: ProcessingState = .success
 
     init(
@@ -205,7 +208,7 @@ class SubmitClaimSummaryScreenViewModel: ObservableObject {
     @MainActor
     func summaryRequest(
         context: String,
-        model: SubmitClaimStep.SummaryStepModels?
+        model: SubmitClaimStep.SummaryStepModels
     ) async -> SubmitClaimStepResponse? {
         withAnimation {
             viewState = .loading

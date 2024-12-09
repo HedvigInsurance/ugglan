@@ -4,6 +4,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
+@MainActor
 public class ChangeTierNavigationViewModel: ObservableObject {
     @Published public var isEditTierPresented = false
     @Published public var isEditDeductiblePresented = false
@@ -51,8 +52,8 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     }
 
     public static func getTiers(input: ChangeTierInputData) async throws -> ChangeTierIntentModel {
-        let client: ChangeTierClient = Dependencies.shared.resolve()
-        let data = try await client.getTier(input: input)
+        let service = ChangeTierService()
+        let data = try await service.getTier(input: input)
         return data
     }
 
@@ -106,7 +107,7 @@ public enum ChangeTierInput: Identifiable, Equatable {
     case contractWithSource(data: ChangeTierInputData)
     case existingIntent(intent: ChangeTierIntentModel, onSelect: (((Tier, Quote)) -> Void)?)
 }
-public struct ChangeTierInputData: Equatable, Identifiable {
+public struct ChangeTierInputData: Equatable, Identifiable, Codable {
     public var id: String {
         contractId
     }
@@ -161,7 +162,7 @@ extension ChangeTierContract: TrackingViewNameProtocol {
     }
 }
 
-public enum ChangeTierSource {
+public enum ChangeTierSource: Codable {
     case changeTier
     case betterPrice
     case betterCoverage
@@ -236,8 +237,15 @@ public struct ChangeTierNavigation: View {
             )
         }
         .modally(presented: $changeTierNavigationVm.isCompareTiersPresented) {
+
+            let currentTier = changeTierNavigationVm.vm.currentTier
+
             CompareTierScreen(
-                vm: .init(tiers: changeTierNavigationVm.vm.tiers, selectedTier: changeTierNavigationVm.vm.selectedTier)
+                vm: .init(
+                    tiers: changeTierNavigationVm.vm.tiers,
+                    selectedTier: changeTierNavigationVm.vm.selectedTier,
+                    currentTier: currentTier
+                )
             )
             .withDismissButton()
             .embededInNavigation(
@@ -268,7 +276,7 @@ public struct ChangeTierNavigation: View {
     var getScreen: some View {
 
         ChangeTierLandingScreen(vm: changeTierNavigationVm.vm)
-            .withDismissButton()
+            .withAlertDismiss()
             .routerDestination(for: ChangeTierRouterActions.self) { action in
                 switch action {
                 case .summary:
@@ -277,7 +285,7 @@ public struct ChangeTierNavigation: View {
                         changeTierNavigationVm: changeTierNavigationVm
                     )
                     .configureTitle(L10n.offerUpdateSummaryTitle)
-                    .withDismissButton()
+                    .withAlertDismiss()
                 }
             }
             .routerDestination(for: ChangeTierRouterActionsWithoutBackButton.self, options: [.hidesBackButton]) {

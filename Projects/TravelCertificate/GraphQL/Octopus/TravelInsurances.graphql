@@ -6,5 +6,8 @@ query TravelCertificates {
       signedUrl
       expiryDate
     }
+    activeContracts {
+      supportsTravelCertificate
+    }
   }
 }

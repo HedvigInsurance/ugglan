@@ -66,7 +66,6 @@ private class AttributedUITextView: UITextView, UITextViewDelegate {
         self.attributedText = attributedString
         self.textContainerInset = .init(top: 0, left: 0, bottom: 0, right: 0)
         self.backgroundColor = .clear
-        let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
         self.textColor = getTextColor(useSecondaryColor: useSecondaryColor)
         self.isUserInteractionEnabled = false
         updateHeight()

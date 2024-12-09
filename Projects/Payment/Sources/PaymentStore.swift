@@ -32,6 +32,7 @@ public enum LoadingAction: LoadingProtocol {
     case getDiscountsData
     case getHistory
 }
+
 public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, LoadingAction> {
     @Inject var paymentService: hPaymentClient
 
@@ -70,7 +71,7 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
         }
     }
 
-    public override func reduce(_ state: PaymentState, _ action: PaymentAction) -> PaymentState {
+    public override func reduce(_ state: PaymentState, _ action: PaymentAction) async -> PaymentState {
         var newState = state
 
         switch action {

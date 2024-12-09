@@ -11,47 +11,43 @@ import hCoreUI
 import hGraphQL
 
 public struct ClaimDetailView: View {
-    @State var player: AudioPlayer?
     @State var showImagePicker = false
     @State var showFilePicker = false
     @State var showCamera = false
-    @StateObject var vm: ClaimDetailViewModel
+    @ObservedObject var vm: ClaimDetailViewModel
     @EnvironmentObject var homeVm: HomeNavigationViewModel
     @EnvironmentObject var router: Router
-    private var fromChat: Bool
 
     public init(
-        claim: ClaimModel,
-        fromChat: Bool
+        claim: ClaimModel?,
+        type: FetchClaimDetailsType
     ) {
-        self._vm = .init(wrappedValue: .init(claim: claim))
-        self.fromChat = fromChat
-        if let url = URL(string: claim.signedAudioURL) {
-            self._player = State(initialValue: AudioPlayer(url: url))
-        }
+        self._vm = .init(wrappedValue: .init(claim: claim, type: type))
     }
 
-    private var statusParagraph: String {
-        vm.claim.statusParagraph
+    private var statusParagraph: String? {
+        vm.claim?.statusParagraph
     }
 
     public var body: some View {
         hForm {
             VStack(spacing: 8) {
-                hSection {
-                    ClaimStatus(
-                        claim: vm.claim,
-                        enableTap: false,
-                        extendedBottomView: {
-                            AnyView(infoAndContactSection)
-                        }()
-                    )
+                if let claim = vm.claim {
+                    hSection {
+                        ClaimStatus(
+                            claim: claim,
+                            enableTap: false,
+                            extendedBottomView: {
+                                AnyView(infoAndContactSection)
+                            }()
+                        )
+                    }
+                    .sectionContainerStyle(.transparent)
+                    memberFreeTextSection
+                    claimDetailsSection
+                        .padding(.vertical, .padding16)
+                    uploadFilesSection
                 }
-                .sectionContainerStyle(.transparent)
-                memberFreeTextSection
-                claimDetailsSection
-                    .padding(.vertical, .padding16)
-                uploadFilesSection
             }
         }
         .setHomeNavigationBars(
@@ -64,18 +60,18 @@ public struct ClaimDetailView: View {
                 case .firstVet:
                     break
                 case .chat:
-                    if fromChat {
+                    if case .conversation = vm.type {
                         router.pop()
                     } else {
                         NotificationCenter.default.post(
                             name: .openChat,
-                            object: ChatType.conversationId(id: vm.claim.conversation?.id ?? "")
+                            object: ChatType.conversationId(id: vm.claim?.conversation?.id ?? "")
                         )
                     }
                 case .chatNotification:
                     NotificationCenter.default.post(
                         name: .openChat,
-                        object: ChatType.conversationId(id: vm.claim.conversation?.id ?? "")
+                        object: ChatType.conversationId(id: vm.claim?.conversation?.id ?? "")
                     )
                 }
             }
@@ -94,8 +90,7 @@ public struct ClaimDetailView: View {
         }
         .sheet(isPresented: $showCamera) {
             CameraPickerView { image in
-                guard let data = image.jpegData(compressionQuality: 0.9),
-                    let thumbnailData = image.jpegData(compressionQuality: 0.1)
+                guard let data = image.jpegData(compressionQuality: 0.9)
                 else { return }
                 let file = File(
                     id: UUID().uuidString,
@@ -129,6 +124,14 @@ public struct ClaimDetailView: View {
             .embededInNavigation(tracking: ClaimDetailDetentType.fileUpload)
 
         }
+        .loading($vm.claimProcessingState)
+        .hErrorViewButtonConfig(
+            .init(
+                actionButton: .init(buttonAction: {
+                    vm.fetchClaimDetails()
+                })
+            )
+        )
     }
 
     @ViewBuilder
@@ -139,8 +142,10 @@ public struct ClaimDetailView: View {
             VStack(alignment: .leading, spacing: 0) {
                 hText(L10n.ClaimStatus.title, style: .label)
                     .foregroundColor(hTextColor.Opaque.primary)
-                hText(statusParagraph, style: .label)
-                    .foregroundColor(hTextColor.Opaque.secondary)
+                if let statusParagraph {
+                    hText(statusParagraph, style: .label)
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                }
             }
             .multilineTextAlignment(.leading)
             Spacer()
@@ -149,18 +154,20 @@ public struct ClaimDetailView: View {
 
     @ViewBuilder
     private var chatSection: some View {
-        hRow {
-            ContactChatView(
-                store: vm.store,
-                id: vm.claim.id,
-                status: vm.claim.status.rawValue
-            )
+        if let claim = vm.claim {
+            hRow {
+                ContactChatView(
+                    store: vm.store,
+                    id: claim.id,
+                    status: claim.status.rawValue
+                )
+            }
         }
     }
 
     @ViewBuilder
     private var memberFreeTextSection: some View {
-        if let inputText = vm.claim.memberFreeText {
+        if let inputText = vm.claim?.memberFreeText {
             hSection {
                 hRow {
                     hText(inputText)
@@ -176,38 +183,40 @@ public struct ClaimDetailView: View {
 
     @ViewBuilder
     private var claimDetailsSection: some View {
-        VStack(spacing: 16) {
-            hSection {
-                VStack(spacing: 8) {
-                    claimDetailsRow(title: L10n.ClaimStatus.ClaimDetails.type, value: vm.claim.claimType)
-                    if let incidentDate = vm.claim.incidentDate {
-                        claimDetailsRow(
-                            title: L10n.ClaimStatus.ClaimDetails.incidentDate,
-                            value: incidentDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-                        )
+        if let claim = vm.claim {
+            VStack(spacing: 16) {
+                hSection {
+                    VStack(spacing: 8) {
+                        claimDetailsRow(title: L10n.ClaimStatus.ClaimDetails.type, value: claim.claimType)
+                        if let incidentDate = claim.incidentDate {
+                            claimDetailsRow(
+                                title: L10n.ClaimStatus.ClaimDetails.incidentDate,
+                                value: incidentDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                            )
+                        }
+                        if let submitted = claim.submittedAt {
+                            claimDetailsRow(
+                                title: L10n.ClaimStatus.ClaimDetails.submitted,
+                                value: submitted.localDateToIso8601Date?.displayDateDDMMMYYYYFormat ?? ""
+                            )
+                        }
                     }
-                    if let submitted = vm.claim.submittedAt {
-                        claimDetailsRow(
-                            title: L10n.ClaimStatus.ClaimDetails.submitted,
-                            value: submitted.localDateToIso8601Date?.displayDateDDMMMYYYYFormat ?? ""
+                }
+                .withHeader {
+                    HStack {
+                        hText(L10n.ClaimStatus.ClaimDetails.title)
+                        Spacer()
+                        InfoViewHolder(
+                            title: L10n.ClaimStatus.ClaimDetails.title,
+                            description: L10n.ClaimStatus.ClaimDetails.infoText
                         )
                     }
                 }
-            }
-            .withHeader {
-                HStack {
-                    hText(L10n.ClaimStatus.ClaimDetails.title)
-                    Spacer()
-                    InfoViewHolder(
-                        title: L10n.ClaimStatus.ClaimDetails.title,
-                        description: L10n.ClaimStatus.ClaimDetails.infoText
-                    )
-                }
-            }
-            .hWithoutDivider
-            .sectionContainerStyle(.transparent)
+                .hWithoutDivider
+                .sectionContainerStyle(.transparent)
 
-            termsAndConditions
+                termsAndConditions
+            }
         }
     }
 
@@ -224,7 +233,7 @@ public struct ClaimDetailView: View {
 
     @ViewBuilder
     private var termsAndConditions: some View {
-        if let termsAndConditionsDocument = vm.claim.productVariant?.documents
+        if let termsAndConditionsDocument = vm.claim?.productVariant?.documents
             .first(where: { $0.type == .termsAndConditions })
         {
             hSection {
@@ -232,7 +241,7 @@ public struct ClaimDetailView: View {
                     hAttributedTextView(
                         text: AttributedPDF().attributedPDFString(for: termsAndConditionsDocument.displayName)
                     )
-                    .id("sds_\(String(describing: vm.claim.productVariant?.displayName))")
+                    .id("sds_\(String(describing: vm.claim?.productVariant?.displayName))")
                 }
                 .withCustomAccessory {
                     Image(uiImage: hCoreUIAssets.arrowNorthEast.image)
@@ -249,7 +258,7 @@ public struct ClaimDetailView: View {
         VStack(spacing: 16) {
             if vm.showUploadedFiles {
                 hSection {
-                    if let player {
+                    if let player = vm.player {
                         TrackPlayerView(
                             audioPlayer: player
                         )
@@ -311,29 +320,26 @@ public struct ClaimDetailView: View {
 
     private func showFilePickerAlert() {
         FilePicker.showAlert { selected in
-            switch selected {
-            case .camera:
-                showCamera = true
-            case .imagePicker:
-                PHPhotoLibrary.requestAuthorization(for: .readWrite) { (status) in
-                    switch status {
+            Task { @MainActor in
+                switch selected {
+                case .camera:
+                    showCamera = true
+                case .imagePicker:
+                    let access = await PHPhotoLibrary.requestAuthorization(for: .readWrite)
+                    switch access {
                     case .notDetermined, .restricted, .denied:
                         guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
                             return
                         }
-                        DispatchQueue.main.async { UIApplication.shared.open(settingsUrl) }
+                        await UIApplication.shared.open(settingsUrl)
                     case .authorized, .limited:
-                        DispatchQueue.main.async {
-                            showImagePicker = true
-                        }
+                        showImagePicker = true
                     @unknown default:
-                        DispatchQueue.main.async {
-                            showImagePicker = true
-                        }
+                        showImagePicker = true
                     }
+                case .filePicker:
+                    showFilePicker = true
                 }
-            case .filePicker:
-                showFilePicker = true
             }
         }
     }
@@ -352,7 +358,7 @@ private enum ClaimDetailDetentType: TrackingViewNameProtocol {
 
 struct ClaimDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        Dependencies.shared.add(module: Module { () -> hFetchClaimClient in FetchClaimClientDemo() })
+        Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in FetchClaimsClientDemo() })
         let featureFlags = FeatureFlagsDemo()
         Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlags })
 
@@ -382,29 +388,43 @@ struct ClaimDetailView_Previews: PreviewProvider {
         )
         return ClaimDetailView(
             claim: claim,
-            fromChat: false
+            type: .claim(id: claim.id)
         )
         .environmentObject(HomeNavigationViewModel())
     }
 }
 
+@MainActor
 public class ClaimDetailViewModel: ObservableObject {
     @PresentableStore var store: ClaimsStore
-    @Published var claim: ClaimModel
-    var claimService = hFetchClaimService()
+    @Published private(set) var claim: ClaimModel? {
+        didSet {
+            self.setupToolbarOptionType(for: claim)
+            if let url = URL(string: claim?.signedAudioURL) {
+                self.player = AudioPlayer(url: url)
+            }
+        }
+    }
+    private(set) var player: AudioPlayer?
+    private var claimDetailsService: FetchClaimDetailsService
     @Published var fetchFilesError: String?
+    @Published var claimProcessingState: ProcessingState = .loading
+
     @Published var hasFiles = false
     @Published var showFilesView: FilesDto?
     @Published var toolbarOptionType: [ToolbarOptionType] = [.chat]
     let fileGridViewModel: FileGridViewModel
-
+    let type: FetchClaimDetailsType
     private var cancellables = Set<AnyCancellable>()
     public init(
-        claim: ClaimModel
+        claim: ClaimModel?,
+        type: FetchClaimDetailsType
     ) {
         self.claim = claim
+        self.claimDetailsService = .init(type: type)
         let store: ClaimsStore = globalPresentableStoreContainer.get()
-        let files = store.state.files[claim.id] ?? []
+        self.type = type
+        let files = store.state.files[claim?.id ?? ""] ?? []
         self.fileGridViewModel = .init(files: files, options: [])
         Task {
             await fetchFiles()
@@ -433,37 +453,60 @@ public class ClaimDetailViewModel: ObservableObject {
             .store(in: &cancellables)
 
         handleClaimChat()
+        if let claim {
+            claimProcessingState = .success
+            if let url = URL(string: claim.signedAudioURL) {
+                self.player = AudioPlayer(url: url)
+            }
+        } else {
+            fetchClaimDetails()
+        }
     }
 
     private func handleClaimChat() {
-        let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
-        let claimId = self.claim.id
-        claimStore.stateSignal
-            .map({ $0.claim(for: claimId) })
-            .compactMap({ $0?.conversation?.hasNewMessage })
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .sink { [weak self] hasNewMessage in
-                let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
-                let claim = claimStore.state.claim(for: self?.claim.id ?? "")
-                let timeStamp = claim?.conversation?.newestMessage?.sentAt
-                self?.toolbarOptionType =
-                    hasNewMessage ? [.chatNotification(lastMessageTimeStamp: timeStamp ?? Date())] : [.chat]
-            }
-            .store(in: &cancellables)
-        if let hasNewMessage = claim.conversation?.hasNewMessage {
-            self.toolbarOptionType =
-                hasNewMessage
-                ? [.chatNotification(lastMessageTimeStamp: claim.conversation?.newestMessage?.sentAt ?? Date())]
-                : [.chat]
-        }
-
+        self.setupToolbarOptionType(for: claim)
         Timer.publish(every: 5, on: .main, in: .common).autoconnect()
-            .sink { _ in
-                let store: ClaimsStore = globalPresentableStoreContainer.get()
-                store.send(.fetchClaims)
+            .sink { [weak self] _ in
+                Task {
+                    do {
+                        if let claim = try await self?.claimDetailsService.get() {
+                            self?.setupToolbarOptionType(for: claim)
+                        }
+                    } catch {
+
+                    }
+                }
             }
             .store(in: &cancellables)
+
+    }
+
+    private func setupToolbarOptionType(for claimModel: ClaimModel?) {
+        guard let claimModel, let conversation = claimModel.conversation else {
+            withAnimation {
+                self.toolbarOptionType = []
+            }
+            return
+        }
+        let hasNewMessage = conversation.hasNewMessage
+        let timeStamp = conversation.newestMessage?.sentAt
+        withAnimation {
+            self.toolbarOptionType =
+                hasNewMessage ? [.chatNotification(lastMessageTimeStamp: timeStamp ?? Date())] : [.chat]
+        }
+    }
+
+    func fetchClaimDetails() {
+        claimProcessingState = .loading
+        Task {
+            do {
+                let claim = try await claimDetailsService.get()
+                self.claim = claim
+                claimProcessingState = .success
+            } catch {
+                claimProcessingState = .error(errorMessage: error.localizedDescription)
+            }
+        }
     }
 
     @MainActor
@@ -472,10 +515,10 @@ public class ClaimDetailViewModel: ObservableObject {
             fetchFilesError = nil
         }
         do {
-            let files = try await claimService.getFiles()
-            store.send(.setFiles(files: files))
+            let data = try await claimDetailsService.getFiles()
+            store.send(.setFilesForClaim(claimId: data.claimId, files: data.files))
             withAnimation { [weak self] in
-                self?.fileGridViewModel.files = files[self?.claim.id ?? ""] ?? []
+                self?.fileGridViewModel.files = data.files
             }
         } catch let ex {
             withAnimation { [weak self] in
@@ -485,17 +528,19 @@ public class ClaimDetailViewModel: ObservableObject {
     }
 
     func showAddFiles(with files: [File]) {
-        if !files.isEmpty {
-            showFilesView = .init(id: claim.id, endPoint: claim.targetFileUploadUri, files: files)
+        if let claim = claim {
+            if !files.isEmpty {
+                showFilesView = .init(id: claim.id, endPoint: claim.targetFileUploadUri, files: files)
+            }
         }
     }
 
     var showUploadedFiles: Bool {
-        return self.claim.signedAudioURL != nil || !fileGridViewModel.files.isEmpty || canAddFiles
+        return self.claim?.signedAudioURL != nil || !fileGridViewModel.files.isEmpty || canAddFiles
     }
 
     var canAddFiles: Bool {
-        return self.claim.status != .closed && fetchFilesError == nil
+        return self.claim?.status != .closed && fetchFilesError == nil
     }
 }
 

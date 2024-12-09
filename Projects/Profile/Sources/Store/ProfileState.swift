@@ -15,22 +15,26 @@ public struct ProfileState: StateProtocol {
 
     var hasTravelCertificates: Bool = false
 
+    @MainActor
     var showTravelCertificate: Bool {
         let flags: FeatureFlags = Dependencies.shared.resolve()
         return flags.isTravelInsuranceEnabled && (hasTravelCertificates || canCreateTravelInsurance)
     }
 
+    @MainActor
     public var canCreateTravelInsurance: Bool {
         let store: ContractStore = globalPresentableStoreContainer.get()
         return store.state.activeContracts.filter({ $0.supportsTravelCertificate }).isEmpty
     }
 
     public init() {
-        UNUserNotificationCenter.current()
-            .getNotificationSettings { settings in
-                let store: ProfileStore = globalPresentableStoreContainer.get()
-                store.send(.setPushNotificationStatus(status: settings.authorizationStatus.rawValue))
-            }
+        Task {
+            let settings = await UNUserNotificationCenter.current().notificationSettings()
+            let status = settings.authorizationStatus.rawValue
+            let store: ProfileStore = await globalPresentableStoreContainer.get()
+            store.send(.setPushNotificationStatus(status: status))
+
+        }
     }
 
     public func pushNotificationCurrentStatus() -> UNAuthorizationStatus {
@@ -48,7 +52,7 @@ public struct ProfileState: StateProtocol {
     }
 }
 
-public struct PartnerData: Codable, Equatable, Hashable {
+public struct PartnerData: Codable, Equatable, Hashable, Sendable {
     public let sas: PartnerDataSas?
 
     public var shouldShowEuroBonus: Bool {
@@ -64,7 +68,7 @@ public struct PartnerData: Codable, Equatable, Hashable {
     }
 }
 
-public struct PartnerDataSas: Codable, Equatable, Hashable {
+public struct PartnerDataSas: Codable, Equatable, Hashable, Sendable {
     let eligible: Bool
     let eurobonusNumber: String?
     init(eligible: Bool, eurobonusNumber: String?) {

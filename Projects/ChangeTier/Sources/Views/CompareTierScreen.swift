@@ -270,19 +270,23 @@ struct CompareOnRowTap: ViewModifier {
     }
 }
 
+@MainActor
 class CompareTierViewModel: ObservableObject {
-    @Inject private var service: ChangeTierClient
+    private let service = ChangeTierService()
     @Published var viewState: ProcessingState = .loading
     @Published var selectedTier: Tier?
+    @Published var currentTier: Tier?
     @Published var tiers: [Tier]
     @Published var selectedPeril: Perils?
     @Published var perils: [String: [Perils]] = [:]
 
     init(
         tiers: [Tier],
-        selectedTier: Tier? = nil
+        selectedTier: Tier? = nil,
+        currentTier: Tier?
     ) {
         self.selectedTier = selectedTier
+        self.currentTier = currentTier
         self.tiers = tiers
         self.productVariantComparision()
     }
@@ -444,7 +448,8 @@ class CompareTierViewModel: ObservableObject {
             standardTier,
             premiumTier,
         ],
-        selectedTier: standardTier
+        selectedTier: standardTier,
+        currentTier: standardTier
     )
 
     return CompareTierScreen(vm: vm)

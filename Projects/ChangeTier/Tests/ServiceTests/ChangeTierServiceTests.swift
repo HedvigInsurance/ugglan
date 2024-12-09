@@ -1,13 +1,14 @@
-import XCTest
+@preconcurrency import XCTest
 import hCore
 
 @testable import ChangeTier
 
+@MainActor
 final class ChangeTierServiceTests: XCTestCase {
     weak var sut: MockChangeTierService?
 
-    override func setUp() {
-        super.setUp()
+    override func setUp() async throws {
+        try await super.setUp()
         sut = nil
     }
 

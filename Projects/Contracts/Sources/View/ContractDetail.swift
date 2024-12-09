@@ -84,6 +84,7 @@ public struct ContractDetail: View {
                     )
                     .padding(.top, .padding16)
                     .padding(.bottom, .padding8)
+                    .hWithoutDividerPadding
                 }
                 .sectionContainerStyle(.transparent)
                 .padding(.top, .padding8)
@@ -96,6 +97,7 @@ public struct ContractDetail: View {
     }
 }
 
+@MainActor
 class ContractDetailsViewModel: ObservableObject {
     private let id: String
     @PresentableStore var store: ContractStore

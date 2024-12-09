@@ -2,7 +2,7 @@ import Foundation
 import hCore
 import hGraphQL
 
-public struct Message: Codable, Identifiable, Hashable {
+public struct Message: Codable, Identifiable, Hashable, Sendable {
     public static func == (lhs: Message, rhs: Message) -> Bool {
         return lhs.localId == rhs.localId || lhs.remoteId == rhs.remoteId
     }
@@ -79,12 +79,12 @@ public struct Message: Codable, Identifiable, Hashable {
 
 }
 
-enum MessageSender: Codable, Hashable {
+enum MessageSender: Codable, Hashable, Sendable {
     case member
     case hedvig
 }
 
-enum MessageStatus: Codable, Hashable {
+enum MessageStatus: Codable, Hashable, Sendable {
     case draft
     case sent
     case received
@@ -99,7 +99,7 @@ enum MessageStatus: Codable, Hashable {
         }
     }
 }
-enum MessageType: Codable, Hashable {
+enum MessageType: Codable, Hashable, Sendable {
     case text(text: String)
     case file(file: File)
     case crossSell(url: URL)

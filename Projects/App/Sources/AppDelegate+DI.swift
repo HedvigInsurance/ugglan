@@ -18,6 +18,7 @@ import TravelCertificate
 import hCore
 import hGraphQL
 
+@MainActor
 extension ApolloClient {
     public static func initAndRegisterClient() {
         let authorizationService = AuthenticationClientAuthLib()
@@ -28,7 +29,7 @@ extension ApolloClient {
         if ugglanStore.state.isDemoMode {
             let featureFlags = FeatureFlagsDemo()
             let hPaymentService = hPaymentClientDemo()
-            let fetchClaimService = FetchClaimClientDemo()
+            let fetchClaimsService = FetchClaimsClientDemo()
             let hClaimFileUploadService = hClaimFileUploadClientDemo()
             let fetchContractsService = FetchContractsClientDemo()
             let foreverService = ForeverClientDemo()
@@ -39,9 +40,10 @@ extension ApolloClient {
             let submitClaimDemoService = SubmitClaimClientDemo()
             let conversationsClient = ConversationsDemoClient()
             let changeTierClient = ChangeTierClientDemo()
+            let fetchClaimDetailsDemoClient = FetchClaimDetailsClientDemo()
             Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlags })
             Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentService })
-            Dependencies.shared.add(module: Module { () -> hFetchClaimClient in fetchClaimService })
+            Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in fetchClaimsService })
             Dependencies.shared.add(module: Module { () -> hClaimFileUploadClient in hClaimFileUploadService })
             Dependencies.shared.add(module: Module { () -> FetchContractsClient in fetchContractsService })
             Dependencies.shared.add(module: Module { () -> ForeverClient in foreverService })
@@ -53,6 +55,7 @@ extension ApolloClient {
             Dependencies.shared.add(module: Module { () -> ConversationsClient in conversationsClient })
             Dependencies.shared.add(module: Module { () -> ConversationClient in conversationsClient })
             Dependencies.shared.add(module: Module { () -> ChangeTierClient in changeTierClient })
+            Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in fetchClaimDetailsDemoClient })
         } else {
             let paymentService = hPaymentClientOctopus()
             let hCampaignsService = hCampaingsClientOctopus()
@@ -65,16 +68,17 @@ extension ApolloClient {
             let homeService = HomeClientOctopus()
             let terminateContractsService = TerminateContractsClientOctopus()
             let fetchContractsService = FetchContractsClientOctopus()
-            let hFetchClaimService = FetchClaimClientOctopus()
+            let hFetchClaimsService = FetchClaimsClientOctopus()
             let travelInsuranceService = TravelInsuranceClientOctopus()
             let featureFlagsUnleash = FeatureFlagsUnleash(environment: Environment.current)
             let analyticsService = AnalyticsClientOctopus()
             let notificationService = NotificationClientOctopus()
-            let hFetchEntrypointsService = FetchEntrypointsClientOctopus()
+            let hFetchEntrypointsClient = FetchEntrypointsClientOctopus()
             let submitClaimService = SubmitClaimClientOctopus()
             let conversationClient = ConversationClientOctopus()
             let conversationsClient = ConversationsClientOctopus()
             let changeTierClient = ChangeTierClientOctopus()
+            let fetchClaimDetailsClient = FetchClaimDetailsClientOctopus()
             switch Environment.current {
             case .staging:
                 Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlagsUnleash })
@@ -83,7 +87,7 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> hPaymentClient in paymentService })
                 Dependencies.shared.add(module: Module { () -> hCampaignClient in hCampaignsService })
-                Dependencies.shared.add(module: Module { () -> hFetchClaimClient in hFetchClaimService })
+                Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in hFetchClaimsService })
                 Dependencies.shared.add(module: Module { () -> hClaimFileUploadClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> FetchContractsClient in fetchContractsService })
                 Dependencies.shared.add(module: Module { () -> MoveFlowClient in moveFlowService })
@@ -97,11 +101,12 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> TerminateContractsClient in terminateContractsService })
                 Dependencies.shared.add(module: Module { () -> AnalyticsClient in analyticsService })
                 Dependencies.shared.add(module: Module { () -> NotificationClient in notificationService })
-                Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in hFetchEntrypointsService })
+                Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in hFetchEntrypointsClient })
                 Dependencies.shared.add(module: Module { () -> SubmitClaimClient in submitClaimService })
                 Dependencies.shared.add(module: Module { () -> ConversationClient in conversationClient })
                 Dependencies.shared.add(module: Module { () -> ConversationsClient in conversationsClient })
                 Dependencies.shared.add(module: Module { () -> ChangeTierClient in changeTierClient })
+                Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in fetchClaimDetailsClient })
             case .production, .custom:
                 Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlagsUnleash })
                 Dependencies.shared.add(module: Module { () -> TravelInsuranceClient in travelInsuranceService })
@@ -109,7 +114,7 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> FileUploaderClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> hPaymentClient in paymentService })
                 Dependencies.shared.add(module: Module { () -> hCampaignClient in hCampaignsService })
-                Dependencies.shared.add(module: Module { () -> hFetchClaimClient in hFetchClaimService })
+                Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in hFetchClaimsService })
                 Dependencies.shared.add(module: Module { () -> hClaimFileUploadClient in networkClient })
                 Dependencies.shared.add(module: Module { () -> FetchContractsClient in fetchContractsService })
                 Dependencies.shared.add(module: Module { () -> MoveFlowClient in moveFlowService })
@@ -123,17 +128,18 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> TerminateContractsClient in terminateContractsService })
                 Dependencies.shared.add(module: Module { () -> AnalyticsClient in analyticsService })
                 Dependencies.shared.add(module: Module { () -> NotificationClient in notificationService })
-                Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in hFetchEntrypointsService })
+                Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in hFetchEntrypointsClient })
                 Dependencies.shared.add(module: Module { () -> SubmitClaimClient in submitClaimService })
                 Dependencies.shared.add(module: Module { () -> ConversationClient in conversationClient })
                 Dependencies.shared.add(module: Module { () -> ConversationsClient in conversationsClient })
                 Dependencies.shared.add(module: Module { () -> ChangeTierClient in changeTierClient })
+                Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in fetchClaimDetailsClient })
             }
         }
     }
 
-    public static func initNetwworkClients() {
-        let hApollo = self.createClient()
+    public static func initNetwworkClients() async {
+        let hApollo = await self.createClient()
         Dependencies.shared.add(module: Module { hApollo.octopus })
     }
 

@@ -1,5 +1,4 @@
 import Foundation
-import PresentableStore
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 
@@ -143,7 +142,9 @@ private struct DetentSizeModifier<SwiftUIContent>: ViewModifier where SwiftUICon
                 vc.transitioningDelegate = delegate
                 vc.modalPresentationStyle = .custom
                 vc.onDeinit = {
-                    presented = false
+                    Task { @MainActor in
+                        presented = false
+                    }
                 }
                 presentationViewModel.presentingVC = vc
                 vcToPresent?.present(vc, animated: true)
@@ -159,13 +160,14 @@ class PresentationViewModel: ObservableObject {
     weak var presentingVC: UIViewController?
 }
 
-public class hHostingController<Content: View>: UIHostingController<Content> {
+@MainActor
+public class hHostingController<Content: View>: UIHostingController<Content>, Sendable {
     var onViewWillLayoutSubviews: () -> Void = {}
     var onViewDidLayoutSubviews: () -> Void = {}
     var onViewWillAppear: () -> Void = {}
     var onViewWillDisappear: () -> Void = {}
     private let key = UUID().uuidString
-    var onDeinit: () -> Void = {}
+    var onDeinit: @Sendable () -> Void = {}
     private let contentName: String?
     public init(rootView: Content, contentName: String? = nil) {
         self.contentName = contentName
@@ -206,7 +208,7 @@ public class hHostingController<Content: View>: UIHostingController<Content> {
     }
 
     deinit {
-        onDeinit()
+        self.onDeinit()
     }
 
     @objc func onCloseButton() {
@@ -224,13 +226,14 @@ extension UIViewController {
     }
 }
 
-public struct DetentPresentationOption: OptionSet {
+@MainActor
+public struct DetentPresentationOption: OptionSet, Sendable {
     public let rawValue: UInt
     public static let alwaysOpenOnTop = DetentPresentationOption(rawValue: 1 << 0)
     public static let withoutGrabber = DetentPresentationOption(rawValue: 1 << 2)
     public static let disableDismissOnScroll = DetentPresentationOption(rawValue: 1 << 3)
 
-    public init(rawValue: UInt) {
+    nonisolated public init(rawValue: UInt) {
         self.rawValue = rawValue
     }
 
@@ -245,5 +248,5 @@ extension String {
     }
 }
 
-public var logStartView: ((_ key: String, _ name: String) -> Void) = { _, _ in }
-public var logStopView: ((_ key: String) -> Void) = { _ in }
+@MainActor public var logStartView: ((_ key: String, _ name: String) -> Void) = { _, _ in }
+@MainActor public var logStopView: ((_ key: String) -> Void) = { _ in }

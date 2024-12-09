@@ -1,17 +1,14 @@
-import XCTest
+@preconcurrency import XCTest
 import hCore
 
 @testable import Claims
 
+@MainActor
 final class FileUploaderTests: XCTestCase {
     weak var sut: MockFileUploaderService?
 
-    override func setUp() {
-        super.setUp()
-        sut = nil
-    }
-
     override func tearDown() async throws {
+        try await super.tearDown()
         Dependencies.shared.remove(for: FileUploaderClient.self)
         try await Task.sleep(nanoseconds: 100)
 

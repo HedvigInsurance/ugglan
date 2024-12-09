@@ -1,103 +1,111 @@
-import Combine
 import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
-public struct LanguagePickerView: View {
-    @StateObject private var vm = LanguagePickerViewModel()
-    @EnvironmentObject var router: Router
+public struct PickLanguage: View {
+    let onSave: ((String) -> Void)?
+    let onCancel: (() -> Void)?
+    @PresentableStore var store: MarketStore
 
-    public init() {}
+    @State var currentLocale: Localization.Locale = .currentLocale.value
+    @State var code: String? = Localization.Locale.currentLocale.value.lprojCode
+
+    public init() {
+        onSave = nil
+        onCancel = nil
+    }
+
+    public init(
+        onSave: @escaping (String) -> Void,
+        onCancel: @escaping () -> Void
+    ) {
+        self.onSave = onSave
+        self.onCancel = onCancel
+    }
 
     public var body: some View {
         hForm {
             VStack(spacing: 8) {
-                withAnimation(.easeInOut(duration: 0.4)) {
-                    languageView
-                        .transition(.asymmetric(insertion: vm.insertion, removal: vm.removal))
+                if onSave == nil {
+                    hSection {
+                        hText(L10n.LanguagePickerModal.text, style: .body1)
+                            .foregroundColor(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
                 }
-                .padding(.top, .padding8)
-
+                hSection {
+                    VStack(spacing: 4) {
+                        ForEach(Localization.Locale.allCases, id: \.lprojCode) { locale in
+                            hRadioField(
+                                id: locale.lprojCode,
+                                leftView: {
+                                    HStack(spacing: 16) {
+                                        Image(uiImage: locale.icon)
+                                            .resizable()
+                                            .frame(width: 24, height: 24)
+                                        hText(locale.displayName, style: .heading2)
+                                            .foregroundColor(hTextColor.Opaque.primary)
+                                    }
+                                    .asAnyView
+                                },
+                                selected: $code
+                            )
+                        }
+                    }
+                }
             }
+            .sectionContainerStyle(.transparent)
         }
-        .sectionContainerStyle(.transparent)
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: 8) {
-                    hText(L10n.profileAboutAppVersion + " " + Bundle.main.appVersion, style: .finePrint)
-                        .foregroundColor(hTextColor.Opaque.tertiary)
-
-                    hButton.LargeButton(type: .primary) {
-                        Task {
-                            await vm.save()
-                            router.dismiss()
+                    if let onSave {
+                        hButton.LargeButton(type: .primary) {
+                            Localization.Locale.currentLocale.send(currentLocale)
+                            onSave(currentLocale.code)
+                        } content: {
+                            hText(L10n.generalSaveButton)
                         }
-                    } content: {
-                        hText(L10n.generalSaveButton)
                     }
-                    hButton.LargeButton(type: .ghost) {
-                        router.dismiss()
-                    } content: {
-                        hText(L10n.generalCancelButton)
+                    if let onCancel {
+                        hButton.LargeButton(type: .ghost) {
+                            onCancel()
+                        } content: {
+                            hText(L10n.generalCancelButton)
+                        }
                     }
-
                 }
             }
-            .padding(.top, .padding8)
+            .padding(.vertical, .padding16)
+            .sectionContainerStyle(.transparent)
             .hWithoutDivider
         }
-    }
-
-    private var languageView: some View {
-        hSection {
-            VStack(spacing: 4) {
-                ForEach(Localization.Locale.allCases, id: \.lprojCode) { locale in
-                    hRadioField(
-                        id: locale.rawValue,
-                        leftView: {
-                            HStack(spacing: 16) {
-                                Image(uiImage: locale.icon)
-                                    .resizable()
-                                    .frame(width: 24, height: 24)
-                                hText(locale.displayName, style: .heading2)
-                                    .foregroundColor(hTextColor.Opaque.primary)
-                            }
-                            .asAnyView
-                        },
-                        selected: $vm.selectedLocaleCode
-                    )
+        .onChange(of: code) { newValue in
+            if let locale = Localization.Locale.allCases.first(where: { $0.lprojCode == newValue }) {
+                if onSave == nil {
+                    Localization.Locale.currentLocale.send(locale)
                 }
+                currentLocale = locale
             }
         }
     }
-}
 
-struct LanguagePickerView_Previews: PreviewProvider {
-    static var previews: some View {
-        LanguagePickerView()
-    }
-}
-
-class LanguagePickerViewModel: ObservableObject {
-    @Published var selectedLocale = Localization.Locale.currentLocale
-    @Published var selectedLocaleCode: String? = Localization.Locale.currentLocale.value.rawValue
-
-    @Published var insertion: AnyTransition = .move(edge: .leading)
-    @Published var removal: AnyTransition = .move(edge: .trailing)
-    var cancellables = Set<AnyCancellable>()
-
-    init() {
-        $selectedLocaleCode.sink { [weak self] selectedLocaleCode in
-            if let selectedLocaleCode, let locale = Localization.Locale(rawValue: selectedLocaleCode) {
-                self?.selectedLocale.value = locale
-            }
+    @hColorBuilder
+    func retColor(isSelected: Bool) -> some hColor {
+        if isSelected {
+            hTextColor.Opaque.primary
+        } else {
+            hSurfaceColor.Opaque.primary
         }
-        .store(in: &cancellables)
     }
 
-    func save() async {
-        let store: MarketStore = globalPresentableStoreContainer.get()
-        await store.sendAsync(.selectLanguage(language: self.selectedLocale.value.rawValue))
+    @hColorBuilder
+    func getBorderColor(isSelected: Bool) -> some hColor {
+        if isSelected {
+            hTextColor.Opaque.primary
+        } else {
+            hBorderColor.secondary
+        }
     }
 }

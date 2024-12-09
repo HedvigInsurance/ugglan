@@ -1,5 +1,5 @@
 import Foundation
-import UnleashProxyClientSwift
+@preconcurrency import UnleashProxyClientSwift
 import hGraphQL
 
 public class FeatureFlagsUnleash: FeatureFlags {
@@ -52,18 +52,15 @@ public class FeatureFlagsUnleash: FeatureFlags {
             environment: environmentContext,
             context: context
         )
-        unleashClient?
-            .subscribe(name: "ready") { [weak self] in
-                self?.handleReady()
-            }
-        unleashClient?
-            .subscribe(name: "update") { [weak self] in
+        self.unleashClient?
+            .subscribe(.update) { [weak self] in
                 self?.handleUpdate()
             }
         log.info("Started loading unleash experiments")
 
         do {
-            try await unleashClient?.start(printToConsole: true)
+            try await self.unleashClient?.start(printToConsole: true)
+            handleUpdate()
             log.info("Successfully loaded unleash experiments")
         } catch let exception {
             log.info("Failed loading unleash experiments \(exception)")
@@ -143,10 +140,11 @@ public class FeatureFlagsUnleash: FeatureFlags {
         if let movingFlowVersion = MovingFlowVersion(rawValue: movingFlowEnabledName), isMovingFlowEnabled.enabled {
             self.movingFlowVersion = movingFlowVersion
         }
-
-        log.info(
-            "Feature flag set",
-            attributes: ["featureFlags": featureFlags]
-        )
+        Task {
+            log.info(
+                "Feature flag set",
+                attributes: ["featureFlags": featureFlags]
+            )
+        }
     }
 }

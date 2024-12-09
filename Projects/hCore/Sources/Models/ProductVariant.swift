@@ -1,6 +1,6 @@
 import hGraphQL
 
-public struct ProductVariant: Codable, Hashable {
+public struct ProductVariant: Codable, Hashable, Sendable {
     public let termsVersion: String
     let typeOfContract: String
     let partner: String?

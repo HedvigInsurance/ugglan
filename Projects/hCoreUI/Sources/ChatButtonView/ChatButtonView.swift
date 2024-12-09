@@ -16,12 +16,13 @@ extension View {
     }
 }
 
-public enum ToolbarOptionType: Codable, Equatable {
+public enum ToolbarOptionType: Codable, Equatable, Sendable {
     case newOffer
     case firstVet
     case chat
     case chatNotification(lastMessageTimeStamp: Date?)
 
+    @MainActor
     var image: UIImage {
         switch self {
         case .newOffer:
@@ -232,7 +233,7 @@ struct ToolbarButtonsViewModifier: ViewModifier {
     func body(content: Content) -> some View {
         if #available(iOS 18.0, *) {
             content
-                .introspect(.viewController, on: .iOS(.v18...)) { vc in
+                .introspect(.viewController, on: .iOS(.v18...)) { @MainActor vc in
                     if let nav = vc.navigationController {
                         if self.navVm.nav != nav {
                             self.navVm.nav = nav

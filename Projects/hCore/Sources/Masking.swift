@@ -16,7 +16,7 @@ public enum MaskType {
     case firstName
     case lastName
 }
-
+@MainActor
 public struct Masking {
     public let type: MaskType
 

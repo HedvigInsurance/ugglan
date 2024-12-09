@@ -1,7 +1,7 @@
 import Foundation
 import hCore
 
-public class FetchClaimClientDemo: hFetchClaimClient {
+public class FetchClaimsClientDemo: hFetchClaimsClient {
     public init() {}
     public func get() async throws -> [ClaimModel] {
         return []

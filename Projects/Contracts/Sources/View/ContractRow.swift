@@ -179,6 +179,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     }
 }
 
+@MainActor
 private enum PillType {
     case text
     case tier

@@ -2,6 +2,7 @@ import hCore
 
 @testable import Claims
 
+@MainActor
 struct MockData {
     @discardableResult
     static func createMockFetchClaimService(
@@ -27,12 +28,12 @@ struct MockData {
         fetchFiles: @escaping FetchFiles = {
             [:]
         }
-    ) -> MockFetchClaimService {
-        let service = MockFetchClaimService(
+    ) -> MockFetchClaimsService {
+        let service = MockFetchClaimsService(
             fetch: fetch,
             fetchFiles: fetchFiles
         )
-        Dependencies.shared.add(module: Module { () -> hFetchClaimClient in service })
+        Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in service })
         return service
     }
 
@@ -72,7 +73,8 @@ struct MockData {
                 claimId: "claim id",
                 context: "context",
                 progress: 0.5,
-                step: .setSuccessStep(model: .init(id: ""))
+                step: .setSuccessStep(model: .init(id: "")),
+                nextStepId: ""
             )
         },
         update: @escaping ContractUpdate = { phoneNumber, context, model in
@@ -80,7 +82,8 @@ struct MockData {
                 claimId: "claim id",
                 context: context,
                 progress: 0.5,
-                step: .setPhoneNumber(model: .init(id: "id", phoneNumber: phoneNumber))
+                step: .setPhoneNumber(model: .init(id: "id", phoneNumber: phoneNumber)),
+                nextStepId: ""
             )
         },
         dateOfOccurrenceAndLocation: @escaping DateOfOccurrenceAndLocation = { context, model in
@@ -88,17 +91,19 @@ struct MockData {
                 claimId: "claim id",
                 context: context,
                 progress: 0.5,
-                step: .setDateOfOccurrencePlusLocation(model: .init(dateOfOccurencePlusLocationModel: nil))
+                step: .setDateOfOccurrencePlusLocation(model: .init(dateOfOccurencePlusLocationModel: nil)),
+                nextStepId: ""
             )
         },
-        audioRecording: @escaping AudioRecording = { type, fileUploaderClient, context, currentClaimId, model in
+        audioRecording: @escaping AudioRecording = { type, context, currentClaimId, model in
             .init(
                 claimId: "claim id",
                 context: context,
                 progress: 0.5,
                 step: .setAudioStep(
                     model: .init(id: "", questions: [], textQuestions: [], inputTextContent: nil, optionalAudio: true)
-                )
+                ),
+                nextStepId: ""
             )
         },
         singleItem: @escaping SingleItem = { context, model in
@@ -117,7 +122,8 @@ struct MockData {
                         defaultItemProblems: nil,
                         purchasePriceApplicable: true
                     )
-                )
+                ),
+                nextStepId: ""
             )
 
         },
@@ -135,7 +141,8 @@ struct MockData {
                         audioRecordingModel: nil,
                         fileUploadModel: nil
                     )
-                )
+                ),
+                nextStepId: ""
             )
         },
         singleItemCheckout: @escaping SingleItemCheckout = { context, model in
@@ -156,7 +163,8 @@ struct MockData {
                         ),
                         singleItemModel: nil
                     )
-                )
+                ),
+                nextStepId: ""
             )
         },
         contractSelect: @escaping ContractSelect = { contractId, context, model in
@@ -164,7 +172,8 @@ struct MockData {
                 claimId: "claim id",
                 context: context,
                 progress: 0.5,
-                step: .setContractSelectStep(model: .init(availableContractOptions: []))
+                step: .setContractSelectStep(model: .init(availableContractOptions: [])),
+                nextStepId: ""
             )
         },
         emergencyConfirm: @escaping EmergencyConfirm = { isEmeregency, context in
@@ -174,7 +183,8 @@ struct MockData {
                 progress: 0.5,
                 step: .setConfirmDeflectEmergencyStepModel(
                     model: .init(id: "", text: "", confirmEmergency: nil, options: [])
-                )
+                ),
+                nextStepId: ""
             )
         },
         submitFile: @escaping SubmitFile = { ids, context, model in
@@ -182,7 +192,8 @@ struct MockData {
                 claimId: "claim id",
                 context: context,
                 progress: 0.5,
-                step: .setFileUploadStep(model: .init(id: "", title: "", targetUploadUrl: "", uploads: []))
+                step: .setFileUploadStep(model: .init(id: "", title: "", targetUploadUrl: "", uploads: [])),
+                nextStepId: ""
             )
         }
     ) -> MockSubmitClaimService {
@@ -207,10 +218,10 @@ enum ClaimsError: Error {
     case error
 }
 
-typealias FetchClaims = () async throws -> [ClaimModel]
+typealias FetchClaims = @Sendable () async throws -> [ClaimModel]
 typealias FetchFiles = () async throws -> [String: [hCore.File]]
 
-class MockFetchClaimService: hFetchClaimClient {
+class MockFetchClaimsService: hFetchClaimsClient {
     var events = [Event]()
     var fetch: FetchClaims
     var fetchFiles: FetchFiles
@@ -288,19 +299,19 @@ class MockFileUploaderService: FileUploaderClient {
 }
 
 typealias ClaimStart = (String?, String?) async throws -> SubmitClaimStepResponse
-typealias ContractUpdate = (String, String, FlowClaimPhoneNumberStepModel?) async throws -> SubmitClaimStepResponse
+typealias ContractUpdate = (String, String, FlowClaimPhoneNumberStepModel) async throws -> SubmitClaimStepResponse
 typealias DateOfOccurrenceAndLocation = (String, SubmitClaimStep.DateOfOccurrencePlusLocationStepModels?) async throws
     -> SubmitClaimStepResponse
 typealias AudioRecording = (
-    SubmitAudioRecordingType, any FileUploaderClient, String, String, FlowClaimAudioRecordingStepModel?
+    SubmitAudioRecordingType, String, String, FlowClaimAudioRecordingStepModel
 ) async throws ->
     SubmitClaimStepResponse
-typealias SingleItem = (String, FlowClaimSingleItemStepModel?) async throws -> SubmitClaimStepResponse
-typealias Summary = (String, SubmitClaimStep.SummaryStepModels?) async throws -> SubmitClaimStepResponse
-typealias SingleItemCheckout = (String, FlowClaimSingleItemCheckoutStepModel?) async throws -> SubmitClaimStepResponse
-typealias ContractSelect = (String, String, FlowClaimContractSelectStepModel?) async throws -> SubmitClaimStepResponse
+typealias SingleItem = (String, FlowClaimSingleItemStepModel) async throws -> SubmitClaimStepResponse
+typealias Summary = (String, SubmitClaimStep.SummaryStepModels) async throws -> SubmitClaimStepResponse
+typealias SingleItemCheckout = (String, FlowClaimSingleItemCheckoutStepModel) async throws -> SubmitClaimStepResponse
+typealias ContractSelect = (String, String, FlowClaimContractSelectStepModel) async throws -> SubmitClaimStepResponse
 typealias EmergencyConfirm = (Bool, String) async throws -> SubmitClaimStepResponse
-typealias SubmitFile = ([String], String, FlowClaimFileUploadStepModel?) async throws -> SubmitClaimStepResponse
+typealias SubmitFile = ([String], String, FlowClaimFileUploadStepModel) async throws -> SubmitClaimStepResponse
 
 class MockSubmitClaimService: SubmitClaimClient {
     var events = [Event]()
@@ -361,7 +372,7 @@ class MockSubmitClaimService: SubmitClaimClient {
     func updateContact(
         phoneNumber: String,
         context: String,
-        model: FlowClaimPhoneNumberStepModel?
+        model: FlowClaimPhoneNumberStepModel
     ) async throws -> SubmitClaimStepResponse {
         events.append(.updateContact)
         let data = try await update(phoneNumber, context, model)
@@ -370,7 +381,7 @@ class MockSubmitClaimService: SubmitClaimClient {
 
     func dateOfOccurrenceAndLocationRequest(
         context: String,
-        model: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels?
+        model: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels
     ) async throws -> SubmitClaimStepResponse {
         events.append(.dateOfOccurrenceAndLocationRequest)
         let data = try await dateOfOccurrenceAndLocation(context, model)
@@ -379,19 +390,18 @@ class MockSubmitClaimService: SubmitClaimClient {
 
     func submitAudioRecording(
         type: SubmitAudioRecordingType,
-        fileUploaderClient: any FileUploaderClient,
         context: String,
         currentClaimId: String,
-        model: FlowClaimAudioRecordingStepModel?
+        model: FlowClaimAudioRecordingStepModel
     ) async throws -> SubmitClaimStepResponse {
         events.append(.submitAudioRecording)
-        let data = try await audioRecording(type, fileUploaderClient, context, currentClaimId, model)
+        let data = try await audioRecording(type, context, currentClaimId, model)
         return data
     }
 
     func singleItemRequest(
         context: String,
-        model: FlowClaimSingleItemStepModel?
+        model: FlowClaimSingleItemStepModel
     ) async throws -> SubmitClaimStepResponse {
         events.append(.singleItemRequest)
         let data = try await singleItem(context, model)
@@ -400,7 +410,7 @@ class MockSubmitClaimService: SubmitClaimClient {
 
     func summaryRequest(
         context: String,
-        model: SubmitClaimStep.SummaryStepModels?
+        model: SubmitClaimStep.SummaryStepModels
     ) async throws -> SubmitClaimStepResponse {
         events.append(.summaryRequest)
         let data = try await summary(context, model)
@@ -409,7 +419,7 @@ class MockSubmitClaimService: SubmitClaimClient {
 
     func singleItemCheckoutRequest(
         context: String,
-        model: FlowClaimSingleItemCheckoutStepModel?
+        model: FlowClaimSingleItemCheckoutStepModel
     ) async throws -> SubmitClaimStepResponse {
         events.append(.singleItemCheckoutRequest)
         let data = try await singleItemCheckout(context, model)
@@ -419,7 +429,7 @@ class MockSubmitClaimService: SubmitClaimClient {
     func contractSelectRequest(
         contractId: String,
         context: String,
-        model: FlowClaimContractSelectStepModel?
+        model: FlowClaimContractSelectStepModel
     ) async throws -> SubmitClaimStepResponse {
         events.append(.contractSelectRequest)
         let data = try await contractSelect(contractId, context, model)
@@ -435,7 +445,7 @@ class MockSubmitClaimService: SubmitClaimClient {
     func submitFileUpload(
         ids: [String],
         context: String,
-        model: FlowClaimFileUploadStepModel?
+        model: FlowClaimFileUploadStepModel
     ) async throws -> SubmitClaimStepResponse {
         events.append(.submitFileUpload)
         let data = try await submitFile(ids, context, model)

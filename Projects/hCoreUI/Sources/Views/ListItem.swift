@@ -133,13 +133,13 @@ public struct ListItem: View {
     }
 }
 
-public enum ListStyle {
+public enum ListStyle: Sendable {
     case chevron
     case radioOption
     case checkBox
 }
 
-public enum ListRowStyle {
+public enum ListRowStyle: Sendable {
     case standard
     case filled
 }

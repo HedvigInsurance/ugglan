@@ -3,6 +3,7 @@ import Chat
 import Claims
 import Combine
 import Contracts
+import EditCoInsured
 import EditCoInsuredShared
 import Forever
 import Foundation
@@ -26,6 +27,7 @@ struct LoggedInNavigation: View {
     @StateObject private var foreverRouter = Router()
     @StateObject private var paymentsRouter = Router()
     @EnvironmentObject private var mainNavigationVm: MainNavigationViewModel
+
     var body: some View {
         TabView(selection: $vm.selectedTab) {
             homeTab
@@ -53,7 +55,9 @@ struct LoggedInNavigation: View {
                 infoButtonPlacement: .leading,
                 useOwnNavigation: true
             )
-            .handleEditCoInsured(with: vm.travelCertificateNavigationVm.editCoInsuredVm)
+            .handleEditCoInsured(
+                with: vm.travelCertificateNavigationVm.editCoInsuredVm
+            )
         }
         .modally(
             presented: $vm.isMoveContractPresented,
@@ -71,7 +75,8 @@ struct LoggedInNavigation: View {
         ) { changeTierInput in
             ChangeTierNavigation(input: changeTierInput)
         }
-        .handleTerminateInsurance(vm: vm.terminateInsuranceVm) { dismissType in
+        .handleTerminateInsurance(vm: vm.terminateInsuranceVm) {
+            dismissType in
             switch dismissType {
             case .done:
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
@@ -177,11 +182,6 @@ struct LoggedInNavigation: View {
             case .forever:
                 ForeverNavigation(useOwnNavigation: false)
                     .hideToolbar()
-            case let .openUrl(url):
-                EmptyView()
-                    .onAppear {
-                        vm.openUrl(url: url)
-                    }
             }
         }
         .environmentObject(paymentsRouter)
@@ -204,7 +204,9 @@ struct LoggedInNavigation: View {
                     infoButtonPlacement: .trailing,
                     useOwnNavigation: false
                 )
-                .handleEditCoInsured(with: vm.travelCertificateNavigationVm.editCoInsuredVm)
+                .handleEditCoInsured(
+                    with: vm.travelCertificateNavigationVm.editCoInsuredVm
+                )
             case let .deleteAccount(memberDetails):
                 let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
                 let contractsStore: ContractStore = globalPresentableStoreContainer.get()
@@ -234,7 +236,7 @@ struct LoggedInNavigation: View {
                 )
                 .environmentObject(vm.profileNavigationVm)
             case .pickLanguage:
-                LanguagePickerView()
+                PickLanguage()
             case .deleteRequestLoading:
                 DeleteRequestLoadingView(
                     screenState: .success,
@@ -274,7 +276,7 @@ struct HomeTab: View {
                 }
             )
             .routerDestination(for: ClaimModel.self, options: [.hidesBottomBarWhenPushed]) { claim in
-                ClaimDetailView(claim: claim, fromChat: false)
+                ClaimDetailView(claim: claim, type: .claim(id: claim.id))
                     .environmentObject(homeNavigationVm)
                     .configureTitle(L10n.claimsYourClaim)
             }
@@ -318,7 +320,9 @@ struct HomeTab: View {
                         infoButtonPlacement: .leading,
                         useOwnNavigation: true
                     )
-                    .handleEditCoInsured(with: loggedInVm.travelCertificateNavigationVm.editCoInsuredVm)
+                    .handleEditCoInsured(
+                        with: loggedInVm.travelCertificateNavigationVm.editCoInsuredVm
+                    )
                 case .deflect:
                     let model: FlowClaimDeflectStepModel? = {
                         let store: HomeStore = globalPresentableStoreContainer.get()
@@ -359,7 +363,9 @@ struct HomeTab: View {
                     )
                 }
             }
-            .handleEditCoInsured(with: loggedInVm.helpCenterVm.editCoInsuredVm)
+            .handleEditCoInsured(
+                with: loggedInVm.helpCenterVm.editCoInsuredVm
+            )
             .environmentObject(homeNavigationVm)
         }
         .detent(
@@ -401,13 +407,11 @@ struct HomeTab: View {
                                     onDone()
                                 }
                             )
-                        case let .claimDetail(id):
+                        case let .claimDetailForConversationId(id):
                             let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
-                            if let claim = claimStore.state.claim(for: id) {
-                                ClaimDetailView(claim: claim, fromChat: true)
-                                    .configureTitle(L10n.claimsYourClaim)
-
-                            }
+                            let claim = claimStore.state.claimFromConversation(for: id)
+                            ClaimDetailView(claim: claim, type: .conversation(id: id))
+                                .configureTitle(L10n.claimsYourClaim)
                         }
                     }
                 )
@@ -433,6 +437,7 @@ private enum LoggedInNavigationDetentType: TrackingViewNameProtocol {
     case crossSelling
 }
 
+@MainActor
 class LoggedInNavigationViewModel: ObservableObject {
     @Published var selectedTab = 0 {
         willSet {
@@ -456,53 +461,12 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isChangeTierPresented: ChangeTierContractsInput?
     @Published var isEuroBonusPresented = false
     @Published var isUrlPresented: URL?
-    private var openDeepLinkObserver: NSObjectProtocol?
-    private var registerForPushNotificationsObserver: NSObjectProtocol?
-    private var handlePushNotificationObserver: NSObjectProtocol?
-    private var chatClosedObserver: NSObjectProtocol?
 
+    private var deeplinkToBeOpenedAfterLogin: URL?
     private var cancellables = Set<AnyCancellable>()
     weak var tabBar: UITabBarController?
     init() {
-        openDeepLinkObserver = NotificationCenter.default.addObserver(forName: .openDeepLink, object: nil, queue: nil) {
-            [weak self] notification in
-            let deepLinkUrl = notification.object as? URL
-            self?.handleDeepLinks(deepLinkUrl: deepLinkUrl)
-        }
-
-        registerForPushNotificationsObserver = NotificationCenter.default.addObserver(
-            forName: .registerForPushNotifications,
-            object: nil,
-            queue: nil
-        ) {
-            [weak self]
-            notification in
-            guard let self = self else { return }
-            UIApplication.shared.appDelegate.registerForPushNotifications {}
-        }
-
-        handlePushNotificationObserver = NotificationCenter.default.addObserver(
-            forName: .handlePushNotification,
-            object: nil,
-            queue: nil
-        ) {
-            [weak self]
-            notification in
-            if self?.hasLaunchFinished.value == true {
-                self?.handle(notification: notification)
-            } else {
-                self?.hasLaunchFinishedCancellable = self?.hasLaunchFinished.filter({ $0 })
-                    .sink { value in
-                        self?.handle(notification: notification)
-                        self?.hasLaunchFinishedCancellable = nil
-                    }
-            }
-        }
-        chatClosedObserver = NotificationCenter.default.addObserver(forName: .chatClosed, object: nil, queue: nil) {
-            notification in
-            let store: HomeStore = globalPresentableStoreContainer.get()
-            store.send(.fetchChatNotifications)
-        }
+        setupObservers()
 
         EditCoInsuredViewModel.updatedCoInsuredForContractId
             .receive(on: RunLoop.main)
@@ -527,6 +491,60 @@ class LoggedInNavigationViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellables)
+    }
+
+    private func setupObservers() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(openDeepLinkNotification),
+            name: .openDeepLink,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(registerForPushNotification),
+            name: .registerForPushNotifications,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handlePushNotification),
+            name: .handlePushNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(self, selector: #selector(chatClosed), name: .chatClosed, object: nil)
+    }
+
+    @objc func openDeepLinkNotification(notification: Notification) {
+        let deepLinkUrl = notification.object as? URL
+        if ApplicationState.currentState == .loggedIn {
+            self.handleDeepLinks(deepLinkUrl: deepLinkUrl)
+        } else {
+            self.deeplinkToBeOpenedAfterLogin = deepLinkUrl
+        }
+    }
+
+    @objc func registerForPushNotification(notification: Notification) {
+        Task {
+            await UIApplication.shared.appDelegate.registerForPushNotifications()
+        }
+    }
+
+    @objc func handlePushNotification(notification: Notification) {
+        if self.hasLaunchFinished.value == true {
+            self.handle(notification: notification)
+        } else {
+            self.hasLaunchFinishedCancellable = self.hasLaunchFinished.filter({ $0 })
+                .sink { [weak self] value in
+                    self?.handle(notification: notification)
+                    self?.hasLaunchFinishedCancellable = nil
+                }
+        }
+    }
+
+    @objc func chatClosed(notification: Notification) {
+        let store: HomeStore = globalPresentableStoreContainer.get()
+        store.send(.fetchChatNotifications)
     }
 
     private func handle(notification: Notification) {
@@ -566,6 +584,13 @@ class LoggedInNavigationViewModel: ObservableObject {
                 let contractId = userInfo?["contractId"] as? String
                 handleChangeTier(contractId: contractId)
             }
+        }
+    }
+
+    func actionAfterLogin() {
+        if let deeplinkToBeOpenedAfterLogin {
+            handleDeepLinks(deepLinkUrl: deeplinkToBeOpenedAfterLogin)
+            self.deeplinkToBeOpenedAfterLogin = nil
         }
     }
 
@@ -617,20 +642,35 @@ class LoggedInNavigationViewModel: ObservableObject {
             case .terminateContract:
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
                 let contractId = self.getContractId(from: url)
-                var contractsConfig: [TerminationConfirmConfig] = []
-
                 if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
-                        contractsConfig = [contract.asTerminationConfirmConfig]
-                        self?.terminateInsuranceVm.start(with: contractsConfig)
+                    Task { [weak self] in
+                        do {
+                            try await Task.sleep(nanoseconds: 200_000_000)
+                            let contractsConfig = [contract.asTerminationConfirmConfig]
+                            try await self?.terminateInsuranceVm.start(with: contractsConfig)
+                        } catch let exception {
+                            Toasts.shared.displayToastBar(
+                                toast: .init(type: .error, text: exception.localizedDescription)
+                            )
+                        }
                     }
                 } else {
-                    contractsConfig = contractStore.state.activeContracts
-                        .filter({ $0.canTerminate })
-                        .map({
-                            $0.asTerminationConfirmConfig
-                        })
-                    self.terminateInsuranceVm.start(with: contractsConfig)
+                    Task { [weak self] in
+                        do {
+                            try await Task.sleep(nanoseconds: 200_000_000)
+                            let contractsConfig = contractStore.state.activeContracts
+                                .filter({ $0.canTerminate })
+                                .map({
+                                    $0.asTerminationConfirmConfig
+                                })
+                            try await self?.terminateInsuranceVm.start(with: contractsConfig)
+                        } catch let exception {
+                            Toasts.shared.displayToastBar(
+                                toast: .init(type: .error, text: exception.localizedDescription)
+                            )
+                        }
+                    }
+
                 }
             case .conversation:
                 let conversationId = self.getConversationId(from: url)
@@ -640,7 +680,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                     let conversations = try await conversationClient.getConversations()
                     let isValidConversation = conversations.first(where: { $0.id == conversationId })
 
-                    if let conversationId, let isValidConversation {
+                    if let conversationId, isValidConversation != nil {
                         NotificationCenter.default.post(
                             name: .openChat,
                             object: ChatType.conversationId(id: conversationId)
@@ -734,18 +774,6 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     deinit {
-        if let openDeepLinkObserver = openDeepLinkObserver {
-            NotificationCenter.default.removeObserver(openDeepLinkObserver)
-        }
-        if let registerForPushNotificationsObserver = registerForPushNotificationsObserver {
-            NotificationCenter.default.removeObserver(registerForPushNotificationsObserver)
-        }
-        if let handlePushNotificationObserver = handlePushNotificationObserver {
-            NotificationCenter.default.removeObserver(handlePushNotificationObserver)
-        }
-        if let chatClosedObserver = chatClosedObserver {
-            NotificationCenter.default.removeObserver(chatClosedObserver)
-        }
         NotificationCenter.default.removeObserver(self)
     }
 }
