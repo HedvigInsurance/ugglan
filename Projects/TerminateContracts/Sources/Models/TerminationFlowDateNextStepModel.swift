@@ -28,4 +28,12 @@ public struct TerminationFlowDateNextStepModel: FlowStepModel {
 public struct ExtraCoverageItem: Codable, Equatable, Hashable, Sendable {
     let displayName: String
     let displayValue: String?
+
+    init(
+        displayName: String,
+        displayValue: String?
+    ) {
+        self.displayName = displayName
+        self.displayValue = displayValue
+    }
 }
