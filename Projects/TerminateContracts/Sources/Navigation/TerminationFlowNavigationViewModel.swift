@@ -525,7 +525,7 @@ struct TerminationFlowNavigation: View {
     }
 
     private func openTerminationSummaryScreen() -> some View {
-        TerminationSummaryScreen()
+        TerminationSummaryScreen(terminationNavigationVm: vm)
             .withDismissButton()
     }
 

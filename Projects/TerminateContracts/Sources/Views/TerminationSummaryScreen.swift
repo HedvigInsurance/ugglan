@@ -3,9 +3,29 @@ import hCore
 import hCoreUI
 
 struct TerminationSummaryScreen: View {
-    @EnvironmentObject var terminationNavigationVm: TerminationFlowNavigationViewModel
+    @ObservedObject var terminationNavigationVm: TerminationFlowNavigationViewModel
+    let extraCoverageItems: [ExtraCoverageItem]?
+    let withAddonView: Bool
 
-    init() {}
+    init(
+        terminationNavigationVm: TerminationFlowNavigationViewModel
+    ) {
+        self.terminationNavigationVm = terminationNavigationVm
+
+        self.extraCoverageItems = {
+            let dateExtraCoverageItems = terminationNavigationVm.terminationDateStepModel?.extraCoverageItem
+            let deletionExtraCoverageItems = terminationNavigationVm.terminationDeleteStepModel?.extraCoverageItem
+
+            if let dateExtraCoverageItems, !dateExtraCoverageItems.isEmpty {
+                return dateExtraCoverageItems
+            } else if let deletionExtraCoverageItems, !deletionExtraCoverageItems.isEmpty {
+                return deletionExtraCoverageItems
+            }
+            return nil
+        }()
+
+        withAddonView = Dependencies.featureFlags().isAddonsEnabled && extraCoverageItems != nil
+    }
 
     var body: some View {
         hForm {}
@@ -24,10 +44,6 @@ struct TerminationSummaryScreen: View {
                 )
             )
             .hFormAttachToBottom {
-                let withAddonView =
-                    Dependencies.featureFlags().isAddonsEnabled
-                    && terminationNavigationVm.config?.addonDisplayItems != nil
-
                 VStack(spacing: .padding16) {
                     hSection {
                         StatusCard(
@@ -86,17 +102,19 @@ struct TerminationSummaryScreen: View {
     private var addonContent: (some View)? {
         VStack(alignment: .leading, spacing: 0) {
             hText(L10n.terminationAddonCoverageTitle)
-            ForEach(terminationNavigationVm.config?.addonDisplayItems ?? [], id: \.self) { item in
+            ForEach(extraCoverageItems ?? [], id: \.self) { item in
                 getRow(for: item)
             }
         }
     }
 
-    private func getRow(for item: AddonDisplayItem) -> some View {
+    private func getRow(for item: ExtraCoverageItem) -> some View {
         HStack {
-            hText(item.title)
+            hText(item.displayName)
             Spacer()
-            hText(item.value)
+            if let displayValue = item.displayValue {
+                hText(displayValue)
+            }
         }
         .foregroundColor(hTextColor.Opaque.secondary)
     }
@@ -104,42 +122,18 @@ struct TerminationSummaryScreen: View {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlagsDemo() })
-    return TerminationSummaryScreen()
-        .environmentObject(
-            TerminationFlowNavigationViewModel(
-                configs: [
-                    .init(
-                        contractId: "",
-                        contractDisplayName: "Homeowner",
-                        contractExposureName: "Bellmansgsatan 19A",
-                        activeFrom: "2024-12-15",
-                        typeOfContract: .seApartmentBrf
-                    )
-                ],
-                terminateInsuranceViewModel: .init()
-            )
+    return TerminationSummaryScreen(
+        terminationNavigationVm: TerminationFlowNavigationViewModel(
+            configs: [
+                .init(
+                    contractId: "",
+                    contractDisplayName: "Homeowner",
+                    contractExposureName: "Bellmansgsatan 19A",
+                    activeFrom: "2024-12-15",
+                    typeOfContract: .seApartmentBrf
+                )
+            ],
+            terminateInsuranceViewModel: .init()
         )
-}
-
-#Preview("PreviewWithAddon") {
-    Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlagsDemo() })
-    return TerminationSummaryScreen()
-        .environmentObject(
-            TerminationFlowNavigationViewModel(
-                configs: [
-                    .init(
-                        contractId: "",
-                        contractDisplayName: "Homeowner",
-                        contractExposureName: "Bellmansgsatan 19A",
-                        activeFrom: "2024-12-15",
-                        typeOfContract: .seApartmentBrf,
-                        addonDisplayItems: [
-                            .init(title: "Travel Plus", value: "45 days"),
-                            .init(title: "Bicycle Plus", value: "Pinarello Dogma FG1..."),
-                        ]
-                    )
-                ],
-                terminateInsuranceViewModel: .init()
-            )
-        )
+    )
 }
