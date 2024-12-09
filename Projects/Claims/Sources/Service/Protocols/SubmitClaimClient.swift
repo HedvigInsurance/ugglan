@@ -6,10 +6,11 @@ class SubmitClaimService {
     @Inject var client: SubmitClaimClient
 
     func startClaim(entrypointId: String?, entrypointOptionId: String?) async throws -> SubmitClaimStepResponse {
-        log.info(
-            "\(SubmitClaimService.self): start claim for entrypointId: \(entrypointId ?? "--"), entrypointOptionId: \(entrypointOptionId ?? "--")"
+        logInfo(
+            "start claim for entrypointId: \(entrypointId ?? "--"), entrypointOptionId: \(entrypointOptionId ?? "--")"
         )
         let data = try await client.startClaim(entrypointId: entrypointId, entrypointOptionId: entrypointOptionId)
+        data.logInfo()
         return data
     }
 
@@ -18,8 +19,9 @@ class SubmitClaimService {
         context: String,
         model: FlowClaimPhoneNumberStepModel
     ) async throws -> SubmitClaimStepResponse {
-        log.info("\(SubmitClaimService.self): update contact for phoneNumber: \(phoneNumber)")
+        logInfo("update contact for phoneNumber: \(phoneNumber)")
         let data = try await client.updateContact(phoneNumber: phoneNumber, context: context, model: model)
+        data.logInfo()
         return data
     }
 
@@ -27,8 +29,9 @@ class SubmitClaimService {
         context: String,
         model: SubmitClaimStep.DateOfOccurrencePlusLocationStepModels
     ) async throws -> SubmitClaimStepResponse {
-        log.info("\(SubmitClaimService.self): dateOfOccurrenceAndLocationRequest \(model)")
+        logInfo("dateOfOccurrenceAndLocationRequest \(model)")
         let data = try await client.dateOfOccurrenceAndLocationRequest(context: context, model: model)
+        data.logInfo()
         return data
     }
 
@@ -38,13 +41,14 @@ class SubmitClaimService {
         currentClaimId: String,
         model: FlowClaimAudioRecordingStepModel
     ) async throws -> SubmitClaimStepResponse {
-        log.info("\(SubmitClaimService.self): submitAudioRecording")
+        logInfo("submitAudioRecording \(model)")
         let data = try await client.submitAudioRecording(
             type: type,
             context: context,
             currentClaimId: currentClaimId,
             model: model
         )
+        data.logInfo()
         return data
     }
 
@@ -52,8 +56,9 @@ class SubmitClaimService {
         context: String,
         model: FlowClaimSingleItemStepModel
     ) async throws -> SubmitClaimStepResponse {
-        log.info("\(SubmitClaimService.self): singleItemRequest \(model)")
+        logInfo("singleItemRequest \(model)")
         let data = try await client.singleItemRequest(context: context, model: model)
+        data.logInfo()
         return data
     }
 
@@ -61,8 +66,9 @@ class SubmitClaimService {
         context: String,
         model: SubmitClaimStep.SummaryStepModels
     ) async throws -> SubmitClaimStepResponse {
-        log.info("\(SubmitClaimService.self): summaryRequest")
+        logInfo("summaryRequest \(model)")
         let data = try await client.summaryRequest(context: context, model: model)
+        data.logInfo()
         return data
     }
 
@@ -70,8 +76,9 @@ class SubmitClaimService {
         context: String,
         model: FlowClaimSingleItemCheckoutStepModel
     ) async throws -> SubmitClaimStepResponse {
-        log.info("\(SubmitClaimService.self): singleItemCheckoutRequest \(model)")
+        logInfo("singleItemCheckoutRequest \(model)")
         let data = try await client.singleItemCheckoutRequest(context: context, model: model)
+        data.logInfo()
         return data
     }
 
@@ -80,14 +87,16 @@ class SubmitClaimService {
         context: String,
         model: FlowClaimContractSelectStepModel
     ) async throws -> SubmitClaimStepResponse {
-        log.info("\(SubmitClaimService.self): contractSelectRequest \(contractId)")
+        logInfo("contractSelectRequest \(contractId)")
         let data = try await client.contractSelectRequest(contractId: contractId, context: context, model: model)
+        data.logInfo()
         return data
     }
 
     func emergencyConfirmRequest(isEmergency: Bool, context: String) async throws -> SubmitClaimStepResponse {
-        log.info("\(SubmitClaimService.self): emergencyConfirmRequest \(isEmergency)")
+        logInfo("emergencyConfirmRequest \(isEmergency)")
         let data = try await client.emergencyConfirmRequest(isEmergency: isEmergency, context: context)
+        data.logInfo()
         return data
     }
 
@@ -96,9 +105,27 @@ class SubmitClaimService {
         context: String,
         model: FlowClaimFileUploadStepModel
     ) async throws -> SubmitClaimStepResponse {
-        log.info("\(SubmitClaimService.self): submitFileUpload \(ids)")
+        logInfo("submitFileUpload \(ids)")
         let data = try await client.submitFileUpload(ids: ids, context: context, model: model)
+        data.logInfo()
         return data
+    }
+}
+
+extension SubmitClaimService {
+    func logInfo(_ message: String) {
+        log.info("\(SubmitClaimService.self): \(message)", error: nil, attributes: [:])
+    }
+}
+
+@MainActor
+extension SubmitClaimStepResponse {
+    func logInfo() {
+        log.info(
+            "\(SubmitClaimService.self): next step id is \(nextStepId)",
+            error: nil,
+            attributes: ["claimId": claimId]
+        )
     }
 }
 
