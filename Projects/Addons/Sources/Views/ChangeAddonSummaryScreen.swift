@@ -21,38 +21,38 @@ struct ChangeAddonSummaryScreen: View {
 
 extension ChangeAddonViewModel {
     func asQuoteSummaryViewModel(changeAddonNavigationVm: ChangeAddonNavigationViewModel) -> QuoteSummaryViewModel {
-
-        let newPremium =
-            changeAddonNavigationVm.changeAddonVm.selectedSubOption?.price
-
         let vm = QuoteSummaryViewModel(
             contract: [
                 .init(
-                    id: self.contractInformation?.contractId ?? "",
-                    displayName: changeAddonNavigationVm.changeAddonVm.contractInformation?.contractName ?? "",
-                    exposureName: changeAddonNavigationVm.changeAddonVm.contractInformation?.activationDate
-                        .localDateString ?? "",
-                    newPremium: newPremium,
-                    currentPremium: nil,
-                    documents: self.contractInformation?.documents ?? [],
+                    id: self.contractId ?? "",
+                    displayName: self.selectedQuote?.productVariant.displayName ?? "",
+                    exposureName: L10n.addonFlowSummaryActiveFrom(
+                        self.addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
+                    ),
+                    newPremium: self.selectedQuote?.price,
+                    currentPremium: self.addonOffer?.currentAddon?.price,
+                    documents: self.selectedQuote?.productVariant.documents ?? [],
                     onDocumentTap: { document in
-
+                        changeAddonNavigationVm.document = document
                     },
-                    displayItems: self.contractInformation?.displayItems ?? [],
-                    insuranceLimits: self.contractInformation?.insurableLimits ?? [],
+                    displayItems: self.compareAddonDisplayItems(
+                        currentDisplayItems: self.addonOffer?.currentAddon?.displayItems ?? [],
+                        newDisplayItems: self.selectedQuote?.displayItems ?? []
+                    ),
+                    insuranceLimits: [],
                     typeOfContract: nil
                 )
             ],
-            total: .init(
-                amount: changeAddonNavigationVm.changeAddonVm.selectedSubOption?.price.formattedAmount ?? "",
-                currency: "SEK"
+            total: getTotalPrice(
+                currentPrice: self.addonOffer?.currentAddon?.price,
+                newPrice: self.selectedQuote?.price
             ),
             isAddon: true
         ) {
             Task {
-                await changeAddonNavigationVm.changeAddonVm.submitAddons()
+                await self.submitAddons()
             }
-            changeAddonNavigationVm.router.push(ChangeAddonRouterActionsWithoutBackButton.commitAddon)
+            changeAddonNavigationVm.isConfirmAddonPresented = true
         }
 
         return vm
@@ -60,6 +60,7 @@ extension ChangeAddonViewModel {
 }
 
 #Preview {
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
     return ChangeAddonSummaryScreen(changeAddonNavigationVm: .init(input: .init(contractId: "")))
 }

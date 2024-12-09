@@ -51,19 +51,12 @@ struct ContractTable: View {
             if !showTerminated {
                 VStack(spacing: 24) {
                     hSection {
-                        if Dependencies.featureFlags().isAddonsEnabled {
+                        if Dependencies.featureFlags().isAddonsEnabled, let banner = vm.addonBannerModel {
                             AddonCardView(
                                 openAddon: {
                                     contractsNavigationVm.isAddonPresented = .init(contractId: nil)
                                 },
-                                addon: .init(
-                                    id: "id",
-                                    title: "Travel Plus",
-                                    description: "Extended travel insurance with extra coverage for your travels",
-                                    tag: "Popular",
-                                    activationDate: Date(),
-                                    options: []
-                                )
+                                addon: banner
                             )
                         }
                     }
@@ -181,8 +174,13 @@ public class ContractTableViewModel: ObservableObject {
     @Published var viewState: ProcessingState = .loading
     @PresentableStore var store: ContractStore
     @Published var loadingCancellable: AnyCancellable?
+    @Inject var service: FetchContractsClient
+    @Published var addonBannerModel: AddonBannerModel?
 
     init() {
+        Task {
+            await getAddonBanner()
+        }
         loadingCancellable = store.loadingSignal
             .receive(on: RunLoop.main)
             .sink { _ in
@@ -197,5 +195,13 @@ public class ContractTableViewModel: ObservableObject {
                     self?.viewState = .success
                 }
             }
+    }
+
+    private func getAddonBanner() async {
+        do {
+            self.addonBannerModel = try await service.getAddonBannerModel()
+        } catch {
+
+        }
     }
 }

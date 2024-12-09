@@ -2,18 +2,22 @@ import Foundation
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 public struct ChangeAddonInput: Identifiable, Equatable {
     public var id: String {
-        contractId ?? ""
+        contractId ?? addonId ?? ""
     }
 
     let contractId: String?
+    let addonId: String?
 
     public init(
-        contractId: String?
+        contractId: String? = nil,
+        addonId: String? = nil
     ) {
         self.contractId = contractId
+        self.addonId = addonId
     }
 
     public static func == (lhs: ChangeAddonInput, rhs: ChangeAddonInput) -> Bool {
@@ -24,8 +28,12 @@ public struct ChangeAddonInput: Identifiable, Equatable {
 @MainActor
 class ChangeAddonNavigationViewModel: ObservableObject {
     @Published var isLearnMorePresented: InfoViewDataModel?
-    @Published var isChangeCoverageDaysPresented: AddonOptionModel?
+    @Published var isChangeCoverageDaysPresented: AddonOffer?
+    @Published var isConfirmAddonPresented = false
+    @Published var isAddonProcessingPresented = false
     @Published var changeAddonVm: ChangeAddonViewModel
+    @Published var document: hPDFDocument?
+
     let router = Router()
 
     public init(
@@ -37,10 +45,6 @@ class ChangeAddonNavigationViewModel: ObservableObject {
 
 enum ChangeAddonRouterActions {
     case summary
-}
-
-enum ChangeAddonRouterActionsWithoutBackButton {
-    case commitAddon
 }
 
 public struct ChangeAddonNavigation: View {
@@ -70,15 +74,18 @@ public struct ChangeAddonNavigation: View {
                         .withAlertDismiss()
                     }
                 }
-                .routerDestination(for: ChangeAddonRouterActionsWithoutBackButton.self, options: [.hidesBackButton]) {
-                    action in
-                    switch action {
-                    case .commitAddon:
-                        AddonProcessingScreen(vm: changeAddonNavigationVm.changeAddonVm)
-                    }
-                }
         }
         .environmentObject(changeAddonNavigationVm)
+        .modally(
+            presented: $changeAddonNavigationVm.isAddonProcessingPresented,
+            options: .constant(.alwaysOpenOnTop)
+        ) {
+            AddonProcessingScreen(vm: changeAddonNavigationVm.changeAddonVm)
+                .embededInNavigation(
+                    tracking: ChangeAddonTrackingType.processing
+                )
+                .environmentObject(changeAddonNavigationVm)
+        }
         .detent(
             item: $changeAddonNavigationVm.isLearnMorePresented,
             style: [.height],
@@ -94,12 +101,30 @@ public struct ChangeAddonNavigation: View {
             style: [.height],
             options: .constant(.alwaysOpenOnTop)
         ) { addOn in
-            AddonSelectSubOptionScreen(addonOption: addOn, changeAddonNavigationVm: changeAddonNavigationVm)
+            AddonSelectSubOptionScreen(addonOffer: addOn, changeAddonNavigationVm: changeAddonNavigationVm)
                 .embededInNavigation(
                     options: .navigationType(type: .large),
                     tracking: ChangeAddonTrackingType.selectSubOptionScreen
                 )
                 .environmentObject(changeAddonNavigationVm)
+        }
+        .detent(
+            presented: $changeAddonNavigationVm.isConfirmAddonPresented,
+            style: [.height],
+            options: .constant(.alwaysOpenOnTop),
+            content: {
+                ConfirmChangeAddonScreen()
+                    .embededInNavigation(
+                        tracking: ChangeAddonTrackingType.confirmAddonScreen
+                    )
+                    .environmentObject(changeAddonNavigationVm)
+            }
+        )
+        .detent(
+            item: $changeAddonNavigationVm.document,
+            style: [.large]
+        ) { document in
+            PDFPreview(document: document)
         }
     }
 }
@@ -113,15 +138,6 @@ extension ChangeAddonRouterActions: TrackingViewNameProtocol {
     }
 }
 
-extension ChangeAddonRouterActionsWithoutBackButton: TrackingViewNameProtocol {
-    var nameForTracking: String {
-        switch self {
-        case .commitAddon:
-            return .init(describing: AddonProcessingScreen.self)
-        }
-    }
-}
-
 private enum ChangeAddonTrackingType: TrackingViewNameProtocol {
     var nameForTracking: String {
         switch self {
@@ -129,9 +145,15 @@ private enum ChangeAddonTrackingType: TrackingViewNameProtocol {
             return .init(describing: ChangeAddonScreen.self)
         case .selectSubOptionScreen:
             return .init(describing: AddonSelectSubOptionScreen.self)
+        case .confirmAddonScreen:
+            return .init(describing: ConfirmChangeAddonScreen.self)
+        case .processing:
+            return .init(describing: AddonProcessingScreen.self)
         }
     }
 
     case changeAddonScreen
     case selectSubOptionScreen
+    case confirmAddonScreen
+    case processing
 }

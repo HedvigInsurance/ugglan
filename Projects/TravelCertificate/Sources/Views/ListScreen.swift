@@ -53,19 +53,12 @@ public struct ListScreen: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: 16) {
-                    if Dependencies.featureFlags().isAddonsEnabled {
+                    if Dependencies.featureFlags().isAddonsEnabled, let banner = vm.addonBannerModel {
                         AddonCardView(
                             openAddon: {
                                 travelCertificateNavigationVm.isAddonPresented = true
                             },
-                            addon: .init(
-                                id: "id",
-                                title: "Travel Plus",
-                                description: "Extended travel insurance with extra coverage for your travels",
-                                tag: "Popular",
-                                activationDate: Date(),
-                                options: []
-                            )
+                            addon: banner
                         )
                     }
 
@@ -149,12 +142,13 @@ extension View {
 @MainActor
 class ListScreenViewModel: ObservableObject {
     var service = TravelInsuranceService()
-
     @Published var list: [TravelCertificateModel] = []
     @Published var canCreateTravelInsurance: Bool = false
     @Published var error: String?
     @Published var isLoading = false
     @Published var isCreateNewLoading: Bool = false
+    @Published var addonBannerModel: AddonBannerModel?
+
     init() {}
 
     @MainActor
@@ -163,10 +157,11 @@ class ListScreenViewModel: ObservableObject {
             isLoading = true
         }
         do {
-            let (list, canCreateTravelInsurance) = try await self.service.getList()
+            let (list, canCreateTravelInsurance, banner) = try await self.service.getList()
             withAnimation {
                 self.list = list
                 self.canCreateTravelInsurance = canCreateTravelInsurance
+                self.addonBannerModel = banner
             }
         } catch _ {
             self.error = L10n.General.errorBody
