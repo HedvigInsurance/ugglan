@@ -11,12 +11,12 @@ public class ChangeAddonViewModel: ObservableObject {
     @Published var selectedQuote: AddonQuote?
     @Published var addonOffer: AddonOffer?
     @Published var activationDate: Date?
-    @Published var contractId: String?
+    let contractId: String
 
-    init() {
+    init(contractId: String) {
+        self.contractId = contractId
         Task {
             await getAddons()
-
             self._selectedQuote = Published(
                 initialValue: addonOffer?.quotes.first
             )
@@ -29,7 +29,7 @@ public class ChangeAddonViewModel: ObservableObject {
         }
 
         do {
-            let data = try await addonService.getAddon(contractId: contractId ?? "")
+            let data = try await addonService.getAddon(contractId: contractId)
 
             withAnimation {
                 self.addonOffer = data
