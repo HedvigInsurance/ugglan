@@ -25,8 +25,7 @@ struct TerminationSummaryScreen: View {
             )
             .hFormAttachToBottom {
                 let withAddonView =
-                    Dependencies.featureFlags().isAddonsEnabled
-                    && terminationNavigationVm.config?.addonDisplayItems != nil
+                    Dependencies.featureFlags().isAddonsEnabled && !terminationNavigationVm.extraCoverage.isEmpty
 
                 VStack(spacing: .padding16) {
                     hSection {
@@ -82,21 +81,22 @@ struct TerminationSummaryScreen: View {
         }
     }
 
-    @ViewBuilder
-    private var addonContent: (some View)? {
+    private var addonContent: some View {
         VStack(alignment: .leading, spacing: 0) {
             hText(L10n.terminationAddonCoverageTitle)
-            ForEach(terminationNavigationVm.config?.addonDisplayItems ?? [], id: \.self) { item in
+            ForEach(terminationNavigationVm.extraCoverage, id: \.self) { item in
                 getRow(for: item)
             }
         }
     }
 
-    private func getRow(for item: AddonDisplayItem) -> some View {
+    private func getRow(for item: ExtraCoverageItem) -> some View {
         HStack {
-            hText(item.title)
+            hText(item.displayName)
             Spacer()
-            hText(item.value)
+            if let displayValue = item.displayValue {
+                hText(displayValue)
+            }
         }
         .foregroundColor(hTextColor.Opaque.secondary)
     }
@@ -114,29 +114,6 @@ struct TerminationSummaryScreen: View {
                         contractExposureName: "Bellmansgsatan 19A",
                         activeFrom: "2024-12-15",
                         typeOfContract: .seApartmentBrf
-                    )
-                ],
-                terminateInsuranceViewModel: .init()
-            )
-        )
-}
-
-#Preview("PreviewWithAddon") {
-    Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlagsDemo() })
-    return TerminationSummaryScreen()
-        .environmentObject(
-            TerminationFlowNavigationViewModel(
-                configs: [
-                    .init(
-                        contractId: "",
-                        contractDisplayName: "Homeowner",
-                        contractExposureName: "Bellmansgsatan 19A",
-                        activeFrom: "2024-12-15",
-                        typeOfContract: .seApartmentBrf,
-                        addonDisplayItems: [
-                            .init(title: "Travel Plus", value: "45 days"),
-                            .init(title: "Bicycle Plus", value: "Pinarello Dogma FG1..."),
-                        ]
                     )
                 ],
                 terminateInsuranceViewModel: .init()
