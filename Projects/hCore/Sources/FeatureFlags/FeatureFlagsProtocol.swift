@@ -18,6 +18,7 @@ public protocol FeatureFlags {
     var osVersionTooLow: Bool { get set }
     var emailPreferencesEnabled: Bool { get set }
     var isTiersEnabled: Bool { get set }
+    var isAddonsEnabled: Bool { get set }
     var isDemoMode: Bool { get set }
     var movingFlowVersion: MovingFlowVersion? { get set }
 

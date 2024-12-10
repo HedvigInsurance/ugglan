@@ -18,7 +18,14 @@ struct MockData {
             .init(
                 context: context,
                 step: .setTerminationDateStep(
-                    model: .init(id: "id", maxDate: "2025-11-11", minDate: Date().localDateString)
+                    model: .init(
+                        id: "id",
+                        maxDate: "2025-11-11",
+                        minDate: Date().localDateString,
+                        extraCoverageItem: [
+                            .init(displayName: "Travel plus", displayValue: "45 days")
+                        ]
+                    )
                 ),
                 progress: 0
             )
@@ -26,7 +33,15 @@ struct MockData {
         confirmDelete: @escaping SendConfirmDelete = { context, model in
             .init(
                 context: context,
-                step: .setTerminationDeletion(model: model ?? .init(id: "id")),
+                step: .setTerminationDeletion(
+                    model: model
+                        ?? .init(
+                            id: "id",
+                            extraCoverageItem: [
+                                .init(displayName: "Travel plus", displayValue: "45 days")
+                            ]
+                        )
+                ),
                 progress: 0
             )
         },
