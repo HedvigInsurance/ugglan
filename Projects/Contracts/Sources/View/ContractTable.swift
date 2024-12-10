@@ -52,9 +52,24 @@ struct ContractTable: View {
                 VStack(spacing: 24) {
                     hSection {
                         if Dependencies.featureFlags().isAddonsEnabled, let banner = vm.addonBannerModel {
+                            let addonContracts = banner.contractIds.compactMap({
+                                store.state.contractForId($0)
+                            })
+
+                            let addonContractConfig: [AddonConfig] = addonContracts.map({
+                                .init(
+                                    contractId: $0.id,
+                                    exposureName: $0.exposureDisplayName,
+                                    displayName: $0.exposureDisplayName
+                                )
+                            })
+
                             AddonCardView(
                                 openAddon: {
-                                    contractsNavigationVm.isAddonPresented = .init(contractId: nil)
+                                    contractsNavigationVm.isAddonPresented = .init(
+                                        contractConfigs: addonContractConfig,
+                                        addonId: nil
+                                    )
                                 },
                                 addon: banner
                             )

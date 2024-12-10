@@ -132,6 +132,6 @@ struct ChangeAddonScreen: View {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
-    return ChangeAddonScreen(changeAddonVm: .init(contractId: ""))
-        .environmentObject(ChangeAddonNavigationViewModel(input: .init(contractId: "contractId")))
+    return ChangeAddonScreen(changeAddonVm: .init())
+        .environmentObject(ChangeAddonNavigationViewModel(input: .init()))
 }

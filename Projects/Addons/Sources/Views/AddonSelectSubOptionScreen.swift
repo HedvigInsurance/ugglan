@@ -97,7 +97,6 @@ extension AddonSelectSubOptionScreen: TitleView {
 }
 
 #Preview {
-
     let currentAddon: AddonQuote = .init(
         id: "45",
         displayName: "45 days",
@@ -172,7 +171,7 @@ extension AddonSelectSubOptionScreen: TitleView {
             ]
         ),
         changeAddonNavigationVm: .init(
-            input: .init(contractId: "contractId")
+            input: .init()
         )
     )
 }

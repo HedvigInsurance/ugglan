@@ -56,7 +56,7 @@ public class FetchContractsClientOctopus: FetchContractsClient {
 
     public func getAddonBannerModel() async throws -> AddonBannerModel? {
         return .init(
-            contractIds: ["contractId"],
+            contractIds: ["69dae7d6-b859-4818-9c07-c4db470c60fa", "eda450de-0b89-4965-a018-552e7a078cf3"],
             titleDisplayName: "Travel Plus",
             descriptionDisplayName:
                 "Extended travel insurance with extra coverage for your travels",
