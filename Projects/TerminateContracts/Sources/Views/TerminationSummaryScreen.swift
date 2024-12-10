@@ -3,29 +3,9 @@ import hCore
 import hCoreUI
 
 struct TerminationSummaryScreen: View {
-    @ObservedObject var terminationNavigationVm: TerminationFlowNavigationViewModel
-    let extraCoverageItems: [ExtraCoverageItem]?
-    let withAddonView: Bool
+    @EnvironmentObject var terminationNavigationVm: TerminationFlowNavigationViewModel
 
-    init(
-        terminationNavigationVm: TerminationFlowNavigationViewModel
-    ) {
-        self.terminationNavigationVm = terminationNavigationVm
-
-        self.extraCoverageItems = {
-            let dateExtraCoverageItems = terminationNavigationVm.terminationDateStepModel?.extraCoverageItem
-            let deletionExtraCoverageItems = terminationNavigationVm.terminationDeleteStepModel?.extraCoverageItem
-
-            if let dateExtraCoverageItems, !dateExtraCoverageItems.isEmpty {
-                return dateExtraCoverageItems
-            } else if let deletionExtraCoverageItems, !deletionExtraCoverageItems.isEmpty {
-                return deletionExtraCoverageItems
-            }
-            return nil
-        }()
-
-        withAddonView = Dependencies.featureFlags().isAddonsEnabled && extraCoverageItems != nil
-    }
+    init() {}
 
     var body: some View {
         hForm {}
@@ -44,6 +24,9 @@ struct TerminationSummaryScreen: View {
                 )
             )
             .hFormAttachToBottom {
+                let withAddonView =
+                    Dependencies.featureFlags().isAddonsEnabled && !terminationNavigationVm.extraCoverage.isEmpty
+
                 VStack(spacing: .padding16) {
                     hSection {
                         StatusCard(
@@ -98,11 +81,10 @@ struct TerminationSummaryScreen: View {
         }
     }
 
-    @ViewBuilder
-    private var addonContent: (some View)? {
+    private var addonContent: some View {
         VStack(alignment: .leading, spacing: 0) {
             hText(L10n.terminationAddonCoverageTitle)
-            ForEach(extraCoverageItems ?? [], id: \.self) { item in
+            ForEach(terminationNavigationVm.extraCoverage, id: \.self) { item in
                 getRow(for: item)
             }
         }
@@ -122,18 +104,19 @@ struct TerminationSummaryScreen: View {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlagsDemo() })
-    return TerminationSummaryScreen(
-        terminationNavigationVm: TerminationFlowNavigationViewModel(
-            configs: [
-                .init(
-                    contractId: "",
-                    contractDisplayName: "Homeowner",
-                    contractExposureName: "Bellmansgsatan 19A",
-                    activeFrom: "2024-12-15",
-                    typeOfContract: .seApartmentBrf
-                )
-            ],
-            terminateInsuranceViewModel: .init()
+    return TerminationSummaryScreen()
+        .environmentObject(
+            TerminationFlowNavigationViewModel(
+                configs: [
+                    .init(
+                        contractId: "",
+                        contractDisplayName: "Homeowner",
+                        contractExposureName: "Bellmansgsatan 19A",
+                        activeFrom: "2024-12-15",
+                        typeOfContract: .seApartmentBrf
+                    )
+                ],
+                terminateInsuranceViewModel: .init()
+            )
         )
-    )
 }

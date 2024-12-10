@@ -169,13 +169,23 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
     @Published var progress: Float? = 0
     var previousProgress: Float?
     @Published var hasSelectInsuranceStep: Bool = false
-
-    @Published var terminationDateStepModel: TerminationFlowDateNextStepModel?
-    @Published var terminationDeleteStepModel: TerminationFlowDeletionNextModel?
     @Published var successStepModel: TerminationFlowSuccessNextModel?
     @Published var failedStepModel: TerminationFlowFailedNextModel?
     @Published var terminationSurveyStepModel: TerminationFlowSurveyStepModel?
     @Published var config: TerminationConfirmConfig?
+
+    @Published var terminationDateStepModel: TerminationFlowDateNextStepModel? {
+        didSet {
+            extraCoverage = terminationDateStepModel?.extraCoverageItem ?? []
+        }
+    }
+    @Published var terminationDeleteStepModel: TerminationFlowDeletionNextModel? {
+        didSet {
+            extraCoverage = terminationDeleteStepModel?.extraCoverageItem ?? []
+        }
+    }
+
+    @Published var extraCoverage: [ExtraCoverageItem] = []
 
     var isDeletion: Bool {
         terminationDeleteStepModel != nil
@@ -525,7 +535,7 @@ struct TerminationFlowNavigation: View {
     }
 
     private func openTerminationSummaryScreen() -> some View {
-        TerminationSummaryScreen(terminationNavigationVm: vm)
+        TerminationSummaryScreen()
             .withDismissButton()
     }
 
