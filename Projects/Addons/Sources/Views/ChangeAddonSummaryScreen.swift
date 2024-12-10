@@ -9,9 +9,10 @@ struct ChangeAddonSummaryScreen: View {
     init(
         changeAddonNavigationVm: ChangeAddonNavigationViewModel
     ) {
-        quoteSummaryVm = changeAddonNavigationVm.changeAddonVm.asQuoteSummaryViewModel(
-            changeAddonNavigationVm: changeAddonNavigationVm
-        )
+        quoteSummaryVm = changeAddonNavigationVm.changeAddonVm!
+            .asQuoteSummaryViewModel(
+                changeAddonNavigationVm: changeAddonNavigationVm
+            )
     }
 
     var body: some View {
@@ -24,7 +25,7 @@ extension ChangeAddonViewModel {
         let vm = QuoteSummaryViewModel(
             contract: [
                 .init(
-                    id: self.contractId ?? "",
+                    id: self.contractId,
                     displayName: self.selectedQuote?.productVariant.displayName ?? "",
                     exposureName: L10n.addonFlowSummaryActiveFrom(
                         self.addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
@@ -49,9 +50,6 @@ extension ChangeAddonViewModel {
             ),
             isAddon: true
         ) {
-            Task {
-                await self.submitAddons()
-            }
             changeAddonNavigationVm.isConfirmAddonPresented = true
         }
 

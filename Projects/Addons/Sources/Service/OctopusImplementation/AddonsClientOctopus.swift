@@ -23,6 +23,7 @@ public class AddonsClientOctopus: AddonsClient {
     public init() {}
 
     public func getAddon(contractId: String) async throws -> AddonOffer {
+        try await Task.sleep(nanoseconds: 3_000_000_000)
         let currentAddon: AddonQuote = .init(
             id: "45",
             displayName: "45 days",
@@ -102,6 +103,7 @@ public class AddonsClientOctopus: AddonsClient {
 
     public func submitAddon(quoteId: String, addonId: String) async throws -> Date? {
         /* TODO: Call mutation upsellTravelAddonActivate(quoteId: ID!, addonId: ID!) */
-        return "2025-01-15".localDateToDate
+        try await Task.sleep(nanoseconds: 3_000_000_000)
+        return Date()
     }
 }

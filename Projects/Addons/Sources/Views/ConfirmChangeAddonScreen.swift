@@ -15,7 +15,7 @@ public struct ConfirmChangeAddonScreen: View {
                             hText(L10n.addonFlowConfirmationTitle)
                             hText(
                                 L10n.addonFlowConfirmationDescription(
-                                    addonNavigationVm.changeAddonVm.activationDate?.displayDateDDMMMYYYYFormat ?? ""
+                                    addonNavigationVm.changeAddonVm!.activationDate?.displayDateDDMMMYYYYFormat ?? ""
                                 )
                             )
                             .multilineTextAlignment(.center)
@@ -25,6 +25,9 @@ public struct ConfirmChangeAddonScreen: View {
                             hButton.LargeButton(type: .primary) {
                                 addonNavigationVm.isAddonProcessingPresented = true
                                 addonNavigationVm.isConfirmAddonPresented = false
+                                Task {
+                                    await addonNavigationVm.changeAddonVm!.submitAddons()
+                                }
                             } content: {
                                 hText(L10n.addonFlowConfirmationButton)
                             }

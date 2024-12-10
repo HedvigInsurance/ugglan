@@ -1,10 +1,11 @@
+import Combine
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct AddonSelectInsuranceScreen: View {
     @EnvironmentObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
-
+    @StateObject var vm = AddonSelectInsuranceScreenViewModel()
     public var body: some View {
         ItemPickerScreen<AddonConfig>(
             config: .init(
@@ -22,11 +23,15 @@ public struct AddonSelectInsuranceScreen: View {
 
                     return items
                 }(),
-                preSelectedItems: { [] },
+                preSelectedItems: { vm.selectedItems },
                 onSelected: { selected in
                     if let selectedContract = selected.first?.0 {
-                        changeAddonNavigationVm.changeAddonVm.contractId = selectedContract.contractId
-                        changeAddonNavigationVm.router.push(ChangeAddonRouterActions.addonLandingScreen)
+                        vm.selectedItems = selected.compactMap({ $0.0 })
+                        changeAddonNavigationVm.changeAddonVm = .init(contractId: selectedContract.contractId)
+                        vm.observer = changeAddonNavigationVm.changeAddonVm!.$fetchAddonsViewState
+                            .sink { value in
+                                vm.processingState = value
+                            }
                     }
                 },
                 singleSelect: true,
@@ -41,5 +46,34 @@ public struct AddonSelectInsuranceScreen: View {
             subTitle: .init(.small, .heading2, L10n.addonFlowSelectInsuranceSubtitle)
         )
         .hFieldSize(.small)
+        .trackErrorState(for: $vm.processingState)
+        .hButtonIsLoading(vm.processingState == .loading)
+        .onChange(of: vm.processingState) { value in
+            switch value {
+            case .success:
+                changeAddonNavigationVm.router.push(ChangeAddonRouterActions.addonLandingScreen)
+            default:
+                break
+            }
+        }
     }
+}
+
+class AddonSelectInsuranceScreenViewModel: ObservableObject {
+    @Published var processingState = ProcessingState.success
+    var observer: AnyCancellable?
+    @Published var selectedItems: [AddonConfig] = []
+}
+
+#Preview {
+    AddonSelectInsuranceScreen()
+        .environmentObject(
+            ChangeAddonNavigationViewModel(
+                input: .init(contractConfigs: [
+                    .init(contractId: "1", exposureName: "1", displayName: "1"),
+                    .init(contractId: "2", exposureName: "2", displayName: "2"),
+
+                ])
+            )
+        )
 }
