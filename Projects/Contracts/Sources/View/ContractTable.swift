@@ -60,7 +60,7 @@ struct ContractTable: View {
                                 .init(
                                     contractId: $0.id,
                                     exposureName: $0.exposureDisplayName,
-                                    displayName: $0.exposureDisplayName
+                                    displayName: $0.currentAgreement?.productVariant.displayName ?? ""
                                 )
                             })
 
