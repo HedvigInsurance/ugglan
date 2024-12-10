@@ -13,7 +13,7 @@ public class ChangeAddonViewModel: ObservableObject {
     @Published var activationDate: Date?
     @Published var contractId: String?
 
-    init(contractId: String) {
+    init() {
         Task {
             await getAddons()
 

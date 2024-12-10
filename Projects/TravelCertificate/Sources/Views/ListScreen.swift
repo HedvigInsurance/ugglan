@@ -1,4 +1,5 @@
 import Addons
+import Contracts
 import Foundation
 import PresentableStore
 import SwiftUI
@@ -56,7 +57,19 @@ public struct ListScreen: View {
                     if Dependencies.featureFlags().isAddonsEnabled, let banner = vm.addonBannerModel {
                         AddonCardView(
                             openAddon: {
-                                travelCertificateNavigationVm.isAddonPresented = true
+                                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                                let addonContracts = banner.contractIds.compactMap({
+                                    contractStore.state.contractForId($0)
+                                })
+
+                                let addonConfigs: [AddonConfig] = addonContracts.map({
+                                    .init(
+                                        contractId: $0.id,
+                                        exposureName: $0.exposureDisplayName,
+                                        displayName: $0.currentAgreement?.productVariant.displayName ?? ""
+                                    )
+                                })
+                                travelCertificateNavigationVm.isAddonPresented = .init(contractConfigs: addonConfigs)
                             },
                             addon: banner
                         )

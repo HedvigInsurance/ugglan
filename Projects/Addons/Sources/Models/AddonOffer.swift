@@ -2,8 +2,24 @@ import Foundation
 import hCore
 import hGraphQL
 
+public struct AddonConfig: Hashable {
+    let contractId: String
+    let exposureName: String
+    let displayName: String
+
+    public init(
+        contractId: String,
+        exposureName: String,
+        displayName: String
+    ) {
+        self.contractId = contractId
+        self.exposureName = exposureName
+        self.displayName = displayName
+    }
+}
+
 public struct AddonBannerModel {
-    let contractIds: [String]
+    public let contractIds: [String]
     let titleDisplayName: String
     let descriptionDisplayName: String
     let badges: [String]
