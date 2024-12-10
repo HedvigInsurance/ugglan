@@ -37,7 +37,7 @@ public struct AddonSelectInsuranceScreen: View {
             )
         )
         .hFormTitle(
-            title: .init(.small, .heading2, L10n.addonFlowTitle, alignment: .leading),
+            title: .init(.small, .heading2, L10n.addonFlowSelectInsuranceTitle, alignment: .leading),
             subTitle: .init(.small, .heading2, L10n.addonFlowSelectInsuranceSubtitle)
         )
         .hFieldSize(.small)
