@@ -29,7 +29,7 @@ class ChangeAddonNavigationViewModel: ObservableObject {
     @Published var isChangeCoverageDaysPresented: AddonOffer?
     @Published var isConfirmAddonPresented = false
     @Published var isAddonProcessingPresented = false
-    @Published var changeAddonVm: ChangeAddonViewModel
+    @Published var changeAddonVm: ChangeAddonViewModel?
     @Published var document: hPDFDocument?
     @Published var input: ChangeAddonInput
 
@@ -39,7 +39,9 @@ class ChangeAddonNavigationViewModel: ObservableObject {
         input: ChangeAddonInput
     ) {
         self.input = input
-        changeAddonVm = ChangeAddonViewModel()
+        if input.contractConfigs?.count ?? 0 == 1, let config = input.contractConfigs?.first {
+            changeAddonVm = .init(contractId: config.contractId)
+        }
     }
 }
 
@@ -67,7 +69,7 @@ public struct ChangeAddonNavigation: View {
                 if changeAddonNavigationVm.input.contractConfigs?.count ?? 0 > 1 {
                     selectInsuranceScreen
                 } else {
-                    ChangeAddonScreen(changeAddonVm: changeAddonNavigationVm.changeAddonVm)
+                    ChangeAddonScreen(changeAddonVm: changeAddonNavigationVm.changeAddonVm!)
                         .withAlertDismiss()
                 }
             }
@@ -80,7 +82,7 @@ public struct ChangeAddonNavigation: View {
                     .configureTitle(L10n.offerUpdateSummaryTitle)
                     .withAlertDismiss()
                 case .addonLandingScreen:
-                    ChangeAddonScreen(changeAddonVm: changeAddonNavigationVm.changeAddonVm)
+                    ChangeAddonScreen(changeAddonVm: changeAddonNavigationVm.changeAddonVm!)
                         .withAlertDismiss()
                 }
             }
@@ -90,7 +92,7 @@ public struct ChangeAddonNavigation: View {
             presented: $changeAddonNavigationVm.isAddonProcessingPresented,
             options: .constant(.alwaysOpenOnTop)
         ) {
-            AddonProcessingScreen(vm: changeAddonNavigationVm.changeAddonVm)
+            AddonProcessingScreen(vm: changeAddonNavigationVm.changeAddonVm!)
                 .embededInNavigation(
                     tracking: ChangeAddonTrackingType.processing
                 )
