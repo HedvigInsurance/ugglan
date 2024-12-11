@@ -20,6 +20,7 @@ extension View {
         self.environment(\.defaultHTextStyle, style)
     }
 }
+
 @MainActor
 extension String {
     public func hText(_ style: HFontTextStyle? = nil) -> hText {
@@ -155,12 +156,13 @@ public enum HFontTextStyle {
 
 public struct hFontModifier: ViewModifier {
     public var style: HFontTextStyle
+    @Environment(\.hWithoutFontMultiplier) var withoutFontMultiplier
 
     public init(style: HFontTextStyle) {
         self.style = style
     }
     var font: UIFont {
-        Fonts.fontFor(style: style)
+        Fonts.fontFor(style: style, withoutFontMultipler: withoutFontMultiplier)
     }
 
     var lineSpacing: CGFloat {
@@ -219,7 +221,8 @@ public struct hFontModifier: ViewModifier {
     }
 
     public func body(content: Content) -> some View {
-        content.font(Font(font))
+        content
+            .font(Font(font))
             .lineSpacing(lineSpacing)
             .padding(.vertical, lineSpacing / 2)
     }
@@ -269,6 +272,7 @@ public struct hText: View {
     }
 
     public var body: some View {
-        Text(text).modifier(hFontModifier(style: style ?? defaultStyle ?? .body1))
+        Text(text)
+            .modifier(hFontModifier(style: style ?? defaultStyle ?? .body1))
     }
 }
