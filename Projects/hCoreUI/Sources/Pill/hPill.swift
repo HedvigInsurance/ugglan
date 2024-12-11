@@ -23,7 +23,8 @@ public struct hPill: View {
             .modifier(
                 PillModifier(
                     color: color,
-                    colorLevel: colorLevel
+                    colorLevel: colorLevel,
+                    style: fieldSize == .large ? .body1 : .label
                 )
             )
     }
@@ -31,13 +32,14 @@ public struct hPill: View {
     struct PillModifier: ViewModifier {
         let color: PillColor
         let colorLevel: PillColor.PillColorLevel
+        let style: HFontTextStyle
         @Environment(\.hFieldSize) var fieldSize
 
         func body(content: Content) -> some View {
             content
-                .padding(.horizontal, getHorizontalPadding)
-                .padding(.top, getTopPadding)
-                .padding(.bottom, getBottomPadding)
+                .padding(.horizontal, getHorizontalPadding * style.multiplier)
+                .padding(.top, getTopPadding * style.multiplier)
+                .padding(.bottom, getBottomPadding * style.multiplier)
                 .background(
                     RoundedRectangle(cornerRadius: getCornerRadius)
                         .fill(getBackgroundColor)
