@@ -21,17 +21,18 @@ public struct InfoCard: View {
                 Image(uiImage: type.image)
                     .resizable()
                     .foregroundColor(type.imageColor)
-                    .frame(width: 20, height: 20)
+                    .frame(width: 20 * HFontTextStyle.label.multiplier, height: 20 * HFontTextStyle.label.multiplier)
             }
             if let customContentView = customContentView {
                 customContentView
-                    .padding(.leading, .padding8)
+                    .padding(.leading, .padding8 * HFontTextStyle.label.multiplier)
                     .hUseLightMode
             } else {
                 VStack(alignment: .leading) {
                     hText(text, style: .label)
                         .foregroundColor(type.textColor)
                         .multilineTextAlignment(.leading)
+                        .padding(.bottom, 4 * HFontTextStyle.label.multiplier)
                     if let buttonsConfig {
                         if buttonsConfig.count > 1 {
                             HStack(spacing: 4) {
@@ -58,13 +59,13 @@ public struct InfoCard: View {
                         }
                     }
                 }
-                .padding(.leading, .padding8)
+                .padding(.leading, .padding8 * HFontTextStyle.label.multiplier)
                 .hUseLightMode
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, .padding12)
-        .padding(.horizontal, .padding16)
+        .padding(.vertical, .padding12 * HFontTextStyle.label.multiplier)
+        .padding(.horizontal, .padding16 * HFontTextStyle.label.multiplier)
         .modifier(NotificationStyle(type: type))
         .fixedSize(horizontal: false, vertical: true)
     }
