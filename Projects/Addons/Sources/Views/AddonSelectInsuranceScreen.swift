@@ -6,7 +6,24 @@ import hCoreUI
 public struct AddonSelectInsuranceScreen: View {
     @EnvironmentObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
     @StateObject var vm = AddonSelectInsuranceScreenViewModel()
+    @ObservedObject var changeAddonVm: ChangeAddonViewModel
+
     public var body: some View {
+        successView.loading($changeAddonVm.fetchAddonsViewState)
+            .hErrorViewButtonConfig(
+                .init(
+                    actionButton: .init(
+                        buttonTitle: L10n.openChat,
+                        buttonAction: {
+                            changeAddonNavigationVm.router.dismiss()
+                            NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
+                        }
+                    )
+                )
+            )
+    }
+
+    private var successView: some View {
         ItemPickerScreen<AddonConfig>(
             config: .init(
                 items: {
@@ -66,7 +83,7 @@ class AddonSelectInsuranceScreenViewModel: ObservableObject {
 }
 
 #Preview {
-    AddonSelectInsuranceScreen()
+    AddonSelectInsuranceScreen(changeAddonVm: .init(contractId: "contractId"))
         .environmentObject(
             ChangeAddonNavigationViewModel(
                 input: .init(contractConfigs: [
