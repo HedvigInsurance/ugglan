@@ -312,7 +312,7 @@ public struct QuoteSummaryScreen: View {
                             if vm.total.value >= 0 {
                                 hText("+" + amount)
                             } else {
-                                hText("-" + amount)
+                                hText(amount)
                             }
                             hText(L10n.addonFlowSummaryPriceSubtitle, style: .label)
                                 .foregroundColor(hTextColor.Opaque.secondary)
