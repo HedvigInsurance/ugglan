@@ -1,0 +1,10 @@
+query CurrentMember($source: UpsellTravelAddonSource!) {
+  currentMember {
+    upsellTravelAddonBanner(source: $source) {
+      contractIds
+      titleDisplayName
+      descriptionDisplayName
+      badges
+    }
+  }
+}
