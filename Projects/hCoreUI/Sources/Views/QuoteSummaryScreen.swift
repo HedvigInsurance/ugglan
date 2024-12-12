@@ -309,7 +309,11 @@ public struct QuoteSummaryScreen: View {
 
                     if vm.isAddon {
                         VStack(alignment: .trailing, spacing: 0) {
-                            hText("+" + amount)
+                            if vm.total.value >= 0 {
+                                hText("+" + amount)
+                            } else {
+                                hText("-" + amount)
+                            }
                             hText(L10n.addonFlowSummaryPriceSubtitle, style: .label)
                                 .foregroundColor(hTextColor.Opaque.secondary)
                         }
