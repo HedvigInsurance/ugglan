@@ -32,8 +32,16 @@ public class AddonsClientOctopus: AddonsClient {
             }()
 
             let mutation = OctopusGraphQL.UpsellTravelAddonOfferMutation(contractId: contractId, flow: .case(source))
-            let data = try await octopus.client.perform(mutation: mutation)
-            let response = data.upsellTravelAddonOffer
+            let contractsQuery = OctopusGraphQL.CurrentAddonContractQuery(contractId: contractId)
+
+            let addonOfferData = try await octopus.client.perform(mutation: mutation)
+            let response = addonOfferData.upsellTravelAddonOffer
+
+            let contractResponse = try await octopus.client.fetch(
+                query: contractsQuery,
+                cachePolicy: .fetchIgnoringCacheCompletely
+            )
+            let currentAddonContract = contractResponse.contract
 
             if let error = response.userError, let message = error.message {
                 throw AddonsError.errorMessage(message: message)
@@ -43,9 +51,8 @@ public class AddonsClientOctopus: AddonsClient {
                 throw AddonsError.somethingWentWrong
             }
 
-            /* TODO: ADD CORRECT VALUES? */
             let currentAddon = AddonQuote(
-                displayName: nil,
+                displayName: currentAddonContract.exposureDisplayName,
                 quoteId: "quoteId",
                 addonId: "addonId",
                 displayItems: addonOffer.currentAddon?.displayItems
@@ -58,7 +65,7 @@ public class AddonsClientOctopus: AddonsClient {
                     perils: [],
                     insurableLimits: [],
                     documents: [],
-                    displayName: "",
+                    displayName: currentAddonContract.exposureDisplayName,
                     displayNameTier: nil,
                     tierDescription: nil
                 )
@@ -120,7 +127,7 @@ extension AddonQuote {
             perils: [],
             insurableLimits: [],
             documents: [],
-            displayName: "",
+            displayName: fragment.displayName,
             displayNameTier: nil,
             tierDescription: nil
         )
