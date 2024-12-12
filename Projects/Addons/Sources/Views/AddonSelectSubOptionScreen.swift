@@ -4,6 +4,7 @@ import hCoreUI
 
 struct AddonSelectSubOptionScreen: View {
     @ObservedObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
+    @ObservedObject private var changeAddonVm: ChangeAddonViewModel
     let addonOffer: AddonOffer
 
     init(
@@ -12,9 +13,9 @@ struct AddonSelectSubOptionScreen: View {
     ) {
         self.addonOffer = addonOffer
         self.changeAddonNavigationVm = changeAddonNavigationVm
-
-        if changeAddonNavigationVm.changeAddonVm.selectedQuote == nil {
-            changeAddonNavigationVm.changeAddonVm.selectedQuote = addonOffer.quotes.first
+        self.changeAddonVm = changeAddonNavigationVm.changeAddonVm!
+        if changeAddonNavigationVm.changeAddonVm!.selectedQuote == nil {
+            changeAddonNavigationVm.changeAddonVm!.selectedQuote = addonOffer.quotes.first
 
         }
     }
@@ -40,7 +41,7 @@ struct AddonSelectSubOptionScreen: View {
                                 }
                                 .asAnyView
                             },
-                            selected: $changeAddonNavigationVm.changeAddonVm.selectedQuote,
+                            selected: $changeAddonVm.selectedQuote,
                             error: .constant(nil),
                             useAnimation: true
                         )
@@ -97,7 +98,6 @@ extension AddonSelectSubOptionScreen: TitleView {
 }
 
 #Preview {
-
     let currentAddon: AddonQuote = .init(
         id: "45",
         displayName: "45 days",
@@ -172,7 +172,7 @@ extension AddonSelectSubOptionScreen: TitleView {
             ]
         ),
         changeAddonNavigationVm: .init(
-            input: .init(contractId: "contractId")
+            input: .init()
         )
     )
 }

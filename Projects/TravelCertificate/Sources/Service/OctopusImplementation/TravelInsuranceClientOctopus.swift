@@ -84,13 +84,19 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
                 .filter({ $0.supportsTravelCertificate }).isEmpty
 
             /* TODO: REPLACE WITH REAL DATA */
-            let addonBannerModelData = AddonBannerModel(
-                contractIds: ["contractId"],
-                titleDisplayName: "Travel Plus",
-                descriptionDisplayName:
-                    "Extended travel insurance with extra coverage for your travels",
-                badges: ["Popular"]
-            )
+            let addonBannerModelData: AddonBannerModel? = {
+                let data = AddonBannerModel(
+                    contractIds: [],
+                    titleDisplayName: "Travel Plus",
+                    descriptionDisplayName:
+                        "Extended travel insurance with extra coverage for your travels",
+                    badges: ["Popular"]
+                )
+                if !data.contractIds.isEmpty {
+                    return data
+                }
+                return nil
+            }()
 
             return (listData, canAddTravelInsuranceData, addonBannerModelData)
         } catch let ex {

@@ -811,7 +811,15 @@ class LoggedInNavigationViewModel: ObservableObject {
         if let contractId = getContractId(from: url),
             let contract: Contracts.Contract = contractStore.state.contractForId(contractId)
         {
-            self.isAddonPresented = .init(contractId: contractId)
+            self.isAddonPresented = .init(
+                contractConfigs: [
+                    .init(
+                        contractId: contract.id,
+                        exposureName: contract.exposureDisplayName,
+                        displayName: contract.currentAgreement?.productVariant.displayName ?? ""
+                    )
+                ]
+            )
         } else if let addonId = getAddonId(from: url) {
             self.isAddonPresented = .init(addonId: addonId)
         }

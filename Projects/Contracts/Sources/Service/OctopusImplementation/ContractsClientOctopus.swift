@@ -1,5 +1,6 @@
 import Addons
 import Foundation
+import PresentableStore
 import hCore
 import hGraphQL
 
@@ -55,8 +56,10 @@ public class FetchContractsClientOctopus: FetchContractsClient {
     }
 
     public func getAddonBannerModel() async throws -> AddonBannerModel? {
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        let contacts = store.state.activeContracts
         return .init(
-            contractIds: ["contractId"],
+            contractIds: contacts.map({ $0.id }),
             titleDisplayName: "Travel Plus",
             descriptionDisplayName:
                 "Extended travel insurance with extra coverage for your travels",
