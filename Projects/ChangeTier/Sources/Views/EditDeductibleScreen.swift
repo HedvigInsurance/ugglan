@@ -38,7 +38,7 @@ struct EditDeductibleScreen: View {
                                         Spacer()
                                         hPill(
                                             text: deductible.premium.formattedAmountPerMonth,
-                                            color: .grey(translucent: false),
+                                            color: .grey,
                                             colorLevel: .two
                                         )
                                         .hFieldSize(.small)
