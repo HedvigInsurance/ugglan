@@ -9,19 +9,32 @@ mutation UpsellTravelAddonOffer($contractId: ID!) {
       activationDate
       currentAddon {
         displayItems {
-          displayTitle
-          displayValue
+            ...UpsellTravelAddonDisplayItemFragment
         }
         premium {
-          amount
-          currencyCode
+            ...MoneyFragment
         }
       }
       quotes {
-        quoteId
-        addonId
-        displayName
+        ...UpsellTravelAddonQuoteFragment
       }
     }
   }
+}
+
+fragment UpsellTravelAddonQuoteFragment on UpsellTravelAddonQuote {
+    quoteId
+    addonId
+    displayName
+    displayItems {
+        ...UpsellTravelAddonDisplayItemFragment
+    }
+    premium {
+        ...MoneyFragment
+    }
+}
+
+fragment UpsellTravelAddonDisplayItemFragment on UpsellTravelAddonDisplayItem {
+    displayTitle
+    displayValue
 }

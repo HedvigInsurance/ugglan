@@ -61,17 +61,19 @@ public struct AddonOffer: Identifiable, Equatable, Hashable, Sendable {
 }
 
 public struct AddonQuote: Identifiable, Equatable, Hashable, Sendable {
-    public let id: String
+    public var id: String {
+        quoteId
+    }
     let displayName: String?
     let quoteId: String
     let addonId: String
     let displayItems: [AddonDisplayItem]
     let price: MonetaryAmount?
     let productVariant: ProductVariant
+}
 
-    struct AddonDisplayItem: Equatable, Hashable {
-        let displayTitle: String
-        let displaySubtitle: String?
-        let displayValue: String
-    }
+struct AddonDisplayItem: Equatable, Hashable {
+    let displayTitle: String
+    //    let displaySubtitle: String?
+    let displayValue: String
 }

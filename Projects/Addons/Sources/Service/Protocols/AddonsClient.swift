@@ -1,4 +1,5 @@
 import Foundation
+import hCore
 import hCoreUI
 import hGraphQL
 
@@ -12,4 +13,19 @@ public enum AddonsError: Error {
     case emptyList
     case somethingWentWrong
     case submitError
+    case errorMessage(message: String)
+}
+
+extension AddonsError: LocalizedError {
+    /** TODO: ADD LOCALIZATION **/
+    public var errorDescription: String? {
+        switch self {
+        case .somethingWentWrong:
+            return "Empty list"
+        case let .errorMessage(message):
+            return message
+        default:
+            return L10n.General.errorBody
+        }
+    }
 }

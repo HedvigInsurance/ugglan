@@ -55,15 +55,26 @@ public class FetchContractsClientOctopus: FetchContractsClient {
         })
     }
 
-    public func getAddonBannerModel() async throws -> AddonBannerModel? {
-        let store: ContractStore = globalPresentableStoreContainer.get()
-        let contacts = store.state.activeContracts
-        return .init(
-            contractIds: contacts.map({ $0.id }),
-            titleDisplayName: "Travel Plus",
-            descriptionDisplayName:
-                "Extended travel insurance with extra coverage for your travels",
-            badges: ["Popular"]
-        )
+    public func getAddonBannerModel(source: AddonSource) async throws -> AddonBannerModel? {
+        let source: OctopusGraphQL.UpsellTravelAddonSource = {
+            switch source {
+            case .appUpsell: return .appUpsell
+            case .appUpgrade: return .appUpgrade
+            }
+        }()
+
+        let query = OctopusGraphQL.UpsellTravelAddonBannerQuery(source: .case(source))
+        let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+        let bannerData = data.currentMember.upsellTravelAddonBanner
+
+        if let bannerData, !bannerData.contractIds.isEmpty {
+            return AddonBannerModel(
+                contractIds: bannerData.contractIds,
+                titleDisplayName: bannerData.titleDisplayName,
+                descriptionDisplayName: bannerData.descriptionDisplayName,
+                badges: bannerData.badges
+            )
+        }
+        return nil
     }
 }

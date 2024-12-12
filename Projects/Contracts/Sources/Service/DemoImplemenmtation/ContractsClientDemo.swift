@@ -77,7 +77,7 @@ public class FetchContractsClientDemo: FetchContractsClient {
         return []
     }
 
-    public func getAddonBannerModel() async throws -> AddonBannerModel? {
+    public func getAddonBannerModel(source: AddonSource) async throws -> AddonBannerModel? {
         let bannerData = AddonBannerModel(
             contractIds: [],
             titleDisplayName: "Travel Plus",

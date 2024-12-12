@@ -99,13 +99,15 @@ extension AddonSelectSubOptionScreen: TitleView {
 
 #Preview {
     let currentAddon: AddonQuote = .init(
-        id: "45",
         displayName: "45 days",
         quoteId: "quoteId45",
         addonId: "addonId45",
         displayItems: [
-            .init(displayTitle: "Coverage", displaySubtitle: nil, displayValue: "45 days"),
-            .init(displayTitle: "Insured people", displaySubtitle: nil, displayValue: "You+1"),
+            .init(displayTitle: "Coverage", displayValue: "45 days"),
+            .init(
+                displayTitle: "Insured people",
+                displayValue: "You+1"
+            ),
         ],
         price: .init(amount: "49", currency: "SEK"),
         productVariant: .init(
@@ -139,13 +141,12 @@ extension AddonSelectSubOptionScreen: TitleView {
             quotes: [
                 currentAddon,
                 .init(
-                    id: "60",
                     displayName: "60 days",
                     quoteId: "quoteId60",
                     addonId: "addonId60",
                     displayItems: [
-                        .init(displayTitle: "Coverage", displaySubtitle: nil, displayValue: "45 days"),
-                        .init(displayTitle: "Insured people", displaySubtitle: nil, displayValue: "You+1"),
+                        .init(displayTitle: "Coverage", displayValue: "45 days"),
+                        .init(displayTitle: "Insured people", displayValue: "You+1"),
                     ],
                     price: .init(amount: "79", currency: "SEK"),
                     productVariant: .init(

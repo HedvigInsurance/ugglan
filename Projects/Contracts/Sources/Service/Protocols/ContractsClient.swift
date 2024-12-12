@@ -5,7 +5,7 @@ import Foundation
 public protocol FetchContractsClient {
     func getContracts() async throws -> ContractsStack
     func getCrossSell() async throws -> [CrossSell]
-    func getAddonBannerModel() async throws -> AddonBannerModel?
+    func getAddonBannerModel(source: AddonSource) async throws -> AddonBannerModel?
 }
 
 public struct ContractsStack: Sendable {

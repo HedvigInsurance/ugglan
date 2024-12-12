@@ -23,6 +23,11 @@ public struct ChangeAddonInput: Identifiable, Equatable {
     }
 }
 
+public enum AddonSource: Codable {
+    case appUpgrade
+    case appUpsell
+}
+
 @MainActor
 class ChangeAddonNavigationViewModel: ObservableObject {
     @Published var isLearnMorePresented: InfoViewDataModel?

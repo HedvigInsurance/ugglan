@@ -214,7 +214,7 @@ public class ContractTableViewModel: ObservableObject {
 
     private func getAddonBanner() async {
         do {
-            self.addonBannerModel = try await service.getAddonBannerModel()
+            self.addonBannerModel = try await service.getAddonBannerModel(source: .appUpsell)
         } catch {
 
         }
