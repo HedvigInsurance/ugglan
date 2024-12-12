@@ -106,7 +106,7 @@ struct ChangeAddonScreen: View {
 
                 hPill(
                     text: L10n.addonFlowPriceLabel(changeAddonVm.selectedQuote?.price?.amount ?? ""),
-                    color: .grey(translucent: true),
+                    color: .grey,
                     colorLevel: .one
                 )
                 .hFieldSize(.small)
