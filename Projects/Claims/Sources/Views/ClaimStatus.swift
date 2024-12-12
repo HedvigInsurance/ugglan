@@ -97,7 +97,7 @@ extension ClaimModel.ClaimOutcome {
     var color: PillColor {
         switch self {
         case .none, .notCompensated, .notCovered, .paid, .closed:
-            .grey(translucent: true)
+            .grey
         case .missingReceipt:
             .amber
         }

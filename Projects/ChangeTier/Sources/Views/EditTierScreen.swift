@@ -29,7 +29,7 @@ struct EditTierScreen: View {
                                         if let premiumLabel = tier.getPremiumLabel() {
                                             hPill(
                                                 text: premiumLabel,
-                                                color: .grey(translucent: false),
+                                                color: .grey,
                                                 colorLevel: .two
                                             )
                                             .hFieldSize(.small)
