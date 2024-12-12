@@ -21,7 +21,7 @@ public class TravelInsuranceService {
         list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBannerModel?
     ) {
         log.info("TravelInsuranceService: getList", error: nil, attributes: nil)
-        return try await service.getList()
+        return try await service.getList(source: .appUpgrade)
     }
 }
 
@@ -68,7 +68,9 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
         }
     }
 
-    public func getList() async throws -> (
+    public func getList(
+        source: AddonSource
+    ) async throws -> (
         list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBannerModel?
     ) {
         let query = OctopusGraphQL.TravelCertificatesQuery()
@@ -83,17 +85,28 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
             let canAddTravelInsuranceData = !data.currentMember.activeContracts
                 .filter({ $0.supportsTravelCertificate }).isEmpty
 
-            /* TODO: REPLACE WITH REAL DATA */
+            let source: OctopusGraphQL.UpsellTravelAddonSource = {
+                switch source {
+                case .appUpsell: return .appUpsell
+                case .appUpgrade: return .appUpgrade
+                }
+            }()
+
+            let query = OctopusGraphQL.UpsellTravelAddonBannerTravelQuery(source: .case(source))
+            let bannerResponse = try await octopus.client.fetch(
+                query: query,
+                cachePolicy: .fetchIgnoringCacheCompletely
+            )
+            let bannerData = bannerResponse.currentMember.upsellTravelAddonBanner
+
             let addonBannerModelData: AddonBannerModel? = {
-                let data = AddonBannerModel(
-                    contractIds: [],
-                    titleDisplayName: "Travel Plus",
-                    descriptionDisplayName:
-                        "Extended travel insurance with extra coverage for your travels",
-                    badges: ["Popular"]
-                )
-                if !data.contractIds.isEmpty {
-                    return data
+                if let bannerData, !bannerData.contractIds.isEmpty {
+                    return AddonBannerModel(
+                        contractIds: bannerData.contractIds,
+                        titleDisplayName: bannerData.titleDisplayName,
+                        descriptionDisplayName: bannerData.descriptionDisplayName,
+                        badges: bannerData.badges
+                    )
                 }
                 return nil
             }()
