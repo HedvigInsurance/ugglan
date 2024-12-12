@@ -68,7 +68,8 @@ struct ContractTable: View {
                                 openAddon: {
                                     contractsNavigationVm.isAddonPresented = .init(
                                         contractConfigs: addonContractConfig,
-                                        addonId: nil
+                                        addonId: nil,
+                                        source: .appUpsell
                                     )
                                 },
                                 addon: banner

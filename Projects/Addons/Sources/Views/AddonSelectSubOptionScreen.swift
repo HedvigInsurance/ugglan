@@ -173,7 +173,7 @@ extension AddonSelectSubOptionScreen: TitleView {
             ]
         ),
         changeAddonNavigationVm: .init(
-            input: .init()
+            input: .init(source: .appUpgrade)
         )
     )
 }

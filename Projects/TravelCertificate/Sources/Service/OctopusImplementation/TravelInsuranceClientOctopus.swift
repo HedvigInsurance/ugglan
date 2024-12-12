@@ -85,14 +85,14 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
             let canAddTravelInsuranceData = !data.currentMember.activeContracts
                 .filter({ $0.supportsTravelCertificate }).isEmpty
 
-            let source: OctopusGraphQL.UpsellTravelAddonSource = {
+            let source: OctopusGraphQL.UpsellTravelAddonFlow = {
                 switch source {
                 case .appUpsell: return .appUpsell
                 case .appUpgrade: return .appUpgrade
                 }
             }()
 
-            let query = OctopusGraphQL.UpsellTravelAddonBannerTravelQuery(source: .case(source))
+            let query = OctopusGraphQL.UpsellTravelAddonBannerTravelQuery(flow: .case(source))
             let bannerResponse = try await octopus.client.fetch(
                 query: query,
                 cachePolicy: .fetchIgnoringCacheCompletely

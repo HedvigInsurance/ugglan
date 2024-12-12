@@ -15,7 +15,8 @@ public struct ConfirmChangeAddonScreen: View {
                             hText(L10n.addonFlowConfirmationTitle)
                             hText(
                                 L10n.addonFlowConfirmationDescription(
-                                    addonNavigationVm.changeAddonVm!.activationDate?.displayDateDDMMMYYYYFormat ?? ""
+                                    addonNavigationVm.changeAddonVm!.addonOffer?.activationDate?
+                                        .displayDateDDMMMYYYYFormat ?? ""
                                 )
                             )
                             .multilineTextAlignment(.center)
@@ -49,5 +50,6 @@ public struct ConfirmChangeAddonScreen: View {
 #Preview {
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    return ConfirmChangeAddonScreen().environmentObject(ChangeAddonNavigationViewModel(input: .init()))
+    return ConfirmChangeAddonScreen()
+        .environmentObject(ChangeAddonNavigationViewModel(input: .init(source: .appUpgrade)))
 }

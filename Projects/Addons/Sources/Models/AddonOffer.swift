@@ -74,6 +74,5 @@ public struct AddonQuote: Identifiable, Equatable, Hashable, Sendable {
 
 struct AddonDisplayItem: Equatable, Hashable {
     let displayTitle: String
-    //    let displaySubtitle: String?
     let displayValue: String
 }

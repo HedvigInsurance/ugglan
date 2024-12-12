@@ -1,6 +1,6 @@
-query UpsellTravelAddonBanner($source: UpsellTravelAddonSource!) {
+query UpsellTravelAddonBanner($flow: UpsellTravelAddonFlow!) {
   currentMember {
-    upsellTravelAddonBanner(source: $source) {
+    upsellTravelAddonBanner(flow: $flow) {
       contractIds
       titleDisplayName
       descriptionDisplayName

@@ -818,10 +818,11 @@ class LoggedInNavigationViewModel: ObservableObject {
                         exposureName: contract.exposureDisplayName,
                         displayName: contract.currentAgreement?.productVariant.displayName ?? ""
                     )
-                ]
+                ],
+                source: .appUpsell
             )
         } else if let addonId = getAddonId(from: url) {
-            self.isAddonPresented = .init(addonId: addonId)
+            self.isAddonPresented = .init(addonId: addonId, source: .appUpgrade)
         }
     }
 

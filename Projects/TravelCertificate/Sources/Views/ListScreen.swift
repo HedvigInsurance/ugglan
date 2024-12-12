@@ -69,7 +69,10 @@ public struct ListScreen: View {
                                         displayName: $0.currentAgreement?.productVariant.displayName ?? ""
                                     )
                                 })
-                                travelCertificateNavigationVm.isAddonPresented = .init(contractConfigs: addonConfigs)
+                                travelCertificateNavigationVm.isAddonPresented = .init(
+                                    contractConfigs: addonConfigs,
+                                    source: .appUpgrade
+                                )
                             },
                             addon: banner
                         )

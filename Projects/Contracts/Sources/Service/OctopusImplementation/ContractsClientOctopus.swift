@@ -56,14 +56,14 @@ public class FetchContractsClientOctopus: FetchContractsClient {
     }
 
     public func getAddonBannerModel(source: AddonSource) async throws -> AddonBannerModel? {
-        let source: OctopusGraphQL.UpsellTravelAddonSource = {
+        let source: OctopusGraphQL.UpsellTravelAddonFlow = {
             switch source {
             case .appUpsell: return .appUpsell
             case .appUpgrade: return .appUpgrade
             }
         }()
 
-        let query = OctopusGraphQL.UpsellTravelAddonBannerQuery(source: .case(source))
+        let query = OctopusGraphQL.UpsellTravelAddonBannerQuery(flow: .case(source))
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
         let bannerData = data.currentMember.upsellTravelAddonBanner
 

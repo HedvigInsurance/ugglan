@@ -6,12 +6,12 @@ import hGraphQL
 public class AddonsService {
     @Inject var service: AddonsClient
 
-    public func getAddon(contractId: String) async throws -> AddonOffer {
+    public func getAddon(contractId: String, source: AddonSource) async throws -> AddonOffer {
         log.info("AddonsService: getAddon", error: nil, attributes: nil)
-        return try await service.getAddon(contractId: contractId)
+        return try await service.getAddon(contractId: contractId, source: source)
     }
 
-    public func submitAddon(quoteId: String, addonId: String) async throws -> Date? {
+    public func submitAddon(quoteId: String, addonId: String) async throws {
         log.info("AddonsService: submitAddon", error: nil, attributes: nil)
         return try await service.submitAddon(quoteId: quoteId, addonId: addonId)
     }
@@ -22,9 +22,16 @@ public class AddonsClientOctopus: AddonsClient {
 
     public init() {}
 
-    public func getAddon(contractId: String) async throws -> AddonOffer {
+    public func getAddon(contractId: String, source: AddonSource) async throws -> AddonOffer {
         do {
-            let mutation = OctopusGraphQL.UpsellTravelAddonOfferMutation(contractId: contractId)
+            let source: OctopusGraphQL.UpsellTravelAddonFlow = {
+                switch source {
+                case .appUpsell: return .appUpsell
+                case .appUpgrade: return .appUpgrade
+                }
+            }()
+
+            let mutation = OctopusGraphQL.UpsellTravelAddonOfferMutation(contractId: contractId, flow: .case(source))
             let data = try await octopus.client.perform(mutation: mutation)
             let response = data.upsellTravelAddonOffer
 
@@ -75,10 +82,21 @@ public class AddonsClientOctopus: AddonsClient {
         }
     }
 
-    public func submitAddon(quoteId: String, addonId: String) async throws -> Date? {
-        /* TODO: Call mutation upsellTravelAddonActivate(quoteId: ID!, addonId: ID!) */
-        try await Task.sleep(nanoseconds: 3_000_000_000)
-        return Date()
+    public func submitAddon(quoteId: String, addonId: String) async throws {
+        do {
+            let mutation = OctopusGraphQL.UpsellTravelAddonActivateMutation(quoteId: quoteId, addonId: addonId)
+            let response = try await octopus.client.perform(mutation: mutation)
+
+            if let error = response.upsellTravelAddonActivate.userError, let message = error.message {
+                throw AddonsError.errorMessage(message: message)
+            }
+
+        } catch let exception {
+            if let exception = exception as? AddonsError {
+                throw exception
+            }
+            throw AddonsError.somethingWentWrong
+        }
     }
 }
 

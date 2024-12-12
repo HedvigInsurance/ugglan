@@ -1,5 +1,5 @@
-mutation UpsellTravelAddonOffer($contractId: ID!) {
-  upsellTravelAddonOffer(contractId: $contractId) {
+mutation UpsellTravelAddonOffer($contractId: ID!, $flow: UpsellTravelAddonFlow!) {
+  upsellTravelAddonOffer(contractId: $contractId, flow: $flow) {
     userError {
       message
     }

@@ -10,11 +10,12 @@ public class ChangeAddonViewModel: ObservableObject {
     @Published var submittingAddonsViewState: ProcessingState = .loading
     @Published var selectedQuote: AddonQuote?
     @Published var addonOffer: AddonOffer?
-    @Published var activationDate: Date?
     let contractId: String
+    let source: AddonSource
 
-    init(contractId: String) {
+    init(contractId: String, source: AddonSource) {
         self.contractId = contractId
+        self.source = source
         Task {
             await getAddons()
             self._selectedQuote = Published(
@@ -29,7 +30,7 @@ public class ChangeAddonViewModel: ObservableObject {
         }
 
         do {
-            let data = try await addonService.getAddon(contractId: contractId)
+            let data = try await addonService.getAddon(contractId: contractId, source: source)
 
             withAnimation {
                 self.addonOffer = data
@@ -45,12 +46,11 @@ public class ChangeAddonViewModel: ObservableObject {
             self.submittingAddonsViewState = .loading
         }
         do {
-            let data = try await addonService.submitAddon(
+            try await addonService.submitAddon(
                 quoteId: selectedQuote?.quoteId ?? "",
                 addonId: selectedQuote?.addonId ?? ""
             )
             withAnimation {
-                self.activationDate = data
                 self.submittingAddonsViewState = .success
             }
         } catch let exception {

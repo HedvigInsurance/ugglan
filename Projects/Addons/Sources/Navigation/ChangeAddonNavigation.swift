@@ -8,14 +8,17 @@ public struct ChangeAddonInput: Identifiable, Equatable {
     public var id: String = UUID().uuidString
 
     let contractConfigs: [AddonConfig]?
+    let source: AddonSource
     let addonId: String?
 
     public init(
         contractConfigs: [AddonConfig]? = nil,
-        addonId: String? = nil
+        addonId: String? = nil,
+        source: AddonSource
     ) {
         self.contractConfigs = contractConfigs
         self.addonId = addonId
+        self.source = source
     }
 
     public static func == (lhs: ChangeAddonInput, rhs: ChangeAddonInput) -> Bool {
@@ -45,7 +48,7 @@ class ChangeAddonNavigationViewModel: ObservableObject {
     ) {
         self.input = input
         if input.contractConfigs?.count ?? 0 == 1, let config = input.contractConfigs?.first {
-            changeAddonVm = .init(contractId: config.contractId)
+            changeAddonVm = .init(contractId: config.contractId, source: input.source)
         }
     }
 }
@@ -148,7 +151,10 @@ public struct ChangeAddonNavigation: View {
     private var selectInsuranceScreen: some View {
         AddonSelectInsuranceScreen(
             changeAddonVm: changeAddonNavigationVm.changeAddonVm
-                ?? .init(contractId: changeAddonNavigationVm.input.contractConfigs?.first?.contractId ?? "")
+                ?? .init(
+                    contractId: changeAddonNavigationVm.input.contractConfigs?.first?.contractId ?? "",
+                    source: changeAddonNavigationVm.input.source
+                )
         )
         .withDismissButton()
     }
