@@ -256,7 +256,7 @@ public struct QuoteSummaryScreen: View {
             hText(displayItem.displayValue)
                 .multilineTextAlignment(.trailing)
         }
-        .foregroundColor(hTextColor.Opaque.secondary)
+        .foregroundColor(hTextColor.Translucent.secondary)
     }
 
     func documentItem(for document: hPDFDocument) -> some View {
@@ -265,14 +265,13 @@ public struct QuoteSummaryScreen: View {
                 text: AttributedPDF().attributedPDFString(for: document.displayName),
                 useSecondaryColor: true
             )
-            .foregroundColor(hTextColor.Opaque.secondary)
             .padding(.horizontal, -6)
             Spacer()
             Image(uiImage: HCoreUIAsset.arrowNorthEast.image)
                 .resizable()
                 .frame(width: 24, height: 24)
         }
-        .foregroundColor(hTextColor.Opaque.secondary)
+        .foregroundColor(hTextColor.Translucent.secondary)
     }
 
     private let whatIsCoveredBgColorScheme: some hColor = hColorScheme.init(
@@ -318,7 +317,7 @@ public struct QuoteSummaryScreen: View {
                 hSection {
                     VStack(alignment: .leading, spacing: 0) {
                         hText(vm.FAQModel?.title ?? "")
-                        hText(vm.FAQModel?.subtitle ?? "").foregroundColor(hTextColor.Opaque.secondary)
+                        hText(vm.FAQModel?.subtitle ?? "").foregroundColor(hTextColor.Translucent.secondary)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
@@ -346,7 +345,7 @@ public struct QuoteSummaryScreen: View {
                                 if expanded, let description = faq.description {
                                     hRow {
                                         hText(description, style: .label)
-                                            .foregroundColor(hTextColor.Opaque.secondary)
+                                            .foregroundColor(hTextColor.Translucent.secondary)
 
                                     }
                                     .verticalPadding(.padding12)

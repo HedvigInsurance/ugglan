@@ -37,7 +37,7 @@ struct EditTierScreen: View {
                                     }
                                     if let subTitle = tier.quotes.first?.productVariant?.tierDescription {
                                         hText(subTitle, style: .label)
-                                            .foregroundColor(hTextColor.Opaque.secondary)
+                                            .foregroundColor(hTextColor.Translucent.secondary)
 
                                     }
                                 }
@@ -94,7 +94,7 @@ extension EditTierScreen: TitleView {
             hText(L10n.tierFlowSelectCoverageTitle, style: .heading1)
                 .foregroundColor(hTextColor.Opaque.primary)
             hText(L10n.tierFlowSelectCoverageSubtitle, style: .heading1)
-                .foregroundColor(hTextColor.Opaque.secondary)
+                .foregroundColor(hTextColor.Translucent.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, .padding8)
