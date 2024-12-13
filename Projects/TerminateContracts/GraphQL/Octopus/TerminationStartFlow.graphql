@@ -22,13 +22,19 @@ fragment FlowTerminationFragment on Flow {
 }
 
 fragment FlowTerminationDateStepFragment on FlowTerminationDateStep{
-     id
-     minDate
-     maxDate
+    id
+    minDate
+    maxDate
+    extraCoverage {
+        ...ExtraCoverageItemFragment
+    }
 }
 
 fragment FlowTerminationDeletionFragment on FlowTerminationDeletionStep{
 	id
+    extraCoverage {
+        ...ExtraCoverageItemFragment
+    }
 }
 
 fragment FlowTerminationFailedFragment on FlowTerminationFailedStep{
@@ -84,4 +90,9 @@ fragment FlowTerminationSurveyOptionSuggestionFragment on FlowTerminationSurveyO
 fragment FlowTerminationSurveyOptionFeedbackFragment on FlowTerminationSurveyOptionFeedback {
          id
          isRequired
+}
+
+fragment ExtraCoverageItemFragment on FlowTerminationExtraCoverageItem {
+    displayName
+    displayValue
 }
