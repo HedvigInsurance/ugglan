@@ -97,7 +97,7 @@ public enum PillColor {
     case pink
     case amber
     case red
-    case grey(translucent: Bool)
+    case grey
 
     @hColorBuilder
     func pillBackgroundColor(level: PillColor.PillColorLevel) -> some hColor {
@@ -174,20 +174,12 @@ public enum PillColor {
             case .three:
                 hHighlightColor.Red.fillThree
             }
-        case let .grey(translucent):
+        case .grey:
             switch level {
             case .one:
-                if translucent {
-                    hSurfaceColor.Translucent.primary
-                } else {
-                    hSurfaceColor.Opaque.primary
-                }
+                hSurfaceColor.Translucent.primary
             case .two:
-                if translucent {
-                    hSurfaceColor.Translucent.secondary
-                } else {
-                    hSurfaceColor.Opaque.secondary
-                }
+                hSurfaceColor.Translucent.secondary
             case .three:
                 hBackgroundColor.negative
             }
@@ -307,60 +299,39 @@ struct ClaimStatus_Previews: PreviewProvider {
             HStack {
                 hPill(
                     text: "Highlight label",
-                    color: .grey(translucent: false)
+                    color: .grey
                 )
 
                 hPill(
                     text: "Highlight label",
-                    color: .grey(translucent: false)
+                    color: .grey
                 )
                 .hFieldSize(.medium)
 
                 hPill(
                     text: "Highlight label",
-                    color: .grey(translucent: false)
+                    color: .grey
                 )
                 .hFieldSize(.small)
             }
             HStack {
                 hPill(
                     text: "Highlight label",
-                    color: .grey(translucent: false),
+                    color: .grey,
                     colorLevel: .two
                 )
 
                 hPill(
                     text: "Highlight label",
-                    color: .grey(translucent: false),
+                    color: .grey,
                     colorLevel: .two
                 )
                 .hFieldSize(.medium)
 
                 hPill(
                     text: "Highlight label",
-                    color: .grey(translucent: false),
+                    color: .grey,
                     colorLevel: .two
-                )
-                .hFieldSize(.small)
-            }
-            HStack {
-                hPill(
-                    text: "Highlight label",
-                    color: .grey(translucent: false),
-                    colorLevel: .three
-                )
-
-                hPill(
-                    text: "Highlight label",
-                    color: .grey(translucent: false),
-                    colorLevel: .three
-                )
-                .hFieldSize(.medium)
-
-                hPill(
-                    text: "Highlight label",
-                    color: .grey(translucent: false),
-                    colorLevel: .three
                 )
                 .hFieldSize(.small)
             }
