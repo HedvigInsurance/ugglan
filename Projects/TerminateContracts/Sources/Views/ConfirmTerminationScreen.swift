@@ -47,5 +47,6 @@ struct ConfirmTerminationScreen: View {
 struct TerminationDeleteScreen_Previews: PreviewProvider {
     static var previews: some View {
         ConfirmTerminationScreen()
+            .environmentObject(TerminationFlowNavigationViewModel(configs: [], terminateInsuranceViewModel: nil))
     }
 }
