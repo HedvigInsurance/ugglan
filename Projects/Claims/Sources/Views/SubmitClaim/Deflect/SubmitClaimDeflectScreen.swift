@@ -3,58 +3,40 @@ import hCore
 import hCoreUI
 
 public struct SubmitClaimDeflectScreen: View {
-    private let model: FlowClaimDeflectStepModel?
-    private let isEmergencyStep: Bool
+    private let model: FlowClaimDeflectStepModel
     private let openChat: () -> Void
 
     public init(
-        model: FlowClaimDeflectStepModel?,
+        model: FlowClaimDeflectStepModel,
         openChat: @escaping () -> Void
     ) {
         self.model = model
-        self.isEmergencyStep = model?.isEmergencyStep ?? false
         self.openChat = openChat
     }
 
     public var body: some View {
         hForm {
             VStack(spacing: 16) {
-                hSection {
-                    let type: NotificationType = isEmergencyStep ? .attention : .info
-                    InfoCard(text: model?.config?.infoText ?? "", type: type)
+                if let infoText = model.infoText {
+                    hSection {
+                        InfoCard(text: infoText, type: .info)
+                    }
+                } else if let warningText = model.warningText {
+                    hSection {
+                        InfoCard(text: warningText, type: .attention)
+                    }
                 }
-                if isEmergencyStep {
-                    ForEach(model?.partners ?? [], id: \.id) { partner in
-                        ClaimEmergencyContactCard(
-                            imageUrl: partner.imageUrl,
-                            label: model?.config?.cardText,
-                            phoneNumber: partner.phoneNumber,
-                            url: URL(string: partner.url),
-                            cardTitle: model?.config?.cardTitle,
-                            footnote: L10n.submitClaimGlobalAssistanceFootnote
-                        )
-                    }
-                } else {
-                    let title =
-                        model?.partners.count == 1 ? L10n.submitClaimPartnerSingularTitle : L10n.submitClaimPartnerTitle
 
-                    VStack(spacing: 8) {
-                        ForEach(Array((model?.partners ?? []).enumerated()), id: \.element) { index, partner in
-                            ClaimContactCard(
-                                imageUrl: partner.imageUrl,
-                                url: partner.url ?? "",
-                                phoneNumber: partner.phoneNumber,
-                                title: index == 0 ? title : nil,
-                                model: model
-                            )
-                        }
-                    }
+                ForEach(model.partners, id: \.id) { partner in
+                    ClaimContactCard(
+                        model: partner
+                    )
                 }
 
                 hSection {
                     VStack(alignment: .leading, spacing: 8) {
-                        hText(model?.config?.infoSectionTitle ?? "")
-                        hText(model?.config?.infoSectionText ?? "")
+                        hText(model.infoSectionTitle ?? "")
+                        hText(model.infoSectionText ?? "")
                             .foregroundColor(hTextColor.Opaque.secondary)
                     }
                 }
@@ -63,8 +45,7 @@ public struct SubmitClaimDeflectScreen: View {
 
                 VStack(spacing: 4) {
                     withAnimation(.easeOut) {
-                        ForEach(model?.config?.questions ?? [], id: \.question) { question in
-
+                        ForEach(model.questions, id: \.question) { question in
                             InfoExpandableView(
                                 title: question.question,
                                 text: question.answer,
@@ -85,19 +66,18 @@ public struct SubmitClaimDeflectScreen: View {
     }
 }
 
-#Preview{
+#Preview {
     Localization.Locale.currentLocale.send(.en_SE)
     let model = FlowClaimDeflectStepModel(
         id: .FlowClaimDeflectEmergencyStep,
-        partners: [
-            .init(
-                id: "",
-                imageUrl: "",
-                url: "",
-                phoneNumber: "+46177272727"
-            )
-        ],
-        isEmergencyStep: true
+        infoText: nil,
+        warningText: nil,
+        infoSectionText: nil,
+        infoSectionTitle: nil,
+        infoViewTitle: nil,
+        infoViewText: nil,
+        questions: [],
+        partners: []
     )
     return SubmitClaimDeflectScreen(model: model, openChat: {})
 }

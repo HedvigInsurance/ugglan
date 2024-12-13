@@ -338,24 +338,27 @@ struct HomeTab: View {
                         with: loggedInVm.travelCertificateNavigationVm.editCoInsuredVm
                     )
                 case .deflect:
-                    let model: FlowClaimDeflectStepModel? = {
+                    let model: FlowClaimDeflectStepModel! = {
                         let store: HomeStore = globalPresentableStoreContainer.get()
                         let quickActions = store.state.quickActions
                         if let sickAbroadPartners = quickActions.first(where: { $0.sickAboardPartners != nil })?
                             .sickAboardPartners
                         {
-                            return FlowClaimDeflectStepModel(
-                                id: .FlowClaimDeflectEmergencyStep,
-                                partners: sickAbroadPartners.compactMap({
-                                    .init(
-                                        id: "",
-                                        imageUrl: $0.imageUrl,
-                                        url: $0.url,
-                                        phoneNumber: $0.phoneNumber
-                                    )
-                                }),
-                                isEmergencyStep: true
-                            )
+                            let partners: [Partner] = sickAbroadPartners.compactMap({
+                                Partner(
+                                    id: $0.id,
+                                    imageUrl: $0.imageUrl,
+                                    url: $0.url,
+                                    phoneNumber: $0.phoneNumber,
+                                    title: L10n.submitClaimEmergencyGlobalAssistanceTitle,
+                                    description: L10n.submitClaimEmergencyGlobalAssistanceLabel,
+                                    info: L10n.submitClaimGlobalAssistanceFootnote,
+                                    buttonText: L10n.submitClaimGlobalAssistanceUrlLabel,
+                                    largerImageSize: true
+                                )
+                            })
+
+                            return FlowClaimDeflectStepModel.emergency(with: partners)
                         }
                         return nil
                     }()

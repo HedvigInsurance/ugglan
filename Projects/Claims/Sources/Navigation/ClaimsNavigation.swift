@@ -399,7 +399,7 @@ public struct ClaimsNavigation: View {
                 SubmitClaimCarView(model: model)
             } else {
                 SubmitClaimDeflectScreen(
-                    model: model,
+                    model: model!,
                     openChat: {
                         NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                     }
