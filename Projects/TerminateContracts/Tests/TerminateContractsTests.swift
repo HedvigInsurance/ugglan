@@ -28,7 +28,10 @@ final class TerminateContractsTests: XCTestCase {
             id: "id",
             maxDate: "2025-11-11",
             minDate: Date().localDateString,
-            date: nil
+            date: nil,
+            extraCoverageItem: [
+                .init(displayName: "Travel plus", displayValue: "45 days")
+            ]
         )
 
         let terminationDateResponse: TerminateStepResponse = .init(
@@ -50,7 +53,12 @@ final class TerminateContractsTests: XCTestCase {
     }
 
     func testConfirmDeleteSuccess() async {
-        let model: TerminationFlowDeletionNextModel = .init(id: "id")
+        let model: TerminationFlowDeletionNextModel = .init(
+            id: "id",
+            extraCoverageItem: [
+                .init(displayName: "Travel plus", displayValue: "45 days")
+            ]
+        )
 
         let terminationConfirmDeleteResponse: TerminateStepResponse = .init(
             context: context,
