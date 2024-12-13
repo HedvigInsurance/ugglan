@@ -65,6 +65,8 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
                 terminationDateStepModel = model
             case let .surveyStep(model):
                 terminationSurveyStepModel = model
+            case .summary:
+                break
             }
         case .final(let action):
             switch action {
@@ -167,13 +169,23 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
     @Published var progress: Float? = 0
     var previousProgress: Float?
     @Published var hasSelectInsuranceStep: Bool = false
-
-    @Published var terminationDateStepModel: TerminationFlowDateNextStepModel?
-    @Published var terminationDeleteStepModel: TerminationFlowDeletionNextModel?
     @Published var successStepModel: TerminationFlowSuccessNextModel?
     @Published var failedStepModel: TerminationFlowFailedNextModel?
     @Published var terminationSurveyStepModel: TerminationFlowSurveyStepModel?
     @Published var config: TerminationConfirmConfig?
+
+    @Published var terminationDateStepModel: TerminationFlowDateNextStepModel? {
+        didSet {
+            extraCoverage = terminationDateStepModel?.extraCoverageItem ?? []
+        }
+    }
+    @Published var terminationDeleteStepModel: TerminationFlowDeletionNextModel? {
+        didSet {
+            extraCoverage = terminationDeleteStepModel?.extraCoverageItem ?? []
+        }
+    }
+
+    @Published var extraCoverage: [ExtraCoverageItem] = []
 
     var isDeletion: Bool {
         terminationDeleteStepModel != nil
@@ -330,6 +342,8 @@ struct TerminationFlowNavigation: View {
                             openSurveyScreen(model: model ?? .init(id: "", options: [], subTitleType: .default))
                         case .selectInsurance:
                             openSelectInsuranceScreen()
+                        case .summary:
+                            openTerminationSummaryScreen()
                         }
                     }
                     .resetProgressOnDismiss(to: vm.previousProgress, for: $vm.progress)
@@ -394,6 +408,8 @@ struct TerminationFlowNavigation: View {
                 openSurveyScreen(model: model ?? .init(id: "", options: [], subTitleType: .default))
             case .selectInsurance:
                 openSelectInsuranceScreen()
+            case .summary:
+                openTerminationSummaryScreen()
             }
         case let .final(action):
             switch action {
@@ -458,7 +474,8 @@ struct TerminationFlowNavigation: View {
                             contractId: selectedContract.contractId,
                             contractDisplayName: selectedContract.contractDisplayName,
                             contractExposureName: selectedContract.contractExposureName,
-                            activeFrom: selectedContract.activeFrom
+                            activeFrom: selectedContract.activeFrom,
+                            typeOfContract: selectedContract.typeOfContract
                         )
                         Task {
                             vm.hasSelectInsuranceStep = true
@@ -514,6 +531,11 @@ struct TerminationFlowNavigation: View {
 
     private func openConfirmTerminationScreen() -> some View {
         ConfirmTerminationScreen()
+            .withDismissButton()
+    }
+
+    private func openTerminationSummaryScreen() -> some View {
+        TerminationSummaryScreen()
             .withDismissButton()
     }
 
@@ -624,6 +646,7 @@ public enum TerminationFlowRouterActions: Hashable {
     case selectInsurance(configs: [TerminationConfirmConfig])
     case terminationDate(model: TerminationFlowDateNextStepModel?)
     case surveyStep(model: TerminationFlowSurveyStepModel?)
+    case summary
 }
 
 extension TerminationFlowRouterActions: TrackingViewNameProtocol {
@@ -635,6 +658,8 @@ extension TerminationFlowRouterActions: TrackingViewNameProtocol {
             return .init(describing: SetTerminationDateLandingScreen.self)
         case .surveyStep:
             return .init(describing: TerminationSurveyScreen.self)
+        case .summary:
+            return .init(describing: TerminationSummaryScreen.self)
         }
     }
 }
