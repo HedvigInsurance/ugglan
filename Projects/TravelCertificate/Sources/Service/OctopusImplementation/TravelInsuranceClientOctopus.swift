@@ -17,11 +17,13 @@ public class TravelInsuranceService {
         return try await service.submitForm(dto: dto)
     }
 
-    public func getList() async throws -> (
+    public func getList(
+        source: AddonSource
+    ) async throws -> (
         list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBannerModel?
     ) {
         log.info("TravelInsuranceService: getList", error: nil, attributes: nil)
-        return try await service.getList(source: .appUpgrade)
+        return try await service.getList(source: source)
     }
 }
 
@@ -85,14 +87,7 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
             let canAddTravelInsuranceData = !data.currentMember.activeContracts
                 .filter({ $0.supportsTravelCertificate }).isEmpty
 
-            let source: OctopusGraphQL.UpsellTravelAddonFlow = {
-                switch source {
-                case .appUpsell: return .appUpsell
-                case .appUpgrade: return .appUpgrade
-                }
-            }()
-
-            let query = OctopusGraphQL.UpsellTravelAddonBannerTravelQuery(flow: .case(source))
+            let query = OctopusGraphQL.UpsellTravelAddonBannerTravelQuery(flow: .case(source.getSource))
             let bannerResponse = try await octopus.client.fetch(
                 query: query,
                 cachePolicy: .fetchIgnoringCacheCompletely

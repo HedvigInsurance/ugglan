@@ -8,17 +8,14 @@ public struct ChangeAddonInput: Identifiable, Equatable {
     public var id: String = UUID().uuidString
 
     let contractConfigs: [AddonConfig]?
-    let source: AddonSource
     let addonId: String?
 
     public init(
         contractConfigs: [AddonConfig]? = nil,
-        addonId: String? = nil,
-        source: AddonSource
+        addonId: String? = nil
     ) {
         self.contractConfigs = contractConfigs
         self.addonId = addonId
-        self.source = source
     }
 
     public static func == (lhs: ChangeAddonInput, rhs: ChangeAddonInput) -> Bool {
@@ -27,8 +24,15 @@ public struct ChangeAddonInput: Identifiable, Equatable {
 }
 
 public enum AddonSource: Codable {
-    case appUpgrade
-    case appUpsell
+    case appUpsellUpgrade
+    case appOnlyUpsell
+
+    public var getSource: OctopusGraphQL.UpsellTravelAddonFlow {
+        switch self {
+        case .appOnlyUpsell: return .appOnlyUpsale
+        case .appUpsellUpgrade: return .appUpsellUpgrade
+        }
+    }
 }
 
 @MainActor
@@ -48,7 +52,7 @@ class ChangeAddonNavigationViewModel: ObservableObject {
     ) {
         self.input = input
         if input.contractConfigs?.count ?? 0 == 1, let config = input.contractConfigs?.first {
-            changeAddonVm = .init(contractId: config.contractId, source: input.source)
+            changeAddonVm = .init(contractId: config.contractId)
         }
     }
 }
@@ -152,8 +156,7 @@ public struct ChangeAddonNavigation: View {
         AddonSelectInsuranceScreen(
             changeAddonVm: changeAddonNavigationVm.changeAddonVm
                 ?? .init(
-                    contractId: changeAddonNavigationVm.input.contractConfigs?.first?.contractId ?? "",
-                    source: changeAddonNavigationVm.input.source
+                    contractId: changeAddonNavigationVm.input.contractConfigs?.first?.contractId ?? ""
                 )
         )
         .withDismissButton()

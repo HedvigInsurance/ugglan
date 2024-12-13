@@ -45,7 +45,7 @@ struct AddonProcessingScreen_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
         return AddonProcessingScreen(
-            vm: .init(contractId: "", source: .appUpgrade),
+            vm: .init(contractId: ""),
             addonNavigationVm: .init()
         )
     }

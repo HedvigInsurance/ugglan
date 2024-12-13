@@ -6,9 +6,9 @@ import hGraphQL
 public class AddonsService {
     @Inject var service: AddonsClient
 
-    public func getAddon(contractId: String, source: AddonSource) async throws -> AddonOffer {
+    public func getAddon(contractId: String) async throws -> AddonOffer {
         log.info("AddonsService: getAddon", error: nil, attributes: nil)
-        return try await service.getAddon(contractId: contractId, source: source)
+        return try await service.getAddon(contractId: contractId)
     }
 
     public func submitAddon(quoteId: String, addonId: String) async throws {
@@ -22,16 +22,9 @@ public class AddonsClientOctopus: AddonsClient {
 
     public init() {}
 
-    public func getAddon(contractId: String, source: AddonSource) async throws -> AddonOffer {
+    public func getAddon(contractId: String) async throws -> AddonOffer {
         do {
-            let source: OctopusGraphQL.UpsellTravelAddonFlow = {
-                switch source {
-                case .appUpsell: return .appUpsell
-                case .appUpgrade: return .appUpgrade
-                }
-            }()
-
-            let mutation = OctopusGraphQL.UpsellTravelAddonOfferMutation(contractId: contractId, flow: .case(source))
+            let mutation = OctopusGraphQL.UpsellTravelAddonOfferMutation(contractId: contractId)
             let contractsQuery = OctopusGraphQL.CurrentAddonContractQuery(contractId: contractId)
 
             let addonOfferData = try await octopus.client.perform(mutation: mutation)

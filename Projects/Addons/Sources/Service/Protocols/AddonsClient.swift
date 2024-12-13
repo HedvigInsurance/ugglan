@@ -5,7 +5,7 @@ import hGraphQL
 
 @MainActor
 public protocol AddonsClient {
-    func getAddon(contractId: String, source: AddonSource) async throws -> AddonOffer
+    func getAddon(contractId: String) async throws -> AddonOffer
     func submitAddon(quoteId: String, addonId: String) async throws
 }
 
