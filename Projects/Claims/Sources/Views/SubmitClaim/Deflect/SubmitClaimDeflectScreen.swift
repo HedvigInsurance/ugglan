@@ -27,10 +27,30 @@ public struct SubmitClaimDeflectScreen: View {
                     }
                 }
 
-                ForEach(model.partners, id: \.id) { partner in
-                    ClaimContactCard(
-                        model: partner
-                    )
+                VStack(spacing: .padding16) {
+                    if let infoViewTitle = model.infoViewTitle, let infoViewText = model.infoViewText {
+                        let title =
+                            model.partners.count == 1
+                            ? L10n.submitClaimPartnerSingularTitle : L10n.submitClaimPartnerTitle
+                        hSection {
+                            HStack {
+                                hText(title)
+                                Spacer()
+                                InfoViewHolder(
+                                    title: infoViewTitle,
+                                    description: infoViewText
+                                )
+                            }
+                        }
+                        .sectionContainerStyle(.transparent)
+                    }
+                    VStack(spacing: .padding8) {
+                        ForEach(model.partners, id: \.id) { partner in
+                            ClaimContactCard(
+                                model: partner
+                            )
+                        }
+                    }
                 }
 
                 hSection {
@@ -70,14 +90,26 @@ public struct SubmitClaimDeflectScreen: View {
     Localization.Locale.currentLocale.send(.en_SE)
     let model = FlowClaimDeflectStepModel(
         id: .FlowClaimDeflectEmergencyStep,
-        infoText: nil,
+        infoText: "info text",
         warningText: nil,
-        infoSectionText: nil,
-        infoSectionTitle: nil,
-        infoViewTitle: nil,
-        infoViewText: nil,
+        infoSectionText: "infoSectionText",
+        infoSectionTitle: "infoSectionTitle",
+        infoViewTitle: "infoViewTitle",
+        infoViewText: "infoViewText",
         questions: [],
-        partners: []
+        partners: [
+            .init(
+                id: "id",
+                imageUrl: nil,
+                url: nil,
+                phoneNumber: nil,
+                title: nil,
+                description: nil,
+                info: nil,
+                buttonText: nil,
+                largerImageSize: false
+            )
+        ]
     )
     return SubmitClaimDeflectScreen(model: model, openChat: {})
 }

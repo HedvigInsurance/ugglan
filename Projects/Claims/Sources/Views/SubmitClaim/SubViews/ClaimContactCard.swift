@@ -48,6 +48,7 @@ struct ClaimContactCard: View {
                                 .multilineTextAlignment(.center)
                                 .foregroundColor(hTextColor.Opaque.primary)
                         }
+                        .colorScheme(.light)
                     }
                 }
                 if let phoneNumber = model.phoneNumber, let url = URL(string: "tel://" + phoneNumber) {
@@ -59,6 +60,7 @@ struct ClaimContactCard: View {
                                 .multilineTextAlignment(.center)
                                 .foregroundColor(hTextColor.Opaque.primary)
                         }
+                        .colorScheme(getPhoneNumberSchema())
                     }
                 }
                 if let info = model.info {
@@ -81,7 +83,14 @@ struct ClaimContactCard: View {
         } else {
             return hCoreUI.hButtonConfigurationType.ghost
         }
+    }
 
+    private func getPhoneNumberSchema() -> ColorScheme {
+        if URL(string: model.url) == nil {
+            return .light
+        } else {
+            return .dark
+        }
     }
 }
 
@@ -93,12 +102,12 @@ struct ClaimContactCard_Previews: PreviewProvider {
                 model: .init(
                     id: "id",
                     imageUrl: nil,
-                    url: nil,
+                    url: "https://www.hedvig.com",
                     phoneNumber: nil,
                     title: nil,
                     description: nil,
                     info: nil,
-                    buttonText: nil,
+                    buttonText: "Button text",
                     largerImageSize: false
                 )
             )
