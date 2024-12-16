@@ -90,7 +90,7 @@ extension AddonSelectSubOptionScreen: TitleView {
             hText(L10n.addonFlowSelectSuboptionTitle, style: .heading1)
                 .foregroundColor(hTextColor.Opaque.primary)
             hText(L10n.addonFlowSelectSuboptionSubtitle, style: .heading1)
-                .foregroundColor(hTextColor.Opaque.secondary)
+                .foregroundColor(hTextColor.Translucent.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, .padding8)

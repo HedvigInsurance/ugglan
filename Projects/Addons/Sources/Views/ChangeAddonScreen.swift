@@ -115,7 +115,7 @@ struct ChangeAddonScreen: View {
             }
             if let subTitle = addon.description {
                 hText(subTitle, style: .label)
-                    .foregroundColor(hTextColor.Opaque.secondary)
+                    .foregroundColor(hTextColor.Translucent.secondary)
                     .padding(.top, .padding8)
             }
 
