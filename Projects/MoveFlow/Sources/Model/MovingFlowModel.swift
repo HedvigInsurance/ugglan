@@ -22,6 +22,7 @@ public struct MovingFlowModel: Codable, Equatable, Hashable, Sendable {
     let faqs: [FAQ]
     let extraBuildingTypes: [ExtraBuildingType]
     let changeTier: ChangeTierIntentModel?
+    let addonInfo: InfoViewDataModel?
 
     init(
         id: String,
@@ -37,7 +38,8 @@ public struct MovingFlowModel: Codable, Equatable, Hashable, Sendable {
         potentialHomeQuotes: [MovingFlowQuote],
         quotes: [MovingFlowQuote],
         faqs: [FAQ],
-        extraBuildingTypes: [ExtraBuildingType]
+        extraBuildingTypes: [ExtraBuildingType],
+        addonInfo: InfoViewDataModel?
     ) {
         self.id = id
         self.isApartmentAvailableforStudent = isApartmentAvailableforStudent
@@ -54,6 +56,7 @@ public struct MovingFlowModel: Codable, Equatable, Hashable, Sendable {
         self.faqs = faqs
         self.extraBuildingTypes = extraBuildingTypes
         self.changeTier = nil
+        self.addonInfo = addonInfo
     }
 
     @MainActor

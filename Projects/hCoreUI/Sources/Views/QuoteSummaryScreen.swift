@@ -22,6 +22,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         let insuranceLimits: [InsurableLimits]
         let typeOfContract: TypeOfContract?
         let shouldShowDetails: Bool
+        let onInfoClick: (() -> Void)?
 
         public init(
             id: String,
@@ -33,7 +34,8 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             onDocumentTap: @escaping (_ document: hPDFDocument) -> Void,
             displayItems: [QuoteDisplayItem],
             insuranceLimits: [InsurableLimits],
-            typeOfContract: TypeOfContract?
+            typeOfContract: TypeOfContract?,
+            onInfoClick: (() -> Void)? = nil
         ) {
             self.id = id
             self.displayName = displayName
@@ -46,6 +48,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             self.insuranceLimits = insuranceLimits
             self.typeOfContract = typeOfContract
             self.shouldShowDetails = !(documents.isEmpty && displayItems.isEmpty && insuranceLimits.isEmpty)
+            self.onInfoClick = onInfoClick
         }
     }
 
@@ -150,7 +153,8 @@ public struct QuoteSummaryScreen: View {
                 mainContent: ContractInformation(
                     displayName: contract.displayName,
                     exposureName: contract.exposureName,
-                    pillowImage: contract.typeOfContract?.pillowType.bgImage
+                    pillowImage: contract.typeOfContract?.pillowType.bgImage,
+                    onInfoClick: contract.onInfoClick
                 ),
                 title: nil,
                 subTitle: nil,

@@ -17,7 +17,8 @@ public class MoveFlowClientDemo: MoveFlowClient {
             potentialHomeQuotes: [],
             quotes: [],
             faqs: [],
-            extraBuildingTypes: []
+            extraBuildingTypes: [],
+            addonInfo: nil
         )
     }
 
@@ -40,7 +41,8 @@ public class MoveFlowClientDemo: MoveFlowClient {
             potentialHomeQuotes: [],
             quotes: [],
             faqs: [],
-            extraBuildingTypes: []
+            extraBuildingTypes: [],
+            addonInfo: nil
         )
     }
 

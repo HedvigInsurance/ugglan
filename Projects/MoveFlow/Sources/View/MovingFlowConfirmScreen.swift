@@ -29,7 +29,11 @@ struct MovingFlowConfirmScreen: View {
                         displayItems: $0.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }
                         ),
                         insuranceLimits: $0.insurableLimits,
-                        typeOfContract: $0.contractType
+                        typeOfContract: $0.contractType,
+                        onInfoClick: movingFlowModel.addonInfo != nil
+                            ? {
+                                movingFlowNavigationVm.isInfoViewPresented = movingFlowModel.addonInfo
+                            } : nil
                     )
                 })
 

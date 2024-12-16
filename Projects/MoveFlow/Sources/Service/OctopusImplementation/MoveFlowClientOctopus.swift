@@ -169,6 +169,16 @@ extension MovingFlowModel {
 
         self.extraBuildingTypes = data.extraBuildingTypes.compactMap({ $0.rawValue })
 
+        if Dependencies.featureFlags().isAddonsEnabled {
+            /* TODO: REPLACE WITH BE DATA */
+            self.addonInfo = .init(
+                title: "Travel Insurance Plus",
+                description: "Some copy describing the extra coverage you already have."
+            )
+        } else {
+            self.addonInfo = nil
+        }
+
         var faqs = [FAQ]()
         faqs.append(.init(title: L10n.changeAddressFaqDateTitle, description: L10n.changeAddressFaqDateLabel))
         faqs.append(.init(title: L10n.changeAddressFaqPriceTitle, description: L10n.changeAddressFaqPriceLabel))
