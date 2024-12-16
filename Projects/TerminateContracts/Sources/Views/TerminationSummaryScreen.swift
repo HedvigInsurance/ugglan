@@ -76,7 +76,7 @@ struct TerminationSummaryScreen: View {
             VStack(alignment: .leading, spacing: 0) {
                 hText(terminationNavigationVm.config?.contractDisplayName ?? "")
                 hText(terminationNavigationVm.config?.contractExposureName ?? "")
-                    .foregroundColor(hTextColor.Opaque.secondary)
+                    .foregroundColor(hTextColor.Translucent.secondary)
             }
         }
     }
@@ -98,7 +98,7 @@ struct TerminationSummaryScreen: View {
                 hText(displayValue)
             }
         }
-        .foregroundColor(hTextColor.Opaque.secondary)
+        .foregroundColor(hTextColor.Translucent.secondary)
     }
 }
 

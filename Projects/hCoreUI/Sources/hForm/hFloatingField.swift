@@ -84,7 +84,7 @@ public struct hFloatingField: View {
         if (isEnabled && !backgroundOption.contains(.locked)) || backgroundOption.contains(.withoutDisabled) {
             hTextColor.Opaque.primary
         } else {
-            hTextColor.Opaque.secondary
+            hTextColor.Translucent.secondary
         }
     }
 
