@@ -32,7 +32,7 @@ struct AddonSelectSubOptionScreen: View {
                                     Spacer()
                                     hPill(
                                         text: L10n.addonFlowPriceLabel(subOption.price.amount),
-                                        color: .grey(translucent: true),
+                                        color: .grey,
                                         colorLevel: .one
                                     )
                                     .hFieldSize(.small)
