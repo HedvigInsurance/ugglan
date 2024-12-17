@@ -23,7 +23,7 @@ public struct ContractInformation: View {
             VStack(alignment: .leading, spacing: 0) {
                 hText(displayName ?? "", style: .heading1)
                 hText(exposureName ?? "", style: .body1)
-                    .foregroundColor(hTextColor.Opaque.secondary)
+                    .foregroundColor(hTextColor.Translucent.secondary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
