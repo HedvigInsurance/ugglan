@@ -4,8 +4,8 @@ import hCoreUI
 
 struct AddonSelectSubOptionScreen: View {
     @ObservedObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
-    @ObservedObject private var changeAddonVm: ChangeAddonViewModel
     let addonOffer: AddonOffer
+    @State var selectedQuote: AddonQuote?
 
     init(
         addonOffer: AddonOffer,
@@ -13,11 +13,6 @@ struct AddonSelectSubOptionScreen: View {
     ) {
         self.addonOffer = addonOffer
         self.changeAddonNavigationVm = changeAddonNavigationVm
-        self.changeAddonVm = changeAddonNavigationVm.changeAddonVm!
-        if changeAddonNavigationVm.changeAddonVm!.selectedQuote == nil {
-            changeAddonNavigationVm.changeAddonVm!.selectedQuote = addonOffer.quotes.first
-
-        }
     }
 
     var body: some View {
@@ -41,7 +36,7 @@ struct AddonSelectSubOptionScreen: View {
                                 }
                                 .asAnyView
                             },
-                            selected: $changeAddonVm.selectedQuote,
+                            selected: $selectedQuote,
                             error: .constant(nil),
                             useAnimation: true
                         )
@@ -51,12 +46,20 @@ struct AddonSelectSubOptionScreen: View {
                 }
             }
             .padding(.top, .padding16)
+            .onAppear {
+                if let preSelectedQuote = changeAddonNavigationVm.changeAddonVm!.selectedQuote {
+                    self.selectedQuote = preSelectedQuote
+                } else if let firstQuote = addonOffer.quotes.first {
+                    self.selectedQuote = firstQuote
+                }
+            }
         }
         .hDisableScroll
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: .padding8) {
                     hButton.LargeButton(type: .primary) {
+                        changeAddonNavigationVm.changeAddonVm?.selectedQuote = selectedQuote
                         changeAddonNavigationVm.isChangeCoverageDaysPresented = nil
                     } content: {
                         hText(L10n.addonFlowSelectButton)
