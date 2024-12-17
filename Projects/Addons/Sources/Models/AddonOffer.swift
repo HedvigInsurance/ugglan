@@ -62,7 +62,7 @@ public struct AddonOffer: Identifiable, Equatable, Hashable, Sendable {
 
 public struct AddonQuote: Identifiable, Equatable, Hashable, Sendable {
     public var id: String {
-        quoteId
+        addonId
     }
     let displayName: String?
     let quoteId: String
