@@ -37,9 +37,9 @@ public struct hPill: View {
 
         func body(content: Content) -> some View {
             content
-                .padding(.horizontal, getHorizontalPadding * style.multiplier)
-                .padding(.top, getTopPadding * style.multiplier)
-                .padding(.bottom, getBottomPadding * style.multiplier)
+                .padding(.horizontal, getHorizontalPadding)
+                .padding(.top, getTopPadding)
+                .padding(.bottom, getBottomPadding)
                 .background(
                     RoundedRectangle(cornerRadius: getCornerRadius)
                         .fill(getBackgroundColor)
@@ -52,30 +52,35 @@ public struct hPill: View {
         }
 
         private var getHorizontalPadding: CGFloat {
+            var padding: CGFloat = .padding12
             if fieldSize == .small {
-                return .padding6
+                padding = .padding6
             } else if fieldSize == .medium {
-                return .padding10
+                padding = .padding10
             }
-            return .padding12
+            return padding * style.multiplier
         }
 
         private var getTopPadding: CGFloat {
+            var padding: CGFloat = 7
             if fieldSize == .small {
-                return 3
+                padding = 3
             } else if fieldSize == .medium {
-                return 6.5
+                padding = 6.5
             }
-            return 7
+            let multiplier = style.multiplier != 1 ? style.multiplier * 2 : 1
+            return padding * multiplier
         }
 
         private var getBottomPadding: CGFloat {
+            var padding: CGFloat = 9
             if fieldSize == .small {
-                return 3
+                padding = 3
             } else if fieldSize == .medium {
-                return 7.5
+                padding = 7.5
             }
-            return 9
+            let multiplier = style.multiplier != 1 ? style.multiplier * 2 : 1
+            return padding * multiplier
         }
 
         private var getCornerRadius: CGFloat {

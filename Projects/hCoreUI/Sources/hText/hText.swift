@@ -105,7 +105,7 @@ public enum HFontTextStyle {
         }
     }
 
-    var multiplier: CGFloat {
+    public var multiplier: CGFloat {
         let sizeMultiplier: CGFloat = {
             if UITraitCollection.current.preferredContentSizeCategory != .large {
                 let defaultDescriptor = UIFontDescriptor.preferredFontDescriptor(
