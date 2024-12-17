@@ -41,17 +41,17 @@ struct SetTerminationDateLandingScreen: View {
                     .hFormAttachToBottom {
                         VStack(spacing: 16) {
                             VStack(spacing: 4) {
-                                displayInsuranceField
                                 displayTerminationDateField
                                 displayImportantInformation
                             }
 
                             hSection {
-                                VStack(spacing: 16) {
-                                    hButton.LargeButton(type: .primary) { [weak terminationNavigationVm] in
-                                        terminationNavigationVm?.isConfirmTerminationPresented = true
+                                VStack(spacing: .padding16) {
+                                    hButton.LargeButton(type: .primary) {
+                                        [weak terminationNavigationVm] in
+                                        terminationNavigationVm?.router.push(TerminationFlowRouterActions.summary)
                                     } content: {
-                                        hText(L10n.terminationButton, style: .body1)
+                                        hText(L10n.generalContinueButton, style: .body1)
                                     }
                                     .disabled(
                                         vm.isCancelButtonDisabled(
@@ -62,29 +62,13 @@ struct SetTerminationDateLandingScreen: View {
                             }
                             .sectionContainerStyle(.transparent)
                         }
-                        .padding(.vertical, 16)
+                        .padding(.vertical, .padding16)
                     }
             }
         }
         .onAppear {
             vm.terminationDeleteStep = terminationNavigationVm.terminationDeleteStepModel
             vm.terminationDateStep = terminationNavigationVm.terminationDateStepModel
-        }
-    }
-
-    @ViewBuilder
-    private var displayInsuranceField: some View {
-        if let config = terminationNavigationVm.config {
-            hSection {
-                hRow {
-                    VStack(alignment: .leading, spacing: 0) {
-                        hText(config.contractDisplayName)
-                        hText(config.contractExposureName, style: .label)
-                            .foregroundColor(hTextColor.Translucent.secondary)
-                    }
-                }
-                .verticalPadding(10.5)
-            }
         }
     }
 

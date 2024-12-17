@@ -38,14 +38,14 @@ struct EditDeductibleScreen: View {
                                         Spacer()
                                         hPill(
                                             text: deductible.premium.formattedAmountPerMonth,
-                                            color: .grey(translucent: false),
+                                            color: .grey,
                                             colorLevel: .two
                                         )
                                         .hFieldSize(.small)
                                     }
                                     if let subTitle = deductible.subTitle, subTitle != "" {
                                         hText(subTitle, style: .label)
-                                            .foregroundColor(hTextColor.Opaque.secondary)
+                                            .foregroundColor(hTextColor.Translucent.secondary)
                                     }
                                 }
                                 .asAnyView
@@ -109,7 +109,7 @@ extension EditDeductibleScreen: TitleView {
             hText(L10n.tierFlowSelectDeductibleTitle, style: .heading1)
                 .foregroundColor(hTextColor.Opaque.primary)
             hText(L10n.tierFlowSelectDeductibleSubtitle, style: .heading1)
-                .foregroundColor(hTextColor.Opaque.secondary)
+                .foregroundColor(hTextColor.Translucent.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, .padding8)
