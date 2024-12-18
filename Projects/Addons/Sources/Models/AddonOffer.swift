@@ -77,7 +77,7 @@ struct AddonDisplayItem: Equatable, Hashable {
     let displayValue: String
 }
 
-public struct AddonVariant: Equatable, Hashable, Sendable {
+public struct AddonVariant: Codable, Equatable, Hashable, Sendable {
     public let displayName: String
     public let documents: [hPDFDocument]
     public let insurableLimits: [InsurableLimits]
