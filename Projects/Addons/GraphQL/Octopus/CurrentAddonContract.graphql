@@ -1,6 +1,0 @@
-query CurrentAddonContract($contractId: UUID!) {
-  contract(id: $contractId) {
-      exposureDisplayName
-  }
-}
-

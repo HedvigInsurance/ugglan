@@ -113,25 +113,22 @@ extension AddonSelectSubOptionScreen: TitleView {
             ),
         ],
         price: .init(amount: "49", currency: "SEK"),
-        productVariant: .init(
-            termsVersion: "",
-            typeOfContract: "",
-            partner: nil,
-            perils: [],
+        addonVariant: .init(
+            displayName: "display name",
+            documents: [
+                .init(displayName: "dodument1", url: "", type: .generalTerms),
+                .init(displayName: "dodument2", url: "", type: .termsAndConditions),
+                .init(displayName: "dodument3", url: "", type: .preSaleInfo),
+            ],
             insurableLimits: [
                 .init(label: "limit1", limit: "limit1", description: "description"),
                 .init(label: "limit2", limit: "limit2", description: "description"),
                 .init(label: "limit3", limit: "limit3", description: "description"),
                 .init(label: "limit4", limit: "limit4", description: "description"),
             ],
-            documents: [
-                .init(displayName: "dodument1", url: "", type: .generalTerms),
-                .init(displayName: "dodument2", url: "", type: .termsAndConditions),
-                .init(displayName: "dodument3", url: "", type: .preSaleInfo),
-            ],
-            displayName: "display name",
-            displayNameTier: nil,
-            tierDescription: nil
+            perils: [],
+            product: "",
+            termsVersion: ""
         )
     )
 
@@ -152,25 +149,22 @@ extension AddonSelectSubOptionScreen: TitleView {
                         .init(displayTitle: "Insured people", displayValue: "You+1"),
                     ],
                     price: .init(amount: "79", currency: "SEK"),
-                    productVariant: .init(
-                        termsVersion: "",
-                        typeOfContract: "",
-                        partner: nil,
-                        perils: [],
+                    addonVariant: .init(
+                        displayName: "display name",
+                        documents: [
+                            .init(displayName: "dodument1", url: "", type: .generalTerms),
+                            .init(displayName: "dodument2", url: "", type: .termsAndConditions),
+                            .init(displayName: "dodument3", url: "", type: .preSaleInfo),
+                        ],
                         insurableLimits: [
                             .init(label: "limit1", limit: "limit1", description: "description"),
                             .init(label: "limit2", limit: "limit2", description: "description"),
                             .init(label: "limit3", limit: "limit3", description: "description"),
                             .init(label: "limit4", limit: "limit4", description: "description"),
                         ],
-                        documents: [
-                            .init(displayName: "dodument1", url: "", type: .generalTerms),
-                            .init(displayName: "dodument2", url: "", type: .termsAndConditions),
-                            .init(displayName: "dodument3", url: "", type: .preSaleInfo),
-                        ],
-                        displayName: "display name",
-                        displayNameTier: nil,
-                        tierDescription: nil
+                        perils: [],
+                        product: "",
+                        termsVersion: ""
                     )
                 ),
             ]

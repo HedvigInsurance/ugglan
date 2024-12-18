@@ -35,6 +35,17 @@ public struct Perils: Codable, Equatable, Hashable, Sendable {
         isDisabled = false
     }
 
+    public init(
+        fragment: OctopusGraphQL.PerilFragment
+    ) {
+        id = fragment.id
+        title = fragment.title
+        description = fragment.description
+        covered = fragment.covered
+        color = fragment.colorCode
+        isDisabled = false
+    }
+
     public func asDisabled() -> Perils {
         return .init(
             id: id,

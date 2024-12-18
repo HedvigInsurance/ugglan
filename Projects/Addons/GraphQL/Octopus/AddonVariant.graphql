@@ -1,0 +1,29 @@
+query AddonVariant($contractId: UUID!) {
+  contract(id: $contractId) {
+    currentAgreement {
+      addons {
+        addonVariant {
+            ...AddonVariantFragment
+        }
+      }
+    }
+  }
+}
+
+fragment AddonVariantFragment on AddonVariant {
+    termsVersion
+    product
+    perils {
+        ...PerilFragment
+    }
+    insurableLimits {
+        label
+        limit
+        description
+        type
+    }
+    documents {
+        ...InsuranceDocumentFragment
+    }
+    displayName
+}
