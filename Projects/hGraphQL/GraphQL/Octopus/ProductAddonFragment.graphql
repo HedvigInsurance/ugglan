@@ -1,15 +1,3 @@
-query AddonVariant($contractId: UUID!) {
-  contract(id: $contractId) {
-    currentAgreement {
-      addons {
-        addonVariant {
-            ...AddonVariantFragment
-        }
-      }
-    }
-  }
-}
-
 fragment AddonVariantFragment on AddonVariant {
     termsVersion
     product

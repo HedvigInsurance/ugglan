@@ -29,17 +29,6 @@ public class AddonsClientOctopus: AddonsClient {
             let addonOfferData = try await octopus.client.perform(mutation: mutation)
             let response = addonOfferData.upsellTravelAddonOffer
 
-            let addonVariantQuery = OctopusGraphQL.AddonVariantQuery(contractId: contractId)
-            let addonVariantData = try await octopus.client.fetch(
-                query: addonVariantQuery,
-                cachePolicy: .fetchIgnoringCacheCompletely
-            )
-
-            let addons = addonVariantData.contract.currentAgreement.addons
-            let addonVariants: [AddonVariant] = addons.map({
-                .init(fragment: $0.addonVariant.fragments.addonVariantFragment)
-            })
-
             if let error = response.userError, let message = error.message {
                 throw AddonsError.errorMessage(message: message)
             }
@@ -64,12 +53,7 @@ public class AddonsClientOctopus: AddonsClient {
                 activationDate: addonOffer.activationDate.localDateToDate,
                 currentAddon: currentAddon,
                 quotes: addonOffer.quotes.map({ quote in
-                    .init(
-                        fragment: quote.fragments.upsellTravelAddonQuoteFragment,
-                        addonVariant: addonVariants.first(where: { variant in
-                            quote.displayName == variant.displayName
-                        })
-                    )
+                    .init(fragment: quote.fragments.upsellTravelAddonQuoteFragment)
                 })
             )
 
@@ -103,8 +87,7 @@ public class AddonsClientOctopus: AddonsClient {
 
 extension AddonQuote {
     init(
-        fragment: OctopusGraphQL.UpsellTravelAddonQuoteFragment,
-        addonVariant: AddonVariant?
+        fragment: OctopusGraphQL.UpsellTravelAddonQuoteFragment
     ) {
         self.quoteId = fragment.quoteId
         self.addonId = fragment.addonId
@@ -113,7 +96,7 @@ extension AddonQuote {
             .init(fragment: $0.fragments.upsellTravelAddonDisplayItemFragment)
         })
         self.price = .init(fragment: fragment.premium.fragments.moneyFragment)
-        self.addonVariant = addonVariant
+        self.addonVariant = .init(fragment: fragment.addonVariant.fragments.addonVariantFragment)
     }
 }
 
