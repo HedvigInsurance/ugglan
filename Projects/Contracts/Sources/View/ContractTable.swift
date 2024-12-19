@@ -196,6 +196,7 @@ public class ContractTableViewModel: ObservableObject {
     @Published var loadingCancellable: AnyCancellable?
     @Inject var service: FetchContractsClient
     @Published var addonBannerModel: AddonBannerModel?
+    private var addonAddedObserver: NSObjectProtocol?
 
     init() {
         loadingCancellable = store.loadingSignal
@@ -212,6 +213,21 @@ public class ContractTableViewModel: ObservableObject {
                     self?.viewState = .success
                 }
             }
+
+        addonAddedObserver = NotificationCenter.default.addObserver(forName: .addonAdded, object: nil, queue: nil) {
+            [weak self] notification in
+            Task {
+                await self?.getAddonBanner()
+            }
+        }
+    }
+
+    deinit {
+        Task { @MainActor [weak self] in
+            if let addonAddedObserver = self?.addonAddedObserver {
+                NotificationCenter.default.removeObserver(addonAddedObserver)
+            }
+        }
     }
 
     func getAddonBanner() async {
