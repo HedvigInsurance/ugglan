@@ -116,6 +116,11 @@ struct ContractTable: View {
                 .padding(.vertical, .padding24)
             }
         }
+        .onAppear {
+            Task {
+                await vm.getAddonBanner()
+            }
+        }
     }
 
     private var successView: some View {
@@ -191,11 +196,9 @@ public class ContractTableViewModel: ObservableObject {
     @Published var loadingCancellable: AnyCancellable?
     @Inject var service: FetchContractsClient
     @Published var addonBannerModel: AddonBannerModel?
+    private var addonAddedObserver: NSObjectProtocol?
 
     init() {
-        Task {
-            await getAddonBanner()
-        }
         loadingCancellable = store.loadingSignal
             .receive(on: RunLoop.main)
             .sink { _ in
@@ -210,9 +213,24 @@ public class ContractTableViewModel: ObservableObject {
                     self?.viewState = .success
                 }
             }
+
+        addonAddedObserver = NotificationCenter.default.addObserver(forName: .addonAdded, object: nil, queue: nil) {
+            [weak self] notification in
+            Task {
+                await self?.getAddonBanner()
+            }
+        }
     }
 
-    private func getAddonBanner() async {
+    deinit {
+        Task { @MainActor [weak self] in
+            if let addonAddedObserver = self?.addonAddedObserver {
+                NotificationCenter.default.removeObserver(addonAddedObserver)
+            }
+        }
+    }
+
+    func getAddonBanner() async {
         do {
             self.addonBannerModel = try await service.getAddonBannerModel(source: .appOnlyUpsell)
         } catch {
