@@ -163,8 +163,24 @@ class ListScreenViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var isCreateNewLoading: Bool = false
     @Published var addonBannerModel: AddonBannerModel?
+    private var addonAddedObserver: NSObjectProtocol?
 
-    init() {}
+    init() {
+        addonAddedObserver = NotificationCenter.default.addObserver(forName: .addonAdded, object: nil, queue: nil) {
+            [weak self] notification in
+            Task {
+                await self?.fetchTravelCertificateList()
+            }
+        }
+    }
+
+    deinit {
+        Task { @MainActor [weak self] in
+            if let addonAddedObserver = self?.addonAddedObserver {
+                NotificationCenter.default.removeObserver(addonAddedObserver)
+            }
+        }
+    }
 
     @MainActor
     func fetchTravelCertificateList() async {
