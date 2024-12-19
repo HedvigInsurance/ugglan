@@ -13,6 +13,14 @@ public struct hPDFDocument: Codable, Equatable, Hashable, Identifiable, Sendable
     }
 
     public init(
+        _ data: OctopusGraphQL.AddonVariantFragment.Document
+    ) {
+        self.displayName = data.displayName
+        self.url = data.url
+        self.type = data.type.asTypeOfDocument
+    }
+
+    public init(
         displayName: String,
         url: String,
         type: TypeOfDocument

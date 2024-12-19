@@ -82,7 +82,8 @@ struct UpcomingChangesScreen_Previews: PreviewProvider {
                         displayName: "",
                         displayNameTier: "Standard",
                         tierDescription: "Vårt mellanpaket med hög ersättning."
-                    )
+                    ),
+                addonVariant: []
             )
         )
     }

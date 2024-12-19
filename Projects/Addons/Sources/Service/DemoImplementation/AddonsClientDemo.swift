@@ -13,26 +13,7 @@ public class AddonsClientDemo: AddonsClient {
                 .init(displayTitle: "Insured people", displayValue: "You+1"),
             ],
             price: .init(amount: "49", currency: "SEK"),
-            productVariant: .init(
-                termsVersion: "",
-                typeOfContract: "",
-                partner: nil,
-                perils: [],
-                insurableLimits: [
-                    .init(label: "limit1", limit: "limit1", description: "description"),
-                    .init(label: "limit2", limit: "limit2", description: "description"),
-                    .init(label: "limit3", limit: "limit3", description: "description"),
-                    .init(label: "limit4", limit: "limit4", description: "description"),
-                ],
-                documents: [
-                    .init(displayName: "dodument1", url: "", type: .generalTerms),
-                    .init(displayName: "dodument2", url: "", type: .termsAndConditions),
-                    .init(displayName: "dodument3", url: "", type: .preSaleInfo),
-                ],
-                displayName: "display name",
-                displayNameTier: nil,
-                tierDescription: nil
-            )
+            addonVariant: nil
         )
 
         let addons: AddonOffer = .init(
@@ -51,25 +32,13 @@ public class AddonsClientDemo: AddonsClient {
                         .init(displayTitle: "Insured people", displayValue: "You+1"),
                     ],
                     price: .init(amount: "79", currency: "SEK"),
-                    productVariant: .init(
-                        termsVersion: "",
-                        typeOfContract: "",
-                        partner: nil,
+                    addonVariant: .init(
+                        displayName: "",
+                        documents: [],
+                        insurableLimits: [],
                         perils: [],
-                        insurableLimits: [
-                            .init(label: "limit1", limit: "limit1", description: "description"),
-                            .init(label: "limit2", limit: "limit2", description: "description"),
-                            .init(label: "limit3", limit: "limit3", description: "description"),
-                            .init(label: "limit4", limit: "limit4", description: "description"),
-                        ],
-                        documents: [
-                            .init(displayName: "dodument1", url: "", type: .generalTerms),
-                            .init(displayName: "dodument2", url: "", type: .termsAndConditions),
-                            .init(displayName: "dodument3", url: "", type: .preSaleInfo),
-                        ],
-                        displayName: "display name",
-                        displayNameTier: nil,
-                        tierDescription: nil
+                        product: "",
+                        termsVersion: ""
                     )
                 ),
             ]
