@@ -43,11 +43,6 @@ extension ChangeTierViewModel {
                 )
             ],
             total: self.newPremium ?? .init(amount: "", currency: ""),
-            FAQModel: (
-                title: L10n.tierFlowQaTitle,
-                subtitle: L10n.tierFlowQaSubtitle,
-                questions: []
-            ),
             onConfirmClick: {
                 self.commitTier()
                 changeTierNavigationVm.router.push(ChangeTierRouterActionsWithoutBackButton.commitTier)

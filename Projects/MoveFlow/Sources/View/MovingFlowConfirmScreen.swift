@@ -36,10 +36,6 @@ struct MovingFlowConfirmScreen: View {
             let vm = QuoteSummaryViewModel(
                 contract: contractInfo,
                 total: movingFlowModel.total,
-                FAQModel: (
-                    title: L10n.changeAddressQa, subtitle: L10n.changeAddressFaqSubtitle,
-                    questions: movingFlowModel.faqs.map({ .init(title: $0.title, description: $0.description) })
-                ),
                 onConfirmClick: {
                     Task {
                         await movingFlowConfirmVm.confirmMoveIntent(
