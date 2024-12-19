@@ -10,6 +10,7 @@ import hGraphQL
 public class MovingFlowNavigationViewModel: ObservableObject {
     @Published var isAddExtraBuildingPresented: HouseInformationInputModel?
     @Published public var document: hPDFDocument? = nil
+    @Published public var isInfoViewPresented: InfoViewDataModel? = nil
 
     @Published public var addressInputModel = AddressInputModel()
     @Published public var movingFlowVm: MovingFlowModel?
@@ -134,6 +135,15 @@ public struct MovingFlowNavigation: View {
             style: [.large]
         ) { document in
             PDFPreview(document: document)
+        }
+        .detent(
+            item: $movingFlowNavigationVm.isInfoViewPresented,
+            style: [.height]
+        ) { infoViewModel in
+            InfoView(
+                title: infoViewModel.title ?? "",
+                description: infoViewModel.description ?? ""
+            )
         }
         .onDisappear {
             onMoved()

@@ -1,4 +1,6 @@
+import Addons
 import Foundation
+import PresentableStore
 import hCore
 import hGraphQL
 
@@ -51,5 +53,21 @@ public class FetchContractsClientOctopus: FetchContractsClient {
         return crossSells.currentMember.fragments.crossSellFragment.crossSells.compactMap({
             CrossSell($0)
         })
+    }
+
+    public func getAddonBannerModel(source: AddonSource) async throws -> AddonBannerModel? {
+        let query = OctopusGraphQL.UpsellTravelAddonBannerQuery(flow: .case(source.getSource))
+        let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+        let bannerData = data.currentMember.upsellTravelAddonBanner
+
+        if let bannerData, !bannerData.contractIds.isEmpty {
+            return AddonBannerModel(
+                contractIds: bannerData.contractIds,
+                titleDisplayName: bannerData.titleDisplayName,
+                descriptionDisplayName: bannerData.descriptionDisplayName,
+                badges: bannerData.badges
+            )
+        }
+        return nil
     }
 }

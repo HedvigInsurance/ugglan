@@ -1,7 +1,0 @@
-query GetContractForAddon($contractId: UUID!) {
-  contract(id: $contractId) {
-    currentAgreement {
-        ...AgreementFragment
-    }
-  }
-}

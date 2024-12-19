@@ -4,11 +4,11 @@ import hCoreUI
 
 public struct AddonCardView: View {
     let openAddon: () -> Void
-    let addon: AddonModel
+    let addon: AddonBannerModel
 
     public init(
         openAddon: @escaping () -> Void,
-        addon: AddonModel
+        addon: AddonBannerModel
     ) {
         self.openAddon = openAddon
         self.addon = addon
@@ -19,15 +19,15 @@ public struct AddonCardView: View {
             hRow {
                 VStack(alignment: .leading, spacing: .padding8) {
                     HStack {
-                        hText(addon.title)
+                        hText(addon.titleDisplayName)
                         Spacer()
-                        hPill(text: addon.tag, color: .green, colorLevel: .one)
-                            .hFieldSize(.small)
+                        if let badge = addon.badges.first {
+                            hPill(text: badge, color: .green, colorLevel: .one)
+                                .hFieldSize(.small)
+                        }
                     }
-                    if let subTitle = addon.description {
-                        hText(subTitle, style: .label)
-                            .foregroundColor(hTextColor.Translucent.secondary)
-                    }
+                    hText(addon.descriptionDisplayName, style: .label)
+                        .foregroundColor(hTextColor.Translucent.secondary)
 
                     hButton.SmallButton(type: .secondary) {
                         openAddon()
@@ -50,12 +50,10 @@ public struct AddonCardView: View {
         AddonCardView(
             openAddon: {},
             addon: .init(
-                id: "id",
-                title: "Travel Plus",
-                description: "Extended travel insurance with extra coverage for your travels",
-                tag: "Popular",
-                activationDate: Date(),
-                options: []
+                contractIds: [""],
+                titleDisplayName: "Travel Plus",
+                descriptionDisplayName: "Extended travel insurance with extra coverage for your travels",
+                badges: ["Popular"]
             )
         )
     }

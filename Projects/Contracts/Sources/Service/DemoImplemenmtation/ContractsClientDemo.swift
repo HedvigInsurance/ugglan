@@ -1,3 +1,4 @@
+import Addons
 import Foundation
 import hCore
 import hCoreUI
@@ -46,7 +47,8 @@ public class FetchContractsClientDemo: FetchContractsClient {
                 .init(title: "Living area", value: "56 m²"),
                 .init(title: "Insured people", value: "Only you"),
             ],
-            productVariant: variant
+            productVariant: variant,
+            addonVariant: []
         )
         let contract = Contract(
             id: "contractId",
@@ -74,5 +76,19 @@ public class FetchContractsClientDemo: FetchContractsClient {
             return [CrossSell(title: "", description: "", imageURL: url, blurHash: "", typeOfContract: "", type: .home)]
         }
         return []
+    }
+
+    public func getAddonBannerModel(source: AddonSource) async throws -> AddonBannerModel? {
+        let bannerData = AddonBannerModel(
+            contractIds: [],
+            titleDisplayName: "Travel Plus",
+            descriptionDisplayName:
+                "Extended travel insurance with extra coverage for your travels",
+            badges: ["Popular"]
+        )
+        if !bannerData.contractIds.isEmpty {
+            return bannerData
+        }
+        return nil
     }
 }

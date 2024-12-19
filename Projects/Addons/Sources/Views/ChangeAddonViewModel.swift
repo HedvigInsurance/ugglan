@@ -1,26 +1,23 @@
 import SwiftUI
 import hCore
 import hCoreUI
+import hGraphQL
 
 @MainActor
 public class ChangeAddonViewModel: ObservableObject {
     var addonService = AddonsService()
     @Published var fetchAddonsViewState: ProcessingState = .loading
     @Published var submittingAddonsViewState: ProcessingState = .loading
-    @Published var selectedSubOption: AddonSubOptionModel?
-    @Published var addonOptions: [AddonOptionModel]?
-    @Published var contractInformation: AddonContract?
-    @Published var activationDate: Date?
-    @Published var addonId: String?
-    @Published var quoteId: String?
+    @Published var selectedQuote: AddonQuote?
+    @Published var addonOffer: AddonOffer?
+    let contractId: String
 
     init(contractId: String) {
+        self.contractId = contractId
         Task {
             await getAddons()
-            await getContractInformation(contractId: contractId)
-
-            self._selectedSubOption = Published(
-                initialValue: addonOptions?.first?.subOptions.first
+            self._selectedQuote = Published(
+                initialValue: addonOffer?.quotes.first
             )
         }
     }
@@ -31,12 +28,10 @@ public class ChangeAddonViewModel: ObservableObject {
         }
 
         do {
-            let data = try await addonService.getAddon(contractId: contractInformation?.contractId ?? "")
+            let data = try await addonService.getAddon(contractId: contractId)
 
             withAnimation {
-                self.addonOptions = data.options
-                self.activationDate = data.activationDate
-                self.addonId = data.id
+                self.addonOffer = data
                 self.fetchAddonsViewState = .success
             }
         } catch let exception {
@@ -49,7 +44,14 @@ public class ChangeAddonViewModel: ObservableObject {
             self.submittingAddonsViewState = .loading
         }
         do {
-            try await addonService.submitAddon(quoteId: quoteId ?? "", addonId: addonId ?? "")
+            try await addonService.submitAddon(
+                quoteId: selectedQuote?.quoteId ?? "",
+                addonId: selectedQuote?.addonId ?? ""
+            )
+            NotificationCenter.default.post(
+                name: .addonAdded,
+                object: nil
+            )
             withAnimation {
                 self.submittingAddonsViewState = .success
             }
@@ -58,20 +60,34 @@ public class ChangeAddonViewModel: ObservableObject {
         }
     }
 
-    func getContractInformation(contractId: String) async {
-        withAnimation {
-            self.fetchAddonsViewState = .loading
-        }
-
-        do {
-            let data = try await addonService.getContract(contractId: contractId)
-
-            withAnimation {
-                self.contractInformation = data
-                self.fetchAddonsViewState = .success
+    func compareAddonDisplayItems(
+        currentDisplayItems: [AddonDisplayItem],
+        newDisplayItems: [AddonDisplayItem]
+    ) -> [QuoteDisplayItem] {
+        let displayItems: [QuoteDisplayItem] = newDisplayItems.map { item in
+            if let matchingDisplayItem = currentDisplayItems.first(where: { $0.displayTitle == item.displayTitle }) {
+                return .init(
+                    title: item.displayTitle,
+                    value: item.displayValue,
+                    displayValueOld: matchingDisplayItem.displayValue
+                )
             }
-        } catch let exception {
-            self.fetchAddonsViewState = .error(errorMessage: exception.localizedDescription)
+            return .init(title: item.displayTitle, value: item.displayValue)
         }
+        return displayItems
+    }
+
+    func getTotalPrice(currentPrice: MonetaryAmount?, newPrice: MonetaryAmount?) -> MonetaryAmount {
+        let diffValue: Float = {
+            if let currentPrice, let newPrice {
+                return newPrice.value - currentPrice.value
+            } else {
+                return 0
+            }
+        }()
+
+        let totalPrice =
+            (currentPrice != nil && diffValue != 0) ? .init(amount: String(diffValue), currency: "SEK") : newPrice
+        return totalPrice ?? .init(amount: 0, currency: "SEK")
     }
 }

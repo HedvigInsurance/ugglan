@@ -143,7 +143,7 @@ public struct InfoView: View {
     }
 }
 
-public struct InfoViewDataModel: Equatable, Identifiable {
+public struct InfoViewDataModel: Codable, Equatable, Identifiable, Hashable, Sendable {
     public var id: String?
     public let title: String?
     public let description: String?

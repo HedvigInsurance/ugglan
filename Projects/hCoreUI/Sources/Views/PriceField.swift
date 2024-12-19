@@ -5,6 +5,7 @@ import hGraphQL
 public struct PriceField: View {
     let newPremium: MonetaryAmount?
     let currentPremium: MonetaryAmount?
+    @SwiftUI.Environment(\.hWithStrikeThroughPrice) var strikeThroughPrice
 
     public init(
         newPremium: MonetaryAmount?,
@@ -18,10 +19,22 @@ public struct PriceField: View {
         HStack(alignment: .top) {
             hText(L10n.tierFlowTotal)
             Spacer()
+
+            if strikeThroughPrice, newPremium != currentPremium {
+                if #available(iOS 16.0, *) {
+                    hText(currentPremium?.formattedAmountPerMonth ?? "")
+                        .strikethrough()
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                } else {
+                    hText(currentPremium?.formattedAmountPerMonth ?? "")
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                }
+            }
+
             VStack(alignment: .trailing, spacing: 0) {
                 hText(newPremium?.formattedAmountPerMonth ?? currentPremium?.formattedAmountPerMonth ?? "")
 
-                if let currentPremium, let newPremium, newPremium != currentPremium {
+                if let currentPremium, let newPremium, newPremium != currentPremium, !strikeThroughPrice {
                     hText(
                         L10n.tierFlowPreviousPrice(currentPremium.formattedAmountPerMonth),
                         style: .label
@@ -30,5 +43,33 @@ public struct PriceField: View {
                 }
             }
         }
+    }
+}
+
+#Preview {
+    hSection {
+        PriceField(
+            newPremium: .init(amount: "99", currency: "SEK"),
+            currentPremium: MonetaryAmount(amount: "49", currency: "SEK")
+        )
+        .hWithStrikeThroughPrice(setTo: true)
+    }
+    .sectionContainerStyle(.transparent)
+}
+
+private struct EnvironmentHWithStrikeThroughPrice: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    public var hWithStrikeThroughPrice: Bool {
+        get { self[EnvironmentHWithStrikeThroughPrice.self] }
+        set { self[EnvironmentHWithStrikeThroughPrice.self] = newValue }
+    }
+}
+
+extension View {
+    public func hWithStrikeThroughPrice(setTo: Bool) -> some View {
+        self.environment(\.hWithStrikeThroughPrice, setTo)
     }
 }
