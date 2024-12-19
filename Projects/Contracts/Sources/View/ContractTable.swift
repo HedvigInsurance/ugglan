@@ -116,6 +116,11 @@ struct ContractTable: View {
                 .padding(.vertical, .padding24)
             }
         }
+        .onAppear {
+            Task {
+                await vm.getAddonBanner()
+            }
+        }
     }
 
     private var successView: some View {
@@ -193,9 +198,6 @@ public class ContractTableViewModel: ObservableObject {
     @Published var addonBannerModel: AddonBannerModel?
 
     init() {
-        Task {
-            await getAddonBanner()
-        }
         loadingCancellable = store.loadingSignal
             .receive(on: RunLoop.main)
             .sink { _ in
@@ -212,7 +214,7 @@ public class ContractTableViewModel: ObservableObject {
             }
     }
 
-    private func getAddonBanner() async {
+    func getAddonBanner() async {
         do {
             self.addonBannerModel = try await service.getAddonBannerModel(source: .appOnlyUpsell)
         } catch {
