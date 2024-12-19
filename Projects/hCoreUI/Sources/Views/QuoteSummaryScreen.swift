@@ -5,7 +5,6 @@ import hGraphQL
 public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     let contracts: [ContractInfo]
     let total: MonetaryAmount
-    let FAQModel: (title: String, subtitle: String, questions: [FAQ])?
     let onConfirmClick: () -> Void
     let isAddon: Bool
     let showNoticeCard: Bool
@@ -52,13 +51,11 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     public init(
         contract: [ContractInfo],
         total: MonetaryAmount,
-        FAQModel: (title: String, subtitle: String, questions: [FAQ])? = nil,
         isAddon: Bool? = false,
         onConfirmClick: @escaping () -> Void
     ) {
         self.contracts = contract
         self.total = total
-        self.FAQModel = FAQModel
         self.isAddon = isAddon ?? false
         self.onConfirmClick = onConfirmClick
         self.showNoticeCard = (contracts.count > 1 || isAddon ?? false)
@@ -71,14 +68,11 @@ public struct QuoteSummaryScreen: View {
     @State var selectedContracts: [String] = []
     @State var spacingCoverage: CGFloat = 0
     @State var totalHeight: CGFloat = 0
-    @State var selectedFAQ: [String] = [""]
-    private var isEmptyFaq: Bool
 
     public init(
         vm: QuoteSummaryViewModel
     ) {
         self.vm = vm
-        self.isEmptyFaq = vm.FAQModel?.questions.isEmpty ?? true
     }
 
     public var body: some View {
@@ -101,10 +95,6 @@ public struct QuoteSummaryScreen: View {
                                 }
                         }
                     )
-                    .padding(.bottom, (vm.FAQModel?.questions.isEmpty ?? true) ? 0 : (spacingCoverage + .padding8))
-                }
-                if !isEmptyFaq {
-                    scrollSection
                 }
             }
             .hFormAttachToBottom {
@@ -128,19 +118,6 @@ public struct QuoteSummaryScreen: View {
                     }
             }
         )
-    }
-
-    var scrollSection: some View {
-        VStack(spacing: 0) {
-            if let questions = vm.FAQModel?.questions {
-                faqsComponent(for: questions)
-            }
-            Spacing(height: 64)
-            chatComponent
-            Spacing(height: 380)
-        }
-        .padding(.top, 16)
-        .id(showCoverageId)
     }
 
     func contractInfoView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
@@ -322,80 +299,11 @@ public struct QuoteSummaryScreen: View {
                     } content: {
                         hText(vm.isAddon ? L10n.addonFlowSummaryConfirmButton : L10n.changeAddressAcceptOffer)
                     }
-
-                    if !isEmptyFaq {
-                        hButton.LargeButton(type: .ghost) {
-                            withAnimation {
-                                proxy.scrollTo(showCoverageId, anchor: .top)
-                            }
-                        } content: {
-                            hText(L10n.summaryScreenLearnMoreButton)
-                        }
-                    }
                 }
             }
         }
         .padding(.top, .padding16)
         .sectionContainerStyle(.transparent)
-    }
-
-    @ViewBuilder
-    func faqsComponent(for faqs: [FAQ]) -> some View {
-        VStack {
-            if !faqs.isEmpty {
-                hSection {
-                    VStack(alignment: .leading, spacing: 0) {
-                        hText(vm.FAQModel?.title ?? "")
-                        hText(vm.FAQModel?.subtitle ?? "").foregroundColor(hTextColor.Translucent.secondary)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .sectionContainerStyle(.transparent)
-
-                VStack(spacing: 4) {
-                    ForEach(faqs, id: \.title) { faq in
-                        let id = "\(faq.title)"
-                        let index = selectedFAQ.firstIndex(of: id)
-                        let expanded = index != nil
-                        hSection {
-                            VStack(spacing: 0) {
-                                hRow {
-                                    hText(faq.title)
-                                    Spacer()
-                                }
-                                .withCustomAccessory {
-                                    Image(
-                                        uiImage: expanded ? hCoreUIAssets.minus.image : hCoreUIAssets.plusSmall.image
-                                    )
-                                    .resizable()
-                                    .frame(width: 16, height: 16)
-                                }
-                                .verticalPadding(.padding12)
-                                if expanded, let description = faq.description {
-                                    hRow {
-                                        hText(description, style: .label)
-                                            .foregroundColor(hTextColor.Translucent.secondary)
-
-                                    }
-                                    .verticalPadding(.padding12)
-                                }
-                            }
-                        }
-                        .onTapGesture {
-                            let index = selectedFAQ.firstIndex(of: id)
-                            withAnimation {
-                                if let index {
-                                    selectedFAQ.remove(at: index)
-                                } else {
-                                    selectedFAQ.append(id)
-                                }
-                            }
-                        }
-                    }
-                }
-                .padding(.top, 16)
-            }
-        }
     }
 
     @ViewBuilder
@@ -537,10 +445,6 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
             ),
         ],
         total: .init(amount: 999, currency: "SEK"),
-        FAQModel: (
-            title: "Questions and answers", subtitle: "Här reder vi ut våra medlemmars vanligaste funderingar.",
-            questions: mockFAQ
-        ),
         onConfirmClick: {}
     )
 
