@@ -6,6 +6,7 @@ struct AddonSelectSubOptionScreen: View {
     @ObservedObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
     let addonOffer: AddonOffer
     @State var selectedQuote: AddonQuote?
+    @EnvironmentObject var router: Router
 
     init(
         addonOffer: AddonOffer,
@@ -13,6 +14,12 @@ struct AddonSelectSubOptionScreen: View {
     ) {
         self.addonOffer = addonOffer
         self.changeAddonNavigationVm = changeAddonNavigationVm
+
+        if let preSelectedQuote = changeAddonNavigationVm.changeAddonVm!.selectedQuote {
+            self._selectedQuote = State(initialValue: preSelectedQuote)
+        } else if let firstQuote = addonOffer.quotes.first {
+            self._selectedQuote = State(initialValue: firstQuote)
+        }
     }
 
     var body: some View {
@@ -46,13 +53,6 @@ struct AddonSelectSubOptionScreen: View {
                 }
             }
             .padding(.top, .padding16)
-            .onAppear {
-                if let preSelectedQuote = changeAddonNavigationVm.changeAddonVm!.selectedQuote {
-                    self.selectedQuote = preSelectedQuote
-                } else if let firstQuote = addonOffer.quotes.first {
-                    self.selectedQuote = firstQuote
-                }
-            }
         }
         .hDisableScroll
         .hFormAttachToBottom {
@@ -60,13 +60,13 @@ struct AddonSelectSubOptionScreen: View {
                 VStack(spacing: .padding8) {
                     hButton.LargeButton(type: .primary) {
                         changeAddonNavigationVm.changeAddonVm?.selectedQuote = selectedQuote
-                        changeAddonNavigationVm.isChangeCoverageDaysPresented = nil
+                        router.dismiss()
                     } content: {
                         hText(L10n.addonFlowSelectButton)
                     }
 
                     hButton.LargeButton(type: .ghost) {
-                        changeAddonNavigationVm.isChangeCoverageDaysPresented = nil
+                        router.dismiss()
                     } content: {
                         hText(L10n.generalCancelButton)
                     }
