@@ -6,7 +6,9 @@ import hCore
 public protocol TravelInsuranceClient {
     func getSpecifications() async throws -> [TravelInsuranceContractSpecification]
     func submitForm(dto: TravelInsuranceFormDTO) async throws -> URL
-    func getList() async throws -> (
+    func getList(
+        source: AddonSource
+    ) async throws -> (
         list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBannerModel?
     )
 }

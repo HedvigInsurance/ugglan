@@ -23,6 +23,18 @@ public struct ChangeAddonInput: Identifiable, Equatable {
     }
 }
 
+public enum AddonSource: Codable {
+    case appUpsellUpgrade
+    case appOnlyUpsell
+
+    public var getSource: OctopusGraphQL.UpsellTravelAddonFlow {
+        switch self {
+        case .appOnlyUpsell: return .appOnlyUpsale
+        case .appUpsellUpgrade: return .appUpsellUpgrade
+        }
+    }
+}
+
 @MainActor
 class ChangeAddonNavigationViewModel: ObservableObject {
     @Published var isLearnMorePresented: InfoViewDataModel?
@@ -143,7 +155,9 @@ public struct ChangeAddonNavigation: View {
     private var selectInsuranceScreen: some View {
         AddonSelectInsuranceScreen(
             changeAddonVm: changeAddonNavigationVm.changeAddonVm
-                ?? .init(contractId: changeAddonNavigationVm.input.contractConfigs?.first?.contractId ?? "")
+                ?? .init(
+                    contractId: changeAddonNavigationVm.input.contractConfigs?.first?.contractId ?? ""
+                )
         )
         .withDismissButton()
     }

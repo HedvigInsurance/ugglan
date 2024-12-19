@@ -4,8 +4,8 @@ import hCoreUI
 
 struct AddonSelectSubOptionScreen: View {
     @ObservedObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
-    @ObservedObject private var changeAddonVm: ChangeAddonViewModel
     let addonOffer: AddonOffer
+    @State var selectedQuote: AddonQuote?
 
     init(
         addonOffer: AddonOffer,
@@ -13,17 +13,12 @@ struct AddonSelectSubOptionScreen: View {
     ) {
         self.addonOffer = addonOffer
         self.changeAddonNavigationVm = changeAddonNavigationVm
-        self.changeAddonVm = changeAddonNavigationVm.changeAddonVm!
-        if changeAddonNavigationVm.changeAddonVm!.selectedQuote == nil {
-            changeAddonNavigationVm.changeAddonVm!.selectedQuote = addonOffer.quotes.first
-
-        }
     }
 
     var body: some View {
         hForm {
             VStack(spacing: .padding4) {
-                ForEach(addonOffer.quotes, id: \.id) { quote in
+                ForEach(addonOffer.quotes, id: \.self) { quote in
                     hSection {
                         hRadioField(
                             id: quote,
@@ -33,7 +28,7 @@ struct AddonSelectSubOptionScreen: View {
                                     hText(quote.displayName ?? "")
                                     Spacer()
                                     hPill(
-                                        text: L10n.addonFlowPriceLabel(quote.price?.amount ?? ""),
+                                        text: L10n.addonFlowPriceLabel(quote.price?.formattedAmountWithoutSymbol ?? ""),
                                         color: .grey,
                                         colorLevel: .one
                                     )
@@ -41,7 +36,7 @@ struct AddonSelectSubOptionScreen: View {
                                 }
                                 .asAnyView
                             },
-                            selected: $changeAddonVm.selectedQuote,
+                            selected: $selectedQuote,
                             error: .constant(nil),
                             useAnimation: true
                         )
@@ -51,12 +46,20 @@ struct AddonSelectSubOptionScreen: View {
                 }
             }
             .padding(.top, .padding16)
+            .onAppear {
+                if let preSelectedQuote = changeAddonNavigationVm.changeAddonVm!.selectedQuote {
+                    self.selectedQuote = preSelectedQuote
+                } else if let firstQuote = addonOffer.quotes.first {
+                    self.selectedQuote = firstQuote
+                }
+            }
         }
         .hDisableScroll
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: .padding8) {
                     hButton.LargeButton(type: .primary) {
+                        changeAddonNavigationVm.changeAddonVm?.selectedQuote = selectedQuote
                         changeAddonNavigationVm.isChangeCoverageDaysPresented = nil
                     } content: {
                         hText(L10n.addonFlowSelectButton)
@@ -90,7 +93,7 @@ extension AddonSelectSubOptionScreen: TitleView {
             hText(L10n.addonFlowSelectSuboptionTitle, style: .heading1)
                 .foregroundColor(hTextColor.Opaque.primary)
             hText(L10n.addonFlowSelectSuboptionSubtitle, style: .heading1)
-                .foregroundColor(hTextColor.Opaque.secondary)
+                .foregroundColor(hTextColor.Translucent.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, .padding8)
@@ -99,13 +102,15 @@ extension AddonSelectSubOptionScreen: TitleView {
 
 #Preview {
     let currentAddon: AddonQuote = .init(
-        id: "45",
         displayName: "45 days",
         quoteId: "quoteId45",
         addonId: "addonId45",
         displayItems: [
-            .init(displayTitle: "Coverage", displaySubtitle: nil, displayValue: "45 days"),
-            .init(displayTitle: "Insured people", displaySubtitle: nil, displayValue: "You+1"),
+            .init(displayTitle: "Coverage", displayValue: "45 days"),
+            .init(
+                displayTitle: "Insured people",
+                displayValue: "You+1"
+            ),
         ],
         price: .init(amount: "49", currency: "SEK"),
         productVariant: .init(
@@ -139,13 +144,12 @@ extension AddonSelectSubOptionScreen: TitleView {
             quotes: [
                 currentAddon,
                 .init(
-                    id: "60",
                     displayName: "60 days",
                     quoteId: "quoteId60",
                     addonId: "addonId60",
                     displayItems: [
-                        .init(displayTitle: "Coverage", displaySubtitle: nil, displayValue: "45 days"),
-                        .init(displayTitle: "Insured people", displaySubtitle: nil, displayValue: "You+1"),
+                        .init(displayTitle: "Coverage", displayValue: "45 days"),
+                        .init(displayTitle: "Insured people", displayValue: "You+1"),
                     ],
                     price: .init(amount: "79", currency: "SEK"),
                     productVariant: .init(

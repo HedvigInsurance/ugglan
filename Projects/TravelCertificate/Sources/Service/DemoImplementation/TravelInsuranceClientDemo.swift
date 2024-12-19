@@ -12,7 +12,9 @@ public struct TravelInsuranceClientDemo: TravelInsuranceClient {
         throw TravelInsuranceError.missingURL
     }
 
-    public func getList() async throws -> (
+    public func getList(
+        source: AddonSource
+    ) async throws -> (
         list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBannerModel?
     ) {
         throw TravelInsuranceError.missingURL

@@ -69,7 +69,9 @@ public struct ListScreen: View {
                                         displayName: $0.currentAgreement?.productVariant.displayName ?? ""
                                     )
                                 })
-                                travelCertificateNavigationVm.isAddonPresented = .init(contractConfigs: addonConfigs)
+                                travelCertificateNavigationVm.isAddonPresented = .init(
+                                    contractConfigs: addonConfigs
+                                )
                             },
                             addon: banner
                         )
@@ -170,7 +172,7 @@ class ListScreenViewModel: ObservableObject {
             isLoading = true
         }
         do {
-            let (list, canCreateTravelInsurance, banner) = try await self.service.getList()
+            let (list, canCreateTravelInsurance, banner) = try await self.service.getList(source: .appUpsellUpgrade)
             withAnimation {
                 self.list = list
                 self.canCreateTravelInsurance = canCreateTravelInsurance

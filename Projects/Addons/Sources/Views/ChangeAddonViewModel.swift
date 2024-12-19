@@ -10,7 +10,6 @@ public class ChangeAddonViewModel: ObservableObject {
     @Published var submittingAddonsViewState: ProcessingState = .loading
     @Published var selectedQuote: AddonQuote?
     @Published var addonOffer: AddonOffer?
-    @Published var activationDate: Date?
     let contractId: String
 
     init(contractId: String) {
@@ -45,12 +44,11 @@ public class ChangeAddonViewModel: ObservableObject {
             self.submittingAddonsViewState = .loading
         }
         do {
-            let data = try await addonService.submitAddon(
+            try await addonService.submitAddon(
                 quoteId: selectedQuote?.quoteId ?? "",
                 addonId: selectedQuote?.addonId ?? ""
             )
             withAnimation {
-                self.activationDate = data
                 self.submittingAddonsViewState = .success
             }
         } catch let exception {
@@ -59,8 +57,8 @@ public class ChangeAddonViewModel: ObservableObject {
     }
 
     func compareAddonDisplayItems(
-        currentDisplayItems: [AddonQuote.AddonDisplayItem],
-        newDisplayItems: [AddonQuote.AddonDisplayItem]
+        currentDisplayItems: [AddonDisplayItem],
+        newDisplayItems: [AddonDisplayItem]
     ) -> [QuoteDisplayItem] {
         let displayItems: [QuoteDisplayItem] = newDisplayItems.map { item in
             if let matchingDisplayItem = currentDisplayItems.first(where: { $0.displayTitle == item.displayTitle }) {

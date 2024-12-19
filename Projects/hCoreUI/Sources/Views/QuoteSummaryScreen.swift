@@ -281,16 +281,20 @@ public struct QuoteSummaryScreen: View {
                     hText(L10n.tierFlowTotal)
                     Spacer()
 
-                    let amount = vm.total.formattedAmountPerMonth
+                    let amount = vm.total
 
                     if vm.isAddon {
                         VStack(alignment: .trailing, spacing: 0) {
-                            hText("+" + amount)
+                            if amount.value >= 0 {
+                                hText(L10n.addonFlowPriceLabel(amount.formattedAmountWithoutSymbol))
+                            } else {
+                                hText(amount.formattedAmountPerMonth)
+                            }
                             hText(L10n.addonFlowSummaryPriceSubtitle, style: .label)
                                 .foregroundColor(hTextColor.Opaque.secondary)
                         }
                     } else {
-                        hText(amount)
+                        hText(amount.formattedAmountPerMonth)
                     }
                 }
                 VStack(spacing: .padding8) {

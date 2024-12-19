@@ -11,7 +11,7 @@ public class AddonsService {
         return try await service.getAddon(contractId: contractId)
     }
 
-    public func submitAddon(quoteId: String, addonId: String) async throws -> Date? {
+    public func submitAddon(quoteId: String, addonId: String) async throws {
         log.info("AddonsService: submitAddon", error: nil, attributes: nil)
         return try await service.submitAddon(quoteId: quoteId, addonId: addonId)
     }
@@ -23,87 +23,115 @@ public class AddonsClientOctopus: AddonsClient {
     public init() {}
 
     public func getAddon(contractId: String) async throws -> AddonOffer {
-        try await Task.sleep(nanoseconds: 3_000_000_000)
-        let currentAddon: AddonQuote = .init(
-            id: "45",
-            displayName: "45 days",
-            quoteId: "quoteId45",
-            addonId: "addonId45",
-            displayItems: [
-                .init(displayTitle: "Coverage", displaySubtitle: nil, displayValue: "45 days"),
-                .init(displayTitle: "Insured people", displaySubtitle: nil, displayValue: "You+1"),
-            ],
-            price: .init(amount: "49", currency: "SEK"),
-            productVariant: .init(
-                termsVersion: "",
-                typeOfContract: "",
-                partner: nil,
-                perils: [],
-                insurableLimits: [
-                    .init(label: "limit1", limit: "limit1", description: "description"),
-                    .init(label: "limit2", limit: "limit2", description: "description"),
-                    .init(label: "limit3", limit: "limit3", description: "description"),
-                    .init(label: "limit4", limit: "limit4", description: "description"),
-                ],
-                documents: [
-                    .init(displayName: "dodument1", url: "", type: .generalTerms),
-                    .init(displayName: "dodument2", url: "", type: .termsAndConditions),
-                    .init(displayName: "dodument3", url: "", type: .preSaleInfo),
-                ],
-                displayName: "Travel Plus",
-                displayNameTier: nil,
-                tierDescription: nil
+        do {
+            let mutation = OctopusGraphQL.UpsellTravelAddonOfferMutation(contractId: contractId)
+            let contractsQuery = OctopusGraphQL.CurrentAddonContractQuery(contractId: contractId)
+
+            let addonOfferData = try await octopus.client.perform(mutation: mutation)
+            let response = addonOfferData.upsellTravelAddonOffer
+
+            let contractResponse = try await octopus.client.fetch(
+                query: contractsQuery,
+                cachePolicy: .fetchIgnoringCacheCompletely
             )
-        )
+            let currentAddonContract = contractResponse.contract
 
-        let addons: AddonOffer = .init(
-            titleDisplayName: "Travel Plus",
-            description: "Extended travel insurance with extra coverage for your travels",
-            activationDate: "2025-01-15".localDateToDate,
-            currentAddon: currentAddon,
-            quotes: [
-                currentAddon,
-                .init(
-                    id: "60",
-                    displayName: "60 days",
-                    quoteId: "quoteId60",
-                    addonId: "addonId60",
-                    displayItems: [
-                        .init(displayTitle: "Coverage", displaySubtitle: nil, displayValue: "60 days"),
-                        .init(displayTitle: "Insured people", displaySubtitle: nil, displayValue: "You+1"),
-                        .init(displayTitle: "Test", displaySubtitle: nil, displayValue: "60 days"),
-                    ],
-                    price: .init(amount: "79", currency: "SEK"),
-                    productVariant: .init(
-                        termsVersion: "",
-                        typeOfContract: "",
-                        partner: nil,
-                        perils: [],
-                        insurableLimits: [
-                            .init(label: "limit1", limit: "limit1", description: "description"),
-                            .init(label: "limit2", limit: "limit2", description: "description"),
-                            .init(label: "limit3", limit: "limit3", description: "description"),
-                            .init(label: "limit4", limit: "limit4", description: "description"),
-                        ],
-                        documents: [
-                            .init(displayName: "dodument1", url: "", type: .generalTerms),
-                            .init(displayName: "dodument2", url: "", type: .termsAndConditions),
-                            .init(displayName: "dodument3", url: "", type: .preSaleInfo),
-                        ],
-                        displayName: "Travel Plus",
-                        displayNameTier: nil,
-                        tierDescription: nil
-                    )
-                ),
-            ]
-        )
+            if let error = response.userError, let message = error.message {
+                throw AddonsError.errorMessage(message: message)
+            }
 
-        return addons
+            guard let addonOffer = response.offer else {
+                throw AddonsError.somethingWentWrong
+            }
+
+            let currentAddon = AddonQuote(
+                displayName: currentAddonContract.exposureDisplayName,
+                quoteId: "quoteId",
+                addonId: "addonId",
+                displayItems: addonOffer.currentAddon?.displayItems
+                    .map({ .init(fragment: $0.fragments.upsellTravelAddonDisplayItemFragment) }) ?? [],
+                price: .init(optionalFragment: addonOffer.currentAddon?.premium.fragments.moneyFragment),
+                productVariant: .init(
+                    termsVersion: "",
+                    typeOfContract: "",
+                    partner: nil,
+                    perils: [],
+                    insurableLimits: [],
+                    documents: [],
+                    displayName: currentAddonContract.exposureDisplayName,
+                    displayNameTier: nil,
+                    tierDescription: nil
+                )
+            )
+
+            let addonData = AddonOffer(
+                titleDisplayName: addonOffer.titleDisplayName,
+                description: addonOffer.descriptionDisplayName,
+                activationDate: addonOffer.activationDate.localDateToDate,
+                currentAddon: currentAddon,
+                quotes: addonOffer.quotes.map({ .init(fragment: $0.fragments.upsellTravelAddonQuoteFragment) })
+            )
+
+            return addonData
+
+        } catch let exception {
+            if let exception = exception as? AddonsError {
+                throw exception
+            }
+            throw AddonsError.somethingWentWrong
+        }
     }
 
-    public func submitAddon(quoteId: String, addonId: String) async throws -> Date? {
-        /* TODO: Call mutation upsellTravelAddonActivate(quoteId: ID!, addonId: ID!) */
-        try await Task.sleep(nanoseconds: 3_000_000_000)
-        return Date()
+    public func submitAddon(quoteId: String, addonId: String) async throws {
+        do {
+            let mutation = OctopusGraphQL.UpsellTravelAddonActivateMutation(quoteId: quoteId, addonId: addonId)
+            let response = try await octopus.client.perform(mutation: mutation)
+
+            if let error = response.upsellTravelAddonActivate.userError, let message = error.message {
+                throw AddonsError.errorMessage(message: message)
+            }
+
+        } catch let exception {
+            if let exception = exception as? AddonsError {
+                throw exception
+            }
+            throw AddonsError.somethingWentWrong
+        }
+    }
+}
+
+extension AddonQuote {
+    init(
+        fragment: OctopusGraphQL.UpsellTravelAddonQuoteFragment
+    ) {
+        self.quoteId = fragment.quoteId
+        self.addonId = fragment.addonId
+        self.displayName = fragment.displayName
+        self.displayItems = fragment.displayItems.map({
+            .init(fragment: $0.fragments.upsellTravelAddonDisplayItemFragment)
+        })
+        self.price = .init(fragment: fragment.premium.fragments.moneyFragment)
+
+        /* TODO: ADD CORRECT VALUES */
+        self.productVariant = .init(
+            termsVersion: "",
+            typeOfContract: "",
+            partner: nil,
+            perils: [],
+            insurableLimits: [],
+            documents: [],
+            displayName: fragment.displayName,
+            displayNameTier: nil,
+            tierDescription: nil
+        )
+    }
+}
+
+extension AddonDisplayItem {
+    init(
+        fragment: OctopusGraphQL.UpsellTravelAddonDisplayItemFragment
+    ) {
+        self.displayTitle = fragment.displayTitle
+        self.displayValue = fragment.displayValue
     }
 }

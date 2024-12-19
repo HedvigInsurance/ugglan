@@ -105,7 +105,9 @@ struct ChangeAddonScreen: View {
                 Spacer()
 
                 hPill(
-                    text: L10n.addonFlowPriceLabel(changeAddonVm.selectedQuote?.price?.amount ?? ""),
+                    text: L10n.addonFlowPriceLabel(
+                        changeAddonVm.selectedQuote?.price?.formattedAmountWithoutSymbol ?? ""
+                    ),
                     color: .grey,
                     colorLevel: .one
                 )
@@ -113,7 +115,7 @@ struct ChangeAddonScreen: View {
             }
             if let subTitle = addon.description {
                 hText(subTitle, style: .label)
-                    .foregroundColor(hTextColor.Opaque.secondary)
+                    .foregroundColor(hTextColor.Translucent.secondary)
                     .padding(.top, .padding8)
             }
 
