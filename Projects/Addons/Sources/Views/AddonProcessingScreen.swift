@@ -14,7 +14,7 @@ struct AddonProcessingScreen: View {
                 vm.addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
             ),
             successViewButtonAction: {
-                addonNavigationVm.router.dismiss()
+                addonNavigationVm.router.dismiss(withDismissingAll: true)
             },
             state: $vm.submittingAddonsViewState
         )
@@ -34,7 +34,7 @@ struct AddonProcessingScreen: View {
                 .init(
                     buttonTitle: L10n.generalCloseButton,
                     buttonAction: {
-                        addonNavigationVm.router.dismiss()
+                        addonNavigationVm.router.dismiss(withDismissingAll: true)
                     }
                 )
         )
