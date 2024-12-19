@@ -6,6 +6,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     let contracts: [ContractInfo]
     let total: MonetaryAmount
     let onConfirmClick: () -> Void
+    let isAddon: Bool
 
     public struct ContractInfo: Identifiable {
         public let id: String
@@ -49,10 +50,12 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     public init(
         contract: [ContractInfo],
         total: MonetaryAmount,
+        isAddon: Bool? = false,
         onConfirmClick: @escaping () -> Void
     ) {
         self.contracts = contract
         self.total = total
+        self.isAddon = isAddon ?? false
         self.onConfirmClick = onConfirmClick
     }
 }
@@ -94,7 +97,7 @@ public struct QuoteSummaryScreen: View {
             }
             .hFormAttachToBottom {
                 VStack {
-                    if vm.contracts.count > 1 {
+                    if vm.contracts.count > 1 || vm.isAddon {
                         noticeComponent
                             .padding(.top, .padding16)
                     }
@@ -176,8 +179,10 @@ public struct QuoteSummaryScreen: View {
         hSection {
             InfoCard(
                 text:
-                    L10n.changeAddressOtherInsurancesInfoText,
-                type: .info
+                    vm.isAddon
+                    ? L10n.addonFlowSummaryInfoText
+                    : L10n.changeAddressOtherInsurancesInfoText,
+                type: vm.isAddon ? .neutral : .info
             )
         }
         .sectionContainerStyle(.transparent)
@@ -262,13 +267,24 @@ public struct QuoteSummaryScreen: View {
                 HStack {
                     hText(L10n.tierFlowTotal)
                     Spacer()
-                    hText(vm.total.formattedAmountPerMonth)
+
+                    let amount = vm.total.formattedAmountPerMonth
+
+                    if vm.isAddon {
+                        VStack(alignment: .trailing, spacing: 0) {
+                            hText("+" + amount)
+                            hText(L10n.addonFlowSummaryPriceSubtitle, style: .label)
+                                .foregroundColor(hTextColor.Opaque.secondary)
+                        }
+                    } else {
+                        hText(amount)
+                    }
                 }
                 VStack(spacing: .padding8) {
                     hButton.LargeButton(type: .primary) {
                         vm.onConfirmClick()
                     } content: {
-                        hText(L10n.changeAddressAcceptOffer)
+                        hText(vm.isAddon ? L10n.addonFlowSummaryConfirmButton : L10n.changeAddressAcceptOffer)
                     }
                 }
             }
@@ -292,7 +308,7 @@ public struct QuoteSummaryScreen: View {
     }
 }
 
-public struct QuoteDisplayItem: Identifiable {
+public struct QuoteDisplayItem: Identifiable, Equatable, Sendable {
     public let id: String?
     let displayTitle: String
     let displayValue: String
