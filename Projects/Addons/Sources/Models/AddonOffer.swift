@@ -69,10 +69,46 @@ public struct AddonQuote: Identifiable, Equatable, Hashable, Sendable {
     let addonId: String
     let displayItems: [AddonDisplayItem]
     let price: MonetaryAmount?
-    let productVariant: ProductVariant
+    let addonVariant: AddonVariant?
 }
 
 struct AddonDisplayItem: Equatable, Hashable {
     let displayTitle: String
     let displayValue: String
+}
+
+public struct AddonVariant: Codable, Equatable, Hashable, Sendable {
+    public let displayName: String
+    public let documents: [hPDFDocument]
+    public let insurableLimits: [InsurableLimits]
+    public let perils: [Perils]
+    public let product: String
+    public let termsVersion: String
+
+    public init(
+        fragment: OctopusGraphQL.AddonVariantFragment?
+    ) {
+        self.displayName = fragment?.displayName ?? ""
+        self.documents = fragment?.documents.map({ .init($0) }) ?? []
+        self.insurableLimits = fragment?.insurableLimits.map({ .init($0) }) ?? []
+        self.perils = fragment?.perils.map({ .init(fragment: $0.fragments.perilFragment) }) ?? []
+        self.product = fragment?.product ?? ""
+        self.termsVersion = fragment?.termsVersion ?? ""
+    }
+
+    public init(
+        displayName: String,
+        documents: [hPDFDocument],
+        insurableLimits: [InsurableLimits],
+        perils: [Perils],
+        product: String,
+        termsVersion: String
+    ) {
+        self.displayName = displayName
+        self.documents = documents
+        self.insurableLimits = insurableLimits
+        self.perils = perils
+        self.product = product
+        self.termsVersion = termsVersion
+    }
 }

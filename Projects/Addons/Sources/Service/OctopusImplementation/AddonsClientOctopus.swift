@@ -25,16 +25,9 @@ public class AddonsClientOctopus: AddonsClient {
     public func getAddon(contractId: String) async throws -> AddonOffer {
         do {
             let mutation = OctopusGraphQL.UpsellTravelAddonOfferMutation(contractId: contractId)
-            let contractsQuery = OctopusGraphQL.CurrentAddonContractQuery(contractId: contractId)
 
             let addonOfferData = try await octopus.client.perform(mutation: mutation)
             let response = addonOfferData.upsellTravelAddonOffer
-
-            let contractResponse = try await octopus.client.fetch(
-                query: contractsQuery,
-                cachePolicy: .fetchIgnoringCacheCompletely
-            )
-            let currentAddonContract = contractResponse.contract
 
             if let error = response.userError, let message = error.message {
                 throw AddonsError.errorMessage(message: message)
@@ -45,23 +38,13 @@ public class AddonsClientOctopus: AddonsClient {
             }
 
             let currentAddon = AddonQuote(
-                displayName: currentAddonContract.exposureDisplayName,
+                displayName: "",
                 quoteId: "quoteId",
                 addonId: "addonId",
                 displayItems: addonOffer.currentAddon?.displayItems
                     .map({ .init(fragment: $0.fragments.upsellTravelAddonDisplayItemFragment) }) ?? [],
                 price: .init(optionalFragment: addonOffer.currentAddon?.premium.fragments.moneyFragment),
-                productVariant: .init(
-                    termsVersion: "",
-                    typeOfContract: "",
-                    partner: nil,
-                    perils: [],
-                    insurableLimits: [],
-                    documents: [],
-                    displayName: currentAddonContract.exposureDisplayName,
-                    displayNameTier: nil,
-                    tierDescription: nil
-                )
+                addonVariant: nil
             )
 
             let addonData = AddonOffer(
@@ -69,7 +52,9 @@ public class AddonsClientOctopus: AddonsClient {
                 description: addonOffer.descriptionDisplayName,
                 activationDate: addonOffer.activationDate.localDateToDate,
                 currentAddon: currentAddon,
-                quotes: addonOffer.quotes.map({ .init(fragment: $0.fragments.upsellTravelAddonQuoteFragment) })
+                quotes: addonOffer.quotes.map({ quote in
+                    .init(fragment: quote.fragments.upsellTravelAddonQuoteFragment)
+                })
             )
 
             return addonData
@@ -111,19 +96,7 @@ extension AddonQuote {
             .init(fragment: $0.fragments.upsellTravelAddonDisplayItemFragment)
         })
         self.price = .init(fragment: fragment.premium.fragments.moneyFragment)
-
-        /* TODO: ADD CORRECT VALUES */
-        self.productVariant = .init(
-            termsVersion: "",
-            typeOfContract: "",
-            partner: nil,
-            perils: [],
-            insurableLimits: [],
-            documents: [],
-            displayName: fragment.displayName,
-            displayNameTier: nil,
-            tierDescription: nil
-        )
+        self.addonVariant = .init(fragment: fragment.addonVariant.fragments.addonVariantFragment)
     }
 }
 

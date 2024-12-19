@@ -32,6 +32,9 @@ fragment UpsellTravelAddonQuoteFragment on UpsellTravelAddonQuote {
     premium {
         ...MoneyFragment
     }
+    addonVariant {
+        ...AddonVariantFragment
+    }
 }
 
 fragment UpsellTravelAddonDisplayItemFragment on UpsellTravelAddonDisplayItem {

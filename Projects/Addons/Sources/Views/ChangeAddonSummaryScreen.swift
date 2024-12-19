@@ -26,13 +26,13 @@ extension ChangeAddonViewModel {
             contract: [
                 .init(
                     id: self.contractId,
-                    displayName: self.selectedQuote?.productVariant.displayName ?? "",
+                    displayName: self.selectedQuote?.addonVariant?.displayName ?? "",
                     exposureName: L10n.addonFlowSummaryActiveFrom(
                         self.addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
                     ),
                     newPremium: self.selectedQuote?.price,
                     currentPremium: self.addonOffer?.currentAddon?.price,
-                    documents: self.selectedQuote?.productVariant.documents ?? [],
+                    documents: self.selectedQuote?.addonVariant?.documents ?? [],
                     onDocumentTap: { document in
                         changeAddonNavigationVm.document = document
                     },
