@@ -13,26 +13,26 @@ struct MovingFlowConfirmScreen: View {
     var body: some View {
         if let movingFlowModel = movingFlowNavigationVm.movingFlowVm {
             let contractInfo = getQuotes(from: movingFlowModel)
-                .map({
+                .map({ quote in
                     QuoteSummaryViewModel.ContractInfo(
-                        id: $0.id,
-                        displayName: $0.displayName,
-                        exposureName: $0.exposureName ?? "",
-                        newPremium: $0.premium,
-                        currentPremium: $0.premium,
-                        documents: $0.documents.map({
+                        id: quote.id,
+                        displayName: quote.displayName,
+                        exposureName: quote.exposureName ?? "",
+                        newPremium: quote.premium,
+                        currentPremium: quote.premium,
+                        documents: quote.documents.map({
                             .init(displayName: $0.displayName, url: $0.url, type: .unknown)
                         }),
                         onDocumentTap: { document in
                             movingFlowNavigationVm.document = document
                         },
-                        displayItems: $0.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }
+                        displayItems: quote.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }
                         ),
-                        insuranceLimits: $0.insurableLimits,
-                        typeOfContract: $0.contractType,
-                        onInfoClick: movingFlowModel.addonInfo != nil
+                        insuranceLimits: quote.insurableLimits,
+                        typeOfContract: quote.contractType,
+                        onInfoClick: quote.quoteInfo != nil
                             ? {
-                                movingFlowNavigationVm.isInfoViewPresented = movingFlowModel.addonInfo
+                                movingFlowNavigationVm.isInfoViewPresented = quote.quoteInfo
                             } : nil
                     )
                 })

@@ -169,16 +169,6 @@ extension MovingFlowModel {
 
         self.extraBuildingTypes = data.extraBuildingTypes.compactMap({ $0.rawValue })
 
-        if Dependencies.featureFlags().isAddonsEnabled {
-            /* TODO: REPLACE WITH BE DATA */
-            self.addonInfo = .init(
-                title: "Travel Insurance Plus",
-                description: "Some copy describing the extra coverage you already have."
-            )
-        } else {
-            self.addonInfo = nil
-        }
-
         var faqs = [FAQ]()
         faqs.append(.init(title: L10n.changeAddressFaqDateTitle, description: L10n.changeAddressFaqDateLabel))
         faqs.append(.init(title: L10n.changeAddressFaqPriceTitle, description: L10n.changeAddressFaqPriceLabel))
@@ -215,6 +205,7 @@ extension MovingFlowQuote {
         documents = productVariantFragment.documents.compactMap({ .init($0) })
         contractType = TypeOfContract(rawValue: data.productVariant.typeOfContract)
         displayItems = data.displayItems.map({ .init($0) })
+        quoteInfo = nil
     }
 
     init(from data: OctopusGraphQL.QuoteFragment.MtaQuote) {
@@ -231,6 +222,7 @@ extension MovingFlowQuote {
         documents = productVariantFragment.documents.compactMap({ .init($0) })
         contractType = TypeOfContract(rawValue: data.productVariant.typeOfContract)
         displayItems = data.displayItems.map({ .init($0) })
+        quoteInfo = nil
     }
 
     init(from data: OctopusGraphQL.QuoteFragment.HomeQuote) {
@@ -247,6 +239,7 @@ extension MovingFlowQuote {
         documents = productVariantFragment.documents.compactMap({ .init($0) })
         contractType = TypeOfContract(rawValue: data.productVariant.typeOfContract)
         displayItems = data.displayItems.map({ .init($0) })
+        quoteInfo = nil
     }
 }
 
