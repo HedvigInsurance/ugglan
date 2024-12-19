@@ -124,12 +124,6 @@ public struct TravelCertificateNavigation: View {
             options: .constant(.withoutGrabber)
         ) { addonInput in
             ChangeAddonNavigation(input: addonInput)
-                .onDeinit {
-                    NotificationCenter.default.post(
-                        name: .addonAdded,
-                        object: nil
-                    )
-                }
         }
         .modally(
             item: $vm.isStartDateScreenPresented,

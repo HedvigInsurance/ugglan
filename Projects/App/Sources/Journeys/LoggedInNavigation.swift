@@ -82,12 +82,6 @@ struct LoggedInNavigation: View {
             tracking: nil
         ) { addonInput in
             ChangeAddonNavigation(input: addonInput)
-                .onDeinit {
-                    NotificationCenter.default.post(
-                        name: .addonAdded,
-                        object: nil
-                    )
-                }
         }
         .handleTerminateInsurance(vm: vm.terminateInsuranceVm) {
             dismissType in
@@ -150,12 +144,6 @@ struct LoggedInNavigation: View {
                 }
             case let .addon(input: input):
                 ChangeAddonNavigation(input: input)
-                    .onDeinit {
-                        NotificationCenter.default.post(
-                            name: .addonAdded,
-                            object: nil
-                        )
-                    }
             }
         } redirectAction: { action in
             switch action {

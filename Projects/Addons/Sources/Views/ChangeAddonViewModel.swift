@@ -48,6 +48,10 @@ public class ChangeAddonViewModel: ObservableObject {
                 quoteId: selectedQuote?.quoteId ?? "",
                 addonId: selectedQuote?.addonId ?? ""
             )
+            NotificationCenter.default.post(
+                name: .addonAdded,
+                object: nil
+            )
             withAnimation {
                 self.submittingAddonsViewState = .success
             }
