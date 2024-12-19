@@ -207,6 +207,7 @@ struct CompareTierScreen: View {
                     ZStack {
                         hText(peril.title, style: .label)
                             .frame(height: .padding40, alignment: .center)
+                            .lineLimit(1)
                     }
                 }
                 .verticalPadding(0)

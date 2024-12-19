@@ -69,7 +69,6 @@ struct ChangeAddonScreen: View {
                                 }
                             )
                         ])
-                        //                        }
 
                         hButton.LargeButton(type: .primary) {
                             changeAddonNavigationVm.router.push(ChangeAddonRouterActions.summary)
@@ -108,7 +107,7 @@ struct ChangeAddonScreen: View {
 
                 hPill(
                     text: L10n.addonFlowPriceLabel(changeAddonVm.selectedSubOption?.price.amount ?? ""),
-                    color: .grey(translucent: true),
+                    color: .grey,
                     colorLevel: .one
                 )
                 .hFieldSize(.small)
