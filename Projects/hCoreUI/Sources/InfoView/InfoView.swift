@@ -82,19 +82,19 @@ public struct InfoViewHolder: View {
 public struct InfoView: View {
     let title: String
     let description: String
-    let markdownOnTap: (() -> Void)?
+    let onUrlClicked: ((_ url: URL) -> Void)?
     let extraButton: (text: String, style: hButtonConfigurationType, action: () -> Void)?
     @StateObject private var vm = InfoViewModel()
 
     public init(
         title: String,
         description: String,
-        markdownOnTap: (() -> Void)? = nil,
+        onUrlClicked: ((_ url: URL) -> Void)? = nil,
         extraButton: (text: String, style: hButtonConfigurationType, action: () -> Void)? = nil
     ) {
         self.title = title
         self.description = description
-        self.markdownOnTap = markdownOnTap
+        self.onUrlClicked = onUrlClicked
         self.extraButton = extraButton
     }
 
@@ -103,7 +103,7 @@ public struct InfoView: View {
             hSection {
                 VStack(alignment: .leading, spacing: .padding8) {
                     hText(title)
-                    if let markdownOnTap {
+                    if let onUrlClicked {
                         MarkdownView(
                             config: .init(
                                 text: description,
@@ -114,7 +114,7 @@ public struct InfoView: View {
                                 maxWidth: nil,
                                 textAlignment: .left,
                                 onUrlClicked: { url in
-                                    markdownOnTap()
+                                    onUrlClicked(url)
                                 }
                             )
                         )

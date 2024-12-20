@@ -143,7 +143,7 @@ public struct MovingFlowNavigation: View {
             InfoView(
                 title: infoViewModel.title ?? "",
                 description: infoViewModel.description ?? "",
-                markdownOnTap: {
+                onUrlClicked: { url in
                     NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                 }
             )

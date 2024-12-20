@@ -12,7 +12,7 @@ struct MovingFlowConfirmScreen: View {
 
     var body: some View {
         if let movingFlowModel = movingFlowNavigationVm.movingFlowVm {
-            var contractInfo = getQuotes(from: movingFlowModel)
+            var contractInfos = getQuotes(from: movingFlowModel)
                 .map({ quote in
                     QuoteSummaryViewModel.ContractInfo(
                         id: quote.id,
@@ -44,7 +44,7 @@ struct MovingFlowConfirmScreen: View {
                             ),
                             newPremium: addonQuote.price,
                             currentPremium: nil,
-                            documents: addonQuote.documents,
+                            documents: addonQuote.addonVariant.documents,
                             onDocumentTap: { document in
                                 movingFlowNavigationVm.document = document
                             },
@@ -57,12 +57,12 @@ struct MovingFlowConfirmScreen: View {
                                 movingFlowNavigationVm.isInfoViewPresented = addonQuote.quoteInfo
                             }
                         )
-                        contractInfo.append(addonQuoteContractInfo)
+                        contractInfos.append(addonQuoteContractInfo)
                     })
                 })
 
             let vm = QuoteSummaryViewModel(
-                contract: contractInfo,
+                contract: contractInfos,
                 total: movingFlowModel.total,
                 onConfirmClick: {
                     Task {

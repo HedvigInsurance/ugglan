@@ -59,11 +59,11 @@ public struct MovingFlowModel: Codable, Equatable, Hashable, Sendable {
 
     @MainActor
     var total: MonetaryAmount {
-        let quoteamount = quotes.reduce(0, { $0 + $1.premium.floatAmount }) + (homeQuote?.premium.floatAmount ?? 0)
+        let quoteAmount = quotes.reduce(0, { $0 + $1.premium.floatAmount }) + (homeQuote?.premium.floatAmount ?? 0)
         let addonAmount =
             quotes.reduce(0, { $0 + $1.addons.reduce(0, { $0 + $1.price.floatAmount }) })
         let addonHomeQuote = homeQuote?.addons.reduce(0, { $0 + $1.price.floatAmount }) ?? 0
-        let totalAmount = quoteamount + addonAmount + addonHomeQuote
+        let totalAmount = quoteAmount + addonAmount + addonHomeQuote
 
         let currency = homeQuote?.premium.currency ?? quotes.first?.premium.currency ?? ""
         return MonetaryAmount(amount: totalAmount, currency: currency)
@@ -142,7 +142,6 @@ struct AddonDataModel: Codable, Equatable, Hashable {
     let id: String
     let quoteInfo: InfoViewDataModel
     let displayItems: [DisplayItem]
-    let documents: [hPDFDocument]
     let price: MonetaryAmount
     let addonVariant: AddonVariant
     let startDate: Date
