@@ -128,6 +128,9 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
                                 self?.router.dismiss()
                             }
                         } catch let exception {
+                            withAnimation {
+                                self?.redirectActionLoadingState = .success
+                            }
                             if let exception = exception as? ChangeTierError {
                                 switch exception {
                                 case .emptyList:
