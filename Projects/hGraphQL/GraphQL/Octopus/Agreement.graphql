@@ -12,6 +12,11 @@ fragment AgreementFragment on Agreement {
     productVariant {
         ...ProductVariantFragment
     }
+    addons {
+        addonVariant {
+            ...AddonVariantFragment
+        }
+    }
 }
 
 fragment AgreementDisplayItemFragment on AgreementDisplayItem {

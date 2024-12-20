@@ -7,6 +7,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     let total: MonetaryAmount
     let onConfirmClick: () -> Void
     let isAddon: Bool
+    let showNoticeCard: Bool
 
     public struct ContractInfo: Identifiable {
         public let id: String
@@ -20,6 +21,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         let insuranceLimits: [InsurableLimits]
         let typeOfContract: TypeOfContract?
         let shouldShowDetails: Bool
+        let onInfoClick: (() -> Void)?
 
         public init(
             id: String,
@@ -31,7 +33,8 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             onDocumentTap: @escaping (_ document: hPDFDocument) -> Void,
             displayItems: [QuoteDisplayItem],
             insuranceLimits: [InsurableLimits],
-            typeOfContract: TypeOfContract?
+            typeOfContract: TypeOfContract?,
+            onInfoClick: (() -> Void)? = nil
         ) {
             self.id = id
             self.displayName = displayName
@@ -44,6 +47,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             self.insuranceLimits = insuranceLimits
             self.typeOfContract = typeOfContract
             self.shouldShowDetails = !(documents.isEmpty && displayItems.isEmpty && insuranceLimits.isEmpty)
+            self.onInfoClick = onInfoClick
         }
     }
 
@@ -57,6 +61,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         self.total = total
         self.isAddon = isAddon ?? false
         self.onConfirmClick = onConfirmClick
+        self.showNoticeCard = (contracts.count > 1 || isAddon ?? false)
     }
 }
 
@@ -97,7 +102,7 @@ public struct QuoteSummaryScreen: View {
             }
             .hFormAttachToBottom {
                 VStack {
-                    if vm.contracts.count > 1 || vm.isAddon {
+                    if vm.showNoticeCard {
                         noticeComponent
                             .padding(.top, .padding16)
                     }
@@ -125,7 +130,8 @@ public struct QuoteSummaryScreen: View {
                 mainContent: ContractInformation(
                     displayName: contract.displayName,
                     exposureName: contract.exposureName,
-                    pillowImage: contract.typeOfContract?.pillowType.bgImage
+                    pillowImage: contract.typeOfContract?.pillowType.bgImage,
+                    onInfoClick: contract.onInfoClick
                 ),
                 title: nil,
                 subTitle: nil,
@@ -135,16 +141,16 @@ public struct QuoteSummaryScreen: View {
                             newPremium: contract.newPremium,
                             currentPremium: contract.currentPremium
                         )
+                        .hWithStrikeThroughPrice(setTo: vm.isAddon ? true : false)
 
                         let index = selectedContracts.firstIndex(of: contract.id)
-                        let isExpanded = index != nil
+                        let isExpanded = vm.isAddon ? true : (index != nil)
                         VStack(spacing: 0) {
                             detailsView(for: contract, isExpanded: isExpanded)
                                 .frame(height: isExpanded ? nil : 0, alignment: .top)
                                 .clipped()
 
-                            if contract.shouldShowDetails {
-
+                            if contract.shouldShowDetails && !vm.isAddon {
                                 hButton.MediumButton(
                                     type: .secondary
                                 ) {
@@ -182,7 +188,7 @@ public struct QuoteSummaryScreen: View {
                     vm.isAddon
                     ? L10n.addonFlowSummaryInfoText
                     : L10n.changeAddressOtherInsurancesInfoText,
-                type: vm.isAddon ? .neutral : .info
+                type: .info
             )
         }
         .sectionContainerStyle(.transparent)
@@ -228,13 +234,24 @@ public struct QuoteSummaryScreen: View {
                 }
             }
         }
-        .padding(.bottom, isExpanded ? .padding16 : 0)
+        .padding(.bottom, (isExpanded && !vm.isAddon) ? .padding16 : 0)
     }
 
     func rowItem(for displayItem: QuoteDisplayItem) -> some View {
         HStack(alignment: .top) {
             hText(displayItem.displayTitle)
             Spacer()
+
+            if let oldValue = displayItem.displayValueOld, oldValue != displayItem.displayValue {
+                if #available(iOS 16.0, *) {
+                    hText(oldValue)
+                        .strikethrough()
+                } else {
+                    hText(oldValue)
+                        .foregroundColor(hTextColor.Opaque.tertiary)
+                }
+            }
+
             hText(displayItem.displayValue)
                 .multilineTextAlignment(.trailing)
         }
@@ -268,16 +285,20 @@ public struct QuoteSummaryScreen: View {
                     hText(L10n.tierFlowTotal)
                     Spacer()
 
-                    let amount = vm.total.formattedAmountPerMonth
+                    let amount = vm.total
 
                     if vm.isAddon {
                         VStack(alignment: .trailing, spacing: 0) {
-                            hText("+" + amount)
+                            if amount.value >= 0 {
+                                hText(L10n.addonFlowPriceLabel(amount.formattedAmountWithoutSymbol))
+                            } else {
+                                hText(amount.formattedAmountPerMonth)
+                            }
                             hText(L10n.addonFlowSummaryPriceSubtitle, style: .label)
                                 .foregroundColor(hTextColor.Opaque.secondary)
                         }
                     } else {
-                        hText(amount)
+                        hText(amount.formattedAmountPerMonth)
                     }
                 }
                 VStack(spacing: .padding8) {
@@ -312,14 +333,17 @@ public struct QuoteDisplayItem: Identifiable, Equatable, Sendable {
     public let id: String?
     let displayTitle: String
     let displayValue: String
+    let displayValueOld: String?
 
     public init(
         title displayTitle: String,
         value displayValue: String,
+        displayValueOld: String? = nil,
         id: String? = nil
     ) {
         self.displayTitle = displayTitle
         self.displayValue = displayValue
+        self.displayValueOld = displayValueOld
         self.id = id
     }
 }

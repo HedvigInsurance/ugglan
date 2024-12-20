@@ -205,6 +205,7 @@ extension MovingFlowQuote {
         documents = productVariantFragment.documents.compactMap({ .init($0) })
         contractType = TypeOfContract(rawValue: data.productVariant.typeOfContract)
         displayItems = data.displayItems.map({ .init($0) })
+        quoteInfo = nil
     }
 
     init(from data: OctopusGraphQL.QuoteFragment.MtaQuote) {
@@ -221,6 +222,7 @@ extension MovingFlowQuote {
         documents = productVariantFragment.documents.compactMap({ .init($0) })
         contractType = TypeOfContract(rawValue: data.productVariant.typeOfContract)
         displayItems = data.displayItems.map({ .init($0) })
+        quoteInfo = nil
     }
 
     init(from data: OctopusGraphQL.QuoteFragment.HomeQuote) {
@@ -237,6 +239,7 @@ extension MovingFlowQuote {
         documents = productVariantFragment.documents.compactMap({ .init($0) })
         contractType = TypeOfContract(rawValue: data.productVariant.typeOfContract)
         displayItems = data.displayItems.map({ .init($0) })
+        quoteInfo = nil
     }
 }
 

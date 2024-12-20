@@ -12,7 +12,7 @@ public class TravelCertificateNavigationViewModel: ObservableObject {
     public init() {}
     @Published var isDocumentPresented: TravelCertificateModel?
     @Published var isStartDateScreenPresented: TravelInsuranceSpecificationNavigationModel?
-    @Published var isAddonPresented = false
+    @Published var isAddonPresented: ChangeAddonInput?
 
     var startDateViewModel: StartDateViewModel?
     var whoIsTravelingViewModel: WhoIsTravelingViewModel?
@@ -120,10 +120,10 @@ public struct TravelCertificateNavigation: View {
             )
         }
         .modally(
-            presented: $vm.isAddonPresented,
+            item: $vm.isAddonPresented,
             options: .constant(.withoutGrabber)
-        ) {
-            ChangeAddonNavigation(input: .init(contractId: ""))
+        ) { addonInput in
+            ChangeAddonNavigation(input: addonInput)
         }
         .modally(
             item: $vm.isStartDateScreenPresented,

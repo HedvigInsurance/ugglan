@@ -1,4 +1,5 @@
 import Addons
+import Contracts
 import Foundation
 import PresentableStore
 import SwiftUI
@@ -53,19 +54,26 @@ public struct ListScreen: View {
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: 16) {
-                    if Dependencies.featureFlags().isAddonsEnabled {
+                    if Dependencies.featureFlags().isAddonsEnabled, let banner = vm.addonBannerModel {
                         AddonCardView(
                             openAddon: {
-                                travelCertificateNavigationVm.isAddonPresented = true
+                                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                                let addonContracts = banner.contractIds.compactMap({
+                                    contractStore.state.contractForId($0)
+                                })
+
+                                let addonConfigs: [AddonConfig] = addonContracts.map({
+                                    .init(
+                                        contractId: $0.id,
+                                        exposureName: $0.exposureDisplayName,
+                                        displayName: $0.currentAgreement?.productVariant.displayName ?? ""
+                                    )
+                                })
+                                travelCertificateNavigationVm.isAddonPresented = .init(
+                                    contractConfigs: addonConfigs
+                                )
                             },
-                            addon: .init(
-                                id: "id",
-                                title: "Travel Plus",
-                                description: "Extended travel insurance with extra coverage for your travels",
-                                tag: "Popular",
-                                activationDate: Date(),
-                                options: []
-                            )
+                            addon: banner
                         )
                     }
 
@@ -149,13 +157,30 @@ extension View {
 @MainActor
 class ListScreenViewModel: ObservableObject {
     var service = TravelInsuranceService()
-
     @Published var list: [TravelCertificateModel] = []
     @Published var canCreateTravelInsurance: Bool = false
     @Published var error: String?
     @Published var isLoading = false
     @Published var isCreateNewLoading: Bool = false
-    init() {}
+    @Published var addonBannerModel: AddonBannerModel?
+    private var addonAddedObserver: NSObjectProtocol?
+
+    init() {
+        addonAddedObserver = NotificationCenter.default.addObserver(forName: .addonAdded, object: nil, queue: nil) {
+            [weak self] notification in
+            Task {
+                await self?.fetchTravelCertificateList()
+            }
+        }
+    }
+
+    deinit {
+        Task { @MainActor [weak self] in
+            if let addonAddedObserver = self?.addonAddedObserver {
+                NotificationCenter.default.removeObserver(addonAddedObserver)
+            }
+        }
+    }
 
     @MainActor
     func fetchTravelCertificateList() async {
@@ -163,10 +188,11 @@ class ListScreenViewModel: ObservableObject {
             isLoading = true
         }
         do {
-            let (list, canCreateTravelInsurance) = try await self.service.getList()
+            let (list, canCreateTravelInsurance, banner) = try await self.service.getList(source: .appUpsellUpgrade)
             withAnimation {
                 self.list = list
                 self.canCreateTravelInsurance = canCreateTravelInsurance
+                self.addonBannerModel = banner
             }
         } catch _ {
             self.error = L10n.General.errorBody

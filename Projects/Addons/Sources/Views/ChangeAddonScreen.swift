@@ -86,43 +86,44 @@ struct ChangeAddonScreen: View {
     @ViewBuilder
     private var addOnSection: some View {
         VStack(spacing: .padding4) {
-            ForEach(changeAddonVm.addonOptions ?? []) { addonOption in
-                hSection {
-                    hRow {
-                        getAddonOptionView(for: addonOption)
+            hSection {
+                hRow {
+                    if let addonOffer = changeAddonVm.addonOffer {
+                        getAddonOptionView(for: addonOffer)
                     }
                 }
-                .hFieldSize(.medium)
             }
-
+            .hFieldSize(.medium)
         }
     }
 
-    private func getAddonOptionView(for addonOption: AddonOptionModel) -> some View {
+    private func getAddonOptionView(for addon: AddonOffer) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                hText(addonOption.title ?? "")
+                hText(addon.title)
                     .fixedSize()
                 Spacer()
 
                 hPill(
-                    text: L10n.addonFlowPriceLabel(changeAddonVm.selectedSubOption?.price.amount ?? ""),
+                    text: L10n.addonFlowPriceLabel(
+                        changeAddonVm.selectedQuote?.price?.formattedAmountWithoutSymbol ?? ""
+                    ),
                     color: .grey,
                     colorLevel: .one
                 )
                 .hFieldSize(.small)
             }
-            if let subTitle = addonOption.description {
+            if let subTitle = addon.description {
                 hText(subTitle, style: .label)
-                    .foregroundColor(hTextColor.Opaque.secondary)
+                    .foregroundColor(hTextColor.Translucent.secondary)
                     .padding(.top, .padding8)
             }
 
             DropdownView(
-                value: String(changeAddonVm.selectedSubOption?.title ?? ""),
+                value: String(changeAddonVm.selectedQuote?.displayName ?? ""),
                 placeHolder: L10n.addonFlowSelectDaysPlaceholder
             ) {
-                changeAddonNavigationVm.isChangeCoverageDaysPresented = addonOption
+                changeAddonNavigationVm.isChangeCoverageDaysPresented = addon
             }
             .padding(.top, .padding16)
             .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary])
@@ -133,6 +134,6 @@ struct ChangeAddonScreen: View {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
-    return ChangeAddonScreen(changeAddonVm: .init(contractId: ""))
-        .environmentObject(ChangeAddonNavigationViewModel(input: .init(contractId: "contractId")))
+    return ChangeAddonScreen(changeAddonVm: .init(contractId: "id"))
+        .environmentObject(ChangeAddonNavigationViewModel(input: .init()))
 }

@@ -118,6 +118,7 @@ struct MovingFlowQuote: Codable, Equatable, Hashable {
     let id: String
     let displayItems: [DisplayItem]
     let exposureName: String?
+    let quoteInfo: InfoViewDataModel?
 }
 
 struct InsuranceDocument: Codable, Equatable, Hashable {
