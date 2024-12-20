@@ -39,7 +39,6 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable, Sendable {
     let selectedQuote: Quote?
     let canEditTier: Bool
     let typeOfContract: TypeOfContract
-    //    let productVariantComparision: ProductVariantComparison
 
     public init(
         displayName: String,
@@ -52,7 +51,6 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable, Sendable {
         selectedQuote: Quote?,
         canEditTier: Bool,
         typeOfContract: TypeOfContract
-            //        productVariantComparision: ProductVariantComparison
     ) {
         self.displayName = displayName
         self.activationDate = activationDate
@@ -64,7 +62,6 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable, Sendable {
         self.selectedQuote = selectedQuote
         self.canEditTier = canEditTier
         self.typeOfContract = typeOfContract
-        //        self.productVariantComparision = productVariantComparision
     }
 }
 public struct Tier: Codable, Equatable, Hashable, Identifiable, Sendable {

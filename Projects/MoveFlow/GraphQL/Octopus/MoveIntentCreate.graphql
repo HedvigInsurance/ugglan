@@ -64,6 +64,9 @@ fragment QuoteFragment on MoveIntent {
           displayTitle
           displayValue
         }
+        addons {
+            ...MoveAddonQuoteFragment
+        }
       }
        homeQuotes {
         deductible {
@@ -90,5 +93,25 @@ fragment QuoteFragment on MoveIntent {
         startDate
         tierLevel
         tierName
+        addons {
+            ...MoveAddonQuoteFragment
+        }
       }
+}
+
+fragment MoveAddonQuoteFragment on MoveAddonQuote {
+    addonId
+    displayName
+    displayItems {
+        displayTitle
+        displaySubtitle
+        displayValue
+    }
+    premium {
+        ...MoneyFragment
+    }
+     startDate
+     addonVariant {
+        ...AddonVariantFragment
+    }
 }
