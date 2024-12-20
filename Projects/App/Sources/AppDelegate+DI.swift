@@ -1,3 +1,4 @@
+import Addons
 import Apollo
 import Authentication
 import ChangeTier
@@ -40,6 +41,7 @@ extension ApolloClient {
             let submitClaimDemoService = SubmitClaimClientDemo()
             let conversationsClient = ConversationsDemoClient()
             let changeTierClient = ChangeTierClientDemo()
+            let addonClient = AddonsClientDemo()
             let fetchClaimDetailsDemoClient = FetchClaimDetailsClientDemo()
             Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlags })
             Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentService })
@@ -55,6 +57,7 @@ extension ApolloClient {
             Dependencies.shared.add(module: Module { () -> ConversationsClient in conversationsClient })
             Dependencies.shared.add(module: Module { () -> ConversationClient in conversationsClient })
             Dependencies.shared.add(module: Module { () -> ChangeTierClient in changeTierClient })
+            Dependencies.shared.add(module: Module { () -> AddonsClient in addonClient })
             Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in fetchClaimDetailsDemoClient })
         } else {
             let paymentService = hPaymentClientOctopus()
@@ -78,6 +81,7 @@ extension ApolloClient {
             let conversationClient = ConversationClientOctopus()
             let conversationsClient = ConversationsClientOctopus()
             let changeTierClient = ChangeTierClientOctopus()
+            let addonClient = AddonsClientOctopus()
             let fetchClaimDetailsClient = FetchClaimDetailsClientOctopus()
             switch Environment.current {
             case .staging:
@@ -106,6 +110,7 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> ConversationClient in conversationClient })
                 Dependencies.shared.add(module: Module { () -> ConversationsClient in conversationsClient })
                 Dependencies.shared.add(module: Module { () -> ChangeTierClient in changeTierClient })
+                Dependencies.shared.add(module: Module { () -> AddonsClient in addonClient })
                 Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in fetchClaimDetailsClient })
             case .production, .custom:
                 Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlagsUnleash })
@@ -133,6 +138,7 @@ extension ApolloClient {
                 Dependencies.shared.add(module: Module { () -> ConversationClient in conversationClient })
                 Dependencies.shared.add(module: Module { () -> ConversationsClient in conversationsClient })
                 Dependencies.shared.add(module: Module { () -> ChangeTierClient in changeTierClient })
+                Dependencies.shared.add(module: Module { () -> AddonsClient in addonClient })
                 Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in fetchClaimDetailsClient })
             }
         }

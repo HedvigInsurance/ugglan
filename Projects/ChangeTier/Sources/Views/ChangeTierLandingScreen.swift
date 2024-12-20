@@ -6,6 +6,7 @@ import hGraphQL
 public struct ChangeTierLandingScreen: View {
     @ObservedObject var vm: ChangeTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
+    @SwiftUI.Environment(\.colorScheme) private var colorScheme
 
     init(
         vm: ChangeTierViewModel
@@ -83,8 +84,6 @@ public struct ChangeTierLandingScreen: View {
                         pillowImage: vm.typeOfContract?.pillowType.bgImage
                     )
                 }
-
-                let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
 
                 VStack(spacing: .padding4) {
                     editTierView

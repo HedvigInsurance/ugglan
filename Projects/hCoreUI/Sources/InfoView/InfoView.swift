@@ -143,6 +143,22 @@ public struct InfoView: View {
     }
 }
 
+public struct InfoViewDataModel: Equatable, Identifiable {
+    public var id: String?
+    public let title: String?
+    public let description: String?
+
+    public init(
+        id: String? = nil,
+        title: String?,
+        description: String?
+    ) {
+        self.id = id
+        self.title = title
+        self.description = description
+    }
+}
+
 class InfoViewModel: ObservableObject {
     weak var vc: UIViewController?
 }

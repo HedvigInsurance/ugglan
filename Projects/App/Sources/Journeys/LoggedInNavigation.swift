@@ -1,3 +1,4 @@
+import Addons
 import ChangeTier
 import Chat
 import Claims
@@ -134,6 +135,8 @@ struct LoggedInNavigation: View {
                         store.send(.fetchContracts)
                     }
                 }
+            case let .addon(input: input):
+                ChangeAddonNavigation(input: input)
             }
         } redirectAction: { action in
             switch action {

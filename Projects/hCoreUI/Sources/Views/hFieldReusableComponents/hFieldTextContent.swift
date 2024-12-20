@@ -16,6 +16,8 @@ public struct ItemModel: Hashable {
 public struct hFieldTextContent<T>: View {
     @Environment(\.isEnabled) var enabled
     @Environment(\.hFieldLeftAttachedView) var leftAlign
+    @Environment(\.hFieldBottomAttachedView) var bottomView
+
     let item: ItemModel?
     let fieldSize: hFieldSize
     let itemDisplayName: String?
@@ -42,11 +44,16 @@ public struct hFieldTextContent<T>: View {
     public var body: some View {
         HStack(spacing: 8) {
             if leftAlign {
-                HStack(alignment: .top) {
-                    cellView?()
-                        .frame(alignment: .top)
-                        .padding(.top, 2)
-                    getTextField
+                VStack(spacing: 0) {
+                    HStack(alignment: .top) {
+                        cellView?()
+                            .frame(alignment: .top)
+                            .padding(.top, 2)
+                        getTextField
+                    }
+                    if let bottomView {
+                        bottomView
+                    }
                 }
             } else {
                 getTextField
@@ -98,5 +105,23 @@ public struct hFieldTextContent<T>: View {
         } else {
             hTextColor.Translucent.secondary
         }
+    }
+}
+
+@MainActor
+private struct EnvironmentHFieldBottomAttachedView: @preconcurrency EnvironmentKey {
+    static let defaultValue: AnyView? = nil
+}
+
+extension EnvironmentValues {
+    public var hFieldBottomAttachedView: AnyView? {
+        get { self[EnvironmentHFieldBottomAttachedView.self] }
+        set { self[EnvironmentHFieldBottomAttachedView.self] = newValue }
+    }
+}
+
+extension View {
+    public func hFieldAttachToBottom<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        self.environment(\.hFieldBottomAttachedView, AnyView(content()))
     }
 }
