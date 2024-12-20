@@ -30,6 +30,7 @@ fragment FlowClaimFragment on Flow {
     ...FlowClaimDeflectEirStepFragment
     ...FlowClaimDeflectPestsStepFragment
     ...FlowClaimFileUploadStepFragment
+    ...FlowClaimDeflectIDProtectionStepFragment
   }
 }
 
@@ -265,6 +266,21 @@ fragment FlowClaimSingleItemCheckoutCompensationFragment on FlowClaimSingleItemC
         }
         depreciation {
             ...MoneyFragment
+        }
+    }
+}
+
+fragment FlowClaimDeflectIDProtectionStepFragment on FlowClaimDeflectIDProtectionStep {
+    id
+    title
+    description
+    partners {
+        title
+        description
+        info
+        urlButtonTitle
+        deflectPartner {
+            ...FlowClaimDeflectPartnerFragment
         }
     }
 }
