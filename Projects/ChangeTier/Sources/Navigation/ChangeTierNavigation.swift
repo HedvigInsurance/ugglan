@@ -11,6 +11,8 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     @Published public var isCompareTiersPresented = false
     @Published public var isInsurableLimitPresented: InsurableLimits?
     @Published public var document: hPDFDocument?
+    let infoRouter = Router()
+    @Published public var isInfoViewPresented: InfoViewDataModel? = nil
     let useOwnNavigation: Bool
     let router: Router
     var onChangedTier: () -> Void = {}
@@ -259,6 +261,51 @@ public struct ChangeTierNavigation: View {
         ) { document in
             PDFPreview(document: document)
         }
+        .detent(
+            item: $changeTierNavigationVm.isInfoViewPresented,
+            style: [.height]
+        ) { [weak changeTierNavigationVm] info in
+            hForm {
+                hSection {
+                    VStack(alignment: .leading, spacing: 0) {
+                        hText(info.title ?? "")
+                        MarkdownView(
+                            config: .init(
+                                text: info.description!,
+                                fontStyle: .body1,
+                                color: hTextColor.Translucent.secondary,
+                                linkColor: hTextColor.Translucent.secondary,
+                                linkUnderlineStyle: .single,
+                                onUrlClicked: { url in
+                                    changeTierNavigationVm?.isInfoViewPresented = nil
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                                        NotificationCenter.default.post(
+                                            name: .openChat,
+                                            object: ChatType.newConversation
+                                        )
+                                    }
+                                }
+                            )
+                        )
+                    }
+                }
+                .padding(.top, .padding24)
+                .padding(.bottom, .padding32)
+                .padding(.horizontal, .padding8)
+            }
+            .hFormAttachToBottom({
+                hSection {
+                    hButton.LargeButton(type: .ghost) {
+                        changeTierNavigationVm?.isInfoViewPresented = nil
+                    } content: {
+                        hText(L10n.generalCancelButton)
+                    }
+                }
+            })
+            .hDisableScroll
+            .sectionContainerStyle(.transparent)
+            //            .embededInNavigation(router: changeTierNavigationVm.router, tracking: ChangeTierTrackingType.info)
+        }
     }
 
     private var wrapperHost: some View {
@@ -309,6 +356,8 @@ private enum ChangeTierTrackingType: TrackingViewNameProtocol {
             return .init(describing: EditDeductibleScreen.self)
         case .compareTier:
             return .init(describing: CompareTierScreen.self)
+        case .info:
+            return "Addon Info"
         }
     }
 
@@ -316,4 +365,5 @@ private enum ChangeTierTrackingType: TrackingViewNameProtocol {
     case editTier
     case editDeductible
     case compareTier
+    case info
 }
