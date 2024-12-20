@@ -60,10 +60,10 @@ public struct MovingFlowModel: Codable, Equatable, Hashable, Sendable {
     @MainActor
     var total: MonetaryAmount {
         let quoteamount = quotes.reduce(0, { $0 + $1.premium.floatAmount }) + (homeQuote?.premium.floatAmount ?? 0)
-        let addonAmpount =
+        let addonAmount =
             quotes.reduce(0, { $0 + $1.addons.reduce(0, { $0 + $1.price.floatAmount }) })
-            + homeQuote?.addons.reduce(0, { $0 + $1.price.floatAmount }) ?? 0
-        let totalAmount = quoteamount + addonAmpount
+        let addonHomeQuote = homeQuote?.addons.reduce(0, { $0 + $1.price.floatAmount }) ?? 0
+        let totalAmount = quoteamount + addonAmount + addonHomeQuote
 
         let currency = homeQuote?.premium.currency ?? quotes.first?.premium.currency ?? ""
         return MonetaryAmount(amount: totalAmount, currency: currency)
