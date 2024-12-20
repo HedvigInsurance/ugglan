@@ -26,13 +26,13 @@ extension ChangeTierViewModel {
     func asQuoteSummaryViewModel(changeTierNavigationVm: ChangeTierNavigationViewModel) -> QuoteSummaryViewModel {
         let displayItems: [QuoteDisplayItem] =
             self.selectedQuote?.displayItems.map({ .init(title: $0.title, value: $0.value) }) ?? []
-
+        let activationDate = L10n.changeAddressActivationDate(activationDate?.displayDateDDMMMYYYYFormat ?? "")
         var contracts: [QuoteSummaryViewModel.ContractInfo] = []
         contracts.append(
             .init(
                 id: self.currentTier?.id ?? "",
                 displayName: self.displayName ?? "",
-                exposureName: self.exposureName ?? "",
+                exposureName: activationDate,
                 newPremium: self.newPremium,
                 currentPremium: self.currentPremium,
                 documents: self.selectedQuote?.productVariant?.documents ?? [],
@@ -49,7 +49,7 @@ extension ChangeTierViewModel {
                 .init(
                     id: addon.addonId,
                     displayName: addon.displayName,
-                    exposureName: addon.addonVariant.displayName,
+                    exposureName: activationDate,
                     newPremium: addon.premium,
                     currentPremium: addon.previousPremium,
                     documents: addon.addonVariant.documents,
