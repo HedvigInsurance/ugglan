@@ -66,12 +66,12 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                             displayItems: [],
                             productVariant: .init(
                                 data: intent.agreementToChange.productVariant.fragments.productVariantFragment
-                            )
+                            ),
+                            addons: []
                         )
                     ],
                     exposureName: currentContract.exposureDisplayName
                 )
-
             /* get current deductible */
             let deductible = agreementToChange.deductible
             let currentDeductible: Quote? = {
@@ -83,7 +83,8 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                         subTitle: (deductible.displayText == "") ? nil : deductible.displayText,
                         premium: .init(fragment: agreementToChange.premium.fragments.moneyFragment),
                         displayItems: currentTier.quotes.first?.displayItems ?? [],
-                        productVariant: currentTier.quotes.first?.productVariant
+                        productVariant: currentTier.quotes.first?.productVariant,
+                        addons: []
                     )
                 }
                 return nil
@@ -176,7 +177,8 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                                 value: $0.displayValue
                             )
                         }),
-                        productVariant: .init(data: quote.productVariant.fragments.productVariantFragment)
+                        productVariant: .init(data: quote.productVariant.fragments.productVariantFragment),
+                        addons: quote.addons.compactMap({ .init(with: $0) })
                     )
                     allDeductiblesForX.append(deductible)
                 })
@@ -231,5 +233,31 @@ extension ProductVariantComparison.ProductVariantComparisonRow {
         self.description = data.description
         self.colorCode = data.colorCode
         self.cells = data.cells.map({ .init(isCovered: $0.isCovered, coverageText: $0.coverageText) })
+    }
+}
+
+extension Quote.Addon {
+    init(
+        with data: OctopusGraphQL.ChangeTierDeductibleCreateIntentMutation.Data.ChangeTierDeductibleCreateIntent.Intent
+            .Quote.Addon
+    ) {
+        let ss = data.displayItems
+        addonId = data.addonId
+        addonVariant = .init(fragment: data.addonVariant.fragments.addonVariantFragment)
+        displayItems = data.displayItems.map({ Quote.DisplayItem.init(with: $0) })
+        displayName = data.displayName
+        premium = .init(fragment: data.premium.fragments.moneyFragment)
+        previousPremium = .init(fragment: data.previousPremium.fragments.moneyFragment)
+    }
+}
+
+extension Quote.DisplayItem {
+    init(
+        with data: OctopusGraphQL.ChangeTierDeductibleCreateIntentMutation.Data.ChangeTierDeductibleCreateIntent.Intent
+            .Quote.Addon.DisplayItem
+    ) {
+        self.title = data.displayTitle
+        self.subTitle = data.displaySubtitle
+        self.value = data.displayValue
     }
 }

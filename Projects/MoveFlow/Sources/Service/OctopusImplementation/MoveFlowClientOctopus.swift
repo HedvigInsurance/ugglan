@@ -298,7 +298,10 @@ extension ChangeTierIntentModel {
                         subTitle: quote.deductible?.displayText,
                         premium: .init(fragment: quote.premium.fragments.moneyFragment),
                         displayItems: [],
-                        productVariant: ProductVariant(data: firstQuote.productVariant.fragments.productVariantFragment)
+                        productVariant: ProductVariant(
+                            data: firstQuote.productVariant.fragments.productVariantFragment
+                        ),
+                        addons: []
                     )
                 }
                 let tier = Tier(

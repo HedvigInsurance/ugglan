@@ -27,6 +27,24 @@ mutation ChangeTierDeductibleCreateIntent($input: ChangeTierDeductibleCreateInte
         productVariant {
             ...ProductVariantFragment
         }
+        addons {
+          addonId
+          addonVariant {
+            ...AddonVariantFragment
+          }
+          displayItems {
+            displayTitle
+            displaySubtitle
+            displayValue
+          }
+          displayName
+          premium {
+            ...MoneyFragment
+          }
+          previousPremium {
+            ...MoneyFragment
+          }
+        }
       }
     }
     userError {

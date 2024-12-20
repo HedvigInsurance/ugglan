@@ -1,3 +1,4 @@
+import Addons
 import Foundation
 import hCore
 import hCoreUI
@@ -39,7 +40,6 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable, Sendable {
     let selectedQuote: Quote?
     let canEditTier: Bool
     let typeOfContract: TypeOfContract
-    //    let productVariantComparision: ProductVariantComparison
 
     public init(
         displayName: String,
@@ -52,7 +52,6 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable, Sendable {
         selectedQuote: Quote?,
         canEditTier: Bool,
         typeOfContract: TypeOfContract
-            //        productVariantComparision: ProductVariantComparison
     ) {
         self.displayName = displayName
         self.activationDate = activationDate
@@ -64,7 +63,6 @@ public struct ChangeTierIntentModel: Codable, Equatable, Hashable, Sendable {
         self.selectedQuote = selectedQuote
         self.canEditTier = canEditTier
         self.typeOfContract = typeOfContract
-        //        self.productVariantComparision = productVariantComparision
     }
 }
 public struct Tier: Codable, Equatable, Hashable, Identifiable, Sendable {
@@ -111,7 +109,7 @@ public struct Quote: Codable, Hashable, Identifiable, Sendable {
     let premium: MonetaryAmount
     let displayItems: [DisplayItem]
     public let productVariant: ProductVariant?
-
+    let addons: [Addon]
     public init(
         id: String,
         quoteAmount: MonetaryAmount?,
@@ -119,7 +117,8 @@ public struct Quote: Codable, Hashable, Identifiable, Sendable {
         subTitle: String?,
         premium: MonetaryAmount,
         displayItems: [DisplayItem],
-        productVariant: ProductVariant?
+        productVariant: ProductVariant?,
+        addons: [Addon]
     ) {
         self.id = id
         self.deductableAmount = quoteAmount
@@ -128,6 +127,7 @@ public struct Quote: Codable, Hashable, Identifiable, Sendable {
         self.premium = premium
         self.displayItems = displayItems
         self.productVariant = productVariant
+        self.addons = addons
     }
 
     public struct DisplayItem: Codable, Equatable, Hashable, Sendable {
@@ -146,6 +146,31 @@ public struct Quote: Codable, Hashable, Identifiable, Sendable {
         let title: String
         let subTitle: String?
         let value: String
+    }
+
+    public struct Addon: Codable, Equatable, Hashable, Sendable {
+        let addonId: String
+        let addonVariant: AddonVariant
+        let displayItems: [Quote.DisplayItem]
+        let displayName: String
+        let premium: MonetaryAmount
+        let previousPremium: MonetaryAmount
+
+        init(
+            addonId: String,
+            addonVariant: AddonVariant,
+            displayItems: [Quote.DisplayItem],
+            displayName: String,
+            premium: MonetaryAmount,
+            previousPremium: MonetaryAmount
+        ) {
+            self.addonId = addonId
+            self.addonVariant = addonVariant
+            self.displayItems = displayItems
+            self.displayName = displayName
+            self.premium = premium
+            self.previousPremium = previousPremium
+        }
     }
 }
 

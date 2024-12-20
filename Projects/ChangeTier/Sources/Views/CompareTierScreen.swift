@@ -403,7 +403,8 @@ class CompareTierViewModel: ObservableObject {
                 subTitle: nil,
                 premium: .init(amount: "220", currency: "SEK"),
                 displayItems: [],
-                productVariant: nil
+                productVariant: nil,
+                addons: []
             )
         ],
         exposureName: "Standard"
@@ -421,7 +422,8 @@ class CompareTierViewModel: ObservableObject {
                 subTitle: nil,
                 premium: .init(amount: "220", currency: "SEK"),
                 displayItems: [],
-                productVariant: nil
+                productVariant: nil,
+                addons: []
             )
         ],
         exposureName: "exposure name"
@@ -441,7 +443,8 @@ class CompareTierViewModel: ObservableObject {
                         subTitle: nil,
                         premium: .init(amount: "220", currency: "SEK"),
                         displayItems: [],
-                        productVariant: nil
+                        productVariant: nil,
+                        addons: []
                     )
                 ],
                 exposureName: "exposure name"
