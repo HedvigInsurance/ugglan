@@ -118,7 +118,7 @@ struct MovingFlowQuote: Codable, Equatable, Hashable {
     let id: String
     let displayItems: [DisplayItem]
     let exposureName: String?
-    let quoteInfo: InfoViewDataModel?
+    let addons: [AddonDataModel]
 }
 
 struct InsuranceDocument: Codable, Equatable, Hashable {
@@ -130,4 +130,12 @@ struct DisplayItem: Codable, Equatable, Hashable {
     let displaySubtitle: String?
     let displayTitle: String
     let displayValue: String
+}
+
+struct AddonDataModel: Codable, Equatable, Hashable {
+    let id: String
+    let quoteInfo: InfoViewDataModel
+    let displayItems: [DisplayItem]
+    let documents: [hPDFDocument]
+    let price: MonetaryAmount
 }

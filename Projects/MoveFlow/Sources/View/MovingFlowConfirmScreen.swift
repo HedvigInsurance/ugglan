@@ -12,7 +12,7 @@ struct MovingFlowConfirmScreen: View {
 
     var body: some View {
         if let movingFlowModel = movingFlowNavigationVm.movingFlowVm {
-            let contractInfo = getQuotes(from: movingFlowModel)
+            var contractInfo = getQuotes(from: movingFlowModel)
                 .map({ quote in
                     QuoteSummaryViewModel.ContractInfo(
                         id: quote.id,
@@ -29,12 +29,30 @@ struct MovingFlowConfirmScreen: View {
                         displayItems: quote.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }
                         ),
                         insuranceLimits: quote.insurableLimits,
-                        typeOfContract: quote.contractType,
-                        onInfoClick: quote.quoteInfo != nil
-                            ? {
-                                movingFlowNavigationVm.isInfoViewPresented = quote.quoteInfo
-                            } : nil
+                        typeOfContract: quote.contractType
                     )
+                })
+
+            let _ = getQuotes(from: movingFlowModel)
+                .forEach({ quote in
+                    quote.addons.forEach({ addonQuote in
+                        let addonQuoteContractInfo = QuoteSummaryViewModel.ContractInfo(
+                            id: "",
+                            displayName: "",
+                            exposureName: "",
+                            newPremium: nil,
+                            currentPremium: nil,
+                            documents: [],
+                            onDocumentTap: { document in },
+                            displayItems: [],
+                            insuranceLimits: [],
+                            typeOfContract: nil,
+                            onInfoClick: {
+                                movingFlowNavigationVm.isInfoViewPresented = addonQuote.quoteInfo
+                            }
+                        )
+                        contractInfo.append(addonQuoteContractInfo)
+                    })
                 })
 
             let vm = QuoteSummaryViewModel(

@@ -205,7 +205,7 @@ extension MovingFlowQuote {
         documents = productVariantFragment.documents.compactMap({ .init($0) })
         contractType = TypeOfContract(rawValue: data.productVariant.typeOfContract)
         displayItems = data.displayItems.map({ .init($0) })
-        quoteInfo = nil
+        addons = []
     }
 
     init(from data: OctopusGraphQL.QuoteFragment.MtaQuote) {
@@ -222,7 +222,7 @@ extension MovingFlowQuote {
         documents = productVariantFragment.documents.compactMap({ .init($0) })
         contractType = TypeOfContract(rawValue: data.productVariant.typeOfContract)
         displayItems = data.displayItems.map({ .init($0) })
-        quoteInfo = nil
+        addons = data.addons.map({ AddonDataModel(fragment: $0.fragments.moveAddonQuoteFragment) })
     }
 
     init(from data: OctopusGraphQL.QuoteFragment.HomeQuote) {
@@ -239,7 +239,7 @@ extension MovingFlowQuote {
         documents = productVariantFragment.documents.compactMap({ .init($0) })
         contractType = TypeOfContract(rawValue: data.productVariant.typeOfContract)
         displayItems = data.displayItems.map({ .init($0) })
-        quoteInfo = nil
+        addons = data.addons.map({ AddonDataModel(fragment: $0.fragments.moveAddonQuoteFragment) })
     }
 }
 
@@ -350,5 +350,19 @@ extension MovingFlowVersion {
         case .v2:
             return .v2TiersAndDeductibles
         }
+    }
+}
+
+extension AddonDataModel {
+    init(fragment: OctopusGraphQL.MoveAddonQuoteFragment) {
+        self.id = fragment.addonId
+        self.displayItems = fragment.displayItems.map({
+            .init(displaySubtitle: $0.displaySubtitle, displayTitle: $0.displayTitle, displayValue: $0.displayValue)
+        })
+        self.documents = fragment.addonVariant.documents.map({
+            .init(displayName: $0.displayName, url: $0.url, type: $0.type.asTypeOfDocument)
+        })
+        self.price = .init(fragment: fragment.premium.fragments.moneyFragment)
+        self.quoteInfo = .init(title: fragment.displayName, description: L10n.movingFlowTravelAddonSummaryDescription)
     }
 }
