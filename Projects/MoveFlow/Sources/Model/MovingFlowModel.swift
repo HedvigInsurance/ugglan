@@ -1,3 +1,4 @@
+import Addons
 import ChangeTier
 import Contracts
 import Foundation
@@ -138,4 +139,6 @@ struct AddonDataModel: Codable, Equatable, Hashable {
     let displayItems: [DisplayItem]
     let documents: [hPDFDocument]
     let price: MonetaryAmount
+    let addonVariant: AddonVariant
+    let startDate: Date
 }

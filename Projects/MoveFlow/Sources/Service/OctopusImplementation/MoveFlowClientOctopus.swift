@@ -353,6 +353,7 @@ extension MovingFlowVersion {
     }
 }
 
+@MainActor
 extension AddonDataModel {
     init(fragment: OctopusGraphQL.MoveAddonQuoteFragment) {
         self.id = fragment.addonId
@@ -364,5 +365,7 @@ extension AddonDataModel {
         })
         self.price = .init(fragment: fragment.premium.fragments.moneyFragment)
         self.quoteInfo = .init(title: fragment.displayName, description: L10n.movingFlowTravelAddonSummaryDescription)
+        self.addonVariant = .init(fragment: fragment.addonVariant.fragments.addonVariantFragment)
+        self.startDate = fragment.startDate.localDateToDate ?? Date()
     }
 }

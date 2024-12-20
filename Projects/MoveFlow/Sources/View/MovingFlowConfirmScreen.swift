@@ -37,15 +37,21 @@ struct MovingFlowConfirmScreen: View {
                 .forEach({ quote in
                     quote.addons.forEach({ addonQuote in
                         let addonQuoteContractInfo = QuoteSummaryViewModel.ContractInfo(
-                            id: "",
-                            displayName: "",
-                            exposureName: "",
-                            newPremium: nil,
+                            id: addonQuote.id,
+                            displayName: addonQuote.quoteInfo.title ?? "",
+                            exposureName: L10n.addonFlowSummaryActiveFrom(
+                                addonQuote.startDate.displayDateDDMMMYYYYFormat
+                            ),
+                            newPremium: addonQuote.price,
                             currentPremium: nil,
-                            documents: [],
-                            onDocumentTap: { document in },
-                            displayItems: [],
-                            insuranceLimits: [],
+                            documents: addonQuote.documents,
+                            onDocumentTap: { document in
+                                movingFlowNavigationVm.document = document
+                            },
+                            displayItems: addonQuote.displayItems.map({
+                                .init(title: $0.displayTitle, value: $0.displayValue)
+                            }),
+                            insuranceLimits: addonQuote.addonVariant.insurableLimits,
                             typeOfContract: nil,
                             onInfoClick: {
                                 movingFlowNavigationVm.isInfoViewPresented = addonQuote.quoteInfo
