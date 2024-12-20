@@ -360,9 +360,7 @@ extension AddonDataModel {
         self.displayItems = fragment.displayItems.map({
             .init(displaySubtitle: $0.displaySubtitle, displayTitle: $0.displayTitle, displayValue: $0.displayValue)
         })
-        self.documents = fragment.addonVariant.documents.map({
-            .init(displayName: $0.displayName, url: $0.url, type: $0.type.asTypeOfDocument)
-        })
+        self.documents = fragment.addonVariant.documents.map({ .init($0) })
         self.price = .init(fragment: fragment.premium.fragments.moneyFragment)
         self.quoteInfo = .init(title: fragment.displayName, description: L10n.movingFlowTravelAddonSummaryDescription)
         self.addonVariant = .init(fragment: fragment.addonVariant.fragments.addonVariantFragment)
