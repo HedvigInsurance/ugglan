@@ -18,7 +18,7 @@ public struct AddonConfig: Hashable {
     }
 }
 
-public struct AddonBannerModel {
+public struct AddonBannerModel: Sendable {
     public let contractIds: [String]
     let titleDisplayName: String
     let descriptionDisplayName: String

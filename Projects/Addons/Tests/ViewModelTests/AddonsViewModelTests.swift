@@ -17,21 +17,18 @@ final class AddonsViewModelTests: XCTestCase {
 
     func testFetchAddonSuccess() async throws {
         let selectedQuote = AddonQuote(
-            id: "quoteId1",
             displayName: "option title",
             quoteId: "quoteId1",
             addonId: "addonId1",
+            displayItems: [],
             price: .init(amount: "49", currency: "SEK"),
-            productVariant: .init(
-                termsVersion: "",
-                typeOfContract: "",
-                partner: nil,
-                perils: [],
-                insurableLimits: [],
+            addonVariant: .init(
+                displayName: "displayItem",
                 documents: [],
-                displayName: "display name",
-                displayNameTier: "tier name",
-                tierDescription: nil
+                insurableLimits: [],
+                perils: [],
+                product: "product",
+                termsVersion: "termsVersion"
             )
         )
 
@@ -39,24 +36,22 @@ final class AddonsViewModelTests: XCTestCase {
             titleDisplayName: "title",
             description: "description",
             activationDate: Date(),
+            currentAddon: nil,
             quotes: [
                 selectedQuote,
                 .init(
-                    id: "quoteId2",
                     displayName: "option title",
                     quoteId: "quoteId2",
                     addonId: "addonId2",
+                    displayItems: [],
                     price: .init(amount: "79", currency: "SEK"),
-                    productVariant: .init(
-                        termsVersion: "",
-                        typeOfContract: "",
-                        partner: nil,
-                        perils: [],
-                        insurableLimits: [],
+                    addonVariant: .init(
+                        displayName: "displayItem",
                         documents: [],
-                        displayName: "display name",
-                        displayNameTier: "tier name",
-                        tierDescription: nil
+                        insurableLimits: [],
+                        perils: [],
+                        product: "product",
+                        termsVersion: "termsVersion"
                     )
                 ),
             ]
@@ -83,7 +78,7 @@ final class AddonsViewModelTests: XCTestCase {
     func testFetchAddonFailure() async throws {
         let mockService = MockData.createMockAddonsService(
             fetchAddon: { contractId in
-                throw AddonsError.emptyList
+                throw AddonsError.somethingWentWrong
             }
         )
 
@@ -100,7 +95,7 @@ final class AddonsViewModelTests: XCTestCase {
         assert(model.selectedQuote == nil)
 
         if case .error(let errorMessage) = model.fetchAddonsViewState {
-            assert(errorMessage == AddonsError.emptyList.localizedDescription)
+            assert(errorMessage == AddonsError.somethingWentWrong.localizedDescription)
         } else {
             assertionFailure("not proper state")
         }
@@ -108,7 +103,7 @@ final class AddonsViewModelTests: XCTestCase {
 
     func testSubmitAddonSuccess() async throws {
         let mockService = MockData.createMockAddonsService(addonSubmit: { quoteId, addonId in
-            .init()
+
         })
 
         self.sut = mockService

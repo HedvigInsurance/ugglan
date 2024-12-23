@@ -46,7 +46,8 @@ final class CompareTierVireModelTests: XCTestCase {
                         displayName: "displayName",
                         displayNameTier: nil,
                         tierDescription: nil
-                    )
+                    ),
+                    addons: []
                 )
             ],
             exposureName: "exposureName"

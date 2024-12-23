@@ -32,7 +32,8 @@ final class ContractsTests: XCTestCase {
                             displayName: "display name",
                             displayNameTier: "standard",
                             tierDescription: "tier description"
-                        )
+                        ),
+                        addonVariant: []
                     ),
                     exposureDisplayName: "exposure display name",
                     masterInceptionDate: "2024-04-05",

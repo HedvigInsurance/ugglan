@@ -18,41 +18,36 @@ final class AddonsServiceTests: XCTestCase {
             titleDisplayName: "title",
             description: "description",
             activationDate: Date(),
+            currentAddon: nil,
             quotes: [
                 .init(
-                    id: "quoteId1",
                     displayName: "option title",
                     quoteId: "quoteId1",
                     addonId: "addonId1",
+                    displayItems: [],
                     price: .init(amount: "49", currency: "SEK"),
-                    productVariant: .init(
-                        termsVersion: "",
-                        typeOfContract: "",
-                        partner: nil,
-                        perils: [],
-                        insurableLimits: [],
+                    addonVariant: .init(
+                        displayName: "displayName",
                         documents: [],
-                        displayName: "display name",
-                        displayNameTier: "tier name",
-                        tierDescription: nil
+                        insurableLimits: [],
+                        perils: [],
+                        product: "",
+                        termsVersion: ""
                     )
                 ),
                 .init(
-                    id: "quoteId2",
                     displayName: "option title",
                     quoteId: "quoteId2",
                     addonId: "addonId2",
+                    displayItems: [],
                     price: .init(amount: "79", currency: "SEK"),
-                    productVariant: .init(
-                        termsVersion: "",
-                        typeOfContract: "",
-                        partner: nil,
-                        perils: [],
-                        insurableLimits: [],
+                    addonVariant: .init(
+                        displayName: "displayName2",
                         documents: [],
-                        displayName: "display name",
-                        displayNameTier: "tier name",
-                        tierDescription: nil
+                        insurableLimits: [],
+                        perils: [],
+                        product: "",
+                        termsVersion: ""
                     )
                 ),
             ]

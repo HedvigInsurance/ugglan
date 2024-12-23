@@ -80,7 +80,8 @@ final class DeleteAccountViewModelTests: XCTestCase {
                             displayName: "",
                             displayNameTier: "standard",
                             tierDescription: "tier description"
-                        )
+                        ),
+                        addonVariant: []
                     ),
                     exposureDisplayName: "display name",
                     masterInceptionDate: "2024-04-17",

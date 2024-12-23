@@ -50,7 +50,8 @@ final class ChangeTierServiceTests: XCTestCase {
                             displayName: "",
                             displayNameTier: nil,
                             tierDescription: nil
-                        )
+                        ),
+                        addons: []
                     )
                 ],
                 exposureName: "exposureName"
