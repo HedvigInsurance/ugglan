@@ -86,8 +86,7 @@ public class ChangeAddonViewModel: ObservableObject {
             }
         }()
 
-        let totalPrice =
-            (currentPrice != nil && diffValue != 0) ? .init(amount: String(diffValue), currency: "SEK") : newPrice
+        let totalPrice = (currentPrice != nil) ? .init(amount: String(diffValue), currency: "SEK") : newPrice
         return totalPrice ?? .init(amount: 0, currency: "SEK")
     }
 }
