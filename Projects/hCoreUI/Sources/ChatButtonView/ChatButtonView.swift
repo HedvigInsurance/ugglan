@@ -274,3 +274,81 @@ extension TimeInterval {
     }
 
 }
+
+extension View {
+    public func setToolbar<Leading: View, Trailing: View>(
+        @ViewBuilder _ leading: () -> Leading,
+        @ViewBuilder _ trailing: () -> Trailing
+    ) -> some View {
+        self.modifier(
+            ToolbarViewModifier(leading: leading(), trailing: trailing(), showLeading: true, showTrailing: true)
+        )
+    }
+
+    public func setToolbarLeading<Leading: View>(
+        @ViewBuilder _ leading: () -> Leading
+    ) -> some View {
+        self.modifier(
+            ToolbarViewModifier(
+                leading: leading(),
+                trailing: EmptyView(),
+                showLeading: true,
+                showTrailing: false
+            )
+        )
+    }
+
+    public func setToolbarTrailing<Trailing: View>(
+        @ViewBuilder _ trailing: () -> Trailing
+    ) -> some View {
+        self.modifier(
+            ToolbarViewModifier(
+                leading: EmptyView(),
+                trailing: trailing(),
+                showLeading: false,
+                showTrailing: true
+            )
+        )
+    }
+
+}
+
+struct ToolbarViewModifier<Leading: View, Trailing: View>: ViewModifier {
+    let leading: Leading?
+    let trailing: Trailing?
+    let showLeading: Bool
+    let showTrailing: Bool
+    func body(content: Content) -> some View {
+        if #available(iOS 18.0, *) {
+            content
+                .introspect(.viewController, on: .iOS(.v18...)) { @MainActor vc in
+                    if let leading, showLeading {
+                        let hostingVc = UIHostingController(rootView: leading)
+                        let viewToPlace = hostingVc.view!
+                        viewToPlace.backgroundColor = .clear
+                        vc.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: viewToPlace)
+                    }
+                    if let trailing, showTrailing {
+                        let hostingVc = UIHostingController(rootView: trailing)
+                        let viewToPlace = hostingVc.view!
+                        viewToPlace.backgroundColor = .clear
+                        vc.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: viewToPlace)
+                    }
+                }
+        } else {
+            if let leading, showLeading {
+                content
+                    .navigationBarItems(
+                        leading:
+                            leading
+                    )
+            } else if let trailing, showTrailing {
+                content
+                    .navigationBarItems(
+                        trailing:
+                            trailing
+                    )
+            }
+        }
+    }
+}

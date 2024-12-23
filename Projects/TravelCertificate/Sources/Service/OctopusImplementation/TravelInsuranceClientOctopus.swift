@@ -1,3 +1,4 @@
+import Addons
 import Foundation
 import hCore
 import hGraphQL
@@ -16,9 +17,13 @@ public class TravelInsuranceService {
         return try await service.submitForm(dto: dto)
     }
 
-    public func getList() async throws -> (list: [TravelCertificateModel], canAddTravelInsurance: Bool) {
+    public func getList(
+        source: AddonSource
+    ) async throws -> (
+        list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBannerModel?
+    ) {
         log.info("TravelInsuranceService: getList", error: nil, attributes: nil)
-        return try await service.getList()
+        return try await service.getList(source: source)
     }
 }
 
@@ -65,7 +70,11 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
         }
     }
 
-    public func getList() async throws -> (list: [TravelCertificateModel], canAddTravelInsurance: Bool) {
+    public func getList(
+        source: AddonSource
+    ) async throws -> (
+        list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBannerModel?
+    ) {
         let query = OctopusGraphQL.TravelCertificatesQuery()
         do {
             let data = try await self.octopus.client.fetch(
@@ -78,7 +87,26 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
             let canAddTravelInsuranceData = !data.currentMember.activeContracts
                 .filter({ $0.supportsTravelCertificate }).isEmpty
 
-            return (listData, canAddTravelInsuranceData)
+            let query = OctopusGraphQL.UpsellTravelAddonBannerTravelQuery(flow: .case(source.getSource))
+            let bannerResponse = try await octopus.client.fetch(
+                query: query,
+                cachePolicy: .fetchIgnoringCacheCompletely
+            )
+            let bannerData = bannerResponse.currentMember.upsellTravelAddonBanner
+
+            let addonBannerModelData: AddonBannerModel? = {
+                if let bannerData, !bannerData.contractIds.isEmpty {
+                    return AddonBannerModel(
+                        contractIds: bannerData.contractIds,
+                        titleDisplayName: bannerData.titleDisplayName,
+                        descriptionDisplayName: bannerData.descriptionDisplayName,
+                        badges: bannerData.badges
+                    )
+                }
+                return nil
+            }()
+
+            return (listData, canAddTravelInsuranceData, addonBannerModelData)
         } catch let ex {
             throw ex
         }

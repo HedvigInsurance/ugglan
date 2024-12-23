@@ -86,7 +86,7 @@ final class ContractStoreTests: XCTestCase {
         assert(mockService.events.first == .getContracts)
     }
 
-    func testFetchSuccess() async {
+    func testFetchSuccess() async throws {
         let mockService = MockData.createMockContractsService(
             fetchContracts: { ContractsStack.getDefault },
             fetchCrossSell: { CrossSell.getDefault }
@@ -98,6 +98,7 @@ final class ContractStoreTests: XCTestCase {
             store.loadingState[.fetchContracts] == nil && store.loadingState[.fetchCrossSell] == nil
         }
 
+        try await Task.sleep(nanoseconds: 30_000_000)
         assert(store.state.activeContracts == ContractsStack.getDefault.activeContracts)
         assert(store.state.pendingContracts == ContractsStack.getDefault.pendingContracts)
         assert(store.state.terminatedContracts == ContractsStack.getDefault.terminatedContracts)
@@ -128,7 +129,8 @@ extension ContractsStack {
                         displayName: "display name",
                         displayNameTier: "standard",
                         tierDescription: "tier description"
-                    )
+                    ),
+                    addonVariant: []
                 ),
                 exposureDisplayName: "exposure display name",
                 masterInceptionDate: "2024-04-05",

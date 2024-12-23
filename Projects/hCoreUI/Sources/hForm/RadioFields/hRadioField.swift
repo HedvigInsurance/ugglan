@@ -2,21 +2,21 @@ import Combine
 import SwiftUI
 import hCore
 
-public struct hRadioField: View {
+public struct hRadioField<T>: View where T: Equatable {
     private let leftView: AnyView?
     private let itemModel: ItemModel?
-    private let id: String
+    private let id: T
     private var useAnimation: Bool
     @Environment(\.hFieldSize) var size
-    @Binding var selected: String?
+    @Binding var selected: T?
     @Binding private var error: String?
     @State private var animate = false
 
     public init(
-        id: String,
+        id: T,
         itemModel: ItemModel? = nil,
         leftView: (() -> AnyView)?,
-        selected: Binding<String?>,
+        selected: Binding<T?>,
         error: Binding<String?>? = nil,
         useAnimation: Bool = false
     ) {

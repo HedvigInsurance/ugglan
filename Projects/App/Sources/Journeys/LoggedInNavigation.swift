@@ -1,3 +1,4 @@
+import Addons
 import ChangeTier
 import Chat
 import Claims
@@ -75,6 +76,13 @@ struct LoggedInNavigation: View {
         ) { changeTierInput in
             ChangeTierNavigation(input: changeTierInput)
         }
+        .modally(
+            item: $vm.isAddonPresented,
+            options: .constant(.alwaysOpenOnTop),
+            tracking: nil
+        ) { addonInput in
+            ChangeAddonNavigation(input: addonInput)
+        }
         .handleTerminateInsurance(vm: vm.terminateInsuranceVm) {
             dismissType in
             switch dismissType {
@@ -134,6 +142,8 @@ struct LoggedInNavigation: View {
                         store.send(.fetchContracts)
                     }
                 }
+            case let .addon(input: input):
+                ChangeAddonNavigation(input: input)
             }
         } redirectAction: { action in
             switch action {
@@ -479,6 +489,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isTravelInsurancePresented = false
     @Published var isMoveContractPresented = false
     @Published var isChangeTierPresented: ChangeTierContractsInput?
+    @Published var isAddonPresented: ChangeAddonInput?
     @Published var isEuroBonusPresented = false
     @Published var isUrlPresented: URL?
 
@@ -718,6 +729,8 @@ class LoggedInNavigationViewModel: ObservableObject {
             case .changeTier:
                 let contractId = self.getContractId(from: url)
                 handleChangeTier(contractId: contractId)
+            case .addon:
+                handleAddon(url: url)
             case nil:
                 openUrl(url: url)
             }
@@ -734,6 +747,12 @@ class LoggedInNavigationViewModel: ObservableObject {
         guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
         guard let queryItems = urlComponents.queryItems else { return nil }
         return queryItems.first(where: { $0.name == "conversationId" })?.value
+    }
+
+    private func getAddonId(from url: URL) -> String? {
+        guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
+        guard let queryItems = urlComponents.queryItems else { return nil }
+        return queryItems.first(where: { $0.name == "addonId" })?.value
     }
 
     public func openUrl(url: URL) {
@@ -790,6 +809,25 @@ class LoggedInNavigationViewModel: ObservableObject {
                 source: .changeTier,
                 contracts: contractsSupportingChangingTier
             )
+        }
+    }
+
+    private func handleAddon(url: URL) {
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        if let contractId = getContractId(from: url),
+            let contract: Contracts.Contract = contractStore.state.contractForId(contractId)
+        {
+            self.isAddonPresented = .init(
+                contractConfigs: [
+                    .init(
+                        contractId: contract.id,
+                        exposureName: contract.exposureDisplayName,
+                        displayName: contract.currentAgreement?.productVariant.displayName ?? ""
+                    )
+                ]
+            )
+        } else if let addonId = getAddonId(from: url) {
+            self.isAddonPresented = .init(addonId: addonId)
         }
     }
 

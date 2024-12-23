@@ -21,7 +21,6 @@ public protocol FeatureFlags {
     var isAddonsEnabled: Bool { get set }
     var isDemoMode: Bool { get set }
     var movingFlowVersion: MovingFlowVersion? { get set }
-
     var isMovingFlowEnabled: Bool { get }
 }
 

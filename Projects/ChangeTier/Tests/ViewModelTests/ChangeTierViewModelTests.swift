@@ -46,7 +46,8 @@ final class ChangeTierViewModelTests: XCTestCase {
                         displayName: "displayName",
                         displayNameTier: nil,
                         tierDescription: nil
-                    )
+                    ),
+                    addons: []
                 )
             ],
             exposureName: "exposureName"
