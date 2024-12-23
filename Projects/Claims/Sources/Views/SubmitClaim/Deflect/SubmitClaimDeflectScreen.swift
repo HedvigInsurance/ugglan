@@ -79,10 +79,14 @@ public struct SubmitClaimDeflectScreen: View {
                 .padding(.top, .padding8)
 
                 SupportView(openChat: openChat)
-                    .padding(.vertical, .padding56)
+                    .padding(.top, .padding56)
             }
             .padding(.top, .padding8)
         }
+        .hFormBottomBackgroundColor(
+            .gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary)
+        )
+        .edgesIgnoringSafeArea(.bottom)
     }
 }
 
