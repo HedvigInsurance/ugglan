@@ -16,33 +16,53 @@ final class AddonsViewModelTests: XCTestCase {
     }
 
     func testFetchAddonSuccess() async throws {
-        let selectedSubOption = AddonSubOptionModel(
-            id: "subOptionId",
-            title: "sub option title",
-            subtitle: "sub option subTitle",
-            price: .init(amount: "79", currency: "SEK")
+        let selectedQuote = AddonQuote(
+            id: "quoteId1",
+            displayName: "option title",
+            quoteId: "quoteId1",
+            addonId: "addonId1",
+            price: .init(amount: "49", currency: "SEK"),
+            productVariant: .init(
+                termsVersion: "",
+                typeOfContract: "",
+                partner: nil,
+                perils: [],
+                insurableLimits: [],
+                documents: [],
+                displayName: "display name",
+                displayNameTier: "tier name",
+                tierDescription: nil
+            )
         )
 
-        let addonModel: AddonModel = .init(
-            id: "addonId",
-            title: "title",
-            subTitle: "subTitle",
-            tag: "tag",
-            informationText: "information text",
-            options: [
+        let addonModel: AddonOffer = .init(
+            titleDisplayName: "title",
+            description: "description",
+            activationDate: Date(),
+            quotes: [
+                selectedQuote,
                 .init(
-                    id: "optionId",
-                    title: "option title",
-                    subtitle: "option subTitle",
-                    price: .init(amount: "49", currency: "SEK"),
-                    subOptions: [
-                        selectedSubOption
-                    ]
-                )
+                    id: "quoteId2",
+                    displayName: "option title",
+                    quoteId: "quoteId2",
+                    addonId: "addonId2",
+                    price: .init(amount: "79", currency: "SEK"),
+                    productVariant: .init(
+                        termsVersion: "",
+                        typeOfContract: "",
+                        partner: nil,
+                        perils: [],
+                        insurableLimits: [],
+                        documents: [],
+                        displayName: "display name",
+                        displayNameTier: "tier name",
+                        tierDescription: nil
+                    )
+                ),
             ]
         )
 
-        let mockService = MockData.createMockAddonsService(fetchAddon: {
+        let mockService = MockData.createMockAddonsService(fetchAddon: { contractId in
             addonModel
         })
 
@@ -53,20 +73,16 @@ final class AddonsViewModelTests: XCTestCase {
         self.vm = model
 
         try await Task.sleep(nanoseconds: 30_000_000)
-        assert(model.addonOptions == addonModel.options)
-        assert(model.addonOptions?.first == addonModel.options.first)
-        assert(model.addonOptions?.count == addonModel.options.count)
-        assert(model.informationText == addonModel.informationText)
+        assert(model.addonOffer == addonModel)
+        assert(model.addonOffer?.quotes == addonModel.quotes)
+        assert(model.addonOffer?.quotes.count == addonModel.quotes.count)
         assert(model.fetchAddonsViewState == .success)
-        assert(model.selectedSubOption == selectedSubOption)
+        assert(model.selectedQuote == selectedQuote)
     }
 
     func testFetchAddonFailure() async throws {
         let mockService = MockData.createMockAddonsService(
-            fetchAddon: {
-                throw AddonsError.emptyList
-            },
-            fetchContract: { contractId in
+            fetchAddon: { contractId in
                 throw AddonsError.emptyList
             }
         )
@@ -78,11 +94,10 @@ final class AddonsViewModelTests: XCTestCase {
         self.vm = model
 
         try await Task.sleep(nanoseconds: 30_000_000)
-        assert(model.addonOptions == nil)
-        assert(model.addonOptions?.first == nil)
-        assert(model.addonOptions?.count == nil)
-        assert(model.informationText == nil)
-        assert(model.selectedSubOption == nil)
+        assert(model.addonOffer?.quotes == nil)
+        assert(model.addonOffer?.quotes.first == nil)
+        assert(model.addonOffer?.quotes.count == nil)
+        assert(model.selectedQuote == nil)
 
         if case .error(let errorMessage) = model.fetchAddonsViewState {
             assert(errorMessage == AddonsError.emptyList.localizedDescription)
@@ -91,89 +106,10 @@ final class AddonsViewModelTests: XCTestCase {
         }
     }
 
-    func testFetchContractSuccess() async throws {
-        let contractId = "contractId"
-
-        let contractModel = AddonContract(
-            contractId: contractId,
-            contractName: "contract name",
-            displayItems: [
-                .init(title: "display item 1", value: "1"),
-                .init(title: "display item 2", value: "2"),
-                .init(title: "display item 3", value: "3"),
-            ],
-            documents: [
-                .init(displayName: "document1", url: "url", type: .generalTerms),
-                .init(displayName: "document2", url: "url", type: .preSaleInfo),
-                .init(displayName: "document3", url: "url", type: .termsAndConditions),
-            ],
-            insurableLimits: [
-                .init(label: "label1", limit: "limit1", description: "description"),
-                .init(label: "label2", limit: "limit2", description: "description"),
-                .init(label: "label3", limit: "limit3", description: "description"),
-            ],
-            typeOfContract: nil,
-            activationDate: Date(),
-            currentPremium: .init(amount: "220", currency: "SEK")
-        )
-
-        let mockService = MockData.createMockAddonsService(fetchContract: { contractId in
-            contractModel
-        })
-
-        self.sut = mockService
-
-        let model = ChangeAddonViewModel(contractId: contractId)
-
-        self.vm = model
-
-        try await Task.sleep(nanoseconds: 30_000_000)
-        assert(model.contractInformation?.activationDate == contractModel.activationDate)
-        assert(model.contractInformation?.contractId == contractModel.contractId)
-        assert(model.contractInformation?.contractName == contractModel.contractName)
-        assert(model.contractInformation?.currentPremium == contractModel.currentPremium)
-        assert(model.contractInformation?.displayItems.count == contractModel.displayItems.count)
-        assert(model.contractInformation?.displayItems.first?.id == contractModel.displayItems.first?.id)
-        assert(model.contractInformation?.documents == contractModel.documents)
-        assert(model.contractInformation?.insurableLimits == contractModel.insurableLimits)
-        assert(model.contractInformation?.typeOfContract == contractModel.typeOfContract)
-        assert(mockService.events.count == 2)
-        assert(model.fetchAddonsViewState == .success)
-    }
-
-    func testFetchContractFailure() async throws {
-        let contractId = "contractId"
-
-        let mockService = MockData.createMockAddonsService(fetchContract: { contractId in
-            throw AddonsError.somethingWentWrong
-        })
-
-        self.sut = mockService
-
-        let model = ChangeAddonViewModel(contractId: contractId)
-
-        self.vm = model
-
-        try await Task.sleep(nanoseconds: 30_000_000)
-        assert(model.contractInformation?.activationDate == nil)
-        assert(model.contractInformation?.contractId == nil)
-        assert(model.contractInformation?.contractName == nil)
-        assert(model.contractInformation?.currentPremium == nil)
-        assert(model.contractInformation?.displayItems.count == nil)
-        assert(model.contractInformation?.displayItems.first?.id == nil)
-        assert(model.contractInformation?.documents == nil)
-        assert(model.contractInformation?.insurableLimits == nil)
-        assert(model.contractInformation?.typeOfContract == nil)
-
-        if case .error(let errorMessage) = model.fetchAddonsViewState {
-            assert(errorMessage == AddonsError.somethingWentWrong.localizedDescription)
-        } else {
-            assertionFailure("not proper state")
-        }
-    }
-
     func testSubmitAddonSuccess() async throws {
-        let mockService = MockData.createMockAddonsService(addonSubmit: {})
+        let mockService = MockData.createMockAddonsService(addonSubmit: { quoteId, addonId in
+            .init()
+        })
 
         self.sut = mockService
 
@@ -188,13 +124,10 @@ final class AddonsViewModelTests: XCTestCase {
 
     func testSubmitAddonFailure() async throws {
         let mockService = MockData.createMockAddonsService(
-            fetchAddon: {
+            fetchAddon: { contractId in
                 throw AddonsError.submitError
             },
-            fetchContract: { contractId in
-                throw AddonsError.submitError
-            },
-            addonSubmit: {
+            addonSubmit: { quoteId, addonId in
                 throw AddonsError.submitError
             }
         )

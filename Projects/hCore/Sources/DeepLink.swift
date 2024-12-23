@@ -15,6 +15,7 @@ public enum DeepLink: String, Codable, CaseIterable {
     case helpCenter = "help-center"
     case moveContract = "move-contract"
     case changeTier = "change-tier"
+    case addon = "addon"
     case terminateContract = "terminate-contract"
     case conversation = "conversation"
     case chat = "chat"
@@ -61,6 +62,8 @@ public enum DeepLink: String, Codable, CaseIterable {
             return L10n.chatConversationInbox
         case .changeTier:
             return L10n.InsuranceDetails.changeCoverage
+        case .addon:
+            return L10n.addonTitle
         }
     }
     @MainActor

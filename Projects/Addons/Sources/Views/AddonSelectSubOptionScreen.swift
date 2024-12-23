@@ -4,34 +4,38 @@ import hCoreUI
 
 struct AddonSelectSubOptionScreen: View {
     @ObservedObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
-    let addonOption: AddonOptionModel
+    let addonOffer: AddonOffer
+    @State var selectedQuote: AddonQuote?
+    @EnvironmentObject var router: Router
 
     init(
-        addonOption: AddonOptionModel,
+        addonOffer: AddonOffer,
         changeAddonNavigationVm: ChangeAddonNavigationViewModel
     ) {
-        self.addonOption = addonOption
+        self.addonOffer = addonOffer
         self.changeAddonNavigationVm = changeAddonNavigationVm
 
-        if changeAddonNavigationVm.changeAddonVm.selectedSubOption == nil {
-            changeAddonNavigationVm.changeAddonVm.selectedSubOption = addonOption.subOptions.first
+        if let preSelectedQuote = changeAddonNavigationVm.changeAddonVm!.selectedQuote {
+            self._selectedQuote = State(initialValue: preSelectedQuote)
+        } else if let firstQuote = addonOffer.quotes.first {
+            self._selectedQuote = State(initialValue: firstQuote)
         }
     }
 
     var body: some View {
         hForm {
             VStack(spacing: .padding4) {
-                ForEach(addonOption.subOptions, id: \.id) { subOption in
+                ForEach(addonOffer.quotes, id: \.self) { quote in
                     hSection {
                         hRadioField(
-                            id: subOption,
+                            id: quote,
                             itemModel: nil,
                             leftView: {
                                 HStack {
-                                    hText(subOption.title ?? "")
+                                    hText(quote.displayName ?? "")
                                     Spacer()
                                     hPill(
-                                        text: L10n.addonFlowPriceLabel(subOption.price.amount),
+                                        text: L10n.addonFlowPriceLabel(quote.price?.formattedAmountWithoutSymbol ?? ""),
                                         color: .grey,
                                         colorLevel: .one
                                     )
@@ -39,7 +43,7 @@ struct AddonSelectSubOptionScreen: View {
                                 }
                                 .asAnyView
                             },
-                            selected: $changeAddonNavigationVm.changeAddonVm.selectedSubOption,
+                            selected: $selectedQuote,
                             error: .constant(nil),
                             useAnimation: true
                         )
@@ -55,13 +59,14 @@ struct AddonSelectSubOptionScreen: View {
             hSection {
                 VStack(spacing: .padding8) {
                     hButton.LargeButton(type: .primary) {
-                        changeAddonNavigationVm.isChangeCoverageDaysPresented = nil
+                        changeAddonNavigationVm.changeAddonVm?.selectedQuote = selectedQuote
+                        router.dismiss()
                     } content: {
                         hText(L10n.addonFlowSelectButton)
                     }
 
                     hButton.LargeButton(type: .ghost) {
-                        changeAddonNavigationVm.isChangeCoverageDaysPresented = nil
+                        router.dismiss()
                     } content: {
                         hText(L10n.generalCancelButton)
                     }
@@ -88,7 +93,7 @@ extension AddonSelectSubOptionScreen: TitleView {
             hText(L10n.addonFlowSelectSuboptionTitle, style: .heading1)
                 .foregroundColor(hTextColor.Opaque.primary)
             hText(L10n.addonFlowSelectSuboptionSubtitle, style: .heading1)
-                .foregroundColor(hTextColor.Opaque.secondary)
+                .foregroundColor(hTextColor.Translucent.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, .padding8)
@@ -96,22 +101,76 @@ extension AddonSelectSubOptionScreen: TitleView {
 }
 
 #Preview {
+    let currentAddon: AddonQuote = .init(
+        displayName: "45 days",
+        quoteId: "quoteId45",
+        addonId: "addonId45",
+        displayItems: [
+            .init(displayTitle: "Coverage", displayValue: "45 days"),
+            .init(
+                displayTitle: "Insured people",
+                displayValue: "You+1"
+            ),
+        ],
+        price: .init(amount: "49", currency: "SEK"),
+        addonVariant: .init(
+            displayName: "display name",
+            documents: [
+                .init(displayName: "dodument1", url: "", type: .generalTerms),
+                .init(displayName: "dodument2", url: "", type: .termsAndConditions),
+                .init(displayName: "dodument3", url: "", type: .preSaleInfo),
+            ],
+            insurableLimits: [
+                .init(label: "limit1", limit: "limit1", description: "description"),
+                .init(label: "limit2", limit: "limit2", description: "description"),
+                .init(label: "limit3", limit: "limit3", description: "description"),
+                .init(label: "limit4", limit: "limit4", description: "description"),
+            ],
+            perils: [],
+            product: "",
+            termsVersion: ""
+        )
+    )
+
     AddonSelectSubOptionScreen(
-        addonOption: .init(
-            id: "Resesydd",
-            title: "Reseskydd",
-            description: "subtitle",
-            price: nil,
-            subOptions: [
+        addonOffer: .init(
+            titleDisplayName: "Travel Plus",
+            description: "Extended travel insurance with extra coverage for your travels",
+            activationDate: "2025-01-15".localDateToDate,
+            currentAddon: currentAddon,
+            quotes: [
+                currentAddon,
                 .init(
-                    id: "subOption",
-                    title: "subOption",
-                    price: .init(amount: "79", currency: "SEK")
-                )
+                    displayName: "60 days",
+                    quoteId: "quoteId60",
+                    addonId: "addonId60",
+                    displayItems: [
+                        .init(displayTitle: "Coverage", displayValue: "45 days"),
+                        .init(displayTitle: "Insured people", displayValue: "You+1"),
+                    ],
+                    price: .init(amount: "79", currency: "SEK"),
+                    addonVariant: .init(
+                        displayName: "display name",
+                        documents: [
+                            .init(displayName: "dodument1", url: "", type: .generalTerms),
+                            .init(displayName: "dodument2", url: "", type: .termsAndConditions),
+                            .init(displayName: "dodument3", url: "", type: .preSaleInfo),
+                        ],
+                        insurableLimits: [
+                            .init(label: "limit1", limit: "limit1", description: "description"),
+                            .init(label: "limit2", limit: "limit2", description: "description"),
+                            .init(label: "limit3", limit: "limit3", description: "description"),
+                            .init(label: "limit4", limit: "limit4", description: "description"),
+                        ],
+                        perils: [],
+                        product: "",
+                        termsVersion: ""
+                    )
+                ),
             ]
         ),
         changeAddonNavigationVm: .init(
-            input: .init(contractId: "contractId")
+            input: .init()
         )
     )
 }

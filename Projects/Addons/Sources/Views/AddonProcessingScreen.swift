@@ -10,9 +10,11 @@ struct AddonProcessingScreen: View {
         ProcessingStateView(
             loadingViewText: L10n.tierFlowCommitProcessingLoadingTitle,
             successViewTitle: L10n.addonFlowSuccessTitle,
-            successViewBody: L10n.addonFlowSuccessSubtitle(vm.activationDate?.localDateString ?? ""),
+            successViewBody: L10n.addonFlowSuccessSubtitle(
+                vm.addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
+            ),
             successViewButtonAction: {
-                addonNavigationVm.router.dismiss()
+                addonNavigationVm.router.dismiss(withDismissingAll: true)
             },
             state: $vm.submittingAddonsViewState
         )
@@ -24,7 +26,7 @@ struct AddonProcessingScreen: View {
             actionButton: .init(
                 buttonAction: {
                     Task {
-                        await addonNavigationVm.changeAddonVm.submitAddons()
+                        await addonNavigationVm.changeAddonVm!.submitAddons()
                     }
                 }
             ),
@@ -32,7 +34,7 @@ struct AddonProcessingScreen: View {
                 .init(
                     buttonTitle: L10n.generalCloseButton,
                     buttonAction: {
-                        addonNavigationVm.router.dismiss()
+                        addonNavigationVm.router.dismiss(withDismissingAll: true)
                     }
                 )
         )
@@ -43,7 +45,7 @@ struct AddonProcessingScreen_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
         return AddonProcessingScreen(
-            vm: .init(contractId: "contractId"),
+            vm: .init(contractId: ""),
             addonNavigationVm: .init()
         )
     }

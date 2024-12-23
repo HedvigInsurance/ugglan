@@ -205,6 +205,7 @@ extension MovingFlowQuote {
         documents = productVariantFragment.documents.compactMap({ .init($0) })
         contractType = TypeOfContract(rawValue: data.productVariant.typeOfContract)
         displayItems = data.displayItems.map({ .init($0) })
+        addons = []
     }
 
     init(from data: OctopusGraphQL.QuoteFragment.MtaQuote) {
@@ -221,6 +222,7 @@ extension MovingFlowQuote {
         documents = productVariantFragment.documents.compactMap({ .init($0) })
         contractType = TypeOfContract(rawValue: data.productVariant.typeOfContract)
         displayItems = data.displayItems.map({ .init($0) })
+        addons = data.addons.map({ AddonDataModel(fragment: $0.fragments.moveAddonQuoteFragment) })
     }
 
     init(from data: OctopusGraphQL.QuoteFragment.HomeQuote) {
@@ -237,6 +239,7 @@ extension MovingFlowQuote {
         documents = productVariantFragment.documents.compactMap({ .init($0) })
         contractType = TypeOfContract(rawValue: data.productVariant.typeOfContract)
         displayItems = data.displayItems.map({ .init($0) })
+        addons = data.addons.map({ AddonDataModel(fragment: $0.fragments.moveAddonQuoteFragment) })
     }
 }
 
@@ -295,7 +298,10 @@ extension ChangeTierIntentModel {
                         subTitle: quote.deductible?.displayText,
                         premium: .init(fragment: quote.premium.fragments.moneyFragment),
                         displayItems: [],
-                        productVariant: ProductVariant(data: firstQuote.productVariant.fragments.productVariantFragment)
+                        productVariant: ProductVariant(
+                            data: firstQuote.productVariant.fragments.productVariantFragment
+                        ),
+                        addons: []
                     )
                 }
                 let tier = Tier(
@@ -347,5 +353,19 @@ extension MovingFlowVersion {
         case .v2:
             return .v2TiersAndDeductibles
         }
+    }
+}
+
+@MainActor
+extension AddonDataModel {
+    init(fragment: OctopusGraphQL.MoveAddonQuoteFragment) {
+        self.id = fragment.addonId
+        self.displayItems = fragment.displayItems.map({
+            .init(displaySubtitle: $0.displaySubtitle, displayTitle: $0.displayTitle, displayValue: $0.displayValue)
+        })
+        self.price = .init(fragment: fragment.premium.fragments.moneyFragment)
+        self.quoteInfo = .init(title: fragment.displayName, description: L10n.movingFlowTravelAddonSummaryDescription)
+        self.addonVariant = .init(fragment: fragment.addonVariant.fragments.addonVariantFragment)
+        self.startDate = fragment.startDate.localDateToDate ?? Date()
     }
 }
