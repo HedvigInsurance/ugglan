@@ -103,13 +103,11 @@ struct ChangeAddonScreen: View {
                 hText(addon.title)
                     .fixedSize()
                 Spacer()
-                let addonDiffPrice = changeAddonVm.addonOffer?
-                    .getAddonPriceDiff(selectedQuote: changeAddonVm.selectedQuote)?
-                    .formattedAmountWithoutSymbol
 
                 hPill(
                     text: L10n.addonFlowPriceLabel(
-                        addonDiffPrice ?? changeAddonVm.selectedQuote?.price?.formattedAmountWithoutSymbol ?? ""
+                        changeAddonVm.addonOffer?.getTotalPrice(selectedQuote: changeAddonVm.selectedQuote)?
+                            .formattedAmountWithoutSymbol ?? ""
                     ),
                     color: .grey,
                     colorLevel: .one
