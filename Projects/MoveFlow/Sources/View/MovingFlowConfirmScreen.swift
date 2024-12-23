@@ -12,7 +12,9 @@ struct MovingFlowConfirmScreen: View {
 
     var body: some View {
         if let movingFlowModel = movingFlowNavigationVm.movingFlowVm {
-            var contractInfos = getQuotes(from: movingFlowModel)
+            let movingFlowQuotes = getQuotes(from: movingFlowModel)
+            var contractInfos =
+                movingFlowQuotes
                 .map({ quote in
                     QuoteSummaryViewModel.ContractInfo(
                         id: quote.id,
@@ -33,7 +35,8 @@ struct MovingFlowConfirmScreen: View {
                     )
                 })
 
-            let _ = getQuotes(from: movingFlowModel)
+            let _ =
+                movingFlowQuotes
                 .forEach({ quote in
                     quote.addons.forEach({ addonQuote in
                         let addonQuoteContractInfo = QuoteSummaryViewModel.ContractInfo(
