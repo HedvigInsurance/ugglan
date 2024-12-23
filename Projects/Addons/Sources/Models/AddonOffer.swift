@@ -58,6 +58,16 @@ public struct AddonOffer: Identifiable, Equatable, Hashable, Sendable {
         self.currentAddon = currentAddon
         self.quotes = quotes
     }
+
+    func getTotalPrice(selectedQuote: AddonQuote?) -> MonetaryAmount? {
+        guard let selectedQuote else { return nil }
+        guard let currentAddon else { return selectedQuote.price }
+        guard let currentAddonPrice = currentAddon.price,
+            let newPrice = selectedQuote.price
+        else { return nil }
+        let diffPrice = newPrice.value - currentAddonPrice.value
+        return MonetaryAmount(amount: diffPrice.asString, currency: newPrice.currency)
+    }
 }
 
 public struct AddonQuote: Identifiable, Equatable, Hashable, Sendable {
