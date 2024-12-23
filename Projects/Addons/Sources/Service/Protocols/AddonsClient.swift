@@ -19,7 +19,7 @@ extension AddonsError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .somethingWentWrong:
-            return L10n.somethingWentWrong
+            return L10n.General.errorBody
         case let .errorMessage(message):
             return message
         default:
