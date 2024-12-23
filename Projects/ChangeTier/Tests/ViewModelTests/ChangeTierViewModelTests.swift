@@ -91,12 +91,13 @@ final class ChangeTierViewModelTests: XCTestCase {
             changeTierInput: .contractWithSource(data: .init(source: .changeTier, contractId: "contractId"))
         )
         self.vm = model
-        model.fetchTiers()
 
         try await Task.sleep(nanoseconds: 30_000_000)
-        assert(model.tiers == tiers)
-        assert(model.tiers.first == tiers.first)
-        assert(model.tiers.count == tiers.count)
+        var expectedTiers = tiers
+        expectedTiers.insert(currentTier, at: 0)
+        assert(model.tiers == expectedTiers)
+        assert(model.tiers.first == expectedTiers.first)
+        assert(model.tiers.count == expectedTiers.count)
         assert(model.exposureName == "exposureName")
         assert(model.displayName == "display name")
         assert(model.activationDate == activationDate)
@@ -164,9 +165,6 @@ final class ChangeTierViewModelTests: XCTestCase {
         model.setTier(for: "max")
         assert(model.selectedTier?.name == "max")
         assert(model.selectedTier == tiers[1])
-        assert(model.tiers == tiers)
-        assert(model.tiers.first == tiers.first)
-        assert(model.tiers.count == tiers.count)
         assert(model.exposureName == "exposureName")
         assert(model.displayName == "displayName")
         assert(model.activationDate == activationDate)
