@@ -37,16 +37,20 @@ public class AddonsClientOctopus: AddonsClient {
                 throw AddonsError.somethingWentWrong
             }
 
-            let currentAddon = AddonQuote(
-                displayName: "",
-                quoteId: "quoteId",
-                addonId: "addonId",
-                displayItems: addonOffer.currentAddon?.displayItems
-                    .map({ .init(fragment: $0.fragments.upsellTravelAddonDisplayItemFragment) }) ?? [],
-                price: .init(optionalFragment: addonOffer.currentAddon?.premium.fragments.moneyFragment),
-                addonVariant: nil
-            )
+            let currentAddon: AddonQuote? = {
+                guard let currentAddon = addonOffer.currentAddon else { return nil }
+                return .init(
+                    displayName: "",
+                    quoteId: "quoteId",
+                    addonId: "addonId",
+                    displayItems: currentAddon.displayItems.map({
+                        .init(fragment: $0.fragments.upsellTravelAddonDisplayItemFragment)
+                    }),
+                    price: .init(fragment: currentAddon.premium.fragments.moneyFragment),
+                    addonVariant: nil
+                )
 
+            }()
             let addonData = AddonOffer(
                 titleDisplayName: addonOffer.titleDisplayName,
                 description: addonOffer.descriptionDisplayName,
