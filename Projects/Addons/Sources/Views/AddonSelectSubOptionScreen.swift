@@ -36,7 +36,7 @@ struct AddonSelectSubOptionScreen: View {
                                     Spacer()
                                     hPill(
                                         text: L10n.addonFlowPriceLabel(
-                                            changeAddonNavigationVm.changeAddonVm?.addonOffer?
+                                            addonOffer
                                                 .getTotalPrice(selectedQuote: quote)?
                                                 .formattedAmountWithoutSymbol ?? ""
                                         ),
