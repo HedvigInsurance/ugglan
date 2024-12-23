@@ -53,7 +53,8 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     displayName: "Homeowner",
                     displayNameTier: "Standard",
                     tierDescription: "Vårt mellanpaket med hög ersättning."
-                )
+                ),
+                addons: []
             ),
             .init(
                 id: "id2",
@@ -94,7 +95,8 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     displayName: "Homeowner",
                     displayNameTier: "Standard",
                     tierDescription: "Vårt mellanpaket med hög ersättning."
-                )
+                ),
+                addons: []
             ),
             .init(
                 id: "id3",
@@ -135,7 +137,8 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     displayName: "Homeowner",
                     displayNameTier: "Standard",
                     tierDescription: "Vårt mellanpaket med hög ersättning."
-                )
+                ),
+                addons: []
             ),
         ]
 
@@ -151,7 +154,8 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     subTitle: nil,
                     premium: .init(amount: "220", currency: "SEK"),
                     displayItems: [],
-                    productVariant: nil
+                    productVariant: nil,
+                    addons: []
                 )
             ],
             exposureName: "Standard"
@@ -224,7 +228,8 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     displayName: "Homeowner",
                     displayNameTier: "Standard",
                     tierDescription: "Vårt mellanpaket med hög ersättning."
-                )
+                ),
+                addons: []
             ),
             selectedTier: selectedTier,
             selectedQuote: nil,
