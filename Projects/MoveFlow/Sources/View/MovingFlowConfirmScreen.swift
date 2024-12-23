@@ -12,7 +12,9 @@ struct MovingFlowConfirmScreen: View {
 
     var body: some View {
         if let movingFlowModel = movingFlowNavigationVm.movingFlowVm {
-            let contractInfo = getQuotes(from: movingFlowModel)
+            let movingFlowQuotes = getQuotes(from: movingFlowModel)
+            var contractInfos =
+                movingFlowQuotes
                 .map({ quote in
                     QuoteSummaryViewModel.ContractInfo(
                         id: quote.id,
@@ -29,16 +31,41 @@ struct MovingFlowConfirmScreen: View {
                         displayItems: quote.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }
                         ),
                         insuranceLimits: quote.insurableLimits,
-                        typeOfContract: quote.contractType,
-                        onInfoClick: quote.quoteInfo != nil
-                            ? {
-                                movingFlowNavigationVm.isInfoViewPresented = quote.quoteInfo
-                            } : nil
+                        typeOfContract: quote.contractType
                     )
                 })
 
+            let _ =
+                movingFlowQuotes
+                .forEach({ quote in
+                    quote.addons.forEach({ addonQuote in
+                        let addonQuoteContractInfo = QuoteSummaryViewModel.ContractInfo(
+                            id: addonQuote.id,
+                            displayName: addonQuote.quoteInfo.title ?? "",
+                            exposureName: L10n.addonFlowSummaryActiveFrom(
+                                addonQuote.startDate.displayDateDDMMMYYYYFormat
+                            ),
+                            newPremium: addonQuote.price,
+                            currentPremium: nil,
+                            documents: addonQuote.addonVariant.documents,
+                            onDocumentTap: { document in
+                                movingFlowNavigationVm.document = document
+                            },
+                            displayItems: addonQuote.displayItems.map({
+                                .init(title: $0.displayTitle, value: $0.displayValue)
+                            }),
+                            insuranceLimits: addonQuote.addonVariant.insurableLimits,
+                            typeOfContract: nil,
+                            onInfoClick: {
+                                movingFlowNavigationVm.isInfoViewPresented = addonQuote.quoteInfo
+                            }
+                        )
+                        contractInfos.append(addonQuoteContractInfo)
+                    })
+                })
+
             let vm = QuoteSummaryViewModel(
-                contract: contractInfo,
+                contract: contractInfos,
                 total: movingFlowModel.total,
                 onConfirmClick: {
                     Task {

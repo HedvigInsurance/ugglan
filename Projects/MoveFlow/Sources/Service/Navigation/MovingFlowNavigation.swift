@@ -142,7 +142,10 @@ public struct MovingFlowNavigation: View {
         ) { infoViewModel in
             InfoView(
                 title: infoViewModel.title ?? "",
-                description: infoViewModel.description ?? ""
+                description: infoViewModel.description ?? "",
+                onUrlClicked: { url in
+                    NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
+                }
             )
         }
         .onDisappear {

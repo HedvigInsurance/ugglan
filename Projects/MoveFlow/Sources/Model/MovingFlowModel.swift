@@ -1,3 +1,4 @@
+import Addons
 import ChangeTier
 import Contracts
 import Foundation
@@ -58,9 +59,18 @@ public struct MovingFlowModel: Codable, Equatable, Hashable, Sendable {
 
     @MainActor
     var total: MonetaryAmount {
-        let amount = quotes.reduce(0, { $0 + $1.premium.floatAmount }) + (homeQuote?.premium.floatAmount ?? 0)
+        let quoteAmount = quotes.reduce(0, { $0 + $1.premium.floatAmount }) + (homeQuote?.premium.floatAmount ?? 0)
+        let addonAmount =
+            quotes
+            .compactMap({ $0.addons })
+            .joined()
+            .reduce(0, { $0 + $1.price.floatAmount })
+
+        let addonHomeQuote = homeQuote?.addons.reduce(0, { $0 + $1.price.floatAmount }) ?? 0
+        let totalAmount = quoteAmount + addonAmount + addonHomeQuote
+
         let currency = homeQuote?.premium.currency ?? quotes.first?.premium.currency ?? ""
-        return MonetaryAmount(amount: amount, currency: currency)
+        return MonetaryAmount(amount: totalAmount, currency: currency)
     }
 
     var movingDate: String {
@@ -118,7 +128,7 @@ struct MovingFlowQuote: Codable, Equatable, Hashable {
     let id: String
     let displayItems: [DisplayItem]
     let exposureName: String?
-    let quoteInfo: InfoViewDataModel?
+    let addons: [AddonDataModel]
 }
 
 struct InsuranceDocument: Codable, Equatable, Hashable {
@@ -130,4 +140,13 @@ struct DisplayItem: Codable, Equatable, Hashable {
     let displaySubtitle: String?
     let displayTitle: String
     let displayValue: String
+}
+
+struct AddonDataModel: Codable, Equatable, Hashable {
+    let id: String
+    let quoteInfo: InfoViewDataModel
+    let displayItems: [DisplayItem]
+    let price: MonetaryAmount
+    let addonVariant: AddonVariant
+    let startDate: Date
 }
