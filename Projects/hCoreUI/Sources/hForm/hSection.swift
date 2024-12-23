@@ -244,6 +244,7 @@ struct hSectionContainerStyleModifier: ViewModifier {
                     dark: hSurfaceColor.Opaque.primary
                 )
             )
+            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
         }
     }
 }

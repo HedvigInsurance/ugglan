@@ -223,6 +223,7 @@ public class SubmitClaimClientOctopus: SubmitClaimClient {
             OctopusGraphQL.Objects.FlowClaimDeflectPestsStep.typename,
             OctopusGraphQL.Objects.FlowClaimDeflectTowingStep.typename,
             OctopusGraphQL.Objects.FlowClaimFailedStep.typename,
+            OctopusGraphQL.Objects.FlowClaimDeflectIDProtectionStep.typename,
         ]
     }
 }
@@ -360,6 +361,9 @@ extension OctopusGraphQL.FlowClaimFragment.CurrentStep: Into {
         } else if let step = self.asFlowClaimDeflectTowingStep?.fragments.flowClaimDeflectTowingStepFragment {
             return .setDeflectModel(model: .init(with: step))
         } else if let step = self.asFlowClaimDeflectEirStep?.fragments.flowClaimDeflectEirStepFragment {
+            return .setDeflectModel(model: .init(with: step))
+        } else if let step = self.asFlowClaimDeflectIDProtectionStep?.fragments.flowClaimDeflectIDProtectionStepFragment
+        {
             return .setDeflectModel(model: .init(with: step))
         } else if let step = self.asFlowClaimFileUploadStep?.fragments.flowClaimFileUploadStepFragment {
             return .setFileUploadStep(model: .init(with: step))
