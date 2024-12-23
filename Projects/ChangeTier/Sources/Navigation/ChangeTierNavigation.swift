@@ -264,50 +264,14 @@ public struct ChangeTierNavigation: View {
             item: $changeTierNavigationVm.isInfoViewPresented,
             style: [.height]
         ) { info in
-            infoView(for: info)
-        }
-    }
-
-    private func infoView(for info: InfoViewDataModel) -> some View {
-        hForm {
-            hSection {
-                VStack(alignment: .leading, spacing: 0) {
-                    hText(info.title ?? "")
-                    MarkdownView(
-                        config: .init(
-                            text: info.description!,
-                            fontStyle: .body1,
-                            color: hTextColor.Translucent.secondary,
-                            linkColor: hTextColor.Translucent.secondary,
-                            linkUnderlineStyle: .single,
-                            onUrlClicked: { url in
-                                changeTierNavigationVm.isInfoViewPresented = nil
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                    NotificationCenter.default.post(
-                                        name: .openChat,
-                                        object: ChatType.newConversation
-                                    )
-                                }
-                            }
-                        )
-                    )
+            InfoView(
+                title: info.title ?? "",
+                description: info.description ?? "",
+                onUrlClicked: { _ in
+                    NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                 }
-            }
-            .padding(.top, .padding24)
-            .padding(.bottom, .padding32)
-            .padding(.horizontal, .padding8)
+            )
         }
-        .hFormAttachToBottom({
-            hSection {
-                hButton.LargeButton(type: .ghost) {
-                    changeTierNavigationVm.isInfoViewPresented = nil
-                } content: {
-                    hText(L10n.generalCancelButton)
-                }
-            }
-        })
-        .hDisableScroll
-        .sectionContainerStyle(.transparent)
     }
 
     private var wrapperHost: some View {
