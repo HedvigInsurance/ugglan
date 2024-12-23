@@ -35,7 +35,11 @@ struct AddonSelectSubOptionScreen: View {
                                     hText(quote.displayName ?? "")
                                     Spacer()
                                     hPill(
-                                        text: L10n.addonFlowPriceLabel(quote.price?.formattedAmountWithoutSymbol ?? ""),
+                                        text: L10n.addonFlowPriceLabel(
+                                            changeAddonNavigationVm.changeAddonVm?.addonOffer?
+                                                .getTotalPrice(selectedQuote: quote)?
+                                                .formattedAmountWithoutSymbol ?? ""
+                                        ),
                                         color: .grey,
                                         colorLevel: .one
                                     )
