@@ -97,7 +97,7 @@ extension ClaimModel.ClaimOutcome {
     var color: PillColor {
         switch self {
         case .none, .notCompensated, .notCovered, .paid, .closed:
-            .grey(translucent: true)
+            .grey
         case .missingReceipt:
             .amber
         }
@@ -115,6 +115,7 @@ extension ClaimModel.ClaimOutcome {
 
 struct ClaimBeingHandled_Previews: PreviewProvider {
     static var previews: some View {
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         let data = ClaimModel(
             id: "1",
             status: .beingHandled,

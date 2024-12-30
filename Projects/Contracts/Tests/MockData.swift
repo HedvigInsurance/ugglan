@@ -1,3 +1,4 @@
+import Addons
 import Foundation
 import hCore
 
@@ -24,11 +25,15 @@ struct MockData {
                     type: .home
                 )
             ]
+        },
+        fetchAddonBanner: @escaping FetchAddonBanner = {
+            nil
         }
     ) -> MockContractService {
         let service = MockContractService(
             fetchContracts: fetchContracts,
-            fetchCrossSell: fetchCrossSell
+            fetchCrossSell: fetchCrossSell,
+            fetchAddonBanner: fetchAddonBanner
         )
         Dependencies.shared.add(module: Module { () -> FetchContractsClient in service })
         return service
@@ -42,23 +47,28 @@ enum MockContractError: Error {
 
 typealias FetchContracts = () async throws -> ContractsStack
 typealias FetchCrossSell = () async throws -> [CrossSell]
+typealias FetchAddonBanner = () async throws -> AddonBannerModel?
 
 class MockContractService: FetchContractsClient {
     var events = [Event]()
     var fetchContracts: FetchContracts
     var fetchCrossSell: FetchCrossSell
+    var fetchAddonBanner: FetchAddonBanner
 
     enum Event {
         case getContracts
         case getCrossSell
+        case getAddonBanner
     }
 
     init(
         fetchContracts: @escaping FetchContracts,
-        fetchCrossSell: @escaping FetchCrossSell
+        fetchCrossSell: @escaping FetchCrossSell,
+        fetchAddonBanner: @escaping FetchAddonBanner
     ) {
         self.fetchContracts = fetchContracts
         self.fetchCrossSell = fetchCrossSell
+        self.fetchAddonBanner = fetchAddonBanner
     }
 
     func getContracts() async throws -> ContractsStack {
@@ -72,4 +82,11 @@ class MockContractService: FetchContractsClient {
         let data = try await fetchCrossSell()
         return data
     }
+
+    func getAddonBannerModel(source: AddonSource) async throws -> AddonBannerModel? {
+        events.append(.getAddonBanner)
+        let data = try await fetchAddonBanner()
+        return data
+    }
+
 }

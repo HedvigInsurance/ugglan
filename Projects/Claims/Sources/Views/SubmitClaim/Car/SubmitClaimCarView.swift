@@ -48,5 +48,16 @@ struct SubmitClaimCarView: View {
 }
 
 #Preview {
-    SubmitClaimCarView(model: .init(id: .FlowClaimDeflectEirStep, partners: [], isEmergencyStep: false))
+    let model = FlowClaimDeflectStepModel(
+        id: .FlowClaimDeflectEirStep,
+        infoText: nil,
+        warningText: nil,
+        infoSectionText: nil,
+        infoSectionTitle: nil,
+        infoViewTitle: nil,
+        infoViewText: nil,
+        questions: [],
+        partners: []
+    )
+    SubmitClaimCarView(model: model)
 }

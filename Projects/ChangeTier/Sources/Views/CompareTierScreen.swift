@@ -207,6 +207,7 @@ struct CompareTierScreen: View {
                     ZStack {
                         hText(peril.title, style: .label)
                             .frame(height: .padding40, alignment: .center)
+                            .lineLimit(1)
                     }
                 }
                 .verticalPadding(0)
@@ -402,7 +403,8 @@ class CompareTierViewModel: ObservableObject {
                 subTitle: nil,
                 premium: .init(amount: "220", currency: "SEK"),
                 displayItems: [],
-                productVariant: nil
+                productVariant: nil,
+                addons: []
             )
         ],
         exposureName: "Standard"
@@ -420,7 +422,8 @@ class CompareTierViewModel: ObservableObject {
                 subTitle: nil,
                 premium: .init(amount: "220", currency: "SEK"),
                 displayItems: [],
-                productVariant: nil
+                productVariant: nil,
+                addons: []
             )
         ],
         exposureName: "exposure name"
@@ -440,7 +443,8 @@ class CompareTierViewModel: ObservableObject {
                         subTitle: nil,
                         premium: .init(amount: "220", currency: "SEK"),
                         displayItems: [],
-                        productVariant: nil
+                        productVariant: nil,
+                        addons: []
                     )
                 ],
                 exposureName: "exposure name"

@@ -82,16 +82,19 @@ public struct InfoViewHolder: View {
 public struct InfoView: View {
     let title: String
     let description: String
+    let onUrlClicked: ((_ url: URL) -> Void)?
     let extraButton: (text: String, style: hButtonConfigurationType, action: () -> Void)?
     @StateObject private var vm = InfoViewModel()
 
     public init(
         title: String,
         description: String,
+        onUrlClicked: ((_ url: URL) -> Void)? = nil,
         extraButton: (text: String, style: hButtonConfigurationType, action: () -> Void)? = nil
     ) {
         self.title = title
         self.description = description
+        self.onUrlClicked = onUrlClicked
         self.extraButton = extraButton
     }
 
@@ -100,9 +103,26 @@ public struct InfoView: View {
             hSection {
                 VStack(alignment: .leading, spacing: .padding8) {
                     hText(title)
-                    hText(description)
-                        .foregroundColor(hTextColor.Opaque.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                    if let onUrlClicked {
+                        MarkdownView(
+                            config: .init(
+                                text: description,
+                                fontStyle: .body1,
+                                color: hTextColor.Opaque.primary,
+                                linkColor: hTextColor.Opaque.secondary,
+                                linkUnderlineStyle: .single,
+                                maxWidth: nil,
+                                textAlignment: .left,
+                                onUrlClicked: { url in
+                                    onUrlClicked(url)
+                                }
+                            )
+                        )
+                    } else {
+                        hText(description)
+                            .foregroundColor(hTextColor.Opaque.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
                 }
                 .padding(.horizontal, .padding8)
                 .padding(.top, .padding32)
@@ -140,6 +160,22 @@ public struct InfoView: View {
         .introspect(.viewController, on: .iOS(.v13...)) { vc in
             vm.vc = vc
         }
+    }
+}
+
+public struct InfoViewDataModel: Codable, Equatable, Identifiable, Hashable, Sendable {
+    public var id: String?
+    public let title: String?
+    public let description: String?
+
+    public init(
+        id: String? = nil,
+        title: String?,
+        description: String?
+    ) {
+        self.id = id
+        self.title = title
+        self.description = description
     }
 }
 

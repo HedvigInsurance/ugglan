@@ -288,6 +288,16 @@ extension TerminationFlowDateNextStepModel {
         self.minDate = data.minDate
         self.maxDate = data.maxDate
         self.date = nil
+        self.extraCoverageItem = data.extraCoverage.map({ .init(fragment: $0.fragments.extraCoverageItemFragment) })
+    }
+}
+
+extension ExtraCoverageItem {
+    init(
+        fragment: OctopusGraphQL.ExtraCoverageItemFragment
+    ) {
+        self.displayName = fragment.displayName
+        self.displayValue = fragment.displayValue
     }
 }
 
@@ -304,6 +314,7 @@ extension TerminationFlowDeletionNextModel {
         with data: OctopusGraphQL.FlowTerminationDeletionFragment
     ) {
         self.id = data.id
+        self.extraCoverageItem = data.extraCoverage.map({ .init(fragment: $0.fragments.extraCoverageItemFragment) })
     }
 
     public func returnDeletionInput() -> OctopusGraphQL.FlowTerminationDeletionInput {

@@ -6,6 +6,7 @@ import hGraphQL
 public struct ChangeTierLandingScreen: View {
     @ObservedObject var vm: ChangeTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
+    @SwiftUI.Environment(\.colorScheme) private var colorScheme
 
     init(
         vm: ChangeTierViewModel
@@ -84,8 +85,6 @@ public struct ChangeTierLandingScreen: View {
                     )
                 }
 
-                let colorScheme: ColorScheme = UITraitCollection.current.userInterfaceStyle == .light ? .light : .dark
-
                 VStack(spacing: .padding4) {
                     editTierView
                     if vm.showDeductibleField {
@@ -118,7 +117,7 @@ public struct ChangeTierLandingScreen: View {
                     .hBackgroundOption(option: [.locked, .secondary, .negative])
                     .hFieldTrailingView {
                         Image(uiImage: hCoreUIAssets.lock.image)
-                            .foregroundColor(hTextColor.Opaque.secondary)
+                            .foregroundColor(hTextColor.Translucent.secondary)
                     }
                     hText(L10n.tierFlowLockedInfoDescription, style: .label)
                         .foregroundColor(hTextColor.Translucent.secondary)
@@ -148,7 +147,7 @@ public struct ChangeTierLandingScreen: View {
                 .hBackgroundOption(option: [.locked, .secondary, .negative])
                 .hFieldTrailingView {
                     Image(uiImage: hCoreUIAssets.lock.image)
-                        .foregroundColor(hTextColor.Opaque.secondary)
+                        .foregroundColor(hTextColor.Translucent.secondary)
                 }
             }
             .padding(.bottom, 8)

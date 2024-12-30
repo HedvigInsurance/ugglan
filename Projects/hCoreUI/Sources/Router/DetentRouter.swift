@@ -241,7 +241,7 @@ public struct DetentPresentationOption: OptionSet, Sendable {
 
 extension String {
     fileprivate func getViewName() -> String? {
-        if self.lowercased().contains("AnyView".lowercased()) || self.isEmpty {
+        if self.lowercased().contains("AnyView".lowercased()) || self.isEmpty || self.contains("Navigation") {
             return nil
         }
         return self

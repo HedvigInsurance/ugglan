@@ -52,12 +52,8 @@ extension MonetaryAmount {
     /// amount formatted according to currency specifications, ready to be displayed
     public var formattedAmountWithoutSymbol: String {
         let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        formatter.currencyCode = currency
-        formatter.currencySymbol = ""
         formatter.minimumFractionDigits = (value.truncatingRemainder(dividingBy: 1) != 0) ? 2 : 0
         formatter.maximumFractionDigits = 2
-        formatter.locale = currencyLocale
         return formatter.string(from: NSNumber(value: floatAmount)) ?? ""
     }
 

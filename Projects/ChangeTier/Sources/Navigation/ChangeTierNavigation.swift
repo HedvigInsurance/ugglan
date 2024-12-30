@@ -11,6 +11,7 @@ public class ChangeTierNavigationViewModel: ObservableObject {
     @Published public var isCompareTiersPresented = false
     @Published public var isInsurableLimitPresented: InsurableLimits?
     @Published public var document: hPDFDocument?
+    @Published public var isInfoViewPresented: InfoViewDataModel? = nil
     let useOwnNavigation: Bool
     let router: Router
     var onChangedTier: () -> Void = {}
@@ -259,6 +260,18 @@ public struct ChangeTierNavigation: View {
         ) { document in
             PDFPreview(document: document)
         }
+        .detent(
+            item: $changeTierNavigationVm.isInfoViewPresented,
+            style: [.height]
+        ) { info in
+            InfoView(
+                title: info.title ?? "",
+                description: info.description ?? "",
+                onUrlClicked: { _ in
+                    NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
+                }
+            )
+        }
     }
 
     private var wrapperHost: some View {
@@ -309,6 +322,8 @@ private enum ChangeTierTrackingType: TrackingViewNameProtocol {
             return .init(describing: EditDeductibleScreen.self)
         case .compareTier:
             return .init(describing: CompareTierScreen.self)
+        case .info:
+            return "Addon Info"
         }
     }
 
@@ -316,4 +331,5 @@ private enum ChangeTierTrackingType: TrackingViewNameProtocol {
     case editTier
     case editDeductible
     case compareTier
+    case info
 }

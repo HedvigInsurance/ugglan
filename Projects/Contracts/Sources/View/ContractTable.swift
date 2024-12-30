@@ -1,3 +1,4 @@
+import Addons
 import Apollo
 import Combine
 import Foundation
@@ -49,6 +50,33 @@ struct ContractTable: View {
                 )
             if !showTerminated {
                 VStack(spacing: 24) {
+                    hSection {
+                        if Dependencies.featureFlags().isAddonsEnabled, let banner = vm.addonBannerModel {
+                            let addonContracts = banner.contractIds.compactMap({
+                                store.state.contractForId($0)
+                            })
+
+                            let addonContractConfig: [AddonConfig] = addonContracts.map({
+                                .init(
+                                    contractId: $0.id,
+                                    exposureName: $0.exposureDisplayName,
+                                    displayName: $0.currentAgreement?.productVariant.displayName ?? ""
+                                )
+                            })
+
+                            AddonCardView(
+                                openAddon: {
+                                    contractsNavigationVm.isAddonPresented = .init(
+                                        contractConfigs: addonContractConfig,
+                                        addonId: nil
+                                    )
+                                },
+                                addon: banner
+                            )
+                        }
+                    }
+                    .sectionContainerStyle(.transparent)
+
                     movingToANewHomeView
                     CrossSellingStack(withHeader: true)
 
@@ -86,6 +114,11 @@ struct ContractTable: View {
                     .sectionContainerStyle(.transparent)
                 }
                 .padding(.vertical, .padding24)
+            }
+        }
+        .onAppear {
+            Task {
+                await vm.getAddonBanner()
             }
         }
     }
@@ -161,6 +194,9 @@ public class ContractTableViewModel: ObservableObject {
     @Published var viewState: ProcessingState = .loading
     @PresentableStore var store: ContractStore
     @Published var loadingCancellable: AnyCancellable?
+    @Inject var service: FetchContractsClient
+    @Published var addonBannerModel: AddonBannerModel?
+    private var addonAddedObserver: NSObjectProtocol?
 
     init() {
         loadingCancellable = store.loadingSignal
@@ -177,5 +213,28 @@ public class ContractTableViewModel: ObservableObject {
                     self?.viewState = .success
                 }
             }
+
+        addonAddedObserver = NotificationCenter.default.addObserver(forName: .addonAdded, object: nil, queue: nil) {
+            [weak self] notification in
+            Task {
+                await self?.getAddonBanner()
+            }
+        }
+    }
+
+    deinit {
+        Task { @MainActor [weak self] in
+            if let addonAddedObserver = self?.addonAddedObserver {
+                NotificationCenter.default.removeObserver(addonAddedObserver)
+            }
+        }
+    }
+
+    func getAddonBanner() async {
+        do {
+            self.addonBannerModel = try await service.getAddonBannerModel(source: .appOnlyUpsell)
+        } catch {
+
+        }
     }
 }

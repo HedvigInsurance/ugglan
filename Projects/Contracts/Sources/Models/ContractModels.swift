@@ -1,3 +1,4 @@
+import Addons
 import EditCoInsuredShared
 import Foundation
 import PresentableStore
@@ -182,7 +183,8 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         currentAgreement = .init(
             premium: .init(fragment: pendingContract.premium.fragments.moneyFragment),
             displayItems: pendingContract.displayItems.map({ .init(data: $0.fragments.agreementDisplayItemFragment) }),
-            productVariant: .init(data: pendingContract.productVariant.fragments.productVariantFragment)
+            productVariant: .init(data: pendingContract.productVariant.fragments.productVariantFragment),
+            addonVariant: []
         )
         masterInceptionDate = nil
         terminationDate = nil
@@ -317,7 +319,8 @@ public struct Agreement: Codable, Hashable, Sendable {
         activeTo: String?,
         premium: MonetaryAmount,
         displayItems: [AgreementDisplayItem],
-        productVariant: hCore.ProductVariant
+        productVariant: hCore.ProductVariant,
+        addonVariant: [AddonVariant]
     ) {
         self.certificateUrl = certificateUrl
         self.activeFrom = activeFrom
@@ -325,6 +328,7 @@ public struct Agreement: Codable, Hashable, Sendable {
         self.premium = premium
         self.displayItems = displayItems
         self.productVariant = productVariant
+        self.addonVariant = addonVariant
     }
 
     public let certificateUrl: String?
@@ -333,15 +337,18 @@ public struct Agreement: Codable, Hashable, Sendable {
     public let premium: MonetaryAmount
     public let displayItems: [AgreementDisplayItem]
     public let productVariant: hCore.ProductVariant
+    public let addonVariant: [AddonVariant]
 
     init(
         premium: MonetaryAmount,
         displayItems: [AgreementDisplayItem],
-        productVariant: hCore.ProductVariant
+        productVariant: hCore.ProductVariant,
+        addonVariant: [AddonVariant]
     ) {
         self.premium = premium
         self.displayItems = displayItems
         self.productVariant = productVariant
+        self.addonVariant = addonVariant
         self.certificateUrl = nil
         self.activeFrom = nil
         self.activeTo = nil
@@ -359,6 +366,7 @@ public struct Agreement: Codable, Hashable, Sendable {
         premium = .init(fragment: agreement.premium.fragments.moneyFragment)
         displayItems = agreement.displayItems.map({ .init(data: $0.fragments.agreementDisplayItemFragment) })
         productVariant = .init(data: agreement.productVariant.fragments.productVariantFragment)
+        addonVariant = agreement.addons.map({ .init(fragment: $0.addonVariant.fragments.addonVariantFragment) })
     }
 }
 
@@ -429,7 +437,8 @@ extension Contract {
             contractId: id,
             contractDisplayName: currentAgreement?.productVariant.displayName ?? "",
             contractExposureName: exposureDisplayName,
-            activeFrom: currentAgreement?.activeFrom
+            activeFrom: currentAgreement?.activeFrom,
+            typeOfContract: TypeOfContract.resolve(for: currentAgreement?.productVariant.typeOfContract ?? "")
         )
     }
 }
