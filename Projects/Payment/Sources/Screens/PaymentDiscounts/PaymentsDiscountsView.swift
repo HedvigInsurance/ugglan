@@ -10,6 +10,7 @@ struct PaymentsDiscountsView: View {
     @PresentableStore var store: PaymentStore
     @EnvironmentObject var paymentsNavigationVm: PaymentsNavigationViewModel
     @EnvironmentObject var router: Router
+    let multiplier = HFontTextStyle.body1.multiplier
 
     var body: some View {
         hForm {
@@ -41,7 +42,7 @@ struct PaymentsDiscountsView: View {
             )
         }
         .withHeader {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: 16 * multiplier) {
                 HStack {
                     hText(L10n.paymentsCampaigns)
                     Spacer()
