@@ -79,7 +79,7 @@ final class TravelCertificateTests: XCTestCase {
         .compactMap({ $0 })
 
         let mockService = MockData.createMockTravelInsuranceService(
-            fetchList: { return (list, true) }
+            fetchList: { return (list, true, nil) }
         )
         self.sut = mockService
 

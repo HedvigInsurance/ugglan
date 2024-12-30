@@ -36,7 +36,7 @@ public enum NotificationType {
         case .campaign:
             hSignalColor.Green.text
         case .neutral:
-            hTextColor.Translucent.secondary
+            hTextColor.Opaque.secondary
         }
     }
 
@@ -96,7 +96,7 @@ struct NotificationStyle: ViewModifier {
         case .campaign:
             hSignalColor.Green.fill
         case .neutral:
-            hSurfaceColor.Opaque.primary
+            hFillColor.Opaque.negative
         }
     }
 }

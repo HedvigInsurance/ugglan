@@ -5,8 +5,9 @@ import hGraphQL
 public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     let contracts: [ContractInfo]
     let total: MonetaryAmount
-    let FAQModel: (title: String, subtitle: String, questions: [FAQ])?
     let onConfirmClick: () -> Void
+    let isAddon: Bool
+    let showNoticeCard: Bool
 
     public struct ContractInfo: Identifiable {
         public let id: String
@@ -20,6 +21,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         let insuranceLimits: [InsurableLimits]
         let typeOfContract: TypeOfContract?
         let shouldShowDetails: Bool
+        let onInfoClick: (() -> Void)?
 
         public init(
             id: String,
@@ -31,7 +33,8 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             onDocumentTap: @escaping (_ document: hPDFDocument) -> Void,
             displayItems: [QuoteDisplayItem],
             insuranceLimits: [InsurableLimits],
-            typeOfContract: TypeOfContract?
+            typeOfContract: TypeOfContract?,
+            onInfoClick: (() -> Void)? = nil
         ) {
             self.id = id
             self.displayName = displayName
@@ -44,19 +47,21 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             self.insuranceLimits = insuranceLimits
             self.typeOfContract = typeOfContract
             self.shouldShowDetails = !(documents.isEmpty && displayItems.isEmpty && insuranceLimits.isEmpty)
+            self.onInfoClick = onInfoClick
         }
     }
 
     public init(
         contract: [ContractInfo],
         total: MonetaryAmount,
-        FAQModel: (title: String, subtitle: String, questions: [FAQ])? = nil,
+        isAddon: Bool? = false,
         onConfirmClick: @escaping () -> Void
     ) {
         self.contracts = contract
         self.total = total
-        self.FAQModel = FAQModel
+        self.isAddon = isAddon ?? false
         self.onConfirmClick = onConfirmClick
+        self.showNoticeCard = (contracts.count > 1 || isAddon ?? false)
     }
 }
 
@@ -66,14 +71,11 @@ public struct QuoteSummaryScreen: View {
     @State var selectedContracts: [String] = []
     @State var spacingCoverage: CGFloat = 0
     @State var totalHeight: CGFloat = 0
-    @State var selectedFAQ: [String] = [""]
-    private var isEmptyFaq: Bool
 
     public init(
         vm: QuoteSummaryViewModel
     ) {
         self.vm = vm
-        self.isEmptyFaq = vm.FAQModel?.questions.isEmpty ?? true
     }
 
     public var body: some View {
@@ -96,15 +98,11 @@ public struct QuoteSummaryScreen: View {
                                 }
                         }
                     )
-                    .padding(.bottom, (vm.FAQModel?.questions.isEmpty ?? true) ? 0 : (spacingCoverage + .padding8))
-                }
-                if !isEmptyFaq {
-                    scrollSection
                 }
             }
             .hFormAttachToBottom {
                 VStack {
-                    if vm.contracts.count > 1 {
+                    if vm.showNoticeCard {
                         noticeComponent
                             .padding(.top, .padding16)
                     }
@@ -125,19 +123,6 @@ public struct QuoteSummaryScreen: View {
         )
     }
 
-    var scrollSection: some View {
-        VStack(spacing: 0) {
-            if let questions = vm.FAQModel?.questions {
-                faqsComponent(for: questions)
-            }
-            Spacing(height: 64)
-            chatComponent
-            Spacing(height: 380)
-        }
-        .padding(.top, 16)
-        .id(showCoverageId)
-    }
-
     func contractInfoView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
         hSection {
             StatusCard(
@@ -145,7 +130,8 @@ public struct QuoteSummaryScreen: View {
                 mainContent: ContractInformation(
                     displayName: contract.displayName,
                     exposureName: contract.exposureName,
-                    pillowImage: contract.typeOfContract?.pillowType.bgImage
+                    pillowImage: contract.typeOfContract?.pillowType.bgImage,
+                    onInfoClick: contract.onInfoClick
                 ),
                 title: nil,
                 subTitle: nil,
@@ -155,16 +141,16 @@ public struct QuoteSummaryScreen: View {
                             newPremium: contract.newPremium,
                             currentPremium: contract.currentPremium
                         )
+                        .hWithStrikeThroughPrice(setTo: vm.isAddon ? true : false)
 
                         let index = selectedContracts.firstIndex(of: contract.id)
-                        let isExpanded = index != nil
+                        let isExpanded = vm.isAddon ? true : (index != nil)
                         VStack(spacing: 0) {
                             detailsView(for: contract, isExpanded: isExpanded)
                                 .frame(height: isExpanded ? nil : 0, alignment: .top)
                                 .clipped()
 
-                            if contract.shouldShowDetails {
-
+                            if contract.shouldShowDetails && !vm.isAddon {
                                 hButton.MediumButton(
                                     type: .secondary
                                 ) {
@@ -199,7 +185,9 @@ public struct QuoteSummaryScreen: View {
         hSection {
             InfoCard(
                 text:
-                    L10n.changeAddressOtherInsurancesInfoText,
+                    vm.isAddon
+                    ? L10n.addonFlowSummaryInfoText
+                    : L10n.changeAddressOtherInsurancesInfoText,
                 type: .info
             )
         }
@@ -246,13 +234,24 @@ public struct QuoteSummaryScreen: View {
                 }
             }
         }
-        .padding(.bottom, isExpanded ? .padding16 : 0)
+        .padding(.bottom, (isExpanded && !vm.isAddon) ? .padding16 : 0)
     }
 
     func rowItem(for displayItem: QuoteDisplayItem) -> some View {
         HStack(alignment: .top) {
             hText(displayItem.displayTitle)
             Spacer()
+
+            if let oldValue = displayItem.displayValueOld, oldValue != displayItem.displayValue {
+                if #available(iOS 16.0, *) {
+                    hText(oldValue)
+                        .strikethrough()
+                } else {
+                    hText(oldValue)
+                        .foregroundColor(hTextColor.Opaque.tertiary)
+                }
+            }
+
             hText(displayItem.displayValue)
                 .multilineTextAlignment(.trailing)
         }
@@ -285,88 +284,34 @@ public struct QuoteSummaryScreen: View {
                 HStack {
                     hText(L10n.tierFlowTotal)
                     Spacer()
-                    hText(vm.total.formattedAmountPerMonth)
+
+                    let amount = vm.total
+
+                    if vm.isAddon {
+                        VStack(alignment: .trailing, spacing: 0) {
+                            if amount.value >= 0 {
+                                hText(L10n.addonFlowPriceLabel(amount.formattedAmountWithoutSymbol))
+                            } else {
+                                hText(amount.formattedAmountPerMonth)
+                            }
+                            hText(L10n.addonFlowSummaryPriceSubtitle, style: .label)
+                                .foregroundColor(hTextColor.Opaque.secondary)
+                        }
+                    } else {
+                        hText(amount.formattedAmountPerMonth)
+                    }
                 }
                 VStack(spacing: .padding8) {
                     hButton.LargeButton(type: .primary) {
                         vm.onConfirmClick()
                     } content: {
-                        hText(L10n.changeAddressAcceptOffer)
-                    }
-
-                    if !isEmptyFaq {
-                        hButton.LargeButton(type: .ghost) {
-                            withAnimation {
-                                proxy.scrollTo(showCoverageId, anchor: .top)
-                            }
-                        } content: {
-                            hText(L10n.summaryScreenLearnMoreButton)
-                        }
+                        hText(vm.isAddon ? L10n.addonFlowSummaryConfirmButton : L10n.changeAddressAcceptOffer)
                     }
                 }
             }
         }
         .padding(.top, .padding16)
         .sectionContainerStyle(.transparent)
-    }
-
-    @ViewBuilder
-    func faqsComponent(for faqs: [FAQ]) -> some View {
-        VStack {
-            if !faqs.isEmpty {
-                hSection {
-                    VStack(alignment: .leading, spacing: 0) {
-                        hText(vm.FAQModel?.title ?? "")
-                        hText(vm.FAQModel?.subtitle ?? "").foregroundColor(hTextColor.Translucent.secondary)
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .sectionContainerStyle(.transparent)
-
-                VStack(spacing: 4) {
-                    ForEach(faqs, id: \.title) { faq in
-                        let id = "\(faq.title)"
-                        let index = selectedFAQ.firstIndex(of: id)
-                        let expanded = index != nil
-                        hSection {
-                            VStack(spacing: 0) {
-                                hRow {
-                                    hText(faq.title)
-                                    Spacer()
-                                }
-                                .withCustomAccessory {
-                                    Image(
-                                        uiImage: expanded ? hCoreUIAssets.minus.image : hCoreUIAssets.plusSmall.image
-                                    )
-                                    .resizable()
-                                    .frame(width: 16, height: 16)
-                                }
-                                .verticalPadding(.padding12)
-                                if expanded, let description = faq.description {
-                                    hRow {
-                                        hText(description, style: .label)
-                                            .foregroundColor(hTextColor.Translucent.secondary)
-
-                                    }
-                                    .verticalPadding(.padding12)
-                                }
-                            }
-                        }
-                        .onTapGesture {
-                            let index = selectedFAQ.firstIndex(of: id)
-                            withAnimation {
-                                if let index {
-                                    selectedFAQ.remove(at: index)
-                                } else {
-                                    selectedFAQ.append(id)
-                                }
-                            }
-                        }
-                    }
-                }
-                .padding(.top, 16)
-            }
-        }
     }
 
     @ViewBuilder
@@ -384,18 +329,21 @@ public struct QuoteSummaryScreen: View {
     }
 }
 
-public struct QuoteDisplayItem: Identifiable {
+public struct QuoteDisplayItem: Identifiable, Equatable, Sendable {
     public let id: String?
     let displayTitle: String
     let displayValue: String
+    let displayValueOld: String?
 
     public init(
         title displayTitle: String,
         value displayValue: String,
+        displayValueOld: String? = nil,
         id: String? = nil
     ) {
         self.displayTitle = displayTitle
         self.displayValue = displayValue
+        self.displayValueOld = displayValueOld
         self.id = id
     }
 }
@@ -505,10 +453,6 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
             ),
         ],
         total: .init(amount: 999, currency: "SEK"),
-        FAQModel: (
-            title: "Questions and answers", subtitle: "Här reder vi ut våra medlemmars vanligaste funderingar.",
-            questions: mockFAQ
-        ),
         onConfirmClick: {}
     )
 

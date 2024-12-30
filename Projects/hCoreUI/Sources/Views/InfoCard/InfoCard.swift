@@ -28,26 +28,40 @@ public struct InfoCard: View {
                     .padding(.leading, .padding8 * HFontTextStyle.label.multiplier)
                     .hUseLightMode
             } else {
-                VStack(alignment: .leading) {
-                    hText(text, style: .label)
-                        .foregroundColor(type.textColor)
-                        .multilineTextAlignment(.leading)
-                        .padding(.bottom, 4 * HFontTextStyle.label.multiplier)
-                    if let buttonsConfig {
-                        if buttonsConfig.count > 1 {
-                            HStack(spacing: 4) {
-                                ForEach(buttonsConfig, id: \.buttonTitle) { config in
-                                    hButton.SmallButton(type: .secondaryAlt) {
-                                        config.buttonAction()
-                                    } content: {
-                                        hText(config.buttonTitle, style: .label)
-                                            .frame(maxWidth: .infinity)
-                                    }
-                                    .hUseLightMode
+                switch type {
+                case .neutral:
+                    buttonsView
+                default:
+                    buttonsView
+                        .hUseLightMode
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, .padding12 * HFontTextStyle.label.multiplier)
+        .padding(.horizontal, .padding16 * HFontTextStyle.label.multiplier)
+        .modifier(NotificationStyle(type: type))
+        .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private var buttonsView: some View {
+        VStack(alignment: .leading) {
+            hText(text, style: .label)
+                .foregroundColor(type.textColor)
+                .multilineTextAlignment(.leading)
+                .padding(.bottom, 4 * HFontTextStyle.label.multiplier)
+            if let buttonsConfig {
+                if buttonsConfig.count > 1 {
+                    HStack(spacing: 4) {
+                        ForEach(buttonsConfig, id: \.buttonTitle) { config in
+                            if type == .neutral {
+                                hButton.SmallButton(type: .secondary) {
+                                    config.buttonAction()
+                                } content: {
+                                    hText(config.buttonTitle, style: .label)
+                                        .frame(maxWidth: .infinity)
                                 }
-                            }
-                        } else {
-                            ForEach(buttonsConfig, id: \.buttonTitle) { config in
+                            } else {
                                 hButton.SmallButton(type: .secondaryAlt) {
                                     config.buttonAction()
                                 } content: {
@@ -58,16 +72,29 @@ public struct InfoCard: View {
                             }
                         }
                     }
+                } else {
+                    ForEach(buttonsConfig, id: \.buttonTitle) { config in
+                        if type == .neutral {
+                            hButton.SmallButton(type: .secondary) {
+                                config.buttonAction()
+                            } content: {
+                                hText(config.buttonTitle, style: .label)
+                                    .frame(maxWidth: .infinity)
+                            }
+                        } else {
+                            hButton.SmallButton(type: .secondaryAlt) {
+                                config.buttonAction()
+                            } content: {
+                                hText(config.buttonTitle, style: .label)
+                                    .frame(maxWidth: .infinity)
+                            }
+                            .hUseLightMode
+                        }
+                    }
                 }
-                .padding(.leading, .padding8 * HFontTextStyle.label.multiplier)
-                .hUseLightMode
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, .padding12 * HFontTextStyle.label.multiplier)
-        .padding(.horizontal, .padding16 * HFontTextStyle.label.multiplier)
-        .modifier(NotificationStyle(type: type))
-        .fixedSize(horizontal: false, vertical: true)
+        .padding(.leading, .padding8 * HFontTextStyle.label.multiplier)
     }
 }
 
@@ -110,6 +137,16 @@ struct InfoCard_Previews: PreviewProvider {
                         Text("Testing custom texzt view")
 
                     }
+
+                InfoCard(text: L10n.changeAddressCoverageInfoText(30), type: .neutral)
+                    .buttons([
+                        .init(
+                            buttonTitle: "Title",
+                            buttonAction: {
+
+                            }
+                        )
+                    ])
             }
         }
     }

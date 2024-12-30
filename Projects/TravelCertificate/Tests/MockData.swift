@@ -1,3 +1,4 @@
+import Addons
 import Foundation
 import hCore
 
@@ -16,7 +17,7 @@ struct MockData {
             throw TravelInsuranceError.missingURL
         },
         fetchList: @escaping FetchList = {
-            return ([], true)
+            return ([], true, nil)
         }
     ) -> MockTravelInsuranceService {
         let service = MockTravelInsuranceService(
@@ -31,7 +32,7 @@ struct MockData {
 
 typealias FetchSpecifications = () async throws -> [TravelInsuranceContractSpecification]
 typealias Submit = (TravelInsuranceFormDTO) async throws -> URL
-typealias FetchList = () async throws -> ([TravelCertificateModel], Bool)
+typealias FetchList = () async throws -> ([TravelCertificateModel], Bool, banner: AddonBannerModel?)
 
 class MockTravelInsuranceService: TravelInsuranceClient {
     var events = [Event]()
@@ -68,7 +69,11 @@ class MockTravelInsuranceService: TravelInsuranceClient {
         return data
     }
 
-    func getList() async throws -> (list: [TravelCertificateModel], canAddTravelInsurance: Bool) {
+    func getList(
+        source: AddonSource
+    ) async throws -> (
+        list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBannerModel?
+    ) {
         events.append(.getList)
         let data = try await fetchList()
         return data

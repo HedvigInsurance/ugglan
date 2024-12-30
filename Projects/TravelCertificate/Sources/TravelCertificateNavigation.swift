@@ -1,3 +1,4 @@
+import Addons
 import Contracts
 import EditCoInsuredShared
 import Foundation
@@ -11,6 +12,7 @@ public class TravelCertificateNavigationViewModel: ObservableObject {
     public init() {}
     @Published var isDocumentPresented: TravelCertificateModel?
     @Published var isStartDateScreenPresented: TravelInsuranceSpecificationNavigationModel?
+    @Published var isAddonPresented: ChangeAddonInput?
 
     var startDateViewModel: StartDateViewModel?
     var whoIsTravelingViewModel: WhoIsTravelingViewModel?
@@ -87,11 +89,11 @@ public struct TravelCertificateNavigation: View {
     private var getListScreen: some View {
         if infoButtonPlacement == .trailing {
             showListScreen(
-                infoButtonPlacement: .topBarTrailing
+                infoButtonPlacement: infoButtonPlacement
             )
         } else {
             showListScreen(
-                infoButtonPlacement: .topBarLeading
+                infoButtonPlacement: infoButtonPlacement
             )
             .withDismissButton()
         }
@@ -116,6 +118,12 @@ public struct TravelCertificateNavigation: View {
             PDFPreview(
                 document: .init(displayName: model.title, url: model.url.absoluteString, type: .unknown)
             )
+        }
+        .modally(
+            item: $vm.isAddonPresented,
+            options: .constant(.withoutGrabber)
+        ) { addonInput in
+            ChangeAddonNavigation(input: addonInput)
         }
         .modally(
             item: $vm.isStartDateScreenPresented,
@@ -154,7 +162,7 @@ public struct TravelCertificateNavigation: View {
     }
 
     private func showListScreen(
-        infoButtonPlacement: ToolbarItemPlacement
+        infoButtonPlacement: ListToolBarPlacement
     ) -> some View {
         ListScreen(
             infoButtonPlacement: infoButtonPlacement

@@ -1,3 +1,4 @@
+import Addons
 import Combine
 import Foundation
 import PresentableStore
@@ -21,12 +22,43 @@ struct ContractDocumentsView: View {
             }
         ) { contract in
             if let contract = contract {
-                InsuranceTermView(
-                    documents: getDocumentsToDisplay(contract: contract)
-                ) { document in
-                    contractsNavigationViewModel.document = document
+                VStack(alignment: .leading, spacing: .padding8) {
+                    hSection {
+                        hText(contract.currentAgreement?.productVariant.displayName ?? "")
+                            .foregroundColor(hTextColor.Opaque.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .padding(.top, .padding16)
+
+                    InsuranceTermView(
+                        documents: getDocumentsToDisplay(contract: contract)
+                    ) { document in
+                        contractsNavigationViewModel.document = document
+                    }
+
+                    if let addonVariant = contract.currentAgreement?.addonVariant {
+                        ForEach(addonVariant, id: \.self) { addonVariant in
+                            addonDocumentSection(for: addonVariant)
+                        }
+                    }
                 }
             }
+        }
+    }
+
+    @ViewBuilder
+    private func addonDocumentSection(for addonVariant: AddonVariant) -> some View {
+        hSection {
+            hText(addonVariant.displayName)
+                .foregroundColor(hTextColor.Opaque.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(.top, .padding16)
+
+        InsuranceTermView(
+            documents: addonVariant.documents
+        ) { document in
+            contractsNavigationViewModel.document = document
         }
     }
 

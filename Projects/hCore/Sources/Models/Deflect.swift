@@ -1,19 +1,33 @@
-public struct Partner: Codable, Equatable, Hashable {
+public struct Partner: Codable, Equatable, Hashable, Sendable {
     public let id: String
     public let imageUrl: String?
     public let url: String?
     public let phoneNumber: String?
-
+    public let title: String?
+    public let description: String?
+    public let info: String?
+    public let buttonText: String?
+    public let largerImageSize: Bool
     public init(
         id: String,
         imageUrl: String?,
         url: String?,
-        phoneNumber: String?
+        phoneNumber: String?,
+        title: String?,
+        description: String?,
+        info: String?,
+        buttonText: String?,
+        largerImageSize: Bool
     ) {
         self.id = id
         self.imageUrl = imageUrl
         self.url = url
         self.phoneNumber = phoneNumber
+        self.title = title
+        self.description = description
+        self.info = info
+        self.buttonText = buttonText
+        self.largerImageSize = largerImageSize
     }
 }
 

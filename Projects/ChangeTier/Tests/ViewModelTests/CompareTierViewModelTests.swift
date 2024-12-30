@@ -46,7 +46,8 @@ final class CompareTierVireModelTests: XCTestCase {
                         displayName: "displayName",
                         displayNameTier: nil,
                         tierDescription: nil
-                    )
+                    ),
+                    addons: []
                 )
             ],
             exposureName: "exposureName"
@@ -109,7 +110,7 @@ final class CompareTierVireModelTests: XCTestCase {
 
         self.sut = mockService
 
-        let model = CompareTierViewModel(tiers: tiers, selectedTier: currentTier)
+        let model = CompareTierViewModel(tiers: tiers, currentTier: currentTier)
         self.vm = model
         model.productVariantComparision()
 
@@ -128,7 +129,7 @@ final class CompareTierVireModelTests: XCTestCase {
 
         self.sut = mockService
 
-        let model = CompareTierViewModel(tiers: tiers, selectedTier: currentTier)
+        let model = CompareTierViewModel(tiers: tiers, currentTier: currentTier)
         self.vm = model
         model.productVariantComparision()
 
