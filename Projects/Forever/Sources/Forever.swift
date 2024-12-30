@@ -5,6 +5,7 @@ import hCoreUI
 import hGraphQL
 
 public struct ForeverView: View {
+    let multiplier = HFontTextStyle.body1.multiplier
     @EnvironmentObject var foreverNavigationVm: ForeverNavigationViewModel
     @StateObject var foreverVm = ForeverViewModel()
     @State var scrollTo: Int = -1
@@ -71,7 +72,7 @@ public struct ForeverView: View {
                                 }
                         })
                     )
-                    Spacing(height: Float(spacing))
+                    Spacing(height: Float(multiplier != 1 ? .padding8 * multiplier : spacing))
                     DiscountCodeSectionView().id(1)
                         .background(
                             GeometryReader(content: { proxy in

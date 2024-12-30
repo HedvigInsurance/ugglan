@@ -450,11 +450,11 @@ extension hFieldSize {
     }
 
     var fieldOffset: CGFloat {
-        switch self {
-        case .small: return 8
-        case .medium: return 8
-        case .large: return 8
+        let multiplier = HFontTextStyle.body1.multiplier
+        if multiplier != 1 {
+            return .padding32 * multiplier
         }
+        return .padding8
     }
 
     var labelFont: HFontTextStyle {

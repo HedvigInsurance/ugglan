@@ -15,6 +15,7 @@ public struct hFloatingField: View {
     @Environment(\.hFieldSize) var size
     @Environment(\.hBackgroundOption) var backgroundOption
     @Environment(\.hAnimateField) var animateField
+    let multiplier = HFontTextStyle.body1.multiplier
 
     public var shouldMoveLabel: Binding<Bool> {
         Binding(
@@ -39,7 +40,7 @@ public struct hFloatingField: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
-                VStack(alignment: .leading, spacing: -2) {
+                VStack(alignment: .leading, spacing: multiplier != 1 ? .padding16 * multiplier : -2) {
                     hFieldLabel(
                         placeholder: placeholder,
                         useScaleEffect: false,
@@ -54,7 +55,6 @@ public struct hFloatingField: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 Spacer()
                 fieldTrailingView
-
             }
             .padding(.top, !value.isEmpty ? size.topPaddingWithSubtitle : size.topPadding)
             .padding(.bottom, !value.isEmpty ? size.bottomPaddingWithSubtitle : size.bottomPadding)
