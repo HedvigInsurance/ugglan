@@ -198,13 +198,15 @@ private enum PillType {
 private struct StatusPill: View {
     var text: String
     var type: PillType
+    let multiplier = HFontTextStyle.label.multiplier
 
     var body: some View {
         VStack {
             hText(text, style: .label)
         }
-        .padding(.vertical, 3)
-        .padding(.horizontal, .padding6)
+        .fixedSize()
+        .padding(.vertical, (multiplier != 1) ? 6 * multiplier : 3)
+        .padding(.horizontal, .padding6 * multiplier)
         .foregroundColor(hTextColor.Opaque.white)
         .background(type.getBackgroundColor).colorScheme(.light)
         .cornerRadius(.cornerRadiusS)
