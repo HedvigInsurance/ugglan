@@ -387,7 +387,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
                         .environment(\.defaultHTextStyle, .body1)
                 }
                 .foregroundColor(hTextColor.Opaque.primary)
-                .padding(.bottom, .padding8)
+                .padding(.bottom, .padding8 * HFontTextStyle.body1.multiplier)
             }
             hSectionContainer {
                 if header != nil && embeddedHeader {
