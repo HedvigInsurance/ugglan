@@ -94,6 +94,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     @Environment(\.hItemPickerBottomAttachedView) var bottomAttachedView
     @Environment(\.hIncludeManualInput) var includeManualInput
     @ObservedObject private var config: ItemConfig<T>
+    let multiplier = HFontTextStyle.body1.multiplier
 
     let leftView: ((T?) -> AnyView?)?
     public init(
@@ -111,7 +112,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                 hForm {}
                     .hFormAttachToBottom {
                         VStack(spacing: 0) {
-                            VStack(spacing: 16) {
+                            VStack(spacing: .padding16 * multiplier) {
                                 if let infoCard = config.infoCard, infoCard.placement == .top {
                                     hSection {
                                         InfoCard(text: infoCard.text, type: .info).buttons(infoCard.buttons)
@@ -164,7 +165,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     }
 
     private func content(with proxy: ScrollViewProxy) -> some View {
-        VStack(spacing: 4) {
+        VStack(spacing: .padding4 * multiplier) {
             if let listTitle = config.listTitle {
                 hSection(config.items, id: \.object) { item in
                     getCell(item: item.object)

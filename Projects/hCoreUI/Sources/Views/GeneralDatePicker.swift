@@ -4,6 +4,7 @@ import hCore
 
 public struct DatePickerView: View {
     @ObservedObject var vm: DatePickerViewModel
+    let multiplier = HFontTextStyle.body1.multiplier
 
     public init(
         vm: DatePickerViewModel
@@ -24,7 +25,7 @@ public struct DatePickerView: View {
                         datePicker
                             .tint(hSignalColor.Green.element)
                             .datePickerStyle(.graphical)
-                            .frame(height: 340)
+                            .frame(height: multiplier != 1 ? 120 * multiplier : 340)
                             .introspect(.datePicker, on: .iOS(.v13...)) { [weak vm] datePicker in
                                 vm?.datePicker = datePicker
                                 vm?.updateColors()
