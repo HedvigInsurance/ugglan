@@ -58,13 +58,7 @@ extension ChangeTierViewModel {
                     },
                     displayItems: addon.displayItems.compactMap({ .init(title: $0.title, value: $0.value) }),
                     insuranceLimits: addon.addonVariant.insurableLimits,
-                    typeOfContract: nil,
-                    onInfoClick: {
-                        changeTierNavigationVm.isInfoViewPresented = .init(
-                            title: addon.displayName,
-                            description: L10n.movingFlowTravelAddonSummaryDescription
-                        )
-                    }
+                    typeOfContract: nil
                 )
             )
         }
