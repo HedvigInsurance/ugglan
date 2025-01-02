@@ -51,7 +51,7 @@ struct ContractDetails: View {
         if expandedContracts.contains(contract.id) {
             hSection(Array(contract.periods.enumerated()), id: \.element.id) { offset, period in
                 hRow {
-                    VStack(alignment: .leading, spacing: multiplier != 1 ? .padding8 * multiplier : 0) {
+                    VStack(alignment: .leading, spacing: multiplier != 1 ? .padding16 * multiplier : 0) {
                         HStack {
                             hText(period.fromToDate)
                                 .foregroundColor(

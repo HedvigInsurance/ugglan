@@ -9,6 +9,7 @@ public struct CoInsuredField<Content: View>: View {
     let date: String
     let title: String?
     let subTitle: String?
+    let multiplier = HFontTextStyle.body1.multiplier
 
     public init(
         coInsured: CoInsuredModel? = nil,
@@ -45,16 +46,16 @@ public struct CoInsuredField<Content: View>: View {
             coInsured?.formattedSSN?.displayFormatSSN ?? coInsured?.birthDate?.birtDateDisplayFormat ?? subTitle ?? ""
 
         VStack(spacing: 4) {
-            VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: multiplier != 1 ? .padding8 * multiplier : 0) {
                 HStack {
                     hText(displayTitle)
-                        .fixedSize()
+                        .fixedSize(horizontal: multiplier != 1 ? false : true, vertical: false)
                     Spacer()
                     accessoryView
                 }
                 hText(displaySubTitle, style: .label)
                     .foregroundColor(hTextColor.Opaque.secondary)
-                    .fixedSize()
+                    .fixedSize(horizontal: multiplier != 1 ? false : true, vertical: false)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             statusPill

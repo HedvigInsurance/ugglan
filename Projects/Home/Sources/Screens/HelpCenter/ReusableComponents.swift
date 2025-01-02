@@ -165,7 +165,7 @@ struct QuickActionView: View {
     var body: some View {
         hSection {
             hRow {
-                VStack(alignment: .leading, spacing: multiplier != 1 ? (16 * multiplier) : 0) {
+                VStack(alignment: .leading, spacing: multiplier != 1 ? (.padding8 * multiplier) : 0) {
                     hText(quickAction.displayTitle)
 
                     hText(quickAction.displaySubtitle, style: .label)
