@@ -6,6 +6,8 @@ import hCore
 public struct ScrollableSegmentedView<Content: View>: View {
     @ObservedObject var vm: ScrollableSegmentedViewModel
     @ViewBuilder var contentFor: (_ id: String) -> Content
+    let multiplier = HFontTextStyle.body1.multiplier
+
     public init(
         vm: ScrollableSegmentedViewModel,
         contentFor: @escaping (_ id: String) -> Content
@@ -61,7 +63,7 @@ public struct ScrollableSegmentedView<Content: View>: View {
     func headerElement(for model: PageModel) -> some View {
         Group {
             hText(model.title, style: .label)
-                .padding(.vertical, 3)
+                .padding(.vertical, 3 * multiplier)
                 .foregroundColor(hTextColor.Opaque.primary)
         }
         .frame(minWidth: 0, maxWidth: .infinity)
