@@ -76,10 +76,6 @@ public class Router: ObservableObject {
         }
         return vc
     }
-
-    deinit {
-        let ss = ""
-    }
 }
 
 struct Builderrr<Content: View> {
