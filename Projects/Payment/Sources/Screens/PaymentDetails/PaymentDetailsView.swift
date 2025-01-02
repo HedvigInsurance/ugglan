@@ -8,6 +8,7 @@ struct PaymentDetailsView: View {
     @PresentableStore var store: PaymentStore
     @State var expandedContracts: [String] = []
     @EnvironmentObject var router: Router
+    let multiplier = HFontTextStyle.body1.multiplier
 
     init(data: PaymentData) {
         self.data = data
@@ -141,7 +142,7 @@ struct PaymentDetailsView: View {
 
     @ViewBuilder var paymentDue: some View {
         hRow {
-            VStack(spacing: 16) {
+            VStack(spacing: .padding16 * multiplier) {
                 HStack {
                     hText(L10n.paymentsPaymentDue)
                     Spacer()
@@ -153,7 +154,6 @@ struct PaymentDetailsView: View {
                         switch action {
                         case .viewAddedToPayment:
                             if let nextPayment = data.addedToThePayment?.first {
-                                //                                store.send(.navigation(to: .openPaymentDetails(data: nextPayment)))
                                 router.push(nextPayment)
                             }
                         }
