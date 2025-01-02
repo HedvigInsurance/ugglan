@@ -21,15 +21,15 @@ struct LocationView: View {
                     }
                     return []
                 },
-                onSelected: { selectedLocation in
+                onSelected: { [weak claimsNavigationVm] selectedLocation in
                     if let object = selectedLocation.first?.0 {
-                        claimsNavigationVm.isLocationPickerPresented = false
-                        claimsNavigationVm.occurrencePlusLocationModel?.locationModel?.location =
+                        claimsNavigationVm?.isLocationPickerPresented = false
+                        claimsNavigationVm?.occurrencePlusLocationModel?.locationModel?.location =
                             object.value
                     }
                 },
-                onCancel: {
-                    router.dismiss()
+                onCancel: { [weak router] in
+                    router?.dismiss()
                 },
                 singleSelect: true
             )
