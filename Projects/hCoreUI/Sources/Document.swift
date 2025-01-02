@@ -72,7 +72,7 @@ private class PDFPreviewViewModel: ObservableObject {
             self.isLoading = true
         }
         do {
-            let data = try download()
+            let data = try await download()
             withAnimation {
                 self.data = data
             }
@@ -82,10 +82,10 @@ private class PDFPreviewViewModel: ObservableObject {
         }
     }
 
-    private func download() throws -> Data? {
+    private func download() async throws -> Data? {
         do {
             if let url = URL(string: self.document.url) {
-                let data = try Data(contentsOf: url)
+                let (data, _) = try await URLSession.shared.data(from: url)
                 return data
             }
             return nil
