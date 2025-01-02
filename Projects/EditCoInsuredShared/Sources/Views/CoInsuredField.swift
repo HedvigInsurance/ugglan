@@ -45,8 +45,8 @@ public struct CoInsuredField<Content: View>: View {
         let displaySubTitle =
             coInsured?.formattedSSN?.displayFormatSSN ?? coInsured?.birthDate?.birtDateDisplayFormat ?? subTitle ?? ""
 
-        VStack(spacing: 4) {
-            VStack(alignment: .leading, spacing: multiplier != 1 ? .padding8 * multiplier : 0) {
+        VStack(spacing: multiplier != 1 ? .padding8 * multiplier : .padding4) {
+            VStack(alignment: .leading, spacing: multiplier != 1 ? .padding16 * multiplier : 0) {
                 HStack {
                     hText(displayTitle)
                         .fixedSize(horizontal: multiplier != 1 ? false : true, vertical: false)
@@ -59,7 +59,6 @@ public struct CoInsuredField<Content: View>: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             statusPill
-
         }
     }
 
@@ -73,8 +72,8 @@ public struct CoInsuredField<Content: View>: View {
                     style: .label
                 )
             }
-            .padding(.vertical, .padding4)
-            .padding(.horizontal, .padding10)
+            .padding(.vertical, multiplier != 1 ? .padding8 * multiplier : .padding4)
+            .padding(.horizontal, .padding10 * multiplier)
             .foregroundColor(includeStatusPill.textColor)
             .background(includeStatusPill.backgroundColor)
             .cornerRadius(8)

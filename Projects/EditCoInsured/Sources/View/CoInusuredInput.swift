@@ -74,191 +74,191 @@ struct CoInusuredInputScreen: View {
                 } else {
                     addCoInsuredFields
                 }
-                //                if vm.showInfoForMissingSSN {
-                //                    hSection {
-                //                        InfoCard(text: L10n.coinsuredWithoutSsnInfo, type: .attention)
-                //                    }
-                //                    .sectionContainerStyle(.transparent)
-                //                }
-                //                hSection {
-                //                    HStack {
-                //                        if vm.actionType == .delete {
-                //                            hButton.LargeButton(type: .alert) {
-                //                                Task {
-                //                                    let coInsuredToDelete: CoInsuredModel = {
-                //                                        if vm.personalData.firstName == "" && vm.SSN == "" {
-                //                                            return .init()
-                //                                        } else if vm.SSN != "" {
-                //                                            return .init(
-                //                                                firstName: vm.personalData.firstName,
-                //                                                lastName: vm.personalData.lastName,
-                //                                                SSN: vm.SSN,
-                //                                                needsMissingInfo: false
-                //                                            )
-                //                                        } else {
-                //                                            return .init(
-                //                                                firstName: vm.personalData.firstName,
-                //                                                lastName: vm.personalData.lastName,
-                //                                                birthDate: vm.birthday,
-                //                                                needsMissingInfo: false
-                //                                            )
-                //                                        }
-                //                                    }()
-                //                                    await intentViewModel.getIntent(
-                //                                        contractId: vm.contractId,
-                //                                        origin: .coinsuredInput,
-                //                                        coInsured: insuredPeopleVm.listForGettingIntentFor(
-                //                                            removedCoInsured: coInsuredToDelete
-                //                                        )
-                //                                    )
-                //                                    if !intentViewModel.showErrorViewForCoInsuredInput {
-                //                                        editCoInsuredNavigation.coInsuredViewModel.removeCoInsured(coInsuredToDelete)
-                //                                        router.push(CoInsuredAction.delete)
-                //                                    } else {
-                //                                        // add back
-                //                                        if vm.noSSN {
-                //                                            editCoInsuredNavigation.coInsuredViewModel.undoDeleted(
-                //                                                .init(
-                //                                                    firstName: vm.personalData.firstName,
-                //                                                    lastName: vm.personalData.lastName,
-                //                                                    birthDate: vm.birthday,
-                //                                                    needsMissingInfo: false
-                //                                                )
-                //                                            )
-                //                                        } else {
-                //                                            editCoInsuredNavigation.coInsuredViewModel.undoDeleted(
-                //                                                .init(
-                //                                                    firstName: vm.personalData.firstName,
-                //                                                    lastName: vm.personalData.lastName,
-                //                                                    SSN: vm.SSN,
-                //                                                    needsMissingInfo: false
-                //                                                )
-                //                                            )
-                //                                        }
-                //                                    }
-                //                                }
-                //                            } content: {
-                //                                hText(L10n.removeConfirmationButton)
-                //                                    .transition(.opacity.animation(.easeOut))
-                //                            }
-                //                            .hButtonIsLoading(vm.isLoading || intentViewModel.isLoading)
-                //                        } else {
-                //                            hButton.LargeButton(type: .primary) {
-                //                                if !(buttonIsDisabled || vm.nameFetchedFromSSN || vm.noSSN) {
-                //                                    Task {
-                //                                        await vm.getNameFromSSN(SSN: vm.SSN)
-                //                                    }
-                //                                } else if vm.nameFetchedFromSSN || vm.noSSN {
-                //                                    Task {
-                //                                        if !intentViewModel.showErrorViewForCoInsuredInput {
-                //                                            if vm.actionType == .edit {
-                //                                                if vm.noSSN {
-                //                                                    editCoInsuredNavigation.coInsuredViewModel.editCoInsured(
-                //                                                        .init(
-                //                                                            firstName: vm.personalData.firstName,
-                //                                                            lastName: vm.personalData.lastName,
-                //                                                            birthDate: vm.birthday,
-                //                                                            needsMissingInfo: false
-                //                                                        )
-                //                                                    )
-                //                                                } else {
-                //                                                    editCoInsuredNavigation.coInsuredViewModel.editCoInsured(
-                //                                                        .init(
-                //                                                            firstName: vm.personalData.firstName,
-                //                                                            lastName: vm.personalData.lastName,
-                //                                                            SSN: vm.SSN,
-                //                                                            needsMissingInfo: false
-                //                                                        )
-                //                                                    )
-                //                                                }
-                //                                                await intentViewModel.getIntent(
-                //                                                    contractId: vm.contractId,
-                //                                                    origin: .coinsuredInput,
-                //                                                    coInsured: insuredPeopleVm.completeList()
-                //                                                )
-                //                                            } else {
-                //                                                let coInsuredToAdd: CoInsuredModel = {
-                //                                                    if vm.noSSN {
-                //                                                        return .init(
-                //                                                            firstName: vm.personalData.firstName,
-                //                                                            lastName: vm.personalData.lastName,
-                //                                                            birthDate: vm.birthday,
-                //                                                            needsMissingInfo: false
-                //                                                        )
-                //                                                    } else {
-                //                                                        return .init(
-                //                                                            firstName: vm.personalData.firstName,
-                //                                                            lastName: vm.personalData.lastName,
-                //                                                            SSN: vm.SSN,
-                //                                                            needsMissingInfo: false
-                //                                                        )
-                //                                                    }
-                //                                                }()
-                //
-                //                                                await intentViewModel.getIntent(
-                //                                                    contractId: vm.contractId,
-                //                                                    origin: .coinsuredInput,
-                //                                                    coInsured: insuredPeopleVm.listForGettingIntentFor(
-                //                                                        addCoInsured: coInsuredToAdd
-                //                                                    )
-                //                                                )
-                //                                                if !editCoInsuredNavigation.intentViewModel
-                //                                                    .showErrorViewForCoInsuredInput
-                //                                                {
-                //                                                    insuredPeopleVm.addCoInsured(coInsuredToAdd)
-                //                                                }
-                //                                            }
-                //
-                //                                            if !intentViewModel.showErrorViewForCoInsuredInput {
-                //                                                router.push(CoInsuredAction.add)
-                //                                            } else {
-                //                                                if vm.noSSN {
-                //                                                    editCoInsuredNavigation.coInsuredViewModel.removeCoInsured(
-                //                                                        .init(
-                //                                                            firstName: vm.personalData.firstName,
-                //                                                            lastName: vm.personalData.lastName,
-                //                                                            birthDate: vm.birthday,
-                //                                                            needsMissingInfo: false
-                //                                                        )
-                //                                                    )
-                //                                                } else {
-                //                                                    editCoInsuredNavigation.coInsuredViewModel.removeCoInsured(
-                //                                                        .init(
-                //                                                            firstName: vm.personalData.firstName,
-                //                                                            lastName: vm.personalData.lastName,
-                //                                                            SSN: vm.SSN,
-                //                                                            needsMissingInfo: false
-                //                                                        )
-                //                                                    )
-                //                                                }
-                //
-                //                                            }
-                //                                        }
-                //                                        editCoInsuredNavigation.selectCoInsured = nil
-                //                                    }
-                //                                }
-                //                            } content: {
-                //                                hText(buttonDisplayText)
-                //                                    .transition(.opacity.animation(.easeOut))
-                //                            }
-                //                            .hButtonIsLoading(vm.isLoading || intentViewModel.isLoading)
-                //                        }
-                //                    }
-                //                }
-                //                .padding(.top, .padding12)
-                //                .disabled(buttonIsDisabled && !(vm.actionType == .delete))
+                if vm.showInfoForMissingSSN {
+                    hSection {
+                        InfoCard(text: L10n.coinsuredWithoutSsnInfo, type: .attention)
+                    }
+                    .sectionContainerStyle(.transparent)
+                }
+                hSection {
+                    HStack {
+                        if vm.actionType == .delete {
+                            hButton.LargeButton(type: .alert) {
+                                Task {
+                                    let coInsuredToDelete: CoInsuredModel = {
+                                        if vm.personalData.firstName == "" && vm.SSN == "" {
+                                            return .init()
+                                        } else if vm.SSN != "" {
+                                            return .init(
+                                                firstName: vm.personalData.firstName,
+                                                lastName: vm.personalData.lastName,
+                                                SSN: vm.SSN,
+                                                needsMissingInfo: false
+                                            )
+                                        } else {
+                                            return .init(
+                                                firstName: vm.personalData.firstName,
+                                                lastName: vm.personalData.lastName,
+                                                birthDate: vm.birthday,
+                                                needsMissingInfo: false
+                                            )
+                                        }
+                                    }()
+                                    await intentViewModel.getIntent(
+                                        contractId: vm.contractId,
+                                        origin: .coinsuredInput,
+                                        coInsured: insuredPeopleVm.listForGettingIntentFor(
+                                            removedCoInsured: coInsuredToDelete
+                                        )
+                                    )
+                                    if !intentViewModel.showErrorViewForCoInsuredInput {
+                                        editCoInsuredNavigation.coInsuredViewModel.removeCoInsured(coInsuredToDelete)
+                                        router.push(CoInsuredAction.delete)
+                                    } else {
+                                        // add back
+                                        if vm.noSSN {
+                                            editCoInsuredNavigation.coInsuredViewModel.undoDeleted(
+                                                .init(
+                                                    firstName: vm.personalData.firstName,
+                                                    lastName: vm.personalData.lastName,
+                                                    birthDate: vm.birthday,
+                                                    needsMissingInfo: false
+                                                )
+                                            )
+                                        } else {
+                                            editCoInsuredNavigation.coInsuredViewModel.undoDeleted(
+                                                .init(
+                                                    firstName: vm.personalData.firstName,
+                                                    lastName: vm.personalData.lastName,
+                                                    SSN: vm.SSN,
+                                                    needsMissingInfo: false
+                                                )
+                                            )
+                                        }
+                                    }
+                                }
+                            } content: {
+                                hText(L10n.removeConfirmationButton)
+                                    .transition(.opacity.animation(.easeOut))
+                            }
+                            .hButtonIsLoading(vm.isLoading || intentViewModel.isLoading)
+                        } else {
+                            hButton.LargeButton(type: .primary) {
+                                if !(buttonIsDisabled || vm.nameFetchedFromSSN || vm.noSSN) {
+                                    Task {
+                                        await vm.getNameFromSSN(SSN: vm.SSN)
+                                    }
+                                } else if vm.nameFetchedFromSSN || vm.noSSN {
+                                    Task {
+                                        if !intentViewModel.showErrorViewForCoInsuredInput {
+                                            if vm.actionType == .edit {
+                                                if vm.noSSN {
+                                                    editCoInsuredNavigation.coInsuredViewModel.editCoInsured(
+                                                        .init(
+                                                            firstName: vm.personalData.firstName,
+                                                            lastName: vm.personalData.lastName,
+                                                            birthDate: vm.birthday,
+                                                            needsMissingInfo: false
+                                                        )
+                                                    )
+                                                } else {
+                                                    editCoInsuredNavigation.coInsuredViewModel.editCoInsured(
+                                                        .init(
+                                                            firstName: vm.personalData.firstName,
+                                                            lastName: vm.personalData.lastName,
+                                                            SSN: vm.SSN,
+                                                            needsMissingInfo: false
+                                                        )
+                                                    )
+                                                }
+                                                await intentViewModel.getIntent(
+                                                    contractId: vm.contractId,
+                                                    origin: .coinsuredInput,
+                                                    coInsured: insuredPeopleVm.completeList()
+                                                )
+                                            } else {
+                                                let coInsuredToAdd: CoInsuredModel = {
+                                                    if vm.noSSN {
+                                                        return .init(
+                                                            firstName: vm.personalData.firstName,
+                                                            lastName: vm.personalData.lastName,
+                                                            birthDate: vm.birthday,
+                                                            needsMissingInfo: false
+                                                        )
+                                                    } else {
+                                                        return .init(
+                                                            firstName: vm.personalData.firstName,
+                                                            lastName: vm.personalData.lastName,
+                                                            SSN: vm.SSN,
+                                                            needsMissingInfo: false
+                                                        )
+                                                    }
+                                                }()
 
-                //                hSection {
-                //                    hButton.LargeButton(type: .ghost) {
-                //                        editCoInsuredNavigation.coInsuredInputModel = nil
-                //                    } content: {
-                //                        hText(L10n.generalCancelButton)
-                //                    }
-                //                    .padding(.top, .padding4)
-                //                    .padding(.bottom, .padding16)
-                //                    .disabled(vm.isLoading || intentViewModel.isLoading)
-                //                }
-                //                .sectionContainerStyle(.transparent)
+                                                await intentViewModel.getIntent(
+                                                    contractId: vm.contractId,
+                                                    origin: .coinsuredInput,
+                                                    coInsured: insuredPeopleVm.listForGettingIntentFor(
+                                                        addCoInsured: coInsuredToAdd
+                                                    )
+                                                )
+                                                if !editCoInsuredNavigation.intentViewModel
+                                                    .showErrorViewForCoInsuredInput
+                                                {
+                                                    insuredPeopleVm.addCoInsured(coInsuredToAdd)
+                                                }
+                                            }
+
+                                            if !intentViewModel.showErrorViewForCoInsuredInput {
+                                                router.push(CoInsuredAction.add)
+                                            } else {
+                                                if vm.noSSN {
+                                                    editCoInsuredNavigation.coInsuredViewModel.removeCoInsured(
+                                                        .init(
+                                                            firstName: vm.personalData.firstName,
+                                                            lastName: vm.personalData.lastName,
+                                                            birthDate: vm.birthday,
+                                                            needsMissingInfo: false
+                                                        )
+                                                    )
+                                                } else {
+                                                    editCoInsuredNavigation.coInsuredViewModel.removeCoInsured(
+                                                        .init(
+                                                            firstName: vm.personalData.firstName,
+                                                            lastName: vm.personalData.lastName,
+                                                            SSN: vm.SSN,
+                                                            needsMissingInfo: false
+                                                        )
+                                                    )
+                                                }
+
+                                            }
+                                        }
+                                        editCoInsuredNavigation.selectCoInsured = nil
+                                    }
+                                }
+                            } content: {
+                                hText(buttonDisplayText)
+                                    .transition(.opacity.animation(.easeOut))
+                            }
+                            .hButtonIsLoading(vm.isLoading || intentViewModel.isLoading)
+                        }
+                    }
+                }
+                .padding(.top, .padding12)
+                .disabled(buttonIsDisabled && !(vm.actionType == .delete))
+
+                hSection {
+                    hButton.LargeButton(type: .ghost) {
+                        editCoInsuredNavigation.coInsuredInputModel = nil
+                    } content: {
+                        hText(L10n.generalCancelButton)
+                    }
+                    .padding(.top, .padding4)
+                    .padding(.bottom, .padding16)
+                    .disabled(vm.isLoading || intentViewModel.isLoading)
+                }
+                .sectionContainerStyle(.transparent)
             }
             .padding(.top, vm.actionType == .delete ? 16 : 0)
         }

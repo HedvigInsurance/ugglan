@@ -13,6 +13,7 @@ struct ContractTable: View {
     let showTerminated: Bool
     @State var onlyTerminatedInsurances = false
     @StateObject var vm = ContractTableViewModel()
+    let multiplier = HFontTextStyle.body1.multiplier
 
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
     @EnvironmentObject var router: Router
@@ -147,7 +148,7 @@ struct ContractTable: View {
                                 router.push(contract)
                             }
                         )
-                        .fixedSize(horizontal: false, vertical: true)
+                        .fixedSize(horizontal: false, vertical: multiplier != 1 ? true : false)
                         .transition(.slide)
                     }
                 }
