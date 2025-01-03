@@ -110,15 +110,12 @@ extension PaymentsRouterAction: TrackingViewNameProtocol {
             return .init(describing: PaymentsDiscountsRootView.self)
         case .history:
             return .init(describing: PaymentHistoryView.self)
-        //        case .openUrl:
-        //            return ""
         }
     }
 }
 
 public enum PaymentsRedirectType: Hashable {
     case forever
-    //    case openUrl(url: URL)
 }
 
 extension PaymentsRedirectType: TrackingViewNameProtocol {

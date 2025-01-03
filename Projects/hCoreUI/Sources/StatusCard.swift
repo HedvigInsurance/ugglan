@@ -11,6 +11,7 @@ where MainContent: View, BottomContent: View {
     let bottomComponent: (() -> BottomContent)?
     @Environment(\.hCardWithoutSpacing) var cardWithoutSpacing
     @Environment(\.hCardWithDivider) var withDivider
+    let multiplier = HFontTextStyle.body1.multiplier
 
     public init(
         onSelected: (() -> Void)? = nil,
@@ -27,7 +28,7 @@ where MainContent: View, BottomContent: View {
     }
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        VStack(alignment: .leading, spacing: multiplier != 1 ? .padding4 * multiplier : 0) {
             hRow {
                 HStack(alignment: .center) {
                     mainContent

@@ -90,6 +90,7 @@ public struct CheckboxToggleView: View {
     @Environment(\.hFieldSize) var fieldSize
     @State private var animate = false
     @Environment(\.isEnabled) var isEnabled
+    let multiplier = HFontTextStyle.body1.multiplier
 
     public init(
         title: String,
@@ -118,7 +119,7 @@ public struct CheckboxToggleView: View {
             HStack(alignment: .center, spacing: 0) {
                 hText(title, style: getTitleStyle(subtitle: subtitle))
                     .foregroundColor(foregroundColor)
-                    .fixedSize()
+                    .fixedSize(horizontal: multiplier != 1 ? false : true, vertical: false)
                 Spacer()
                 checkbox
             }

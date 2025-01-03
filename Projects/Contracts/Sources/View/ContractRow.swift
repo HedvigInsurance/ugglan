@@ -78,6 +78,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     let activeInFuture: Bool?
     let masterInceptionDate: String?
     let tierDisplayName: String?
+    let multiplier = HFontTextStyle.body1.multiplier
 
     public init(
         image: UIImage?,
@@ -127,7 +128,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     }
 
     func makeBody(configuration: Configuration) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
+        VStack(alignment: .leading, spacing: multiplier != 1 ? 2 * multiplier : 0) {
             HStack(alignment: .top, spacing: .padding6) {
                 if let tierDisplayName, Dependencies.featureFlags().isTiersEnabled {
                     StatusPill(text: tierDisplayName, type: .tier)
@@ -166,8 +167,9 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             hText(contractExposureName)
                 .foregroundColor(hTextColor.Translucent.secondary)
                 .colorScheme(.dark)
+                .padding(.top, multiplier != 1 ? .padding16 * multiplier : 0)
         }
-        .padding(.padding16)
+        .padding(.padding16 * multiplier)
         .frame(minHeight: 200)
         .background(
             background
@@ -198,13 +200,15 @@ private enum PillType {
 private struct StatusPill: View {
     var text: String
     var type: PillType
+    let multiplier = HFontTextStyle.label.multiplier
 
     var body: some View {
         VStack {
             hText(text, style: .label)
         }
-        .padding(.vertical, 3)
-        .padding(.horizontal, .padding6)
+        .fixedSize(horizontal: multiplier != 1 ? false : true, vertical: false)
+        .padding(.vertical, (multiplier != 1) ? 6 * multiplier : 3)
+        .padding(.horizontal, .padding6 * multiplier)
         .foregroundColor(hTextColor.Opaque.white)
         .background(type.getBackgroundColor).colorScheme(.light)
         .cornerRadius(.cornerRadiusS)

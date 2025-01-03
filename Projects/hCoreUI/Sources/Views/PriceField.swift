@@ -6,6 +6,7 @@ public struct PriceField: View {
     let newPremium: MonetaryAmount?
     let currentPremium: MonetaryAmount?
     @SwiftUI.Environment(\.hWithStrikeThroughPrice) var strikeThroughPrice
+    let multiplier = HFontTextStyle.body1.multiplier
 
     public init(
         newPremium: MonetaryAmount?,
@@ -31,7 +32,7 @@ public struct PriceField: View {
                 }
             }
 
-            VStack(alignment: .trailing, spacing: 0) {
+            VStack(alignment: .trailing, spacing: multiplier != 1 ? .padding8 * multiplier : 0) {
                 hText(newPremium?.formattedAmountPerMonth ?? currentPremium?.formattedAmountPerMonth ?? "")
 
                 if let currentPremium, let newPremium, newPremium != currentPremium, !strikeThroughPrice {

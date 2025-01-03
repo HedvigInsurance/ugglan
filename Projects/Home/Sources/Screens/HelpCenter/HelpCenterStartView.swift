@@ -11,6 +11,7 @@ public struct HelpCenterStartView: View {
     @StateObject var vm = HelpCenterStartViewModel(helpCenterModel: .getDefault())
     @PresentableStore var store: HomeStore
     let onQuickAction: (QuickAction) -> Void
+    let multiplier: CGFloat = HFontTextStyle.body1.multiplier
     @EnvironmentObject var router: Router
 
     public init(
@@ -48,8 +49,9 @@ public struct HelpCenterStartView: View {
                                 Spacer()
                             }
 
-                            VStack(alignment: .leading, spacing: 8) {
+                            VStack(alignment: .leading, spacing: 8 * multiplier) {
                                 hText(vm.helpCenterModel.title)
+                                    .padding(.bottom, multiplier != 1 ? 8 * multiplier : 0)
                                 hText(vm.helpCenterModel.description)
                                     .foregroundColor(hTextColor.Opaque.secondary)
                             }
@@ -97,9 +99,9 @@ public struct HelpCenterStartView: View {
     @ViewBuilder
     func displayQuickActions(from quickActions: [QuickAction]) -> some View {
         if !quickActions.isEmpty {
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 4 * multiplier) {
                 HelpCenterPill(title: L10n.hcQuickActionsTitle, color: .green)
-                    .padding(.bottom, .padding4)
+                    .padding(.bottom, .padding4 * multiplier)
 
                 ForEach(quickActions, id: \.displayTitle) { quickAction in
                     QuickActionView(quickAction: quickAction) {
@@ -111,7 +113,7 @@ public struct HelpCenterStartView: View {
     }
 
     private func displayCommonTopics() -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 8 * multiplier) {
             HelpCenterPill(title: L10n.hcCommonTopicsTitle, color: .yellow)
 
             let commonTopics = vm.helpCenterModel.commonTopics
@@ -120,7 +122,7 @@ public struct HelpCenterStartView: View {
     }
 
     private func commonTopicsItems(commonTopics: [CommonTopic]) -> some View {
-        VStack(spacing: 4) {
+        VStack(spacing: 4 * multiplier) {
             ForEach(commonTopics, id: \.self) { item in
                 hSection {
                     hRow {

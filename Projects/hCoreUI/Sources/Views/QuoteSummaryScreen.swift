@@ -71,6 +71,7 @@ public struct QuoteSummaryScreen: View {
     @State var selectedContracts: [String] = []
     @State var spacingCoverage: CGFloat = 0
     @State var totalHeight: CGFloat = 0
+    let multiplier = HFontTextStyle.body1.multiplier
 
     public init(
         vm: QuoteSummaryViewModel
@@ -81,8 +82,8 @@ public struct QuoteSummaryScreen: View {
     public var body: some View {
         ScrollViewReader { proxy in
             hForm {
-                VStack(spacing: .padding16) {
-                    VStack(spacing: .padding8) {
+                VStack(spacing: .padding16 * multiplier) {
+                    VStack(spacing: .padding8 * multiplier) {
                         ForEach(vm.contracts, id: \.id) { contract in
                             contractInfoView(for: contract)
                         }
@@ -136,7 +137,7 @@ public struct QuoteSummaryScreen: View {
                 title: nil,
                 subTitle: nil,
                 bottomComponent: {
-                    VStack(spacing: .padding16) {
+                    VStack(spacing: .padding16 * multiplier) {
                         PriceField(
                             newPremium: contract.newPremium,
                             currentPremium: contract.currentPremium
@@ -195,12 +196,12 @@ public struct QuoteSummaryScreen: View {
     }
 
     func detailsView(for contract: QuoteSummaryViewModel.ContractInfo, isExpanded: Bool) -> some View {
-        VStack(spacing: .padding16) {
+        VStack(spacing: .padding16 * multiplier) {
             hRowDivider()
                 .hWithoutDividerPadding
 
             if !contract.displayItems.isEmpty {
-                VStack(alignment: .leading, spacing: 0) {
+                VStack(alignment: .leading, spacing: multiplier != 1 ? .padding16 * multiplier : 0) {
                     hText(L10n.summaryScreenOverview)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     ForEach(contract.displayItems, id: \.displayTitle) { item in
@@ -210,7 +211,7 @@ public struct QuoteSummaryScreen: View {
             }
 
             if !contract.insuranceLimits.isEmpty {
-                VStack(alignment: .leading, spacing: 0) {
+                VStack(alignment: .leading, spacing: multiplier != 1 ? .padding16 * multiplier : 0) {
                     hText(L10n.summaryScreenCoverage)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     ForEach(contract.insuranceLimits, id: \.limit) { limit in
@@ -221,7 +222,7 @@ public struct QuoteSummaryScreen: View {
             }
 
             if !contract.documents.isEmpty {
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: .padding4 * multiplier) {
                     hText(L10n.confirmationScreenDocumentTitle)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     ForEach(contract.documents, id: \.displayName) { document in
@@ -234,7 +235,7 @@ public struct QuoteSummaryScreen: View {
                 }
             }
         }
-        .padding(.bottom, (isExpanded && !vm.isAddon) ? .padding16 : 0)
+        .padding(.bottom, (isExpanded && !vm.isAddon) ? .padding16 * multiplier : 0)
     }
 
     func rowItem(for displayItem: QuoteDisplayItem) -> some View {

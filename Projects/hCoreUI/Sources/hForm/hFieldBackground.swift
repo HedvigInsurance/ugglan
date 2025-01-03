@@ -5,11 +5,13 @@ struct hFieldBackgroundModifier: ViewModifier {
     @Binding var error: String?
     @Environment(\.isEnabled) var enabled
     @Environment(\.hBackgroundOption) var backgroundOption
+    let multiplier = HFontTextStyle.body1.multiplier
 
     func body(content: Content) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             content
                 .padding(.horizontal, .padding16)
+                .padding(.vertical, multiplier != 1 ? .padding16 : 0)
                 .background(getBackgroundColor())
                 .animation(.easeOut, value: animate)
                 .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))

@@ -10,6 +10,7 @@ struct CrossSellingItem: View {
     @PresentableStore var store: ContractStore
     let crossSell: CrossSell
     @State var fieldIsClicked = false
+    let multiplier = HFontTextStyle.body1.multiplier
 
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
 
@@ -29,7 +30,7 @@ struct CrossSellingItem: View {
                     .frame(width: 48, height: 48)
                     .aspectRatio(contentMode: .fill)
                 HStack(spacing: 0) {
-                    VStack(alignment: .leading, spacing: 0) {
+                    VStack(alignment: .leading, spacing: multiplier != 1 ? .padding4 * multiplier : 0) {
                         hText(crossSell.title, style: .body1).foregroundColor(hTextColor.Opaque.primary)
                         MarqueeText(
                             text: crossSell.description,

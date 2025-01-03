@@ -13,6 +13,7 @@ struct ContractInformationView: View {
     @PresentableStore var store: ContractStore
     @StateObject private var vm = ContractsInformationViewModel()
     @EnvironmentObject private var contractsNavigationVm: ContractsNavigationViewModel
+    let multiplier = HFontTextStyle.body1.multiplier
 
     let id: String
     var body: some View {
@@ -31,7 +32,7 @@ struct ContractInformationView: View {
                             hSection(displayItems, id: \.displayTitle) { item in
                                 hRow {
                                     hText(item.displayTitle)
-                                        .fixedSize()
+                                        .fixedSize(horizontal: multiplier != 1 ? false : true, vertical: false)
                                 }
                                 .withCustomAccessory({
                                     Spacer()
@@ -42,7 +43,7 @@ struct ContractInformationView: View {
                                             hText(item.displayValue)
                                         }
                                     }
-                                    .fixedSize()
+                                    .fixedSize(horizontal: multiplier != 1 ? false : true, vertical: false)
                                     .foregroundColor(hTextColor.Opaque.secondary)
                                 })
                             }

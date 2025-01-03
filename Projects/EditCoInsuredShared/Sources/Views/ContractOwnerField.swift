@@ -6,6 +6,7 @@ public struct ContractOwnerField: View {
     let hasContentBelow: Bool
     let fullName: String
     let SSN: String
+    let multiplier = HFontTextStyle.body1.multiplier
 
     public init(
         enabled: Bool? = false,
@@ -32,7 +33,7 @@ public struct ContractOwnerField: View {
 
     public var body: some View {
         VStack {
-            VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: multiplier != 1 ? .padding24 * multiplier : 0) {
                 HStack {
                     hText(fullName)
                         .foregroundColor(getTitleColor)
@@ -46,6 +47,7 @@ public struct ContractOwnerField: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             if hasContentBelow {
                 Divider()
+                    .padding(.top, multiplier != 1 ? .padding8 * multiplier : 0)
             }
         }
         .padding(.bottom, hasContentBelow ? 0 : 16)

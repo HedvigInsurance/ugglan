@@ -85,6 +85,7 @@ public struct InfoView: View {
     let onUrlClicked: ((_ url: URL) -> Void)?
     let extraButton: (text: String, style: hButtonConfigurationType, action: () -> Void)?
     @StateObject private var vm = InfoViewModel()
+    let multiplier = HFontTextStyle.body1.multiplier
 
     public init(
         title: String,
@@ -101,7 +102,7 @@ public struct InfoView: View {
     public var body: some View {
         hForm {
             hSection {
-                VStack(alignment: .leading, spacing: .padding8) {
+                VStack(alignment: .leading, spacing: .padding8 * multiplier) {
                     hText(title)
                     if let onUrlClicked {
                         MarkdownView(
