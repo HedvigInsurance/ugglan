@@ -11,6 +11,7 @@ public struct hCounterField: View {
     private let textForValue: (_ value: Int) -> String?
     @Environment(\.isEnabled) var isEnabled
     @Environment(\.hFieldSize) var size
+    let multiplier = HFontTextStyle.body1.multiplier
 
     @State var shouldMoveLabel: Bool = false
     public init(
@@ -71,7 +72,7 @@ public struct hCounterField: View {
                     }
                 }
                 .padding(.top, size.counterTopPadding)
-                .padding(.bottom, size.counterBottomPadding)
+                .padding(.bottom, multiplier != 1 ? .padding24 * multiplier : size.counterBottomPadding)
             }
         }
         .addFieldBackground(animate: $animate, error: $error)

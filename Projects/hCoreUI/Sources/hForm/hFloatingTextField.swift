@@ -25,6 +25,7 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
     private let focusValue: Value
     private let onReturn: () -> Void
     private let textFieldPlaceholder: String?
+    let multiplier = HFontTextStyle.body1.multiplier
 
     public init(
         masking: Masking,
@@ -75,11 +76,11 @@ public struct hFloatingTextField<Value: hTextFieldFocusStateCompliant>: View {
                             getSuffixLabel
                         }
                     }
-                    .offset(y: shouldMoveLabel ? size.fieldOffset : 0)
+                    .offset(y: shouldMoveLabel ? (multiplier != 1 ? .padding16 * multiplier : size.fieldOffset) : 0)
 
                 }
                 .padding(.top, size.topPadding)
-                .padding(.bottom, size.bottomPadding)
+                .padding(.bottom, size.bottomPadding * multiplier)
             }
             rightAttachedView
         }
