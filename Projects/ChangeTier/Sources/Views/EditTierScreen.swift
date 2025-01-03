@@ -6,6 +6,7 @@ struct EditTierScreen: View {
     @State var selectedTier: String?
     @ObservedObject var vm: ChangeTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
+    let multiplier = HFontTextStyle.body1.multiplier
 
     init(
         vm: ChangeTierViewModel
@@ -22,7 +23,7 @@ struct EditTierScreen: View {
                         hRadioField(
                             id: tier.name,
                             leftView: {
-                                VStack(alignment: .leading, spacing: 0) {
+                                VStack(alignment: .leading, spacing: multiplier != 1 ? .padding8 * multiplier : 0) {
                                     HStack {
                                         hText(tier.quotes.first?.productVariant?.displayNameTier ?? tier.name)
                                         Spacer()
@@ -51,7 +52,7 @@ struct EditTierScreen: View {
                     }
                 }
             }
-            .padding(.top, 16)
+            .padding(.top, .padding16)
             .sectionContainerStyle(.transparent)
             .hFieldSize(.medium)
         }

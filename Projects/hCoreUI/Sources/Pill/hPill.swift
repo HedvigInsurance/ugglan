@@ -15,10 +15,11 @@ public struct hPill: View {
     private let color: PillColor
     private let colorLevel: PillColor.PillColorLevel
     @Environment(\.hFieldSize) var fieldSize
+    let multiplier = HFontTextStyle.body1.multiplier
 
     public var body: some View {
         hText(text, style: fieldSize == .large ? .body1 : .label)
-            .fixedSize()
+            .fixedSize(horizontal: multiplier != 1 ? false : true, vertical: false)
             .foregroundColor(color.pillTextColor(level: colorLevel))
             .modifier(
                 PillModifier(

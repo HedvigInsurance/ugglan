@@ -206,7 +206,7 @@ private struct StatusPill: View {
         VStack {
             hText(text, style: .label)
         }
-        //        .fixedSize()
+        .fixedSize(horizontal: multiplier != 1 ? false : true, vertical: false)
         .padding(.vertical, (multiplier != 1) ? 6 * multiplier : 3)
         .padding(.horizontal, .padding6 * multiplier)
         .foregroundColor(hTextColor.Opaque.white)

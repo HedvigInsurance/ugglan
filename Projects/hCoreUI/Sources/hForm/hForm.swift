@@ -29,6 +29,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
     @Environment(\.hUseInitialAnimation) var hUseInitialAnimation
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    let multiplier = HFontTextStyle.body1.multiplier
 
     @State var lastTimeChangedMergeBottomViewWithContent = Date()
     @State var cancellable: AnyCancellable?
@@ -120,7 +121,10 @@ public struct hForm<Content: View>: View, KeyboardReadable {
             VStack(spacing: 8) {
                 VStack(spacing: 0) {
                     if let hFormTitle {
-                        VStack(alignment: hFormTitle.title.alignment == .leading ? .leading : .center, spacing: 0) {
+                        VStack(
+                            alignment: hFormTitle.title.alignment == .leading ? .leading : .center,
+                            spacing: multiplier != 1 ? .padding16 * multiplier : 0
+                        ) {
                             hText(hFormTitle.title.text, style: hFormTitle.title.fontSize)
                             if let subTitle = hFormTitle.subTitle {
                                 hText(subTitle.text, style: subTitle.fontSize)
@@ -132,7 +136,9 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                         .padding(.top, hFormTitle.title.type.topMargin)
                         .padding(
                             .bottom,
-                            hFormTitle.subTitle?.type.bottomMargin ?? hFormTitle.title.type.bottomMargin
+                            multiplier != 1
+                                ? .padding16 * multiplier
+                                : hFormTitle.subTitle?.type.bottomMargin ?? hFormTitle.title.type.bottomMargin
                         )
                         .padding(.horizontal, horizontalSizeClass == .regular ? .padding60 : .padding16)
                         .background {
