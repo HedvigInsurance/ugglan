@@ -59,7 +59,7 @@ public struct hFieldTextContent<T>: View {
             } else {
                 getTextField
                 Spacer()
-                //                cellView?()
+                cellView?()
             }
         }
     }
