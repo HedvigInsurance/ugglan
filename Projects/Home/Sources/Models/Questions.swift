@@ -300,6 +300,9 @@ enum CoverageQuestions: CaseIterable {
     case coverageQuestion20
     case coverageQuestion21
     case coverageQuestion22
+    case coverageQuestion23
+    case coverageQuestion24
+    case coverageQuestion25
     var question: Question {
         switch self {
         case .coverageQuestion1:
@@ -448,7 +451,24 @@ enum CoverageQuestions: CaseIterable {
                 question: L10n.hcCoverageQ22,
                 questionEn: L10n.hcCoverageQ22_en,
                 answer: L10n.hcCoverageA22
-                    //                topicType: .coverage
+            )
+        case .coverageQuestion23:
+            return .init(
+                question: L10n.hcCoverageQ23,
+                questionEn: L10n.hcCoverageQ23_en,
+                answer: L10n.hcCoverageA23
+            )
+        case .coverageQuestion24:
+            return .init(
+                question: L10n.hcCoverageQ24,
+                questionEn: L10n.hcCoverageQ24_en,
+                answer: L10n.hcCoverageA24
+            )
+        case .coverageQuestion25:
+            return .init(
+                question: L10n.hcCoverageQ25,
+                questionEn: L10n.hcCoverageQ25_en,
+                answer: L10n.hcCoverageA25
             )
         }
     }
