@@ -149,7 +149,7 @@ extension MovingFlowModel {
         })
 
         mtaQuotes = data.fragments.quoteFragment.mtaQuotes?.compactMap({ MovingFlowQuote(from: $0) }) ?? []
-        changeTier = {
+        changeTierModel = {
             if let data = data.fragments.quoteFragment.homeQuotes, !data.isEmpty {
                 return ChangeTierIntentModel.initWith(data: data)
             }

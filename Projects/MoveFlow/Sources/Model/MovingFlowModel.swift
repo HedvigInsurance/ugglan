@@ -22,7 +22,7 @@ public struct MovingFlowModel: Codable, Equatable, Hashable, Sendable {
     let mtaQuotes: [MovingFlowQuote]
     let faqs: [FAQ]
     let extraBuildingTypes: [ExtraBuildingType]
-    let changeTier: ChangeTierIntentModel?
+    let changeTierModel: ChangeTierIntentModel?
 
     init(
         id: String,
@@ -54,7 +54,7 @@ public struct MovingFlowModel: Codable, Equatable, Hashable, Sendable {
         self.mtaQuotes = mtaQuotes
         self.faqs = faqs
         self.extraBuildingTypes = extraBuildingTypes
-        self.changeTier = nil
+        self.changeTierModel = nil
     }
 
     @MainActor
