@@ -20,7 +20,7 @@ final class MovingFlowHousingTypeViewModelTests: XCTestCase {
         suggestedNumberCoInsured: 2,
         currentHomeAddresses: [],
         potentialHomeQuotes: [],
-        quotes: [],
+        mtaQuotes: [],
         faqs: [],
         extraBuildingTypes: []
     )
