@@ -366,13 +366,6 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
         .init(displayName: "document 1", url: "https//hedvig.com", type: .generalTerms),
         .init(displayName: "document 2", url: "https//hedvig.com", type: .preSaleInfo),
     ]
-
-    let mockFAQ: [FAQ] = [
-        .init(title: "question 1", description: "..."),
-        .init(title: "question 2", description: "..."),
-        .init(title: "question 3", description: "..."),
-    ]
-
     let vm = QuoteSummaryViewModel(
         contract: [
             .init(

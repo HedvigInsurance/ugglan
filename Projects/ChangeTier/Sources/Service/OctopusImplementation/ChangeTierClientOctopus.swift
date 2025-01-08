@@ -241,7 +241,6 @@ extension Quote.Addon {
         with data: OctopusGraphQL.ChangeTierDeductibleCreateIntentMutation.Data.ChangeTierDeductibleCreateIntent.Intent
             .Quote.Addon
     ) {
-        let ss = data.displayItems
         addonId = data.addonId
         addonVariant = .init(fragment: data.addonVariant.fragments.addonVariantFragment)
         displayItems = data.displayItems.map({ Quote.DisplayItem.init(with: $0) })
