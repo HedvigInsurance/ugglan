@@ -26,10 +26,8 @@ public class FeatureFlagsUnleash: FeatureFlags {
     public var isSubmitClaimEnabled: Bool = true
     public var osVersionTooLow: Bool = false
     public var emailPreferencesEnabled: Bool = false
-    public var isTiersEnabled: Bool = false
     public var isAddonsEnabled: Bool = false
-    public var movingFlowVersion: MovingFlowVersion?
-    public var isMovingFlowEnabled: Bool { movingFlowVersion != nil }
+    public var isMovingFlowEnabled: Bool = false
 
     public func setup(with context: [String: String]) async throws {
         unleashClient?.unsubscribe(name: "ready")
@@ -130,10 +128,6 @@ public class FeatureFlagsUnleash: FeatureFlags {
         isHelpCenterEnabled = unleashClient.isEnabled(name: helpCenterKey)
         featureFlags[helpCenterKey] = isHelpCenterEnabled
 
-        let enableTiersKey = "enable_tiers"
-        isTiersEnabled = unleashClient.isEnabled(name: enableTiersKey)
-        featureFlags[enableTiersKey] = isTiersEnabled
-
         let enableAddonsKey = "enable_addons"
         isAddonsEnabled = unleashClient.isEnabled(name: enableAddonsKey)
         featureFlags[enableAddonsKey] = isAddonsEnabled
@@ -145,12 +139,9 @@ public class FeatureFlagsUnleash: FeatureFlags {
         } else {
             isConnectPaymentEnabled = false
         }
-        let movingFlowKey = "moving_flow_version"
-        let isMovingFlowEnabled = unleashClient.getVariant(name: movingFlowKey)
-        let movingFlowEnabledName = isMovingFlowEnabled.name
-        if let movingFlowVersion = MovingFlowVersion(rawValue: movingFlowEnabledName), isMovingFlowEnabled.enabled {
-            self.movingFlowVersion = movingFlowVersion
-        }
+        let movingFlowKey = "moving_flow"
+        isMovingFlowEnabled = unleashClient.isEnabled(name: movingFlowKey)
+        featureFlags[movingFlowKey] = isMovingFlowEnabled
         Task {
             log.info(
                 "Feature flag set",
