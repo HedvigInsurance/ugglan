@@ -148,7 +148,7 @@ extension MovingFlowModel {
             MoveAddress(from: $0.fragments.moveAddressFragment)
         })
 
-        quotes = data.fragments.quoteFragment.mtaQuotes?.compactMap({ MovingFlowQuote(from: $0) }) ?? []
+        mtaQuotes = data.fragments.quoteFragment.mtaQuotes?.compactMap({ MovingFlowQuote(from: $0) }) ?? []
         changeTier = {
             if let data = data.fragments.quoteFragment.homeQuotes, !data.isEmpty {
                 return ChangeTierIntentModel.initWith(data: data)
