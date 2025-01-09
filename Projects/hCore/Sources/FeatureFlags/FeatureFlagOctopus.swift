@@ -48,7 +48,7 @@ public class FeatureFlagsUnleash: FeatureFlags {
         unleashClient = UnleashProxyClientSwift.UnleashClient(
             unleashUrl: "https://eu.app.unleash-hosted.com/eubb1047/api/frontend",
             clientKey: clientKey,
-            refreshInterval: 10,
+            refreshInterval: 60 * 60,
             appName: "ios",
             environment: environmentContext,
             context: context
