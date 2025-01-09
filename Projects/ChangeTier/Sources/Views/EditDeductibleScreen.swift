@@ -28,7 +28,7 @@ struct EditDeductibleScreen: View {
         hForm {
             hSection {
                 VStack(spacing: .padding4) {
-                    ForEach(deductibles, id: \.self) { deductible in
+                    ForEach(deductibles.sorted(by: { $0.premium.value > $1.premium.value }), id: \.self) { deductible in
                         hRadioField(
                             id: deductible.id,
                             leftView: {
