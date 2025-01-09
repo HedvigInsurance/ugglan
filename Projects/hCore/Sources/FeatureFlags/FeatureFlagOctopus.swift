@@ -1,9 +1,10 @@
 import Foundation
-@preconcurrency import UnleashProxyClientSwift
+import UnleashProxyClientSwift
 import hGraphQL
 
 public class FeatureFlagsUnleash: FeatureFlags {
-    private var unleashClient: UnleashClient?
+    nonisolated(unsafe)
+        private var unleashClient: UnleashClient?
     private var environment: Environment
 
     public init(
@@ -43,20 +44,16 @@ public class FeatureFlagsUnleash: FeatureFlags {
                 return "*:development.f2455340ac9d599b5816fa879d079f21dd0eb03e4315130deb5377b6"
             }
         }
-
         let environmentContext = clientKey.replacingOccurrences(of: "*:", with: "").components(separatedBy: ".")[0]
         unleashClient = UnleashProxyClientSwift.UnleashClient(
             unleashUrl: "https://eu.app.unleash-hosted.com/eubb1047/api/frontend",
             clientKey: clientKey,
-            refreshInterval: 60 * 60,
+            refreshInterval: 10,
             appName: "ios",
             environment: environmentContext,
             context: context
         )
-        self.unleashClient?
-            .subscribe(.update) { [weak self] in
-                self?.handleUpdate()
-            }
+
         log.info("Started loading unleash experiments")
 
         let market = await Task { @MainActor in
@@ -71,6 +68,17 @@ public class FeatureFlagsUnleash: FeatureFlags {
         } catch let exception {
             log.info("Failed loading unleash experiments \(exception)")
         }
+        self.subscribeToUpdates()
+    }
+    nonisolated(unsafe)
+        private func subscribeToUpdates()
+    {
+        self.unleashClient?
+            .subscribe(.update) {
+                Task { [weak self] in
+                    await self?.handleUpdate()
+                }
+            }
     }
 
     public func updateContext(context: [String: String]) {
