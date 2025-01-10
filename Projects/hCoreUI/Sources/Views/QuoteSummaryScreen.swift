@@ -115,6 +115,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
 
     public init(
         contract: [ContractInfo],
+        total: MonetaryAmount? = nil,
         isAddon: Bool? = false,
         onConfirmClick: @escaping () -> Void
     ) {
@@ -122,7 +123,11 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         self.isAddon = isAddon ?? false
         self.onConfirmClick = onConfirmClick
         self.showNoticeCard = (contract.count > 1 || isAddon ?? false)
-        calculateTotal()
+        if let total = total {
+            self.total = total
+        } else {
+            calculateTotal()
+        }
     }
 
     func calculateTotal() {

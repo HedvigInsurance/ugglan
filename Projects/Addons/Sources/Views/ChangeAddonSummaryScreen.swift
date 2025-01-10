@@ -44,10 +44,10 @@ extension ChangeAddonViewModel {
                     typeOfContract: nil
                 )
             ],
-            //            total: getTotalPrice(
-            //                currentPrice: self.addonOffer?.currentAddon?.price,
-            //                newPrice: self.selectedQuote?.price
-            //            ),
+            total: getTotalPrice(
+                currentPrice: self.addonOffer?.currentAddon?.price,
+                newPrice: self.selectedQuote?.price
+            ),
             isAddon: true
         ) {
             changeAddonNavigationVm.isConfirmAddonPresented = true
