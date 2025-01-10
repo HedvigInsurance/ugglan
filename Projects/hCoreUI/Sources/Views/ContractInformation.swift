@@ -5,7 +5,6 @@ public struct ContractInformation: View {
     let exposureName: String?
     let pillowImage: UIImage?
     let status: String?
-
     public init(
         displayName: String?,
         exposureName: String?,
@@ -32,11 +31,13 @@ public struct ContractInformation: View {
                     if let status {
                         hPill(text: status, color: .grey)
                             .hFieldSize(.medium)
+                            .transition(.opacity)
                     }
                 }
                 if let exposureName {
                     hText(exposureName, style: .body1)
                         .foregroundColor(hTextColor.Translucent.secondary)
+                        .transition(.opacity)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)

@@ -19,10 +19,10 @@ public class MovingFlowNavigationViewModel: ObservableObject {
 
     init() {}
 
-    func getMovingFlowSummaryViewModel(
+    func setMovingFlowSummaryViewModel(
         using movingFlowConfirmVm: MovingFlowConfirmViewModel,
         router: Router
-    ) -> QuoteSummaryViewModel? {
+    ) {
         if let movingFlowModel = movingFlowVm {
             let movingFlowQuotes = getQuotes(from: movingFlowModel)
             var contractInfos =
@@ -83,7 +83,6 @@ public class MovingFlowNavigationViewModel: ObservableObject {
 
             let vm = QuoteSummaryViewModel(
                 contract: contractInfos,
-                //                total: movingFlowModel.total,
                 onConfirmClick: {
                     Task {
                         await movingFlowConfirmVm.confirmMoveIntent(
@@ -95,9 +94,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                 }
             )
             self.quoteSummaryViewModel = vm
-            return vm
         }
-        return nil
     }
 
     private func getQuotes(from data: MovingFlowModel) -> [MovingFlowQuote] {
@@ -241,10 +238,11 @@ public struct MovingFlowNavigation: View {
 
     func openConfirmScreen() -> some View {
         movingFlowNavigationVm.movingFlowConfirmViewModel = .init()
-        let model = movingFlowNavigationVm.getMovingFlowSummaryViewModel(
+        movingFlowNavigationVm.setMovingFlowSummaryViewModel(
             using: movingFlowNavigationVm.movingFlowConfirmViewModel!,
             router: router
-        )!
+        )
+        let model = movingFlowNavigationVm.quoteSummaryViewModel!
         return MovingFlowConfirmScreen(quoteSummaryViewModel: model)
             .navigationTitle(L10n.changeAddressSummaryTitle)
             .withAlertDismiss()

@@ -221,7 +221,7 @@ public struct QuoteSummaryScreen: View {
                     displayName: contract.displayName,
                     exposureName: vm.removedContracts.contains(contract.id) ? nil : contract.exposureName,
                     pillowImage: contract.typeOfContract?.pillowType.bgImage,
-                    status: vm.removedContracts.contains(contract.id) ? "Terminated" : nil
+                    status: vm.removedContracts.contains(contract.id) ? L10n.contractStatusTerminated : nil
                 ),
                 title: nil,
                 subTitle: nil,
@@ -343,11 +343,14 @@ public struct QuoteSummaryScreen: View {
                     }
                 } content: {
                     hText(
-                        "Remove"
+                        L10n.General.remove
                     )
                     .transition(.scale)
                 }
-                .border(hBorderColor.primary, width: 1)
+                .background {
+                    RoundedRectangle(cornerRadius: .cornerRadiusM)
+                        .stroke(hBorderColor.primary, lineWidth: 1)
+                }
                 .padding(.bottom, -.padding8)
             }
         }

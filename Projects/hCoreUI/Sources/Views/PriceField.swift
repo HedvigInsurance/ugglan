@@ -17,12 +17,8 @@ public struct PriceField: View {
 
     public var body: some View {
         HStack(alignment: .top) {
-            if strikeThroughPrice == .crossNewPrice {
-                hText(L10n.tierFlowTotal)
-                    .foregroundColor(hTextColor.Translucent.secondary)
-            } else {
-                hText(L10n.tierFlowTotal)
-            }
+            hText(L10n.tierFlowTotal)
+                .foregroundColor(getTotalColor())
             Spacer()
 
             if strikeThroughPrice != .none, newPremium != currentPremium {
@@ -59,6 +55,16 @@ public struct PriceField: View {
                     .foregroundColor(hTextColor.Opaque.secondary)
                 }
             }
+        }
+    }
+
+    @hColorBuilder
+    private func getTotalColor() -> some hColor {
+        switch strikeThroughPrice {
+        case .crossNewPrice:
+            hTextColor.Translucent.secondary
+        case .crossOldPrice, .none:
+            hTextColor.Opaque.primary
         }
     }
 }
