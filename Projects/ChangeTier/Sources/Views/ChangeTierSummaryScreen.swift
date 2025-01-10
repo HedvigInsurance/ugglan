@@ -76,7 +76,7 @@ extension ChangeTierViewModel {
         }()
         let vm = QuoteSummaryViewModel(
             contract: contracts,
-            total: premium,
+            //            total: premium,
             onConfirmClick: {
                 self.commitTier()
                 changeTierNavigationVm.router.push(ChangeTierRouterActionsWithoutBackButton.commitTier)

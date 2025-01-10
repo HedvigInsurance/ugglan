@@ -266,10 +266,7 @@ public struct ChangeTierNavigation: View {
         ) { info in
             InfoView(
                 title: info.title ?? "",
-                description: info.description ?? "",
-                onUrlClicked: { _ in
-                    NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
-                }
+                description: info.description ?? ""
             )
         }
     }
