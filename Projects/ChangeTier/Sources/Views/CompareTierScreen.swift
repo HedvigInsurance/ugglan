@@ -47,7 +47,7 @@ struct CompareTierScreen: View {
                 Column(
                     tier: tier,
                     selectedTier: vm.selectedTier,
-                    perils: vm.perils.first(where: { $0.0 == tier.name })?.1 ?? [],
+                    perils: vm.getPerils(for: tier.name),
                     vm: vm
                 )
             }
@@ -202,7 +202,7 @@ struct CompareTierScreen: View {
                 .padding(.top, 7)
             let firstTier = vm.tiers.first?.name ?? ""
 
-            hSection(vm.perils.first(where: { $0.0 == firstTier })?.1 ?? [], id: \.self) { peril in
+            hSection(vm.getPerils(for: firstTier), id: \.self) { peril in
                 hRow {
                     ZStack {
                         hText(peril.title, style: .label)
@@ -385,6 +385,10 @@ class CompareTierViewModel: ObservableObject {
             return currentPeril.description + "\n" + coverageTextDisplayString
         }
         return currentPeril.description
+    }
+
+    func getPerils(for tierName: String) -> [Perils] {
+        perils.first(where: { $0.0 == tierName })?.1 ?? []
     }
 }
 
