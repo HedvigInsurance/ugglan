@@ -14,7 +14,6 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         exposureDisplayName: String,
         masterInceptionDate: String,
         terminationDate: String?,
-        selfChangeBlockers: String? = nil,
         supportsAddressChange: Bool,
         supportsCoInsured: Bool,
         supportsTravelCertificate: Bool,
@@ -32,7 +31,6 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         self.exposureDisplayName = exposureDisplayName
         self.masterInceptionDate = masterInceptionDate
         self.terminationDate = terminationDate
-        self.selfChangeBlockers = selfChangeBlockers
         self.supportsCoInsured = supportsCoInsured
         self.supportsAddressChange = supportsAddressChange
         self.supportsTravelCertificate = supportsTravelCertificate
@@ -51,7 +49,6 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     public let exposureDisplayName: String
     public let masterInceptionDate: String?
     public let terminationDate: String?
-    public let selfChangeBlockers: String?
     public let supportsAddressChange: Bool
     public let supportsChangeTier: Bool
     public let supportsCoInsured: Bool
@@ -194,7 +191,6 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         supportsChangeTier = false
         upcomingChangedAgreement = nil
         upcomingRenewal = nil
-        selfChangeBlockers = nil
         typeOfContract = TypeOfContract.resolve(for: pendingContract.productVariant.typeOfContract)
         coInsured = []
         self.firstName = firstName
@@ -214,7 +210,6 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         exposureDisplayName = contract.exposureDisplayName
         masterInceptionDate = contract.masterInceptionDate
         terminationDate = contract.terminationDate
-        selfChangeBlockers = contract.selfChangeBlockers?.coInsured?.reason
         supportsAddressChange = contract.supportsMoving
         supportsCoInsured = contract.supportsCoInsured
         supportsTravelCertificate = contract.supportsTravelCertificate
