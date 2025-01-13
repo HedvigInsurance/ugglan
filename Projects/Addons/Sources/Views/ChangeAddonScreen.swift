@@ -73,7 +73,7 @@ struct ChangeAddonScreen: View {
                         hButton.LargeButton(type: .primary) {
                             changeAddonNavigationVm.router.push(ChangeAddonRouterActions.summary)
                         } content: {
-                            hText(L10n.addonFlowAddToInsuranceButton)
+                            hText(L10n.generalContinueButton)
                         }
                         .padding(.top, .padding16)
                     }
