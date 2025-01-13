@@ -5,12 +5,12 @@ import hGraphQL
 public struct CoverageView: View {
     let limits: [InsurableLimits]
     var didTapInsurableLimit: (_ limit: InsurableLimits) -> Void
-    let perils: [Perils]
+    let perils: [(title: String?, perils: [Perils])]
 
     public init(
         limits: [InsurableLimits],
         didTapInsurableLimit: @escaping (_ limit: InsurableLimits) -> Void,
-        perils: [Perils]
+        perils: [(title: String?, perils: [Perils])]
     ) {
         self.limits = limits
         self.didTapInsurableLimit = didTapInsurableLimit
@@ -24,10 +24,48 @@ public struct CoverageView: View {
             ) { limit in
                 didTapInsurableLimit(limit)
             }
-            PerilCollection(
-                perils: perils
-            )
-            .hFieldSize(.small)
+            VStack(spacing: .padding32) {
+                ForEach(perils, id: \.title) { perils in
+                    VStack(spacing: .padding8) {
+                        if let title = perils.title {
+                            hSection {
+                                HStack {
+                                    hPill(text: title, color: .blue)
+                                        .hFieldSize(.medium)
+                                    Spacer()
+                                }
+                            }
+                        }
+                        PerilCollection(
+                            perils: perils.perils
+                        )
+                        .hFieldSize(.small)
+                    }
+                }
+            }
         }
     }
+}
+
+#Preview {
+    CoverageView(
+        limits: [],
+        didTapInsurableLimit: { limit in
+
+        },
+        perils: [
+            (
+                nil,
+                perils: [
+                    .init(id: "id1", title: "title1", description: "description1", color: nil, covered: [])
+                ]
+            ),
+            (
+                "title1",
+                perils: [
+                    .init(id: "id2", title: "title12", description: "description2", color: nil, covered: [])
+                ]
+            ),
+        ]
+    )
 }
