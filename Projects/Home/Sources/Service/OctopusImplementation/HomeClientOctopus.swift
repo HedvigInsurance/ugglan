@@ -60,7 +60,7 @@ public class HomeClientOctopus: HomeClient {
             contractAction.append(.cancellation)
         }
 
-        if actions?.isChangeTierEnabled == true && featureFlags.isTiersEnabled {
+        if actions?.isChangeTierEnabled == true {
             contractAction.append(.upgradeCoverage)
         }
 

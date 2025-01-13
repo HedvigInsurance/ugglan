@@ -17,20 +17,13 @@ public protocol FeatureFlags {
     func updateContext(context: [String: String])
     var osVersionTooLow: Bool { get set }
     var emailPreferencesEnabled: Bool { get set }
-    var isTiersEnabled: Bool { get set }
     var isAddonsEnabled: Bool { get set }
     var isDemoMode: Bool { get set }
-    var movingFlowVersion: MovingFlowVersion? { get set }
     var isMovingFlowEnabled: Bool { get }
 }
 
 public enum PaymentType {
     case trustly
-}
-
-public enum MovingFlowVersion: String {
-    case v1
-    case v2
 }
 
 @MainActor
