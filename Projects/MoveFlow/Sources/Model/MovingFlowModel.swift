@@ -19,10 +19,10 @@ public struct MovingFlowModel: Codable, Equatable, Hashable, Sendable {
     let currentHomeAddresses: [MoveAddress]
     let potentialHomeQuotes: [MovingFlowQuote]
     var homeQuote: MovingFlowQuote?
-    let quotes: [MovingFlowQuote]
+    let mtaQuotes: [MovingFlowQuote]
     let faqs: [FAQ]
     let extraBuildingTypes: [ExtraBuildingType]
-    let changeTier: ChangeTierIntentModel?
+    let changeTierModel: ChangeTierIntentModel?
 
     init(
         id: String,
@@ -36,7 +36,7 @@ public struct MovingFlowModel: Codable, Equatable, Hashable, Sendable {
         suggestedNumberCoInsured: Int,
         currentHomeAddresses: [MoveAddress],
         potentialHomeQuotes: [MovingFlowQuote],
-        quotes: [MovingFlowQuote],
+        mtaQuotes: [MovingFlowQuote],
         faqs: [FAQ],
         extraBuildingTypes: [ExtraBuildingType]
     ) {
@@ -51,17 +51,17 @@ public struct MovingFlowModel: Codable, Equatable, Hashable, Sendable {
         self.suggestedNumberCoInsured = suggestedNumberCoInsured
         self.currentHomeAddresses = currentHomeAddresses
         self.potentialHomeQuotes = potentialHomeQuotes
-        self.quotes = quotes
+        self.mtaQuotes = mtaQuotes
         self.faqs = faqs
         self.extraBuildingTypes = extraBuildingTypes
-        self.changeTier = nil
+        self.changeTierModel = nil
     }
 
     @MainActor
     var total: MonetaryAmount {
-        let quoteAmount = quotes.reduce(0, { $0 + $1.premium.floatAmount }) + (homeQuote?.premium.floatAmount ?? 0)
+        let quoteAmount = mtaQuotes.reduce(0, { $0 + $1.premium.floatAmount }) + (homeQuote?.premium.floatAmount ?? 0)
         let addonAmount =
-            quotes
+            mtaQuotes
             .compactMap({ $0.addons })
             .joined()
             .reduce(0, { $0 + $1.price.floatAmount })
@@ -69,12 +69,12 @@ public struct MovingFlowModel: Codable, Equatable, Hashable, Sendable {
         let addonHomeQuote = homeQuote?.addons.reduce(0, { $0 + $1.price.floatAmount }) ?? 0
         let totalAmount = quoteAmount + addonAmount + addonHomeQuote
 
-        let currency = homeQuote?.premium.currency ?? quotes.first?.premium.currency ?? ""
+        let currency = homeQuote?.premium.currency ?? mtaQuotes.first?.premium.currency ?? ""
         return MonetaryAmount(amount: totalAmount, currency: currency)
     }
 
     var movingDate: String {
-        return homeQuote?.startDate ?? quotes.first?.startDate ?? ""
+        return homeQuote?.startDate ?? mtaQuotes.first?.startDate ?? ""
     }
 
     func maxNumberOfCoinsuredFor(_ type: HousingType) -> Int {

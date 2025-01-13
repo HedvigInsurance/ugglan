@@ -17,10 +17,8 @@ public class FeatureFlagsDemo: FeatureFlags {
     public var isSubmitClaimEnabled: Bool = false
     public var osVersionTooLow: Bool = false
     public var emailPreferencesEnabled: Bool = false
-    public var isTiersEnabled: Bool = false
     public var isAddonsEnabled: Bool = false
-    public var movingFlowVersion: MovingFlowVersion?
-    public var isMovingFlowEnabled: Bool { movingFlowVersion != nil }
+    public var isMovingFlowEnabled: Bool = false
 
     public func setup(with context: [String: String]) async throws {
         try await Task.sleep(nanoseconds: 500_000_000)
