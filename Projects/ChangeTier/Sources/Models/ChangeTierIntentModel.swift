@@ -91,7 +91,8 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable, Sendable {
         if quotes.count == 1 {
             return quotes.first?.premium.formattedAmountPerMonth
         } else {
-            if let smallestPremium = quotes.sorted(by: { $0.premium.amount < $1.premium.amount }).first?.premium
+            if let smallestPremium = quotes.sorted(by: { $0.premium.floatAmount < $1.premium.floatAmount }).first?
+                .premium
                 .formattedAmountWithoutSymbol
             {
                 return L10n.tierFlowPriceLabel(smallestPremium)

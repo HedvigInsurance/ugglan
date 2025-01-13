@@ -39,7 +39,7 @@ extension EditType {
         if Dependencies.featureFlags().isMovingFlowEnabled && contract.supportsAddressChange {
             editTypes.append(.changeAddress)
         }
-        if Dependencies.featureFlags().isTiersEnabled && contract.supportsChangeTier {
+        if contract.supportsChangeTier {
             editTypes.append(.changeTier)
         }
         if Dependencies.featureFlags().isEditCoInsuredEnabled && contract.supportsCoInsured {

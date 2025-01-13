@@ -19,7 +19,7 @@ struct MockData {
                 suggestedNumberCoInsured: 2,
                 currentHomeAddresses: [],
                 potentialHomeQuotes: [],
-                quotes: [],
+                mtaQuotes: [],
                 faqs: [],
                 extraBuildingTypes: []
             )
@@ -37,7 +37,7 @@ struct MockData {
                 suggestedNumberCoInsured: 2,
                 currentHomeAddresses: [],
                 potentialHomeQuotes: [],
-                quotes: [],
+                mtaQuotes: [],
                 faqs: [],
                 extraBuildingTypes: []
             )

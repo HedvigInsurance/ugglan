@@ -22,10 +22,22 @@ struct ContractCoverageView: View {
                     didTapInsurableLimit: { limit in
                         contractsNavigationVm.insurableLimit = limit
                     },
-                    perils: contract.currentAgreement?.productVariant.perils ?? []
+                    perils: contract.allPerils
                 )
                 .hWithoutHorizontalPadding
             }
         }
+    }
+}
+
+extension Contract {
+    var allPerils: [(title: String?, perils: [Perils])] {
+        var allPerils: [(title: String?, perils: [Perils])] = []
+        allPerils.append((nil, currentAgreement?.productVariant.perils ?? []))
+        let addonPerils: [(title: String?, perils: [Perils])] =
+            currentAgreement?.addonVariant.compactMap({ ($0.displayName, $0.perils) }) ?? []
+        allPerils.append(contentsOf: addonPerils)
+        return allPerils
+
     }
 }

@@ -82,7 +82,7 @@ struct MovingFlowConfirmScreen: View {
     }
 
     private func getQuotes(from data: MovingFlowModel) -> [MovingFlowQuote] {
-        var allQuotes = data.quotes
+        var allQuotes = data.mtaQuotes
         if let homeQuote = data.homeQuote {
             allQuotes.insert(homeQuote, at: 0)
         }

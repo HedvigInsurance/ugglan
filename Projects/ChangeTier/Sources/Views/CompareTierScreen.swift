@@ -47,7 +47,7 @@ struct CompareTierScreen: View {
                 Column(
                     tier: tier,
                     selectedTier: vm.selectedTier,
-                    perils: vm.perils[tier.name] ?? [],
+                    perils: vm.getPerils(for: tier.name),
                     vm: vm
                 )
             }
@@ -202,7 +202,7 @@ struct CompareTierScreen: View {
                 .padding(.top, 7)
             let firstTier = vm.tiers.first?.name ?? ""
 
-            hSection(vm.perils[firstTier] ?? [], id: \.self) { peril in
+            hSection(vm.getPerils(for: firstTier), id: \.self) { peril in
                 hRow {
                     ZStack {
                         hText(peril.title, style: .label)
@@ -279,7 +279,7 @@ class CompareTierViewModel: ObservableObject {
     @Published var currentTier: Tier?
     @Published var tiers: [Tier]
     @Published var selectedPeril: Perils?
-    @Published var perils: [String: [Perils]] = [:]
+    @Published var perils: [(String, [Perils])] = []
 
     init(
         tiers: [Tier],
@@ -295,8 +295,8 @@ class CompareTierViewModel: ObservableObject {
     private func getPerils(
         tierNames: [String]?,
         rows: [ProductVariantComparison.ProductVariantComparisonRow]?
-    ) -> [String: [Perils]] {
-        var tempPerils: [String: [Perils]] = [:]
+    ) -> [(String, [Perils])] {
+        var tempPerils: [(String, [Perils])] = []
         var index = 0
 
         tierNames?
@@ -314,7 +314,7 @@ class CompareTierViewModel: ObservableObject {
                         )
                     })
 
-                tempPerils[tierName] = cells
+                tempPerils.append((tierName, cells ?? []))
                 index = index + 1
             })
         return tempPerils
@@ -360,11 +360,11 @@ class CompareTierViewModel: ObservableObject {
     }
 
     func getDescriptionText(for currentPeril: Perils) -> String {
-        var allMatchingPerils: [String: Perils] = [:]
+        var allMatchingPerils: [(String, Perils)] = []
         perils.forEach { tierName, allTierNamePerils in
             allTierNamePerils.forEach { peril in
                 if currentPeril.title == peril.title {
-                    allMatchingPerils[tierName] = peril
+                    allMatchingPerils.append((tierName, peril))
                 }
             }
         }
@@ -385,6 +385,10 @@ class CompareTierViewModel: ObservableObject {
             return currentPeril.description + "\n" + coverageTextDisplayString
         }
         return currentPeril.description
+    }
+
+    func getPerils(for tierName: String) -> [Perils] {
+        perils.first(where: { $0.0 == tierName })?.1 ?? []
     }
 }
 

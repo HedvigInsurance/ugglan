@@ -185,7 +185,7 @@ struct MovingFlowAddressScreen: View {
                     ) {
                         movingFlowNavigationVm.movingFlowVm = movingFlowData
 
-                        if let changeTierModel = movingFlowData.changeTier {
+                        if let changeTierModel = movingFlowData.changeTierModel {
                             router.push(MovingFlowRouterActions.selectTier(changeTierModel: changeTierModel))
                         } else {
                             router.push(MovingFlowRouterActions.confirm)

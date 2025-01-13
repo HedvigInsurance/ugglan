@@ -15,7 +15,7 @@ public class MoveFlowClientDemo: MoveFlowClient {
             suggestedNumberCoInsured: 2,
             currentHomeAddresses: [],
             potentialHomeQuotes: [],
-            quotes: [],
+            mtaQuotes: [],
             faqs: [],
             extraBuildingTypes: []
         )
@@ -38,7 +38,7 @@ public class MoveFlowClientDemo: MoveFlowClient {
             suggestedNumberCoInsured: 2,
             currentHomeAddresses: [],
             potentialHomeQuotes: [],
-            quotes: [],
+            mtaQuotes: [],
             faqs: [],
             extraBuildingTypes: []
         )

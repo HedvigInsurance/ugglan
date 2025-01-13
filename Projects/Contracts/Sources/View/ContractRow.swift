@@ -130,7 +130,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         VStack(alignment: .leading, spacing: multiplier != 1 ? 2 * multiplier : 0) {
             HStack(alignment: .top, spacing: .padding6) {
-                if let tierDisplayName, Dependencies.featureFlags().isTiersEnabled {
+                if let tierDisplayName {
                     StatusPill(text: tierDisplayName, type: .tier)
                 }
                 if let terminationMessage {
