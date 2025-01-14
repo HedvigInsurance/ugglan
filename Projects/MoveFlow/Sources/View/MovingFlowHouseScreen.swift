@@ -25,34 +25,30 @@ struct MovingFlowHouseScreen: View {
 
     var form: some View {
         hUpdatedForm {
-            VStack {
-                VStack(spacing: 16) {
-                    VStack(spacing: 8) {
-                        yearOfConstructionField
-                        ancillaryAreaField
-                        bathroomsField
-                        isSubleted
-                        extraBuildingTypes
-                    }
-                    .disabled(houseInformationInputvm.viewState == .loading)
-                    if let days = movingFlowNavigationVm.movingFlowVm?.oldAddressCoverageDurationDays {
-                        hSection {
-                            InfoCard(text: L10n.changeAddressCoverageInfoText(days), type: .info)
-                        }
-                    }
-                    hSection {
-                        hButton.LargeButton(type: .primary) {
-                            continuePressed()
-                        } content: {
-                            hText(L10n.saveAndContinueButtonLabel, style: .body1)
-                        }
-                    }
-
+            VStack(spacing: 16) {
+                VStack(spacing: 8) {
+                    yearOfConstructionField
+                    ancillaryAreaField
+                    bathroomsField
+                    isSubleted
+                    extraBuildingTypes
                 }
+                .disabled(houseInformationInputvm.viewState == .loading)
+                if let days = movingFlowNavigationVm.movingFlowVm?.oldAddressCoverageDurationDays {
+                    hSection {
+                        InfoCard(text: L10n.changeAddressCoverageInfoText(days), type: .info)
+                    }
+                }
+                hSection {
+                    hButton.LargeButton(type: .primary) {
+                        continuePressed()
+                    } content: {
+                        hText(L10n.saveAndContinueButtonLabel, style: .body1)
+                    }
+                }
+
             }
             .padding(.bottom, .padding8)
-            .padding(.top, .padding16)
-
         }
         .hFormTitle(
             title: .init(
@@ -68,6 +64,7 @@ struct MovingFlowHouseScreen: View {
             )
         )
         .sectionContainerStyle(.transparent)
+        .hFormContentPosition(.bottom)
     }
 
     private var yearOfConstructionField: some View {

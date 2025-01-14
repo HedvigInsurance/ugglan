@@ -57,17 +57,17 @@ public struct hUpdatedForm<Content: View>: View {
             case .top:
                 formTitle
                 content
-                Spacer()
+                Spacer(minLength: 0)
                 bottomAttachedView
             case .center:
                 formTitle
-                Spacer()
+                Spacer(minLength: 0)
                 content
-                Spacer()
+                Spacer(minLength: 0)
                 bottomAttachedView
             case .bottom:
                 formTitle
-                Spacer()
+                Spacer(minLength: 0)
                 content
                 bottomAttachedView
             }
