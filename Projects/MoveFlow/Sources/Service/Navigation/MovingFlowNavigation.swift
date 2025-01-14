@@ -70,11 +70,11 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                             typeOfContract: nil,
                             removeModel: .init(
                                 id: addonQuote.id,
-                                title: "Remove Travel Insurance Plus",
+                                title: L10n.addonRemoveTravelInsuranceTitle,
                                 description:
-                                    "By removing this extended coverage, your insurance will no longer include extra protection while traveling.",
-                                confirmButtonTitle: "Remove Travel Insurance Plus",
-                                cancelRemovalButtonTitle: "Keep current coverage"
+                                    L10n.addonRemoveTravelInsuranceDescription,
+                                confirmButtonTitle: L10n.addonRemoveTravelInsuranceConfirmButton,
+                                cancelRemovalButtonTitle: L10n.addonRemoveTravelInsuranceCancelButton
                             )
                         )
                         contractInfos.append(addonQuoteContractInfo)
