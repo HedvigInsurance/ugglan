@@ -61,8 +61,7 @@ public class MoveFlowClientOctopus: MoveFlowClient {
         throw MovingFlowError.missingDataError(message: L10n.General.errorBody)
     }
 
-    public func confirmMoveIntent(intentId: String, homeQuoteId: String?) async throws {
-
+    public func confirmMoveIntent(intentId: String, homeQuoteId: String, removedAddons: [String]) async throws {
         let mutation = OctopusGraphQL.MoveIntentCommitMutation(
             intentId: intentId,
             homeQuoteId: GraphQLNullable.init(optionalValue: homeQuoteId)

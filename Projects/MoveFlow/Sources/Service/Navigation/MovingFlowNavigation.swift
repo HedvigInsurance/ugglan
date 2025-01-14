@@ -82,17 +82,19 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                 })
 
             let vm = QuoteSummaryViewModel(
-                contract: contractInfos,
-                onConfirmClick: {
-                    Task {
-                        await movingFlowConfirmVm.confirmMoveIntent(
-                            intentId: self.movingFlowVm?.id ?? "",
-                            homeQuoteId: self.movingFlowVm?.homeQuote?.id ?? ""
-                        )
-                    }
-                    router.push(MovingFlowRouterWithHiddenBackButtonActions.processing)
-                }
+                contract: contractInfos
             )
+            vm.onConfirmClick = {
+                Task { [weak movingFlowConfirmVm, weak vm] in
+                    guard let movingFlowConfirmVm, let vm else { return }
+                    await movingFlowConfirmVm.confirmMoveIntent(
+                        intentId: self.movingFlowVm?.id ?? "",
+                        homeQuoteId: self.movingFlowVm?.homeQuote?.id ?? "",
+                        removedAddons: vm.getRemovedContractsIds()
+                    )
+                }
+                router.push(MovingFlowRouterWithHiddenBackButtonActions.processing)
+            }
             self.quoteSummaryViewModel = vm
         }
     }

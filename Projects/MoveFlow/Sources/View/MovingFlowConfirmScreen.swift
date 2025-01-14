@@ -19,13 +19,17 @@ public class MovingFlowConfirmViewModel: ObservableObject {
     @Published var viewState: ProcessingState = .loading
 
     @MainActor
-    func confirmMoveIntent(intentId: String, homeQuoteId: String) async {
+    func confirmMoveIntent(intentId: String, homeQuoteId: String, removedAddons: [String]) async {
         withAnimation {
             viewState = .loading
         }
 
         do {
-            try await service.confirmMoveIntent(intentId: intentId, homeQuoteId: homeQuoteId)
+            try await service.confirmMoveIntent(
+                intentId: intentId,
+                homeQuoteId: homeQuoteId,
+                removedAddons: removedAddons
+            )
 
             withAnimation {
                 viewState = .success

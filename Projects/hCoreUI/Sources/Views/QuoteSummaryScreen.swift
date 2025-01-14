@@ -7,7 +7,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     @Published var total: MonetaryAmount = .init(amount: "", currency: "")
     @Published var expandedContracts: [String] = []
     @Published var removedContracts: [String] = []
-    let onConfirmClick: () -> Void
+    public var onConfirmClick: () -> Void
     let isAddon: Bool
     let showNoticeCard: Bool
     @Published public var removeModel: QuoteSummaryViewModel.ContractInfo.RemoveModel? = nil
@@ -18,6 +18,10 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         } else {
             expandContract(contract)
         }
+    }
+
+    public func getRemovedContractsIds() -> [String] {
+        removedContracts
     }
 
     private func expandContract(_ contract: ContractInfo) {
@@ -117,11 +121,11 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         contract: [ContractInfo],
         total: MonetaryAmount? = nil,
         isAddon: Bool? = false,
-        onConfirmClick: @escaping () -> Void
+        onConfirmClick: (() -> Void)? = nil
     ) {
         self.contracts = contract
         self.isAddon = isAddon ?? false
-        self.onConfirmClick = onConfirmClick
+        self.onConfirmClick = onConfirmClick ?? {}
         self.showNoticeCard = (contract.count > 1 || isAddon ?? false)
         if let total = total {
             self.total = total
