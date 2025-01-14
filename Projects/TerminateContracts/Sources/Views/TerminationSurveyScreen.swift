@@ -9,7 +9,7 @@ struct TerminationSurveyScreen: View {
     @EnvironmentObject var terminationFlowNavigationViewModel: TerminationFlowNavigationViewModel
 
     var body: some View {
-        hForm {
+        hUpdatedForm {
             hSection {
                 VStack(spacing: 16) {
                     VStack(spacing: 4) {

@@ -35,7 +35,7 @@ struct MovingFlowAddressScreen: View {
     }
 
     var form: some View {
-        hForm {
+        hUpdatedForm {
             VStack(spacing: 16) {
                 VStack(spacing: 4) {
                     hSection {
@@ -63,14 +63,6 @@ struct MovingFlowAddressScreen: View {
                         InfoCard(text: L10n.changeAddressCoverageInfoText(days), type: .info)
                     }
                 }
-                hSection {
-                    hButton.LargeButton(type: .primary) {
-                        continuePressed()
-                    } content: {
-                        hText(vm.continueButtonTitle, style: .body1)
-                    }
-                }
-
             }
             .padding(.bottom, .padding8)
             .padding(.top, .padding16)
@@ -90,6 +82,16 @@ struct MovingFlowAddressScreen: View {
             )
         )
         .sectionContainerStyle(.transparent)
+        .hFormAttachToBottom {
+            hSection {
+                hButton.LargeButton(type: .primary) {
+                    continuePressed()
+                } content: {
+                    hText(vm.continueButtonTitle, style: .body1)
+                }
+            }
+        }
+        .hFormContentPosition(.bottom)
     }
 
     func addressField() -> some View {
