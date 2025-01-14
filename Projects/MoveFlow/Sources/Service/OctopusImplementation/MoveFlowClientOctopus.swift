@@ -181,23 +181,6 @@ extension MoveAddress {
 
 @MainActor
 extension MovingFlowQuote {
-    init(from data: OctopusGraphQL.QuoteFragment.Quote) {
-        id = UUID().uuidString
-        premium = .init(fragment: data.premium.fragments.moneyFragment)
-        startDate = data.startDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? data.startDate
-        let productVariantFragment = data.productVariant.fragments.productVariantFragment
-        displayName = productVariantFragment.displayName
-        exposureName = data.exposureName
-        insurableLimits = productVariantFragment.insurableLimits.compactMap({
-            .init(label: $0.label, limit: $0.limit, description: $0.description)
-        })
-        perils = productVariantFragment.perils.compactMap({ .init(fragment: $0) })
-        documents = productVariantFragment.documents.compactMap({ .init($0) })
-        contractType = TypeOfContract(rawValue: data.productVariant.typeOfContract)
-        displayItems = data.displayItems.map({ .init($0) })
-        addons = []
-    }
-
     init(from data: OctopusGraphQL.QuoteFragment.MtaQuote) {
         id = UUID().uuidString
         premium = .init(fragment: data.premium.fragments.moneyFragment)
@@ -241,11 +224,6 @@ extension InsuranceDocument {
 }
 
 extension DisplayItem {
-    init(_ data: OctopusGraphQL.QuoteFragment.Quote.DisplayItem) {
-        displaySubtitle = data.displaySubtitle
-        displayTitle = data.displayTitle
-        displayValue = data.displayValue
-    }
 
     init(_ data: OctopusGraphQL.QuoteFragment.MtaQuote.DisplayItem) {
         displaySubtitle = data.displaySubtitle

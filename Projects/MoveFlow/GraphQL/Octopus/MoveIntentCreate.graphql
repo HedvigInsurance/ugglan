@@ -35,21 +35,6 @@ fragment MoveAddressFragment on MoveAddress {
 }
 
 fragment QuoteFragment on MoveIntent {
-      quotes {
-        premium {
-            ...MoneyFragment
-        }
-        startDate
-        exposureName
-        productVariant {
-            ...ProductVariantFragment
-        }
-        displayItems {
-          displaySubtitle
-          displayTitle
-          displayValue
-        }
-      }
       mtaQuotes {
         premium {
             ...MoneyFragment
