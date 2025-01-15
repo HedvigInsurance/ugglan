@@ -64,7 +64,8 @@ public class MoveFlowClientOctopus: MoveFlowClient {
     public func confirmMoveIntent(intentId: String, homeQuoteId: String, removedAddons: [String]) async throws {
         let mutation = OctopusGraphQL.MoveIntentCommitMutation(
             intentId: intentId,
-            homeQuoteId: GraphQLNullable.init(optionalValue: homeQuoteId)
+            homeQuoteId: GraphQLNullable.init(optionalValue: homeQuoteId),
+            removedAddons: GraphQLNullable.init(optionalValue: removedAddons)
         )
         let delayTask = Task {
             try await Task.sleep(nanoseconds: 3_000_000_000)
