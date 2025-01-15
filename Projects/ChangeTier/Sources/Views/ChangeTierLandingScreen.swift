@@ -141,7 +141,7 @@ public struct ChangeTierLandingScreen: View {
         if !vm.canEditDeductible {
             hSection {
                 hFloatingField(
-                    value: vm.selectedQuote?.deductableAmount?.formattedAmount ?? "",
+                    value: vm.selectedQuote?.displayTitle ?? "",
                     placeholder: L10n.tierFlowDeductibleLabel
                 ) {}
                 .hBackgroundOption(option: [.locked, .secondary, .negative])
@@ -153,7 +153,7 @@ public struct ChangeTierLandingScreen: View {
             .padding(.bottom, 8)
         } else {
             DropdownView(
-                value: vm.selectedQuote?.deductableAmount?.formattedAmount ?? "",
+                value: vm.selectedQuote?.displayTitle ?? "",
                 placeHolder: vm.selectedQuote != nil
                     ? L10n.tierFlowDeductibleLabel : L10n.tierFlowDeductiblePlaceholder
             ) {
