@@ -56,12 +56,13 @@ public class HomeClientOctopus: HomeClient {
         if actions?.isEditCoInsuredEnabled == true && featureFlags.isEditCoInsuredEnabled {
             contractAction.append(.editCoInsured)
         }
-        if actions?.isCancelInsuranceEnabled == true && featureFlags.isTerminationFlowEnabled {
-            contractAction.append(.cancellation)
-        }
 
         if actions?.isChangeTierEnabled == true {
             contractAction.append(.upgradeCoverage)
+        }
+
+        if actions?.isCancelInsuranceEnabled == true && featureFlags.isTerminationFlowEnabled {
+            contractAction.append(.cancellation)
         }
 
         if !contractAction.isEmpty {
