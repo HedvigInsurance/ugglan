@@ -28,7 +28,7 @@ public class ChangeTierViewModel: ObservableObject {
 
     var isValid: Bool {
         let selectedTierIsSameAsCurrent = currentTier?.name == selectedTier?.name
-        let selectedDeductibleIsSameAsCurrent = currentQuote == selectedQuote
+        let selectedDeductibleIsSameAsCurrent = showDeductibleField ? currentQuote == selectedQuote : true
         let isDeductibleValid = selectedQuote != nil || selectedTier?.quotes.isEmpty ?? false
         let isTierValid = selectedTier != nil
         let hasSelectedValues = isTierValid && isDeductibleValid
@@ -38,7 +38,8 @@ public class ChangeTierViewModel: ObservableObject {
     }
 
     var showDeductibleField: Bool {
-        return !(selectedTier?.quotes.isEmpty ?? true) && selectedTier != nil
+        return selectedTier?.quotes.filter({ $0.deductableAmount != nil || $0.deductablePercentage != nil }).count ?? 0
+            > 0
     }
 
     public init(
