@@ -6,7 +6,8 @@ public struct hUpdatedForm<Content: View>: View {
     @Environment(\.hFormTitle) var hFormTitle
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.hFormContentPosition) var contentPosition
-    @State var contentHeight: CGFloat = 0
+    @Environment(\.hEnableScrollBounce) var hEnableScrollBounce
+    @StateObject fileprivate var vm = hUpdatedFormViewModel()
     var content: Content
     public init(
         @ViewBuilder _ builder: () -> Content
@@ -27,10 +28,10 @@ public struct hUpdatedForm<Content: View>: View {
                                 GeometryReader { geometry in
                                     Color.clear
                                         .onAppear {
-                                            contentHeight = geometry.size.height
+                                            vm.contentHeight = geometry.size.height
                                         }
                                         .onChange(of: geometry.size) { value in
-                                            contentHeight = value.height
+                                            vm.contentHeight = value.height
                                         }
                                 }
                             }
@@ -38,16 +39,27 @@ public struct hUpdatedForm<Content: View>: View {
                     .frame(maxWidth: .infinity)
                     .frame(maxHeight: .infinity)
                     .introspect(.scrollView, on: .iOS(.v13...)) { scrollView in
-                        if contentHeight > geometry.size.height {
-                            scrollView.bounces = true
-                        } else {
-                            scrollView.bounces = false
-                        }
+                        vm.scrollView = scrollView
+                    }
+                    .introspect(.viewController, on: .iOS(.v13...)) { vc in
+                        vm.vc = vc
+                    }
+                    .background {
+                        Color.clear
+                            .onAppear {
+                                vm.viewHeight = geometry.size.height
+                            }
+                            .onChange(of: geometry.size) { value in
+                                vm.viewHeight = value.height
+                            }
                     }
                 }
             }
             .frame(maxWidth: .infinity)
             .frame(maxHeight: .infinity)
+        }
+        .task {
+            vm.scrollBounces = hEnableScrollBounce
         }
     }
 
@@ -58,6 +70,7 @@ public struct hUpdatedForm<Content: View>: View {
                 formTitle
                 content
                 Spacer(minLength: 0)
+                    .layoutPriority(1)
                 bottomAttachedView
             case .center:
                 formTitle
@@ -68,6 +81,7 @@ public struct hUpdatedForm<Content: View>: View {
             case .bottom:
                 formTitle
                 Spacer(minLength: 0)
+                    .layoutPriority(1)
                 content
                 bottomAttachedView
             }
@@ -108,4 +122,72 @@ public struct hUpdatedForm<Content: View>: View {
         hText("BOTTOM")
     }
     .hFormTitle(title: .init(.small, .body1, "title", alignment: .leading), subTitle: nil)
+}
+
+@MainActor
+private class hUpdatedFormViewModel: ObservableObject {
+    weak var scrollView: UIScrollView? {
+        didSet {
+            setScrollView()
+            setBouces()
+        }
+    }
+    weak var vc: UIViewController? {
+        didSet {
+            setScrollView()
+        }
+    }
+
+    var viewHeight: CGFloat = 0 {
+        didSet {
+            setBouces()
+        }
+    }
+
+    var contentHeight: CGFloat = 0 {
+        didSet {
+            setBouces()
+        }
+    }
+
+    var scrollBounces: Bool? = nil {
+        didSet {
+            setBouces()
+        }
+    }
+
+    private func setBouces() {
+        if let scrollBounces {
+            scrollView?.bounces = scrollBounces
+        } else {
+            if contentHeight > viewHeight {
+                scrollView?.bounces = true
+            } else {
+                scrollView?.bounces = false
+            }
+        }
+    }
+
+    private func setScrollView() {
+        if let vc, let scrollView {
+            vc.setContentScrollView(scrollView)
+        }
+    }
+}
+
+private struct EnvironmentHScrollBounce: EnvironmentKey {
+    static let defaultValue: Bool? = nil
+}
+
+extension EnvironmentValues {
+    public var hEnableScrollBounce: Bool? {
+        get { self[EnvironmentHScrollBounce.self] }
+        set { self[EnvironmentHScrollBounce.self] = newValue }
+    }
+}
+
+extension View {
+    public func hSetScrollBounce(to value: Bool?) -> some View {
+        self.environment(\.hEnableScrollBounce, value)
+    }
 }

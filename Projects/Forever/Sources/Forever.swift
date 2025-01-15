@@ -51,7 +51,7 @@ public struct ForeverView: View {
 
     private var successView: some View {
         ScrollViewReader { value in
-            hForm {
+            hUpdatedForm {
                 VStack(spacing: 0) {
                     HeaderView {
                         scrollTo = 2
@@ -89,6 +89,7 @@ public struct ForeverView: View {
                     InvitationTable().id(2)
                 }
             }
+            .hSetScrollBounce(to: true)
             .onChange(of: scrollTo) { newValue in
                 if newValue != 0 {
                     withAnimation {
