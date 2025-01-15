@@ -71,6 +71,12 @@ public struct PriceField: View {
 
 #Preview {
     hSection {
+
+        PriceField(
+            newPremium: .init(amount: "99", currency: "SEK"),
+            currentPremium: MonetaryAmount(amount: "49", currency: "SEK")
+        )
+
         PriceField(
             newPremium: .init(amount: "99", currency: "SEK"),
             currentPremium: MonetaryAmount(amount: "49", currency: "SEK")
