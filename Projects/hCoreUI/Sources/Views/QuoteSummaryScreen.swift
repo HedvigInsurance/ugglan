@@ -254,7 +254,7 @@ public struct QuoteSummaryScreen: View {
                                     }
                                 } content: {
                                     hText(
-                                        "Add coverage"
+                                        L10n.addonAddCoverage
                                     )
                                     .transition(.scale)
                                 }
