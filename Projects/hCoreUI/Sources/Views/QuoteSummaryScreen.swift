@@ -157,9 +157,10 @@ public struct QuoteSummaryScreen: View {
         ScrollViewReader { proxy in
             hForm {
                 VStack(spacing: .padding16) {
-                    VStack(spacing: .padding8) {
+                    VStack(spacing: 0) {
                         ForEach(vm.contracts, id: \.id) { contract in
-                            contractInfoView(for: contract)
+                            contractInfoView(for: contract, proxy: proxy)
+                                .id(contract.id)
                         }
                     }
                     .background(
@@ -217,7 +218,7 @@ public struct QuoteSummaryScreen: View {
         }
     }
 
-    func contractInfoView(for contract: QuoteSummaryViewModel.ContractInfo) -> some View {
+    func contractInfoView(for contract: QuoteSummaryViewModel.ContractInfo, proxy: ScrollViewProxy) -> some View {
         hSection {
             StatusCard(
                 onSelected: {},
@@ -264,6 +265,15 @@ public struct QuoteSummaryScreen: View {
                                 ) {
                                     withAnimation(.easeInOut(duration: 0.4)) {
                                         vm.toggleContract(contract)
+                                        Task { [weak vm] in
+                                            guard let vm else { return }
+                                            try await Task.sleep(nanoseconds: 200_000_000)
+                                            withAnimation(.easeInOut(duration: 0.4)) {
+                                                if vm.expandedContracts.contains(contract.id) {
+                                                    proxy.scrollTo(contract.id, anchor: .top)
+                                                }
+                                            }
+                                        }
                                     }
 
                                 } content: {
@@ -281,6 +291,7 @@ public struct QuoteSummaryScreen: View {
             )
             .hCardWithoutSpacing
         }
+        .padding(.top, .padding8)
         .sectionContainerStyle(.transparent)
     }
 
