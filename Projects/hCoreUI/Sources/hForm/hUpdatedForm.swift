@@ -69,7 +69,7 @@ public struct hUpdatedForm<Content: View>: View {
             case .top:
                 formTitle
                 content
-                Spacer(minLength: 0)
+                Spacer()
                     .layoutPriority(1)
                 bottomAttachedView
             case .center:
@@ -80,8 +80,7 @@ public struct hUpdatedForm<Content: View>: View {
                 bottomAttachedView
             case .bottom:
                 formTitle
-                Spacer(minLength: 0)
-                    .layoutPriority(1)
+                Spacer()
                 content
                 bottomAttachedView
             }
@@ -96,6 +95,8 @@ public struct hUpdatedForm<Content: View>: View {
                 if let subTitle = hFormTitle.subTitle {
                     hText(subTitle.text, style: subTitle.fontSize)
                         .foregroundColor(hTextColor.Opaque.secondary)
+                        .multilineTextAlignment(hFormTitle.title.alignment == .center ? .center : .leading)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
             .frame(maxWidth: .infinity, alignment: hFormTitle.title.alignment)
@@ -106,6 +107,9 @@ public struct hUpdatedForm<Content: View>: View {
                 hFormTitle.subTitle?.type.bottomMargin ?? hFormTitle.title.type.bottomMargin
             )
             .padding(.horizontal, horizontalSizeClass == .regular ? .padding60 : .padding16)
+            .overlay {
+                Color.red.opacity(0.5)
+            }
         }
     }
 }

@@ -40,7 +40,6 @@ struct ContractInformationView: View {
                                         }
                                     }
                                     .foregroundColor(hTextColor.Opaque.secondary)
-                                    .layoutPriority(1)
                                 }
                             }
                             if contract.supportsCoInsured {
