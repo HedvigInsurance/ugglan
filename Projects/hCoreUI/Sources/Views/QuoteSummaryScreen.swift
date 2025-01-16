@@ -66,7 +66,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         let typeOfContract: TypeOfContract?
         let shouldShowDetails: Bool
         let removeModel: RemoveModel?
-
+        let isAddon: Bool
         public init(
             id: String,
             displayName: String,
@@ -78,6 +78,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             displayItems: [QuoteDisplayItem],
             insuranceLimits: [InsurableLimits],
             typeOfContract: TypeOfContract?,
+            isAddon: Bool = false,
             removeModel: RemoveModel? = nil
         ) {
             self.id = id
@@ -91,6 +92,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
             self.insuranceLimits = insuranceLimits
             self.typeOfContract = typeOfContract
             self.shouldShowDetails = !(documents.isEmpty && displayItems.isEmpty && insuranceLimits.isEmpty)
+            self.isAddon = isAddon
             self.removeModel = removeModel
         }
 
@@ -126,7 +128,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         self.contracts = contract
         self.isAddon = isAddon ?? false
         self.onConfirmClick = onConfirmClick ?? {}
-        self.showNoticeCard = (contract.count > 1 || isAddon ?? false)
+        self.showNoticeCard = (contract.filter({ !$0.isAddon }).count > 1 || isAddon ?? false)
         if let total = total {
             self.total = total
         } else {
@@ -538,6 +540,7 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
                     .init(label: "label3", limit: "limit3", description: "description3"),
                 ],
                 typeOfContract: nil,
+                isAddon: true,
                 removeModel: .init(
                     id: "id2",
                     title: "Remove Travel Insurance Plus",

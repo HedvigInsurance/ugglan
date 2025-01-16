@@ -25,61 +25,58 @@ public class MovingFlowNavigationViewModel: ObservableObject {
     ) {
         if let movingFlowModel = movingFlowVm {
             let movingFlowQuotes = getQuotes(from: movingFlowModel)
-            var contractInfos =
-                movingFlowQuotes
-                .map({ quote in
-                    QuoteSummaryViewModel.ContractInfo(
-                        id: quote.id,
-                        displayName: quote.displayName,
-                        exposureName: quote.exposureName ?? "",
-                        newPremium: quote.premium,
-                        currentPremium: quote.premium,
-                        documents: quote.documents.map({
-                            .init(displayName: $0.displayName, url: $0.url, type: .unknown)
-                        }),
+            var contractInfos: [QuoteSummaryViewModel.ContractInfo] = []
+            movingFlowQuotes.forEach { quote in
+                let contractQuote = QuoteSummaryViewModel.ContractInfo(
+                    id: quote.id,
+                    displayName: quote.displayName,
+                    exposureName: quote.exposureName ?? "",
+                    newPremium: quote.premium,
+                    currentPremium: quote.premium,
+                    documents: quote.documents.map({
+                        .init(displayName: $0.displayName, url: $0.url, type: .unknown)
+                    }),
+                    onDocumentTap: { document in
+                        self.document = document
+                    },
+                    displayItems: quote.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }
+                    ),
+                    insuranceLimits: quote.insurableLimits,
+                    typeOfContract: quote.contractType
+                )
+                contractInfos.append(contractQuote)
+
+                quote.addons.forEach({ addonQuote in
+                    let addonQuoteContractInfo = QuoteSummaryViewModel.ContractInfo(
+                        id: addonQuote.id,
+                        displayName: addonQuote.quoteInfo.title ?? "",
+                        exposureName: L10n.addonFlowSummaryActiveFrom(
+                            addonQuote.startDate.displayDateDDMMMYYYYFormat
+                        ),
+                        newPremium: addonQuote.price,
+                        currentPremium: nil,
+                        documents: addonQuote.addonVariant.documents,
                         onDocumentTap: { document in
                             self.document = document
                         },
-                        displayItems: quote.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }
-                        ),
-                        insuranceLimits: quote.insurableLimits,
-                        typeOfContract: quote.contractType
-                    )
-                })
-
-            let _ =
-                movingFlowQuotes
-                .forEach({ quote in
-                    quote.addons.forEach({ addonQuote in
-                        let addonQuoteContractInfo = QuoteSummaryViewModel.ContractInfo(
+                        displayItems: addonQuote.displayItems.map({
+                            .init(title: $0.displayTitle, value: $0.displayValue)
+                        }),
+                        insuranceLimits: addonQuote.addonVariant.insurableLimits,
+                        typeOfContract: nil,
+                        isAddon: true,
+                        removeModel: .init(
                             id: addonQuote.id,
-                            displayName: addonQuote.quoteInfo.title ?? "",
-                            exposureName: L10n.addonFlowSummaryActiveFrom(
-                                addonQuote.startDate.displayDateDDMMMYYYYFormat
-                            ),
-                            newPremium: addonQuote.price,
-                            currentPremium: nil,
-                            documents: addonQuote.addonVariant.documents,
-                            onDocumentTap: { document in
-                                self.document = document
-                            },
-                            displayItems: addonQuote.displayItems.map({
-                                .init(title: $0.displayTitle, value: $0.displayValue)
-                            }),
-                            insuranceLimits: addonQuote.addonVariant.insurableLimits,
-                            typeOfContract: nil,
-                            removeModel: .init(
-                                id: addonQuote.id,
-                                title: L10n.addonRemoveTravelInsuranceTitle,
-                                description:
-                                    L10n.addonRemoveTravelInsuranceDescription,
-                                confirmButtonTitle: L10n.addonRemoveTravelInsuranceConfirmButton,
-                                cancelRemovalButtonTitle: L10n.addonRemoveTravelInsuranceCancelButton
-                            )
+                            title: L10n.addonRemoveTravelInsuranceTitle,
+                            description:
+                                L10n.addonRemoveTravelInsuranceDescription,
+                            confirmButtonTitle: L10n.addonRemoveTravelInsuranceConfirmButton,
+                            cancelRemovalButtonTitle: L10n.addonRemoveTravelInsuranceCancelButton
                         )
-                        contractInfos.append(addonQuoteContractInfo)
-                    })
+                    )
+                    contractInfos.append(addonQuoteContractInfo)
                 })
+            }
 
             let vm = QuoteSummaryViewModel(
                 contract: contractInfos
