@@ -324,5 +324,16 @@ extension AddonDataModel {
         self.quoteInfo = .init(title: fragment.displayName, description: L10n.movingFlowTravelAddonSummaryDescription)
         self.addonVariant = .init(fragment: fragment.addonVariant.fragments.addonVariantFragment)
         self.startDate = fragment.startDate.localDateToDate ?? Date()
+        self.removeDialogInfo = .init(optinalFragment: fragment.removeDialogInfo)
+    }
+}
+
+extension RemoveDialogInfo {
+    init?(optinalFragment: OctopusGraphQL.MoveAddonQuoteFragment.RemoveDialogInfo?) {
+        guard let optinalFragment else { return nil }
+        title = optinalFragment.title
+        description = optinalFragment.description
+        confirmButtonTitle = optinalFragment.confirmButtonTitle
+        cancelButtonTitle = optinalFragment.cancelButtonTitle
     }
 }
