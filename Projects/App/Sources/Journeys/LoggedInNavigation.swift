@@ -495,7 +495,12 @@ class LoggedInNavigationViewModel: ObservableObject {
 
     private var deeplinkToBeOpenedAfterLogin: URL?
     private var cancellables = Set<AnyCancellable>()
-    weak var tabBar: UITabBarController?
+    weak var tabBar: UITabBarController? {
+        didSet {
+            guard #available(iOS 18, *), UIDevice.current.userInterfaceIdiom == .pad else { return }
+            tabBar?.traitOverrides.horizontalSizeClass = .compact
+        }
+    }
     init() {
         setupObservers()
 
