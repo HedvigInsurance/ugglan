@@ -1,23 +1,14 @@
-//
-//  hPadding.swift
-//  hCoreUI
-//
-//  Created by Sladan Nimcevic on 2025-01-20.
-//  Copyright © 2025 Hedvig. All rights reserved.
-//
-
 import SwiftUI
 
-public extension View {
-    func hPadding(_ edges: Edge.Set = .all, _ length: CGFloat = 16, diffLength: CGFloat? = nil) -> some View {
+extension View {
+    public func hPadding(_ edges: Edge.Set = .all, _ length: CGFloat = 16, diffLength: CGFloat? = nil) -> some View {
         self.modifier(hPaddingModifier(edges, length, diffLength))
     }
-    
-    func hPadding(_ length: CGFloat = 16, diffLength: CGFloat? = nil) -> some View {
+
+    public func hPadding(_ length: CGFloat = 16, diffLength: CGFloat? = nil) -> some View {
         self.modifier(hPaddingModifier(.all, length, diffLength))
     }
 }
-
 
 struct hPaddingModifier: ViewModifier {
     let size: CGFloat
