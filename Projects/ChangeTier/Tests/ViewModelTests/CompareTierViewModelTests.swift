@@ -118,7 +118,7 @@ final class CompareTierVireModelTests: XCTestCase {
         assert(model.tiers == tiers)
         assert(model.tiers.first == tiers.first)
         assert(model.tiers.count == tiers.count)
-        assert(model.perils == ["Standard": [peril1]])
+        assert(model.perils.first! == ("Standard", [peril1]))
         assert(model.viewState == .success)
     }
 
@@ -137,7 +137,7 @@ final class CompareTierVireModelTests: XCTestCase {
         assert(model.tiers == tiers)
         assert(model.tiers.first == tiers.first)
         assert(model.tiers.count == tiers.count)
-        assert(model.perils == [:])
+        assert(model.perils.isEmpty)
         assert(model.viewState == .error(errorMessage: ChangeTierError.somethingWentWrong.localizedDescription))
     }
 }

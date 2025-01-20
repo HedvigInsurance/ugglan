@@ -20,7 +20,10 @@ public final class NetworkClient {
         else {
             if let data {
                 let responseError = try? JSONDecoder().decode(ResponseError.self, from: data)
-                throw NetworkError.badRequest(message: responseError?.message)
+                if let message = responseError?.message {
+                    throw NetworkError.badRequest(message: message)
+                }
+                throw NetworkError.badRequest(message: String(data: data, encoding: .utf8))
             }
             throw NetworkError.badRequest(message: nil)
         }
