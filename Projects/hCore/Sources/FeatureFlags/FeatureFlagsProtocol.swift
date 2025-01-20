@@ -20,6 +20,7 @@ public protocol FeatureFlags {
     var isAddonsEnabled: Bool { get set }
     var isDemoMode: Bool { get set }
     var isMovingFlowEnabled: Bool { get }
+    var isAddonsRemovalFromMovingFlowEnabled: Bool { get }
 }
 
 public enum PaymentType {

@@ -28,6 +28,7 @@ public class FeatureFlagsUnleash: FeatureFlags {
     public var emailPreferencesEnabled: Bool = false
     public var isAddonsEnabled: Bool = false
     public var isMovingFlowEnabled: Bool = false
+    public var isAddonsRemovalFromMovingFlowEnabled: Bool = false
 
     public func setup(with context: [String: String]) async throws {
         unleashClient?.unsubscribe(name: "ready")
@@ -141,6 +142,11 @@ public class FeatureFlagsUnleash: FeatureFlags {
         let movingFlowKey = "moving_flow"
         isMovingFlowEnabled = unleashClient.isEnabled(name: movingFlowKey)
         featureFlags[movingFlowKey] = isMovingFlowEnabled
+
+        let enableAddonsRemovalFromMovingFlowKey = "enable_addons_removal_from_moving_flow"
+        isAddonsRemovalFromMovingFlowEnabled = unleashClient.isEnabled(name: movingFlowKey)
+        featureFlags[enableAddonsRemovalFromMovingFlowKey] = isAddonsRemovalFromMovingFlowEnabled
+
         Task {
             log.info(
                 "Feature flag set",
