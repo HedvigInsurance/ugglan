@@ -35,9 +35,15 @@ public enum AddonSource: Codable {
     }
 }
 
+struct AddonInfo: Equatable, Identifiable {
+    let id = UUID()
+    let model: InfoViewDataModel
+    let perils: [Perils]
+}
+
 @MainActor
 class ChangeAddonNavigationViewModel: ObservableObject {
-    @Published var isLearnMorePresented: InfoViewDataModel?
+    @Published var isLearnMorePresented: AddonInfo?
     @Published var isChangeCoverageDaysPresented: AddonOffer?
     @Published var isConfirmAddonPresented = false
     @Published var isAddonProcessingPresented = false
@@ -110,15 +116,16 @@ public struct ChangeAddonNavigation: View {
                 )
                 .environmentObject(changeAddonNavigationVm)
         }
-        .detent(
+        .modally(
             item: $changeAddonNavigationVm.isLearnMorePresented,
-            style: [.height],
             options: .constant(.alwaysOpenOnTop)
-        ) { infoViewModel in
-            InfoView(
-                title: infoViewModel.title ?? "",
-                description: infoViewModel.description ?? ""
-            )
+        ) { info in
+            AddonLearnMoreView(model: info.model, perils: info.perils)
+                .withDismissButton()
+                .embededInNavigation(
+                    options: .navigationType(type: .large),
+                    tracking: ChangeAddonTrackingType.addonLearnMoreView
+                )
         }
         .detent(
             item: $changeAddonNavigationVm.isChangeCoverageDaysPresented,
@@ -185,6 +192,8 @@ private enum ChangeAddonTrackingType: TrackingViewNameProtocol {
             return .init(describing: ConfirmChangeAddonScreen.self)
         case .processing:
             return .init(describing: AddonProcessingScreen.self)
+        case .addonLearnMoreView:
+            return .init(describing: AddonLearnMoreView.self)
         }
     }
 
@@ -192,4 +201,5 @@ private enum ChangeAddonTrackingType: TrackingViewNameProtocol {
     case selectSubOptionScreen
     case confirmAddonScreen
     case processing
+    case addonLearnMoreView
 }

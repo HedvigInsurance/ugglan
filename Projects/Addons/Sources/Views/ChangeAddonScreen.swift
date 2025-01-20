@@ -63,8 +63,12 @@ struct ChangeAddonScreen: View {
                                 buttonTitle: L10n.addonFlowLearnMoreButton,
                                 buttonAction: {
                                     changeAddonNavigationVm.isLearnMorePresented = .init(
-                                        title: L10n.addonFlowTravelInformationTitle,
-                                        description: L10n.addonFlowTravelInformationDescription
+                                        model: .init(
+                                            title: L10n.addonFlowTravelInformationTitle,
+                                            description: L10n.addonFlowTravelInformationDescription
+                                        ),
+                                        perils: changeAddonNavigationVm.changeAddonVm?.selectedQuote?.addonVariant?
+                                            .perils ?? []
                                     )
                                 }
                             )
