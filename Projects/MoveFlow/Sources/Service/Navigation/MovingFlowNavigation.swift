@@ -47,33 +47,10 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                 contractInfos.append(contractQuote)
 
                 quote.addons.forEach({ addonQuote in
-                    let addonQuoteContractInfo = QuoteSummaryViewModel.ContractInfo(
-                        id: addonQuote.id,
-                        displayName: addonQuote.quoteInfo.title ?? "",
-                        exposureName: L10n.addonFlowSummaryActiveFrom(
-                            addonQuote.startDate.displayDateDDMMMYYYYFormat
-                        ),
-                        newPremium: addonQuote.price,
-                        currentPremium: nil,
-                        documents: addonQuote.addonVariant.documents,
-                        onDocumentTap: { document in
-                            self.document = document
-                        },
-                        displayItems: addonQuote.displayItems.map({
-                            .init(title: $0.displayTitle, value: $0.displayValue)
-                        }),
-                        insuranceLimits: addonQuote.addonVariant.insurableLimits,
-                        typeOfContract: nil,
-                        isAddon: true,
-                        removeModel: .init(
-                            id: addonQuote.id,
-                            title: L10n.addonRemoveTravelInsuranceTitle,
-                            description:
-                                L10n.addonRemoveTravelInsuranceDescription,
-                            confirmButtonTitle: L10n.addonRemoveTravelInsuranceConfirmButton,
-                            cancelRemovalButtonTitle: L10n.addonRemoveTravelInsuranceCancelButton
-                        )
-                    )
+
+                    let addonQuoteContractInfo = addonQuote.asContractInfo { [weak self] document in
+                        self?.document = document
+                    }
                     contractInfos.append(addonQuoteContractInfo)
                 })
             }
@@ -308,4 +285,43 @@ private enum MovingFlowDetentType: TrackingViewNameProtocol {
     case addExtraBuilding
     case typeOfBuildingPicker
 
+}
+
+@MainActor
+extension AddonDataModel {
+    func asContractInfo(ondocumentClicked: @escaping (hPDFDocument) -> Void) -> QuoteSummaryViewModel.ContractInfo {
+        let removeModel: QuoteSummaryViewModel.ContractInfo.RemoveModel? = {
+            if let removeDialogInfo = self.removeDialogInfo {
+                return .init(
+                    id: self.id,
+                    title: removeDialogInfo.title,
+                    description: removeDialogInfo.description,
+                    confirmButtonTitle: removeDialogInfo.confirmButtonTitle,
+                    cancelRemovalButtonTitle: removeDialogInfo.cancelButtonTitle
+                )
+            }
+            return nil
+        }()
+        let addonQuoteContractInfo = QuoteSummaryViewModel.ContractInfo(
+            id: self.id,
+            displayName: self.quoteInfo.title ?? "",
+            exposureName: L10n.addonFlowSummaryActiveFrom(
+                self.startDate.displayDateDDMMMYYYYFormat
+            ),
+            newPremium: self.price,
+            currentPremium: nil,
+            documents: self.addonVariant.documents,
+            onDocumentTap: { document in
+                ondocumentClicked(document)
+            },
+            displayItems: self.displayItems.map({
+                .init(title: $0.displayTitle, value: $0.displayValue)
+            }),
+            insuranceLimits: self.addonVariant.insurableLimits,
+            typeOfContract: nil,
+            isAddon: true,
+            removeModel: removeModel
+        )
+        return addonQuoteContractInfo
+    }
 }

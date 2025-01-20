@@ -99,4 +99,10 @@ fragment MoveAddonQuoteFragment on MoveAddonQuote {
      addonVariant {
         ...AddonVariantFragment
     }
+    removeDialogInfo {
+        title
+        description
+        confirmButtonTitle
+        cancelButtonTitle
+    }
 }
