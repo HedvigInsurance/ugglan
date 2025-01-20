@@ -3,8 +3,7 @@ import UnleashProxyClientSwift
 import hGraphQL
 
 public class FeatureFlagsUnleash: FeatureFlags {
-    nonisolated(unsafe)
-        private var unleashClient: UnleashClient?
+    private var unleashClient: UnleashClient?
     private var environment: Environment
 
     public init(
@@ -66,19 +65,11 @@ public class FeatureFlagsUnleash: FeatureFlags {
         } catch let exception {
             log.info("Failed loading unleash experiments \(exception)")
         }
-        self.subscribeToUpdates()
-    }
-    nonisolated(unsafe)
-        private func subscribeToUpdates()
-    {
         self.unleashClient?
-            .subscribe(.update) {
-                Task { [weak self] in
-                    await self?.handleUpdate()
-                }
+            .subscribe(.update) { [weak self] in
+                self?.handleUpdate()
             }
     }
-
     public func updateContext(context: [String: String]) {
         if let existingContext = unleashClient?.context.toMap() {
             for contextKey in context.keys {

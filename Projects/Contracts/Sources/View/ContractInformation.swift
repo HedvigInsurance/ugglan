@@ -34,7 +34,7 @@ struct ContractInformationView: View {
                                     hText(item.displayTitle)
                                         .fixedSize(horizontal: multiplier != 1 ? false : true, vertical: false)
                                 }
-                                .withCustomAccessory({
+                                .withCustomAccessory {
                                     Spacer()
                                     Group {
                                         if let date = item.displayValue.localDateToDate?.displayDateDDMMMYYYYFormat {
@@ -45,7 +45,8 @@ struct ContractInformationView: View {
                                     }
                                     .fixedSize(horizontal: multiplier != 1 ? false : true, vertical: false)
                                     .foregroundColor(hTextColor.Opaque.secondary)
-                                })
+                                    .layoutPriority(1)
+                                }
                             }
                             if contract.supportsCoInsured {
                                 hRowDivider()

@@ -173,6 +173,15 @@ public struct Quote: Codable, Hashable, Identifiable, Sendable {
             self.previousPremium = previousPremium
         }
     }
+
+    var displayTitle: String {
+        var displayTitle: String = (deductableAmount?.formattedAmount ?? "")
+
+        if let deductiblePercentage = deductablePercentage {
+            displayTitle += " + \(deductiblePercentage)%"
+        }
+        return displayTitle
+    }
 }
 
 extension Quote: Equatable {
