@@ -78,7 +78,6 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     let activeInFuture: Bool?
     let masterInceptionDate: String?
     let tierDisplayName: String?
-    let multiplier = HFontTextStyle.body1.multiplier
 
     public init(
         image: UIImage?,
@@ -128,7 +127,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     }
 
     func makeBody(configuration: Configuration) -> some View {
-        VStack(alignment: .leading, spacing: multiplier != 1 ? 2 * multiplier : 0) {
+        hVStack(alignment: .leading, spacing: 0, diffSpacing: 2) {
             HStack(alignment: .top, spacing: .padding6) {
                 if let tierDisplayName {
                     StatusPill(text: tierDisplayName, type: .tier)
@@ -167,9 +166,8 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
             hText(contractExposureName)
                 .foregroundColor(hTextColor.Translucent.secondary)
                 .colorScheme(.dark)
-                .padding(.top, multiplier != 1 ? .padding16 * multiplier : 0)
         }
-        .padding(.padding16 * multiplier)
+        .padding(.padding16)
         .frame(minHeight: 200)
         .background(
             background
@@ -200,15 +198,15 @@ private enum PillType {
 private struct StatusPill: View {
     var text: String
     var type: PillType
-    let multiplier = HFontTextStyle.label.multiplier
+    @Environment(\.sizeCategory) private var sizeCategory
 
     var body: some View {
         VStack {
             hText(text, style: .label)
         }
-        .fixedSize(horizontal: multiplier != 1 ? false : true, vertical: false)
-        .padding(.vertical, (multiplier != 1) ? 6 * multiplier : 3)
-        .padding(.horizontal, .padding6 * multiplier)
+        .fixedSize(horizontal: sizeCategory > .large ? false : true, vertical: false)
+        .padding(.vertical, 3)
+        .hPadding(.horizontal, .padding6)
         .foregroundColor(hTextColor.Opaque.white)
         .background(type.getBackgroundColor).colorScheme(.light)
         .cornerRadius(.cornerRadiusS)

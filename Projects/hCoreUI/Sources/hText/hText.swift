@@ -117,11 +117,40 @@ public enum HFontTextStyle {
                     withTextStyle: uifontTextStyle,
                     compatibleWith: UITraitCollection(preferredContentSizeCategory: .large)
                 )
-                return defaultDescriptor.pointSize / normalSizeDesciptor.pointSize
+                let multiplier = defaultDescriptor.pointSize / normalSizeDesciptor.pointSize
+                return multiplier
             }
             return 1
         }()
         return sizeMultiplier
+    }
+    var fontTextStyle: Font.TextStyle {
+        switch self {
+        case .display1: return .title
+        case .display2: return .title
+        case .display3: return .title
+        case .heading3: return .title3
+        case .heading2: return .title2
+        case .heading1: return .title
+        case .body1: return .body
+        case .body2: return .body
+        case .body3: return .body
+        case .label: return .footnote
+        case .finePrint: return .footnote
+
+        case .displayXXLShort: return .largeTitle
+        case .displayXXLLong: return .largeTitle
+        case .displayXLShort: return .largeTitle
+        case .displayXLLong: return .largeTitle
+        case .displayLShort: return .largeTitle
+        case .displayLLong: return .largeTitle
+        case .displayMShort: return .largeTitle
+        case .displayMLong: return .largeTitle
+        case .displaySShort: return .largeTitle
+        case .displaySLong: return .largeTitle
+        case .displayXSShort: return .largeTitle
+        case .displayXSLong: return .largeTitle
+        }
     }
 
     private var uifontTextStyle: UIFont.TextStyle {
@@ -157,6 +186,7 @@ public enum HFontTextStyle {
 public struct hFontModifier: ViewModifier {
     public var style: HFontTextStyle
     @Environment(\.hWithoutFontMultiplier) var withoutFontMultiplier
+    @SwiftUI.Environment(\.sizeCategory) var sizeCategory
 
     public init(style: HFontTextStyle) {
         self.style = style
@@ -222,7 +252,7 @@ public struct hFontModifier: ViewModifier {
 
     public func body(content: Content) -> some View {
         content
-            .font(Font(font))
+            .font(.custom(font.fontName, size: style.fontSize, relativeTo: self.style.fontTextStyle))
             .lineSpacing(lineSpacing)
             .padding(.vertical, lineSpacing / 2)
     }
