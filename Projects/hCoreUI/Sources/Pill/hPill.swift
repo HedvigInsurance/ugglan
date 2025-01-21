@@ -15,11 +15,11 @@ public struct hPill: View {
     private let color: PillColor
     private let colorLevel: PillColor.PillColorLevel
     @Environment(\.hFieldSize) var fieldSize
-    let multiplier = HFontTextStyle.body1.multiplier
+    @Environment(\.sizeCategory) var sizeCategory
 
     public var body: some View {
         hText(text, style: fieldSize == .large ? .body1 : .label)
-            .fixedSize(horizontal: multiplier != 1 ? false : true, vertical: false)
+            .fixedSize(horizontal: sizeCategory != .large ? false : true, vertical: false)
             .foregroundColor(color.pillTextColor(level: colorLevel))
             .modifier(
                 PillModifier(
@@ -58,7 +58,7 @@ public struct hPill: View {
             } else if fieldSize == .medium {
                 padding = .padding10
             }
-            return padding * style.multiplier
+            return padding
         }
 
         private var getTopPadding: CGFloat {
@@ -68,8 +68,7 @@ public struct hPill: View {
             } else if fieldSize == .medium {
                 padding = 6.5
             }
-            let multiplier = style.multiplier != 1 ? style.multiplier * 2 : 1
-            return padding * multiplier
+            return padding
         }
 
         private var getBottomPadding: CGFloat {
@@ -79,8 +78,7 @@ public struct hPill: View {
             } else if fieldSize == .medium {
                 padding = 7.5
             }
-            let multiplier = style.multiplier != 1 ? style.multiplier * 2 : 1
-            return padding * multiplier
+            return padding
         }
 
         private var getCornerRadius: CGFloat {

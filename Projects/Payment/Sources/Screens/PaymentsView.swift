@@ -70,7 +70,6 @@ public struct PaymentsView: View {
 
     @ViewBuilder
     private var upcomingPayment: some View {
-        let multiplier = HFontTextStyle.body1.multiplier
 
         PresentableStoreLens(
             PaymentStore.self,
@@ -82,7 +81,7 @@ public struct PaymentsView: View {
                 if let upcomingPayment = state.paymentData {
                     hSection {
                         hRow {
-                            VStack(alignment: .leading, spacing: multiplier != 1 ? .padding16 * multiplier : 0) {
+                            VStack(alignment: .leading, spacing: 0) {
                                 HStack(alignment: .center, spacing: 8) {
                                     hText(L10n.paymentsUpcomingPayment)
                                     Spacer()

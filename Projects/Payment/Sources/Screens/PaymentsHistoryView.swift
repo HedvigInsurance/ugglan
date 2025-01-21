@@ -11,7 +11,6 @@ public struct PaymentHistoryView: View {
     @EnvironmentObject var router: Router
     @PresentableStore var store: PaymentStore
     @StateObject var vm = PaymentsHistoryViewModel()
-    let multiplier = HFontTextStyle.body1.multiplier
 
     public var body: some View {
         successView.loading($vm.viewState)
@@ -37,7 +36,7 @@ public struct PaymentHistoryView: View {
             }
         ) { history in
             if history.isEmpty {
-                VStack(spacing: .padding16 * multiplier) {
+                VStack(spacing: .padding16) {
                     Image(uiImage: hCoreUIAssets.infoFilled.image)
                         .resizable()
                         .frame(width: 24, height: 24)
@@ -47,7 +46,7 @@ public struct PaymentHistoryView: View {
                 }
             } else {
                 hForm {
-                    VStack(spacing: .padding16 * multiplier) {
+                    VStack(spacing: .padding16) {
                         ForEach(history) { item in
                             hSection(item.valuesPerMonth) { month in
                                 hRow {
@@ -57,7 +56,7 @@ public struct PaymentHistoryView: View {
                                     ) {
                                         VStack(
                                             alignment: .leading,
-                                            spacing: multiplier != 1 ? .padding16 * multiplier : 0
+                                            spacing: 0
                                         ) {
                                             hText(month.paymentData.payment.date.displayDateShort)
                                             if month.paymentData.status.hasFailed {

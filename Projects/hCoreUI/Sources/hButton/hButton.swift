@@ -335,8 +335,8 @@ struct _hButton<Content: View>: View {
 private struct LargeButtonModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .padding(.top, 15 * HFontTextStyle.body1.multiplier)
-            .padding(.bottom, 17 * HFontTextStyle.body1.multiplier)
+            .padding(.top, 15)
+            .padding(.bottom, 17)
             .frame(minHeight: .padding56)
             .frame(maxWidth: .infinity)
     }
@@ -346,8 +346,8 @@ private struct MediumButtonModifier: ViewModifier {
     func body(content: Content) -> some View {
         hSection {
             content
-                .padding(.top, 7 * HFontTextStyle.body1.multiplier)
-                .padding(.bottom, 9 * HFontTextStyle.body1.multiplier)
+                .padding(.top, 7)
+                .padding(.bottom, 9)
                 .frame(maxWidth: .infinity)
         }
         .sectionContainerStyle(.transparent)
@@ -358,9 +358,9 @@ private struct SmallButtonModifier: ViewModifier {
     func body(content: Content) -> some View {
         hSection {
             content
-                .padding(.top, 6.5 * HFontTextStyle.label.multiplier)
-                .padding(.bottom, 7.5 * HFontTextStyle.label.multiplier)
-                .frame(minHeight: 32 * HFontTextStyle.label.multiplier)
+                .padding(.top, 6.5)
+                .padding(.bottom, 7.5)
+                .frame(minHeight: 32)
         }
         .sectionContainerStyle(.transparent)
     }

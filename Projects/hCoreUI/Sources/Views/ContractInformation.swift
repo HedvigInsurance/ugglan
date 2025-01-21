@@ -4,7 +4,6 @@ public struct ContractInformation: View {
     let displayName: String?
     let exposureName: String?
     let pillowImage: UIImage?
-    let multiplier = HFontTextStyle.body1.multiplier
 
     let status: String?
     public init(
@@ -26,7 +25,7 @@ public struct ContractInformation: View {
                     .resizable()
                     .frame(width: 48, height: 48)
             }
-            VStack(alignment: .leading, spacing: multiplier != 1 ? .padding8 * multiplier : 0) {
+            VStack(alignment: .leading, spacing: 0) {
                 HStack(alignment: .center) {
                     hText(displayName ?? "", style: .heading1)
                     Spacer()

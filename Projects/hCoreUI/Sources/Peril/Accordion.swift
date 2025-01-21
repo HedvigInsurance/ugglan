@@ -55,13 +55,12 @@ struct AccordionButtonStyle: SwiftUI.ButtonStyle {
     var peril: Perils?
     let title: String
     let description: String
-    let multiplier = HFontTextStyle.body1.multiplier
 
     @Binding var extended: Bool
     @Environment(\.hFieldSize) var fieldSize
 
     func makeBody(configuration: Configuration) -> some View {
-        VStack(alignment: .center, spacing: 11 * multiplier) {
+        VStack(alignment: .center, spacing: 11) {
             HStack(alignment: .top, spacing: 8) {
                 if let color = peril?.color {
                     Group {
@@ -103,7 +102,7 @@ struct AccordionButtonStyle: SwiftUI.ButtonStyle {
             }
 
             if extended {
-                VStack(alignment: .leading, spacing: .padding12 * multiplier) {
+                VStack(alignment: .leading, spacing: .padding12) {
                     hText(description, style: peril != nil ? .label : .body1)
                         .padding(.bottom, .padding12)
                         .foregroundColor(getTextColor)

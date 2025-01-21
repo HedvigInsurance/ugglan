@@ -5,12 +5,11 @@ import hCoreUI
 struct ContractDetails: View {
     @Binding var expandedContracts: [String]
     let contract: PaymentData.ContractPaymentDetails
-    let multiplier = HFontTextStyle.body1.multiplier
 
     var body: some View {
         hSection {
             hRow {
-                VStack(alignment: .leading, spacing: multiplier != 1 ? .padding16 * multiplier : 0) {
+                VStack(alignment: .leading, spacing: 0) {
                     HStack(alignment: .top, spacing: 8) {
                         HStack {
                             hText(contract.title)
@@ -51,7 +50,7 @@ struct ContractDetails: View {
         if expandedContracts.contains(contract.id) {
             hSection(Array(contract.periods.enumerated()), id: \.element.id) { offset, period in
                 hRow {
-                    VStack(alignment: .leading, spacing: multiplier != 1 ? .padding16 * multiplier : 0) {
+                    VStack(alignment: .leading, spacing: 0) {
                         HStack {
                             hText(period.fromToDate)
                                 .foregroundColor(

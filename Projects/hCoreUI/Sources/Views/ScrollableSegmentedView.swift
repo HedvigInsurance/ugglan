@@ -6,7 +6,6 @@ import hCore
 public struct ScrollableSegmentedView<Content: View>: View {
     @ObservedObject var vm: ScrollableSegmentedViewModel
     @ViewBuilder var contentFor: (_ id: String) -> Content
-    let multiplier = HFontTextStyle.body1.multiplier
 
     public init(
         vm: ScrollableSegmentedViewModel,
@@ -69,7 +68,7 @@ public struct ScrollableSegmentedView<Content: View>: View {
 
     func headerElement(for model: PageModel) -> some View {
         hText(model.title, style: .label)
-            .padding(.vertical, 3 * multiplier)
+            .padding(.vertical, 3)
             .foregroundColor(hTextColor.Opaque.primary)
             .frame(maxWidth: .infinity)
             .onTapGesture {

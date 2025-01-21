@@ -4,7 +4,6 @@ import hCore
 public struct EditContractScreen: View {
     @State var selectedType: EditType?
     @State var selectedValue: String?
-    let multiplier = HFontTextStyle.body1.multiplier
 
     let editTypes: [EditType]
     let onSelectedType: (EditType) -> Void
@@ -26,7 +25,7 @@ public struct EditContractScreen: View {
                                 leftView: {
                                     VStack(
                                         alignment: .leading,
-                                        spacing: multiplier != 1 ? .padding12 * multiplier : .padding2
+                                        spacing: .padding2
                                     ) {
                                         HStack {
                                             hText(editType.title)

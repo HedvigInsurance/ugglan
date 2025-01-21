@@ -24,7 +24,6 @@ public struct hFieldTextContent<T>: View {
     let leftViewWithItem: ((T?) -> AnyView?)?
     let leftView: (() -> AnyView?)?
     let cellView: (() -> AnyView?)?
-    let multiplier = HFontTextStyle.body1.multiplier
 
     public init(
         item: ItemModel? = nil,
@@ -43,7 +42,7 @@ public struct hFieldTextContent<T>: View {
     }
 
     public var body: some View {
-        HStack(spacing: .padding8 * multiplier) {
+        HStack(spacing: .padding8) {
             if leftAlign {
                 VStack(spacing: 0) {
                     HStack(alignment: .top) {
@@ -71,7 +70,7 @@ public struct hFieldTextContent<T>: View {
             } else if let leftView = leftView?() {
                 leftView
             } else {
-                VStack(spacing: multiplier != 1 ? .padding16 * multiplier : 0) {
+                VStack(spacing: 0) {
                     Group {
                         let titleFont: HFontTextStyle =
                             (fieldSize != .large) ? .body1 : .heading2

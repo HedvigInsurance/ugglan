@@ -64,11 +64,10 @@ struct QuestionsItems: View {
     let questions: [Question]
     let questionType: QuestionType
     let source: HelpViewSource
-    let multiplier = HFontTextStyle.body1.multiplier
     @EnvironmentObject var router: Router
 
     var body: some View {
-        VStack(alignment: .leading, spacing: multiplier != 1 ? 16 * multiplier : 0) {
+        VStack(alignment: .leading, spacing: 0) {
             switch questionType {
             case .commonQuestions, .searchQuestions:
                 HelpCenterPill(title: questionType.title, color: .blue)
@@ -77,7 +76,7 @@ struct QuestionsItems: View {
             case .relatedQuestions:
                 HelpCenterPill(title: questionType.title, color: .pink)
             }
-            VStack(alignment: .leading, spacing: 4 * multiplier) {
+            VStack(alignment: .leading, spacing: .padding4) {
                 hSection(questions, id: \.self) { item in
                     hRow {
                         hText(item.question)
@@ -109,11 +108,10 @@ struct QuestionsItems: View {
 struct SupportView: View {
     @PresentableStore var store: HomeStore
     @ObservedObject var router: Router
-    let multiplier = HFontTextStyle.display3.multiplier
 
     var body: some View {
         HStack {
-            VStack(spacing: multiplier != 1 ? .padding16 * multiplier : 0) {
+            VStack(spacing: 0) {
                 hText(L10n.hcChatQuestion)
                     .foregroundColor(hTextColor.Translucent.primary)
                 hText(L10n.hcChatAnswer)
@@ -122,14 +120,14 @@ struct SupportView: View {
                 PresentableStoreLens(HomeStore.self) { state in
                     state.hasSentOrRecievedAtLeastOneMessage
                 } _: { hasSentOrRecievedAtLeastOneMessage in
-                    VStack(spacing: .padding8 * multiplier) {
+                    VStack(spacing: .padding8) {
                         if hasSentOrRecievedAtLeastOneMessage {
                             hButton.MediumButton(type: .primary) {
                                 router.push(HelpCenterNavigationRouterType.inbox)
                             } content: {
                                 hText(L10n.hcChatGoToInbox)
                             }
-                            .fixedSize(horizontal: multiplier != 1 ? false : true, vertical: false)
+                            .fixedSize()
                         }
                         hButton.MediumButton(type: hasSentOrRecievedAtLeastOneMessage ? .ghost : .primary) {
                             NotificationCenter.default.post(
@@ -139,7 +137,7 @@ struct SupportView: View {
                         } content: {
                             hText(L10n.hcChatButton)
                         }
-                        .fixedSize(horizontal: multiplier != 1 ? false : true, vertical: false)
+                        .fixedSize()
                     }
                     .padding(.top, .padding24)
                 }
@@ -160,12 +158,11 @@ struct SupportView: View {
 struct QuickActionView: View {
     let quickAction: QuickAction
     let onQuickAction: () -> Void
-    let multiplier = HFontTextStyle.body1.multiplier
 
     var body: some View {
         hSection {
             hRow {
-                VStack(alignment: .leading, spacing: multiplier != 1 ? (.padding8 * multiplier) : 0) {
+                VStack(alignment: .leading, spacing: 0) {
                     hText(quickAction.displayTitle)
 
                     hText(quickAction.displaySubtitle, style: .label)
@@ -175,7 +172,7 @@ struct QuickActionView: View {
                 Spacer()
             }
             .withChevronAccessory
-            .verticalPadding(12 * multiplier)
+            .verticalPadding(.padding12)
             .onTap {
                 log.addUserAction(
                     type: .click,

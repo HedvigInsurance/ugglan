@@ -8,7 +8,6 @@ struct PaymentDetailsView: View {
     @PresentableStore var store: PaymentStore
     @State var expandedContracts: [String] = []
     @EnvironmentObject var router: Router
-    let multiplier = HFontTextStyle.body1.multiplier
 
     init(data: PaymentData) {
         self.data = data
@@ -142,7 +141,7 @@ struct PaymentDetailsView: View {
 
     @ViewBuilder var paymentDue: some View {
         hRow {
-            VStack(spacing: .padding16 * multiplier) {
+            VStack(spacing: .padding16) {
                 HStack {
                     hText(L10n.paymentsPaymentDue)
                     Spacer()

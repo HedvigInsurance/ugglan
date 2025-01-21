@@ -47,7 +47,6 @@ public struct hRow<Content: View, Accessory: View>: View {
     var verticalPadding: CGFloat = 16
     var topPadding: CGFloat = 0
     var bottomPadding: CGFloat = 0
-    let multiplier = HFontTextStyle.body1.multiplier
 
     public init(
         _ accessory: Accessory,
@@ -93,9 +92,9 @@ public struct hRow<Content: View, Accessory: View>: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, withoutHorizontalPadding ? 0 : horizontalPadding)
-            .padding(.vertical, verticalPadding * multiplier)
-            .padding(.top, topPadding * multiplier)
-            .padding(.bottom, bottomPadding * multiplier)
+            .padding(.vertical, verticalPadding)
+            .padding(.top, topPadding)
+            .padding(.bottom, bottomPadding)
             if (position == .middle || position == .top) && !hWithoutDivider {
                 hRowDivider()
             }

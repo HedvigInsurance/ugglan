@@ -97,7 +97,6 @@ public struct InfoView: View {
     let closeButtonTitle: String
     let extraButton: ExtraButtonModel?
     @StateObject private var vm = InfoViewModel()
-    let multiplier = HFontTextStyle.body1.multiplier
 
     public init(
         title: String,
@@ -114,7 +113,7 @@ public struct InfoView: View {
     public var body: some View {
         hForm {
             hSection {
-                VStack(alignment: .leading, spacing: .padding8 * multiplier) {
+                VStack(alignment: .leading, spacing: .padding8) {
                     hText(title)
                     hText(description)
                         .foregroundColor(hTextColor.Opaque.secondary)

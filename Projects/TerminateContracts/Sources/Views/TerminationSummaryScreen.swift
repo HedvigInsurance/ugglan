@@ -4,7 +4,6 @@ import hCoreUI
 
 struct TerminationSummaryScreen: View {
     @EnvironmentObject var terminationNavigationVm: TerminationFlowNavigationViewModel
-    let multiplier = HFontTextStyle.body1.multiplier
 
     init() {}
 
@@ -74,7 +73,7 @@ struct TerminationSummaryScreen: View {
             )
             .resizable()
             .frame(width: 48, height: 48)
-            VStack(alignment: .leading, spacing: multiplier != 1 ? .padding16 * multiplier : 0) {
+            VStack(alignment: .leading, spacing: 0) {
                 hText(terminationNavigationVm.config?.contractDisplayName ?? "")
                 hText(terminationNavigationVm.config?.contractExposureName ?? "")
                     .foregroundColor(hTextColor.Translucent.secondary)
@@ -83,7 +82,7 @@ struct TerminationSummaryScreen: View {
     }
 
     private var addonContent: some View {
-        VStack(alignment: .leading, spacing: multiplier != 1 ? .padding16 * multiplier : 0) {
+        VStack(alignment: .leading, spacing: 0) {
             hText(L10n.terminationAddonCoverageTitle)
             ForEach(terminationNavigationVm.extraCoverage, id: \.self) { item in
                 getRow(for: item)
