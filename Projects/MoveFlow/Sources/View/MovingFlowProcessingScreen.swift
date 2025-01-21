@@ -38,6 +38,7 @@ struct MovingFlowProcessingScreen: View {
 struct SuccessScreen_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.sv_SE)
+
         return MovingFlowProcessingScreen(
             onSuccessButtonAction: {},
             onErrorButtonAction: {},

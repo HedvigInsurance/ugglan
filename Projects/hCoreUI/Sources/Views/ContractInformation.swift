@@ -4,19 +4,19 @@ public struct ContractInformation: View {
     let displayName: String?
     let exposureName: String?
     let pillowImage: UIImage?
-    let onInfoClick: (() -> Void)?
     let multiplier = HFontTextStyle.body1.multiplier
 
+    let status: String?
     public init(
         displayName: String?,
         exposureName: String?,
         pillowImage: UIImage?,
-        onInfoClick: (() -> Void)? = nil
+        status: String? = nil
     ) {
         self.displayName = displayName
         self.exposureName = exposureName
         self.pillowImage = pillowImage
-        self.onInfoClick = onInfoClick
+        self.status = status
     }
 
     public var body: some View {
@@ -27,21 +27,41 @@ public struct ContractInformation: View {
                     .frame(width: 48, height: 48)
             }
             VStack(alignment: .leading, spacing: multiplier != 1 ? .padding8 * multiplier : 0) {
-                HStack {
+                HStack(alignment: .center) {
                     hText(displayName ?? "", style: .heading1)
                     Spacer()
-                    if let onInfoClick = onInfoClick {
-                        Image(uiImage: hCoreUIAssets.infoOutlined.image)
-                            .foregroundColor(hFillColor.Opaque.primary)
-                            .onTapGesture {
-                                onInfoClick()
-                            }
+                    if let status {
+                        hPill(text: status, color: .grey)
+                            .hFieldSize(.medium)
+                            .transition(.opacity)
                     }
                 }
-                hText(exposureName ?? "", style: .body1)
-                    .foregroundColor(hTextColor.Translucent.secondary)
+                if let exposureName {
+                    hText(exposureName, style: .body1)
+                        .foregroundColor(hTextColor.Translucent.secondary)
+                        .transition(.opacity)
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }
+
+#Preview(body: {
+    VStack {
+        ContractInformation(
+            displayName: "displayName",
+            exposureName: "name",
+            pillowImage: nil,
+            status: "status"
+        )
+        .background(Color.red)
+        ContractInformation(
+            displayName: "displayName",
+            exposureName: "name",
+            pillowImage: nil
+        )
+        .background(Color.blue)
+
+    }
+})

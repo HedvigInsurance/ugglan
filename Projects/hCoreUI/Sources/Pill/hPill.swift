@@ -35,7 +35,6 @@ public struct hPill: View {
         let colorLevel: PillColor.PillColorLevel
         let style: HFontTextStyle
         @Environment(\.hFieldSize) var fieldSize
-
         func body(content: Content) -> some View {
             content
                 .padding(.horizontal, getHorizontalPadding)

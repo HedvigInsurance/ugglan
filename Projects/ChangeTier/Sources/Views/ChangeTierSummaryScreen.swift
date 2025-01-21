@@ -58,7 +58,8 @@ extension ChangeTierViewModel {
                     },
                     displayItems: addon.displayItems.compactMap({ .init(title: $0.title, value: $0.value) }),
                     insuranceLimits: addon.addonVariant.insurableLimits,
-                    typeOfContract: nil
+                    typeOfContract: nil,
+                    isAddon: true
                 )
             )
         }
@@ -76,7 +77,6 @@ extension ChangeTierViewModel {
         }()
         let vm = QuoteSummaryViewModel(
             contract: contracts,
-            total: premium,
             onConfirmClick: {
                 self.commitTier()
                 changeTierNavigationVm.router.push(ChangeTierRouterActionsWithoutBackButton.commitTier)

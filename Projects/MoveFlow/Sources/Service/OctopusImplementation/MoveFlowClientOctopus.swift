@@ -61,11 +61,11 @@ public class MoveFlowClientOctopus: MoveFlowClient {
         throw MovingFlowError.missingDataError(message: L10n.General.errorBody)
     }
 
-    public func confirmMoveIntent(intentId: String, homeQuoteId: String?) async throws {
-
+    public func confirmMoveIntent(intentId: String, homeQuoteId: String, removedAddons: [String]) async throws {
         let mutation = OctopusGraphQL.MoveIntentCommitMutation(
             intentId: intentId,
-            homeQuoteId: GraphQLNullable.init(optionalValue: homeQuoteId)
+            homeQuoteId: GraphQLNullable.init(optionalValue: homeQuoteId),
+            removedAddons: GraphQLNullable.init(optionalValue: removedAddons)
         )
         let delayTask = Task {
             try await Task.sleep(nanoseconds: 3_000_000_000)
@@ -324,5 +324,17 @@ extension AddonDataModel {
         self.quoteInfo = .init(title: fragment.displayName, description: L10n.movingFlowTravelAddonSummaryDescription)
         self.addonVariant = .init(fragment: fragment.addonVariant.fragments.addonVariantFragment)
         self.startDate = fragment.startDate.localDateToDate ?? Date()
+        self.removeDialogInfo = {
+            if Dependencies.featureFlags().isAddonsRemovalFromMovingFlowEnabled {
+                return .init(
+                    title: L10n.addonRemoveTitle(fragment.displayName),
+                    description: L10n.addonRemoveDescription,
+                    confirmButtonTitle: L10n.addonRemoveConfirmButton(fragment.displayName),
+                    cancelButtonTitle: L10n.addonRemoveCancelButton
+                )
+            }
+            return nil
+
+        }()
     }
 }

@@ -26,7 +26,7 @@ public struct CoverageView: View {
             }
             VStack(spacing: .padding32) {
                 ForEach(perils, id: \.title) { perils in
-                    VStack(spacing: .padding8) {
+                    VStack(spacing: .padding16) {
                         if let title = perils.title {
                             hSection {
                                 HStack {
@@ -36,10 +36,12 @@ public struct CoverageView: View {
                                 }
                             }
                         }
-                        PerilCollection(
-                            perils: perils.perils
-                        )
-                        .hFieldSize(.small)
+                        VStack(spacing: .padding4) {
+                            PerilCollection(
+                                perils: perils.perils
+                            )
+                            .hFieldSize(.small)
+                        }
                     }
                 }
             }
