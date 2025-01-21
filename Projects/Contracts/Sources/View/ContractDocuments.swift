@@ -22,13 +22,13 @@ struct ContractDocumentsView: View {
             }
         ) { contract in
             if let contract = contract {
-                hVStack(alignment: .leading, spacing: .padding8) {
+                VStack(alignment: .leading, spacing: .padding8) {
                     hSection {
                         hText(contract.currentAgreement?.productVariant.displayName ?? "")
                             .foregroundColor(hTextColor.Opaque.secondary)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    .hPadding(.top, .padding16)
+                    .padding(.top, .padding16)
 
                     InsuranceTermView(
                         documents: getDocumentsToDisplay(contract: contract)

@@ -85,6 +85,7 @@ struct ContractInformationView: View {
                             .padding(.bottom, .padding16)
                         }
                     }
+                    .hWithoutHorizontalPadding
                 }
             }
         }

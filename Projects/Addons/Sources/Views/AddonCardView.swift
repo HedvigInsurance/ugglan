@@ -17,7 +17,7 @@ public struct AddonCardView: View {
     public var body: some View {
         hSection {
             hRow {
-                hVStack(alignment: .leading, spacing: .padding8) {
+                VStack(alignment: .leading, spacing: .padding8) {
                     HStack {
                         hText(addon.titleDisplayName)
                         Spacer()

@@ -127,7 +127,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     }
 
     func makeBody(configuration: Configuration) -> some View {
-        hVStack(alignment: .leading, spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .top, spacing: .padding6) {
                 if let tierDisplayName {
                     StatusPill(text: tierDisplayName, type: .tier)
@@ -206,7 +206,7 @@ private struct StatusPill: View {
         }
         .fixedSize(horizontal: sizeCategory > .large ? false : true, vertical: false)
         .padding(.vertical, 3)
-        .hPadding(.horizontal, .padding6)
+        .padding(.horizontal, .padding6)
         .foregroundColor(hTextColor.Opaque.white)
         .background(type.getBackgroundColor).colorScheme(.light)
         .cornerRadius(.cornerRadiusS)
