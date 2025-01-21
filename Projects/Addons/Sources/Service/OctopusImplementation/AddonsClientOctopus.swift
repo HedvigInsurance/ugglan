@@ -74,8 +74,11 @@ public class AddonsClientOctopus: AddonsClient {
     public func submitAddon(quoteId: String, addonId: String) async throws {
         do {
             let mutation = OctopusGraphQL.UpsellTravelAddonActivateMutation(quoteId: quoteId, addonId: addonId)
+            let delayTask = Task {
+                try await Task.sleep(nanoseconds: 3_000_000_000)
+            }
             let response = try await octopus.client.perform(mutation: mutation)
-
+            try await delayTask.value
             if let error = response.upsellTravelAddonActivate.userError, let message = error.message {
                 throw AddonsError.errorMessage(message: message)
             }
