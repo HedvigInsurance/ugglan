@@ -37,7 +37,8 @@ public enum AddonSource: Codable {
 
 struct AddonInfo: Equatable, Identifiable {
     let id = UUID()
-    let model: InfoViewDataModel
+    let title: String
+    let description: String
     let perils: [Perils]
 }
 
@@ -120,7 +121,7 @@ public struct ChangeAddonNavigation: View {
             item: $changeAddonNavigationVm.isLearnMorePresented,
             options: .constant(.alwaysOpenOnTop)
         ) { info in
-            AddonLearnMoreView(model: info.model, perils: info.perils)
+            AddonLearnMoreView(model: info)
                 .withDismissButton()
                 .embededInNavigation(
                     options: .navigationType(type: .large),
