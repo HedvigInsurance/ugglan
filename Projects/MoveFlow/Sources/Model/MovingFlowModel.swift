@@ -149,4 +149,12 @@ struct AddonDataModel: Codable, Equatable, Hashable {
     let price: MonetaryAmount
     let addonVariant: AddonVariant
     let startDate: Date
+    let removeDialogInfo: RemoveDialogInfo?
+}
+
+struct RemoveDialogInfo: Codable, Equatable, Hashable {
+    let title: String
+    let description: String
+    let confirmButtonTitle: String
+    let cancelButtonTitle: String
 }

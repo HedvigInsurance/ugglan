@@ -36,19 +36,26 @@ public struct ScrollableSegmentedView<Content: View>: View {
     @ViewBuilder
     var headerControl: some View {
         if vm.pageModels.count > 1 {
-            hSection {
-                ZStack(alignment: .leading) {
-                    selectedPageHeaderBackground
-                    HStack(spacing: .padding4) {
-                        ForEach(vm.pageModels) { model in
-                            headerElement(for: model)
+            ScrollView(.horizontal, showsIndicators: false) {
+                hSection {
+                    ZStack(alignment: .leading) {
+                        selectedPageHeaderBackground
+                        HStack(spacing: .padding4) {
+                            ForEach(vm.pageModels) { model in
+                                headerElement(for: model)
+                            }
                         }
                     }
+                    .padding(.padding4)
+                    .background {
+                        hSurfaceColor.Opaque.primary.clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
+                    }
                 }
-                .padding(.padding4)
-                .background {
-                    hSurfaceColor.Opaque.primary.clipShape(RoundedRectangle(cornerRadius: .cornerRadiusS))
-                }
+                .frame(minWidth: vm.viewWidth)
+            }
+            .introspect(.scrollView, on: .iOS(.v13...)) { scrollView in
+                vm.headerScrollView = scrollView
+                scrollView.bounces = false
             }
         }
     }
@@ -61,27 +68,25 @@ public struct ScrollableSegmentedView<Content: View>: View {
     }
 
     func headerElement(for model: PageModel) -> some View {
-        Group {
-            hText(model.title, style: .label)
-                .padding(.vertical, 3 * multiplier)
-                .foregroundColor(hTextColor.Opaque.primary)
-        }
-        .frame(minWidth: 0, maxWidth: .infinity)
-        .onTapGesture {
-            vm.setSelectedTab(with: model.id)
-        }
-        .background {
-            GeometryReader { geo in
-                Color.clear
-                    .onAppear {
-                        let frame = geo.frame(in: .global)
-                        vm.updateTitleStartPositions(for: model.id, position: frame)
-                    }
-                    .onChange(of: geo.frame(in: .global)) { frame in
-                        vm.updateTitleStartPositions(for: model.id, position: frame)
-                    }
+        hText(model.title, style: .label)
+            .padding(.vertical, 3 * multiplier)
+            .foregroundColor(hTextColor.Opaque.primary)
+            .frame(maxWidth: .infinity)
+            .onTapGesture {
+                vm.setSelectedTab(with: model.id)
             }
-        }
+            .background {
+                GeometryReader { geo in
+                    Color.clear
+                        .onAppear {
+                            let frame = geo.frame(in: .global)
+                            vm.updateTitleStartPositions(for: model.id, position: frame)
+                        }
+                        .onChange(of: geo.frame(in: .global)) { frame in
+                            vm.updateTitleStartPositions(for: model.id, position: frame)
+                        }
+                }
+            }
     }
 
     var scrollableContent: some View {
@@ -133,7 +138,8 @@ public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
     @Published var currentHeight: CGFloat = 0
     @Published var currentId: String
 
-    @MainActor
+    weak var headerScrollView: UIScrollView?
+
     weak var horizontalScrollView: UIScrollView? {
         didSet {
             horizontalScrollView?.delegate = self
@@ -146,20 +152,22 @@ public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
                     }
                     let allOffsets = self.getPagesOffset()
                     let titlePositions = self.titlesPositions.values.sorted(by: { $0.origin.x < $1.origin.x })
+                    let rects = titlePositions.compactMap { rect in
+                        return CGRect(
+                            x: rect.origin.x - titlePositions[0].origin.x,
+                            y: rect.origin.y,
+                            width: rect.width,
+                            height: rect.height
+                        )
+                    }
                     let sortedTitlePositions =
-                        titlePositions.compactMap { rect in
-                            return CGRect(
-                                x: rect.origin.x - titlePositions[0].origin.x,
-                                y: rect.origin.y,
-                                width: rect.width,
-                                height: rect.height
-                            )
-                        }
+                        rects
                         .compactMap({ $0.origin.x })
                     let offset = value.x
                     let lowerBoundry = allOffsets.lastIndex(where: { $0 <= offset })
                     let upperBoundry = allOffsets.firstIndex(where: { $0 >= offset })
-                    if let lowerBoundry, let upperBoundry {
+                    let previousSelectedIndicatorOffset = self.selectedIndicatorOffset
+                    if let lowerBoundry, let upperBoundry, sortedTitlePositions.count > 0 {
                         if lowerBoundry == upperBoundry {
                             Task { @MainActor in
                                 try? await Task.sleep(nanoseconds: 50_000_000)
@@ -178,6 +186,14 @@ public class ScrollableSegmentedViewModel: NSObject, ObservableObject {
                             withAnimation(.easeInOut(duration: 0.2)) {
                                 self.selectedIndicatorOffset = newOffset
                             }
+                        }
+
+                        let index =
+                            previousSelectedIndicatorOffset > self.selectedIndicatorOffset ? lowerBoundry : upperBoundry
+                        if rects.count > index {
+                            var baseRect = rects[index]
+                            baseRect.origin.y = 0
+                            headerScrollView?.scrollRectToVisible(baseRect, animated: true)
                         }
                     }
                 })
@@ -319,5 +335,24 @@ extension View {
                 view.isUserInteractionEnabled = false
             }
         }
+    }
+}
+
+#Preview {
+    let vm = ScrollableSegmentedViewModel(
+        pageModels: [
+            .init(id: "1", title: "Title Longer"),
+            .init(id: "2", title: "Title Longer"),
+            .init(id: "3", title: "Title Longer"),
+            .init(id: "4", title: "Title Longer"),
+            .init(id: "5", title: "Title Longer"),
+            .init(id: "6", title: "Title Longer"),
+            .init(id: "7", title: "Title Longer"),
+            .init(id: "8", title: "Title Longer"),
+        ],
+        currentId: "1"
+    )
+    ScrollableSegmentedView(vm: vm) { id in
+        hText("id")
     }
 }
