@@ -31,8 +31,8 @@ struct AddonLearnMoreView: View {
             description:
                 "Travel Insurance Plus is extended coverage for those who want to add to the basic travel coverage included in their Hedvig Home Insurance.",
             perils: [
-                .init(id: "id", title: "Peril1", description: "jnbv", color: nil, covered: []),
-                .init(id: "id", title: "Peril2", description: "jnbv", color: nil, covered: []),
+                .init(id: "id", title: "Peril1", description: "description", color: nil, covered: []),
+                .init(id: "id", title: "Peril2", description: "description", color: nil, covered: []),
             ]
         )
     )
