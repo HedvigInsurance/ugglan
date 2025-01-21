@@ -233,6 +233,10 @@ extension EnvironmentValues {
 }
 
 extension View {
+    /// Used to determine if we should bounce effect on the scroll view
+    /// nil: default behaviour depending on the content position and content size
+    /// true: always on
+    /// false : always off
     public func hSetScrollBounce(to value: Bool?) -> some View {
         self.environment(\.hEnableScrollBounce, value)
     }
@@ -251,7 +255,32 @@ extension EnvironmentValues {
 }
 
 extension View {
+    /// View that is not part of the scroll view, but just bellow it ignoring keyboard. Default spacing to top and bottom are added to this view
     public func hFormAlwaysAttachToBottom<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         self.environment(\.hFormAlwaysVisibleBottomAttachedView, AnyView(content()))
     }
+}
+
+@MainActor
+private struct EnvironmentHFormContentPosition: @preconcurrency EnvironmentKey {
+    static let defaultValue: ContentPosition = .top
+}
+
+extension EnvironmentValues {
+    public var hFormContentPosition: ContentPosition {
+        get { self[EnvironmentHFormContentPosition.self] }
+        set { self[EnvironmentHFormContentPosition.self] = newValue }
+    }
+}
+
+extension View {
+    public func hFormContentPosition(_ position: ContentPosition) -> some View {
+        self.environment(\.hFormContentPosition, position)
+    }
+}
+
+public enum ContentPosition {
+    case top
+    case center
+    case bottom
 }
