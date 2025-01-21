@@ -19,6 +19,7 @@ public class FeatureFlagsDemo: FeatureFlags {
     public var emailPreferencesEnabled: Bool = false
     public var isAddonsEnabled: Bool = false
     public var isMovingFlowEnabled: Bool = false
+    public var isAddonsRemovalFromMovingFlowEnabled: Bool = false
 
     public func setup(with context: [String: String]) async throws {
         try await Task.sleep(nanoseconds: 500_000_000)
