@@ -127,7 +127,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     }
 
     func makeBody(configuration: Configuration) -> some View {
-        hVStack(alignment: .leading, spacing: 0, diffSpacing: 2) {
+        hVStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .top, spacing: .padding6) {
                 if let tierDisplayName {
                     StatusPill(text: tierDisplayName, type: .tier)
