@@ -77,6 +77,15 @@ public struct Message: Codable, Identifiable, Hashable, Sendable {
         return Message(localId: localId, remoteId: remoteId, sender: sender, sentAt: sentAt, type: type, status: status)
     }
 
+    var trimmedText: String {
+        switch type {
+        case let .text(text):
+            return text.trimmingCharacters(in: .whitespacesAndNewlines)
+        default:
+            return ""
+        }
+    }
+
 }
 
 enum MessageSender: Codable, Hashable, Sendable {
