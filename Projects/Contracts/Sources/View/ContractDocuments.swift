@@ -11,7 +11,6 @@ import hGraphQL
 struct ContractDocumentsView: View {
     @PresentableStore var contractStore: ContractStore
     @EnvironmentObject private var contractsNavigationViewModel: ContractsNavigationViewModel
-    let multiplier = HFontTextStyle.body1.multiplier
 
     let id: String
     @State var height: CGFloat = 0
@@ -23,13 +22,13 @@ struct ContractDocumentsView: View {
             }
         ) { contract in
             if let contract = contract {
-                VStack(alignment: .leading, spacing: .padding8 * multiplier) {
+                hVStack(alignment: .leading, spacing: .padding8) {
                     hSection {
                         hText(contract.currentAgreement?.productVariant.displayName ?? "")
                             .foregroundColor(hTextColor.Opaque.secondary)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
-                    .padding(.top, .padding16 * multiplier)
+                    .hPadding(.top, .padding16)
 
                     InsuranceTermView(
                         documents: getDocumentsToDisplay(contract: contract)

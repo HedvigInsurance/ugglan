@@ -5,7 +5,6 @@ import hCoreUI
 public struct AddonCardView: View {
     let openAddon: () -> Void
     let addon: AddonBannerModel
-    let multiplier = HFontTextStyle.body1.multiplier
 
     public init(
         openAddon: @escaping () -> Void,
@@ -18,7 +17,7 @@ public struct AddonCardView: View {
     public var body: some View {
         hSection {
             hRow {
-                VStack(alignment: .leading, spacing: multiplier != 1 ? .padding16 * multiplier : .padding8) {
+                hVStack(alignment: .leading, spacing: .padding8) {
                     HStack {
                         hText(addon.titleDisplayName)
                         Spacer()

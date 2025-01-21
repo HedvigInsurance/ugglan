@@ -117,11 +117,40 @@ public enum HFontTextStyle {
                     withTextStyle: uifontTextStyle,
                     compatibleWith: UITraitCollection(preferredContentSizeCategory: .large)
                 )
-                return defaultDescriptor.pointSize / normalSizeDesciptor.pointSize
+                let multiplier = defaultDescriptor.pointSize / normalSizeDesciptor.pointSize
+                return multiplier
             }
             return 1
         }()
         return sizeMultiplier
+    }
+    var fontTextStyle: Font.TextStyle {
+        switch self {
+        case .display1: return .title
+        case .display2: return .title
+        case .display3: return .title
+        case .heading3: return .title3
+        case .heading2: return .title2
+        case .heading1: return .title
+        case .body1: return .body
+        case .body2: return .body
+        case .body3: return .body
+        case .label: return .footnote
+        case .finePrint: return .footnote
+
+        case .displayXXLShort: return .largeTitle
+        case .displayXXLLong: return .largeTitle
+        case .displayXLShort: return .largeTitle
+        case .displayXLLong: return .largeTitle
+        case .displayLShort: return .largeTitle
+        case .displayLLong: return .largeTitle
+        case .displayMShort: return .largeTitle
+        case .displayMLong: return .largeTitle
+        case .displaySShort: return .largeTitle
+        case .displaySLong: return .largeTitle
+        case .displayXSShort: return .largeTitle
+        case .displayXSLong: return .largeTitle
+        }
     }
 
     private var uifontTextStyle: UIFont.TextStyle {
@@ -157,6 +186,7 @@ public enum HFontTextStyle {
 public struct hFontModifier: ViewModifier {
     public var style: HFontTextStyle
     @Environment(\.hWithoutFontMultiplier) var withoutFontMultiplier
+    @SwiftUI.Environment(\.sizeCategory) var sizeCategory
 
     public init(style: HFontTextStyle) {
         self.style = style
@@ -165,66 +195,9 @@ public struct hFontModifier: ViewModifier {
         Fonts.fontFor(style: style, withoutFontMultipler: withoutFontMultiplier)
     }
 
-    var lineSpacing: CGFloat {
-        switch style {
-        case .display1:
-            return 64 - font.lineHeight
-        case .display2:
-            return 78 - font.lineHeight
-        case .display3:
-            return 94 - font.lineHeight
-
-        case .heading1:
-            return 24 - font.lineHeight
-        case .heading2:
-            return 30 - font.lineHeight
-        case .heading3:
-            return 40 - font.lineHeight
-
-        case .body1:
-            return 24 - font.lineHeight
-        case .body2:
-            return 30 - font.lineHeight
-        case .body3:
-            return 40 - font.lineHeight
-
-        case .label:
-            return 18 - font.lineHeight
-        case .finePrint:
-            return 16 - font.lineHeight
-
-        case .displayXXLShort:
-            return 102 - font.lineHeight
-        case .displayXXLLong:
-            return 94 - font.lineHeight
-        case .displayXLShort:
-            return 94 - font.lineHeight
-        case .displayXLLong:
-            return 86 - font.lineHeight
-        case .displayLShort:
-            return 86 - font.lineHeight
-        case .displayLLong:
-            return 78 - font.lineHeight
-        case .displayMShort:
-            return 78 - font.lineHeight
-        case .displayMLong:
-            return 64 - font.lineHeight
-        case .displaySShort:
-            return 56 - font.lineHeight
-        case .displaySLong:
-            return 40 - font.lineHeight
-        case .displayXSShort:
-            return 40 - font.lineHeight
-        case .displayXSLong:
-            return 36 - font.lineHeight
-        }
-    }
-
     public func body(content: Content) -> some View {
         content
-            .font(Font(font))
-            .lineSpacing(lineSpacing)
-            .padding(.vertical, lineSpacing / 2)
+            .font(.custom(font.fontName, size: style.fontSize, relativeTo: self.style.fontTextStyle))
     }
 }
 
