@@ -57,7 +57,7 @@ struct MessageView: View {
                 case let .text(text):
                     MarkdownView(
                         config: .init(
-                            text: text,
+                            text: message.trimmedText,
                             fontStyle: .body1,
                             color: hTextColor.Opaque.primary,
                             linkColor: hTextColor.Opaque.primary,
