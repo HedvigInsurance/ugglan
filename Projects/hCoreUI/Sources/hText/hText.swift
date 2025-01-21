@@ -220,8 +220,8 @@ public struct hFontModifier: ViewModifier {
 
     public func body(content: Content) -> some View {
         content.font(Font(font))
-            .lineSpacing(lineSpacing)
-            .padding(.vertical, lineSpacing / 2)
+        //            .lineSpacing(lineSpacing)
+        //            .padding(.vertical, lineSpacing / 2)
     }
 }
 

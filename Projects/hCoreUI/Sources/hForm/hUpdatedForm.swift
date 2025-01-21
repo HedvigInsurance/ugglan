@@ -3,11 +3,13 @@ import SwiftUI
 
 public struct hUpdatedForm<Content: View>: View {
     @Environment(\.hFormBottomAttachedView) var bottomAttachedView
+    @Environment(\.hFormAlwaysVisibleBottomAttachedView) var hFormAlwaysVisibleBottomAttachedView
     @Environment(\.hFormTitle) var hFormTitle
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.hFormContentPosition) var contentPosition
     @Environment(\.hEnableScrollBounce) var hEnableScrollBounce
     @StateObject fileprivate var vm = hUpdatedFormViewModel()
+    @State private var alwaysVisibleBottomAttachedViewHeight: CGFloat = 0
     var content: Content
     public init(
         @ViewBuilder _ builder: () -> Content
@@ -54,6 +56,7 @@ public struct hUpdatedForm<Content: View>: View {
                             }
                     }
                 }
+                getAlwaysVisibleBottomView
             }
             .frame(maxWidth: .infinity)
             .frame(maxHeight: .infinity)
@@ -61,6 +64,7 @@ public struct hUpdatedForm<Content: View>: View {
         .task {
             vm.scrollBounces = hEnableScrollBounce
         }
+        .ignoresSafeArea(.keyboard)
     }
 
     private var centerContent: some View {
@@ -68,21 +72,22 @@ public struct hUpdatedForm<Content: View>: View {
             switch contentPosition {
             case .top:
                 formTitle
+                    .layoutPriority(1)
                 content
                 Spacer()
                     .layoutPriority(1)
-                bottomAttachedView
+                getBottomAttachedView
             case .center:
                 formTitle
                 Spacer(minLength: 0)
                 content
                 Spacer(minLength: 0)
-                bottomAttachedView
+                getBottomAttachedView
             case .bottom:
                 formTitle
                 Spacer()
                 content
-                bottomAttachedView
+                getBottomAttachedView
             }
         }
     }
@@ -107,10 +112,38 @@ public struct hUpdatedForm<Content: View>: View {
                 hFormTitle.subTitle?.type.bottomMargin ?? hFormTitle.title.type.bottomMargin
             )
             .padding(.horizontal, horizontalSizeClass == .regular ? .padding60 : .padding16)
-            .overlay {
-                Color.red.opacity(0.5)
-            }
         }
+    }
+
+    @ViewBuilder
+    private var getBottomAttachedView: some View {
+        if hFormAlwaysVisibleBottomAttachedView != nil {
+            bottomAttachedView
+        } else {
+            bottomAttachedView?.padding(.bottom, .padding8)
+        }
+    }
+
+    @ViewBuilder
+    private var getAlwaysVisibleBottomView: some View {
+        hFormAlwaysVisibleBottomAttachedView
+            .padding(.top, .padding16)
+            .padding(.bottom, .padding8)
+            .background {
+                GeometryReader { proxy in
+                    Color.clear
+                        .onAppear {
+                            alwaysVisibleBottomAttachedViewHeight = proxy.size.height
+                        }
+                        .onChange(of: proxy.size.height) { height in
+                            alwaysVisibleBottomAttachedViewHeight = height
+                        }
+                }
+            }
+            .background {
+                BackgroundBlurView()
+                    .ignoresSafeArea()
+            }
     }
 }
 
@@ -120,10 +153,18 @@ public struct hUpdatedForm<Content: View>: View {
         Rectangle().frame(width: 100, height: 100)
         Rectangle().frame(width: 100, height: 100)
         Rectangle().frame(width: 100, height: 100)
-        Rectangle().frame(width: 300, height: 300)
+        Rectangle().fill(Color.red.opacity(0.1)).frame(width: 300, height: 300)
+        Rectangle().fill(Color.blue.opacity(0.1)).frame(width: 300, height: 300)
+
     }
     .hFormAttachToBottom {
         hText("BOTTOM")
+    }
+    .hFormAlwaysAttachToBottom {
+        hSection {
+            hText("Always visible content")
+        }
+        .sectionContainerStyle(.transparent)
     }
     .hFormTitle(title: .init(.small, .body1, "title", alignment: .leading), subTitle: nil)
 }
@@ -132,6 +173,7 @@ public struct hUpdatedForm<Content: View>: View {
 private class hUpdatedFormViewModel: ObservableObject {
     weak var scrollView: UIScrollView? {
         didSet {
+            scrollView?.clipsToBounds = false
             setScrollView()
             setBouces()
         }
@@ -193,5 +235,23 @@ extension EnvironmentValues {
 extension View {
     public func hSetScrollBounce(to value: Bool?) -> some View {
         self.environment(\.hEnableScrollBounce, value)
+    }
+}
+
+@MainActor
+private struct EnvironmentHFormAlwaysVisibleBottomAttachedView: @preconcurrency EnvironmentKey {
+    static let defaultValue: AnyView? = nil
+}
+
+extension EnvironmentValues {
+    public var hFormAlwaysVisibleBottomAttachedView: AnyView? {
+        get { self[EnvironmentHFormAlwaysVisibleBottomAttachedView.self] }
+        set { self[EnvironmentHFormAlwaysVisibleBottomAttachedView.self] = newValue }
+    }
+}
+
+extension View {
+    public func hFormAlwaysAttachToBottom<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        self.environment(\.hFormAlwaysVisibleBottomAttachedView, AnyView(content()))
     }
 }

@@ -82,7 +82,8 @@ struct MovingFlowAddressScreen: View {
             )
         )
         .sectionContainerStyle(.transparent)
-        .hFormAttachToBottom {
+        .hFormContentPosition(.bottom)
+        .hFormAlwaysAttachToBottom {
             hSection {
                 hButton.LargeButton(type: .primary) {
                     continuePressed()
@@ -91,7 +92,6 @@ struct MovingFlowAddressScreen: View {
                 }
             }
         }
-        .hFormContentPosition(.bottom)
     }
 
     func addressField() -> some View {

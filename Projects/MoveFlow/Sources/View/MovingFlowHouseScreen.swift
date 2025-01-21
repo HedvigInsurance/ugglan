@@ -39,16 +39,17 @@ struct MovingFlowHouseScreen: View {
                         InfoCard(text: L10n.changeAddressCoverageInfoText(days), type: .info)
                     }
                 }
-                hSection {
-                    hButton.LargeButton(type: .primary) {
-                        continuePressed()
-                    } content: {
-                        hText(L10n.saveAndContinueButtonLabel, style: .body1)
-                    }
-                }
-
             }
             .padding(.bottom, .padding8)
+        }
+        .hFormAlwaysAttachToBottom {
+            hSection {
+                hButton.LargeButton(type: .primary) {
+                    continuePressed()
+                } content: {
+                    hText(L10n.saveAndContinueButtonLabel, style: .body1)
+                }
+            }
         }
         .hFormTitle(
             title: .init(

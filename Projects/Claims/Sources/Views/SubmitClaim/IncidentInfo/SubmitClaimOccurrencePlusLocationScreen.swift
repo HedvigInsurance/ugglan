@@ -24,7 +24,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
     }
 
     var body: some View {
-        hForm {}
+        hUpdatedForm {}
             .hFormTitle(
                 title: .init(
                     .small,
