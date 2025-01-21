@@ -44,6 +44,6 @@ public class MoveFlowClientDemo: MoveFlowClient {
         )
     }
 
-    public func confirmMoveIntent(intentId: String, homeQuoteId: String?) async throws {
+    public func confirmMoveIntent(intentId: String, homeQuoteId: String, removedAddons: [String]) async throws {
     }
 }

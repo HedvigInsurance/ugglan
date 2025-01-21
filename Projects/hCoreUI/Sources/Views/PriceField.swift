@@ -18,9 +18,10 @@ public struct PriceField: View {
     public var body: some View {
         HStack(alignment: .top) {
             hText(L10n.tierFlowTotal)
+                .foregroundColor(getTotalColor())
             Spacer()
 
-            if strikeThroughPrice, newPremium != currentPremium {
+            if strikeThroughPrice != .none, newPremium != currentPremium {
                 if #available(iOS 16.0, *) {
                     hText(currentPremium?.formattedAmountPerMonth ?? "")
                         .strikethrough()
@@ -32,9 +33,21 @@ public struct PriceField: View {
             }
 
             VStack(alignment: .trailing, spacing: 0) {
-                hText(newPremium?.formattedAmountPerMonth ?? currentPremium?.formattedAmountPerMonth ?? "")
-
-                if let currentPremium, let newPremium, newPremium != currentPremium, !strikeThroughPrice {
+                if strikeThroughPrice == .crossNewPrice {
+                    if #available(iOS 16.0, *) {
+                        hText(newPremium?.formattedAmountPerMonth ?? "")
+                            .strikethrough()
+                            .foregroundColor(hTextColor.Opaque.secondary)
+                    } else {
+                        hText(newPremium?.formattedAmountPerMonth ?? "")
+                            .foregroundColor(hTextColor.Opaque.secondary)
+                    }
+                } else {
+                    hText(newPremium?.formattedAmountPerMonth ?? currentPremium?.formattedAmountPerMonth ?? "")
+                }
+                if let currentPremium, let newPremium, newPremium != currentPremium,
+                    strikeThroughPrice != .crossOldPrice
+                {
                     hText(
                         L10n.tierFlowPreviousPrice(currentPremium.formattedAmountPerMonth),
                         style: .label
@@ -44,32 +57,60 @@ public struct PriceField: View {
             }
         }
     }
+
+    @hColorBuilder
+    private func getTotalColor() -> some hColor {
+        switch strikeThroughPrice {
+        case .crossNewPrice:
+            hTextColor.Translucent.secondary
+        case .crossOldPrice, .none:
+            hTextColor.Opaque.primary
+        }
+    }
 }
 
 #Preview {
     hSection {
+
         PriceField(
             newPremium: .init(amount: "99", currency: "SEK"),
             currentPremium: MonetaryAmount(amount: "49", currency: "SEK")
         )
-        .hWithStrikeThroughPrice(setTo: true)
+
+        PriceField(
+            newPremium: .init(amount: "99", currency: "SEK"),
+            currentPremium: MonetaryAmount(amount: "49", currency: "SEK")
+        )
+        .hWithStrikeThroughPrice(setTo: .crossOldPrice)
+
+        PriceField(
+            newPremium: .init(amount: "99", currency: "SEK"),
+            currentPremium: nil
+        )
+        .hWithStrikeThroughPrice(setTo: .crossNewPrice)
     }
     .sectionContainerStyle(.transparent)
 }
 
 private struct EnvironmentHWithStrikeThroughPrice: EnvironmentKey {
-    static let defaultValue = false
+    static let defaultValue: StrikeThroughPriceType = .none
+}
+
+public enum StrikeThroughPriceType: Sendable {
+    case none
+    case crossOldPrice
+    case crossNewPrice
 }
 
 extension EnvironmentValues {
-    public var hWithStrikeThroughPrice: Bool {
+    public var hWithStrikeThroughPrice: StrikeThroughPriceType {
         get { self[EnvironmentHWithStrikeThroughPrice.self] }
         set { self[EnvironmentHWithStrikeThroughPrice.self] = newValue }
     }
 }
 
 extension View {
-    public func hWithStrikeThroughPrice(setTo: Bool) -> some View {
+    public func hWithStrikeThroughPrice(setTo: StrikeThroughPriceType) -> some View {
         self.environment(\.hWithStrikeThroughPrice, setTo)
     }
 }
