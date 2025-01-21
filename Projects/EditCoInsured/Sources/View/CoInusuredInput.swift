@@ -53,15 +53,15 @@ struct CoInusuredInputScreen: View {
             CoInsuredInputErrorView(vm: vm, editCoInsuredNavigation: editCoInsuredNavigation)
         } else {
             mainView
-            //                .toolbar {
-            //                    ToolbarItem(placement: .principal) {
-            //                        VStack(alignment: .center) {
-            //                            ForEach(title.components(separatedBy: "\n"), id: \.self) { title in
-            //                                hText(title)
-            //                            }
-            //                        }
-            //                    }
-            //                }
+                .toolbar {
+                    ToolbarItem(placement: .principal) {
+                        VStack(alignment: .center) {
+                            ForEach(title.components(separatedBy: "\n"), id: \.self) { title in
+                                hText(title)
+                            }
+                        }
+                    }
+                }
         }
     }
 
