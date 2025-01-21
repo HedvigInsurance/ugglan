@@ -50,6 +50,7 @@ extension ApolloClient {
                         }
                     }
                 case let .failure(error):
+                    log.error("graphQL error \(query)", error: error, attributes: [:])
                     inCont.resume(throwing: GraphQLError.otherError(error: error))
                 }
             }
@@ -77,6 +78,7 @@ extension ApolloClient {
                         }
                     }
                 case .failure(let error):
+                    log.error("graphQL error \(mutation)", error: error, attributes: [:])
                     inCont.resume(throwing: GraphQLError.otherError(error: error))
                 }
             }
