@@ -42,7 +42,8 @@ struct TypeOfBuildingPickerScreen: View {
                 onCancel: {
                     isBuildingTypePickerPresented = nil
                 },
-                singleSelect: true
+                singleSelect: true,
+                useAlwaysAttachedToBottom: true
             )
         )
     }

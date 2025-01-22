@@ -15,6 +15,8 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
     let hButtonText: String
     let infoCard: ItemPickerInfoCard?
     let listTitle: String?
+    let contentPosition: ContentPosition?
+    let useAlwaysAttachedToBottom: Bool
 
     var fieldSize: hFieldSize
     let manualInputId = "manualInputId"
@@ -37,7 +39,9 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
         withTitle: String? = nil,
         hButtonText: String? = L10n.generalSaveButton,
         infoCard: ItemPickerInfoCard? = nil,
-        fieldSize: hFieldSize? = nil
+        fieldSize: hFieldSize? = nil,
+        contentPosition: ContentPosition? = nil,
+        useAlwaysAttachedToBottom: Bool = false
     ) {
         self.items = items
         self.preSelectedItems = preSelectedItems()
@@ -65,6 +69,8 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
         }
 
         self.infoCard = infoCard
+        self.contentPosition = contentPosition
+        self.useAlwaysAttachedToBottom = useAlwaysAttachedToBottom
     }
 
     public struct ItemPickerInfoCard {
@@ -108,7 +114,8 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     public var body: some View {
         ScrollViewReader { proxy in
             if config.attachToBottom {
-                hForm {}
+                hUpdatedForm {}
+                    .hFormContentPosition(config.contentPosition ?? .bottom)
                     .hFormAttachToBottom {
                         VStack(spacing: 0) {
                             VStack(spacing: .padding16) {
@@ -129,18 +136,29 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                             bottomContent
                         }
                     }
-                    .hFormObserveKeyboard
                     .onAppear {
                         onAppear(with: proxy)
                     }
             } else {
-                hForm {
-                    content(with: proxy)
+                Group {
+                    if config.useAlwaysAttachedToBottom {
+                        hUpdatedForm {
+                            content(with: proxy)
+                        }
+                        .hFormAlwaysAttachToBottom {
+                            bottomContent
+                        }
+                    } else {
+                        hUpdatedForm {
+                            content(with: proxy)
+                        }
+                        .hFormAttachToBottom {
+                            bottomContent
+                        }
+                    }
                 }
-                .hFormAttachToBottom {
-                    bottomContent
-                }
-                .hFormObserveKeyboard
+                .hFormContentPosition(config.contentPosition ?? .compact)
+
                 .onAppear {
                     onAppear(with: proxy)
                 }

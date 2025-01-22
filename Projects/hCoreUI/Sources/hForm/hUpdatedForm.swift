@@ -1,16 +1,19 @@
+import Combine
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 
-public struct hUpdatedForm<Content: View>: View {
+public struct hUpdatedForm<Content: View>: View, KeyboardReadable {
     @Environment(\.hFormBottomAttachedView) var bottomAttachedView
     @Environment(\.hFormAlwaysVisibleBottomAttachedView) var hFormAlwaysVisibleBottomAttachedView
     @Environment(\.hFormTitle) var hFormTitle
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.hFormContentPosition) var contentPosition
     @Environment(\.hEnableScrollBounce) var hEnableScrollBounce
+
     @StateObject fileprivate var vm = hUpdatedFormViewModel()
-    @State private var alwaysVisibleBottomAttachedViewHeight: CGFloat = 0
+    @Namespace var animationNamespace
     var content: Content
+
     public init(
         @ViewBuilder _ builder: () -> Content
     ) {
@@ -23,28 +26,35 @@ public struct hUpdatedForm<Content: View>: View {
                 GeometryReader { geometry in
                     ScrollView {
                         centerContent
-                            .frame(minHeight: contentPosition == .compact ? nil : geometry.size.height)
+                            .frame(minHeight: contentPosition == .compact ? vm.scrollViewHeight : geometry.size.height)
                             .frame(maxWidth: .infinity)
                             .frame(maxHeight: .infinity)
                             .background {
                                 GeometryReader { geometry in
                                     Color.clear
                                         .onAppear {
-                                            vm.contentHeight = geometry.size.height
+                                            vm.scrollViewHeight = geometry.size.height
                                         }
                                         .onChange(of: geometry.size) { value in
-                                            vm.contentHeight = value.height
+                                            vm.scrollViewHeight = value.height
                                         }
                                 }
                             }
                     }
                     .frame(maxWidth: .infinity)
                     .frame(maxHeight: .infinity)
-                    .introspect(.scrollView, on: .iOS(.v13...)) { scrollView in
-                        vm.scrollView = scrollView
+                    .introspect(.scrollView, on: .iOS(.v13...)) { [weak vm] scrollView in
+                        guard let vm else { return }
+                        if scrollView != vm.scrollView {
+                            vm.scrollView = scrollView
+                            vm.keyboardCancellable = keyboardPublisher.sink { _ in
+                            } receiveValue: { [weak vm] keyboardHeight in
+                                vm?.keyboardVisible = keyboardHeight != nil
+                            }
+                        }
                     }
-                    .introspect(.viewController, on: .iOS(.v13...)) { vc in
-                        vm.vc = vc
+                    .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in
+                        vm?.vc = vc
                     }
                     .background {
                         Color.clear
@@ -56,7 +66,10 @@ public struct hUpdatedForm<Content: View>: View {
                             }
                     }
                 }
-                getAlwaysVisibleBottomView
+                if !vm.keyboardVisible {
+                    getAlwaysVisibleBottomView
+                        .matchedGeometryEffect(id: "bottom", in: animationNamespace)
+                }
             }
             .frame(maxWidth: .infinity)
             .frame(maxHeight: .infinity)
@@ -64,7 +77,6 @@ public struct hUpdatedForm<Content: View>: View {
         .task {
             vm.scrollBounces = hEnableScrollBounce
         }
-        .ignoresSafeArea(.keyboard)
     }
 
     private var centerContent: some View {
@@ -92,6 +104,10 @@ public struct hUpdatedForm<Content: View>: View {
                 formTitle
                 content
                 getBottomAttachedView
+            }
+            if vm.keyboardVisible {
+                getAlwaysVisibleBottomView
+                    .matchedGeometryEffect(id: "bottom", in: animationNamespace)
             }
         }
     }
@@ -134,17 +150,6 @@ public struct hUpdatedForm<Content: View>: View {
             .padding(.top, .padding16)
             .padding(.bottom, .padding8)
             .background {
-                GeometryReader { proxy in
-                    Color.clear
-                        .onAppear {
-                            alwaysVisibleBottomAttachedViewHeight = proxy.size.height
-                        }
-                        .onChange(of: proxy.size.height) { height in
-                            alwaysVisibleBottomAttachedViewHeight = height
-                        }
-                }
-            }
-            .background {
                 BackgroundBlurView()
                     .ignoresSafeArea()
             }
@@ -175,9 +180,11 @@ public struct hUpdatedForm<Content: View>: View {
 
 @MainActor
 private class hUpdatedFormViewModel: ObservableObject {
+
+    var keyboardCancellable: AnyCancellable?
+    @Published var keyboardVisible: Bool = false
     weak var scrollView: UIScrollView? {
         didSet {
-            scrollView?.clipsToBounds = false
             setScrollView()
             setBouces()
         }
@@ -194,7 +201,7 @@ private class hUpdatedFormViewModel: ObservableObject {
         }
     }
 
-    var contentHeight: CGFloat = 0 {
+    var scrollViewHeight: CGFloat = 0 {
         didSet {
             setBouces()
         }
@@ -210,7 +217,7 @@ private class hUpdatedFormViewModel: ObservableObject {
         if let scrollBounces {
             scrollView?.bounces = scrollBounces
         } else {
-            if contentHeight > viewHeight {
+            if scrollViewHeight > viewHeight {
                 scrollView?.bounces = true
             } else {
                 scrollView?.bounces = false
