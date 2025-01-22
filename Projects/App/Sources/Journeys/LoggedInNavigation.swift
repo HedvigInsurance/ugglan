@@ -400,7 +400,7 @@ struct HomeTab: View {
         }
         .detent(
             presented: $homeNavigationVm.navBarItems.isFirstVetPresented,
-            style: [.height]
+            style: [.large]
         ) {
             let store: HomeStore = globalPresentableStoreContainer.get()
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
