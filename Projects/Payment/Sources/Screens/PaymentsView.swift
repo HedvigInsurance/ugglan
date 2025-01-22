@@ -68,9 +68,7 @@ public struct PaymentsView: View {
         }
     }
 
-    @ViewBuilder
     private var upcomingPayment: some View {
-
         PresentableStoreLens(
             PaymentStore.self,
             getter: { state in

@@ -50,7 +50,6 @@ public struct HelpCenterStartView: View {
 
                             VStack(alignment: .leading, spacing: .padding8) {
                                 hText(vm.helpCenterModel.title)
-                                    .padding(.bottom, 0)
                                 hText(vm.helpCenterModel.description)
                                     .foregroundColor(hTextColor.Opaque.secondary)
                             }
