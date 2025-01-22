@@ -322,6 +322,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                 case .center: return (maxContentHeight - contentHeight) / 2
                 case .bottom:
                     return max(scrollViewHeight - bottomAttachedViewHeight - contentHeight - titleHeight - 8, 20)
+                case .compact: return 0
                 }
             }()
         }

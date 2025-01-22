@@ -23,7 +23,7 @@ public struct hUpdatedForm<Content: View>: View {
                 GeometryReader { geometry in
                     ScrollView {
                         centerContent
-                            .frame(minHeight: geometry.size.height)
+                            .frame(minHeight: contentPosition == .compact ? nil : geometry.size.height)
                             .frame(maxWidth: .infinity)
                             .frame(maxHeight: .infinity)
                             .background {
@@ -86,6 +86,10 @@ public struct hUpdatedForm<Content: View>: View {
             case .bottom:
                 formTitle
                 Spacer()
+                content
+                getBottomAttachedView
+            case .compact:
+                formTitle
                 content
                 getBottomAttachedView
             }
@@ -283,4 +287,5 @@ public enum ContentPosition {
     case top
     case center
     case bottom
+    case compact
 }
