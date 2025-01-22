@@ -11,13 +11,14 @@ struct AddonLearnMoreView: View {
                 hSection {
                     VStack(alignment: .leading, spacing: .padding4) {
                         hText(model.title, style: .body2)
-                        hText(model.description, style: .body2)
+                        hText(model.description, style: .body1)
                             .foregroundColor(hTextColor.Opaque.secondary)
                     }
                 }
                 .sectionContainerStyle(.transparent)
                 VStack(spacing: .padding4) {
                     PerilCollection(perils: model.perils)
+                        .hFieldSize(.small)
                 }
             }
         }
