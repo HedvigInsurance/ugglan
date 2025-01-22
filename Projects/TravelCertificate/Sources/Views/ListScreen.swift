@@ -76,8 +76,6 @@ public struct ListScreen: View {
                             addon: banner
                         )
                     }
-
-                    InfoCard(text: L10n.TravelCertificate.startDateInfo(45), type: .info)
                     if vm.canCreateTravelInsurance {
                         hButton.LargeButton(type: .secondary) {
                             createNewPressed()
