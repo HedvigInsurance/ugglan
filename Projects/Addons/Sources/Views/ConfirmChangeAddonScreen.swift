@@ -6,8 +6,8 @@ public struct ConfirmChangeAddonScreen: View {
     @EnvironmentObject var addonNavigationVm: ChangeAddonNavigationViewModel
 
     public var body: some View {
-        hForm {}
-            .hFormContentPosition(.center)
+        hUpdatedForm {}
+            .hFormContentPosition(.compact)
             .hFormAttachToBottom {
                 hSection {
                     VStack(spacing: .padding32) {

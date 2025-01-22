@@ -36,7 +36,7 @@ struct ChangeAddonScreen: View {
     }
 
     private var successView: some View {
-        hForm {}
+        hUpdatedForm {}
             .hFormTitle(
                 title: .init(
                     .small,
@@ -84,7 +84,6 @@ struct ChangeAddonScreen: View {
                     .sectionContainerStyle(.transparent)
                 }
             }
-            .hDisableScroll
     }
 
     @ViewBuilder
