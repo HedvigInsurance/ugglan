@@ -6,6 +6,7 @@ public struct InfoCard: View {
     let type: NotificationType
     @Environment(\.hInfoCardButtonConfig) var buttonsConfig
     @Environment(\.hInfoCardCustomView) var customContentView
+    @Environment(\.sizeCategory) var sizeCategory
 
     public init(
         text: String,
@@ -49,6 +50,7 @@ public struct InfoCard: View {
             hText(text, style: .label)
                 .foregroundColor(type.textColor)
                 .multilineTextAlignment(.leading)
+                .padding(.bottom, .padding4)
             if let buttonsConfig {
                 if buttonsConfig.count > 1 {
                     HStack(spacing: 4) {

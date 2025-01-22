@@ -31,6 +31,8 @@ struct ContractInformationView: View {
                             hSection(displayItems, id: \.displayTitle) { item in
                                 hRow {
                                     hText(item.displayTitle)
+                                }
+                                .withCustomAccessory {
                                     Spacer()
                                     Group {
                                         if let date = item.displayValue.localDateToDate?.displayDateDDMMMYYYYFormat {
@@ -82,8 +84,8 @@ struct ContractInformationView: View {
                             .padding(.bottom, .padding16)
                         }
                     }
+                    .hWithoutHorizontalPadding
                 }
-                .hWithoutHorizontalPadding
             }
         }
         .sectionContainerStyle(.transparent)

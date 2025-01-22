@@ -44,7 +44,7 @@ public struct CoInsuredField<Content: View>: View {
         let displaySubTitle =
             coInsured?.formattedSSN?.displayFormatSSN ?? coInsured?.birthDate?.birtDateDisplayFormat ?? subTitle ?? ""
 
-        VStack(spacing: 4) {
+        VStack(spacing: .padding4) {
             VStack(alignment: .leading, spacing: 0) {
                 HStack {
                     hText(displayTitle)
@@ -58,7 +58,6 @@ public struct CoInsuredField<Content: View>: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             statusPill
-
         }
     }
 

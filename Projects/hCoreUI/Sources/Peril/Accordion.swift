@@ -102,7 +102,7 @@ struct AccordionButtonStyle: SwiftUI.ButtonStyle {
             }
 
             if extended {
-                VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: .padding12) {
                     hText(description, style: peril != nil ? .label : .body1)
                         .padding(.bottom, .padding12)
                         .foregroundColor(getTextColor)

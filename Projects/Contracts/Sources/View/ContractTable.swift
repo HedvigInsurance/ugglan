@@ -13,9 +13,10 @@ struct ContractTable: View {
     let showTerminated: Bool
     @State var onlyTerminatedInsurances = false
     @StateObject var vm = ContractTableViewModel()
-
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
     @EnvironmentObject var router: Router
+    @SwiftUI.Environment(\.sizeCategory) private var sizeCategory
+
     func getContractsToShow(for state: ContractState) -> [Contract] {
         if showTerminated {
             return state.terminatedContracts.compactMap { $0 }
@@ -147,7 +148,7 @@ struct ContractTable: View {
                                 router.push(contract)
                             }
                         )
-                        .fixedSize(horizontal: false, vertical: true)
+                        .fixedSize(horizontal: false, vertical: sizeCategory > .large ? true : false)
                         .transition(.slide)
                     }
                 }

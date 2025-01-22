@@ -39,8 +39,8 @@ struct SetTerminationDateLandingScreen: View {
                         )
                     )
                     .hFormAttachToBottom {
-                        VStack(spacing: 16) {
-                            VStack(spacing: 4) {
+                        VStack(spacing: .padding16) {
+                            VStack(spacing: .padding4) {
                                 displayTerminationDateField
                                 displayImportantInformation
                             }
@@ -118,9 +118,9 @@ struct SetTerminationDateLandingScreen: View {
         if terminationNavigationVm.terminationDateStepModel?.date != nil {
             hSection {
                 hRow {
-                    VStack(spacing: 16) {
-                        VStack(spacing: 16) {
-                            VStack(alignment: .leading, spacing: 4) {
+                    VStack(spacing: .padding16) {
+                        VStack(spacing: .padding16) {
+                            VStack(alignment: .leading, spacing: .padding4) {
                                 hText(L10n.terminationFlowImportantInformationTitle)
                                 hText(
                                     L10n.terminationFlowImportantInformationText,

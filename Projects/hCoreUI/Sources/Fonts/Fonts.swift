@@ -33,9 +33,9 @@ public enum Fonts {
 
     public static var forceTraitCollection: UITraitCollection? = nil
 
-    public static func fontFor(style: HFontTextStyle) -> UIFont {
+    public static func fontFor(style: HFontTextStyle, withoutFontMultipler: Bool = false) -> UIFont {
         func getFont(_ font: UIFont) -> UIFont {
-            let size = style.fontSize * style.multiplier
+            let size = style.fontSize * (withoutFontMultipler ? 1 : style.multiplier)
             let fontDescriptor = UIFontDescriptor(fontAttributes: [
                 UIFontDescriptor.AttributeName.size: size,
                 UIFontDescriptor.AttributeName.family: font.familyName,
@@ -52,5 +52,23 @@ public enum Fonts {
         default:
             return getFont(hedvigLettersStandard)
         }
+    }
+}
+
+@MainActor
+private struct EnvironmentWithoutFontMultiplier: @preconcurrency EnvironmentKey {
+    static let defaultValue: Bool = false
+}
+
+extension EnvironmentValues {
+    public var hWithoutFontMultiplier: Bool {
+        get { self[EnvironmentWithoutFontMultiplier.self] }
+        set { self[EnvironmentWithoutFontMultiplier.self] = newValue }
+    }
+}
+
+extension View {
+    public var hWithoutFontMultiplier: some View {
+        self.environment(\.hWithoutFontMultiplier, true)
     }
 }

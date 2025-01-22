@@ -76,7 +76,7 @@ struct QuestionsItems: View {
             case .relatedQuestions:
                 HelpCenterPill(title: questionType.title, color: .pink)
             }
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: .padding4) {
                 hSection(questions, id: \.self) { item in
                     hRow {
                         hText(item.question)
@@ -108,6 +108,7 @@ struct QuestionsItems: View {
 struct SupportView: View {
     @PresentableStore var store: HomeStore
     @ObservedObject var router: Router
+
     var body: some View {
         HStack {
             VStack(spacing: 0) {
@@ -157,11 +158,13 @@ struct SupportView: View {
 struct QuickActionView: View {
     let quickAction: QuickAction
     let onQuickAction: () -> Void
+
     var body: some View {
         hSection {
             hRow {
                 VStack(alignment: .leading, spacing: 0) {
                     hText(quickAction.displayTitle)
+
                     hText(quickAction.displaySubtitle, style: .label)
                         .foregroundColor(hTextColor.Opaque.secondary)
 
@@ -169,7 +172,7 @@ struct QuickActionView: View {
                 Spacer()
             }
             .withChevronAccessory
-            .verticalPadding(12)
+            .verticalPadding(.padding12)
             .onTap {
                 log.addUserAction(
                     type: .click,

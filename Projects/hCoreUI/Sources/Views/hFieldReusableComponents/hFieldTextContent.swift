@@ -42,7 +42,7 @@ public struct hFieldTextContent<T>: View {
     }
 
     public var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: .padding8) {
             if leftAlign {
                 VStack(spacing: 0) {
                     HStack(alignment: .top) {
@@ -64,7 +64,7 @@ public struct hFieldTextContent<T>: View {
     }
 
     var getTextField: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: .padding8) {
             if let leftViewWithItem = leftViewWithItem?(item as? T) {
                 leftViewWithItem
             } else if let leftView = leftView?() {

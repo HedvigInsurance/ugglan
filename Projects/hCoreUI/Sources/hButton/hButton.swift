@@ -346,8 +346,8 @@ private struct MediumButtonModifier: ViewModifier {
     func body(content: Content) -> some View {
         hSection {
             content
-                .padding(.top, 8)
-                .padding(.bottom, 8)
+                .padding(.top, 7)
+                .padding(.bottom, 9)
                 .frame(maxWidth: .infinity)
         }
         .sectionContainerStyle(.transparent)
