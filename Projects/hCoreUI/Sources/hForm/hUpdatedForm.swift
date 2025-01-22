@@ -26,7 +26,7 @@ public struct hUpdatedForm<Content: View>: View, KeyboardReadable {
                 GeometryReader { geometry in
                     ScrollView {
                         centerContent
-                            .frame(minHeight: contentPosition == .compact ? vm.scrollViewHeight : geometry.size.height)
+                            .frame(minHeight: contentPosition == .compact ? nil : geometry.size.height)
                             .frame(maxWidth: .infinity)
                             .frame(maxHeight: .infinity)
                             .background {
