@@ -122,7 +122,7 @@ public enum HFontTextStyle {
             }
             return 1
         }()
-        return sizeMultiplier
+        return min(2.5, sizeMultiplier)
     }
     var fontTextStyle: Font.TextStyle {
         switch self {
