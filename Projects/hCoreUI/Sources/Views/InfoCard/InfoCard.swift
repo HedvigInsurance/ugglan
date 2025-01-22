@@ -23,6 +23,7 @@ public struct InfoCard: View {
                     .resizable()
                     .foregroundColor(type.imageColor)
                     .frame(width: 20, height: 20)
+                    .accessibilityValue(type.displayName)
             }
             if let customContentView = customContentView {
                 customContentView

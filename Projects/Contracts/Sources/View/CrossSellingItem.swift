@@ -28,6 +28,7 @@ struct CrossSellingItem: View {
                     .resizable()
                     .frame(width: 48, height: 48)
                     .aspectRatio(contentMode: .fill)
+                    .accessibilityHidden(true)
                 HStack(spacing: 0) {
                     VStack(alignment: .leading, spacing: 0) {
                         hText(crossSell.title, style: .body1).foregroundColor(hTextColor.Opaque.primary)
@@ -50,6 +51,7 @@ struct CrossSellingItem: View {
                     }
                     .fixedSize(horizontal: true, vertical: true)
                 }
+                .accessibilityElement(children: .combine)
             }
             .onTapGesture {
                 fieldIsClicked.toggle()
