@@ -113,7 +113,6 @@ extension HomeView {
                 }
             }
         }
-        .padding(.bottom, .padding16)
     }
 
     @ViewBuilder
