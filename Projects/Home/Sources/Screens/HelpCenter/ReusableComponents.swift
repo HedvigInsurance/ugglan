@@ -108,6 +108,7 @@ struct QuestionsItems: View {
 struct SupportView: View {
     @PresentableStore var store: HomeStore
     @ObservedObject var router: Router
+    @SwiftUI.Environment(\.sizeCategory) private var sizeCategory
 
     var body: some View {
         HStack {
@@ -127,7 +128,7 @@ struct SupportView: View {
                             } content: {
                                 hText(L10n.hcChatGoToInbox)
                             }
-                            .fixedSize()
+                            .fixedSize(horizontal: sizeCategory <= .large, vertical: false)
                         }
                         hButton.MediumButton(type: hasSentOrRecievedAtLeastOneMessage ? .ghost : .primary) {
                             NotificationCenter.default.post(
@@ -137,7 +138,7 @@ struct SupportView: View {
                         } content: {
                             hText(L10n.hcChatButton)
                         }
-                        .fixedSize()
+                        .fixedSize(horizontal: sizeCategory <= .large, vertical: false)
                     }
                     .padding(.top, .padding24)
                 }

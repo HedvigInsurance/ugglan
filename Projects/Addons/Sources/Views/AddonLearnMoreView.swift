@@ -11,13 +11,20 @@ struct AddonLearnMoreView: View {
                 hSection {
                     VStack(alignment: .leading, spacing: .padding4) {
                         hText(model.title, style: .body2)
-                        hText(model.description, style: .body2)
+                        hText(model.description, style: .body1)
                             .foregroundColor(hTextColor.Opaque.secondary)
                     }
+
+                    hPill(text: L10n.addonLearnMoreLabel, color: .blue)
+                        .hFieldSize(.medium)
+                        .padding(.top, .padding32)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .sectionContainerStyle(.transparent)
+
                 VStack(spacing: .padding4) {
                     PerilCollection(perils: model.perils)
+                        .hFieldSize(.small)
                 }
             }
         }
