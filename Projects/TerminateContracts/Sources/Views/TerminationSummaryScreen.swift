@@ -8,8 +8,7 @@ struct TerminationSummaryScreen: View {
     init() {}
 
     var body: some View {
-        hForm {}
-            .hDisableScroll
+        hUpdatedForm {}
             .hFormTitle(
                 title: .init(
                     .small,

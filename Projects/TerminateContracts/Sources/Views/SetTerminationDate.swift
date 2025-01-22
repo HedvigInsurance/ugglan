@@ -17,7 +17,7 @@ struct SetTerminationDate: View {
     }
 
     var body: some View {
-        hForm {
+        hUpdatedForm {
             if let termination = terminationNavigationVm.terminationDateStepModel {
                 DatePickerView(
                     vm: .init(
@@ -47,7 +47,7 @@ struct SetTerminationDate: View {
                 )
             }
         }
-        .hDisableScroll
+        .hFormContentPosition(.compact)
         .hide($isHidden)
     }
 }
