@@ -13,7 +13,8 @@ struct DeleteCampaignView: View {
 
     var body: some View {
         ZStack {
-            hForm {}
+            hUpdatedForm {}
+                .hFormContentPosition(.compact)
                 .opacity(vm.codeRemoved ? 0 : 1)
                 .hFormAttachToBottom {
                     hSection {
@@ -55,7 +56,6 @@ struct DeleteCampaignView: View {
             SuccessScreen(title: L10n.paymentsCodeRemoved).opacity(vm.codeRemoved ? 1 : 0)
                 .offset(y: -32)
         }
-        .hDisableScroll
         .sectionContainerStyle(.transparent)
         .toolbar {
             ToolbarItem(placement: .principal) {
