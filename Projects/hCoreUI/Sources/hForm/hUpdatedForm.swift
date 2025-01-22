@@ -140,7 +140,7 @@ public struct hUpdatedForm<Content: View>: View, KeyboardReadable {
         if hFormAlwaysVisibleBottomAttachedView != nil {
             bottomAttachedView
         } else {
-            bottomAttachedView?.padding(.bottom, .padding8)
+            bottomAttachedView?.padding(.bottom, .padding16)
         }
     }
 
@@ -148,7 +148,7 @@ public struct hUpdatedForm<Content: View>: View, KeyboardReadable {
     private var getAlwaysVisibleBottomView: some View {
         hFormAlwaysVisibleBottomAttachedView
             .padding(.top, .padding16)
-            .padding(.bottom, .padding8)
+            .padding(.bottom, .padding16)
             .background {
                 BackgroundBlurView()
                     .ignoresSafeArea()
