@@ -23,7 +23,7 @@ struct AddonSelectSubOptionScreen: View {
     }
 
     var body: some View {
-        hForm {
+        hUpdatedForm {
             VStack(spacing: .padding4) {
                 ForEach(addonOffer.quotes, id: \.self) { quote in
                     hSection {
@@ -58,7 +58,6 @@ struct AddonSelectSubOptionScreen: View {
             }
             .padding(.top, .padding16)
         }
-        .hDisableScroll
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: .padding8) {
@@ -79,6 +78,7 @@ struct AddonSelectSubOptionScreen: View {
             .sectionContainerStyle(.transparent)
             .padding(.top, 16)
         }
+        .hFormContentPosition(.compact)
         .configureTitleView(self)
     }
 }
