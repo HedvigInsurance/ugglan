@@ -198,11 +198,13 @@ private enum PillType {
 private struct StatusPill: View {
     var text: String
     var type: PillType
+    @Environment(\.sizeCategory) private var sizeCategory
 
     var body: some View {
         VStack {
             hText(text, style: .label)
         }
+        .fixedSize(horizontal: sizeCategory <= .large, vertical: false)
         .padding(.vertical, 3)
         .padding(.horizontal, .padding6)
         .foregroundColor(hTextColor.Opaque.white)

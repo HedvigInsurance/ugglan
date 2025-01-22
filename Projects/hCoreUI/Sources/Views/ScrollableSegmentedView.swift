@@ -6,6 +6,7 @@ import hCore
 public struct ScrollableSegmentedView<Content: View>: View {
     @ObservedObject var vm: ScrollableSegmentedViewModel
     @ViewBuilder var contentFor: (_ id: String) -> Content
+
     public init(
         vm: ScrollableSegmentedViewModel,
         contentFor: @escaping (_ id: String) -> Content

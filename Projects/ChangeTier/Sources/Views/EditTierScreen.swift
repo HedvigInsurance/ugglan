@@ -51,7 +51,7 @@ struct EditTierScreen: View {
                     }
                 }
             }
-            .padding(.top, 16)
+            .padding(.top, .padding16)
             .sectionContainerStyle(.transparent)
             .hFieldSize(.medium)
         }

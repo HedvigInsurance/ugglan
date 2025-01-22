@@ -111,7 +111,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                 hForm {}
                     .hFormAttachToBottom {
                         VStack(spacing: 0) {
-                            VStack(spacing: 16) {
+                            VStack(spacing: .padding16) {
                                 if let infoCard = config.infoCard, infoCard.placement == .top {
                                     hSection {
                                         InfoCard(text: infoCard.text, type: .info).buttons(infoCard.buttons)
@@ -164,7 +164,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     }
 
     private func content(with proxy: ScrollViewProxy) -> some View {
-        VStack(spacing: 4) {
+        VStack(spacing: .padding4) {
             if let listTitle = config.listTitle {
                 hSection(config.items, id: \.object) { item in
                     getCell(item: item.object)

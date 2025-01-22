@@ -41,7 +41,7 @@ struct PaymentsDiscountsView: View {
             )
         }
         .withHeader {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: .padding16) {
                 HStack {
                     hText(L10n.paymentsCampaigns)
                     Spacer()

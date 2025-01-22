@@ -337,7 +337,7 @@ public struct QuoteSummaryScreen: View {
             }
 
             if !contract.documents.isEmpty {
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .leading, spacing: .padding4) {
                     hText(L10n.confirmationScreenDocumentTitle)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     ForEach(contract.documents, id: \.displayName) { document in
