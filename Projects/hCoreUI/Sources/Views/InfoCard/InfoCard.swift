@@ -6,6 +6,7 @@ public struct InfoCard: View {
     let type: NotificationType
     @Environment(\.hInfoCardButtonConfig) var buttonsConfig
     @Environment(\.hInfoCardCustomView) var customContentView
+    @Environment(\.sizeCategory) var sizeCategory
 
     public init(
         text: String,
@@ -21,11 +22,11 @@ public struct InfoCard: View {
                 Image(uiImage: type.image)
                     .resizable()
                     .foregroundColor(type.imageColor)
-                    .frame(width: 20 * HFontTextStyle.label.multiplier, height: 20 * HFontTextStyle.label.multiplier)
+                    .frame(width: 20, height: 20)
             }
             if let customContentView = customContentView {
                 customContentView
-                    .padding(.leading, .padding8 * HFontTextStyle.label.multiplier)
+                    .padding(.leading, .padding8)
                     .hUseLightMode
             } else {
                 switch type {
@@ -38,8 +39,8 @@ public struct InfoCard: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, .padding12 * HFontTextStyle.label.multiplier)
-        .padding(.horizontal, .padding16 * HFontTextStyle.label.multiplier)
+        .padding(.vertical, .padding12)
+        .padding(.horizontal, .padding16)
         .modifier(NotificationStyle(type: type))
         .fixedSize(horizontal: false, vertical: true)
     }
@@ -49,7 +50,7 @@ public struct InfoCard: View {
             hText(text, style: .label)
                 .foregroundColor(type.textColor)
                 .multilineTextAlignment(.leading)
-                .padding(.bottom, 4 * HFontTextStyle.label.multiplier)
+                .padding(.bottom, .padding4)
             if let buttonsConfig {
                 if buttonsConfig.count > 1 {
                     HStack(spacing: 4) {
@@ -94,7 +95,7 @@ public struct InfoCard: View {
                 }
             }
         }
-        .padding(.leading, .padding8 * HFontTextStyle.label.multiplier)
+        .padding(.leading, .padding8)
     }
 }
 

@@ -19,13 +19,12 @@ public struct hPill: View {
 
     public var body: some View {
         hText(text, style: fieldSize == .large ? .body1 : .label)
-            .fixedSize(horizontal: sizeCategory != .large ? false : true, vertical: false)
+            .fixedSize(horizontal: sizeCategory <= .large, vertical: false)
             .foregroundColor(color.pillTextColor(level: colorLevel))
             .modifier(
                 PillModifier(
                     color: color,
-                    colorLevel: colorLevel,
-                    style: fieldSize == .large ? .body1 : .label
+                    colorLevel: colorLevel
                 )
             )
     }
@@ -33,7 +32,6 @@ public struct hPill: View {
     struct PillModifier: ViewModifier {
         let color: PillColor
         let colorLevel: PillColor.PillColorLevel
-        let style: HFontTextStyle
         @Environment(\.hFieldSize) var fieldSize
         func body(content: Content) -> some View {
             content

@@ -4,8 +4,8 @@ public struct ContractInformation: View {
     let displayName: String?
     let exposureName: String?
     let pillowImage: UIImage?
-
     let status: String?
+
     public init(
         displayName: String?,
         exposureName: String?,

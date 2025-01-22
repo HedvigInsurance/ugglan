@@ -33,9 +33,9 @@ public enum Fonts {
 
     public static var forceTraitCollection: UITraitCollection? = nil
 
-    public static func fontFor(style: HFontTextStyle, withoutFontMultipler: Bool? = false) -> UIFont {
+    public static func fontFor(style: HFontTextStyle, withoutFontMultipler: Bool = false) -> UIFont {
         func getFont(_ font: UIFont) -> UIFont {
-            let size = style.fontSize * (withoutFontMultipler ?? false ? 1 : style.multiplier)
+            let size = style.fontSize * (withoutFontMultipler ? 1 : style.multiplier)
             let fontDescriptor = UIFontDescriptor(fontAttributes: [
                 UIFontDescriptor.AttributeName.size: size,
                 UIFontDescriptor.AttributeName.family: font.familyName,

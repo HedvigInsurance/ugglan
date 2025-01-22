@@ -135,7 +135,7 @@ public struct DefaultStyling {
     public static func applyCommonNavigationBarStyling(_ appearance: UINavigationBarAppearance) {
         appearance.titleTextAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-            NSAttributedString.Key.font: Fonts.fontFor(style: .body1, withoutFontMultipler: false),
+            NSAttributedString.Key.font: Fonts.fontFor(style: .body1),
         ]
         appearance.largeTitleTextAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
