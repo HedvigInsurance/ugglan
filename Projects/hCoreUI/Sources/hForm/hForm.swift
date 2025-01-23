@@ -204,6 +204,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
     }
     .hFormTitle(title: .init(.small, .body1, "title", alignment: .leading), subTitle: nil)
 }
+//MARK: View model
 
 @MainActor
 private class hUpdatedFormViewModel: ObservableObject {
@@ -260,6 +261,7 @@ private class hUpdatedFormViewModel: ObservableObject {
     }
 }
 
+//MARK: hScrollBounce
 private struct EnvironmentHScrollBounce: EnvironmentKey {
     static let defaultValue: Bool? = nil
 }
@@ -281,6 +283,8 @@ extension View {
     }
 }
 
+//MARK: hAlwaysVisibleBottomAttachedView
+/// not added to the scroll view
 @MainActor
 private struct EnvironmentHFormAlwaysVisibleBottomAttachedView: @preconcurrency EnvironmentKey {
     static let defaultValue: AnyView? = nil
@@ -300,6 +304,7 @@ extension View {
     }
 }
 
+//MARK: hFormContentPosition
 @MainActor
 private struct EnvironmentHFormContentPosition: @preconcurrency EnvironmentKey {
     static let defaultValue: ContentPosition = .top
@@ -325,6 +330,7 @@ public enum ContentPosition {
     case compact
 }
 
+//MARK: hFormBottomAttachedView
 @MainActor
 private struct EnvironmentHFormBottomAttachedView: @preconcurrency EnvironmentKey {
     static let defaultValue: AnyView? = nil
@@ -343,6 +349,7 @@ extension View {
     }
 }
 
+//MARK: hFormBottomBackgroundStyle
 public enum hFormBottomBackgroundStyle {
     case transparent
     case gradient(from: any hColor, to: any hColor)
@@ -366,6 +373,7 @@ extension View {
     }
 }
 
+//MARK: hFormTitle
 @MainActor
 private struct EnvironmentHFormTitle: @preconcurrency EnvironmentKey {
     static let defaultValue: (title: hTitle, subTitle: hTitle?)? = nil
