@@ -34,7 +34,7 @@ public struct DeleteRequestLoadingView: View {
     }
 
     @ViewBuilder private var successState: some View {
-        hUpdatedForm {
+        hForm {
             VStack(spacing: 0) {
                 Image(uiImage: hCoreUIAssets.checkmark.image)
                     .resizable()
@@ -65,7 +65,8 @@ public struct DeleteRequestLoadingView: View {
 
     @ViewBuilder private func errorState(errorMessage: String) -> some View {
         GenericErrorView(
-            description: errorMessage
+            description: errorMessage,
+            formPosition: .center
         )
         .hErrorViewButtonConfig(
             .init(
@@ -76,40 +77,6 @@ public struct DeleteRequestLoadingView: View {
                     }
                 )
             )
-        )
-    }
-
-    private var notAvailableView: some View {
-        hSection {
-            VStack {
-                Spacer()
-                GenericErrorView(
-                    description: L10n.DeleteAccount.deleteNotAvailable
-                )
-                .hErrorViewButtonConfig(
-                    .init(
-                        actionButton: .init(
-                            buttonTitle: L10n.openChat,
-                            buttonAction: {
-                                dismissAction(.makeHomeTabActiveAndOpenChat)
-                            }
-                        ),
-                        dismissButton: nil
-                    )
-                )
-                Spacer()
-                hSection {
-                    hButton.LargeButton(type: .ghost) {
-                        dismissAction(.makeHomeTabActiveAndOpenChat)
-                    } content: {
-                        hText(L10n.generalCancelButton)
-                    }
-                }
-            }
-        }
-        .sectionContainerStyle(.transparent)
-        .background(
-            BackgroundView().edgesIgnoringSafeArea(.all)
         )
     }
 

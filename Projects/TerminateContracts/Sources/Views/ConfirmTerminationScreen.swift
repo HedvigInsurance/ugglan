@@ -11,6 +11,7 @@ struct ConfirmTerminationScreen: View {
         GenericErrorView(
             title: L10n.General.areYouSure,
             description: terminationText,
+            formPosition: .compact,
             attachContentToTheBottom: true
         )
         .hErrorViewButtonConfig(
@@ -31,7 +32,6 @@ struct ConfirmTerminationScreen: View {
             )
         )
         .hExtraTopPadding
-        .hDisableScroll
     }
 
     var terminationText: String {

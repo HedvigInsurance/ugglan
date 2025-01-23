@@ -34,7 +34,7 @@ public struct HomeView<Claims: View>: View {
 extension HomeView {
 
     public var body: some View {
-        hUpdatedForm {
+        hForm {
             centralContent
         }
         .setHomeNavigationBars(

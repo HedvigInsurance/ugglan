@@ -23,7 +23,7 @@ struct SetTerminationDateLandingScreen: View {
                 .edgesIgnoringSafeArea(.top)
                 .useDarkColor
             } else {
-                hUpdatedForm {}
+                hForm {}
                     .hFormTitle(
                         title: .init(
                             .small,

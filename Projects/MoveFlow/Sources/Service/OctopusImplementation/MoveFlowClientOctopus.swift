@@ -193,7 +193,7 @@ extension MovingFlowQuote {
         })
         perils = productVariantFragment.perils.compactMap({ .init(fragment: $0) })
         documents = productVariantFragment.documents.compactMap({ .init($0) })
-        contractType = TypeOfContract(rawValue: data.productVariant.typeOfContract)
+        contractType = TypeOfContract.resolve(for: data.productVariant.typeOfContract)
         displayItems = data.displayItems.map({ .init($0) })
         addons = data.addons.map({ AddonDataModel(fragment: $0.fragments.moveAddonQuoteFragment) })
     }
@@ -210,7 +210,7 @@ extension MovingFlowQuote {
         })
         perils = productVariantFragment.perils.compactMap({ .init(fragment: $0) })
         documents = productVariantFragment.documents.compactMap({ .init($0) })
-        contractType = TypeOfContract(rawValue: data.productVariant.typeOfContract)
+        contractType = TypeOfContract.resolve(for: data.productVariant.typeOfContract)
         displayItems = data.displayItems.map({ .init($0) })
         addons = data.addons.map({ AddonDataModel(fragment: $0.fragments.moveAddonQuoteFragment) })
     }

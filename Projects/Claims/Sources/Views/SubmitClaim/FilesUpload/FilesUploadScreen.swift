@@ -21,7 +21,7 @@ struct SubmitClaimFilesUploadScreen: View {
     var body: some View {
         Group {
             if vm.hasFiles {
-                hUpdatedForm {
+                hForm {
                     hSection {
                         FilesGridView(vm: vm.fileGridViewModel)
                     }
@@ -81,7 +81,7 @@ struct SubmitClaimFilesUploadScreen: View {
                     }
                 }
             } else {
-                hUpdatedForm {}
+                hForm {}
                     .hFormTitle(
                         title: .init(
                             .small,

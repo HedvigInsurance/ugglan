@@ -11,7 +11,7 @@ public struct LanguageAndMarketPickerView: View {
     public init() {}
 
     public var body: some View {
-        hUpdatedForm {
+        hForm {
             VStack(spacing: 8) {
                 hSection {
                     Picker("View", selection: $vm.selected) {

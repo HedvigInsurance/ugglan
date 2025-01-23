@@ -11,7 +11,7 @@ struct StartDateScreen: View {
     }
 
     var form: some View {
-        hUpdatedForm {}
+        hForm {}
             .sectionContainerStyle(.transparent)
             .hFormTitle(title: .init(.small, .heading2, L10n.TravelCertificate.whenIsYourTrip, alignment: .leading))
             .hFormAttachToBottom {

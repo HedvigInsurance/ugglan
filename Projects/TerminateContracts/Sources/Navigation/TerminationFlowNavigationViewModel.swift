@@ -583,7 +583,8 @@ struct TerminationFlowNavigation: View {
     private func openTerminationFailScreen() -> some View {
         GenericErrorView(
             title: L10n.terminationNotSuccessfulTitle,
-            description: L10n.somethingWentWrong
+            description: L10n.somethingWentWrong,
+            formPosition: .center
         )
         .hErrorViewButtonConfig(
             .init(

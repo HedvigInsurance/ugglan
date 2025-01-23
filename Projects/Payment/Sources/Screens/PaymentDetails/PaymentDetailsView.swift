@@ -14,7 +14,7 @@ struct PaymentDetailsView: View {
     }
 
     var body: some View {
-        hUpdatedForm {
+        hForm {
             VStack(spacing: 16) {
                 contracts
                 paymentInfo

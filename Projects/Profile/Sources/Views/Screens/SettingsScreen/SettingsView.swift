@@ -16,7 +16,7 @@ struct SettingsView: View {
     }
 
     var body: some View {
-        hUpdatedForm {
+        hForm {
             hSection {
                 VStack(spacing: 4) {
                     hFloatingField(

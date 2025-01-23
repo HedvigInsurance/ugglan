@@ -23,7 +23,7 @@ public struct EuroBonusView: View {
                 return L10n.SasIntegration.notConnected
             }()
 
-            hUpdatedForm {
+            hForm {
                 hSection {
                     VStack(spacing: 16) {
                         hFloatingField(value: fieldValue, placeholder: L10n.SasIntegration.title) {

@@ -278,30 +278,33 @@ public struct DirectDebitSetup: View {
     public var body: some View {
         Group {
             if showNotSupported {
-                GenericErrorView(title: L10n.moveintentGenericError, description: nil)
-                    .hErrorViewButtonConfig(
-                        .init(
-                            actionButtonAttachedToBottom: .init(
-                                buttonTitle: L10n.openChat,
-                                buttonAction: {
-                                    router.dismiss()
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                                        NotificationCenter.default.post(
-                                            name: .openChat,
-                                            object: ChatType.newConversation
-                                        )
-                                    }
+                GenericErrorView(
+                    title: L10n.moveintentGenericError,
+                    description: nil,
+                    formPosition: .center
+                )
+                .hErrorViewButtonConfig(
+                    .init(
+                        actionButtonAttachedToBottom: .init(
+                            buttonTitle: L10n.openChat,
+                            buttonAction: {
+                                router.dismiss()
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                                    NotificationCenter.default.post(
+                                        name: .openChat,
+                                        object: ChatType.newConversation
+                                    )
                                 }
-                            ),
-                            dismissButton: .init(
-                                buttonTitle: L10n.generalCloseButton,
-                                buttonAction: {
-                                    router.dismiss()
-                                }
-                            )
+                            }
+                        ),
+                        dismissButton: .init(
+                            buttonTitle: L10n.generalCloseButton,
+                            buttonAction: {
+                                router.dismiss()
+                            }
                         )
                     )
-                    .hFormDontUseInitialAnimation
+                )
             } else if showCancelAlert {
                 DirectDebitSetupRepresentable(setupType: setupType, showErrorAlert: $showErrorAlert, router: router)
                     .alert(isPresented: $showCancelAlert) {

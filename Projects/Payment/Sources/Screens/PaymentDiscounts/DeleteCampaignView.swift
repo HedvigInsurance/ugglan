@@ -13,7 +13,7 @@ struct DeleteCampaignView: View {
 
     var body: some View {
         ZStack {
-            hUpdatedForm {}
+            hForm {}
                 .hFormContentPosition(.compact)
                 .opacity(vm.codeRemoved ? 0 : 1)
                 .hFormAttachToBottom {

@@ -25,7 +25,7 @@ public struct BankIDLoginQRView: View {
                 .useDarkColor
                 .transition(.opacity.combined(with: .opacity).animation(.easeInOut(duration: 0.2)))
             } else {
-                hUpdatedForm {
+                hForm {
                     VStack(spacing: 32) {
                         ZStack {
                             if let image = vm.image {

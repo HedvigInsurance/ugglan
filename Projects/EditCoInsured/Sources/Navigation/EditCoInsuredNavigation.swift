@@ -201,7 +201,7 @@ public struct EditCoInsuredNavigation: View {
     }
 
     func openSuccessScreen(title: String) -> some View {
-        hUpdatedForm {
+        hForm {
             SuccessScreen(title: title)
                 .onAppear {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {

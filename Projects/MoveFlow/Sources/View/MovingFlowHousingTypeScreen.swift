@@ -22,7 +22,7 @@ public struct MovingFlowHousingTypeScreen: View {
             state: $vm.viewState
         )
         .hCustomSuccessView {
-            hUpdatedForm {}
+            hForm {}
                 .hFormTitle(
                     title: .init(
                         .small,
@@ -59,7 +59,6 @@ public struct MovingFlowHousingTypeScreen: View {
                             } content: {
                                 hText(L10n.generalContinueButton, style: .body1)
                             }
-                            .padding(.bottom, .padding16)
                         }
                     }
                     .sectionContainerStyle(.transparent)
@@ -75,7 +74,6 @@ public struct MovingFlowHousingTypeScreen: View {
                         dismissButton: nil
                     )
                 )
-                .hDisableScroll
         }
         .hErrorViewButtonConfig(errorButtons)
     }

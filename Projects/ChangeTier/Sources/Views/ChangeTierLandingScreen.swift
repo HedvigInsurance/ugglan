@@ -50,7 +50,7 @@ public struct ChangeTierLandingScreen: View {
     }
 
     var succesView: some View {
-        hUpdatedForm {}
+        hForm {}
             .hFormTitle(
                 title: .init(
                     .small,
@@ -68,7 +68,6 @@ public struct ChangeTierLandingScreen: View {
                 VStack(spacing: .padding4) {
                     informationCard
                     buttons
-                        .padding(.bottom, 16)
                 }
             }
     }

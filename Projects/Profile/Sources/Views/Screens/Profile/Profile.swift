@@ -23,7 +23,7 @@ public struct ProfileView: View {
     }
 
     public var body: some View {
-        hUpdatedForm {
+        hForm {
             PresentableStoreLens(
                 ProfileStore.self,
                 getter: { state in
