@@ -124,12 +124,6 @@ extension AddonSelectSubOptionScreen: TitleView {
                 .init(displayName: "dodument2", url: "", type: .termsAndConditions),
                 .init(displayName: "dodument3", url: "", type: .preSaleInfo),
             ],
-            insurableLimits: [
-                .init(label: "limit1", limit: "limit1", description: "description"),
-                .init(label: "limit2", limit: "limit2", description: "description"),
-                .init(label: "limit3", limit: "limit3", description: "description"),
-                .init(label: "limit4", limit: "limit4", description: "description"),
-            ],
             perils: [],
             product: "",
             termsVersion: ""
@@ -159,12 +153,6 @@ extension AddonSelectSubOptionScreen: TitleView {
                             .init(displayName: "dodument1", url: "", type: .generalTerms),
                             .init(displayName: "dodument2", url: "", type: .termsAndConditions),
                             .init(displayName: "dodument3", url: "", type: .preSaleInfo),
-                        ],
-                        insurableLimits: [
-                            .init(label: "limit1", limit: "limit1", description: "description"),
-                            .init(label: "limit2", limit: "limit2", description: "description"),
-                            .init(label: "limit3", limit: "limit3", description: "description"),
-                            .init(label: "limit4", limit: "limit4", description: "description"),
                         ],
                         perils: [],
                         product: "",
