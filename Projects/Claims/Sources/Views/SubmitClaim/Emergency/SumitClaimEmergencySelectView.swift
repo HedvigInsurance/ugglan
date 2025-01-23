@@ -67,7 +67,7 @@ struct SumitClaimEmergencySelectView: View {
                                 hColorScheme(light: hTextColor.Opaque.primary, dark: hTextColor.Opaque.negative)
                             )
                     }
-                    .fixedSize(horizontal: false, vertical: true)
+                    .hButtonTakeFullWidth(true)
                 } else {
                     hButton.MediumButton(type: .secondary) {
                         withAnimation(.spring()) {
@@ -76,7 +76,7 @@ struct SumitClaimEmergencySelectView: View {
                     } content: {
                         hText(option.displayName)
                     }
-                    .fixedSize(horizontal: false, vertical: true)
+                    .hButtonTakeFullWidth(true)
                 }
             }
         }

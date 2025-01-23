@@ -25,7 +25,6 @@ struct SupportView: View {
                 } content: {
                     hText(L10n.CrossSell.Info.faqChatButton)
                 }
-                .fixedSize(horizontal: true, vertical: true)
             }
             .padding(.top, .padding32)
             .padding(.bottom, .padding56)

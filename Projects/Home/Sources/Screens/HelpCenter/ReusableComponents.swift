@@ -111,7 +111,7 @@ struct SupportView: View {
     @SwiftUI.Environment(\.sizeCategory) private var sizeCategory
 
     var body: some View {
-        HStack {
+        hSection {
             VStack(spacing: 0) {
                 hText(L10n.hcChatQuestion)
                     .foregroundColor(hTextColor.Translucent.primary)
@@ -128,7 +128,6 @@ struct SupportView: View {
                             } content: {
                                 hText(L10n.hcChatGoToInbox)
                             }
-                            .fixedSize(horizontal: sizeCategory <= .large, vertical: false)
                         }
                         hButton.MediumButton(type: hasSentOrRecievedAtLeastOneMessage ? .ghost : .primary) {
                             NotificationCenter.default.post(
@@ -138,12 +137,12 @@ struct SupportView: View {
                         } content: {
                             hText(L10n.hcChatButton)
                         }
-                        .fixedSize(horizontal: sizeCategory <= .large, vertical: false)
                     }
                     .padding(.top, .padding24)
                 }
                 .presentableStoreLensAnimation(.default)
             }
+            .fixedSize(horizontal: false, vertical: true)
             .padding(.vertical, .padding32)
             .padding(.bottom, .padding24)
         }
