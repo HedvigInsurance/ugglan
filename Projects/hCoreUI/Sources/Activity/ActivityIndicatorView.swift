@@ -14,7 +14,8 @@ struct LoadingViewWithContent: ViewModifier {
                 loadingIndicatorView.transition(.opacity.animation(.easeInOut(duration: 0.2)))
             } else if let error = error {
                 GenericErrorView(
-                    description: error
+                    description: error,
+                    formPosition: .center
                 )
                 .hErrorViewButtonConfig(.init())
                 .transition(.opacity.animation(.easeInOut(duration: 0.2)))
@@ -49,7 +50,7 @@ struct LoadingViewWithContentForProcessingState: ViewModifier {
             case .error(let errorMessage):
                 GenericErrorView(
                     description: errorMessage,
-                    useForm: false
+                    formPosition: nil
                 )
                 .transition(.opacity.animation(.easeInOut(duration: 0.2)))
             }
@@ -77,7 +78,8 @@ struct LoadingViewWithButtonLoadingForProcessingState: ViewModifier {
                 content.transition(.opacity.animation(.easeInOut(duration: 0.2))).hButtonIsLoading(state == .loading)
             case .error(let errorMessage):
                 GenericErrorView(
-                    description: errorMessage
+                    description: errorMessage,
+                    formPosition: nil
                 )
                 .transition(.opacity.animation(.easeInOut(duration: 0.2)))
             }

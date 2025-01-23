@@ -13,8 +13,7 @@ struct StartDateScreen: View {
     var form: some View {
         hForm {}
             .sectionContainerStyle(.transparent)
-            .hFormTitle(title: .init(.standard, .displayXSLong, L10n.TravelCertificate.whenIsYourTrip))
-            .hDisableScroll
+            .hFormTitle(title: .init(.small, .heading2, L10n.TravelCertificate.whenIsYourTrip, alignment: .leading))
             .hFormAttachToBottom {
                 VStack(spacing: 16) {
                     hSection {
@@ -55,7 +54,6 @@ struct StartDateScreen: View {
                         } content: {
                             hText(L10n.generalContinueButton)
                         }
-                        .padding(.bottom, .padding16)
                     }
                 }
             }

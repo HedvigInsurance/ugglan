@@ -52,7 +52,7 @@ struct HelpCenterQuestionView: View {
     }
 }
 
-#Preview{
+#Preview {
     HelpCenterQuestionView(
         question: Question(
             question: "When do you charge for my insurance?",

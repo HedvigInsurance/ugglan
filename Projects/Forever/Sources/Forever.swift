@@ -89,6 +89,7 @@ public struct ForeverView: View {
                     InvitationTable().id(2)
                 }
             }
+            .hSetScrollBounce(to: true)
             .onChange(of: scrollTo) { newValue in
                 if newValue != 0 {
                     withAnimation {

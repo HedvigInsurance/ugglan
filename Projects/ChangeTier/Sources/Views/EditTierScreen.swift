@@ -55,6 +55,7 @@ struct EditTierScreen: View {
             .sectionContainerStyle(.transparent)
             .hFieldSize(.medium)
         }
+        .hFormContentPosition(.compact)
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: .padding8) {

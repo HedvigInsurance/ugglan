@@ -60,6 +60,7 @@ public struct PaymentsView: View {
             }
             .padding(.vertical, .padding8)
         }
+        .hSetScrollBounce(to: true)
         .hFormAttachToBottom {
             bottomPart
         }

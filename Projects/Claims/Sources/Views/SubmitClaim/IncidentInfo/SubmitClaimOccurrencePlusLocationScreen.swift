@@ -33,7 +33,6 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
                     alignment: .leading
                 )
             )
-            .hDisableScroll
             .hFormAttachToBottom {
                 VStack(spacing: 0) {
                     hSection {

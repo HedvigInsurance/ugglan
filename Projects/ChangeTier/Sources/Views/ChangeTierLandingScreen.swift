@@ -68,10 +68,8 @@ public struct ChangeTierLandingScreen: View {
                 VStack(spacing: .padding4) {
                     informationCard
                     buttons
-                        .padding(.bottom, 16)
                 }
             }
-            .hDisableScroll
     }
 
     private var informationCard: some View {

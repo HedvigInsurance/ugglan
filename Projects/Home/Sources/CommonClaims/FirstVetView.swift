@@ -46,7 +46,7 @@ public struct FirstVetView: View {
                 .hWithoutDivider
             }
         }
-        .hFormAttachToBottom {
+        .hFormAlwaysAttachToBottom {
             hButton.LargeButton(type: .ghost) {
                 store.send(.dismissOtherServices)
             } content: {

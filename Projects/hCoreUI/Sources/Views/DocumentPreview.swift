@@ -94,7 +94,8 @@ public struct DocumentPreview: View {
             if vm.error != nil {
                 GenericErrorView(
                     title: L10n.somethingWentWrong,
-                    description: L10n.General.errorBody
+                    description: L10n.General.errorBody,
+                    formPosition: .center
                 )
                 .hErrorViewButtonConfig(
                     .init(

@@ -22,7 +22,6 @@ public struct DeleteAccountView: View {
     public var body: some View {
         RouterHost(router: router, tracking: DeleteDetentType.deleteAccountView) {
             hForm {
-                Spacing(height: vm.topSpacing)
                 hSection {
                     VStack(alignment: vm.alignment, spacing: vm.titleAndDescriptionSpacing) {
                         if let topIcon = vm.topIcon {
@@ -47,6 +46,7 @@ public struct DeleteAccountView: View {
                 }
                 .sectionContainerStyle(.transparent)
             }
+            .hFormContentPosition(.compact)
             .hFormAttachToBottom {
                 hSection {
                     VStack(spacing: 8) {
@@ -68,7 +68,6 @@ public struct DeleteAccountView: View {
                 }
                 .sectionContainerStyle(.transparent)
             }
-            .hDisableScroll
         }
     }
 }
@@ -122,15 +121,6 @@ extension DeleteAccountViewModel {
             return .center
         } else {
             return .leading
-        }
-    }
-    var topSpacing: Float {
-        if self.hasActiveContracts {
-            return 64
-        } else if self.hasActiveClaims {
-            return 64
-        } else {
-            return 32
         }
     }
 

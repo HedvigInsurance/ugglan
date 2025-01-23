@@ -84,7 +84,6 @@ struct ChangeAddonScreen: View {
                     .sectionContainerStyle(.transparent)
                 }
             }
-            .hDisableScroll
     }
 
     @ViewBuilder

@@ -53,7 +53,6 @@ struct SelectContractView: View {
         )
         .hButtonIsLoading(vm.state == .loading)
         .claimErrorTrackerForState($vm.state)
-        .hDisableScroll
     }
 }
 

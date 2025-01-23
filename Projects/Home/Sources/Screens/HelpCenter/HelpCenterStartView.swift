@@ -74,7 +74,6 @@ public struct HelpCenterStartView: View {
             vm.searchInProgress
                 ? .transparent : .gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary)
         )
-        .hFormObserveKeyboard
         .edgesIgnoringSafeArea(.bottom)
         .dismissKeyboard()
         .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in

@@ -28,6 +28,7 @@ struct AskForPushNotifications: View {
             hForm {
                 mainContent
             }
+            .hFormContentPosition(.compact)
         } else {
             mainContent
         }

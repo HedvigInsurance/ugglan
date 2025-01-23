@@ -28,7 +28,7 @@ struct CoInsuredInputErrorView: View {
         GenericErrorView(
             description: vm.SSNError ?? intentViewModel.errorMessageForInput
                 ?? intentViewModel.errorMessageForCoinsuredList,
-            useForm: true
+            formPosition: .compact
         )
         .hErrorViewButtonConfig(
             .init(

@@ -43,11 +43,9 @@ struct SumitClaimEmergencySelectView: View {
                         }
                         .hButtonIsLoading(vm.state == .loading)
                     }
-                    .padding(.bottom, .padding32)
                 }
                 .sectionContainerStyle(.transparent)
             }
-            .hDisableScroll
             .claimErrorTrackerForState($vm.state)
     }
 
