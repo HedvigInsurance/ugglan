@@ -51,7 +51,7 @@ public struct ForeverView: View {
 
     private var successView: some View {
         ScrollViewReader { value in
-            hUpdatedForm {
+            hForm {
                 VStack(spacing: 0) {
                     HeaderView {
                         scrollTo = 2

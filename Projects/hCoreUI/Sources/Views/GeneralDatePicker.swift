@@ -12,7 +12,7 @@ public struct DatePickerView: View {
     }
 
     public var body: some View {
-        hUpdatedForm {
+        hForm {
             hSection {
                 HStack {
                     if vm.config.showAsList ?? false {

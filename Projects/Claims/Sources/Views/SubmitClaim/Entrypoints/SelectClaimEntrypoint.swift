@@ -16,7 +16,7 @@ public struct SelectClaimEntrypointGroup: View {
     }
 
     public var body: some View {
-        hUpdatedForm {}
+        hForm {}
             .hFormTitle(
                 title: .init(
                     .small,
@@ -110,7 +110,7 @@ struct SelectClaimEntrypointType: View {
     public init() {}
 
     var body: some View {
-        hUpdatedForm {}
+        hForm {}
             .hFormTitle(
                 title: .init(
                     .small,
@@ -203,7 +203,7 @@ struct SelectClaimEntrypointOption: View {
     public init() {}
 
     var body: some View {
-        hUpdatedForm {}
+        hForm {}
             .hFormTitle(
                 title: .init(
                     .small,

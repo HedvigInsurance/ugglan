@@ -14,7 +14,7 @@ struct SumitClaimEmergencySelectView: View {
         self.title = title
     }
     var body: some View {
-        hUpdatedForm {}
+        hForm {}
             .hFormTitle(
                 title: .init(
                     .small,

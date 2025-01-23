@@ -9,7 +9,7 @@ struct TerminationSurveyScreen: View {
     @EnvironmentObject var terminationFlowNavigationViewModel: TerminationFlowNavigationViewModel
 
     var body: some View {
-        hUpdatedForm {
+        hForm {
             content
         }
         .hFormTitle(

@@ -18,7 +18,7 @@ struct HelpCenterQuestionView: View {
     }
 
     var body: some View {
-        hUpdatedForm {
+        hForm {
             VStack(alignment: .leading, spacing: 32) {
                 hSection {
                     VStack(alignment: .leading, spacing: 32) {

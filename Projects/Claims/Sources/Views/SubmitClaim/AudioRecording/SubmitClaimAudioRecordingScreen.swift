@@ -58,7 +58,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
     }
 
     private var mainContent: some View {
-        hUpdatedForm {
+        hForm {
             let audioRecordingStep = claimsNavigationVm.audioRecordingModel
             if isAudioInput {
                 textSection(questions: audioRecordingStep?.questions)

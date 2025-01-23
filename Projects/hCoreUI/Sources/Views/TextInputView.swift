@@ -15,7 +15,7 @@ public struct TextInputView: View {
     }
 
     public var body: some View {
-        hUpdatedForm {
+        hForm {
             VStack(spacing: 0) {
                 hSection {
                     hFloatingTextField(

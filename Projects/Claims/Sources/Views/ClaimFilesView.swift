@@ -43,7 +43,7 @@ public struct ClaimFilesView: View {
                     )
                 )
             } else {
-                hUpdatedForm {
+                hForm {
                     hSection {
                         FilesGridView(vm: vm.fileGridViewModel)
                     }

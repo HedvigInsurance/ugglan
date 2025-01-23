@@ -23,7 +23,7 @@ struct PriceInputScreen: View {
     }
 
     var body: some View {
-        hUpdatedForm {
+        hForm {
             hSection {
                 hFloatingTextField(
                     masking: Masking(type: .digits),

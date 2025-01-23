@@ -25,7 +25,7 @@ public struct GenericErrorView: View {
 
     public var body: some View {
         if let formPosition {
-            hUpdatedForm {
+            hForm {
                 if !attachContentToTheBottom {
                     content
                         .padding(.bottom, .padding32)

@@ -32,7 +32,7 @@ public struct PaymentsView: View {
     }
 
     private var successView: some View {
-        hUpdatedForm {
+        hForm {
             VStack(spacing: 8) {
                 upcomingPayment
                 PresentableStoreLens(

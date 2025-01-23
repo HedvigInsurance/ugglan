@@ -30,7 +30,7 @@ public struct ClaimDetailView: View {
     }
 
     public var body: some View {
-        hUpdatedForm {
+        hForm {
             VStack(spacing: 8) {
                 if let claim = vm.claim {
                     hSection {

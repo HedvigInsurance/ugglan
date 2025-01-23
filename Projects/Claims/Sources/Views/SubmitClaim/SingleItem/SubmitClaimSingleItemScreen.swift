@@ -12,7 +12,7 @@ public struct SubmitClaimSingleItemScreen: View {
     public init() {}
 
     public var body: some View {
-        hUpdatedForm {}
+        hForm {}
             .hFormTitle(
                 title: .init(
                     .small,

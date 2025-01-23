@@ -45,7 +45,7 @@ public struct PaymentHistoryView: View {
                         .multilineTextAlignment(.center)
                 }
             } else {
-                hUpdatedForm {
+                hForm {
                     VStack(spacing: .padding16) {
                         ForEach(history) { item in
                             hSection(item.valuesPerMonth) { month in

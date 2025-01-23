@@ -24,7 +24,7 @@ struct MovingFlowHouseScreen: View {
     }
 
     var form: some View {
-        hUpdatedForm {
+        hForm {
             VStack(spacing: 16) {
                 VStack(spacing: 8) {
                     yearOfConstructionField

@@ -53,7 +53,7 @@ public struct InfoScreen: View {
     }
 
     public var body: some View {
-        hUpdatedForm {
+        hForm {
             StateView(
                 type: .information,
                 title: text,

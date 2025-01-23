@@ -12,7 +12,7 @@ public struct AppInfoView: View {
     public init() {}
 
     public var body: some View {
-        hUpdatedForm {
+        hForm {
             hSection {
                 memberId
                 profileVersion

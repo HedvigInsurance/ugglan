@@ -18,7 +18,7 @@ public struct ListScreen<T>: View {
     }
 
     public var body: some View {
-        hUpdatedForm {
+        hForm {
             ListItems(
                 onClick: { item in
                     onSelected(item)

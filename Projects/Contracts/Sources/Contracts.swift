@@ -23,7 +23,7 @@ struct Contracts: View {
     }
 
     public var body: some View {
-        hUpdatedForm {
+        hForm {
             ContractTable(showTerminated: showTerminated)
                 .padding(.top, .padding8)
         }
