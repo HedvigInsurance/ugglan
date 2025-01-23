@@ -8,7 +8,7 @@ import hGraphQL
 public struct DeleteRequestLoadingView: View {
     @PresentableStore var store: ProfileStore
     var profileService = ProfileService()
-
+    @EnvironmentObject var router: Router
     private var dismissAction: (ProfileNavigationDismissAction) -> Void
 
     public init(
@@ -34,7 +34,7 @@ public struct DeleteRequestLoadingView: View {
     }
 
     @ViewBuilder private var successState: some View {
-        hForm {
+        hUpdatedForm {
             VStack(spacing: 0) {
                 Image(uiImage: hCoreUIAssets.checkmark.image)
                     .resizable()
@@ -47,12 +47,13 @@ public struct DeleteRequestLoadingView: View {
                     .foregroundColor(hTextColor.Translucent.secondary)
                     .multilineTextAlignment(.center)
             }
-            .padding(.top, UIScreen.main.bounds.size.height / 3.5)
             .padding(.horizontal, .padding32)
         }
+        .hFormContentPosition(.center)
         .hFormAttachToBottom {
             hSection {
                 hButton.LargeButton(type: .ghost) {
+                    router.dismiss()
                     dismissAction(.makeHomeTabActive)
                 } content: {
                     hText(L10n.generalCloseButton, style: .body1)

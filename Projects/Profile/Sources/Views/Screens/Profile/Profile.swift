@@ -23,7 +23,7 @@ public struct ProfileView: View {
     }
 
     public var body: some View {
-        hForm {
+        hUpdatedForm {
             PresentableStoreLens(
                 ProfileStore.self,
                 getter: { state in
@@ -52,7 +52,6 @@ public struct ProfileView: View {
                 .hWithoutDividerPadding
             }
         }
-        .hFormMergeBottomViewWithContentIfNeeded
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: 8) {
@@ -75,6 +74,7 @@ public struct ProfileView: View {
         .onAppear {
             store.send(.fetchProfileState)
         }
+        .hSetScrollBounce(to: true)
         .onPullToRefresh {
             await store.sendAsync(.fetchProfileState)
         }
