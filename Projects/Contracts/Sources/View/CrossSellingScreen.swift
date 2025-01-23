@@ -7,9 +7,10 @@ public struct CrossSellingScreen: View {
     public init() {}
 
     public var body: some View {
-        hForm {
+        hUpdatedForm {
             CrossSellingStack(withHeader: false)
         }
+        .hFormContentPosition(.compact)
         .navigationTitle(L10n.InsuranceTab.CrossSells.title)
     }
 }

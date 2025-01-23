@@ -25,7 +25,7 @@ public struct BankIDLoginQRView: View {
                 .useDarkColor
                 .transition(.opacity.combined(with: .opacity).animation(.easeInOut(duration: 0.2)))
             } else {
-                hForm {
+                hUpdatedForm {
                     VStack(spacing: 32) {
                         ZStack {
                             if let image = vm.image {
@@ -73,7 +73,6 @@ public struct BankIDLoginQRView: View {
                     }
                     .padding(.top, UIScreen.main.bounds.size.height / 5.0)
                 }
-                .hDisableScroll
                 .hFormAttachToBottom {
                     hSection {
                         VStack(spacing: 16) {
