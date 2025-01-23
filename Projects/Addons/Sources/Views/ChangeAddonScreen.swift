@@ -36,7 +36,7 @@ struct ChangeAddonScreen: View {
     }
 
     private var successView: some View {
-        hUpdatedForm {}
+        hForm {}
             .hFormTitle(
                 title: .init(
                     .small,

@@ -19,7 +19,7 @@ public struct SubmitClaimSummaryScreen: View {
     }
 
     public var body: some View {
-        hUpdatedForm {
+        hForm {
             VStack(spacing: 16) {
                 hSection {
                     VStack(spacing: 0) {

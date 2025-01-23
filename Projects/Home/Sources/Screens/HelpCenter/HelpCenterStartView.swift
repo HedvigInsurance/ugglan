@@ -20,7 +20,7 @@ public struct HelpCenterStartView: View {
     }
 
     public var body: some View {
-        hUpdatedForm {
+        hForm {
             VStack(spacing: 0) {
                 hSection {
                     VStack(alignment: .leading, spacing: 40) {

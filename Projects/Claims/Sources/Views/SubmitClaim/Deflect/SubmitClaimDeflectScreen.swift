@@ -15,7 +15,7 @@ public struct SubmitClaimDeflectScreen: View {
     }
 
     public var body: some View {
-        hUpdatedForm {
+        hForm {
             VStack(spacing: 16) {
                 if let infoText = model.infoText {
                     hSection {

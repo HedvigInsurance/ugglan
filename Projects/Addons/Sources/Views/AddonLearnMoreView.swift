@@ -6,7 +6,7 @@ struct AddonLearnMoreView: View {
     let model: AddonInfo
 
     var body: some View {
-        hUpdatedForm {
+        hForm {
             VStack(spacing: .padding16) {
                 hSection {
                     VStack(alignment: .leading, spacing: .padding4) {

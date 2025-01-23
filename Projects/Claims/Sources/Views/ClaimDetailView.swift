@@ -30,7 +30,7 @@ public struct ClaimDetailView: View {
     }
 
     public var body: some View {
-        hUpdatedForm {
+        hForm {
             VStack(spacing: 8) {
                 if let claim = vm.claim {
                     hSection {
@@ -272,7 +272,8 @@ public struct ClaimDetailView: View {
                 if let fetchError = vm.fetchFilesError {
                     hSection {
                         GenericErrorView(
-                            description: fetchError
+                            description: fetchError,
+                            formPosition: .center
                         )
                         .hErrorViewButtonConfig(
                             .init(

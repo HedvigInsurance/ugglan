@@ -10,7 +10,7 @@ public struct SubmitClaimEditSummaryScreen: View {
     public init() {}
 
     public var body: some View {
-        hUpdatedForm {
+        hForm {
             hSection(
                 header: hText(L10n.Claims.Incident.Screen.header, style: .body1)
                     .foregroundColor(hTextColor.Opaque.secondary)

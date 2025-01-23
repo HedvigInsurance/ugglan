@@ -125,7 +125,7 @@ public struct InfoView: View {
             .sectionContainerStyle(.transparent)
             .padding(.bottom, .padding24)
         }
-        .hDisableScroll
+        .hFormContentPosition(.compact)
         .hFormAttachToBottom {
             VStack(spacing: .padding8) {
                 if let button = extraButton {

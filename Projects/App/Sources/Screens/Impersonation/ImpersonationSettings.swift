@@ -11,7 +11,7 @@ struct ImpersonationSettings: View {
     @AppStorage(ApplicationState.key) public var state: ApplicationState.Screen = .notLoggedIn
 
     var body: some View {
-        hUpdatedForm {
+        hForm {
             hSection(header: hText("Select locale")) {
                 ForEach(Localization.Locale.allCases, id: \.rawValue) { locale in
                     hRow {

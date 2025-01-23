@@ -12,7 +12,7 @@ public struct SubmitClaimCheckoutScreen: View {
 
     public var body: some View {
         let singleItemCheckoutStep = claimsNavigationVm.singleItemCheckoutModel
-        hUpdatedForm {
+        hForm {
             getFormContent(from: singleItemCheckoutStep)
         }
         .hFormAttachToBottom {

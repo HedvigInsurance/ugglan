@@ -15,7 +15,7 @@ struct EditTierScreen: View {
     }
 
     var body: some View {
-        hUpdatedForm {
+        hForm {
             hSection {
                 VStack(spacing: .padding4) {
                     ForEach(vm.tiers.sorted(by: { $0.level < $1.level }), id: \.self) { tier in

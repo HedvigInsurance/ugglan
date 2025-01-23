@@ -17,7 +17,8 @@ public struct UpdateAppScreen: View {
     public var body: some View {
         GenericErrorView(
             title: L10n.embarkUpdateAppTitle,
-            description: L10n.embarkUpdateAppBody
+            description: L10n.embarkUpdateAppBody,
+            formPosition: .center
         )
         .hErrorViewButtonConfig(buttonsInit)
     }

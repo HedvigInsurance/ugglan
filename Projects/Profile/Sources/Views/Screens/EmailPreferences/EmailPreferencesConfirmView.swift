@@ -13,6 +13,7 @@ struct EmailPreferencesConfirmView: View {
             title: vm.isUnsubscribed ? L10n.SettingsScreen.subscribeTitle : L10n.General.areYouSure,
             description: vm.isUnsubscribed
                 ? L10n.SettingsScreen.subscribeDescription : L10n.SettingsScreen.unsubscribeDescription,
+            formPosition: .compact,
             attachContentToTheBottom: true
         )
         .hErrorViewButtonConfig(
@@ -36,7 +37,6 @@ struct EmailPreferencesConfirmView: View {
                 )
             )
         )
-        .hDisableScroll
         .hButtonIsLoading(vm.isLoading)
     }
 }

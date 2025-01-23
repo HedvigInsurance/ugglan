@@ -11,7 +11,7 @@ public struct InboxView: View {
     public init() {}
 
     public var body: some View {
-        hUpdatedForm {
+        hForm {
             displayMessages
                 .padding(.top, 8)
         }

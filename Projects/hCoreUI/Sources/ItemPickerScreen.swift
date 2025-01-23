@@ -114,7 +114,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     public var body: some View {
         ScrollViewReader { proxy in
             if config.attachToBottom {
-                hUpdatedForm {}
+                hForm {}
                     .hFormContentPosition(config.contentPosition ?? .bottom)
                     .hFormAttachToBottom {
                         VStack(spacing: 0) {
@@ -142,14 +142,14 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
             } else {
                 Group {
                     if config.useAlwaysAttachedToBottom {
-                        hUpdatedForm {
+                        hForm {
                             content(with: proxy)
                         }
                         .hFormAlwaysAttachToBottom {
                             bottomContent
                         }
                     } else {
-                        hUpdatedForm {
+                        hForm {
                             content(with: proxy)
                         }
                         .hFormAttachToBottom {

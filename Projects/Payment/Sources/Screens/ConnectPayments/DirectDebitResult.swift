@@ -52,7 +52,7 @@ struct DirectDebitResult: View {
             GenericErrorView(
                 title: type.headingText,
                 description: type.messageText,
-                useForm: true
+                formPosition: .center
             )
             .hErrorViewButtonConfig(
                 .init(

@@ -67,7 +67,7 @@ struct CoInusuredInputScreen: View {
 
     @ViewBuilder
     var mainView: some View {
-        hUpdatedForm {
+        hForm {
             VStack(spacing: 4) {
                 if vm.actionType == .delete {
                     deleteCoInsuredFields
@@ -610,6 +610,7 @@ public class IntentViewModel: ObservableObject {
             withAnimation {
                 self.intent = data
             }
+            throw hGraphQL.AuthError.refreshFailed
         } catch let exception {
             withAnimation {
                 switch origin {
