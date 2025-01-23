@@ -63,14 +63,6 @@ struct MovingFlowAddressScreen: View {
                         InfoCard(text: L10n.changeAddressCoverageInfoText(days), type: .info)
                     }
                 }
-                hSection {
-                    hButton.LargeButton(type: .primary) {
-                        continuePressed()
-                    } content: {
-                        hText(vm.continueButtonTitle, style: .body1)
-                    }
-                }
-
             }
             .padding(.bottom, .padding8)
             .padding(.top, .padding16)
@@ -90,6 +82,16 @@ struct MovingFlowAddressScreen: View {
             )
         )
         .sectionContainerStyle(.transparent)
+        .hFormContentPosition(.bottom)
+        .hFormAlwaysAttachToBottom {
+            hSection {
+                hButton.LargeButton(type: .primary) {
+                    continuePressed()
+                } content: {
+                    hText(vm.continueButtonTitle, style: .body1)
+                }
+            }
+        }
     }
 
     func addressField() -> some View {

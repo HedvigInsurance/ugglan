@@ -34,7 +34,7 @@ public struct DatePickerView: View {
             }
             .sectionContainerStyle(.transparent)
         }
-        .hDisableScroll
+        .hFormContentPosition(.compact)
         .hFormAttachToBottom {
             VStack {
                 hButton.LargeButton(type: .primary) {

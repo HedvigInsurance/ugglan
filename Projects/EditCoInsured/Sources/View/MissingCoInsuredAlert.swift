@@ -18,7 +18,8 @@ public struct MissingCoInsuredAlert: View {
     public var body: some View {
         GenericErrorView(
             title: config.contractDisplayName,
-            description: L10n.contractCoinsuredMissingInformationLabel
+            description: L10n.contractCoinsuredMissingInformationLabel,
+            formPosition: .compact
         )
         .hErrorViewButtonConfig(
             .init(

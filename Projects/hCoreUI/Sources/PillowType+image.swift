@@ -4,9 +4,18 @@ import hCore
 import hGraphQL
 
 public enum TypeOfContract: String, Codable, CaseIterable, Sendable {
+    case seHouseBas = "SE_HOUSE_BAS"
     case seHouse = "SE_HOUSE"
+    case seHouseMax = "SE_HOUSE_MAX"
+
+    case seApartmentBrfBas = "SE_APARTMENT_BRF_BAS"
     case seApartmentBrf = "SE_APARTMENT_BRF"
+    case seApartmentBrfMax = "SE_APARTMENT_BRF_MAX"
+
+    case seApartmentRentBas = "SE_APARTMENT_RENT_BAS"
     case seApartmentRent = "SE_APARTMENT_RENT"
+    case seApartmentRentMax = "SE_APARTMENT_RENT_MAX"
+
     case seApartmentStudentBrf = "SE_APARTMENT_STUDENT_BRF"
     case seApartmentStudentRent = "SE_APARTMENT_STUDENT_RENT"
     case seAccident = "SE_ACCIDENT"
@@ -70,13 +79,13 @@ public enum TypeOfContract: String, Codable, CaseIterable, Sendable {
 
     public var pillowType: PillowType {
         switch self {
-        case .seHouse:
+        case .seHouse, .seHouseBas, .seHouseMax:
             return .villa
-        case .seApartmentBrf:
+        case .seApartmentBrf, .seApartmentBrfBas, .seApartmentBrfMax:
             return .homeOwner
         case .seGroupApartmentBrf:
             return .homeOwner
-        case .seApartmentRent:
+        case .seApartmentRent, .seApartmentRentBas, .seApartmentRentMax:
             return .rental
         case .seApartmentStudentBrf:
             return .student

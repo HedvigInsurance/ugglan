@@ -42,7 +42,9 @@ struct ModelPickerView: View {
                 },
                 singleSelect: true,
                 manualInputPlaceholder: L10n.Claims.Item.Enter.Model.name,
-                manualBrandName: customName
+                manualBrandName: customName,
+                contentPosition: .top,
+                useAlwaysAttachedToBottom: true
             )
         )
         .hIncludeManualInput

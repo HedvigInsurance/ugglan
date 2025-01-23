@@ -14,6 +14,7 @@ struct AddonLearnMoreView: View {
                         hText(model.description, style: .body1)
                             .foregroundColor(hTextColor.Opaque.secondary)
                     }
+                    .fixedSize(horizontal: false, vertical: true)
 
                     hPill(text: L10n.addonLearnMoreLabel, color: .blue)
                         .hFieldSize(.medium)

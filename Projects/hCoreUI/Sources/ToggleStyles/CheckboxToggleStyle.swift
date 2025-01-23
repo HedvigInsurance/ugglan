@@ -15,27 +15,26 @@ public struct CheckboxToggleStyle: ToggleStyle {
     }
 
     public func makeBody(configuration: Configuration) -> some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: .cornerRadiusL).fill(getBackgroundColor)
-                .padding(.horizontal, 16)
-            hSection {
-                hRow {
-                    configuration.label
-                }
-                .verticalPadding(0)
-                .hWithoutHorizontalPadding
-                .padding(.top, getTopPadding)
-                .padding(.bottom, getBottomPadding)
-                .padding(.horizontal, getHorizontalPadding)
+        hSection {
+            hRow {
+                configuration.label
             }
-            .sectionContainerStyle(.transparent)
-            .onUpdate(of: configuration.isOn) { newValue in
-                withAnimation {
-                    animate = true
-                }
-                withAnimation(.default.delay(0.4)) {
-                    animate = false
-                }
+            .verticalPadding(0)
+            .hWithoutHorizontalPadding
+            .padding(.top, getTopPadding)
+            .padding(.bottom, getBottomPadding)
+            .padding(.horizontal, getHorizontalPadding)
+            .background {
+                RoundedRectangle(cornerRadius: .cornerRadiusL).fill(getBackgroundColor)
+            }
+        }
+        .sectionContainerStyle(.transparent)
+        .onUpdate(of: configuration.isOn) { newValue in
+            withAnimation {
+                animate = true
+            }
+            withAnimation(.default.delay(0.4)) {
+                animate = false
             }
         }
     }

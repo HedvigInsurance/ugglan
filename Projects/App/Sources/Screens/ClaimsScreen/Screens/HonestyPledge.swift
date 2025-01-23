@@ -174,7 +174,7 @@ struct HonestyPledge: View {
             .padding(.horizontal, .padding24)
             .fixedSize(horizontal: false, vertical: true)
         }
-        .hDisableScroll
+        .hFormContentPosition(.compact)
     }
 }
 

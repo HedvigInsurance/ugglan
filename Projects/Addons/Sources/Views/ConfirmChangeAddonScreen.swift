@@ -7,7 +7,7 @@ public struct ConfirmChangeAddonScreen: View {
 
     public var body: some View {
         hForm {}
-            .hFormContentPosition(.center)
+            .hFormContentPosition(.compact)
             .hFormAttachToBottom {
                 hSection {
                     VStack(spacing: .padding32) {

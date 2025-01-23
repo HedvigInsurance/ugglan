@@ -24,7 +24,6 @@ struct SetTerminationDateLandingScreen: View {
                 .useDarkColor
             } else {
                 hForm {}
-                    .hDisableScroll
                     .hFormTitle(
                         title: .init(
                             .small,
@@ -240,6 +239,7 @@ class SetTerminationDateLandingScreenViewModel: ObservableObject {
 }
 
 #Preview {
+
     SetTerminationDateLandingScreen(
         terminationNavigationVm: .init(configs: [], terminateInsuranceViewModel: nil)
     )

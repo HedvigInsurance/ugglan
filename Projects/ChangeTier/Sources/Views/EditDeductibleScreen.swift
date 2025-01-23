@@ -61,6 +61,7 @@ struct EditDeductibleScreen: View {
             .padding(.top, 16)
             .sectionContainerStyle(.transparent)
         }
+        .hFormContentPosition(.compact)
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: .padding8) {

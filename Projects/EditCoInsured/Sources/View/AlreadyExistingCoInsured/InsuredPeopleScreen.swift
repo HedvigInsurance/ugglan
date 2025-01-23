@@ -81,7 +81,6 @@ struct InsuredPeopleScreen: View {
                 .sectionContainerStyle(.transparent)
             }
         }
-        .hFormIgnoreKeyboard()
     }
 
     @ViewBuilder

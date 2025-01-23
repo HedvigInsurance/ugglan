@@ -262,7 +262,7 @@ struct CoInusuredInputScreen: View {
             }
             .padding(.top, vm.actionType == .delete ? 16 : 0)
         }
-        .hDisableScroll
+        .hFormContentPosition(.compact)
     }
 
     var buttonDisplayText: String {
@@ -610,6 +610,7 @@ public class IntentViewModel: ObservableObject {
             withAnimation {
                 self.intent = data
             }
+            throw hGraphQL.AuthError.refreshFailed
         } catch let exception {
             withAnimation {
                 switch origin {

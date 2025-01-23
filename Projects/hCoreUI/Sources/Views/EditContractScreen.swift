@@ -67,7 +67,7 @@ public struct EditContractScreen: View {
                 .padding(.bottom, .padding16)
             }
         }
-        .hDisableScroll
+        .hFormContentPosition(.compact)
         .onChange(of: selectedValue) { value in
             selectedType = EditType(rawValue: value ?? "")
         }

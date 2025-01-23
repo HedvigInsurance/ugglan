@@ -47,7 +47,7 @@ struct SetTerminationDate: View {
                 )
             }
         }
-        .hDisableScroll
+        .hFormContentPosition(.compact)
         .hide($isHidden)
     }
 }

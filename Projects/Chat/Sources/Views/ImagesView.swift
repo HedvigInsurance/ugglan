@@ -16,7 +16,7 @@ struct ImagesView: View {
                 GenericErrorView(
                     title: L10n.chatMissingImagesPermissionSubtitle,
                     description: nil,
-                    useForm: false
+                    formPosition: nil
                 )
                 .hErrorViewButtonConfig(
                     .init(

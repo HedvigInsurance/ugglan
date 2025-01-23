@@ -238,11 +238,11 @@ extension TypeOfContract {
 extension TypeOfContract {
     var isHomeInsurance: Bool {
         switch self {
-        case .seHouse:
+        case .seHouse, .seHouseBas, .seHouseMax:
             return true
-        case .seApartmentBrf:
+        case .seApartmentBrf, .seApartmentBrfBas, .seApartmentBrfMax:
             return true
-        case .seApartmentRent:
+        case .seApartmentRent, .seApartmentRentBas, .seApartmentRentMax:
             return true
         case .seApartmentStudentBrf:
             return true
