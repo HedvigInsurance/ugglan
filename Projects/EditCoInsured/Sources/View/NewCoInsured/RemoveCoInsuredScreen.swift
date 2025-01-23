@@ -58,7 +58,6 @@ struct RemoveCoInsuredScreen: View {
                 .sectionContainerStyle(.transparent)
             }
         }
-        .hFormContentPosition(.compact)
     }
 
     @ViewBuilder
