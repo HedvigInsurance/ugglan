@@ -15,7 +15,7 @@ public struct SubmitClaimDeflectScreen: View {
     }
 
     public var body: some View {
-        hForm {
+        hUpdatedForm {
             VStack(spacing: 16) {
                 if let infoText = model.infoText {
                     hSection {
@@ -83,9 +83,7 @@ public struct SubmitClaimDeflectScreen: View {
             }
             .padding(.top, .padding8)
         }
-        .hFormBottomBackgroundColor(
-            .gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary)
-        )
+        .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary))
         .edgesIgnoringSafeArea(.bottom)
     }
 }
