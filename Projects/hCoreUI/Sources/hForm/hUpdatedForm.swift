@@ -9,6 +9,8 @@ public struct hUpdatedForm<Content: View>: View, KeyboardReadable {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.hFormContentPosition) var contentPosition
     @Environment(\.hEnableScrollBounce) var hEnableScrollBounce
+    @Environment(\.hFormBottomBackgroundStyle) var bottomBackgroundStyle
+    @Environment(\.colorScheme) private var colorScheme
 
     @StateObject fileprivate var vm = hUpdatedFormViewModel()
     @Namespace var animationNamespace
@@ -23,49 +25,7 @@ public struct hUpdatedForm<Content: View>: View, KeyboardReadable {
         ZStack {
             BackgroundView().ignoresSafeArea()
             VStack(spacing: 0) {
-                GeometryReader { geometry in
-                    ScrollView {
-                        centerContent
-                            .frame(minHeight: contentPosition == .compact ? nil : geometry.size.height)
-                            .frame(maxWidth: .infinity)
-                            .frame(maxHeight: .infinity)
-                            .background {
-                                GeometryReader { geometry in
-                                    Color.clear
-                                        .onAppear {
-                                            vm.scrollViewHeight = geometry.size.height
-                                        }
-                                        .onChange(of: geometry.size) { value in
-                                            vm.scrollViewHeight = value.height
-                                        }
-                                }
-                            }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .frame(maxHeight: .infinity)
-                    .introspect(.scrollView, on: .iOS(.v13...)) { [weak vm] scrollView in
-                        guard let vm else { return }
-                        if scrollView != vm.scrollView {
-                            vm.scrollView = scrollView
-                            vm.keyboardCancellable = keyboardPublisher.sink { _ in
-                            } receiveValue: { [weak vm] keyboardHeight in
-                                vm?.keyboardVisible = keyboardHeight != nil
-                            }
-                        }
-                    }
-                    .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in
-                        vm?.vc = vc
-                    }
-                    .background {
-                        Color.clear
-                            .onAppear {
-                                vm.viewHeight = geometry.size.height
-                            }
-                            .onChange(of: geometry.size) { value in
-                                vm.viewHeight = value.height
-                            }
-                    }
-                }
+                scrollView
                 if !vm.keyboardVisible {
                     getAlwaysVisibleBottomView
                         .matchedGeometryEffect(id: "bottom", in: animationNamespace)
@@ -90,6 +50,62 @@ public struct hUpdatedForm<Content: View>: View, KeyboardReadable {
         }
     }
 
+    private var scrollView: some View {
+        GeometryReader { geometry in
+            ScrollView {
+                centerContent
+                    .frame(minHeight: contentPosition == .compact ? nil : geometry.size.height)
+                    .frame(maxWidth: .infinity)
+                    .frame(maxHeight: .infinity)
+                    .background {
+                        GeometryReader { geometry in
+                            hBackgroundColor.primary
+                                .onAppear {
+                                    vm.scrollViewHeight = geometry.size.height
+                                }
+                                .onChange(of: geometry.size) { value in
+                                    vm.scrollViewHeight = value.height
+                                }
+                        }
+                    }
+            }
+            .frame(maxWidth: .infinity)
+            .frame(maxHeight: .infinity)
+            .introspect(.scrollView, on: .iOS(.v13...)) { [weak vm] scrollView in
+                guard let vm else { return }
+                if scrollView != vm.scrollView {
+                    vm.scrollView = scrollView
+                    vm.keyboardCancellable = keyboardPublisher.sink { _ in
+                    } receiveValue: { [weak vm] keyboardHeight in
+                        vm?.keyboardVisible = keyboardHeight != nil
+                    }
+                }
+            }
+            .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in
+                vm?.vc = vc
+            }
+            .background {
+                Group {
+                    switch bottomBackgroundStyle {
+                    case let .gradient(from, to):
+                        LinearGradient(
+                            colors: [
+                                from.colorFor(colorScheme, .base).color,
+                                from.colorFor(colorScheme, .base).color,
+                                to.colorFor(colorScheme, .base).color,
+                                to.colorFor(colorScheme, .base).color,
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    case .transparent:
+                        Color.clear
+                    }
+                }
+            }
+        }
+    }
+
     private var centerContent: some View {
         VStack(spacing: 0) {
             switch contentPosition {
@@ -97,7 +113,7 @@ public struct hUpdatedForm<Content: View>: View, KeyboardReadable {
                 formTitle
                     .layoutPriority(1)
                 content
-                Spacer()
+                Spacer(minLength: 0)
                     .layoutPriority(1)
                 getBottomAttachedView
             case .center:
@@ -196,6 +212,7 @@ private class hUpdatedFormViewModel: ObservableObject {
     @Published var keyboardVisible: Bool = false
     weak var scrollView: UIScrollView? {
         didSet {
+            scrollView?.clipsToBounds = false
             setScrollView()
             setBouces()
         }

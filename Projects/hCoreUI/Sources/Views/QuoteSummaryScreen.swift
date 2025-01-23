@@ -178,6 +178,7 @@ public struct QuoteSummaryScreen: View {
                     )
                 }
             }
+            .hButtonTakeFullWidth(true)
             .hFormAttachToBottom {
                 VStack {
                     if vm.showNoticeCard {

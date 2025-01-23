@@ -49,7 +49,6 @@ struct CrossSellingItem: View {
                         hText(L10n.crossSellGetPrice)
                             .foregroundColor(hTextColor.Opaque.primary).colorScheme(.light)
                     }
-                    .fixedSize(horizontal: true, vertical: true)
                 }
                 .accessibilityElement(children: .combine)
             }

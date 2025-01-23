@@ -341,6 +341,7 @@ private struct FreeTextInputView: View, KeyboardReadableHeight {
                             .disabled(value.count > maxCharacters)
                         }
                         .padding(.bottom, .padding8)
+                        .hButtonTakeFullWidth(true)
                     }
                     .colorScheme(.dark)
                     .sectionContainerStyle(.transparent)

@@ -45,6 +45,7 @@ public struct InfoCard: View {
         .modifier(NotificationStyle(type: type))
         .fixedSize(horizontal: false, vertical: true)
         .accessibilityElement(children: .combine)
+        .hButtonTakeFullWidth(true)
     }
 
     private var buttonsView: some View {
@@ -62,14 +63,12 @@ public struct InfoCard: View {
                                     config.buttonAction()
                                 } content: {
                                     hText(config.buttonTitle, style: .label)
-                                        .frame(maxWidth: .infinity)
                                 }
                             } else {
                                 hButton.SmallButton(type: .secondaryAlt) {
                                     config.buttonAction()
                                 } content: {
                                     hText(config.buttonTitle, style: .label)
-                                        .frame(maxWidth: .infinity)
                                 }
                                 .hUseLightMode
                             }
@@ -82,14 +81,12 @@ public struct InfoCard: View {
                                 config.buttonAction()
                             } content: {
                                 hText(config.buttonTitle, style: .label)
-                                    .frame(maxWidth: .infinity)
                             }
                         } else {
                             hButton.SmallButton(type: .secondaryAlt) {
                                 config.buttonAction()
                             } content: {
                                 hText(config.buttonTitle, style: .label)
-                                    .frame(maxWidth: .infinity)
                             }
                             .hUseLightMode
                         }
