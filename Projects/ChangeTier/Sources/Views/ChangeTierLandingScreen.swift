@@ -50,7 +50,7 @@ public struct ChangeTierLandingScreen: View {
     }
 
     var succesView: some View {
-        hForm {}
+        hUpdatedForm {}
             .hFormTitle(
                 title: .init(
                     .small,
@@ -71,7 +71,6 @@ public struct ChangeTierLandingScreen: View {
                         .padding(.bottom, 16)
                 }
             }
-            .hDisableScroll
     }
 
     private var informationCard: some View {

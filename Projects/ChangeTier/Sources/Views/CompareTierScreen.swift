@@ -57,7 +57,7 @@ struct CompareTierScreen: View {
 
     @ViewBuilder
     var succesView: some View {
-        hForm {
+        hUpdatedForm {
             ZStack {
                 HStack(spacing: 0) {
                     ZStack {
