@@ -45,6 +45,7 @@ struct ClaimStatus: View {
                         } content: {
                             hText(L10n.ClaimStatus.ClaimDetails.button)
                         }
+                        .hButtonTakeFullWidth(true)
                     }
                     extendedBottomView
                 }

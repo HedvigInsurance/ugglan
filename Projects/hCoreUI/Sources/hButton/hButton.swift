@@ -343,38 +343,39 @@ private struct LargeButtonModifier: ViewModifier {
 }
 
 private struct MediumButtonModifier: ViewModifier {
+    @Environment(\.hButtonTakeFullWidth) var hButtonTakeFullWidth
+
     func body(content: Content) -> some View {
-        hSection {
-            content
-                .padding(.top, 7)
-                .padding(.bottom, 9)
-                .frame(maxWidth: .infinity)
-        }
-        .sectionContainerStyle(.transparent)
+        content
+            .padding(.top, 7)
+            .padding(.bottom, 9)
+            .padding(.horizontal, .padding16)
+            .frame(maxWidth: hButtonTakeFullWidth ? .infinity : nil)
     }
 }
 
 private struct SmallButtonModifier: ViewModifier {
+    @Environment(\.hButtonTakeFullWidth) var hButtonTakeFullWidth
     func body(content: Content) -> some View {
-        hSection {
-            content
-                .padding(.top, 6.5)
-                .padding(.bottom, 7.5)
-                .frame(minHeight: 32)
-        }
-        .sectionContainerStyle(.transparent)
+        content
+            .padding(.top, 6.5)
+            .padding(.bottom, 7.5)
+            .frame(minHeight: 32)
+            .padding(.horizontal, .padding16)
+            .frame(maxWidth: hButtonTakeFullWidth ? .infinity : nil)
     }
 }
 
 private struct MiniButtonModifier: ViewModifier {
+    @Environment(\.hButtonTakeFullWidth) var hButtonTakeFullWidth
     func body(content: Content) -> some View {
-        hSection {
-            content
-                .padding(.vertical, 3)
-                .padding(.horizontal, .padding8)
-                .frame(minHeight: 24)
-        }
-        .sectionContainerStyle(.transparent)
+        content
+            .padding(.vertical, 3)
+            .padding(.horizontal, .padding8)
+            .frame(minHeight: 24)
+            .padding(.horizontal, .padding16)
+            .frame(maxWidth: hButtonTakeFullWidth ? .infinity : nil)
+
     }
 }
 
@@ -524,6 +525,23 @@ extension EnvironmentValues {
 extension View {
     public func hButtonDontShowLoadingWhenDisabled(_ show: Bool) -> some View {
         self.environment(\.hButtonDontShowLoadingWhenDisabled, show)
+    }
+}
+
+private struct EnvironmentHButtonTakeFullWidth: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    var hButtonTakeFullWidth: Bool {
+        get { self[EnvironmentHButtonTakeFullWidth.self] }
+        set { self[EnvironmentHButtonTakeFullWidth.self] = newValue }
+    }
+}
+
+extension View {
+    public func hButtonTakeFullWidth(_ takeFullWidth: Bool) -> some View {
+        self.environment(\.hButtonTakeFullWidth, takeFullWidth)
     }
 }
 

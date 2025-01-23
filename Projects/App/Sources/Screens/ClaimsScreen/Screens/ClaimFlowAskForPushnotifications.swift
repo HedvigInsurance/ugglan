@@ -36,7 +36,6 @@ struct AskForPushNotifications: View {
     var mainContent: some View {
         hSection {
             VStack(spacing: 24) {
-                Spacer()
                 hCoreUIAssets.infoFilled.view
                     .resizable()
                     .frame(width: 24, height: 24)
@@ -56,9 +55,6 @@ struct AskForPushNotifications: View {
                 } content: {
                     hText(L10n.claimsActivateNotificationsCta, style: .body1)
                 }
-                .fixedSize()
-
-                Spacer()
                 hButton.LargeButton(type: .ghost) {
                     onActionExecuted()
                     let store: ProfileStore = globalPresentableStoreContainer.get()
