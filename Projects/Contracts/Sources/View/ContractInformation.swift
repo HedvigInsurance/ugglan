@@ -43,6 +43,7 @@ struct ContractInformationView: View {
                                     }
                                     .foregroundColor(hTextColor.Opaque.secondary)
                                 }
+                                .accessibilityElement(children: .combine)
                             }
                             if contract.supportsCoInsured {
                                 hRowDivider()
@@ -103,6 +104,7 @@ struct ContractInformationView: View {
                 .foregroundColor(hTextColor.Opaque.secondary)
             }
         }
+        .accessibilityElement(children: .combine)
     }
 
     @ViewBuilder
@@ -162,7 +164,9 @@ struct ContractInformationView: View {
                             config: .init(contract: contract, fromInfoCard: true)
                         )
                         .padding(.bottom, .padding16)
+                        .accessibilityElement(children: .combine)
                     }
+                    .accessibilityElement(children: .combine)
                 }
             }
         }

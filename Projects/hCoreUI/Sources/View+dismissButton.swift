@@ -95,5 +95,6 @@ private struct CloseButtonModifier: ViewModifier {
             .introspect(.viewController, on: .iOS(.v13...)) { vc in
                 vm.vc = vc
             }
+            .accessibilityLabel(L10n.generalCloseButton)
     }
 }

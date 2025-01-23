@@ -41,6 +41,7 @@ public struct EditContractScreen: View {
                             )
                             .hFieldSize(.medium)
                         }
+                        .accessibilityElement(children: .combine)
                     }
                 }
                 infoView

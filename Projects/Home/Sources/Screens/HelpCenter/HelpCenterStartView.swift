@@ -47,12 +47,14 @@ public struct HelpCenterStartView: View {
                                     .padding(.top, 39)
                                 Spacer()
                             }
+                            .accessibilityHidden(true)
 
                             VStack(alignment: .leading, spacing: .padding8) {
                                 hText(vm.helpCenterModel.title)
                                 hText(vm.helpCenterModel.description)
                                     .foregroundColor(hTextColor.Opaque.secondary)
                             }
+                            .accessibilityElement(children: .combine)
                             displayQuickActions(from: vm.quickActions)
                             displayCommonTopics()
                             QuestionsItems(
