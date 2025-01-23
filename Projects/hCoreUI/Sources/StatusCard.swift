@@ -62,6 +62,7 @@ where MainContent: View, BottomContent: View {
             RoundedRectangle(cornerRadius: .cornerRadiusXL)
                 .fill(hSurfaceColor.Opaque.primary)
         )
+        .accessibilityElement(children: .combine)
         .onTapGesture {
             if let onSelected = onSelected {
                 onSelected()

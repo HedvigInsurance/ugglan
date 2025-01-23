@@ -21,6 +21,9 @@ struct TrackPlayerView: View {
             TrackPlayer(
                 audioPlayer: audioPlayer
             )
+            .accessibilityElement(children: .combine)
+            .accessibilityAddTraits(.playsSound)
+            .accessibilityHint(L10n.voiceoverAudioRecordingPlay)
         }
     }
 }
