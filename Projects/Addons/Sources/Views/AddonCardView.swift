@@ -34,6 +34,7 @@ public struct AddonCardView: View {
                     } content: {
                         hText(L10n.addonFlowSeePriceButton)
                     }
+                    .hButtonTakeFullWidth(true)
                 }
             }
         }

@@ -40,8 +40,6 @@ struct StateView: View {
                     } content: {
                         hText(button.buttonTitle ?? type.buttonText)
                     }
-                    .fixedSize()
-
                 }
             }
         }

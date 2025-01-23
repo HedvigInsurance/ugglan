@@ -310,7 +310,6 @@ public struct ClaimDetailView: View {
                         } content: {
                             hText(L10n.ClaimStatus.UploadedFiles.uploadButton)
                         }
-                        .fixedSize()
                     }
                     .padding(.vertical, .padding32)
                 }

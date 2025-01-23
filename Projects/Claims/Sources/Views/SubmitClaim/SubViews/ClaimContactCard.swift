@@ -49,6 +49,7 @@ struct ClaimContactCard: View {
                                 .foregroundColor(hTextColor.Opaque.primary)
                         }
                         .colorScheme(.light)
+                        .hButtonTakeFullWidth(true)
                     }
                 }
                 if let phoneNumber = model.phoneNumber, let url = URL(string: "tel://" + phoneNumber) {
@@ -61,6 +62,7 @@ struct ClaimContactCard: View {
                                 .foregroundColor(hTextColor.Opaque.primary)
                         }
                         .colorScheme(getPhoneNumberSchema())
+                        .hButtonTakeFullWidth(true)
                     }
                 }
                 if let info = model.info {

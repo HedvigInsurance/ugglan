@@ -157,6 +157,7 @@ struct LinkView: View {
                     } content: {
                         hText(L10n.ImportantMessage.readMore)
                     }
+                    .hButtonTakeFullWidth(true)
 
                 }
                 .padding([.horizontal, .bottom], .padding16)
@@ -221,6 +222,7 @@ struct ActionView: View {
             } content: {
                 hText(action.buttonTitle)
             }
+            hButtonTakeFullWidth(true)
         }
         .environment(\.colorScheme, .light)
     }
