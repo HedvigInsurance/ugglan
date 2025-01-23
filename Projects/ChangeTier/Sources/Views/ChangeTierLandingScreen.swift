@@ -68,7 +68,6 @@ public struct ChangeTierLandingScreen: View {
                 VStack(spacing: .padding4) {
                     informationCard
                     buttons
-                        .padding(.bottom, 16)
                 }
             }
     }

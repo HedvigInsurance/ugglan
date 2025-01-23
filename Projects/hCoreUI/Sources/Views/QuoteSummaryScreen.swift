@@ -157,7 +157,7 @@ public struct QuoteSummaryScreen: View {
 
     public var body: some View {
         ScrollViewReader { proxy in
-            hForm {
+            hUpdatedForm {
                 VStack(spacing: .padding16) {
                     VStack(spacing: 0) {
                         ForEach(vm.contracts, id: \.id) { contract in
@@ -179,11 +179,10 @@ public struct QuoteSummaryScreen: View {
                 }
             }
             .hButtonTakeFullWidth(true)
-            .hFormAttachToBottom {
-                VStack {
+            .hFormAlwaysAttachToBottom {
+                VStack(spacing: .padding8) {
                     if vm.showNoticeCard {
                         noticeComponent
-                            .padding(.top, .padding16)
                     }
                     buttonComponent(proxy: proxy)
                 }
@@ -448,7 +447,6 @@ public struct QuoteSummaryScreen: View {
                 }
             }
         }
-        .padding(.top, .padding16)
         .sectionContainerStyle(.transparent)
     }
 

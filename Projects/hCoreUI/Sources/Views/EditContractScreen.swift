@@ -15,7 +15,7 @@ public struct EditContractScreen: View {
     }
 
     public var body: some View {
-        hForm {
+        hUpdatedForm {
             VStack(spacing: .padding16) {
                 VStack(spacing: .padding4) {
                     ForEach(editTypes, id: \.rawValue) { editType in
@@ -67,7 +67,7 @@ public struct EditContractScreen: View {
                 .padding(.bottom, .padding16)
             }
         }
-        .hDisableScroll
+        .hFormContentPosition(.compact)
         .onChange(of: selectedValue) { value in
             selectedType = EditType(rawValue: value ?? "")
         }

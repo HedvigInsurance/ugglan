@@ -164,9 +164,8 @@ public struct hTextView: View {
         var body: some View {
             VStack(spacing: 4) {
                 VStack {
-                    hForm {}
+                    hUpdatedForm {}
                         .hFormTitle(title: .init(.standard, .heading2, "TITLE"))
-                        .hFormMergeBottomViewWithContentIfNeeded
                         .hFormAttachToBottom {
                             VStack(spacing: 20) {
                                 Rectangle().frame(height: 20)

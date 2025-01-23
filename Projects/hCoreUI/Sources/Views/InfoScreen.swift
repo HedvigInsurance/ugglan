@@ -21,7 +21,7 @@ struct InfoScreenWrapper: View {
     let router = Router()
     var body: some View {
         RouterHost(router: router, tracking: self) {
-            InfoScreen(text: text, dismissButtonTitle: dismissButtonTitle, contentPosition: .top) {
+            InfoScreen(text: text, dismissButtonTitle: dismissButtonTitle, contentPosition: .compact) {
                 router.dismiss()
             }
         }
@@ -53,7 +53,7 @@ public struct InfoScreen: View {
     }
 
     public var body: some View {
-        hForm {
+        hUpdatedForm {
             StateView(
                 type: .information,
                 title: text,
@@ -62,9 +62,7 @@ public struct InfoScreen: View {
             )
             .padding(.bottom, .padding16)
         }
-        .hFormDontUseInitialAnimation
         .hFormContentPosition(contentPosition)
-        .hDisableScroll
         .hFormAttachToBottom {
             hSection {
                 hButton.LargeButton(type: .ghost) {

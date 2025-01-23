@@ -15,7 +15,7 @@ public struct TextInputView: View {
     }
 
     public var body: some View {
-        hForm {
+        hUpdatedForm {
             VStack(spacing: 0) {
                 hSection {
                     hFloatingTextField(
@@ -62,7 +62,7 @@ public struct TextInputView: View {
                 .padding(.vertical, .padding16)
             }
         }
-        .hDisableScroll
+        .hFormContentPosition(.compact)
         .sectionContainerStyle(.transparent)
     }
     enum InputViewFocus: hTextFieldFocusStateCompliant {

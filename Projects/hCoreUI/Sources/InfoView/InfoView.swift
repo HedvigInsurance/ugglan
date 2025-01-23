@@ -111,7 +111,7 @@ public struct InfoView: View {
     }
 
     public var body: some View {
-        hForm {
+        hUpdatedForm {
             hSection {
                 VStack(alignment: .leading, spacing: .padding8) {
                     hText(title)
@@ -125,7 +125,7 @@ public struct InfoView: View {
             .sectionContainerStyle(.transparent)
             .padding(.bottom, .padding24)
         }
-        .hDisableScroll
+        .hFormContentPosition(.compact)
         .hFormAttachToBottom {
             VStack(spacing: .padding8) {
                 if let button = extraButton {

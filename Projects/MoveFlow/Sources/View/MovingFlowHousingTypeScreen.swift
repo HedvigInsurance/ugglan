@@ -59,7 +59,6 @@ public struct MovingFlowHousingTypeScreen: View {
                             } content: {
                                 hText(L10n.generalContinueButton, style: .body1)
                             }
-                            .padding(.bottom, .padding16)
                         }
                     }
                     .sectionContainerStyle(.transparent)
