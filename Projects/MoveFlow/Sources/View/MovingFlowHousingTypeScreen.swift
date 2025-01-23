@@ -74,7 +74,6 @@ public struct MovingFlowHousingTypeScreen: View {
                         dismissButton: nil
                     )
                 )
-                .hDisableScroll
         }
         .hErrorViewButtonConfig(errorButtons)
     }

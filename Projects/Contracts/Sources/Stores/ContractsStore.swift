@@ -20,10 +20,12 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
             }
         case .fetchContracts:
             do {
-                let data = try await self.fetchContractsService.getContracts()
-                send(.setActiveContracts(contracts: data.activeContracts))
-                send(.setTerminatedContracts(contracts: data.terminatedContracts))
-                send(.setPendingContracts(contracts: data.pendingContracts))
+                //                let data = try await self.fetchContractsService.getContracts()
+                //                send(.setActiveContracts(contracts: data.activeContracts))
+                //                send(.setTerminatedContracts(contracts: data.terminatedContracts))
+                //                send(.setPendingContracts(contracts: data.pendingContracts))
+                try await Task.sleep(nanoseconds: 1_000_000_000)
+                throw AuthError.refreshFailed
             } catch let error {
                 self.setError(error.localizedDescription, for: .fetchContracts)
             }

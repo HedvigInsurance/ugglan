@@ -272,7 +272,8 @@ public struct ClaimDetailView: View {
                 if let fetchError = vm.fetchFilesError {
                     hSection {
                         GenericErrorView(
-                            description: fetchError
+                            description: fetchError,
+                            formPosition: .center
                         )
                         .hErrorViewButtonConfig(
                             .init(

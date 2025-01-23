@@ -28,7 +28,8 @@ public struct ClaimFilesView: View {
                 }
             } else if let error = vm.error {
                 GenericErrorView(
-                    description: error
+                    description: error,
+                    formPosition: .center
                 )
                 .hErrorViewButtonConfig(
                     .init(

@@ -80,18 +80,20 @@ public struct ProcesssingView: View {
     private var errorView: some View {
         ZStack(alignment: .bottom) {
             BackgroundView().ignoresSafeArea()
-            GenericErrorView()
-                .hErrorViewButtonConfig(
-                    errorViewButtons
-                        ?? .init(
-                            dismissButton: .init(
-                                buttonTitle: L10n.generalCancelButton,
-                                buttonAction: {
-                                    onErrorCancelAction?()
-                                }
-                            )
+            GenericErrorView(
+                formPosition: .center
+            )
+            .hErrorViewButtonConfig(
+                errorViewButtons
+                    ?? .init(
+                        dismissButton: .init(
+                            buttonTitle: L10n.generalCancelButton,
+                            buttonAction: {
+                                onErrorCancelAction?()
+                            }
                         )
-                )
+                    )
+            )
         }
     }
 

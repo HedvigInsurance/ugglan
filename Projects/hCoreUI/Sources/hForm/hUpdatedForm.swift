@@ -324,3 +324,131 @@ public enum ContentPosition {
     case bottom
     case compact
 }
+
+@MainActor
+private struct EnvironmentHFormBottomAttachedView: @preconcurrency EnvironmentKey {
+    static let defaultValue: AnyView? = nil
+}
+
+extension EnvironmentValues {
+    public var hFormBottomAttachedView: AnyView? {
+        get { self[EnvironmentHFormBottomAttachedView.self] }
+        set { self[EnvironmentHFormBottomAttachedView.self] = newValue }
+    }
+}
+
+extension View {
+    public func hFormAttachToBottom<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        self.environment(\.hFormBottomAttachedView, AnyView(content()))
+    }
+}
+
+public enum hFormBottomBackgroundStyle {
+    case transparent
+    case gradient(from: any hColor, to: any hColor)
+}
+
+@MainActor
+private struct EnvironmentHFormBottomBackgorundColor: @preconcurrency EnvironmentKey {
+    static let defaultValue: hFormBottomBackgroundStyle = hFormBottomBackgroundStyle.transparent
+}
+
+extension EnvironmentValues {
+    public var hFormBottomBackgroundStyle: hFormBottomBackgroundStyle {
+        get { self[EnvironmentHFormBottomBackgorundColor.self] }
+        set { self[EnvironmentHFormBottomBackgorundColor.self] = newValue }
+    }
+}
+
+extension View {
+    public func hFormBottomBackgroundColor(_ style: hFormBottomBackgroundStyle) -> some View {
+        self.environment(\.hFormBottomBackgroundStyle, style)
+    }
+}
+
+@MainActor
+private struct EnvironmentHFormTitle: @preconcurrency EnvironmentKey {
+    static let defaultValue: (title: hTitle, subTitle: hTitle?)? = nil
+}
+
+public enum HFormTitleSpacingType {
+    case standard
+    case small
+    case none
+
+    var topMargin: CGFloat {
+        switch self {
+        case .standard:
+            return 56
+        case .small:
+            return 16
+        case .none:
+            return 0
+        }
+    }
+
+    var bottomMargin: CGFloat {
+        switch self {
+        case .standard:
+            return 64
+        case .small, .none:
+            return 0
+        }
+    }
+}
+
+public struct hTitle {
+    var type: HFormTitleSpacingType
+    var fontSize: HFontTextStyle
+    var text: String
+    var alignment: Alignment
+
+    public init(
+        _ type: HFormTitleSpacingType,
+        _ fontSize: HFontTextStyle,
+        _ text: String,
+        alignment: Alignment? = .center
+    ) {
+        self.type = type
+        self.fontSize = fontSize
+        self.text = text
+        self.alignment = alignment ?? .center
+    }
+}
+
+extension EnvironmentValues {
+    public var hFormTitle: (title: hTitle, subTitle: hTitle?)? {
+        get { self[EnvironmentHFormTitle.self] }
+        set { self[EnvironmentHFormTitle.self] = newValue }
+    }
+}
+
+extension View {
+    public func hFormTitle(title: hTitle, subTitle: hTitle? = nil) -> some View {
+        self.environment(\.hFormTitle, (title, subTitle))
+    }
+}
+
+public struct BackgroundView: UIViewRepresentable {
+
+    public init() {}
+    public func updateUIView(_ uiView: UIViewType, context: Context) {
+        uiView.backgroundColor = .brand(.primaryBackground())
+    }
+
+    public func makeUIView(context: Context) -> some UIView {
+        UIView()
+    }
+}
+
+struct BackgroundBlurView: UIViewRepresentable {
+    func makeUIView(context: Context) -> UIView {
+        let view = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+        view.subviews.forEach { subview in
+            subview.backgroundColor = UIColor.clear
+        }
+        return view
+    }
+
+    func updateUIView(_ uiView: UIView, context: Context) {}
+}

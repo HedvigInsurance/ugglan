@@ -410,24 +410,26 @@ public struct ClaimsNavigation: View {
     }
 
     private func showClaimFailureScreen() -> some View {
-        GenericErrorView()
-            .hErrorViewButtonConfig(
-                .init(
-                    actionButton: .init(
-                        buttonAction: {
-                            claimsNavigationVm.router.pop()
-                        }
-                    ),
-                    dismissButton: .init(
-                        buttonTitle: L10n.openChat,
-                        buttonAction: {
-                            claimsNavigationVm.router.dismiss()
-                            NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
-                        }
-                    )
+        GenericErrorView(
+            formPosition: .center
+        )
+        .hErrorViewButtonConfig(
+            .init(
+                actionButton: .init(
+                    buttonAction: {
+                        claimsNavigationVm.router.pop()
+                    }
+                ),
+                dismissButton: .init(
+                    buttonTitle: L10n.openChat,
+                    buttonAction: {
+                        claimsNavigationVm.router.dismiss()
+                        NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
+                    }
                 )
             )
-            .withDismissButton()
+        )
+        .withDismissButton()
     }
 
     private func openDamagePickerScreen() -> some View {

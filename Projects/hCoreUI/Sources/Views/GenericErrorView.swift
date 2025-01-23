@@ -4,7 +4,7 @@ import hCore
 public struct GenericErrorView: View {
     private let title: String?
     private let description: String?
-    private let useForm: Bool
+    private let formPosition: ContentPosition?
 
     private let attachContentToTheBottom: Bool
 
@@ -14,26 +14,25 @@ public struct GenericErrorView: View {
     public init(
         title: String? = nil,
         description: String? = L10n.General.errorBody,
-        useForm: Bool = true,
+        formPosition: ContentPosition?,
         attachContentToTheBottom: Bool = false
     ) {
         self.title = title
         self.description = description
-        self.useForm = useForm
+        self.formPosition = formPosition
         self.attachContentToTheBottom = attachContentToTheBottom
     }
 
     public var body: some View {
-        if useForm {
-            hForm {
+        if let formPosition {
+            hUpdatedForm {
                 if !attachContentToTheBottom {
                     content
                         .padding(.bottom, .padding32)
                         .padding(.top, extraTopPadding ? 32 : 0)
                 }
-
             }
-            .hFormContentPosition(.center)
+            .hFormContentPosition(formPosition)
             .hFormAttachToBottom {
                 hSection {
                     VStack(spacing: 8) {
@@ -132,29 +131,31 @@ extension View {
 
 struct Error_Previews: PreviewProvider {
     static var previews: some View {
-        GenericErrorView()
-            .hErrorViewButtonConfig(
-                .init(
-                    actionButton: .init(buttonTitle: nil, buttonAction: {}),
-                    actionButtonAttachedToBottom:
-                        .init(
-                            buttonTitle: "Extra button",
-                            buttonAction: {}
-                        ),
-                    dismissButton:
-                        .init(
-                            buttonTitle: "Close",
-                            buttonAction: {}
-                        )
-                )
+        GenericErrorView(
+            formPosition: .center
+        )
+        .hErrorViewButtonConfig(
+            .init(
+                actionButton: .init(buttonTitle: nil, buttonAction: {}),
+                actionButtonAttachedToBottom:
+                    .init(
+                        buttonTitle: "Extra button",
+                        buttonAction: {}
+                    ),
+                dismissButton:
+                    .init(
+                        buttonTitle: "Close",
+                        buttonAction: {}
+                    )
             )
-
+        )
     }
 }
 
 struct ErrorAttachToBottom_Previews: PreviewProvider {
     static var previews: some View {
         GenericErrorView(
+            formPosition: .center,
             attachContentToTheBottom: true
         )
         .hErrorViewButtonConfig(

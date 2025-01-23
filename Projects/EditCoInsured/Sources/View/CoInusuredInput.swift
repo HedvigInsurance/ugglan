@@ -606,10 +606,12 @@ public class IntentViewModel: ObservableObject {
             self.errorMessageForCoinsuredList = nil
         }
         do {
-            let data = try await service.sendIntent(contractId: contractId, coInsured: coInsured)
-            withAnimation {
-                self.intent = data
-            }
+            //            let data = try await service.sendIntent(contractId: contractId, coInsured: coInsured)
+            //            withAnimation {
+            //                self.intent = data
+            //            }
+            try await Task.sleep(nanoseconds: 1_000_000_000)
+            throw hGraphQL.AuthError.refreshFailed
         } catch let exception {
             withAnimation {
                 switch origin {
