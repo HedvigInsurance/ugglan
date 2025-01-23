@@ -39,6 +39,7 @@ public struct ConfirmChangeAddonScreen: View {
                             }
                         }
                     }
+                    .padding(.top, .padding24)
                 }
                 .sectionContainerStyle(.transparent)
             }
