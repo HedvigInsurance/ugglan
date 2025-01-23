@@ -274,6 +274,7 @@ struct LoggedInNavigation: View {
                         }
                     }
                 )
+                .embededInNavigation(tracking: ProfileRedirectType.deleteRequestLoading)
             }
         }
         .tabItem {
