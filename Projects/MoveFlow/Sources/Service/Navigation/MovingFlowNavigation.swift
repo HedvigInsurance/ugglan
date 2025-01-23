@@ -317,7 +317,7 @@ extension AddonDataModel {
             displayItems: self.displayItems.map({
                 .init(title: $0.displayTitle, value: $0.displayValue)
             }),
-            insuranceLimits: self.addonVariant.insurableLimits,
+            insuranceLimits: [],
             typeOfContract: nil,
             isAddon: true,
             removeModel: removeModel
