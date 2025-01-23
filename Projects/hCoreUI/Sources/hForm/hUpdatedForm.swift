@@ -33,6 +33,17 @@ public struct hUpdatedForm<Content: View>: View, KeyboardReadable {
             }
             .frame(maxWidth: .infinity)
             .frame(maxHeight: .infinity)
+            .background {
+                GeometryReader { geometry in
+                    hBackgroundColor.primary
+                        .onAppear {
+                            vm.viewHeight = geometry.size.height
+                        }
+                        .onChange(of: geometry.size) { value in
+                            vm.viewHeight = value.height
+                        }
+                }
+            }
         }
         .task {
             vm.scrollBounces = hEnableScrollBounce
@@ -234,7 +245,7 @@ private class hUpdatedFormViewModel: ObservableObject {
         if let scrollBounces {
             scrollView?.bounces = scrollBounces
         } else {
-            if scrollViewHeight > viewHeight {
+            if scrollViewHeight - 1 > viewHeight {
                 scrollView?.bounces = true
             } else {
                 scrollView?.bounces = false
