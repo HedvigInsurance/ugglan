@@ -16,7 +16,7 @@ struct HelpCenterTopicView: View {
     }
 
     var body: some View {
-        hForm {
+        hUpdatedForm {
             VStack(spacing: 40) {
                 hSection {
                     VStack(spacing: 40) {
@@ -41,7 +41,7 @@ struct HelpCenterTopicView: View {
     }
 }
 
-#Preview{
+#Preview {
     let questions: [Question] = [
         .init(
             question: "When do you charge for my insurance?",
