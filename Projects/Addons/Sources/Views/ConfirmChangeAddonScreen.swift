@@ -11,7 +11,7 @@ public struct ConfirmChangeAddonScreen: View {
             .hFormAttachToBottom {
                 hSection {
                     VStack(spacing: .padding32) {
-                        VStack(spacing: 0) {
+                        VStack(alignment: .leading, spacing: 0) {
                             hText(L10n.addonFlowConfirmationTitle)
                             hText(
                                 L10n.addonFlowConfirmationDescription(
@@ -19,7 +19,6 @@ public struct ConfirmChangeAddonScreen: View {
                                         .displayDateDDMMMYYYYFormat ?? ""
                                 )
                             )
-                            .multilineTextAlignment(.center)
                             .foregroundColor(hTextColor.Translucent.secondary)
                         }
                         VStack(spacing: .padding8) {
@@ -38,8 +37,8 @@ public struct ConfirmChangeAddonScreen: View {
                             } content: {
                                 hText(L10n.generalCloseButton)
                             }
-
                         }
+                        .padding(.bottom, .padding8)
                     }
                 }
                 .sectionContainerStyle(.transparent)
