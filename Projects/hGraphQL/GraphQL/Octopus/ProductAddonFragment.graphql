@@ -4,12 +4,6 @@ fragment AddonVariantFragment on AddonVariant {
     perils {
         ...PerilFragment
     }
-    insurableLimits {
-        label
-        limit
-        description
-        type
-    }
     documents {
         ...InsuranceDocumentFragment
     }

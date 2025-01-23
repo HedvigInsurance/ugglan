@@ -35,7 +35,6 @@ public class AddonsClientDemo: AddonsClient {
                     addonVariant: .init(
                         displayName: "",
                         documents: [],
-                        insurableLimits: [],
                         perils: [],
                         product: "",
                         termsVersion: ""
