@@ -38,7 +38,6 @@ public struct ConfirmChangeAddonScreen: View {
                                 hText(L10n.generalCloseButton)
                             }
                         }
-                        .padding(.bottom, .padding8)
                     }
                 }
                 .sectionContainerStyle(.transparent)
