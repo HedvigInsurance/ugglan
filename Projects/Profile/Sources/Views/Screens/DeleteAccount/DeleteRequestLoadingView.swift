@@ -34,7 +34,7 @@ public struct DeleteRequestLoadingView: View {
     }
 
     @ViewBuilder private var successState: some View {
-        hUpdatedForm {
+        hForm {
             VStack(spacing: 0) {
                 Image(uiImage: hCoreUIAssets.checkmark.image)
                     .resizable()

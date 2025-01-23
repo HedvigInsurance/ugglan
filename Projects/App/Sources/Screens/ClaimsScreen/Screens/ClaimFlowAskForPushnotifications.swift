@@ -25,7 +25,7 @@ struct AskForPushNotifications: View {
 
     var body: some View {
         if wrapWithForm {
-            hUpdatedForm {
+            hForm {
                 mainContent
             }
             .hFormContentPosition(.compact)

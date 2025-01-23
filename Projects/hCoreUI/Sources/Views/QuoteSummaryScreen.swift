@@ -157,7 +157,7 @@ public struct QuoteSummaryScreen: View {
 
     public var body: some View {
         ScrollViewReader { proxy in
-            hUpdatedForm {
+            hForm {
                 VStack(spacing: .padding16) {
                     VStack(spacing: 0) {
                         ForEach(vm.contracts, id: \.id) { contract in

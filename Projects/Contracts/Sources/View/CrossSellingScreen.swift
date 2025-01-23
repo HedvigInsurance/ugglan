@@ -7,7 +7,7 @@ public struct CrossSellingScreen: View {
     public init() {}
 
     public var body: some View {
-        hUpdatedForm {
+        hForm {
             CrossSellingStack(withHeader: false)
         }
         .hFormContentPosition(.compact)

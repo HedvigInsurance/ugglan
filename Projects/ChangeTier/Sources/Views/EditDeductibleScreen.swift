@@ -25,7 +25,7 @@ struct EditDeductibleScreen: View {
     }
 
     var body: some View {
-        hUpdatedForm {
+        hForm {
             hSection {
                 VStack(spacing: .padding4) {
                     ForEach(quotes.sorted(by: { $0.premium.value > $1.premium.value }), id: \.self) { quote in

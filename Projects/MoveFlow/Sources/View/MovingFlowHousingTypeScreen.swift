@@ -22,7 +22,7 @@ public struct MovingFlowHousingTypeScreen: View {
             state: $vm.viewState
         )
         .hCustomSuccessView {
-            hUpdatedForm {}
+            hForm {}
                 .hFormTitle(
                     title: .init(
                         .small,

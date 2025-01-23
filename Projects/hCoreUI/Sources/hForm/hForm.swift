@@ -2,7 +2,7 @@ import Combine
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 
-public struct hUpdatedForm<Content: View>: View, KeyboardReadable {
+public struct hForm<Content: View>: View, KeyboardReadable {
     @Environment(\.hFormBottomAttachedView) var bottomAttachedView
     @Environment(\.hFormAlwaysVisibleBottomAttachedView) var hFormAlwaysVisibleBottomAttachedView
     @Environment(\.hFormTitle) var hFormTitle
@@ -184,7 +184,7 @@ public struct hUpdatedForm<Content: View>: View, KeyboardReadable {
 }
 
 #Preview {
-    hUpdatedForm {
+    hForm {
         hText("Main content")
         Rectangle().frame(width: 100, height: 100)
         Rectangle().frame(width: 100, height: 100)

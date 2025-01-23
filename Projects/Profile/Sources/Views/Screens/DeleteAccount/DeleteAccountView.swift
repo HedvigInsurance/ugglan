@@ -21,7 +21,7 @@ public struct DeleteAccountView: View {
 
     public var body: some View {
         RouterHost(router: router, tracking: DeleteDetentType.deleteAccountView) {
-            hUpdatedForm {
+            hForm {
                 hSection {
                     VStack(alignment: vm.alignment, spacing: vm.titleAndDescriptionSpacing) {
                         if let topIcon = vm.topIcon {

@@ -13,7 +13,7 @@ struct SubmitClaimCarView: View {
     }
 
     var body: some View {
-        hUpdatedForm {
+        hForm {
             hSection {
                 VStack(alignment: .leading, spacing: 8) {
                     hText(L10n.submitClaimCarReportClaimTitle)

@@ -20,7 +20,7 @@ public struct ListScreen: View {
     }
 
     public var body: some View {
-        hUpdatedForm {
+        hForm {
             if vm.list.isEmpty && !vm.isLoading {
                 VStack(spacing: .padding16) {
                     Image(uiImage: hCoreUIAssets.infoFilled.image)

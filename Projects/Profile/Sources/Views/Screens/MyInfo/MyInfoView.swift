@@ -12,7 +12,7 @@ public struct MyInfoView: View {
     public init() {}
 
     public var body: some View {
-        hUpdatedForm {
+        hForm {
             hSection {
                 VStack(spacing: 4) {
                     hFloatingTextField(

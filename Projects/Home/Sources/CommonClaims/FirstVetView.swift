@@ -15,7 +15,7 @@ public struct FirstVetView: View {
     }
 
     public var body: some View {
-        hUpdatedForm {
+        hForm {
             VStack(spacing: 8) {
                 ForEach(partners, id: \.id) { partner in
                     hSection {

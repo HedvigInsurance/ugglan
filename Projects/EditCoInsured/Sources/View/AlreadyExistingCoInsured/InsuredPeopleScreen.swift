@@ -19,7 +19,7 @@ struct InsuredPeopleScreen: View {
     }
 
     var body: some View {
-        hUpdatedForm {
+        hForm {
             VStack(spacing: 0) {
                 let listToDisplay = listToDisplay()
                 hSection {

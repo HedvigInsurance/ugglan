@@ -23,7 +23,7 @@ struct AddonSelectSubOptionScreen: View {
     }
 
     var body: some View {
-        hUpdatedForm {
+        hForm {
             VStack(spacing: .padding4) {
                 ForEach(addonOffer.quotes, id: \.self) { quote in
                     hSection {

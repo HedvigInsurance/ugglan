@@ -9,7 +9,7 @@ public struct OTPEntryView: View {
     public init() {}
 
     public var body: some View {
-        hUpdatedForm {
+        hForm {
             hSection {
                 VStack(spacing: 50) {
                     hText(

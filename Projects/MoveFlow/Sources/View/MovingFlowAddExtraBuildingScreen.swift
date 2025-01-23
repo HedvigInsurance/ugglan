@@ -21,7 +21,7 @@ struct MovingFlowAddExtraBuildingScreen: View {
     }
 
     var body: some View {
-        hUpdatedForm {
+        hForm {
             VStack(spacing: 8) {
                 hSection {
                     typeOfBuilding

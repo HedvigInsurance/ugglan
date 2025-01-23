@@ -111,7 +111,7 @@ public struct InfoView: View {
     }
 
     public var body: some View {
-        hUpdatedForm {
+        hForm {
             hSection {
                 VStack(alignment: .leading, spacing: .padding8) {
                     hText(title)

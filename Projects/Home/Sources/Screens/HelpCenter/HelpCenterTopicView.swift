@@ -16,7 +16,7 @@ struct HelpCenterTopicView: View {
     }
 
     var body: some View {
-        hUpdatedForm {
+        hForm {
             VStack(spacing: 40) {
                 hSection {
                     VStack(spacing: 40) {

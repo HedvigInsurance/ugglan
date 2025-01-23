@@ -15,7 +15,7 @@ public struct EditContractScreen: View {
     }
 
     public var body: some View {
-        hUpdatedForm {
+        hForm {
             VStack(spacing: .padding16) {
                 VStack(spacing: .padding4) {
                     ForEach(editTypes, id: \.rawValue) { editType in

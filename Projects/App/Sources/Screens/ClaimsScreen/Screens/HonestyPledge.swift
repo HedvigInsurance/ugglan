@@ -146,7 +146,7 @@ struct HonestyPledge: View {
     }
 
     var body: some View {
-        hUpdatedForm {
+        hForm {
             VStack(alignment: .leading, spacing: 0) {
                 L10n.honestyPledgeTitle.hText(.body1)
                     .foregroundColor(hTextColor.Opaque.primary)
