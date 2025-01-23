@@ -163,7 +163,6 @@ struct MovingFlowHouseScreen: View {
                         }
                     }
                     .hButtonDontShowLoadingWhenDisabled(true)
-                    .fixedSize(horizontal: true, vertical: false)
                     .hUseLightMode
                     .padding(.top, .padding8)
 
