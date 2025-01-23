@@ -17,13 +17,23 @@ public struct InfoCard: View {
     }
 
     public var body: some View {
+        if #available(iOS 18.0, *) {
+            mainView
+                .accessibilityHint((buttonsConfig?.first?.buttonTitle ?? ""), isEnabled: buttonsConfig?.count == 1)
+        } else {
+            // Fallback on earlier versions
+            mainView
+        }
+    }
+
+    private var mainView: some View {
         HStack(alignment: .top, spacing: 0) {
             VStack(spacing: .padding8) {
                 Image(uiImage: type.image)
                     .resizable()
                     .foregroundColor(type.imageColor)
                     .frame(width: 20, height: 20)
-                    .accessibilityValue(type.displayName)
+                    .accessibilityHidden(true)
             }
             if let customContentView = customContentView {
                 customContentView
@@ -44,7 +54,7 @@ public struct InfoCard: View {
         .padding(.horizontal, .padding16)
         .modifier(NotificationStyle(type: type))
         .fixedSize(horizontal: false, vertical: true)
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: buttonsConfig?.count ?? 0 > 1 ? .contain : .combine)
         .hButtonTakeFullWidth(true)
     }
 
@@ -75,21 +85,25 @@ public struct InfoCard: View {
                         }
                     }
                 } else {
-                    ForEach(buttonsConfig, id: \.buttonTitle) { config in
-                        if type == .neutral {
-                            hButton.SmallButton(type: .secondary) {
-                                config.buttonAction()
-                            } content: {
-                                hText(config.buttonTitle, style: .label)
+                    ForEach(buttonsConfig, id: \.buttonTitle) {
+                        config in
+                        Group {
+                            if type == .neutral {
+                                hButton.SmallButton(type: .secondary) {
+                                    config.buttonAction()
+                                } content: {
+                                    hText(config.buttonTitle, style: .label)
+                                }
+                            } else {
+                                hButton.SmallButton(type: .secondaryAlt) {
+                                    config.buttonAction()
+                                } content: {
+                                    hText(config.buttonTitle, style: .label)
+                                }
+                                .hUseLightMode
                             }
-                        } else {
-                            hButton.SmallButton(type: .secondaryAlt) {
-                                config.buttonAction()
-                            } content: {
-                                hText(config.buttonTitle, style: .label)
-                            }
-                            .hUseLightMode
                         }
+                        //                            .accessibilityHint(config.buttonTitle)
                     }
                 }
             }

@@ -10,21 +10,6 @@ public enum NotificationType {
     case campaign
     case neutral
 
-    var displayName: String {
-        switch self {
-        case .info:
-            return L10n.voiceOverInfoImageDescription
-        case .attention:
-            return L10n.voiceOverWarningImageDescription
-        case .error:
-            return L10n.voiceOverWarningImageDescription
-        case .campaign:
-            return L10n.voiceOverCampaignImageDescription
-        case .neutral:
-            return L10n.voiceOverInfoImageDescription
-        }
-    }
-
     var image: UIImage {
         switch self {
         case .info:
