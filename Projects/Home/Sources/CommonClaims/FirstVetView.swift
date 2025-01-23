@@ -15,7 +15,7 @@ public struct FirstVetView: View {
     }
 
     public var body: some View {
-        hForm {
+        hUpdatedForm {
             VStack(spacing: 8) {
                 ForEach(partners, id: \.id) { partner in
                     hSection {
@@ -46,7 +46,7 @@ public struct FirstVetView: View {
                 .hWithoutDivider
             }
         }
-        .hFormAttachToBottom {
+        .hFormAlwaysAttachToBottom {
             hButton.LargeButton(type: .ghost) {
                 store.send(.dismissOtherServices)
             } content: {

@@ -12,7 +12,7 @@ public struct AppInfoView: View {
     public init() {}
 
     public var body: some View {
-        hForm {
+        hUpdatedForm {
             hSection {
                 memberId
                 profileVersion
@@ -23,9 +23,8 @@ public struct AppInfoView: View {
         .hWithoutHorizontalPadding
         .hWithoutDividerPadding
         .sectionContainerStyle(.transparent)
-        .hFormAttachToBottom {
+        .hFormAlwaysAttachToBottom {
             submitBugButton
-                .padding(.vertical, .padding16)
                 .sectionContainerStyle(.transparent)
         }
     }
