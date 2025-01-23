@@ -21,7 +21,7 @@ struct MovingFlowAddExtraBuildingScreen: View {
     }
 
     var body: some View {
-        hForm {
+        hUpdatedForm {
             VStack(spacing: 8) {
                 hSection {
                     typeOfBuilding
@@ -53,7 +53,7 @@ struct MovingFlowAddExtraBuildingScreen: View {
                 .sectionContainerStyle(.transparent)
             }
         }
-        .hDisableScroll
+        .hFormContentPosition(.compact)
     }
     @ViewBuilder
     private var typeOfBuilding: some View {

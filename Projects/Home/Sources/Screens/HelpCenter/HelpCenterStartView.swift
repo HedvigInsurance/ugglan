@@ -20,7 +20,7 @@ public struct HelpCenterStartView: View {
     }
 
     public var body: some View {
-        hForm {
+        hUpdatedForm {
             VStack(spacing: 0) {
                 hSection {
                     VStack(alignment: .leading, spacing: 40) {
@@ -74,7 +74,6 @@ public struct HelpCenterStartView: View {
             vm.searchInProgress
                 ? .transparent : .gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary)
         )
-        .hFormObserveKeyboard
         .edgesIgnoringSafeArea(.bottom)
         .dismissKeyboard()
         .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in
