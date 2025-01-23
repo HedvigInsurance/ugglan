@@ -67,7 +67,7 @@ struct CoInusuredInputScreen: View {
 
     @ViewBuilder
     var mainView: some View {
-        hForm {
+        hUpdatedForm {
             VStack(spacing: 4) {
                 if vm.actionType == .delete {
                     deleteCoInsuredFields
@@ -262,7 +262,7 @@ struct CoInusuredInputScreen: View {
             }
             .padding(.top, vm.actionType == .delete ? 16 : 0)
         }
-        .hDisableScroll
+        .hFormContentPosition(.compact)
     }
 
     var buttonDisplayText: String {

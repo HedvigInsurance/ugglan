@@ -30,7 +30,7 @@ public struct ClaimDetailView: View {
     }
 
     public var body: some View {
-        hForm {
+        hUpdatedForm {
             VStack(spacing: 8) {
                 if let claim = vm.claim {
                     hSection {
@@ -308,6 +308,7 @@ public struct ClaimDetailView: View {
                                 .frame(maxWidth: .infinity, alignment: .center)
                         }
                         .verticalPadding(0)
+                        .fixedSize(horizontal: false, vertical: true)
                         hButton.MediumButton(type: .primary) {
                             showFilePickerAlert()
                         } content: {

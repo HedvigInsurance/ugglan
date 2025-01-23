@@ -14,7 +14,7 @@ struct SumitClaimEmergencySelectView: View {
         self.title = title
     }
     var body: some View {
-        hForm {}
+        hUpdatedForm {}
             .hFormTitle(
                 title: .init(
                     .small,
@@ -43,11 +43,9 @@ struct SumitClaimEmergencySelectView: View {
                         }
                         .hButtonIsLoading(vm.state == .loading)
                     }
-                    .padding(.bottom, .padding32)
                 }
                 .sectionContainerStyle(.transparent)
             }
-            .hDisableScroll
             .claimErrorTrackerForState($vm.state)
     }
 
