@@ -157,7 +157,6 @@ struct PHPAssetPreview: View {
                         }
                     }
                     .opacity(selected ? 1 : 0)
-                    .fixedSize()
                 }
             } else {
                 ProgressView()

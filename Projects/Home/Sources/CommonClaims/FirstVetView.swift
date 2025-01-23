@@ -38,6 +38,7 @@ public struct FirstVetView: View {
                                 } content: {
                                     hText(L10n.commonClaimButton)
                                 }
+                                .hButtonTakeFullWidth(true)
                             }
                         }
                     }
