@@ -10,7 +10,7 @@ struct RemoveCoInsuredScreen: View {
     @EnvironmentObject private var router: Router
 
     var body: some View {
-        hForm {
+        hUpdatedForm {
             VStack(spacing: 0) {
                 let nbOfMissingoInsured =
                     vm.config.numberOfMissingCoInsuredWithoutTermination - vm.coInsuredDeleted.count
@@ -58,7 +58,7 @@ struct RemoveCoInsuredScreen: View {
                 .sectionContainerStyle(.transparent)
             }
         }
-        .hFormIgnoreKeyboard()
+        .hFormContentPosition(.compact)
     }
 
     @ViewBuilder
