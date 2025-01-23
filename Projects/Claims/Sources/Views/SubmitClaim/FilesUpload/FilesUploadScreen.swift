@@ -21,14 +21,13 @@ struct SubmitClaimFilesUploadScreen: View {
     var body: some View {
         Group {
             if vm.hasFiles {
-                hForm {
+                hUpdatedForm {
                     hSection {
                         FilesGridView(vm: vm.fileGridViewModel)
                     }
                     .padding(.vertical, .padding16)
                 }
-                .hDisableScroll
-                .hFormAttachToBottom {
+                .hFormAlwaysAttachToBottom {
                     hSection {
                         VStack(spacing: 8) {
                             if let error = vm.error {
@@ -70,10 +69,8 @@ struct SubmitClaimFilesUploadScreen: View {
                             .fixedSize(horizontal: false, vertical: true)
                             .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
                             .hShadow()
-
                         }
                     }
-                    .padding(.vertical, .padding16)
                 }
                 .sectionContainerStyle(.transparent)
                 .toolbar {
@@ -84,7 +81,7 @@ struct SubmitClaimFilesUploadScreen: View {
                     }
                 }
             } else {
-                hForm {}
+                hUpdatedForm {}
                     .hFormTitle(
                         title: .init(
                             .small,
@@ -93,7 +90,7 @@ struct SubmitClaimFilesUploadScreen: View {
                             alignment: .leading
                         )
                     )
-                    .hFormAttachToBottom {
+                    .hFormAlwaysAttachToBottom {
                         hSection {
                             VStack(spacing: 16) {
                                 if let error = vm.error {

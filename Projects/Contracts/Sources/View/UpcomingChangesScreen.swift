@@ -19,7 +19,7 @@ struct UpcomingChangesScreen: View {
         self.upcomingAgreement = upcomingAgreement
     }
     public var body: some View {
-        hForm {
+        hUpdatedForm {
             if let upcomingAgreement {
                 hSection(upcomingAgreement.displayItems, id: \.displayValue) { item in
                     hRow {

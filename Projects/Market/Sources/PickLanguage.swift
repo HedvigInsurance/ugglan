@@ -31,7 +31,7 @@ public struct PickLanguage: View {
     }
 
     public var body: some View {
-        hForm {
+        hUpdatedForm {
             VStack(spacing: 8) {
                 if onSave == nil {
                     hSection {
@@ -63,6 +63,7 @@ public struct PickLanguage: View {
             }
             .sectionContainerStyle(.transparent)
         }
+        .hFormContentPosition(.compact)
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: 8) {

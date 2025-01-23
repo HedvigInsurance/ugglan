@@ -34,10 +34,9 @@ public struct HomeView<Claims: View>: View {
 extension HomeView {
 
     public var body: some View {
-        hForm {
+        hUpdatedForm {
             centralContent
         }
-        .hFormDontUseInitialAnimation
         .setHomeNavigationBars(
             with: $vm.toolbarOptionTypes,
             and: "HomeView",
@@ -53,14 +52,10 @@ extension HomeView {
             }
         )
         .hFormAttachToBottom {
-            VStack(spacing: 0) {
-                bottomContent
-            }
+            bottomContent
         }
-        .hFormIgnoreKeyboard()
         .sectionContainerStyle(.transparent)
         .hFormContentPosition(.center)
-        .hFormMergeBottomViewWithContentIfNeeded
         .onAppear {
             vm.fetch()
         }
@@ -118,7 +113,6 @@ extension HomeView {
                 }
             }
         }
-        .padding(.bottom, .padding16)
     }
 
     @ViewBuilder

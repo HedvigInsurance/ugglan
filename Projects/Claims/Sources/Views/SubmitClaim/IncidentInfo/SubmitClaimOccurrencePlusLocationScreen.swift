@@ -24,7 +24,7 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
     }
 
     var body: some View {
-        hForm {}
+        hUpdatedForm {}
             .hFormTitle(
                 title: .init(
                     .small,
@@ -33,7 +33,6 @@ struct SubmitClaimOccurrencePlusLocationScreen: View {
                     alignment: .leading
                 )
             )
-            .hDisableScroll
             .hFormAttachToBottom {
                 VStack(spacing: 0) {
                     hSection {

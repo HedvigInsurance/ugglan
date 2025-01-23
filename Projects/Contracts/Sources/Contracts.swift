@@ -23,11 +23,11 @@ struct Contracts: View {
     }
 
     public var body: some View {
-        hForm {
+        hUpdatedForm {
             ContractTable(showTerminated: showTerminated)
                 .padding(.top, .padding8)
         }
-        .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hBackgroundColor.primary))
+        .hSetScrollBounce(to: true)
         .onReceive(pollTimer) { _ in
             fetch()
         }

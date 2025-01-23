@@ -32,7 +32,7 @@ public struct PaymentsView: View {
     }
 
     private var successView: some View {
-        hForm {
+        hUpdatedForm {
             VStack(spacing: 8) {
                 upcomingPayment
                 PresentableStoreLens(
@@ -60,6 +60,7 @@ public struct PaymentsView: View {
             }
             .padding(.vertical, .padding8)
         }
+        .hSetScrollBounce(to: true)
         .hFormAttachToBottom {
             bottomPart
         }

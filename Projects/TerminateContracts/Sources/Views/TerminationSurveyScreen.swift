@@ -9,46 +9,8 @@ struct TerminationSurveyScreen: View {
     @EnvironmentObject var terminationFlowNavigationViewModel: TerminationFlowNavigationViewModel
 
     var body: some View {
-        hForm {
-            hSection {
-                VStack(spacing: 16) {
-                    VStack(spacing: 4) {
-                        ForEach(vm.options) { option in
-                            ZStack {
-                                VStack(spacing: 4) {
-                                    hRadioField(
-                                        id: option.id,
-                                        leftView: {
-                                            hText(option.title).asAnyView
-                                        },
-                                        selected: $vm.selected
-                                    )
-                                    .hFieldSize(.medium)
-                                    .zIndex(1)
-                                    Group {
-                                        if let suggestion = option.suggestion, option.id == vm.selectedOption?.id {
-                                            buildInfo(for: suggestion)
-                                                .matchedGeometryEffect(id: "buildInfo", in: animationNamespace)
-                                        }
-
-                                        if let feedBack = vm.allFeedBackViewModels[option.id],
-                                            option.id == vm.selectedOption?.id
-                                        {
-                                            TerminationFlowSurveyStepFeedBackView(
-                                                vm: feedBack
-                                            )
-                                        }
-                                    }
-                                    .frame(minHeight: 120)
-                                }
-                            }
-
-                        }
-                    }
-                }
-                .padding(.bottom, .padding16)
-            }
-            .sectionContainerStyle(.transparent)
+        hUpdatedForm {
+            content
         }
         .hFormTitle(
             title: .init(
@@ -63,11 +25,8 @@ struct TerminationSurveyScreen: View {
                 vm.subtitleType.title
             )
         )
-        .hFormIgnoreKeyboard()
         .hFormContentPosition(.bottom)
-        .hFormDontUseInitialAnimation
-        .hFormIgnoreScrollOffsetChanges
-        .hFormAttachToBottom {
+        .hFormAlwaysAttachToBottom {
             hSection {
                 hButton.LargeButton(type: .primary) {
                     continueClicked()
@@ -80,6 +39,47 @@ struct TerminationSurveyScreen: View {
         }
         .trackErrorState(for: $vm.viewState)
         .hButtonIsLoading(vm.viewState == .loading)
+    }
+
+    private var content: some View {
+        hSection {
+            VStack(spacing: 16) {
+                VStack(spacing: 4) {
+                    ForEach(vm.options) { option in
+                        ZStack {
+                            VStack(spacing: 4) {
+                                hRadioField(
+                                    id: option.id,
+                                    leftView: {
+                                        hText(option.title).asAnyView
+                                    },
+                                    selected: $vm.selected
+                                )
+                                .hFieldSize(.medium)
+                                .zIndex(1)
+                                Group {
+                                    if let suggestion = option.suggestion, option.id == vm.selectedOption?.id {
+                                        buildInfo(for: suggestion)
+                                            .matchedGeometryEffect(id: "buildInfo", in: animationNamespace)
+                                    }
+
+                                    if let feedBack = vm.allFeedBackViewModels[option.id],
+                                        option.id == vm.selectedOption?.id
+                                    {
+                                        TerminationFlowSurveyStepFeedBackView(
+                                            vm: feedBack
+                                        )
+                                    }
+                                }
+                                .frame(minHeight: 120)
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+        .sectionContainerStyle(.transparent)
     }
 
     @ViewBuilder
@@ -151,7 +151,7 @@ class SurveyScreenViewModel: ObservableObject {
     var allFeedBackViewModels = [String: TerminationFlowSurveyStepFeedBackViewModel]()
 
     @Published var text: String = "test"
-    @Published var continueEnabled = true
+    @Published var continueEnabled = false
 
     @Published var selected: String? {
         didSet {

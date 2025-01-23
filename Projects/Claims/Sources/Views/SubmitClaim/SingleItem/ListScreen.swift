@@ -18,7 +18,7 @@ public struct ListScreen<T>: View {
     }
 
     public var body: some View {
-        hForm {
+        hUpdatedForm {
             ListItems(
                 onClick: { item in
                     onSelected(item)
@@ -27,14 +27,14 @@ public struct ListScreen<T>: View {
             )
             .hListRowStyle(.filled)
         }
-        .hFormAttachToBottom {
+        .hFormContentPosition(.bottom)
+        .hFormAlwaysAttachToBottom {
             hSection {
                 hButton.LargeButton(type: .ghost) {
                     onCancel()
                 } content: {
                     hText(L10n.generalCancelButton, style: .body1)
                 }
-                .padding(.top, .padding16)
             }
             .sectionContainerStyle(.transparent)
         }

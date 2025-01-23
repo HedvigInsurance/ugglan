@@ -12,7 +12,7 @@ struct PaymentsDiscountsView: View {
     @EnvironmentObject var router: Router
 
     var body: some View {
-        hForm {
+        hUpdatedForm {
             VStack(spacing: 8) {
                 discounts
                 hSection {

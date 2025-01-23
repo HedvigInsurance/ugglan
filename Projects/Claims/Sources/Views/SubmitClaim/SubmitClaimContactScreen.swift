@@ -14,7 +14,7 @@ public struct SubmitClaimContactScreen: View, KeyboardReadable {
     }
 
     public var body: some View {
-        hForm {}
+        hUpdatedForm {}
             .hFormTitle(
                 title: .init(
                     .small,

@@ -11,10 +11,11 @@ public struct InboxView: View {
     public init() {}
 
     public var body: some View {
-        hForm {
+        hUpdatedForm {
             displayMessages
                 .padding(.top, 8)
         }
+        .hSetScrollBounce(to: true)
         .onPullToRefresh {
             await vm.fetchMessages()
         }

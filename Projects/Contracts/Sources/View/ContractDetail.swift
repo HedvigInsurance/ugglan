@@ -51,7 +51,7 @@ public struct ContractDetail: View {
 
     public var body: some View {
         if let contract = store.state.contractForId(id) {
-            hForm {
+            hUpdatedForm {
                 VStack(spacing: 0) {
                     hSection {
                         ContractRow(

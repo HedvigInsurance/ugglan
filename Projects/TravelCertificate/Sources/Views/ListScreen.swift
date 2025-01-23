@@ -20,7 +20,7 @@ public struct ListScreen: View {
     }
 
     public var body: some View {
-        hForm {
+        hUpdatedForm {
             if vm.list.isEmpty && !vm.isLoading {
                 VStack(spacing: .padding16) {
                     Image(uiImage: hCoreUIAssets.infoFilled.image)
@@ -52,41 +52,13 @@ public struct ListScreen: View {
             }
         }
         .hFormContentPosition(vm.list.isEmpty ? .center : .top)
-        .hFormAttachToBottom {
+        .hSetScrollBounce(to: true)
+        .hFormAlwaysAttachToBottom {
             hSection {
-                VStack(spacing: 16) {
-                    if Dependencies.featureFlags().isAddonsEnabled, let banner = vm.addonBannerModel {
-                        AddonCardView(
-                            openAddon: {
-                                let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                                let addonContracts = banner.contractIds.compactMap({
-                                    contractStore.state.contractForId($0)
-                                })
-
-                                let addonConfigs: [AddonConfig] = addonContracts.map({
-                                    .init(
-                                        contractId: $0.id,
-                                        exposureName: $0.exposureDisplayName,
-                                        displayName: $0.currentAgreement?.productVariant.displayName ?? ""
-                                    )
-                                })
-                                travelCertificateNavigationVm.isAddonPresented = .init(
-                                    contractConfigs: addonConfigs
-                                )
-                            },
-                            addon: banner
-                        )
-                    }
-                    if vm.canCreateTravelInsurance {
-                        hButton.LargeButton(type: .secondary) {
-                            createNewPressed()
-                        } content: {
-                            hText(L10n.TravelCertificate.createNewCertificate)
-                        }
-                        .hButtonIsLoading(vm.isCreateNewLoading)
-                    }
+                VStack(spacing: .padding16) {
+                    addonView
+                    createNewButton
                 }
-                .padding(.vertical, .padding16)
             }
         }
         .loading($vm.isLoading, $vm.error)
@@ -113,6 +85,44 @@ public struct ListScreen: View {
                     await vm.fetchTravelCertificateList()
                 }
             }
+        }
+    }
+
+    @ViewBuilder
+    private var addonView: some View {
+        if Dependencies.featureFlags().isAddonsEnabled, let banner = vm.addonBannerModel {
+            AddonCardView(
+                openAddon: {
+                    let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                    let addonContracts = banner.contractIds.compactMap({
+                        contractStore.state.contractForId($0)
+                    })
+
+                    let addonConfigs: [AddonConfig] = addonContracts.map({
+                        .init(
+                            contractId: $0.id,
+                            exposureName: $0.exposureDisplayName,
+                            displayName: $0.currentAgreement?.productVariant.displayName ?? ""
+                        )
+                    })
+                    travelCertificateNavigationVm.isAddonPresented = .init(
+                        contractConfigs: addonConfigs
+                    )
+                },
+                addon: banner
+            )
+        }
+    }
+
+    @ViewBuilder
+    private var createNewButton: some View {
+        if vm.canCreateTravelInsurance {
+            hButton.LargeButton(type: .secondary) {
+                createNewPressed()
+            } content: {
+                hText(L10n.TravelCertificate.createNewCertificate)
+            }
+            .hButtonIsLoading(vm.isCreateNewLoading)
         }
     }
 

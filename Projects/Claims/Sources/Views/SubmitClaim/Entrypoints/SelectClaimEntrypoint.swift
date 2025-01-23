@@ -16,7 +16,7 @@ public struct SelectClaimEntrypointGroup: View {
     }
 
     public var body: some View {
-        hForm {}
+        hUpdatedForm {}
             .hFormTitle(
                 title: .init(
                     .small,
@@ -25,7 +25,6 @@ public struct SelectClaimEntrypointGroup: View {
                     alignment: .leading
                 )
             )
-            .hDisableScroll
             .hFormAttachToBottom {
                 VStack {
                     ShowTagList(
@@ -111,7 +110,7 @@ struct SelectClaimEntrypointType: View {
     public init() {}
 
     var body: some View {
-        hForm {}
+        hUpdatedForm {}
             .hFormTitle(
                 title: .init(
                     .small,
@@ -120,7 +119,6 @@ struct SelectClaimEntrypointType: View {
                     alignment: .leading
                 )
             )
-            .hDisableScroll
             .hFormAttachToBottom {
                 ShowTagList(
                     tagsToShow: entrypointsToStringArray(
@@ -205,7 +203,7 @@ struct SelectClaimEntrypointOption: View {
     public init() {}
 
     var body: some View {
-        hForm {}
+        hUpdatedForm {}
             .hFormTitle(
                 title: .init(
                     .small,
@@ -214,7 +212,6 @@ struct SelectClaimEntrypointOption: View {
                     alignment: .leading
                 )
             )
-            .hDisableScroll
             .hFormAttachToBottom {
                 ShowTagList(
                     tagsToShow: entrypointOptionsToStringArray(

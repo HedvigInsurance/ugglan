@@ -36,7 +36,6 @@ struct WhoIsTravelingScreen: View {
                     vm.setCoInsured(data: listOfIncludedTravellers)
                     validateAndSubmit()
                 },
-                attachToBottom: true,
                 hButtonText: L10n.General.submit,
                 infoCard: vm.hasMissingCoInsuredData
                     ? .init(
@@ -53,12 +52,11 @@ struct WhoIsTravelingScreen: View {
                             )
                         ],
                         placement: .bottom
-                    ) : nil
+                    ) : nil,
+                contentPosition: .bottom
             )
         )
-        .padding(.bottom, .padding16)
-        .hFormTitle(title: .init(.standard, .displayXSLong, L10n.TravelCertificate.whoIsTraveling))
-        .hDisableScroll
+        .hFormTitle(title: .init(.small, .heading2, L10n.TravelCertificate.whoIsTraveling, alignment: .leading))
         .disabled(vm.isLoading)
     }
 

@@ -325,6 +325,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                 case .center: return (maxContentHeight - contentHeight) / 2
                 case .bottom:
                     return max(scrollViewHeight - bottomAttachedViewHeight - contentHeight - titleHeight - 8, 20)
+                case .compact: return 0
                 }
             }()
         }
@@ -387,29 +388,6 @@ struct hForm_Previews: PreviewProvider {
 }
 
 //MARK: Enviroment keys
-@MainActor
-private struct EnvironmentHFormContentPosition: @preconcurrency EnvironmentKey {
-    static let defaultValue: ContentPosition = .top
-}
-
-extension EnvironmentValues {
-    public var hFormContentPosition: ContentPosition {
-        get { self[EnvironmentHFormContentPosition.self] }
-        set { self[EnvironmentHFormContentPosition.self] = newValue }
-    }
-}
-
-extension View {
-    public func hFormContentPosition(_ position: ContentPosition) -> some View {
-        self.environment(\.hFormContentPosition, position)
-    }
-}
-
-public enum ContentPosition {
-    case top
-    case center
-    case bottom
-}
 
 @MainActor
 private struct EnvironmentHFormBottomAttachedView: @preconcurrency EnvironmentKey {

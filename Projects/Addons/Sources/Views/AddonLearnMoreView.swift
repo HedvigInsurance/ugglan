@@ -6,7 +6,7 @@ struct AddonLearnMoreView: View {
     let model: AddonInfo
 
     var body: some View {
-        hForm {
+        hUpdatedForm {
             VStack(spacing: .padding16) {
                 hSection {
                     VStack(alignment: .leading, spacing: .padding4) {
@@ -14,6 +14,7 @@ struct AddonLearnMoreView: View {
                         hText(model.description, style: .body1)
                             .foregroundColor(hTextColor.Opaque.secondary)
                     }
+                    .fixedSize(horizontal: false, vertical: true)
 
                     hPill(text: L10n.addonLearnMoreLabel, color: .blue)
                         .hFieldSize(.medium)

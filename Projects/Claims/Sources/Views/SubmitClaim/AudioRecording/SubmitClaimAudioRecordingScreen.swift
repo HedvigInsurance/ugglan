@@ -58,7 +58,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
     }
 
     private var mainContent: some View {
-        hForm {
+        hUpdatedForm {
             let audioRecordingStep = claimsNavigationVm.audioRecordingModel
             if isAudioInput {
                 textSection(questions: audioRecordingStep?.questions)
@@ -66,9 +66,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
                 textSection(questions: audioRecordingStep?.textQuestions)
             }
         }
-        .hFormIgnoreKeyboard()
-        .hDisableScroll
-        .hFormAttachToBottom {
+        .hFormAlwaysAttachToBottom {
             Group {
                 if isAudioInput {
                     audioElements
@@ -86,16 +84,15 @@ public struct SubmitClaimAudioRecordingScreen: View {
             VStack(spacing: 8) {
                 if let questions = questions {
                     ForEach(questions, id: \.self) { question in
-                        HStack {
-                            hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
-                                .foregroundColor(hTextColor.Opaque.primary)
-                        }
-                        .padding(.padding16)
-                        .background(hSurfaceColor.Opaque.primary)
-                        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
-                        .padding(.trailing, .padding88)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .slideUpAppearAnimation()
+                        hText(L10nDerivation(table: "Localizable", key: question, args: []).render())
+                            .foregroundColor(hTextColor.Opaque.primary)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .padding(.padding16)
+                            .background(hSurfaceColor.Opaque.primary)
+                            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusL))
+                            .padding(.trailing, .padding88)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .slideUpAppearAnimation()
                     }
                 }
             }
@@ -199,7 +196,6 @@ public struct SubmitClaimAudioRecordingScreen: View {
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                     }
                 }
-                .padding(.vertical, .padding16)
             }
             .environmentObject(audioRecorder)
         }
@@ -241,7 +237,6 @@ public struct SubmitClaimAudioRecordingScreen: View {
             }
             .sectionContainerStyle(.transparent)
         }
-        .padding(.vertical, .padding16)
         .frame(height: 300)
     }
 
@@ -315,10 +310,23 @@ public class SubmitClaimAudioRecordingScreenModel: ObservableObject {
 }
 
 struct SubmitClaimAudioRecordingScreen_Previews: PreviewProvider {
+
     static var previews: some View {
-        SubmitClaimAudioRecordingScreen(
+        let client = FetchEntrypointsClientDemo()
+        Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in client })
+        let navigation = ClaimsNavigationViewModel()
+        navigation.audioRecordingModel = .init(
+            id: "id",
+            questions: [
+                "QUESTGION 1 very long how much time it should take to complete this task"
+            ],
+            textQuestions: [],
+            inputTextContent: nil,
+            optionalAudio: false
+        )
+        return SubmitClaimAudioRecordingScreen(
             url: URL(string: "https://filesamples.com/samples/audio/m4a/sample4.m4a"),
-            claimsNavigationVm: .init()
+            claimsNavigationVm: navigation
         )
     }
 }
