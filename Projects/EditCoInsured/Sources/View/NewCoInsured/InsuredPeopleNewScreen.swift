@@ -10,7 +10,7 @@ struct InsuredPeopleNewScreen: View {
     @EnvironmentObject var router: Router
     @ObservedObject var intentViewModel: IntentViewModel
     var body: some View {
-        hForm {
+        hUpdatedForm {
             VStack(spacing: 0) {
                 let listToDisplay = listToDisplay()
                 let hasContentBelow = !listToDisplay.isEmpty

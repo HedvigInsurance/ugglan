@@ -19,7 +19,7 @@ struct InsuredPeopleScreen: View {
     }
 
     var body: some View {
-        hForm {
+        hUpdatedForm {
             VStack(spacing: 0) {
                 let listToDisplay = listToDisplay()
                 hSection {
@@ -81,7 +81,6 @@ struct InsuredPeopleScreen: View {
                 .sectionContainerStyle(.transparent)
             }
         }
-        .hFormIgnoreKeyboard()
     }
 
     @ViewBuilder
