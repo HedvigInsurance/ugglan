@@ -29,7 +29,6 @@ final class AddonsServiceTests: XCTestCase {
                     addonVariant: .init(
                         displayName: "displayName",
                         documents: [],
-                        insurableLimits: [],
                         perils: [],
                         product: "",
                         termsVersion: ""
@@ -44,7 +43,6 @@ final class AddonsServiceTests: XCTestCase {
                     addonVariant: .init(
                         displayName: "displayName2",
                         documents: [],
-                        insurableLimits: [],
                         perils: [],
                         product: "",
                         termsVersion: ""
