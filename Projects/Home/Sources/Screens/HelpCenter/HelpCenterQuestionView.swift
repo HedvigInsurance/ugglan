@@ -45,11 +45,14 @@ struct HelpCenterQuestionView: View {
                     }
                 }
                 .sectionContainerStyle(.transparent)
-                SupportView(router: router)
-                    .padding(.top, .padding8)
             }
         }
         .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary))
+        .hFormAttachToBottom {
+            SupportView(router: router)
+                .padding(.top, .padding8)
+        }
+        .hFormIgnoreBottomPadding
         .edgesIgnoringSafeArea(.bottom)
     }
 }
