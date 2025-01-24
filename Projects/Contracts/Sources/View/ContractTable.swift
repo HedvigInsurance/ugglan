@@ -115,7 +115,6 @@ struct ContractTable: View {
                     .presentableStoreLensAnimation(.spring())
                     .sectionContainerStyle(.transparent)
                 }
-                //                .padding(.vertical, .padding24)
             }
         }
         .onAppear {
