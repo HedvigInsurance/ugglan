@@ -61,7 +61,6 @@ public struct hFloatingField: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .addFieldBackground(animate: $animate, error: $error)
         .addFieldError(animate: $animate, error: $error)
-        .accessibilityElement(children: .combine)
         .onTapGesture {
             if isEnabled {
                 onTap()
@@ -73,6 +72,9 @@ public struct hFloatingField: View {
                 self.startAnimation()
             }
         }
+        .accessibilityAddTraits(.isButton)
+        .accessibilityElement(children: .combine)
+
     }
     private var getTextLabel: some View {
         hText(value, style: size == .large ? .body2 : .body1)

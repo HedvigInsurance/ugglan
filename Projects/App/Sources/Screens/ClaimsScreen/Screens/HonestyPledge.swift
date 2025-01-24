@@ -14,6 +14,7 @@ struct SlideToConfirm: View {
     @State private var bounceSliderButton = false
 
     private let animation = Animation.spring(response: 0.55, dampingFraction: 0.725, blendDuration: 1)
+
     var body: some View {
         if #available(iOS 16.0, *) {
             slider
@@ -95,6 +96,14 @@ struct SlideToConfirm: View {
             }
         )
         .cornerRadius(29)
+        .accessibilityElement(children: .combine)
+        .accessibilityHint(L10n.voiceoverHonestypledgeSlider)
+        .accessibilityAction {
+            withAnimation(animation.speed(2)) {
+                progress = 0
+            }
+            promiseConfirmed()
+        }
     }
 
     private func promiseConfirmed() {
@@ -148,14 +157,17 @@ struct HonestyPledge: View {
     var body: some View {
         hForm {
             VStack(alignment: .leading, spacing: 0) {
-                L10n.honestyPledgeTitle.hText(.body1)
-                    .foregroundColor(hTextColor.Opaque.primary)
-                    .padding(.bottom, .padding8)
-                HStack {
-                    L10n.honestyPledgeDescription.hText(.body1)
-                        .foregroundColor(hTextColor.Opaque.secondary)
+                VStack(alignment: .leading, spacing: 0) {
+                    L10n.honestyPledgeTitle.hText(.body1)
+                        .foregroundColor(hTextColor.Opaque.primary)
+                        .padding(.bottom, .padding8)
+                    HStack {
+                        L10n.honestyPledgeDescription.hText(.body1)
+                            .foregroundColor(hTextColor.Opaque.secondary)
+                    }
+                    .padding(.bottom, .padding32)
                 }
-                .padding(.bottom, .padding32)
+                .accessibilityElement(children: .combine)
 
                 SlideToConfirm(onConfirmAction: {
                     onConfirmAction?()

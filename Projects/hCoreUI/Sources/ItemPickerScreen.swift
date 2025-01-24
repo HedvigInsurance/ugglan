@@ -246,6 +246,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                 }
                 .hButtonIsLoading(isLoading)
                 .disabled(config.disableIfNoneSelected ? config.selectedItems.isEmpty : false)
+                .accessibilityHint(config.selectedItems.isEmpty ? L10n.voiceoverPickerInfo(config.hButtonText) : "")
                 if let onCancel = config.onCancel {
                     hButton.LargeButton(type: .ghost) {
                         onCancel()
@@ -325,6 +326,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                 )
             }
         )
+        .accessibilityHint(isSelected ? L10n.voiceoverOptionSelected + (displayName?.title ?? "") : "")
     }
 
     func onTapExecuteFor(_ item: T) {
