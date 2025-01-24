@@ -194,6 +194,10 @@ public struct SubmitClaimAudioRecordingScreen: View {
                             }
                         }
                         .transition(.move(edge: .bottom).combined(with: .opacity))
+                        .accessibilityElement(children: .combine)
+                        .accessibilityHint(
+                            audioRecorder.isRecording ? L10n.embarkStopRecording : L10n.claimsStartRecordingLabel
+                        )
                     }
                 }
             }
