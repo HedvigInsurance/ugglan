@@ -147,6 +147,7 @@ public struct ChangeAddonNavigation: View {
             content: {
                 ConfirmChangeAddonScreen()
                     .embededInNavigation(
+                        options: .navigationBarHidden,
                         tracking: ChangeAddonTrackingType.confirmAddonScreen
                     )
                     .environmentObject(changeAddonNavigationVm)
