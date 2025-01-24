@@ -146,6 +146,7 @@ struct AddonDataModel: Codable, Equatable, Hashable {
     let id: String
     let quoteInfo: InfoViewDataModel
     let displayItems: [DisplayItem]
+    let coverageDisplayName: String
     let price: MonetaryAmount
     let addonVariant: AddonVariant
     let startDate: Date

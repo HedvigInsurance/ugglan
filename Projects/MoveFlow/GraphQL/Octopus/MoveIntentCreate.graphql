@@ -87,6 +87,7 @@ fragment QuoteFragment on MoveIntent {
 fragment MoveAddonQuoteFragment on MoveAddonQuote {
     addonId
     displayName
+    coverageDisplayName
     displayItems {
         displayTitle
         displaySubtitle

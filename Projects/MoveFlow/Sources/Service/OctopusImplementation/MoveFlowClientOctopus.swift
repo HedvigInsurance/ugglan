@@ -324,6 +324,7 @@ extension AddonDataModel {
         self.quoteInfo = .init(title: fragment.displayName, description: L10n.movingFlowTravelAddonSummaryDescription)
         self.addonVariant = .init(fragment: fragment.addonVariant.fragments.addonVariantFragment)
         self.startDate = fragment.startDate.localDateToDate ?? Date()
+        self.coverageDisplayName = fragment.coverageDisplayName
         self.removeDialogInfo = {
             if Dependencies.featureFlags().isAddonsRemovalFromMovingFlowEnabled {
                 return .init(

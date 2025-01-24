@@ -47,7 +47,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                 contractInfos.append(contractQuote)
 
                 quote.addons.forEach({ addonQuote in
-                    let addonQuoteContractInfo = addonQuote.asContractInfo(exposureName: quote.exposureName ?? "") {
+                    let addonQuoteContractInfo = addonQuote.asContractInfo {
                         [weak self] document in
                         self?.document = document
                     }
@@ -290,7 +290,6 @@ private enum MovingFlowDetentType: TrackingViewNameProtocol {
 @MainActor
 extension AddonDataModel {
     func asContractInfo(
-        exposureName: String,
         ondocumentClicked: @escaping (hPDFDocument) -> Void
     ) -> QuoteSummaryViewModel.ContractInfo {
         let removeModel: QuoteSummaryViewModel.ContractInfo.RemoveModel? = {
@@ -308,7 +307,7 @@ extension AddonDataModel {
         let addonQuoteContractInfo = QuoteSummaryViewModel.ContractInfo(
             id: self.id,
             displayName: self.quoteInfo.title ?? "",
-            exposureName: exposureName,
+            exposureName: self.coverageDisplayName,
             newPremium: self.price,
             currentPremium: nil,
             documents: self.addonVariant.documents,
