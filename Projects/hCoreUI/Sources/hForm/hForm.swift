@@ -10,6 +10,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
     @Environment(\.hFormContentPosition) var contentPosition
     @Environment(\.hEnableScrollBounce) var hEnableScrollBounce
     @Environment(\.hFormBottomBackgroundStyle) var bottomBackgroundStyle
+    @Environment(\.hFormIgnoreBottomPadding) var hFormIgnoreBottomPadding
     @Environment(\.colorScheme) private var colorScheme
 
     @StateObject fileprivate var vm = hUpdatedFormViewModel()
@@ -164,7 +165,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
 
     @ViewBuilder
     private var getBottomAttachedView: some View {
-        if hFormAlwaysVisibleBottomAttachedView != nil {
+        if hFormAlwaysVisibleBottomAttachedView != nil || hFormIgnoreBottomPadding {
             bottomAttachedView
         } else {
             bottomAttachedView?.padding(.bottom, .padding16)
@@ -175,7 +176,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
     private var getAlwaysVisibleBottomView: some View {
         hFormAlwaysVisibleBottomAttachedView
             .padding(.top, .padding16)
-            .padding(.bottom, .padding16)
+            .padding(.bottom, hFormIgnoreBottomPadding ? 0 : .padding16)
             .background {
                 BackgroundBlurView()
                     .ignoresSafeArea()
@@ -434,6 +435,25 @@ extension EnvironmentValues {
 extension View {
     public func hFormTitle(title: hTitle, subTitle: hTitle? = nil) -> some View {
         self.environment(\.hFormTitle, (title, subTitle))
+    }
+}
+
+//MARK: hFormIgnoreBottomPadding
+@MainActor
+private struct EnvironmentHFormIgnoreBottomPadding: @preconcurrency EnvironmentKey {
+    static let defaultValue: Bool = false
+}
+
+extension EnvironmentValues {
+    public var hFormIgnoreBottomPadding: Bool {
+        get { self[EnvironmentHFormIgnoreBottomPadding.self] }
+        set { self[EnvironmentHFormIgnoreBottomPadding.self] = newValue }
+    }
+}
+
+extension View {
+    public var hFormIgnoreBottomPadding: some View {
+        self.environment(\.hFormIgnoreBottomPadding, true)
     }
 }
 

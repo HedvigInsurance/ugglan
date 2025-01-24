@@ -23,13 +23,6 @@ struct ContractDocumentsView: View {
         ) { contract in
             if let contract = contract {
                 VStack(alignment: .leading, spacing: .padding8) {
-                    hSection {
-                        hText(contract.currentAgreement?.productVariant.displayName ?? "")
-                            .foregroundColor(hTextColor.Opaque.secondary)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    .padding(.top, .padding16)
-
                     InsuranceTermView(
                         documents: getDocumentsToDisplay(contract: contract)
                     ) { document in
@@ -49,11 +42,10 @@ struct ContractDocumentsView: View {
     @ViewBuilder
     private func addonDocumentSection(for addonVariant: AddonVariant) -> some View {
         hSection {
-            hText(addonVariant.displayName)
-                .foregroundColor(hTextColor.Opaque.secondary)
+            hPill(text: addonVariant.displayName, color: .blue)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(.top, .padding16)
+        .padding(.top, .padding24)
 
         InsuranceTermView(
             documents: addonVariant.documents
