@@ -26,6 +26,7 @@ struct Contracts: View {
         hForm {
             ContractTable(showTerminated: showTerminated)
                 .padding(.top, .padding8)
+                .padding(.bottom, .padding16)
         }
         .hSetScrollBounce(to: true)
         .onReceive(pollTimer) { _ in
