@@ -45,8 +45,7 @@ struct ContractDocumentsView: View {
             hPill(text: addonVariant.displayName, color: .blue)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .padding(.top, .padding16)
-        .padding(.top, .padding6)
+        .padding(.top, .padding24)
 
         InsuranceTermView(
             documents: addonVariant.documents
