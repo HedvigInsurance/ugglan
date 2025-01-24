@@ -38,7 +38,7 @@ struct ContractTable: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: .padding8) {
             successView
                 .loadingWithButtonLoading($vm.viewState)
                 .hErrorViewButtonConfig(
@@ -50,7 +50,7 @@ struct ContractTable: View {
                     )
                 )
             if !showTerminated {
-                VStack(spacing: 24) {
+                VStack(spacing: .padding8) {
                     hSection {
                         if Dependencies.featureFlags().isAddonsEnabled, let banner = vm.addonBannerModel {
                             let addonContracts = banner.contractIds.compactMap({
@@ -80,6 +80,7 @@ struct ContractTable: View {
 
                     movingToANewHomeView
                     CrossSellingStack(withHeader: true)
+                        .padding(.top, .padding8)
 
                     PresentableStoreLens(
                         ContractStore.self,
@@ -114,7 +115,6 @@ struct ContractTable: View {
                     .presentableStoreLensAnimation(.spring())
                     .sectionContainerStyle(.transparent)
                 }
-                .padding(.vertical, .padding24)
             }
         }
         .onAppear {
@@ -179,11 +179,6 @@ struct ContractTable: View {
                                 }
                             )
                         ])
-                }
-                .withHeader {
-                    hText(L10n.insurancesTabMovingFlowSectionTitle)
-                        .foregroundColor(hTextColor.Opaque.primary)
-                        .padding(.leading, 2)
                 }
             }
         }

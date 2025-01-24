@@ -24,22 +24,24 @@ public struct CoverageView: View {
             ) { limit in
                 didTapInsurableLimit(limit)
             }
-            ForEach(perils, id: \.title) { perils in
-                VStack(spacing: .padding16) {
-                    if let title = perils.title {
-                        hSection {
-                            HStack {
-                                hPill(text: title, color: .blue)
-                                    .hFieldSize(.medium)
-                                Spacer()
+            VStack(spacing: .padding32) {
+                ForEach(perils, id: \.title) { perils in
+                    VStack(spacing: .padding8) {
+                        if let title = perils.title {
+                            hSection {
+                                HStack {
+                                    hPill(text: title, color: .blue)
+                                        .hFieldSize(.medium)
+                                    Spacer()
+                                }
                             }
                         }
-                    }
-                    VStack(spacing: .padding4) {
-                        PerilCollection(
-                            perils: perils.perils
-                        )
-                        .hFieldSize(.small)
+                        VStack(spacing: .padding4) {
+                            PerilCollection(
+                                perils: perils.perils
+                            )
+                            .hFieldSize(.small)
+                        }
                     }
                 }
             }
