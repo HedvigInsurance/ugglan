@@ -25,6 +25,8 @@ struct HelpCenterQuestionView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             HelpCenterPill(title: L10n.hcQuestionTitle, color: .blue)
                             hText(question.question, style: .body1)
+                                .multilineTextAlignment(.leading)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
                         VStack(alignment: .leading, spacing: 8) {
                             HelpCenterPill(title: L10n.hcAnswerTitle, color: .green)
