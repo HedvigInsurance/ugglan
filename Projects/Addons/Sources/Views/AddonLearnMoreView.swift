@@ -7,7 +7,7 @@ struct AddonLearnMoreView: View {
 
     var body: some View {
         hForm {
-            VStack(spacing: .padding16) {
+            VStack(spacing: .padding8) {
                 hSection {
                     VStack(alignment: .leading, spacing: .padding4) {
                         hText(model.title, style: .body2)
