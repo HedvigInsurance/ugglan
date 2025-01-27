@@ -115,6 +115,11 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
         ScrollViewReader { proxy in
             if config.attachToBottom {
                 hForm {}
+                    .accessibilityLabel(
+                        config.singleSelect ?? false
+                            ? L10n.voiceoverPickerInfo(config.hButtonText)
+                            : L10n.voiceoverPickerInfoMultiple(config.hButtonText)
+                    )
                     .hFormContentPosition(config.contentPosition ?? .bottom)
                     .hFormAttachToBottom {
                         VStack(spacing: 0) {
@@ -234,6 +239,19 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
         }
     }
 
+    var accessibilityText: String {
+        if config.selectedItems.isEmpty {
+            if config.singleSelect ?? false {
+                return L10n.voiceoverPickerInfo(config.hButtonText)
+            }
+            return L10n.voiceoverPickerInfoMultiple(config.hButtonText)
+        }
+        let selectedItemsDisplayName = config.selectedItems.map { selectedItem in
+            config.items.first(where: { $0.object == selectedItem })?.displayName.title ?? ""
+        }
+        return L10n.voiceoverOptionSelected + selectedItemsDisplayName.joined()
+    }
+
     var bottomContent: some View {
         hSection {
             VStack(spacing: 16) {
@@ -246,7 +264,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                 }
                 .hButtonIsLoading(isLoading)
                 .disabled(config.disableIfNoneSelected ? config.selectedItems.isEmpty : false)
-                .accessibilityHint(config.selectedItems.isEmpty ? L10n.voiceoverPickerInfo(config.hButtonText) : "")
+                .accessibilityHint(accessibilityText)
                 if let onCancel = config.onCancel {
                     hButton.LargeButton(type: .ghost) {
                         onCancel()

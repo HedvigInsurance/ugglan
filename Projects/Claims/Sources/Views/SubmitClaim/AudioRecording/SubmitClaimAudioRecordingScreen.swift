@@ -99,6 +99,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
             .padding(.top, .padding8)
         }
         .sectionContainerStyle(.transparent)
+        .accessibilityElement(children: .combine)
     }
 
     private var audioElements: some View {
@@ -106,104 +107,110 @@ public struct SubmitClaimAudioRecordingScreen: View {
             ZStack(alignment: .bottom) {
                 Group {
                     if let url = audioRecorder.recording?.url ?? claimsNavigationVm.audioRecordingModel?.getUrl() {
-                        VStack(spacing: 12) {
-                            TrackPlayerView(audioPlayer: audioPlayer)
-                                .onAppear {
-                                    minutes = 0
-                                    seconds = 0
-                                }
-                            hButton.LargeButton(type: .primary) {
-                                onSubmit(url)
-                                Task {
-                                    if let model = claimsNavigationVm.audioRecordingModel {
-                                        let step = await audioRecordingVm.submitAudioRecording(
-                                            context: claimsNavigationVm.currentClaimContext ?? "",
-                                            currentClaimId: claimsNavigationVm.currentClaimId ?? "",
-                                            type: .audio(url: url),
-                                            model: model
-                                        )
-
-                                        if let step {
-                                            claimsNavigationVm.navigate(data: step)
-                                        }
-                                    }
-                                }
-                            } content: {
-                                hText(L10n.saveAndContinueButtonLabel)
-                            }
-                            .disabled(audioRecordingVm.viewState == .loading)
-                            .hButtonIsLoading(audioRecordingVm.viewState == .loading)
-                            hButton.LargeButton(type: .ghost) {
-                                withAnimation(.spring()) {
-                                    claimsNavigationVm.audioRecordingModel?.audioContent = nil
-                                    audioRecorder.restart()
-                                }
-                            } content: {
-                                hText(L10n.embarkRecordAgain)
-                            }
-                        }
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
-                        .onAppear {
-                            self.audioPlayer.url = url
-                        }
+                        playRecordingButton(url: url)
                     } else {
-                        VStack(spacing: 0) {
-                            RecordButton(isRecording: audioRecorder.isRecording) {
-                                if audioRecorder.isRecording {
-                                } else {
-                                }
-                                withAnimation(.spring()) {
-                                    audioRecorder.toggleRecording()
-                                }
-                            }
-                            .frame(height: audioRecorder.isRecording ? 144 : 72)
-                            .padding(.bottom, audioRecorder.isRecording ? 10 : 46)
-                            .transition(
-                                .asymmetric(insertion: .move(edge: .bottom), removal: .offset(x: 0, y: 300))
-                            )
-                            if !audioRecorder.isRecording {
-                                let audioRecordingStep = claimsNavigationVm.audioRecordingModel
-                                if audioRecordingStep?.optionalAudio == true {
-                                    hButton.LargeButton(type: .ghost) {
-                                        withAnimation {
-                                            self.isAudioInput = false
-                                        }
-                                    } content: {
-                                        hText(L10n.claimsUseTextInstead, style: .body1)
-                                            .foregroundColor(hTextColor.Opaque.primary)
-                                    }
-
-                                } else {
-                                    hText(L10n.claimsStartRecordingLabel, style: .body1)
-                                        .foregroundColor(hTextColor.Opaque.primary)
-
-                                }
-                            } else {
-                                let minutesToString = String(format: "%02d", minutes)
-                                let secondsToString = String(format: "%02d", seconds)
-                                hText("\(minutesToString):\(secondsToString)", style: .body1)
-                                    .foregroundColor(hTextColor.Opaque.primary)
-                                    .onReceive(timer) { time in
-                                        if ((seconds % 59) == 0) && seconds != 0 {
-                                            minutes += 1
-                                            seconds = 0
-                                        } else {
-                                            seconds += 1
-                                        }
-                                    }
-                            }
-                        }
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
-                        .accessibilityElement(children: .combine)
-                        .accessibilityHint(
-                            audioRecorder.isRecording ? L10n.embarkStopRecording : L10n.claimsStartRecordingLabel
-                        )
+                        recordNewButton
                     }
                 }
             }
             .environmentObject(audioRecorder)
         }
         .sectionContainerStyle(.transparent)
+    }
+
+    private func playRecordingButton(url: URL) -> some View {
+        VStack(spacing: 12) {
+            TrackPlayerView(audioPlayer: audioPlayer)
+                .onAppear {
+                    minutes = 0
+                    seconds = 0
+                }
+            hButton.LargeButton(type: .primary) {
+                onSubmit(url)
+                Task {
+                    if let model = claimsNavigationVm.audioRecordingModel {
+                        let step = await audioRecordingVm.submitAudioRecording(
+                            context: claimsNavigationVm.currentClaimContext ?? "",
+                            currentClaimId: claimsNavigationVm.currentClaimId ?? "",
+                            type: .audio(url: url),
+                            model: model
+                        )
+
+                        if let step {
+                            claimsNavigationVm.navigate(data: step)
+                        }
+                    }
+                }
+            } content: {
+                hText(L10n.saveAndContinueButtonLabel)
+            }
+            .disabled(audioRecordingVm.viewState == .loading)
+            .hButtonIsLoading(audioRecordingVm.viewState == .loading)
+            hButton.LargeButton(type: .ghost) {
+                withAnimation(.spring()) {
+                    claimsNavigationVm.audioRecordingModel?.audioContent = nil
+                    audioRecorder.restart()
+                }
+            } content: {
+                hText(L10n.embarkRecordAgain)
+            }
+        }
+        .transition(.move(edge: .bottom).combined(with: .opacity))
+        .onAppear {
+            self.audioPlayer.url = url
+        }
+    }
+
+    private var recordNewButton: some View {
+        VStack(spacing: 0) {
+            RecordButton(isRecording: audioRecorder.isRecording) {
+                withAnimation(.spring()) {
+                    audioRecorder.toggleRecording()
+                }
+            }
+            .frame(height: audioRecorder.isRecording ? 144 : 72)
+            .padding(.bottom, audioRecorder.isRecording ? 10 : 46)
+            .transition(
+                .asymmetric(insertion: .move(edge: .bottom), removal: .offset(x: 0, y: 300))
+            )
+            if !audioRecorder.isRecording {
+                let audioRecordingStep = claimsNavigationVm.audioRecordingModel
+                if audioRecordingStep?.optionalAudio == true {
+                    hButton.LargeButton(type: .ghost) {
+                        withAnimation {
+                            self.isAudioInput = false
+                        }
+                    } content: {
+                        hText(L10n.claimsUseTextInstead, style: .body1)
+                            .foregroundColor(hTextColor.Opaque.primary)
+                    }
+
+                } else {
+                    hText(L10n.claimsStartRecordingLabel, style: .body1)
+                        .foregroundColor(hTextColor.Opaque.primary)
+
+                }
+            } else {
+                let minutesToString = String(format: "%02d", minutes)
+                let secondsToString = String(format: "%02d", seconds)
+                hText("\(minutesToString):\(secondsToString)", style: .body1)
+                    .foregroundColor(hTextColor.Opaque.primary)
+                    .onReceive(timer) { time in
+                        if ((seconds % 59) == 0) && seconds != 0 {
+                            minutes += 1
+                            seconds = 0
+                        } else {
+                            seconds += 1
+                        }
+                    }
+            }
+        }
+        .transition(.move(edge: .bottom).combined(with: .opacity))
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.updatesFrequently)
+        .accessibilityHint(
+            audioRecorder.isRecording ? L10n.embarkStopRecording : L10n.claimsStartRecordingLabel
+        )
     }
 
     private var textElements: some View {
