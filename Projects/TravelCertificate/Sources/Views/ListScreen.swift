@@ -27,7 +27,7 @@ public struct ListScreen: View {
                         .resizable()
                         .frame(width: 24, height: 24)
                         .foregroundColor(hSignalColor.Blue.element)
-                        .accessibilityHidden(true)
+
                     hText(L10n.TravelCertificate.emptyListMessage)
                         .multilineTextAlignment(.center)
                 }
@@ -53,7 +53,15 @@ public struct ListScreen: View {
         }
         .hFormContentPosition(vm.list.isEmpty ? .center : .top)
         .hSetScrollBounce(to: true)
-        .hFormAlwaysAttachToBottom {
+        //        .hFormAlwaysAttachToBottom {
+        //            hSection {
+        //                VStack(spacing: .padding16) {
+        //                    addonView
+        //                    createNewButton
+        //                }
+        //            }
+        //        }
+        .hFormAttachToBottom {
             hSection {
                 VStack(spacing: .padding16) {
                     addonView

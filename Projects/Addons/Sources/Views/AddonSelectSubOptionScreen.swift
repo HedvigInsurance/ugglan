@@ -67,6 +67,7 @@ struct AddonSelectSubOptionScreen: View {
                     } content: {
                         hText(L10n.addonFlowSelectButton)
                     }
+                    .accessibilityHint(L10n.voiceoverOptionSelected + (selectedQuote?.displayName ?? ""))
 
                     hButton.LargeButton(type: .ghost) {
                         router.dismiss()
@@ -101,6 +102,7 @@ extension AddonSelectSubOptionScreen: TitleView {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, .padding8)
+        .accessibilityElement(children: .combine)
     }
 }
 

@@ -132,6 +132,12 @@ struct ChangeAddonScreen: View {
             .padding(.top, .padding16)
             .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary])
             .hSectionWithoutHorizontalPadding
+            .accessibilityHidden(false)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityHint(L10n.voiceoverPressTo + L10n.addonFlowSelectSuboptionTitle)
+        .accessibilityAction {
+            changeAddonNavigationVm.isChangeCoverageDaysPresented = addon
         }
     }
 }

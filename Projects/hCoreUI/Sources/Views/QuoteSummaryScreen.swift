@@ -318,6 +318,7 @@ public struct QuoteSummaryScreen: View {
             if !contract.displayItems.isEmpty {
                 VStack(alignment: .leading, spacing: 0) {
                     hText(L10n.summaryScreenOverview)
+                        .accessibilityAddTraits(.isHeader)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     ForEach(contract.displayItems, id: \.displayTitle) { item in
                         rowItem(for: item)
@@ -329,6 +330,7 @@ public struct QuoteSummaryScreen: View {
                 VStack(alignment: .leading, spacing: 0) {
                     hText(L10n.summaryScreenCoverage)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .accessibilityAddTraits(.isHeader)
                     ForEach(contract.insuranceLimits, id: \.limit) { limit in
                         let displayItem: QuoteDisplayItem = .init(title: limit.label, value: limit.limit, id: limit.id)
                         rowItem(for: displayItem)
@@ -340,6 +342,7 @@ public struct QuoteSummaryScreen: View {
                 VStack(alignment: .leading, spacing: .padding4) {
                     hText(L10n.confirmationScreenDocumentTitle)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .accessibilityAddTraits(.isHeader)
                     ForEach(contract.documents, id: \.displayName) { document in
                         documentItem(for: document)
                             .background(hSurfaceColor.Opaque.primary)

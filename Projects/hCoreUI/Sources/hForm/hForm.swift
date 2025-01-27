@@ -160,6 +160,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                 hFormTitle.subTitle?.type.bottomMargin ?? hFormTitle.title.type.bottomMargin
             )
             .padding(.horizontal, horizontalSizeClass == .regular ? .padding60 : .padding16)
+            .accessibilityElement(children: .combine)
         }
     }
 
