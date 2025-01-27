@@ -610,7 +610,6 @@ public class IntentViewModel: ObservableObject {
             withAnimation {
                 self.intent = data
             }
-            throw hGraphQL.AuthError.refreshFailed
         } catch let exception {
             withAnimation {
                 switch origin {
