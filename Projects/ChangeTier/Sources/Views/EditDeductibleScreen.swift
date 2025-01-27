@@ -71,6 +71,7 @@ struct EditDeductibleScreen: View {
                     } content: {
                         hText(L10n.generalConfirm)
                     }
+                    .accessibilityHint(L10n.voiceoverOptionSelected + (self.selectedQuote ?? ""))
 
                     hButton.LargeButton(type: .ghost) {
                         changeTierNavigationVm.isEditDeductiblePresented = false
@@ -105,6 +106,7 @@ extension EditDeductibleScreen: TitleView {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, .padding8)
+        .accessibilityElement(children: .combine)
     }
 }
 

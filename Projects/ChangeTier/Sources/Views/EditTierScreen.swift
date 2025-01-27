@@ -65,6 +65,7 @@ struct EditTierScreen: View {
                     } content: {
                         hText(L10n.generalContinueButton)
                     }
+                    .accessibilityHint(L10n.voiceoverOptionSelected + (self.selectedTier ?? ""))
 
                     hButton.LargeButton(type: .ghost) {
                         changeTierNavigationVm.isEditTierPresented = false
@@ -99,6 +100,7 @@ extension EditTierScreen: TitleView {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, .padding8)
+        .accessibilityElement(children: .combine)
     }
 }
 

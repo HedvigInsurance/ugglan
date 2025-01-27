@@ -69,6 +69,7 @@ public struct PriceField: View {
                 }
             }
         }
+        .accessibilityElement(children: .combine)
     }
 
     @hColorBuilder

@@ -605,3 +605,20 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
 
     return QuoteSummaryScreen(vm: vm)
 })
+
+private struct EnvironmentHAccessibilityWithoutCombinedElements: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    public var hAccessibilityWithoutCombinedElements: Bool {
+        get { self[EnvironmentHAccessibilityWithoutCombinedElements.self] }
+        set { self[EnvironmentHAccessibilityWithoutCombinedElements.self] = newValue }
+    }
+}
+
+extension View {
+    public var hAccessibilityWithoutCombinedElements: some View {
+        self.environment(\.hAccessibilityWithoutCombinedElements, true)
+    }
+}

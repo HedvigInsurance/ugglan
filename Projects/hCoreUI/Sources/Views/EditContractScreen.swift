@@ -56,6 +56,11 @@ public struct EditContractScreen: View {
                             hText(selectedType?.buttonTitle ?? L10n.generalContinueButton, style: .body1)
                         }
                         .disabled(selectedType == nil)
+                        .accessibilityHint(
+                            selectedType != nil
+                                ? L10n.voiceoverOptionSelected + (selectedType?.title ?? "")
+                                : L10n.voiceoverPickerInfo(selectedType?.buttonTitle ?? L10n.generalContinueButton)
+                        )
 
                         hButton.LargeButton(type: .ghost) {
                             router.dismiss()
