@@ -63,6 +63,7 @@ where MainContent: View, BottomContent: View {
                 .fill(hSurfaceColor.Opaque.primary)
         )
         .accessibilityElement(children: .combine)
+        .accessibilityRemoveTraits(.isHeader)
         .onTapGesture {
             if let onSelected = onSelected {
                 onSelected()

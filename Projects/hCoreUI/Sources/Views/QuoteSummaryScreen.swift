@@ -386,14 +386,20 @@ public struct QuoteSummaryScreen: View {
                 if #available(iOS 16.0, *) {
                     hText(oldValue)
                         .strikethrough()
+                        .accessibilityLabel(L10n.voiceoverCurrentValue + oldValue)
                 } else {
                     hText(oldValue)
                         .foregroundColor(hTextColor.Opaque.tertiary)
+                        .accessibilityLabel(L10n.voiceoverCurrentValue + oldValue)
                 }
             }
 
             hText(displayItem.displayValue)
                 .multilineTextAlignment(.trailing)
+                .accessibilityLabel(
+                    displayItem.displayValueOld != nil && displayItem.displayValueOld != displayItem.displayValue
+                        ? L10n.voiceoverNewValue + displayItem.displayValue : displayItem.displayValue
+                )
         }
         .foregroundColor(hTextColor.Translucent.secondary)
     }
@@ -441,6 +447,7 @@ public struct QuoteSummaryScreen: View {
                         hText(amount.formattedAmountPerMonth)
                     }
                 }
+                .accessibilityElement(children: .combine)
                 VStack(spacing: .padding8) {
                     hButton.LargeButton(type: .primary) {
                         vm.onConfirmClick()
