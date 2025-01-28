@@ -24,6 +24,7 @@ struct ClaimContactCard: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(height: model.largerImageSize ? 80 : 40)
                     .foregroundColor(hTextColor.Opaque.negative)
+                    .accessibilityHidden(true)
             }
             VStack(spacing: 0) {
                 if let title = model.title {
@@ -38,6 +39,7 @@ struct ClaimContactCard: View {
                 }
             }
             .padding(.horizontal, .padding16)
+            .accessibilityElement(children: .combine)
             VStack(spacing: 4) {
                 if let url = URL(string: model.url) {
                     hSection {
