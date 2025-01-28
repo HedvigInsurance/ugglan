@@ -60,6 +60,7 @@ public struct DatePickerView: View {
                 }
                 .sectionContainerStyle(.transparent)
             }
+            .padding(.top, .padding8)
         }
         .toolbar {
             ToolbarItem(placement: .principal) {

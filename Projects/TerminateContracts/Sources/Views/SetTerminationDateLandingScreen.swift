@@ -128,7 +128,7 @@ struct SetTerminationDateLandingScreen: View {
                                 .foregroundColor(hTextColor.Opaque.secondary)
                             }
                         }
-
+                        .fixedSize(horizontal: false, vertical: true)
                         HStack {
                             hRow {
                                 hText(L10n.terminationFlowIUnderstandText)
