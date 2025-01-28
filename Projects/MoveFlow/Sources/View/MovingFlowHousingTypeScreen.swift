@@ -51,6 +51,8 @@ public struct MovingFlowHousingTypeScreen: View {
                                     )
                                 }
                             }
+                            .accessibilityHint(L10n.voiceoverOptionSelected + (vm.selectedHousingType ?? ""))
+
                             if let days = movingFlowNavigationVm.movingFlowVm?.oldAddressCoverageDurationDays {
                                 InfoCard(text: L10n.changeAddressCoverageInfoText(days), type: .info)
                             }
@@ -59,6 +61,7 @@ public struct MovingFlowHousingTypeScreen: View {
                             } content: {
                                 hText(L10n.generalContinueButton, style: .body1)
                             }
+                            .accessibilityHint(L10n.voiceoverOptionSelected + (vm.selectedHousingType ?? ""))
                         }
                     }
                     .sectionContainerStyle(.transparent)

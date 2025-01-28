@@ -53,15 +53,7 @@ public struct ListScreen: View {
         }
         .hFormContentPosition(vm.list.isEmpty ? .center : .top)
         .hSetScrollBounce(to: true)
-        //        .hFormAlwaysAttachToBottom {
-        //            hSection {
-        //                VStack(spacing: .padding16) {
-        //                    addonView
-        //                    createNewButton
-        //                }
-        //            }
-        //        }
-        .hFormAttachToBottom {
+        .hFormAlwaysAttachToBottom {
             hSection {
                 VStack(spacing: .padding16) {
                     addonView
