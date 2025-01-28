@@ -12,6 +12,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
     @Environment(\.hFormBottomBackgroundStyle) var bottomBackgroundStyle
     @Environment(\.hFormIgnoreBottomPadding) var hFormIgnoreBottomPadding
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
 
     @StateObject fileprivate var vm = hUpdatedFormViewModel()
     @Namespace var animationNamespace
@@ -27,7 +28,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
             BackgroundView().ignoresSafeArea()
             VStack(spacing: 0) {
                 scrollView
-                if !vm.keyboardVisible {
+                if !vm.keyboardVisible && !voiceOverEnabled {
                     getAlwaysVisibleBottomView
                         .matchedGeometryEffect(id: "bottom", in: animationNamespace)
                 }
@@ -133,7 +134,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                 content
                 getBottomAttachedView
             }
-            if vm.keyboardVisible {
+            if vm.keyboardVisible || voiceOverEnabled {
                 getAlwaysVisibleBottomView
                     .matchedGeometryEffect(id: "bottom", in: animationNamespace)
             }
