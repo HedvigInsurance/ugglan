@@ -4,6 +4,8 @@ import hGraphQL
 
 @MainActor
 extension PaymentData {
+
+    //used for upcoming payment
     init?(
         with data: OctopusGraphQL.PaymentDataQuery.Data,
         paymentDetails: PaymentDetails?
@@ -28,6 +30,7 @@ extension PaymentData {
         addedToThePayment = []
     }
 
+    // used for ongoing payments
     init(
         with data: OctopusGraphQL.MemberChargeFragment,
         paymentDataQueryCurrentMember: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember
