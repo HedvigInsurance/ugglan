@@ -27,6 +27,29 @@ extension PaymentData {
         self.paymentDetails = paymentDetails
         addedToThePayment = []
     }
+
+    init(
+        with data: OctopusGraphQL.MemberChargeFragment,
+        paymentDataQueryCurrentMember: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember
+    ) {
+        self.id = data.id ?? ""
+        payment = .init(with: data)
+        status = .pending
+        contracts = data.contractsChargeBreakdown.compactMap({ .init(with: $0) })
+        let redeemedCampaigns = paymentDataQueryCurrentMember.redeemedCampaigns
+        discounts = data.discountBreakdown.compactMap({ discountBreakdown in
+            if let campaing = redeemedCampaigns.first(where: { $0.code == discountBreakdown.code }) {
+                return .init(with: discountBreakdown, discount: campaing)
+            } else {
+                let dto = paymentDataQueryCurrentMember.referralInformation.fragments
+                    .memberReferralInformationCodeFragment
+                    .asReedeemedCampaing()
+                return .init(with: discountBreakdown, discountDto: dto)
+            }
+        })
+        self.paymentDetails = nil
+        addedToThePayment = []
+    }
 }
 
 extension PaymentData.PaymentDetails {

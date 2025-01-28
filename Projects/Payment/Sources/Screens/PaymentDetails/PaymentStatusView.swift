@@ -30,26 +30,7 @@ struct PaymentStatusView: View {
                     .stroke(hBorderColor.primary, lineWidth: 0.5)
             )
         case .pending:
-            HStack(spacing: 8) {
-                Spacer()
-                Image(uiImage: hCoreUIAssets.infoFilled.image)
-                    .resizable()
-                    .frame(width: 16, height: 16)
-                    .foregroundColor(hSignalColor.Blue.element)
-
-                hText(L10n.paymentsPaymentInProgress, style: .label)
-                    .foregroundColor(hSignalColor.Blue.text)
-                Spacer()
-            }
-            .padding(.vertical, 14)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(hSignalColor.Blue.fill)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(hBorderColor.primary, lineWidth: 0.5)
-            )
+            InfoCard(text: L10n.paymentsInProgress, type: .info)
         case let .failedForPrevious(from, to):
             InfoCard(
                 text:
