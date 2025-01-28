@@ -34,7 +34,7 @@ public struct PaymentsView: View {
     private var successView: some View {
         hForm {
             VStack(spacing: 8) {
-                upcomingPayment
+                payments
                 PresentableStoreLens(
                     PaymentStore.self,
                     getter: { state in
