@@ -25,13 +25,13 @@ public struct Perils: Codable, Equatable, Hashable, Sendable {
     }
 
     public init(
-        fragment: OctopusGraphQL.ProductVariantFragment.Peril
+        fragment: OctopusGraphQL.AddonVariantFragment.AddonPeril
     ) {
-        id = fragment.id
+        id = fragment.title
         title = fragment.title
-        description = fragment.description
-        covered = fragment.covered
-        color = fragment.colorCode
+        description = fragment.description ?? ""
+        covered = [fragment.coverageText ?? ""]
+        color = nil
         isDisabled = false
     }
 

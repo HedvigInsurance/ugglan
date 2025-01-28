@@ -191,7 +191,7 @@ extension MovingFlowQuote {
         insurableLimits = productVariantFragment.insurableLimits.compactMap({
             .init(label: $0.label, limit: $0.limit, description: $0.description)
         })
-        perils = productVariantFragment.perils.compactMap({ .init(fragment: $0) })
+        perils = productVariantFragment.perils.compactMap({ .init(fragment: $0.fragments.perilFragment) })
         documents = productVariantFragment.documents.compactMap({ .init($0) })
         contractType = TypeOfContract.resolve(for: data.productVariant.typeOfContract)
         displayItems = data.displayItems.map({ .init($0) })
@@ -208,7 +208,7 @@ extension MovingFlowQuote {
         insurableLimits = productVariantFragment.insurableLimits.compactMap({
             .init(label: $0.label, limit: $0.limit, description: $0.description)
         })
-        perils = productVariantFragment.perils.compactMap({ .init(fragment: $0) })
+        perils = productVariantFragment.perils.compactMap({ .init(fragment: $0.fragments.perilFragment) })
         documents = productVariantFragment.documents.compactMap({ .init($0) })
         contractType = TypeOfContract.resolve(for: data.productVariant.typeOfContract)
         displayItems = data.displayItems.map({ .init($0) })
