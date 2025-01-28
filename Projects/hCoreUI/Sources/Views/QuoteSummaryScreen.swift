@@ -220,7 +220,24 @@ public struct QuoteSummaryScreen: View {
         }
     }
 
+    @ViewBuilder
     func contractInfoView(for contract: QuoteSummaryViewModel.ContractInfo, proxy: ScrollViewProxy) -> some View {
+        let index = vm.expandedContracts.firstIndex(of: contract.id)
+        let isExpanded = vm.isAddon ? true : (index != nil)
+
+        if isExpanded {
+            contractContent(for: contract, proxy: proxy, isExpanded: isExpanded)
+                .accessibilityElement(children: .combine)
+        } else {
+            contractContent(for: contract, proxy: proxy, isExpanded: isExpanded)
+        }
+    }
+
+    func contractContent(
+        for contract: QuoteSummaryViewModel.ContractInfo,
+        proxy: ScrollViewProxy,
+        isExpanded: Bool
+    ) -> some View {
         hSection {
             StatusCard(
                 onSelected: {},
@@ -233,68 +250,89 @@ public struct QuoteSummaryScreen: View {
                 title: nil,
                 subTitle: nil,
                 bottomComponent: {
-                    VStack(spacing: .padding16) {
-                        PriceField(
-                            newPremium: contract.newPremium,
-                            currentPremium: vm.removedContracts.contains(contract.id) ? nil : contract.currentPremium
-                        )
-                        .hWithStrikeThroughPrice(
-                            setTo: vm.strikeThroughPriceType(contract.id)
-                        )
-
-                        let index = vm.expandedContracts.firstIndex(of: contract.id)
-                        let isExpanded = vm.isAddon ? true : (index != nil)
-                        VStack(spacing: 0) {
-                            detailsView(for: contract, isExpanded: isExpanded)
-                                .frame(height: isExpanded ? nil : 0, alignment: .top)
-                                .clipped()
-                            if vm.removedContracts.contains(contract.id) {
-                                hButton.MediumButton(
-                                    type: .secondary
-                                ) {
-                                    withAnimation(.easeInOut(duration: 0.4)) {
-                                        vm.addContract(contract)
-                                    }
-                                } content: {
-                                    hText(
-                                        L10n.addonAddCoverage
-                                    )
-                                    .transition(.scale)
-                                }
-                            } else if contract.shouldShowDetails && !vm.isAddon {
-                                hButton.MediumButton(
-                                    type: .secondary
-                                ) {
-                                    withAnimation(.easeInOut(duration: 0.4)) {
-                                        vm.toggleContract(contract)
-                                        Task { [weak vm] in
-                                            guard let vm else { return }
-                                            try await Task.sleep(nanoseconds: 200_000_000)
-                                            withAnimation(.easeInOut(duration: 0.4)) {
-                                                if vm.expandedContracts.contains(contract.id) {
-                                                    proxy.scrollTo(contract.id, anchor: .top)
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                } content: {
-                                    hText(
-                                        vm.expandedContracts.firstIndex(of: contract.id) != nil
-                                            ? L10n.ClaimStatus.ClaimHideDetails.button
-                                            : L10n.ClaimStatus.ClaimDetails.button
-                                    )
-                                    .transition(.scale)
-                                }
-                            }
-                        }
-                    }
+                    bottomComponent(for: contract, proxy: proxy, isExpanded: isExpanded)
                 }
             )
             .hCardWithoutSpacing
         }
         .padding(.top, .padding8)
         .sectionContainerStyle(.transparent)
+    }
+
+    @ViewBuilder
+    private func bottomComponent(
+        for contract: QuoteSummaryViewModel.ContractInfo,
+        proxy: ScrollViewProxy,
+        isExpanded: Bool
+    ) -> some View {
+        if isExpanded {
+            bottomContent(for: contract, proxy: proxy, isExpanded: isExpanded)
+                .accessibilityElement(children: .combine)
+        } else {
+            bottomContent(for: contract, proxy: proxy, isExpanded: isExpanded)
+        }
+    }
+
+    @ViewBuilder
+    private func bottomContent(
+        for contract: QuoteSummaryViewModel.ContractInfo,
+        proxy: ScrollViewProxy,
+        isExpanded: Bool
+    ) -> some View {
+        VStack(spacing: .padding16) {
+            PriceField(
+                newPremium: contract.newPremium,
+                currentPremium: vm.removedContracts.contains(contract.id) ? nil : contract.currentPremium
+            )
+            .hWithStrikeThroughPrice(
+                setTo: vm.strikeThroughPriceType(contract.id)
+            )
+
+            VStack(spacing: 0) {
+                detailsView(for: contract, isExpanded: isExpanded)
+                    .frame(height: isExpanded ? nil : 0, alignment: .top)
+                    .clipped()
+                if vm.removedContracts.contains(contract.id) {
+                    hButton.MediumButton(
+                        type: .secondary
+                    ) {
+                        withAnimation(.easeInOut(duration: 0.4)) {
+                            vm.addContract(contract)
+                        }
+                    } content: {
+                        hText(
+                            L10n.addonAddCoverage
+                        )
+                        .transition(.scale)
+                    }
+                } else if contract.shouldShowDetails && !vm.isAddon {
+                    hButton.MediumButton(
+                        type: .secondary
+                    ) {
+                        withAnimation(.easeInOut(duration: 0.4)) {
+                            vm.toggleContract(contract)
+                            Task { [weak vm] in
+                                guard let vm else { return }
+                                try await Task.sleep(nanoseconds: 200_000_000)
+                                withAnimation(.easeInOut(duration: 0.4)) {
+                                    if vm.expandedContracts.contains(contract.id) {
+                                        proxy.scrollTo(contract.id, anchor: .top)
+                                    }
+                                }
+                            }
+                        }
+
+                    } content: {
+                        hText(
+                            vm.expandedContracts.firstIndex(of: contract.id) != nil
+                                ? L10n.ClaimStatus.ClaimHideDetails.button
+                                : L10n.ClaimStatus.ClaimDetails.button
+                        )
+                        .transition(.scale)
+                    }
+                }
+            }
+        }
     }
 
     private var noticeComponent: some View {
