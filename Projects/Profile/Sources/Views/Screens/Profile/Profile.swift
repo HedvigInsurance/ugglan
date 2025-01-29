@@ -66,7 +66,6 @@ public struct ProfileView: View {
                     .alert(isPresented: $showLogoutAlert) {
                         logoutAlert
                     }
-                    .padding(.bottom, .padding16)
                 }
             }
             .sectionContainerStyle(.transparent)

@@ -199,7 +199,6 @@ public struct PaymentsView: View {
                         } content: {
                             hText(statusData.connectButtonTitle)
                         }
-                        .padding(.bottom, .padding16)
                     }
                 }
                 .sectionContainerStyle(.transparent)
