@@ -738,7 +738,7 @@ class LoggedInNavigationViewModel: ObservableObject {
             case .addon:
                 handleAddon(url: url)
             case nil:
-                break
+                openUrl(url: url)
             }
         }
     }
