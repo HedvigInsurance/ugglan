@@ -14,7 +14,7 @@ extension PaymentData {
         guard let futureCharge = data.currentMember.futureCharge else { return nil }
         let chargeFragment = futureCharge.fragments.memberChargeFragment
         payment = .init(with: chargeFragment)
-        status = PaymentData.PaymentStatus.getStatus(with: data.currentMember)
+        status = PaymentData.PaymentStatus.getStatus(for: chargeFragment, with: data.currentMember)
         contracts = chargeFragment.contractsChargeBreakdown.compactMap({ .init(with: $0) })
         let redeemedCampaigns = data.currentMember.redeemedCampaigns
         discounts = chargeFragment.discountBreakdown.compactMap({ discountBreakdown in
@@ -37,7 +37,7 @@ extension PaymentData {
     ) {
         self.id = data.id ?? ""
         payment = .init(with: data)
-        status = .pending
+        status = PaymentData.PaymentStatus.getStatus(for: data, with: paymentDataQueryCurrentMember)
         contracts = data.contractsChargeBreakdown.compactMap({ .init(with: $0) })
         let redeemedCampaigns = paymentDataQueryCurrentMember.redeemedCampaigns
         discounts = data.discountBreakdown.compactMap({ discountBreakdown in
@@ -69,10 +69,10 @@ extension PaymentData.PaymentDetails {
 @MainActor
 extension PaymentData.PaymentStatus {
     static func getStatus(
+        for charge: OctopusGraphQL.MemberChargeFragment,
         with data: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember
     ) -> PaymentData.PaymentStatus {
-        let charge = data.futureCharge
-        switch charge?.status {
+        switch charge.status {
         case .case(let t):
             switch t {
             case .failed:
@@ -93,8 +93,6 @@ extension PaymentData.PaymentStatus {
                 return .upcoming
             }
         case .unknown:
-            return .unknown
-        case nil:
             return .unknown
         }
     }
