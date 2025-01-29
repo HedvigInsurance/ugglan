@@ -30,7 +30,9 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                 let contractQuote = QuoteSummaryViewModel.ContractInfo(
                     id: quote.id,
                     displayName: quote.displayName,
-                    exposureName: quote.exposureName ?? "",
+                    description: L10n.addonFlowSummaryActiveFrom(
+                        quote.startDate
+                    ),
                     newPremium: quote.premium,
                     currentPremium: quote.premium,
                     documents: quote.documents.map({
@@ -307,7 +309,7 @@ extension AddonDataModel {
         let addonQuoteContractInfo = QuoteSummaryViewModel.ContractInfo(
             id: self.id,
             displayName: self.quoteInfo.title ?? "",
-            exposureName: self.coverageDisplayName,
+            description: self.coverageDisplayName,
             newPremium: self.price,
             currentPremium: nil,
             documents: self.addonVariant.documents,

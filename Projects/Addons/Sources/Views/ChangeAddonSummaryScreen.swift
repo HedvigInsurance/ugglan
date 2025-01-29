@@ -27,7 +27,7 @@ extension ChangeAddonViewModel {
                 .init(
                     id: self.contractId,
                     displayName: self.selectedQuote?.addonVariant?.displayName ?? "",
-                    exposureName: L10n.addonFlowSummaryActiveFrom(
+                    description: L10n.addonFlowSummaryActiveFrom(
                         self.addonOffer?.activationDate?.displayDateDDMMMYYYYFormat ?? ""
                     ),
                     newPremium: self.selectedQuote?.price,

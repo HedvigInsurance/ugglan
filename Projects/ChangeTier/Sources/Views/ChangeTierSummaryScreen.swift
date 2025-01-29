@@ -32,7 +32,7 @@ extension ChangeTierViewModel {
             .init(
                 id: self.currentTier?.id ?? "",
                 displayName: self.displayName ?? "",
-                exposureName: activationDate,
+                description: activationDate,
                 newPremium: self.newPremium,
                 currentPremium: self.currentPremium,
                 documents: self.selectedQuote?.productVariant?.documents ?? [],
@@ -49,7 +49,7 @@ extension ChangeTierViewModel {
                 .init(
                     id: addon.addonId,
                     displayName: addon.displayName,
-                    exposureName: activationDate,
+                    description: activationDate,
                     newPremium: addon.premium,
                     currentPremium: addon.previousPremium,
                     documents: addon.addonVariant.documents,

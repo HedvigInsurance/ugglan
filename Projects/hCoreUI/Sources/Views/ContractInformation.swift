@@ -2,18 +2,18 @@ import SwiftUI
 
 public struct ContractInformation: View {
     let displayName: String?
-    let exposureName: String?
+    let description: String?
     let pillowImage: UIImage?
     let status: String?
 
     public init(
         displayName: String?,
-        exposureName: String?,
+        description: String?,
         pillowImage: UIImage?,
         status: String? = nil
     ) {
         self.displayName = displayName
-        self.exposureName = exposureName
+        self.description = description
         self.pillowImage = pillowImage
         self.status = status
     }
@@ -35,8 +35,8 @@ public struct ContractInformation: View {
                             .transition(.opacity)
                     }
                 }
-                if let exposureName {
-                    hText(exposureName, style: .body1)
+                if let description {
+                    hText(description, style: .body1)
                         .foregroundColor(hTextColor.Translucent.secondary)
                         .transition(.opacity)
                 }
@@ -50,14 +50,14 @@ public struct ContractInformation: View {
     VStack {
         ContractInformation(
             displayName: "displayName",
-            exposureName: "name",
+            description: "name",
             pillowImage: nil,
             status: "status"
         )
         .background(Color.red)
         ContractInformation(
             displayName: "displayName",
-            exposureName: "name",
+            description: "name",
             pillowImage: nil
         )
         .background(Color.blue)

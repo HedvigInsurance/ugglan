@@ -56,7 +56,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
     public struct ContractInfo: Identifiable {
         public var id: String
         let displayName: String
-        let exposureName: String
+        let description: String
         let newPremium: MonetaryAmount?
         let currentPremium: MonetaryAmount?
         let displayItems: [QuoteDisplayItem]
@@ -70,7 +70,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         public init(
             id: String,
             displayName: String,
-            exposureName: String,
+            description: String,
             newPremium: MonetaryAmount?,
             currentPremium: MonetaryAmount?,
             documents: [hPDFDocument],
@@ -83,7 +83,7 @@ public class QuoteSummaryViewModel: ObservableObject, Identifiable {
         ) {
             self.id = id
             self.displayName = displayName
-            self.exposureName = exposureName
+            self.description = description
             self.newPremium = newPremium
             self.currentPremium = currentPremium
             self.documents = documents
@@ -226,7 +226,7 @@ public struct QuoteSummaryScreen: View {
                 onSelected: {},
                 mainContent: ContractInformation(
                     displayName: contract.displayName,
-                    exposureName: vm.removedContracts.contains(contract.id) ? nil : contract.exposureName,
+                    description: vm.removedContracts.contains(contract.id) ? nil : contract.description,
                     pillowImage: contract.typeOfContract?.pillowType.bgImage,
                     status: vm.removedContracts.contains(contract.id) ? L10n.contractStatusTerminated : nil
                 ),
@@ -507,7 +507,7 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
             .init(
                 id: "id1",
                 displayName: "Homeowner",
-                exposureName: "Bellmansgtan 19A",
+                description: "Bellmansgtan 19A",
                 newPremium: .init(amount: 999, currency: "SEK"),
                 currentPremium: .init(amount: 599, currency: "SEK"),
                 documents: documents,
@@ -523,7 +523,7 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
             .init(
                 id: "id2",
                 displayName: "Travel addon",
-                exposureName: "Bellmansgtan 19A",
+                description: "Bellmansgtan 19A",
                 newPremium: .init(amount: 999, currency: "SEK"),
                 currentPremium: nil,
                 documents: documents,
@@ -552,7 +552,7 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
             .init(
                 id: "id3",
                 displayName: "Homeowner",
-                exposureName: "Bellmansgtan 19A",
+                description: "Bellmansgtan 19A",
                 newPremium: .init(amount: 999, currency: "SEK"),
                 currentPremium: .init(amount: 599, currency: "SEK"),
                 documents: documents,
@@ -568,7 +568,7 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
             .init(
                 id: "id4",
                 displayName: "Homeowner",
-                exposureName: "Bellmansgtan 19A",
+                description: "Bellmansgtan 19A",
                 newPremium: .init(amount: 999, currency: "SEK"),
                 currentPremium: .init(amount: 599, currency: "SEK"),
                 documents: [],
@@ -580,7 +580,7 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
             .init(
                 id: "id5",
                 displayName: "Dog",
-                exposureName: "Bellmansgtan 19A",
+                description: "Bellmansgtan 19A",
                 newPremium: .init(amount: 999, currency: "SEK"),
                 currentPremium: .init(amount: 599, currency: "SEK"),
                 documents: [],
