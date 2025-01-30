@@ -42,7 +42,7 @@ struct MockData {
                 extraBuildingTypes: []
             )
         },
-        moveIntentConfirm: @escaping MoveIntentConfirm = { intentId, homeQuoteId in
+        moveIntentConfirm: @escaping MoveIntentConfirm = { intentId, homeQuoteId, removedAddons in
 
         }
     ) -> MockMoveFlowService {
@@ -58,7 +58,7 @@ struct MockData {
 
 typealias SubmitMoveIntent = @Sendable () async throws -> MovingFlowModel
 typealias MoveIntentRequest = (String, AddressInputModel, HouseInformationInputModel) async throws -> MovingFlowModel
-typealias MoveIntentConfirm = (String, String?) async throws -> Void
+typealias MoveIntentConfirm = (String, String?, [String]) async throws -> Void
 
 class MockMoveFlowService: MoveFlowClient {
     var events = [Event]()
@@ -99,8 +99,8 @@ class MockMoveFlowService: MoveFlowClient {
         return data
     }
 
-    func confirmMoveIntent(intentId: String, homeQuoteId: String?) async throws {
+    func confirmMoveIntent(intentId: String, homeQuoteId: String, removedAddons: [String]) async throws {
         events.append(.confirmMoveIntent)
-        try await moveIntentConfirm(intentId, homeQuoteId)
+        try await moveIntentConfirm(intentId, homeQuoteId, removedAddons)
     }
 }
