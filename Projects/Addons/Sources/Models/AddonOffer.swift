@@ -99,7 +99,7 @@ public struct AddonVariant: Codable, Equatable, Hashable, Sendable {
     ) {
         self.displayName = fragment?.displayName ?? ""
         self.documents = fragment?.documents.map({ .init($0) }) ?? []
-        self.perils = fragment?.perils.map({ .init(fragment: $0.fragments.perilFragment) }) ?? []
+        self.perils = fragment?.addonPerils.map({ .init(fragment: $0) }) ?? []
         self.product = fragment?.product ?? ""
         self.termsVersion = fragment?.termsVersion ?? ""
     }

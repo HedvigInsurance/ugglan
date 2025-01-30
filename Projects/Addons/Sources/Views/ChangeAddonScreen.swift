@@ -106,7 +106,6 @@ struct ChangeAddonScreen: View {
                 hText(addon.title)
                     .fixedSize()
                 Spacer()
-
                 hPill(
                     text: L10n.addonFlowPriceLabel(
                         changeAddonVm.addonOffer?.getTotalPrice(selectedQuote: changeAddonVm.selectedQuote)?
@@ -133,6 +132,7 @@ struct ChangeAddonScreen: View {
             .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary])
             .hSectionWithoutHorizontalPadding
         }
+        .fixedSize(horizontal: false, vertical: true)
     }
 }
 
