@@ -21,6 +21,7 @@ import TerminateContracts
 import TravelCertificate
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct LoggedInNavigation: View {
     @ObservedObject var vm: LoggedInNavigationViewModel
@@ -738,7 +739,13 @@ class LoggedInNavigationViewModel: ObservableObject {
             case .addon:
                 handleAddon(url: url)
             case nil:
-                openUrl(url: url)
+                let rootUrls = [hGraphQL.Environment.staging.deepLinkUrl, Environment.production.deepLinkUrl]
+                    .compactMap({ $0.host })
+                guard rootUrls.contains(url.host ?? "") else {
+                    openUrl(url: url)
+                    return
+                }
+
             }
         }
     }
