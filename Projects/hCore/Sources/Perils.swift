@@ -31,7 +31,7 @@ public struct Perils: Codable, Equatable, Hashable, Sendable {
         title = fragment.title
         description = fragment.description ?? ""
         covered = [fragment.coverageText].compactMap({ $0 })
-        color = nil
+        color = fragment.colorCode
         isDisabled = false
     }
 

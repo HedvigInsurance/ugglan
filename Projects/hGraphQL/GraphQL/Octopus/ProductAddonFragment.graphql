@@ -5,6 +5,7 @@ fragment AddonVariantFragment on AddonVariant {
       title
       description
       coverageText
+      colorCode
     }
     documents {
         ...InsuranceDocumentFragment
