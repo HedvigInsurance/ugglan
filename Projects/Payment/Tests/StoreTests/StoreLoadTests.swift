@@ -44,7 +44,7 @@ final class StoreLoadTests: XCTestCase {
                         settlementAdjustment: nil,
                         date: .init()
                     ),
-                    status: .success,
+                    status: .pending,
                     contracts: [],
                     discounts: [],
                     paymentDetails: nil,
