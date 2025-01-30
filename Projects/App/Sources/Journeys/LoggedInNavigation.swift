@@ -739,13 +739,10 @@ class LoggedInNavigationViewModel: ObservableObject {
             case .addon:
                 handleAddon(url: url)
             case nil:
-                let rootUrls = [hGraphQL.Environment.staging.deepLinkUrl, Environment.production.deepLinkUrl]
-                    .compactMap({ $0.host })
-                guard rootUrls.contains(url.host ?? "") else {
+                let isDeeplink = hGraphQL.Environment.current.isDeeplink(url)
+                if !isDeeplink {
                     openUrl(url: url)
-                    return
                 }
-
             }
         }
     }

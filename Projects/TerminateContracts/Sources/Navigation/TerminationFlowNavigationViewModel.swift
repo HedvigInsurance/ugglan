@@ -93,7 +93,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
             switch redirectAction {
             case .updateAddress:
                 self.router.dismiss()
-                var url = Environment.current.deepLinkUrl
+                var url = Environment.current.deepLinkUrls.last!
                 url.appendPathComponent(DeepLink.moveContract.rawValue)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     NotificationCenter.default.post(name: .openDeepLink, object: url)
