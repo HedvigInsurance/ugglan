@@ -65,7 +65,8 @@ public struct PaymentsView: View {
             bottomPart
         }
         .onPullToRefresh {
-            await store.sendAsync(.fetchPaymentStatus)
+            await store.send(.fetchPaymentStatus)
+            await store.send(.load)
         }
     }
 
