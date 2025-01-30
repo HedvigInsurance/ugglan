@@ -10,7 +10,7 @@ public struct AddonSelectInsuranceScreen: View {
 
     public var body: some View {
         successView.loading($changeAddonVm.fetchAddonsViewState)
-            .hErrorViewButtonConfig(
+            .hStateViewButtonConfig(
                 .init(
                     actionButton: .init(
                         buttonTitle: L10n.openChat,

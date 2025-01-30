@@ -25,7 +25,7 @@ public struct ProcessingStateView: View {
     var showSuccessScreen: Bool
 
     @Environment(\.hCustomSuccessView) var customSuccessView
-    @Environment(\.hErrorViewButtonConfig) var errorViewButtonConfig
+    @Environment(\.hStateViewButtonConfig) var errorViewButtonConfig
     @Environment(\.hSuccessBottomAttachedView) var successBottomView
 
     public init(
@@ -102,11 +102,13 @@ public struct ProcessingStateView: View {
         } else {
             SuccessScreen(
                 successViewTitle: successViewTitle ?? "",
-                successViewBody: successViewBody ?? "",
-                buttons: .init(
+                successViewBody: successViewBody ?? ""
+            )
+            .hStateViewButtonConfig(
+                .init(
                     actionButton: nil,
-                    primaryButton: nil,
-                    ghostButton: .init(buttonAction: successViewButtonAction ?? {})
+                    actionButtonAttachedToBottom: nil,
+                    dismissButton: .init(buttonAction: successViewButtonAction ?? {})
                 )
             )
         }
@@ -119,7 +121,7 @@ public struct ProcessingStateView: View {
             description: errorMessage,
             formPosition: .center
         )
-        .hErrorViewButtonConfig(errorViewButtonConfig)
+        .hStateViewButtonConfig(errorViewButtonConfig)
     }
 
     @ViewBuilder

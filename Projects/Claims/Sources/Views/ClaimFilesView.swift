@@ -31,7 +31,7 @@ public struct ClaimFilesView: View {
                     description: error,
                     formPosition: .center
                 )
-                .hErrorViewButtonConfig(
+                .hStateViewButtonConfig(
                     .init(
                         actionButton: .init(
                             buttonAction: {

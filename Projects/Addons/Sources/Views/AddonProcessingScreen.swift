@@ -18,10 +18,10 @@ struct AddonProcessingScreen: View {
             },
             state: $vm.submittingAddonsViewState
         )
-        .hErrorViewButtonConfig(errorButtons)
+        .hStateViewButtonConfig(errorButtons)
     }
 
-    private var errorButtons: ErrorViewButtonConfig {
+    private var errorButtons: StateViewButtonConfig {
         .init(
             actionButton: .init(
                 buttonAction: {

@@ -76,7 +76,7 @@ public struct SelectClaimEntrypointGroup: View {
                 }
             }
             .trackErrorState(for: $vm.viewState)
-            .hErrorViewButtonConfig(
+            .hStateViewButtonConfig(
                 .init(
                     actionButton: .init(
                         buttonAction: {

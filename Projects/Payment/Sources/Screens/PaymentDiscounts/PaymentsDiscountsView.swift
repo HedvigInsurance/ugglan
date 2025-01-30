@@ -186,7 +186,7 @@ struct PaymentsDiscountsRootView: View {
 
     var body: some View {
         successView.loading($vm.viewState)
-            .hErrorViewButtonConfig(
+            .hStateViewButtonConfig(
                 .init(
                     actionButton: .init(buttonAction: {
                         store.send(.fetchDiscountsData)

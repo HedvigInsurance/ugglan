@@ -12,9 +12,9 @@ struct ConfirmTerminationScreen: View {
             title: L10n.General.areYouSure,
             description: terminationText,
             formPosition: .compact,
-            attachContentToTheBottom: true
+            attachContentToBottom: true
         )
-        .hErrorViewButtonConfig(
+        .hStateViewButtonConfig(
             .init(
                 actionButtonAttachedToBottom:
                     .init(

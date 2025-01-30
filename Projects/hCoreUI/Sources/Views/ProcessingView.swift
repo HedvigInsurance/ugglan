@@ -20,7 +20,7 @@ public struct ProcesssingView: View {
     var onErrorCancelAction: (() -> Void)?
     var onLoadingDismiss: (() -> Void)?
 
-    var errorViewButtons: ErrorViewButtonConfig?
+    var errorViewButtons: StateViewButtonConfig?
 
     public init(
         showSuccessScreen: Bool? = true,
@@ -33,7 +33,7 @@ public struct ProcesssingView: View {
         onAppearLoadingView: (() -> Void)? = nil,
         onErrorCancelAction: (() -> Void)? = nil,
         onLoadingDismiss: (() -> Void)? = nil,
-        errorViewButtons: ErrorViewButtonConfig? = nil
+        errorViewButtons: StateViewButtonConfig? = nil
     ) {
         self.showSuccessScreen = showSuccessScreen ?? true
         self.loadingViewText = loadingViewText
@@ -83,7 +83,7 @@ public struct ProcesssingView: View {
             GenericErrorView(
                 formPosition: .center
             )
-            .hErrorViewButtonConfig(
+            .hStateViewButtonConfig(
                 errorViewButtons
                     ?? .init(
                         dismissButton: .init(

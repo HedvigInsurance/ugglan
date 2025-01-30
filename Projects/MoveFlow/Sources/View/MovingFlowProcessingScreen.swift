@@ -22,10 +22,10 @@ struct MovingFlowProcessingScreen: View {
             state: $movingFlowConfirmVm.viewState,
             duration: 6
         )
-        .hErrorViewButtonConfig(errorButtons)
+        .hStateViewButtonConfig(errorButtons)
     }
 
-    private var errorButtons: ErrorViewButtonConfig {
+    private var errorButtons: StateViewButtonConfig {
         .init(
             actionButton: .init(buttonAction: {
                 onErrorButtonAction()
