@@ -14,6 +14,7 @@ struct ContractDetails: View {
                         HStack {
                             hText(contract.title)
                                 .multilineTextAlignment(.leading)
+                                .fixedSize(horizontal: false, vertical: true)
                             Spacer()
                         }
                         hText(contract.amount.formattedAmount)
