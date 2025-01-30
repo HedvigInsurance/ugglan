@@ -34,7 +34,7 @@ public struct PaymentsView: View {
     private var successView: some View {
         hForm {
             VStack(spacing: 8) {
-                upcomingPayment
+                payments
                 PresentableStoreLens(
                     PaymentStore.self,
                     getter: { state in
@@ -69,7 +69,7 @@ public struct PaymentsView: View {
         }
     }
 
-    private var upcomingPayment: some View {
+    private var payments: some View {
         PresentableStoreLens(
             PaymentStore.self,
             getter: { state in
@@ -77,30 +77,13 @@ public struct PaymentsView: View {
             }
         ) { state in
             VStack(spacing: 8) {
-                if let upcomingPayment = state.paymentData {
-                    hSection {
-                        hRow {
-                            VStack(alignment: .leading, spacing: 0) {
-                                HStack(alignment: .center, spacing: 8) {
-                                    hText(L10n.paymentsUpcomingPayment)
-                                    Spacer()
-                                    hText(upcomingPayment.payment.net.formattedAmount)
-                                    Image(uiImage: hCoreUIAssets.chevronRightSmall.image)
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                        .frame(width: 16, height: 16)
-                                        .foregroundColor(hTextColor.Opaque.secondary)
-                                }
-                                .foregroundColor(.primary)
-                                hText(upcomingPayment.payment.date.displayDate)
-                                    .foregroundColor(hTextColor.Opaque.secondary)
-                            }
-                        }
-                        .withEmptyAccessory
-                        .onTap {
-                            router.push(upcomingPayment)
-                        }
+                if !state.ongoingPaymentData.isEmpty {
+                    ForEach(state.ongoingPaymentData, id: \.id) { paymentData in
+                        paymentView(for: paymentData)
                     }
+                }
+                if let upcomingPayment = state.paymentData {
+                    paymentView(for: upcomingPayment)
                 } else {
                     VStack(spacing: 16) {
                         Image(uiImage: hCoreUIAssets.infoFilledSmall.image)
@@ -111,17 +94,40 @@ public struct PaymentsView: View {
                     }
                     .padding(.vertical, .padding32)
                 }
+
                 hSection {
                     ConnectPaymentCardView()
                         .environmentObject(paymentNavigationVm.connectPaymentVm)
                 }
-                if let status = state.paymentData?.status, status != .upcoming {
-                    hSection {
-                        PaymentStatusView(status: status) { _ in
+            }
+        }
+    }
 
-                        }
+    private func paymentView(for paymentData: PaymentData) -> some View {
+        hSection {
+            hRow {
+                VStack(alignment: .leading, spacing: 0) {
+                    HStack(alignment: .center, spacing: 8) {
+                        hText(
+                            paymentData.status == .upcoming
+                                ? L10n.paymentsUpcomingPayment : L10n.paymentsProcessingPayment
+                        )
+                        Spacer()
+                        hText(paymentData.payment.net.formattedAmount)
+                        Image(uiImage: hCoreUIAssets.chevronRightSmall.image)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 16, height: 16)
+                            .foregroundColor(hTextColor.Opaque.secondary)
                     }
+                    .foregroundColor(.primary)
+                    hText(paymentData.payment.date.displayDate)
+                        .foregroundColor(hTextColor.Opaque.secondary)
                 }
+            }
+            .withEmptyAccessory
+            .onTap {
+                router.push(paymentData)
             }
         }
     }
