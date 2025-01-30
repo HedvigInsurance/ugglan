@@ -75,21 +75,23 @@ struct SettingsView: View {
                         )
                 }
             ) { memberDetails in
-                hButton.LargeButton(type: .ghost) {
-                    if ApplicationState.currentState?.isOneOf([.loggedIn]) == true {
-                        let hasAlreadyRequested = ApolloClient.deleteAccountStatus(for: memberDetails.id)
-                        if hasAlreadyRequested {
-                            profileNavigationVm.isDeleteAccountAlreadyRequestedPresented = true
-                        } else {
-                            profileNavigationVm.isDeleteAccountPresented = memberDetails
+                hSection {
+                    hButton.LargeButton(type: .ghost) {
+                        if ApplicationState.currentState?.isOneOf([.loggedIn]) == true {
+                            let hasAlreadyRequested = ApolloClient.deleteAccountStatus(for: memberDetails.id)
+                            if hasAlreadyRequested {
+                                profileNavigationVm.isDeleteAccountAlreadyRequestedPresented = true
+                            } else {
+                                profileNavigationVm.isDeleteAccountPresented = memberDetails
+                            }
                         }
+                    } content: {
+                        hText(L10n.SettingsScreen.deleteAccountButton)
+                            .foregroundColor(hSignalColor.Red.element)
                     }
-                } content: {
-                    hText(L10n.SettingsScreen.deleteAccountButton)
-                        .foregroundColor(hSignalColor.Red.element)
                 }
+                .sectionContainerStyle(.transparent)
             }
-            .padding(.padding16)
         }
     }
 }

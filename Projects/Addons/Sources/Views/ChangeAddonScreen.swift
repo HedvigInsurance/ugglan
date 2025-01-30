@@ -106,7 +106,6 @@ struct ChangeAddonScreen: View {
                 hText(addon.title)
                     .fixedSize()
                 Spacer()
-
                 hPill(
                     text: L10n.addonFlowPriceLabel(
                         changeAddonVm.addonOffer?.getTotalPrice(selectedQuote: changeAddonVm.selectedQuote)?
@@ -139,6 +138,7 @@ struct ChangeAddonScreen: View {
         .accessibilityAction {
             changeAddonNavigationVm.isChangeCoverageDaysPresented = addon
         }
+        .fixedSize(horizontal: false, vertical: true)
     }
 }
 
