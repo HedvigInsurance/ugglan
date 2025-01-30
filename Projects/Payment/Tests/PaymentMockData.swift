@@ -8,20 +8,39 @@ import hCore
 struct MockPaymentData {
     @discardableResult static func createMockPaymentService(
         fetchPaymentData: @escaping FetchPaymentData = {
-            .init(
-                id: "id",
-                payment: .init(
-                    gross: .init(amount: "230", currency: "SEK"),
-                    net: .init(amount: "230", currency: "SEK"),
-                    carriedAdjustment: .init(amount: "230", currency: "SEK"),
-                    settlementAdjustment: nil,
-                    date: .init()
+            (
+                upcoming: .init(
+                    id: "id1",
+                    payment: .init(
+                        gross: .init(amount: "230", currency: "SEK"),
+                        net: .init(amount: "230", currency: "SEK"),
+                        carriedAdjustment: .init(amount: "230", currency: "SEK"),
+                        settlementAdjustment: nil,
+                        date: .init()
+                    ),
+                    status: .upcoming,
+                    contracts: [],
+                    discounts: [],
+                    paymentDetails: nil,
+                    addedToThePayment: nil
                 ),
-                status: .success,
-                contracts: [],
-                discounts: [],
-                paymentDetails: nil,
-                addedToThePayment: nil
+                ongoing: [
+                    .init(
+                        id: "id2",
+                        payment: .init(
+                            gross: .init(amount: "230", currency: "SEK"),
+                            net: .init(amount: "230", currency: "SEK"),
+                            carriedAdjustment: .init(amount: "230", currency: "SEK"),
+                            settlementAdjustment: nil,
+                            date: .init()
+                        ),
+                        status: .success,
+                        contracts: [],
+                        discounts: [],
+                        paymentDetails: nil,
+                        addedToThePayment: nil
+                    )
+                ]
             )
         },
         fetchPaymentStatusData: @escaping FetchPaymentStatusData = {
@@ -60,7 +79,7 @@ struct MockPaymentData {
     }
 }
 
-typealias FetchPaymentData = () async throws -> PaymentData?
+typealias FetchPaymentData = () async throws -> (upcoming: Payment.PaymentData?, ongoing: [Payment.PaymentData])
 typealias FetchPaymentStatusData = () async throws -> PaymentStatusData
 typealias FetchPaymentDiscountsData = () async throws -> PaymentDiscountsData
 typealias FetchPaymentHistoryData = () async throws -> [PaymentHistoryListData]
@@ -97,7 +116,7 @@ class MockPaymentService: hPaymentClient {
         self.fetchConnectPaymentUrl = fetchConnectPaymentUrl
     }
 
-    func getPaymentData() async throws -> PaymentData? {
+    func getPaymentData() async throws -> (upcoming: Payment.PaymentData?, ongoing: [Payment.PaymentData]) {
         events.append(.getPaymentData)
         let data = try await fetchPaymentData()
         return data

@@ -18,20 +18,39 @@ final class StoreLoadTests: XCTestCase {
     }
 
     func testLoadPaymentDataSuccess() async throws {
-        let paymentData: PaymentData = .init(
-            id: "id",
-            payment: .init(
-                gross: .init(amount: "230", currency: "SEK"),
-                net: .init(amount: "230", currency: "SEK"),
-                carriedAdjustment: .init(amount: "230", currency: "SEK"),
-                settlementAdjustment: nil,
-                date: .init()
+        let paymentData: (upcoming: Payment.PaymentData?, ongoing: [Payment.PaymentData]) = (
+            upcoming: .init(
+                id: "id1",
+                payment: .init(
+                    gross: .init(amount: "230", currency: "SEK"),
+                    net: .init(amount: "230", currency: "SEK"),
+                    carriedAdjustment: .init(amount: "230", currency: "SEK"),
+                    settlementAdjustment: nil,
+                    date: .init()
+                ),
+                status: .upcoming,
+                contracts: [],
+                discounts: [],
+                paymentDetails: nil,
+                addedToThePayment: nil
             ),
-            status: .success,
-            contracts: [],
-            discounts: [],
-            paymentDetails: nil,
-            addedToThePayment: nil
+            ongoing: [
+                .init(
+                    id: "id2",
+                    payment: .init(
+                        gross: .init(amount: "230", currency: "SEK"),
+                        net: .init(amount: "230", currency: "SEK"),
+                        carriedAdjustment: .init(amount: "230", currency: "SEK"),
+                        settlementAdjustment: nil,
+                        date: .init()
+                    ),
+                    status: .success,
+                    contracts: [],
+                    discounts: [],
+                    paymentDetails: nil,
+                    addedToThePayment: nil
+                )
+            ]
         )
 
         let mockService = MockPaymentData.createMockPaymentService(
@@ -42,7 +61,8 @@ final class StoreLoadTests: XCTestCase {
         await store.sendAsync(.load)
         try await Task.sleep(nanoseconds: 100_000_000)
         XCTAssertNil(store.loadingState[.getPaymentData])
-        assert(store.state.paymentData == paymentData)
+        assert(store.state.ongoingPaymentData == paymentData.ongoing)
+        assert(store.state.paymentData == paymentData.upcoming)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getPaymentData)
     }
@@ -56,6 +76,7 @@ final class StoreLoadTests: XCTestCase {
         await store.sendAsync(.load)
         XCTAssertNotNil(store.loadingState[.getPaymentData])
         assert(store.state.paymentData == nil)
+        assert(store.state.ongoingPaymentData.isEmpty)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getPaymentData)
     }
