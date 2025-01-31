@@ -68,18 +68,17 @@ public enum DeepLink: String, Codable, CaseIterable {
     }
     @MainActor
     public static func getType(from url: URL) -> DeepLink? {
-        let rootUrls = [Environment.staging.deepLinkUrl, Environment.production.deepLinkUrl].compactMap({ $0.host })
-        guard rootUrls.contains(url.host ?? "") else { return nil }
-
-        guard let type = url.pathComponents.compactMap({ DeepLink(rawValue: $0) }).first else {
+        guard Environment.staging.isDeeplink(url) || Environment.production.isDeeplink(url) else { return nil }
+        guard let type = url.pathComponents.compactMap({ DeepLink(rawValue: $0) }).last else {
             return nil
         }
         return type
     }
 
     public static func getUrl(from deeplink: DeepLink) -> URL? {
-        let path = Environment.current.deepLinkUrl.absoluteString + "/" + deeplink.rawValue
-        guard let url = URL(string: path) else {
+        let paths = Environment.current.deepLinkUrls.compactMap({ $0.absoluteString + "/" + deeplink.rawValue })
+        let url = paths.compactMap({ URL.init(string: $0) }).last
+        guard let url else {
             return nil
         }
         return url
