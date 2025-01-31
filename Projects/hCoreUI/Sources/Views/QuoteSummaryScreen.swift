@@ -265,20 +265,6 @@ public struct QuoteSummaryScreen: View {
         proxy: ScrollViewProxy,
         isExpanded: Bool
     ) -> some View {
-        //        if isExpanded {
-        bottomContent(for: contract, proxy: proxy, isExpanded: isExpanded)
-        //                .accessibilityElement(children: .combine)
-        ////        } else {
-        //            bottomContent(for: contract, proxy: proxy, isExpanded: isExpanded)
-        //        }
-    }
-
-    @ViewBuilder
-    private func bottomContent(
-        for contract: QuoteSummaryViewModel.ContractInfo,
-        proxy: ScrollViewProxy,
-        isExpanded: Bool
-    ) -> some View {
         VStack(spacing: .padding16) {
             PriceField(
                 newPremium: contract.newPremium,
