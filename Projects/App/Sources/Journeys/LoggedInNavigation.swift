@@ -554,11 +554,12 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     @objc func openDeepLinkNotification(notification: Notification) {
-        let deepLinkUrl = notification.object as? URL
-        if ApplicationState.currentState == .loggedIn {
-            self.handleDeepLinks(deepLinkUrl: deepLinkUrl)
-        } else {
-            self.deeplinkToBeOpenedAfterLogin = deepLinkUrl
+        if let deepLinkUrl = notification.object as? URL {
+            if ApplicationState.currentState == .loggedIn {
+                self.handleDeepLinks(deepLinkUrl: deepLinkUrl)
+            } else if !deepLinkUrl.absoluteString.contains("//bankid") {
+                self.deeplinkToBeOpenedAfterLogin = deepLinkUrl
+            }
         }
     }
 
