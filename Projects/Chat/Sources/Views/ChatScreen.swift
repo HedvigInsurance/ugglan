@@ -130,6 +130,7 @@ public struct ChatScreen: View {
                     }
 
                 }
+                .accessibilityElement(children: .combine)
                 .hTextStyle(.label)
                 .foregroundColor(hTextColor.Opaque.secondary)
                 .padding(.bottom, 3)
