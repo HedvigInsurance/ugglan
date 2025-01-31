@@ -50,8 +50,8 @@ struct CrossSellingItem: View {
                             .foregroundColor(hTextColor.Opaque.primary).colorScheme(.light)
                     }
                 }
-                .accessibilityElement(children: .combine)
             }
+            .accessibilityElement(children: .combine)
             .onTapGesture {
                 fieldIsClicked.toggle()
                 openExternal()

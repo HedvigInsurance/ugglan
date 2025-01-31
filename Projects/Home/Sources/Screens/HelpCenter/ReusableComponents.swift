@@ -113,7 +113,7 @@ struct SupportView: View {
     var body: some View {
         hSection {
             VStack(spacing: 0) {
-                VStack {
+                VStack(spacing: 0) {
                     hText(L10n.hcChatQuestion)
                         .foregroundColor(hTextColor.Translucent.primary)
                     hText(L10n.hcChatAnswer)

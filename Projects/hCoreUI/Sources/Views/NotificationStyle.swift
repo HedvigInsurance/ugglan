@@ -1,6 +1,5 @@
 import SwiftUI
 import UIKit
-import hCore
 
 @MainActor
 public enum NotificationType {

@@ -17,11 +17,9 @@ public struct InfoCard: View {
     }
 
     public var body: some View {
-        if #available(iOS 18.0, *) {
-            mainView
-                .accessibilityHint((buttonsConfig?.first?.buttonTitle ?? ""), isEnabled: buttonsConfig?.count == 1)
+        if buttonsConfig?.count == 1 {
+            mainView.accessibilityHint((buttonsConfig?.first?.buttonTitle ?? ""))
         } else {
-            // Fallback on earlier versions
             mainView
         }
     }
