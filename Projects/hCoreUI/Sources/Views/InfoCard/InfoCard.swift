@@ -101,7 +101,6 @@ public struct InfoCard: View {
                                 .hUseLightMode
                             }
                         }
-                        //                            .accessibilityHint(config.buttonTitle)
                     }
                 }
             }

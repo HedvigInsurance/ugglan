@@ -225,9 +225,9 @@ public struct QuoteSummaryScreen: View {
         let index = vm.expandedContracts.firstIndex(of: contract.id)
         let isExpanded = vm.isAddon ? true : (index != nil)
 
-        if isExpanded {
+        if !contract.documents.isEmpty {
             contractContent(for: contract, proxy: proxy, isExpanded: isExpanded)
-                .accessibilityElement(children: .combine)
+                .hAccessibilityWithoutCombinedElements
         } else {
             contractContent(for: contract, proxy: proxy, isExpanded: isExpanded)
         }
@@ -265,12 +265,12 @@ public struct QuoteSummaryScreen: View {
         proxy: ScrollViewProxy,
         isExpanded: Bool
     ) -> some View {
-        if isExpanded {
-            bottomContent(for: contract, proxy: proxy, isExpanded: isExpanded)
-                .accessibilityElement(children: .combine)
-        } else {
-            bottomContent(for: contract, proxy: proxy, isExpanded: isExpanded)
-        }
+        //        if isExpanded {
+        bottomContent(for: contract, proxy: proxy, isExpanded: isExpanded)
+        //                .accessibilityElement(children: .combine)
+        ////        } else {
+        //            bottomContent(for: contract, proxy: proxy, isExpanded: isExpanded)
+        //        }
     }
 
     @ViewBuilder
@@ -384,7 +384,11 @@ public struct QuoteSummaryScreen: View {
                     ForEach(contract.documents, id: \.displayName) { document in
                         documentItem(for: document)
                             .background(hSurfaceColor.Opaque.primary)
+                            .accessibilityElement(children: .combine)
                             .onTapGesture {
+                                contract.onDocumentTap(document)
+                            }
+                            .accessibilityAction {
                                 contract.onDocumentTap(document)
                             }
                     }
