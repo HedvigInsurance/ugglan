@@ -14,7 +14,7 @@ extension PaymentHistoryListData {
         for item in data.pastCharges.enumerated() {
             if item.offset == 0 {
                 let store: PaymentStore = globalPresentableStoreContainer.get()
-                nextPayment = store.state.paymentData
+                nextPayment = store.state.ongoingPaymentData.first ?? store.state.paymentData
             }
             let paymentData = PaymentData(
                 with: item.element.fragments.memberChargeFragment,
