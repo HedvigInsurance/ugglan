@@ -13,6 +13,25 @@ private struct AnimationTiming {
     let progress: Float
 }
 
+class ProcessingViewModel: ObservableObject {
+    @Published var progress: Float = 0
+}
+
+public struct hProgressViewStyle: ProgressViewStyle {
+    public init() {}
+    public func makeBody(configuration: LinearProgressViewStyle.Configuration) -> some View {
+        return RoundedRectangle(cornerRadius: 2).fill(hSurfaceColor.Translucent.secondary)
+            .overlay {
+                GeometryReader(content: { geometry in
+                    RoundedRectangle(cornerRadius: 2, style: .continuous)
+                        .fill(hFillColor.Opaque.primary)
+                        .frame(width: geometry.size.width * (configuration.fractionCompleted ?? 0))
+                })
+            }
+            .frame(height: 4)
+    }
+}
+
 public struct ProcessingStateView: View {
     @StateObject var vm = ProcessingViewModel()
     @Binding var state: ProcessingState

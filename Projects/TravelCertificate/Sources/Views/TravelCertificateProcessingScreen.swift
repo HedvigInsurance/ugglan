@@ -9,19 +9,27 @@ struct TravelCertificateProcessingScreen: View {
     @EnvironmentObject var whoIsTravelingViewModel: WhoIsTravelingViewModel
 
     var body: some View {
-        ProcesssingView(
-            isLoading: $vm.isLoading,
-            error: $vm.error,
+        ProcessingStateView(
             loadingViewText: L10n.TravelCertificate.generating,
             successViewTitle: L10n.TravelCertificate.travelCertificateReady,
             successViewBody: L10n.TravelCertificate.weHaveSentCopyToYourEmail,
-            onErrorCancelAction: {
-                router.pop()
-            }
+            state: $vm.viewState
         )
         .hSuccessBottomAttachedView {
             bottomSuccessView
         }
+        .hStateViewButtonConfig(
+            .init(
+                actionButton: nil,
+                actionButtonAttachedToBottom: nil,
+                dismissButton: .init(
+                    buttonTitle: L10n.generalCancelButton,
+                    buttonAction: {
+                        router.pop()
+                    }
+                )
+            )
+        )
         .task { [weak vm] in
             vm?.whoIsTravelingViewModel = whoIsTravelingViewModel
             vm?.startDateViewModel = startDateViewModel
@@ -62,6 +70,7 @@ struct TravelCertificateProcessingScreen: View {
 @MainActor
 class ProcessingViewModel: ObservableObject {
     var service = TravelInsuranceService()
+    @Published var viewState: ProcessingState = .loading
     @Published var isLoading = true
     @Published var error: String?
     @Published var downloadUrl: URL?
@@ -73,6 +82,7 @@ class ProcessingViewModel: ObservableObject {
     func submit() {
         Task { @MainActor in
             isLoading = true
+            viewState = .loading
             if let startDateViewModel = startDateViewModel,
                 let whoIsTravelingViewModel = whoIsTravelingViewModel
             {
@@ -93,8 +103,10 @@ class ProcessingViewModel: ObservableObject {
                     try await minimumTime.value
 
                     downloadUrl = url
+                    viewState = .success
                     AskForRating().askForReview()
                 } catch _ {
+                    viewState = .error(errorMessage: L10n.General.errorBody)
                     error = L10n.General.errorBody
                 }
             }
