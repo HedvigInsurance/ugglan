@@ -138,6 +138,7 @@ struct ChangeAddonScreen: View {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     return ChangeAddonScreen(changeAddonVm: .init(contractId: "id"))
         .environmentObject(ChangeAddonNavigationViewModel(input: .init()))
 }

@@ -85,7 +85,9 @@ class AddonSelectInsuranceScreenViewModel: ObservableObject {
 }
 
 #Preview {
-    AddonSelectInsuranceScreen(changeAddonVm: .init(contractId: "contractId"))
+    Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    return AddonSelectInsuranceScreen(changeAddonVm: .init(contractId: "contractId"))
         .environmentObject(
             ChangeAddonNavigationViewModel(
                 input: .init(
