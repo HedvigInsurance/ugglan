@@ -36,7 +36,7 @@ public struct PaymentHistoryView: View {
             }
         ) { history in
             if history.isEmpty {
-                VStack(spacing: 16) {
+                VStack(spacing: .padding16) {
                     Image(uiImage: hCoreUIAssets.infoFilled.image)
                         .resizable()
                         .frame(width: 24, height: 24)
@@ -46,7 +46,7 @@ public struct PaymentHistoryView: View {
                 }
             } else {
                 hForm {
-                    VStack(spacing: 16) {
+                    VStack(spacing: .padding16) {
                         ForEach(history) { item in
                             hSection(item.valuesPerMonth) { month in
                                 hRow {
@@ -54,7 +54,10 @@ public struct PaymentHistoryView: View {
                                         alignment: month.paymentData.status.hasFailed ? .top : .center,
                                         spacing: 0
                                     ) {
-                                        VStack(alignment: .leading, spacing: 0) {
+                                        VStack(
+                                            alignment: .leading,
+                                            spacing: 0
+                                        ) {
                                             hText(month.paymentData.payment.date.displayDateShort)
                                             if month.paymentData.status.hasFailed {
                                                 hText(L10n.paymentsOutstandingPayment, style: .label)

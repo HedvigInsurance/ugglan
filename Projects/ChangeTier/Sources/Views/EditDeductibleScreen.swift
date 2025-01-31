@@ -3,9 +3,9 @@ import hCore
 import hCoreUI
 
 struct EditDeductibleScreen: View {
-    @State var selectedDeductible: String?
+    @State var selectedQuote: String?
     private let vm: ChangeTierViewModel
-    private let deductibles: [Quote]
+    private let quotes: [Quote]
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
 
     init(
@@ -14,12 +14,12 @@ struct EditDeductibleScreen: View {
         self.vm = vm
 
         if !(vm.selectedTier?.quotes.isEmpty ?? true) {
-            self.deductibles = vm.selectedTier?.quotes ?? []
+            self.quotes = vm.selectedTier?.quotes ?? []
         } else {
-            self.deductibles = vm.tiers.first(where: { $0.name == vm.selectedTier?.name })?.quotes ?? []
+            self.quotes = vm.tiers.first(where: { $0.name == vm.selectedTier?.name })?.quotes ?? []
         }
 
-        self._selectedDeductible = State(
+        self._selectedQuote = State(
             initialValue: vm.selectedQuote?.id ?? vm.selectedTier?.quotes.first?.id
         )
     }
@@ -28,29 +28,29 @@ struct EditDeductibleScreen: View {
         hForm {
             hSection {
                 VStack(spacing: .padding4) {
-                    ForEach(deductibles, id: \.self) { deductible in
+                    ForEach(quotes.sorted(by: { $0.premium.value > $1.premium.value }), id: \.self) { quote in
                         hRadioField(
-                            id: deductible.id,
+                            id: quote.id,
                             leftView: {
                                 VStack(alignment: .leading, spacing: .padding8) {
                                     HStack {
-                                        hText(displayTitle(deductible: deductible))
+                                        hText(quote.displayTitle)
                                         Spacer()
                                         hPill(
-                                            text: deductible.premium.formattedAmountPerMonth,
+                                            text: quote.premium.formattedAmountPerMonth,
                                             color: .grey,
                                             colorLevel: .two
                                         )
                                         .hFieldSize(.small)
                                     }
-                                    if let subTitle = deductible.subTitle, subTitle != "" {
+                                    if let subTitle = quote.subTitle, subTitle != "" {
                                         hText(subTitle, style: .label)
                                             .foregroundColor(hTextColor.Translucent.secondary)
                                     }
                                 }
                                 .asAnyView
                             },
-                            selected: $selectedDeductible,
+                            selected: $selectedQuote,
                             error: nil,
                             useAnimation: true
                         )
@@ -61,11 +61,12 @@ struct EditDeductibleScreen: View {
             .padding(.top, 16)
             .sectionContainerStyle(.transparent)
         }
+        .hFormContentPosition(.compact)
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: .padding8) {
                     hButton.LargeButton(type: .primary) {
-                        vm.setDeductible(for: self.selectedDeductible ?? "")
+                        vm.setDeductible(for: self.selectedQuote ?? "")
                         changeTierNavigationVm.isEditDeductiblePresented = false
                     } content: {
                         hText(L10n.generalConfirm)
@@ -83,15 +84,6 @@ struct EditDeductibleScreen: View {
             .padding(.top, .padding16)
         }
         .configureTitleView(self)
-    }
-
-    func displayTitle(deductible: Quote) -> String {
-        var displayTitle: String = (deductible.deductableAmount?.formattedAmount ?? "")
-
-        if let deductiblePercentage = deductible.deductablePercentage {
-            displayTitle += " + \(deductiblePercentage)%"
-        }
-        return displayTitle
     }
 }
 

@@ -15,6 +15,7 @@ public struct InboxView: View {
             displayMessages
                 .padding(.top, 8)
         }
+        .hSetScrollBounce(to: true)
         .onPullToRefresh {
             await vm.fetchMessages()
         }

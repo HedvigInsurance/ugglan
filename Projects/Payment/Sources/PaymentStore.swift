@@ -7,6 +7,7 @@ import hGraphQL
 
 public struct PaymentState: StateProtocol {
     var paymentData: PaymentData?
+    var ongoingPaymentData: [PaymentData] = []
     var paymentDiscountsData: PaymentDiscountsData?
     public var paymentStatusData: PaymentStatusData? = nil
     var paymentHistory: [PaymentHistoryListData] = []
@@ -18,6 +19,7 @@ public struct PaymentState: StateProtocol {
 public enum PaymentAction: ActionProtocol {
     case load
     case setPaymentData(data: PaymentData?)
+    case setOngoingPaymentData(data: [PaymentData])
     case fetchPaymentStatus
     case setPaymentStatus(data: PaymentStatusData)
     case fetchDiscountsData
@@ -41,7 +43,8 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
         case .load:
             do {
                 let paymentData = try await self.paymentService.getPaymentData()
-                self.send(.setPaymentData(data: paymentData))
+                self.send(.setPaymentData(data: paymentData.upcoming))
+                self.send(.setOngoingPaymentData(data: paymentData.ongoing))
             } catch {
                 self.setError(L10n.General.errorBody, for: .getPaymentData)
             }
@@ -80,6 +83,8 @@ public final class PaymentStore: LoadingStateStore<PaymentState, PaymentAction, 
         case let .setPaymentData(data):
             removeLoading(for: .getPaymentData)
             newState.paymentData = data
+        case let .setOngoingPaymentData(data):
+            newState.ongoingPaymentData = data
         case .fetchPaymentStatus:
             setLoading(for: .getPaymentStatus)
         case let .setPaymentStatus(data):

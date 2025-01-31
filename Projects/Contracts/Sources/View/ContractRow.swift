@@ -129,7 +129,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .top, spacing: .padding6) {
-                if let tierDisplayName, Dependencies.featureFlags().isTiersEnabled {
+                if let tierDisplayName {
                     StatusPill(text: tierDisplayName, type: .tier)
                 }
                 if let terminationMessage {
@@ -198,11 +198,13 @@ private enum PillType {
 private struct StatusPill: View {
     var text: String
     var type: PillType
+    @Environment(\.sizeCategory) private var sizeCategory
 
     var body: some View {
         VStack {
             hText(text, style: .label)
         }
+        .fixedSize(horizontal: sizeCategory <= .large, vertical: false)
         .padding(.vertical, 3)
         .padding(.horizontal, .padding6)
         .foregroundColor(hTextColor.Opaque.white)

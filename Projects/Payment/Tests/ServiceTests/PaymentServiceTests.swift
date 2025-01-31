@@ -19,20 +19,39 @@ final class PaymentServiceTests: XCTestCase {
     }
 
     func testFetchPaymentDataSuccess() async {
-        let paymentData: PaymentData = .init(
-            id: "id",
-            payment: .init(
-                gross: .init(amount: "230", currency: "SEK"),
-                net: .init(amount: "230", currency: "SEK"),
-                carriedAdjustment: .init(amount: "230", currency: "SEK"),
-                settlementAdjustment: nil,
-                date: .init()
+        let paymentData: (upcoming: Payment.PaymentData?, ongoing: [Payment.PaymentData]) = (
+            upcoming: .init(
+                id: "id1",
+                payment: .init(
+                    gross: .init(amount: "230", currency: "SEK"),
+                    net: .init(amount: "230", currency: "SEK"),
+                    carriedAdjustment: .init(amount: "230", currency: "SEK"),
+                    settlementAdjustment: nil,
+                    date: .init()
+                ),
+                status: .upcoming,
+                contracts: [],
+                discounts: [],
+                paymentDetails: nil,
+                addedToThePayment: nil
             ),
-            status: .success,
-            contracts: [],
-            discounts: [],
-            paymentDetails: nil,
-            addedToThePayment: nil
+            ongoing: [
+                .init(
+                    id: "id2",
+                    payment: .init(
+                        gross: .init(amount: "230", currency: "SEK"),
+                        net: .init(amount: "230", currency: "SEK"),
+                        carriedAdjustment: .init(amount: "230", currency: "SEK"),
+                        settlementAdjustment: nil,
+                        date: .init()
+                    ),
+                    status: .pending,
+                    contracts: [],
+                    discounts: [],
+                    paymentDetails: nil,
+                    addedToThePayment: nil
+                )
+            ]
         )
 
         let mockService = MockPaymentData.createMockPaymentService(
@@ -41,7 +60,8 @@ final class PaymentServiceTests: XCTestCase {
         self.sut = mockService
 
         let respondedPaymentData = try! await mockService.getPaymentData()
-        assert(respondedPaymentData == paymentData)
+        assert(respondedPaymentData.ongoing == paymentData.ongoing)
+        assert(respondedPaymentData.upcoming == paymentData.upcoming)
     }
 
     func testFetchPaymentStatusDataSuccess() async {

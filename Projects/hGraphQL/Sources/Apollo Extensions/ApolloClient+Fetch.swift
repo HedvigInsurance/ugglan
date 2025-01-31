@@ -38,7 +38,7 @@ extension ApolloClient {
                 cachePolicy: cachePolicy,
                 contextIdentifier: nil,
                 queue: queue
-            ) { result in
+            ) {[weak self] result in
                 switch result {
                 case let .success(result):
                     if let errors = result.errors {
@@ -50,6 +50,7 @@ extension ApolloClient {
                         }
                     }
                 case let .failure(error):
+                    self?.logGraphQLException(error: error, for: query)
                     inCont.resume(throwing: GraphQLError.otherError(error: error))
                 }
             }
@@ -65,7 +66,7 @@ extension ApolloClient {
             self.perform(
                 mutation: mutation,
                 queue: queue
-            ) { result in
+            ) {[weak self] result in
                 switch result {
                 case let .success(result):
                     if let errors = result.errors {
@@ -77,9 +78,23 @@ extension ApolloClient {
                         }
                     }
                 case .failure(let error):
+                    self?.logGraphQLException(error: error, for: mutation)
                     inCont.resume(throwing: GraphQLError.otherError(error: error))
                 }
             }
+        }
+    }
+    
+    private func logGraphQLException(error: Error, for operation: any GraphQLOperation) {
+        if let error = error as? AuthError {
+            switch error {
+            case .refreshTokenExpired:
+                break
+            case .refreshFailed:
+                log.error("graphQL error \(operation)", error: error, attributes: [:])
+            }
+        } else {
+            log.error("graphQL error \(operation)", error: error, attributes: [:])
         }
     }
 }

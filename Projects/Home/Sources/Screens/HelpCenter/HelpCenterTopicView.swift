@@ -41,7 +41,7 @@ struct HelpCenterTopicView: View {
     }
 }
 
-#Preview{
+#Preview {
     let questions: [Question] = [
         .init(
             question: "When do you charge for my insurance?",

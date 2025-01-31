@@ -48,7 +48,7 @@ public struct HelpCenterStartView: View {
                                 Spacer()
                             }
 
-                            VStack(alignment: .leading, spacing: 8) {
+                            VStack(alignment: .leading, spacing: .padding8) {
                                 hText(vm.helpCenterModel.title)
                                 hText(vm.helpCenterModel.description)
                                     .foregroundColor(hTextColor.Opaque.secondary)
@@ -74,7 +74,6 @@ public struct HelpCenterStartView: View {
             vm.searchInProgress
                 ? .transparent : .gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary)
         )
-        .hFormObserveKeyboard
         .edgesIgnoringSafeArea(.bottom)
         .dismissKeyboard()
         .introspect(.viewController, on: .iOS(.v13...)) { [weak vm] vc in
@@ -97,7 +96,7 @@ public struct HelpCenterStartView: View {
     @ViewBuilder
     func displayQuickActions(from quickActions: [QuickAction]) -> some View {
         if !quickActions.isEmpty {
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: .padding4) {
                 HelpCenterPill(title: L10n.hcQuickActionsTitle, color: .green)
                     .padding(.bottom, .padding4)
 
@@ -111,7 +110,7 @@ public struct HelpCenterStartView: View {
     }
 
     private func displayCommonTopics() -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: .padding8) {
             HelpCenterPill(title: L10n.hcCommonTopicsTitle, color: .yellow)
 
             let commonTopics = vm.helpCenterModel.commonTopics
@@ -120,7 +119,7 @@ public struct HelpCenterStartView: View {
     }
 
     private func commonTopicsItems(commonTopics: [CommonTopic]) -> some View {
-        VStack(spacing: 4) {
+        VStack(spacing: .padding4) {
             ForEach(commonTopics, id: \.self) { item in
                 hSection {
                     hRow {

@@ -76,7 +76,7 @@ struct QuestionsItems: View {
             case .relatedQuestions:
                 HelpCenterPill(title: questionType.title, color: .pink)
             }
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: .padding4) {
                 hSection(questions, id: \.self) { item in
                     hRow {
                         hText(item.question)
@@ -108,8 +108,10 @@ struct QuestionsItems: View {
 struct SupportView: View {
     @PresentableStore var store: HomeStore
     @ObservedObject var router: Router
+    @SwiftUI.Environment(\.sizeCategory) private var sizeCategory
+
     var body: some View {
-        HStack {
+        hSection {
             VStack(spacing: 0) {
                 hText(L10n.hcChatQuestion)
                     .foregroundColor(hTextColor.Translucent.primary)
@@ -126,7 +128,6 @@ struct SupportView: View {
                             } content: {
                                 hText(L10n.hcChatGoToInbox)
                             }
-                            .fixedSize()
                         }
                         hButton.MediumButton(type: hasSentOrRecievedAtLeastOneMessage ? .ghost : .primary) {
                             NotificationCenter.default.post(
@@ -136,12 +137,12 @@ struct SupportView: View {
                         } content: {
                             hText(L10n.hcChatButton)
                         }
-                        .fixedSize()
                     }
                     .padding(.top, .padding24)
                 }
                 .presentableStoreLensAnimation(.default)
             }
+            .fixedSize(horizontal: false, vertical: true)
             .padding(.vertical, .padding32)
             .padding(.bottom, .padding24)
         }
@@ -157,11 +158,13 @@ struct SupportView: View {
 struct QuickActionView: View {
     let quickAction: QuickAction
     let onQuickAction: () -> Void
+
     var body: some View {
         hSection {
             hRow {
                 VStack(alignment: .leading, spacing: 0) {
                     hText(quickAction.displayTitle)
+
                     hText(quickAction.displaySubtitle, style: .label)
                         .foregroundColor(hTextColor.Opaque.secondary)
 
@@ -169,7 +172,7 @@ struct QuickActionView: View {
                 Spacer()
             }
             .withChevronAccessory
-            .verticalPadding(12)
+            .verticalPadding(.padding12)
             .onTap {
                 log.addUserAction(
                     type: .click,

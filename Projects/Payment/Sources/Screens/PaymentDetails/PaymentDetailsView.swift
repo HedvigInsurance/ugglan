@@ -141,7 +141,7 @@ struct PaymentDetailsView: View {
 
     @ViewBuilder var paymentDue: some View {
         hRow {
-            VStack(spacing: 16) {
+            VStack(spacing: .padding16) {
                 HStack {
                     hText(L10n.paymentsPaymentDue)
                     Spacer()
@@ -153,7 +153,6 @@ struct PaymentDetailsView: View {
                         switch action {
                         case .viewAddedToPayment:
                             if let nextPayment = data.addedToThePayment?.first {
-                                //                                store.send(.navigation(to: .openPaymentDetails(data: nextPayment)))
                                 router.push(nextPayment)
                             }
                         }

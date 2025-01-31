@@ -16,7 +16,7 @@ struct ImagesView: View {
                 GenericErrorView(
                     title: L10n.chatMissingImagesPermissionSubtitle,
                     description: nil,
-                    useForm: false
+                    formPosition: nil
                 )
                 .hErrorViewButtonConfig(
                     .init(
@@ -157,7 +157,6 @@ struct PHPAssetPreview: View {
                         }
                     }
                     .opacity(selected ? 1 : 0)
-                    .fixedSize()
                 }
             } else {
                 ProgressView()

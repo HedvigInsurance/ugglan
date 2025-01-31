@@ -22,7 +22,7 @@ public struct AddonCardView: View {
                         hText(addon.titleDisplayName)
                         Spacer()
                         if let badge = addon.badges.first {
-                            hPill(text: badge, color: .green, colorLevel: .one)
+                            hPill(text: badge, color: .grey, colorLevel: .three)
                                 .hFieldSize(.small)
                         }
                     }
@@ -34,11 +34,12 @@ public struct AddonCardView: View {
                     } content: {
                         hText(L10n.addonFlowSeePriceButton)
                     }
+                    .hButtonTakeFullWidth(true)
                 }
             }
         }
         .hSectionWithoutHorizontalPadding
-        .sectionContainerStyle(.transparent)
+        .sectionContainerStyle(.opaque)
         .overlay(
             RoundedRectangle(cornerRadius: .cornerRadiusL).stroke(hBorderColor.primary, lineWidth: 1)
         )

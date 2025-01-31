@@ -6,111 +6,30 @@ import hCoreUI
 import hGraphQL
 
 struct MovingFlowConfirmScreen: View {
-    @StateObject var movingFlowConfirmVm = MovingFlowConfirmViewModel()
-    @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
-    @EnvironmentObject var router: Router
-
+    let quoteSummaryViewModel: QuoteSummaryViewModel
     var body: some View {
-        if let movingFlowModel = movingFlowNavigationVm.movingFlowVm {
-            let movingFlowQuotes = getQuotes(from: movingFlowModel)
-            var contractInfos =
-                movingFlowQuotes
-                .map({ quote in
-                    QuoteSummaryViewModel.ContractInfo(
-                        id: quote.id,
-                        displayName: quote.displayName,
-                        exposureName: quote.exposureName ?? "",
-                        newPremium: quote.premium,
-                        currentPremium: quote.premium,
-                        documents: quote.documents.map({
-                            .init(displayName: $0.displayName, url: $0.url, type: .unknown)
-                        }),
-                        onDocumentTap: { document in
-                            movingFlowNavigationVm.document = document
-                        },
-                        displayItems: quote.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }
-                        ),
-                        insuranceLimits: quote.insurableLimits,
-                        typeOfContract: quote.contractType
-                    )
-                })
-
-            let _ =
-                movingFlowQuotes
-                .forEach({ quote in
-                    quote.addons.forEach({ addonQuote in
-                        let addonQuoteContractInfo = QuoteSummaryViewModel.ContractInfo(
-                            id: addonQuote.id,
-                            displayName: addonQuote.quoteInfo.title ?? "",
-                            exposureName: L10n.addonFlowSummaryActiveFrom(
-                                addonQuote.startDate.displayDateDDMMMYYYYFormat
-                            ),
-                            newPremium: addonQuote.price,
-                            currentPremium: nil,
-                            documents: addonQuote.addonVariant.documents,
-                            onDocumentTap: { document in
-                                movingFlowNavigationVm.document = document
-                            },
-                            displayItems: addonQuote.displayItems.map({
-                                .init(title: $0.displayTitle, value: $0.displayValue)
-                            }),
-                            insuranceLimits: addonQuote.addonVariant.insurableLimits,
-                            typeOfContract: nil,
-                            onInfoClick: {
-                                movingFlowNavigationVm.isInfoViewPresented = addonQuote.quoteInfo
-                            }
-                        )
-                        contractInfos.append(addonQuoteContractInfo)
-                    })
-                })
-
-            let vm = QuoteSummaryViewModel(
-                contract: contractInfos,
-                total: movingFlowModel.total,
-                onConfirmClick: {
-                    Task {
-                        await movingFlowConfirmVm.confirmMoveIntent(
-                            intentId: movingFlowNavigationVm.movingFlowVm?.id ?? "",
-                            homeQuoteId: movingFlowNavigationVm.movingFlowVm?.homeQuote?.id ?? ""
-                        )
-                    }
-                    router.push(MovingFlowRouterWithHiddenBackButtonActions.processing(vm: movingFlowConfirmVm))
-                }
-            )
-            QuoteSummaryScreen(vm: vm)
-        }
-    }
-
-    private func getQuotes(from data: MovingFlowModel) -> [MovingFlowQuote] {
-        var allQuotes = data.quotes
-        if let homeQuote = data.homeQuote {
-            allQuotes.insert(homeQuote, at: 0)
-        }
-        return allQuotes
+        QuoteSummaryScreen(vm: quoteSummaryViewModel)
     }
 }
 
 @MainActor
-public class MovingFlowConfirmViewModel: ObservableObject, Hashable {
-    nonisolated public static func == (lhs: MovingFlowConfirmViewModel, rhs: MovingFlowConfirmViewModel) -> Bool {
-        return true
-    }
-
-    nonisolated public func hash(into hasher: inout Hasher) {
-        hasher.combine(ObjectIdentifier(self))
-    }
+public class MovingFlowConfirmViewModel: ObservableObject {
 
     @Inject private var service: MoveFlowClient
     @Published var viewState: ProcessingState = .loading
 
     @MainActor
-    func confirmMoveIntent(intentId: String, homeQuoteId: String) async {
+    func confirmMoveIntent(intentId: String, homeQuoteId: String, removedAddons: [String]) async {
         withAnimation {
             viewState = .loading
         }
 
         do {
-            try await service.confirmMoveIntent(intentId: intentId, homeQuoteId: homeQuoteId)
+            try await service.confirmMoveIntent(
+                intentId: intentId,
+                homeQuoteId: homeQuoteId,
+                removedAddons: removedAddons
+            )
 
             withAnimation {
                 viewState = .success
@@ -125,11 +44,13 @@ public class MovingFlowConfirmViewModel: ObservableObject, Hashable {
 
 struct MovingFlowConfirm_Previews: PreviewProvider {
     static var previews: some View {
-        Dependencies.shared.add(module: Module { () -> MoveFlowClient in MoveFlowClientDemo() })
-        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+        let model = QuoteSummaryViewModel(
+            contract: [],
+            isAddon: false
+        ) {
+
+        }
         Localization.Locale.currentLocale.send(.en_SE)
-        return MovingFlowConfirmScreen()
-            .environmentObject(Router())
-            .environmentObject(MovingFlowNavigationViewModel())
+        return MovingFlowConfirmScreen(quoteSummaryViewModel: model)
     }
 }

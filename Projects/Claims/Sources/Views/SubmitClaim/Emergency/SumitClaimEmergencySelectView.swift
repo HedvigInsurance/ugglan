@@ -43,11 +43,9 @@ struct SumitClaimEmergencySelectView: View {
                         }
                         .hButtonIsLoading(vm.state == .loading)
                     }
-                    .padding(.bottom, .padding32)
                 }
                 .sectionContainerStyle(.transparent)
             }
-            .hDisableScroll
             .claimErrorTrackerForState($vm.state)
     }
 
@@ -67,7 +65,7 @@ struct SumitClaimEmergencySelectView: View {
                                 hColorScheme(light: hTextColor.Opaque.primary, dark: hTextColor.Opaque.negative)
                             )
                     }
-                    .fixedSize(horizontal: false, vertical: true)
+                    .hButtonTakeFullWidth(true)
                 } else {
                     hButton.MediumButton(type: .secondary) {
                         withAnimation(.spring()) {
@@ -76,7 +74,7 @@ struct SumitClaimEmergencySelectView: View {
                     } content: {
                         hText(option.displayName)
                     }
-                    .fixedSize(horizontal: false, vertical: true)
+                    .hButtonTakeFullWidth(true)
                 }
             }
         }

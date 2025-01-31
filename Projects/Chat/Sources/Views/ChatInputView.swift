@@ -134,7 +134,7 @@ class ChatInputViewModel: NSObject, ObservableObject {
         }
     }
     func sendTextMessage() {
-        if inputText.count > 0 {
+        if inputText.count > 0, inputText.trimmingCharacters(in: .whitespacesAndNewlines).count > 0 {
             self.sendMessage(Message(type: .text(text: inputText)))
             UIApplication.dismissKeyboard()
             inputText = ""

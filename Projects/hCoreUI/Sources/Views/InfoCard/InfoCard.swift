@@ -6,6 +6,7 @@ public struct InfoCard: View {
     let type: NotificationType
     @Environment(\.hInfoCardButtonConfig) var buttonsConfig
     @Environment(\.hInfoCardCustomView) var customContentView
+    @Environment(\.sizeCategory) var sizeCategory
 
     public init(
         text: String,
@@ -42,6 +43,7 @@ public struct InfoCard: View {
         .padding(.horizontal, .padding16)
         .modifier(NotificationStyle(type: type))
         .fixedSize(horizontal: false, vertical: true)
+        .hButtonTakeFullWidth(true)
     }
 
     private var buttonsView: some View {
@@ -49,6 +51,7 @@ public struct InfoCard: View {
             hText(text, style: .label)
                 .foregroundColor(type.textColor)
                 .multilineTextAlignment(.leading)
+                .padding(.bottom, .padding4)
             if let buttonsConfig {
                 if buttonsConfig.count > 1 {
                     HStack(spacing: 4) {
@@ -58,14 +61,12 @@ public struct InfoCard: View {
                                     config.buttonAction()
                                 } content: {
                                     hText(config.buttonTitle, style: .label)
-                                        .frame(maxWidth: .infinity)
                                 }
                             } else {
                                 hButton.SmallButton(type: .secondaryAlt) {
                                     config.buttonAction()
                                 } content: {
                                     hText(config.buttonTitle, style: .label)
-                                        .frame(maxWidth: .infinity)
                                 }
                                 .hUseLightMode
                             }
@@ -78,14 +79,12 @@ public struct InfoCard: View {
                                 config.buttonAction()
                             } content: {
                                 hText(config.buttonTitle, style: .label)
-                                    .frame(maxWidth: .infinity)
                             }
                         } else {
                             hButton.SmallButton(type: .secondaryAlt) {
                                 config.buttonAction()
                             } content: {
                                 hText(config.buttonTitle, style: .label)
-                                    .frame(maxWidth: .infinity)
                             }
                             .hUseLightMode
                         }

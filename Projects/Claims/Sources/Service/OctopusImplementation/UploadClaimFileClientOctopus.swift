@@ -15,7 +15,12 @@ public class hClaimFileUploadService {
         withProgress: (@Sendable (_ progress: Double) -> Void)?
     ) async throws -> [ClaimFileUploadResponse] {
         log.info("hClaimFileUploadService: upload", error: nil, attributes: nil)
-        return try await client.upload(endPoint: endPoint, files: files, withProgress: withProgress)
+        do {
+            return try await client.upload(endPoint: endPoint, files: files, withProgress: withProgress)
+        } catch {
+            log.error("hClaimFileUploadService: upload", error: error, attributes: [:])
+            throw error
+        }
     }
 }
 

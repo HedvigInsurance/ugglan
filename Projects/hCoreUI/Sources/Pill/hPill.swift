@@ -15,10 +15,11 @@ public struct hPill: View {
     private let color: PillColor
     private let colorLevel: PillColor.PillColorLevel
     @Environment(\.hFieldSize) var fieldSize
+    @Environment(\.sizeCategory) var sizeCategory
 
     public var body: some View {
         hText(text, style: fieldSize == .large ? .body1 : .label)
-            .fixedSize()
+            .fixedSize(horizontal: sizeCategory <= .large, vertical: false)
             .foregroundColor(color.pillTextColor(level: colorLevel))
             .modifier(
                 PillModifier(
@@ -32,7 +33,6 @@ public struct hPill: View {
         let color: PillColor
         let colorLevel: PillColor.PillColorLevel
         @Environment(\.hFieldSize) var fieldSize
-
         func body(content: Content) -> some View {
             content
                 .padding(.horizontal, getHorizontalPadding)
@@ -50,30 +50,33 @@ public struct hPill: View {
         }
 
         private var getHorizontalPadding: CGFloat {
+            var padding: CGFloat = .padding12
             if fieldSize == .small {
-                return .padding6
+                padding = .padding6
             } else if fieldSize == .medium {
-                return .padding10
+                padding = .padding10
             }
-            return .padding12
+            return padding
         }
 
         private var getTopPadding: CGFloat {
+            var padding: CGFloat = 7
             if fieldSize == .small {
-                return 3
+                padding = 3
             } else if fieldSize == .medium {
-                return 6.5
+                padding = 6.5
             }
-            return 7
+            return padding
         }
 
         private var getBottomPadding: CGFloat {
+            var padding: CGFloat = 9
             if fieldSize == .small {
-                return 3
+                padding = 3
             } else if fieldSize == .medium {
-                return 7.5
+                padding = 7.5
             }
-            return 9
+            return padding
         }
 
         private var getCornerRadius: CGFloat {

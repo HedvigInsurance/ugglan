@@ -116,9 +116,9 @@ public struct ProcessingStateView: View {
     private func errorView(errorMessage: String?) -> some View {
         GenericErrorView(
             title: L10n.somethingWentWrong,
-            description: errorMessage
+            description: errorMessage,
+            formPosition: .center
         )
-        .hFormDontUseInitialAnimation
         .hErrorViewButtonConfig(errorViewButtonConfig)
     }
 
@@ -168,8 +168,10 @@ private struct TrackErrorState: ViewModifier {
     func body(content: Content) -> some View {
         Group {
             if let error {
-                GenericErrorView(description: error)
-                    .hFormDontUseInitialAnimation
+                GenericErrorView(
+                    description: error,
+                    formPosition: .center
+                )
             } else {
                 content
             }

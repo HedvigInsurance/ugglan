@@ -4,6 +4,8 @@ import hGraphQL
 
 @MainActor
 extension PaymentData {
+
+    //used for upcoming payment
     init?(
         with data: OctopusGraphQL.PaymentDataQuery.Data,
         paymentDetails: PaymentDetails?
@@ -12,7 +14,7 @@ extension PaymentData {
         guard let futureCharge = data.currentMember.futureCharge else { return nil }
         let chargeFragment = futureCharge.fragments.memberChargeFragment
         payment = .init(with: chargeFragment)
-        status = PaymentData.PaymentStatus.getStatus(with: data.currentMember)
+        status = PaymentData.PaymentStatus.getStatus(for: chargeFragment, with: data.currentMember)
         contracts = chargeFragment.contractsChargeBreakdown.compactMap({ .init(with: $0) })
         let redeemedCampaigns = data.currentMember.redeemedCampaigns
         discounts = chargeFragment.discountBreakdown.compactMap({ discountBreakdown in
@@ -25,6 +27,30 @@ extension PaymentData {
             }
         })
         self.paymentDetails = paymentDetails
+        addedToThePayment = []
+    }
+
+    // used for ongoing payments
+    init(
+        with data: OctopusGraphQL.MemberChargeFragment,
+        paymentDataQueryCurrentMember: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember
+    ) {
+        self.id = data.id ?? ""
+        payment = .init(with: data)
+        status = PaymentData.PaymentStatus.getStatus(for: data, with: paymentDataQueryCurrentMember)
+        contracts = data.contractsChargeBreakdown.compactMap({ .init(with: $0) })
+        let redeemedCampaigns = paymentDataQueryCurrentMember.redeemedCampaigns
+        discounts = data.discountBreakdown.compactMap({ discountBreakdown in
+            if let campaing = redeemedCampaigns.first(where: { $0.code == discountBreakdown.code }) {
+                return .init(with: discountBreakdown, discount: campaing)
+            } else {
+                let dto = paymentDataQueryCurrentMember.referralInformation.fragments
+                    .memberReferralInformationCodeFragment
+                    .asReedeemedCampaing()
+                return .init(with: discountBreakdown, discountDto: dto)
+            }
+        })
+        self.paymentDetails = nil
         addedToThePayment = []
     }
 }
@@ -43,10 +69,10 @@ extension PaymentData.PaymentDetails {
 @MainActor
 extension PaymentData.PaymentStatus {
     static func getStatus(
+        for charge: OctopusGraphQL.MemberChargeFragment,
         with data: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember
     ) -> PaymentData.PaymentStatus {
-        let charge = data.futureCharge
-        switch charge?.status {
+        switch charge.status {
         case .case(let t):
             switch t {
             case .failed:
@@ -67,8 +93,6 @@ extension PaymentData.PaymentStatus {
                 return .upcoming
             }
         case .unknown:
-            return .unknown
-        case nil:
             return .unknown
         }
     }

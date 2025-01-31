@@ -1,5 +1,5 @@
 import Foundation
-@preconcurrency import UnleashProxyClientSwift
+import UnleashProxyClientSwift
 import hGraphQL
 
 public class FeatureFlagsUnleash: FeatureFlags {
@@ -26,10 +26,9 @@ public class FeatureFlagsUnleash: FeatureFlags {
     public var isSubmitClaimEnabled: Bool = true
     public var osVersionTooLow: Bool = false
     public var emailPreferencesEnabled: Bool = false
-    public var isTiersEnabled: Bool = false
     public var isAddonsEnabled: Bool = false
-    public var movingFlowVersion: MovingFlowVersion?
-    public var isMovingFlowEnabled: Bool { movingFlowVersion != nil }
+    public var isMovingFlowEnabled: Bool = false
+    public var isAddonsRemovalFromMovingFlowEnabled: Bool = false
 
     public func setup(with context: [String: String]) async throws {
         unleashClient?.unsubscribe(name: "ready")
@@ -43,7 +42,6 @@ public class FeatureFlagsUnleash: FeatureFlags {
                 return "*:development.f2455340ac9d599b5816fa879d079f21dd0eb03e4315130deb5377b6"
             }
         }
-
         let environmentContext = clientKey.replacingOccurrences(of: "*:", with: "").components(separatedBy: ".")[0]
         unleashClient = UnleashProxyClientSwift.UnleashClient(
             unleashUrl: "https://eu.app.unleash-hosted.com/eubb1047/api/frontend",
@@ -53,10 +51,7 @@ public class FeatureFlagsUnleash: FeatureFlags {
             environment: environmentContext,
             context: context
         )
-        self.unleashClient?
-            .subscribe(.update) { [weak self] in
-                self?.handleUpdate()
-            }
+
         log.info("Started loading unleash experiments")
 
         do {
@@ -66,8 +61,11 @@ public class FeatureFlagsUnleash: FeatureFlags {
         } catch let exception {
             log.info("Failed loading unleash experiments \(exception)")
         }
+        self.unleashClient?
+            .subscribe(.update) { [weak self] in
+                self?.handleUpdate()
+            }
     }
-
     public func updateContext(context: [String: String]) {
         if let existingContext = unleashClient?.context.toMap() {
             for contextKey in context.keys {
@@ -125,10 +123,6 @@ public class FeatureFlagsUnleash: FeatureFlags {
         isHelpCenterEnabled = unleashClient.isEnabled(name: helpCenterKey)
         featureFlags[helpCenterKey] = isHelpCenterEnabled
 
-        let enableTiersKey = "enable_tiers"
-        isTiersEnabled = unleashClient.isEnabled(name: enableTiersKey)
-        featureFlags[enableTiersKey] = isTiersEnabled
-
         let enableAddonsKey = "enable_addons"
         isAddonsEnabled = unleashClient.isEnabled(name: enableAddonsKey)
         featureFlags[enableAddonsKey] = isAddonsEnabled
@@ -140,12 +134,14 @@ public class FeatureFlagsUnleash: FeatureFlags {
         } else {
             isConnectPaymentEnabled = false
         }
-        let movingFlowKey = "moving_flow_version"
-        let isMovingFlowEnabled = unleashClient.getVariant(name: movingFlowKey)
-        let movingFlowEnabledName = isMovingFlowEnabled.name
-        if let movingFlowVersion = MovingFlowVersion(rawValue: movingFlowEnabledName), isMovingFlowEnabled.enabled {
-            self.movingFlowVersion = movingFlowVersion
-        }
+        let movingFlowKey = "moving_flow"
+        isMovingFlowEnabled = unleashClient.isEnabled(name: movingFlowKey)
+        featureFlags[movingFlowKey] = isMovingFlowEnabled
+
+        let enableAddonsRemovalFromMovingFlowKey = "enable_addons_removal_from_moving_flow"
+        isAddonsRemovalFromMovingFlowEnabled = unleashClient.isEnabled(name: movingFlowKey)
+        featureFlags[enableAddonsRemovalFromMovingFlowKey] = isAddonsRemovalFromMovingFlowEnabled
+
         Task {
             log.info(
                 "Feature flag set",

@@ -7,7 +7,7 @@ import hGraphQL
 public class hPaymentService {
     @Inject var client: hPaymentClient
 
-    public func getPaymentData() async throws -> PaymentData? {
+    func getPaymentData() async throws -> (upcoming: PaymentData?, ongoing: [PaymentData?]) {
         log.info("hPaymentService: getPaymentData", error: nil, attributes: nil)
         return try await client.getPaymentData()
     }
@@ -37,7 +37,7 @@ public class hPaymentClientOctopus: hPaymentClient {
 
     public init() {}
 
-    public func getPaymentData() async throws -> PaymentData? {
+    public func getPaymentData() async throws -> (upcoming: PaymentData?, ongoing: [PaymentData]) {
         let query = OctopusGraphQL.PaymentDataQuery()
         let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
 
@@ -48,7 +48,12 @@ public class hPaymentClientOctopus: hPaymentClient {
         )
 
         let paymentDetails = PaymentData.PaymentDetails(with: paymentDetailsData)
-        return PaymentData(with: data, paymentDetails: paymentDetails)
+        let upcomingPayment = PaymentData(with: data, paymentDetails: paymentDetails)
+        let ongoingPayments: [PaymentData] = data.currentMember.ongoingCharges.compactMap({
+            .init(with: $0.fragments.memberChargeFragment, paymentDataQueryCurrentMember: data.currentMember)
+        })
+        return (upcomingPayment, ongoingPayments)
+
     }
 
     public func getPaymentStatusData() async throws -> PaymentStatusData {

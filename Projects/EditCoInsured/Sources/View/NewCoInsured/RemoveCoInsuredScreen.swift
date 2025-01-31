@@ -58,7 +58,6 @@ struct RemoveCoInsuredScreen: View {
                 .sectionContainerStyle(.transparent)
             }
         }
-        .hFormIgnoreKeyboard()
     }
 
     @ViewBuilder

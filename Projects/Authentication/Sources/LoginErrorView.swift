@@ -12,7 +12,8 @@ public struct LoginErrorView: View {
 
     public var body: some View {
         GenericErrorView(
-            description: message
+            description: message,
+            formPosition: .center
         )
         .hErrorViewButtonConfig(
             .init(

@@ -18,7 +18,7 @@ struct EditTierScreen: View {
         hForm {
             hSection {
                 VStack(spacing: .padding4) {
-                    ForEach(vm.tiers, id: \.self) { tier in
+                    ForEach(vm.tiers.sorted(by: { $0.level < $1.level }), id: \.self) { tier in
                         hRadioField(
                             id: tier.name,
                             leftView: {
@@ -51,10 +51,11 @@ struct EditTierScreen: View {
                     }
                 }
             }
-            .padding(.top, 16)
+            .padding(.top, .padding16)
             .sectionContainerStyle(.transparent)
             .hFieldSize(.medium)
         }
+        .hFormContentPosition(.compact)
         .hFormAttachToBottom {
             hSection {
                 VStack(spacing: .padding8) {

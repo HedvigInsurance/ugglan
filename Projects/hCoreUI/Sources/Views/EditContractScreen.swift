@@ -16,14 +16,17 @@ public struct EditContractScreen: View {
 
     public var body: some View {
         hForm {
-            VStack(spacing: 16) {
-                VStack(spacing: 4) {
+            VStack(spacing: .padding16) {
+                VStack(spacing: .padding4) {
                     ForEach(editTypes, id: \.rawValue) { editType in
                         hSection {
                             hRadioField(
                                 id: editType.rawValue,
                                 leftView: {
-                                    VStack(alignment: .leading, spacing: .padding2) {
+                                    VStack(
+                                        alignment: .leading,
+                                        spacing: .padding2
+                                    ) {
                                         HStack {
                                             hText(editType.title)
                                         }
@@ -64,7 +67,7 @@ public struct EditContractScreen: View {
                 .padding(.bottom, .padding16)
             }
         }
-        .hDisableScroll
+        .hFormContentPosition(.compact)
         .onChange(of: selectedValue) { value in
             selectedType = EditType(rawValue: value ?? "")
         }

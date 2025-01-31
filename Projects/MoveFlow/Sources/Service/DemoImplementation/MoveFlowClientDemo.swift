@@ -15,7 +15,7 @@ public class MoveFlowClientDemo: MoveFlowClient {
             suggestedNumberCoInsured: 2,
             currentHomeAddresses: [],
             potentialHomeQuotes: [],
-            quotes: [],
+            mtaQuotes: [],
             faqs: [],
             extraBuildingTypes: []
         )
@@ -38,12 +38,12 @@ public class MoveFlowClientDemo: MoveFlowClient {
             suggestedNumberCoInsured: 2,
             currentHomeAddresses: [],
             potentialHomeQuotes: [],
-            quotes: [],
+            mtaQuotes: [],
             faqs: [],
             extraBuildingTypes: []
         )
     }
 
-    public func confirmMoveIntent(intentId: String, homeQuoteId: String?) async throws {
+    public func confirmMoveIntent(intentId: String, homeQuoteId: String, removedAddons: [String]) async throws {
     }
 }

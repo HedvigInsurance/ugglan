@@ -272,7 +272,8 @@ public struct ClaimDetailView: View {
                 if let fetchError = vm.fetchFilesError {
                     hSection {
                         GenericErrorView(
-                            description: fetchError
+                            description: fetchError,
+                            formPosition: .center
                         )
                         .hErrorViewButtonConfig(
                             .init(
@@ -304,12 +305,12 @@ public struct ClaimDetailView: View {
                                 .frame(maxWidth: .infinity, alignment: .center)
                         }
                         .verticalPadding(0)
+                        .fixedSize(horizontal: false, vertical: true)
                         hButton.MediumButton(type: .primary) {
                             showFilePickerAlert()
                         } content: {
                             hText(L10n.ClaimStatus.UploadedFiles.uploadButton)
                         }
-                        .fixedSize()
                     }
                     .padding(.vertical, .padding32)
                 }

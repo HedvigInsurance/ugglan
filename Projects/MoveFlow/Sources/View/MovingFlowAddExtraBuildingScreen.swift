@@ -53,7 +53,7 @@ struct MovingFlowAddExtraBuildingScreen: View {
                 .sectionContainerStyle(.transparent)
             }
         }
-        .hDisableScroll
+        .hFormContentPosition(.compact)
     }
     @ViewBuilder
     private var typeOfBuilding: some View {

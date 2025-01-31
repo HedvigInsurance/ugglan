@@ -62,7 +62,7 @@ public struct TextInputView: View {
                 .padding(.vertical, .padding16)
             }
         }
-        .hDisableScroll
+        .hFormContentPosition(.compact)
         .sectionContainerStyle(.transparent)
     }
     enum InputViewFocus: hTextFieldFocusStateCompliant {

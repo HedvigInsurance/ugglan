@@ -63,8 +63,12 @@ struct ChangeAddonScreen: View {
                                 buttonTitle: L10n.addonFlowLearnMoreButton,
                                 buttonAction: {
                                     changeAddonNavigationVm.isLearnMorePresented = .init(
-                                        title: L10n.addonFlowTravelInformationTitle,
-                                        description: L10n.addonFlowTravelInformationDescription
+                                        .init(
+                                            title: L10n.addonFlowTravelInformationTitle,
+                                            description: L10n.addonFlowTravelInformationDescription,
+                                            perils: changeAddonNavigationVm.changeAddonVm?.selectedQuote?.addonVariant?
+                                                .perils ?? []
+                                        )
                                     )
                                 }
                             )
@@ -73,14 +77,13 @@ struct ChangeAddonScreen: View {
                         hButton.LargeButton(type: .primary) {
                             changeAddonNavigationVm.router.push(ChangeAddonRouterActions.summary)
                         } content: {
-                            hText(L10n.addonFlowAddToInsuranceButton)
+                            hText(L10n.generalContinueButton)
                         }
                         .padding(.top, .padding16)
                     }
                     .sectionContainerStyle(.transparent)
                 }
             }
-            .hDisableScroll
     }
 
     @ViewBuilder
@@ -103,7 +106,6 @@ struct ChangeAddonScreen: View {
                 hText(addon.title)
                     .fixedSize()
                 Spacer()
-
                 hPill(
                     text: L10n.addonFlowPriceLabel(
                         changeAddonVm.addonOffer?.getTotalPrice(selectedQuote: changeAddonVm.selectedQuote)?
@@ -130,6 +132,7 @@ struct ChangeAddonScreen: View {
             .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary])
             .hSectionWithoutHorizontalPadding
         }
+        .fixedSize(horizontal: false, vertical: true)
     }
 }
 

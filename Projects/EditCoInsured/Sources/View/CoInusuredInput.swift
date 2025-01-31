@@ -262,7 +262,7 @@ struct CoInusuredInputScreen: View {
             }
             .padding(.top, vm.actionType == .delete ? 16 : 0)
         }
-        .hDisableScroll
+        .hFormContentPosition(.compact)
     }
 
     var buttonDisplayText: String {

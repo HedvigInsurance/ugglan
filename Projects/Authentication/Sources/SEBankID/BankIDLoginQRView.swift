@@ -73,7 +73,6 @@ public struct BankIDLoginQRView: View {
                     }
                     .padding(.top, UIScreen.main.bounds.size.height / 5.0)
                 }
-                .hDisableScroll
                 .hFormAttachToBottom {
                     hSection {
                         VStack(spacing: 16) {

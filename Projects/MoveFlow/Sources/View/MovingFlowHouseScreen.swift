@@ -25,34 +25,31 @@ struct MovingFlowHouseScreen: View {
 
     var form: some View {
         hForm {
-            VStack {
-                VStack(spacing: 16) {
-                    VStack(spacing: 8) {
-                        yearOfConstructionField
-                        ancillaryAreaField
-                        bathroomsField
-                        isSubleted
-                        extraBuildingTypes
-                    }
-                    .disabled(houseInformationInputvm.viewState == .loading)
-                    if let days = movingFlowNavigationVm.movingFlowVm?.oldAddressCoverageDurationDays {
-                        hSection {
-                            InfoCard(text: L10n.changeAddressCoverageInfoText(days), type: .info)
-                        }
-                    }
+            VStack(spacing: 16) {
+                VStack(spacing: 8) {
+                    yearOfConstructionField
+                    ancillaryAreaField
+                    bathroomsField
+                    isSubleted
+                    extraBuildingTypes
+                }
+                .disabled(houseInformationInputvm.viewState == .loading)
+                if let days = movingFlowNavigationVm.movingFlowVm?.oldAddressCoverageDurationDays {
                     hSection {
-                        hButton.LargeButton(type: .primary) {
-                            continuePressed()
-                        } content: {
-                            hText(L10n.saveAndContinueButtonLabel, style: .body1)
-                        }
+                        InfoCard(text: L10n.changeAddressCoverageInfoText(days), type: .info)
                     }
-
                 }
             }
             .padding(.bottom, .padding8)
-            .padding(.top, .padding16)
-
+        }
+        .hFormAlwaysAttachToBottom {
+            hSection {
+                hButton.LargeButton(type: .primary) {
+                    continuePressed()
+                } content: {
+                    hText(L10n.saveAndContinueButtonLabel, style: .body1)
+                }
+            }
         }
         .hFormTitle(
             title: .init(
@@ -68,6 +65,7 @@ struct MovingFlowHouseScreen: View {
             )
         )
         .sectionContainerStyle(.transparent)
+        .hFormContentPosition(.bottom)
     }
 
     private var yearOfConstructionField: some View {
@@ -165,7 +163,6 @@ struct MovingFlowHouseScreen: View {
                         }
                     }
                     .hButtonDontShowLoadingWhenDisabled(true)
-                    .fixedSize(horizontal: true, vertical: false)
                     .hUseLightMode
                     .padding(.top, .padding8)
 
@@ -209,7 +206,7 @@ struct MovingFlowHouseScreen: View {
                 ) {
                     movingFlowNavigationVm.movingFlowVm = movingFlowData
 
-                    if let changeTierModel = movingFlowData.changeTier {
+                    if let changeTierModel = movingFlowData.changeTierModel {
                         router.push(MovingFlowRouterActions.selectTier(changeTierModel: changeTierModel))
                     } else {
                         router.push(MovingFlowRouterActions.confirm)

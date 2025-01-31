@@ -57,32 +57,14 @@ extension ChangeTierViewModel {
                         changeTierNavigationVm?.document = document
                     },
                     displayItems: addon.displayItems.compactMap({ .init(title: $0.title, value: $0.value) }),
-                    insuranceLimits: addon.addonVariant.insurableLimits,
+                    insuranceLimits: [],
                     typeOfContract: nil,
-                    onInfoClick: {
-                        changeTierNavigationVm.isInfoViewPresented = .init(
-                            title: addon.displayName,
-                            description: L10n.movingFlowTravelAddonSummaryDescription
-                        )
-                    }
+                    isAddon: true
                 )
             )
         }
-        let premium: MonetaryAmount = {
-            let quotePremium = self.newPremium?.value ?? 0
-            let addonsPremium: Float =
-                self.selectedQuote?.addons
-                .reduce(
-                    0,
-                    { partialResult, addon in
-                        partialResult + addon.premium.value
-                    }
-                ) ?? 0
-            return .init(amount: quotePremium + addonsPremium, currency: self.newPremium?.currency ?? "")
-        }()
         let vm = QuoteSummaryViewModel(
             contract: contracts,
-            total: premium,
             onConfirmClick: {
                 self.commitTier()
                 changeTierNavigationVm.router.push(ChangeTierRouterActionsWithoutBackButton.commitTier)

@@ -1,14 +1,11 @@
 fragment AddonVariantFragment on AddonVariant {
     termsVersion
     product
-    perils {
-        ...PerilFragment
-    }
-    insurableLimits {
-        label
-        limit
-        description
-        type
+    addonPerils {
+      title
+      description
+      coverageText
+      colorCode
     }
     documents {
         ...InsuranceDocumentFragment

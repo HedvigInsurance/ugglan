@@ -54,7 +54,6 @@ public struct hFloatingField: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 Spacer()
                 fieldTrailingView
-
             }
             .padding(.top, !value.isEmpty ? size.topPaddingWithSubtitle : size.topPadding)
             .padding(.bottom, !value.isEmpty ? size.bottomPaddingWithSubtitle : size.bottomPadding)

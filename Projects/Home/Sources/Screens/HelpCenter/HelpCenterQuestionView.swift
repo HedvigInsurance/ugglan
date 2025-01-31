@@ -25,6 +25,8 @@ struct HelpCenterQuestionView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             HelpCenterPill(title: L10n.hcQuestionTitle, color: .blue)
                             hText(question.question, style: .body1)
+                                .multilineTextAlignment(.leading)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
                         VStack(alignment: .leading, spacing: 8) {
                             HelpCenterPill(title: L10n.hcAnswerTitle, color: .green)
@@ -43,16 +45,19 @@ struct HelpCenterQuestionView: View {
                     }
                 }
                 .sectionContainerStyle(.transparent)
-                SupportView(router: router)
-                    .padding(.top, .padding8)
             }
         }
         .hFormBottomBackgroundColor(.gradient(from: hBackgroundColor.primary, to: hSurfaceColor.Opaque.primary))
+        .hFormAttachToBottom {
+            SupportView(router: router)
+                .padding(.top, .padding8)
+        }
+        .hFormIgnoreBottomPadding
         .edgesIgnoringSafeArea(.bottom)
     }
 }
 
-#Preview{
+#Preview {
     HelpCenterQuestionView(
         question: Question(
             question: "When do you charge for my insurance?",

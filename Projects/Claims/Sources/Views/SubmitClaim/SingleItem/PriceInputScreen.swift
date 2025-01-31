@@ -35,6 +35,7 @@ struct PriceInputScreen: View {
                 )
             }
         }
+        .hFormContentPosition(.compact)
         .sectionContainerStyle(.transparent)
         .hFormAttachToBottom {
             hSection {
@@ -54,7 +55,7 @@ struct PriceInputScreen: View {
                     }
                 }
             }
-            .padding(.vertical, .padding16)
+            .padding(.top, .padding16)
         }
         .introspect(.scrollView, on: .iOS(.v13...)) { scrollView in
             scrollView.keyboardDismissMode = .interactive

@@ -21,6 +21,7 @@ import TerminateContracts
 import TravelCertificate
 import hCore
 import hCoreUI
+import hGraphQL
 
 struct LoggedInNavigation: View {
     @ObservedObject var vm: LoggedInNavigationViewModel
@@ -260,6 +261,7 @@ struct LoggedInNavigation: View {
                         }
                     }
                 )
+                .embededInNavigation(tracking: ProfileRedirectType.deleteRequestLoading)
             }
         }
         .tabItem {
@@ -386,7 +388,7 @@ struct HomeTab: View {
         }
         .detent(
             presented: $homeNavigationVm.navBarItems.isFirstVetPresented,
-            style: [.height]
+            style: [.large]
         ) {
             let store: HomeStore = globalPresentableStoreContainer.get()
             FirstVetView(partners: store.state.quickActions.getFirstVetPartners ?? [])
@@ -481,7 +483,12 @@ class LoggedInNavigationViewModel: ObservableObject {
 
     private var deeplinkToBeOpenedAfterLogin: URL?
     private var cancellables = Set<AnyCancellable>()
-    weak var tabBar: UITabBarController?
+    weak var tabBar: UITabBarController? {
+        didSet {
+            guard #available(iOS 18, *), UIDevice.current.userInterfaceIdiom == .pad else { return }
+            tabBar?.traitOverrides.horizontalSizeClass = .compact
+        }
+    }
     init() {
         setupObservers()
 
@@ -533,11 +540,12 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     @objc func openDeepLinkNotification(notification: Notification) {
-        let deepLinkUrl = notification.object as? URL
-        if ApplicationState.currentState == .loggedIn {
-            self.handleDeepLinks(deepLinkUrl: deepLinkUrl)
-        } else {
-            self.deeplinkToBeOpenedAfterLogin = deepLinkUrl
+        if let deepLinkUrl = notification.object as? URL {
+            if ApplicationState.currentState == .loggedIn {
+                self.handleDeepLinks(deepLinkUrl: deepLinkUrl)
+            } else if !deepLinkUrl.absoluteString.contains("//bankid") {
+                self.deeplinkToBeOpenedAfterLogin = deepLinkUrl
+            }
         }
     }
 
@@ -718,7 +726,13 @@ class LoggedInNavigationViewModel: ObservableObject {
             case .addon:
                 handleAddon(url: url)
             case nil:
-                openUrl(url: url)
+                let rootUrls = [hGraphQL.Environment.staging.deepLinkUrl, Environment.production.deepLinkUrl]
+                    .compactMap({ $0.host })
+                guard rootUrls.contains(url.host ?? "") else {
+                    openUrl(url: url)
+                    return
+                }
+
             }
         }
     }

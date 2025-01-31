@@ -29,10 +29,7 @@ where MainContent: View, BottomContent: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             hRow {
-                HStack(alignment: .center) {
-                    mainContent
-                    Spacer()
-                }
+                mainContent
             }
             .verticalPadding(0)
             .padding(.bottom, cardWithoutSpacing ? 0 : .padding16)

@@ -13,9 +13,10 @@ struct ContractTable: View {
     let showTerminated: Bool
     @State var onlyTerminatedInsurances = false
     @StateObject var vm = ContractTableViewModel()
-
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
     @EnvironmentObject var router: Router
+    @SwiftUI.Environment(\.sizeCategory) private var sizeCategory
+
     func getContractsToShow(for state: ContractState) -> [Contract] {
         if showTerminated {
             return state.terminatedContracts.compactMap { $0 }
@@ -37,7 +38,7 @@ struct ContractTable: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: .padding8) {
             successView
                 .loadingWithButtonLoading($vm.viewState)
                 .hErrorViewButtonConfig(
@@ -49,7 +50,7 @@ struct ContractTable: View {
                     )
                 )
             if !showTerminated {
-                VStack(spacing: 24) {
+                VStack(spacing: .padding8) {
                     hSection {
                         if Dependencies.featureFlags().isAddonsEnabled, let banner = vm.addonBannerModel {
                             let addonContracts = banner.contractIds.compactMap({
@@ -79,6 +80,7 @@ struct ContractTable: View {
 
                     movingToANewHomeView
                     CrossSellingStack(withHeader: true)
+                        .padding(.top, .padding8)
 
                     PresentableStoreLens(
                         ContractStore.self,
@@ -113,7 +115,6 @@ struct ContractTable: View {
                     .presentableStoreLensAnimation(.spring())
                     .sectionContainerStyle(.transparent)
                 }
-                .padding(.vertical, .padding24)
             }
         }
         .onAppear {
@@ -147,7 +148,7 @@ struct ContractTable: View {
                                 router.push(contract)
                             }
                         )
-                        .fixedSize(horizontal: false, vertical: true)
+                        .fixedSize(horizontal: false, vertical: sizeCategory > .large ? true : false)
                         .transition(.slide)
                     }
                 }
@@ -178,11 +179,6 @@ struct ContractTable: View {
                                 }
                             )
                         ])
-                }
-                .withHeader {
-                    hText(L10n.insurancesTabMovingFlowSectionTitle)
-                        .foregroundColor(hTextColor.Opaque.primary)
-                        .padding(.leading, 2)
                 }
             }
         }

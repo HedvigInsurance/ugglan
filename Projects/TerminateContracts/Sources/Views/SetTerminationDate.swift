@@ -17,38 +17,35 @@ struct SetTerminationDate: View {
     }
 
     var body: some View {
-        hForm {
-            if let termination = terminationNavigationVm.terminationDateStepModel {
-                DatePickerView(
-                    vm: .init(
-                        continueAction: {
-                            terminationNavigationVm.terminationDateStepModel?.date = terminationDate
-                            terminationNavigationVm.isDatePickerPresented = false
+        if let termination = terminationNavigationVm.terminationDateStepModel {
+            DatePickerView(
+                vm: .init(
+                    continueAction: {
+                        terminationNavigationVm.terminationDateStepModel?.date = terminationDate
+                        terminationNavigationVm.isDatePickerPresented = false
 
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                                self.isHidden = true
-                            }
-                        },
-                        cancelAction: {
-                            terminationNavigationVm.isDatePickerPresented = false
-                        },
-                        date: $terminationDate,
-                        config: .init(
-                            minDate: termination.minDate.localDateToDate,
-                            maxDate: termination.maxDate.localDateToDate,
-                            initialySelectedValue: Date(),
-                            placeholder: "",
-                            title: L10n.terminationDateText,
-                            showAsList: false,
-                            dateFormatter: .none,
-                            buttonText: L10n.generalSaveButton
-                        )
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                            self.isHidden = true
+                        }
+                    },
+                    cancelAction: {
+                        terminationNavigationVm.isDatePickerPresented = false
+                    },
+                    date: $terminationDate,
+                    config: .init(
+                        minDate: termination.minDate.localDateToDate,
+                        maxDate: termination.maxDate.localDateToDate,
+                        initialySelectedValue: Date(),
+                        placeholder: "",
+                        title: L10n.terminationDateText,
+                        showAsList: false,
+                        dateFormatter: .none,
+                        buttonText: L10n.generalSaveButton
                     )
                 )
-            }
+            )
+            .hide($isHidden)
         }
-        .hDisableScroll
-        .hide($isHidden)
     }
 }
 

@@ -38,6 +38,7 @@ public struct FirstVetView: View {
                                 } content: {
                                     hText(L10n.commonClaimButton)
                                 }
+                                .hButtonTakeFullWidth(true)
                             }
                         }
                     }
@@ -45,7 +46,7 @@ public struct FirstVetView: View {
                 .hWithoutDivider
             }
         }
-        .hFormAttachToBottom {
+        .hFormAlwaysAttachToBottom {
             hButton.LargeButton(type: .ghost) {
                 store.send(.dismissOtherServices)
             } content: {
@@ -56,6 +57,6 @@ public struct FirstVetView: View {
     }
 }
 
-#Preview{
+#Preview {
     FirstVetView(partners: [])
 }

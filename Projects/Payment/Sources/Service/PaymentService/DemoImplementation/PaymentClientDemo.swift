@@ -3,82 +3,84 @@ import hCore
 
 public class hPaymentClientDemo: hPaymentClient {
     public init() {}
-    public func getPaymentData() async throws -> PaymentData? {
+    public func getPaymentData() async throws -> (upcoming: PaymentData?, ongoing: [PaymentData]) {
         try await Task.sleep(nanoseconds: 1_000_000_000)
-        return .init(
-            id: "",
-            payment: .init(
-                gross: .sek(460),
-                net: .sek(400),
-                carriedAdjustment: nil,
-                settlementAdjustment: nil,
-                date: "2023-11-30"
-            ),
-            status: .upcoming,
-            contracts: [
-                .init(
-                    id: "id",
-                    title: "Title",
-                    subtitle: "Subtitle",
-                    amount: .sek(200),
-                    periods: [
-                        .init(
-                            id: "id",
-                            from: "2023-11-01",
-                            to: "2023-11-30",
-                            amount: .sek(200),
-                            isOutstanding: false,
-                            desciption: nil
-                        )
-                    ]
+        return (
+            .init(
+                id: "",
+                payment: .init(
+                    gross: .sek(460),
+                    net: .sek(400),
+                    carriedAdjustment: nil,
+                    settlementAdjustment: nil,
+                    date: "2023-11-30"
                 ),
-                .init(
-                    id: "id1",
-                    title: "Title 2",
-                    subtitle: "Subtitle 2",
-                    amount: .sek(200),
-                    periods: [
-                        .init(
-                            id: "id2",
-                            from: "2023-11-01",
-                            to: "2023-11-30",
-                            amount: .sek(100),
-                            isOutstanding: false,
-                            desciption: nil
-                        ),
-                        .init(
-                            id: "id12",
-                            from: "2023-10-01",
-                            to: "2023-10-31",
-                            amount: .sek(100),
-                            isOutstanding: true,
-                            desciption: nil
-                        ),
-                    ]
-                ),
-            ],
-            discounts: [
-                .init(
-                    id: "CODE",
-                    code: "CODE",
-                    amount: .sek(30),
-                    title: "15% off for 1 year",
-                    listOfAffectedInsurances: [.init(id: "1", displayName: "Car Insurance * ABH 234")],
-                    validUntil: "2023-12-10",
-                    canBeDeleted: false
-                ),
-                .init(
-                    id: "CODE 2",
-                    code: "CODE 2",
-                    amount: .sek(30),
-                    title: "15% off for 1 year",
-                    listOfAffectedInsurances: [.init(id: "1", displayName: "Home insurace &*")],
-                    validUntil: "2023-11-03",
-                    canBeDeleted: false
-                ),
-            ],
-            paymentDetails: .init(paymentMethod: "Method", account: "Account", bank: "Bank"),
-            addedToThePayment: nil
+                status: .upcoming,
+                contracts: [
+                    .init(
+                        id: "id",
+                        title: "Title",
+                        subtitle: "Subtitle",
+                        amount: .sek(200),
+                        periods: [
+                            .init(
+                                id: "id",
+                                from: "2023-11-01",
+                                to: "2023-11-30",
+                                amount: .sek(200),
+                                isOutstanding: false,
+                                desciption: nil
+                            )
+                        ]
+                    ),
+                    .init(
+                        id: "id1",
+                        title: "Title 2",
+                        subtitle: "Subtitle 2",
+                        amount: .sek(200),
+                        periods: [
+                            .init(
+                                id: "id2",
+                                from: "2023-11-01",
+                                to: "2023-11-30",
+                                amount: .sek(100),
+                                isOutstanding: false,
+                                desciption: nil
+                            ),
+                            .init(
+                                id: "id12",
+                                from: "2023-10-01",
+                                to: "2023-10-31",
+                                amount: .sek(100),
+                                isOutstanding: true,
+                                desciption: nil
+                            ),
+                        ]
+                    ),
+                ],
+                discounts: [
+                    .init(
+                        id: "CODE",
+                        code: "CODE",
+                        amount: .sek(30),
+                        title: "15% off for 1 year",
+                        listOfAffectedInsurances: [.init(id: "1", displayName: "Car Insurance * ABH 234")],
+                        validUntil: "2023-12-10",
+                        canBeDeleted: false
+                    ),
+                    .init(
+                        id: "CODE 2",
+                        code: "CODE 2",
+                        amount: .sek(30),
+                        title: "15% off for 1 year",
+                        listOfAffectedInsurances: [.init(id: "1", displayName: "Home insurace &*")],
+                        validUntil: "2023-11-03",
+                        canBeDeleted: false
+                    ),
+                ],
+                paymentDetails: .init(paymentMethod: "Method", account: "Account", bank: "Bank"),
+                addedToThePayment: nil
+            ), []
         )
     }
 

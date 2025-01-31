@@ -40,7 +40,7 @@ public struct ProductVariant: Codable, Hashable, Sendable {
         self.termsVersion = data.termsVersion
         self.typeOfContract = data.typeOfContract
         self.partner = data.partner ?? ""
-        self.perils = data.perils.map({ .init(fragment: $0) })
+        self.perils = data.perils.map({ .init(fragment: $0.fragments.perilFragment) })
         self.insurableLimits = data.insurableLimits.map({ .init($0) })
         self.documents = data.documents.map({ .init($0) })
         self.displayNameTier = data.displayNameTier

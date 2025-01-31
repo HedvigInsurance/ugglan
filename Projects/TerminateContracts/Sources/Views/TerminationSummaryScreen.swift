@@ -9,7 +9,6 @@ struct TerminationSummaryScreen: View {
 
     var body: some View {
         hForm {}
-            .hDisableScroll
             .hFormTitle(
                 title: .init(
                     .small,

@@ -209,6 +209,7 @@ public struct EditCoInsuredNavigation: View {
                     }
                 }
         }
+        .hFormContentPosition(.compact)
     }
 
     func openRemoveCoInsuredScreen() -> some View {

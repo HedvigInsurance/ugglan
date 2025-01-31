@@ -8,7 +8,7 @@ import hGraphQL
 public struct DeleteRequestLoadingView: View {
     @PresentableStore var store: ProfileStore
     var profileService = ProfileService()
-
+    @EnvironmentObject var router: Router
     private var dismissAction: (ProfileNavigationDismissAction) -> Void
 
     public init(
@@ -47,12 +47,13 @@ public struct DeleteRequestLoadingView: View {
                     .foregroundColor(hTextColor.Translucent.secondary)
                     .multilineTextAlignment(.center)
             }
-            .padding(.top, UIScreen.main.bounds.size.height / 3.5)
             .padding(.horizontal, .padding32)
         }
+        .hFormContentPosition(.center)
         .hFormAttachToBottom {
             hSection {
                 hButton.LargeButton(type: .ghost) {
+                    router.dismiss()
                     dismissAction(.makeHomeTabActive)
                 } content: {
                     hText(L10n.generalCloseButton, style: .body1)
@@ -64,7 +65,8 @@ public struct DeleteRequestLoadingView: View {
 
     @ViewBuilder private func errorState(errorMessage: String) -> some View {
         GenericErrorView(
-            description: errorMessage
+            description: errorMessage,
+            formPosition: .center
         )
         .hErrorViewButtonConfig(
             .init(
@@ -75,40 +77,6 @@ public struct DeleteRequestLoadingView: View {
                     }
                 )
             )
-        )
-    }
-
-    private var notAvailableView: some View {
-        hSection {
-            VStack {
-                Spacer()
-                GenericErrorView(
-                    description: L10n.DeleteAccount.deleteNotAvailable
-                )
-                .hErrorViewButtonConfig(
-                    .init(
-                        actionButton: .init(
-                            buttonTitle: L10n.openChat,
-                            buttonAction: {
-                                dismissAction(.makeHomeTabActiveAndOpenChat)
-                            }
-                        ),
-                        dismissButton: nil
-                    )
-                )
-                Spacer()
-                hSection {
-                    hButton.LargeButton(type: .ghost) {
-                        dismissAction(.makeHomeTabActiveAndOpenChat)
-                    } content: {
-                        hText(L10n.generalCancelButton)
-                    }
-                }
-            }
-        }
-        .sectionContainerStyle(.transparent)
-        .background(
-            BackgroundView().edgesIgnoringSafeArea(.all)
         )
     }
 

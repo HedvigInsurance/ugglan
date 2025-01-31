@@ -97,9 +97,9 @@ public enum ChangeTierInput: Identifiable, Equatable {
     public var id: String {
         switch self {
         case .contractWithSource(let data):
-            return data.contractId
+            return data.contractId + data.source.asString
         case .existingIntent(let intent, _):
-            return intent.displayName
+            return intent.displayName + intent.tiers.flatMap({ $0.quotes }).compactMap({ $0.id }).joined(separator: ",")
         }
     }
     public static func == (lhs: ChangeTierInput, rhs: ChangeTierInput) -> Bool {
@@ -266,10 +266,7 @@ public struct ChangeTierNavigation: View {
         ) { info in
             InfoView(
                 title: info.title ?? "",
-                description: info.description ?? "",
-                onUrlClicked: { _ in
-                    NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
-                }
+                description: info.description ?? ""
             )
         }
     }

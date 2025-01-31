@@ -130,6 +130,8 @@ class LargeNavBar: UINavigationBar {
 
 @MainActor
 public struct DefaultStyling {
+    @Environment(\.hWithoutFontMultiplier) var withoutFontMultiplier
+
     public static func applyCommonNavigationBarStyling(_ appearance: UINavigationBarAppearance) {
         appearance.titleTextAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
@@ -137,7 +139,7 @@ public struct DefaultStyling {
         ]
         appearance.largeTitleTextAttributes = [
             NSAttributedString.Key.foregroundColor: UIColor.brand(.primaryText()),
-            NSAttributedString.Key.font: Fonts.fontFor(style: .body1),
+            NSAttributedString.Key.font: Fonts.fontFor(style: .body1, withoutFontMultipler: true),
         ]
 
         let backImage = hCoreUIAssets.chevronLeft.image.withAlignmentRectInsets(
@@ -247,7 +249,7 @@ public struct DefaultStyling {
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [hNavigationController.self])
             .setTitleTextAttributes(
                 [
-                    NSAttributedString.Key.font: Fonts.fontFor(style: .label)
+                    NSAttributedString.Key.font: Fonts.fontFor(style: .label, withoutFontMultipler: true)
                 ],
                 for: .normal
             )
@@ -255,7 +257,7 @@ public struct DefaultStyling {
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [hNavigationController.self])
             .setTitleTextAttributes(
                 [
-                    NSAttributedString.Key.font: Fonts.fontFor(style: .label)
+                    NSAttributedString.Key.font: Fonts.fontFor(style: .label, withoutFontMultipler: true)
                 ],
                 for: .highlighted
             )
@@ -263,7 +265,7 @@ public struct DefaultStyling {
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [hNavigationControllerWithLargerNavBar.self])
             .setTitleTextAttributes(
                 [
-                    NSAttributedString.Key.font: Fonts.fontFor(style: .label)
+                    NSAttributedString.Key.font: Fonts.fontFor(style: .label, withoutFontMultipler: true)
                 ],
                 for: .normal
             )
@@ -271,7 +273,7 @@ public struct DefaultStyling {
         UIBarButtonItem.appearance(whenContainedInInstancesOf: [hNavigationControllerWithLargerNavBar.self])
             .setTitleTextAttributes(
                 [
-                    NSAttributedString.Key.font: Fonts.fontFor(style: .label)
+                    NSAttributedString.Key.font: Fonts.fontFor(style: .label, withoutFontMultipler: true)
                 ],
                 for: .highlighted
             )
@@ -315,7 +317,7 @@ public struct DefaultStyling {
                     appearance.badgePositionAdjustment.vertical = -4
                     appearance.badgeTextAttributes = [
                         NSAttributedString.Key.foregroundColor: UIColor.brand(.alert),
-                        NSAttributedString.Key.font: Fonts.fontFor(style: .display1),
+                        NSAttributedString.Key.font: Fonts.fontFor(style: .display1, withoutFontMultipler: true),
                     ]
                 }
                 configureBadge(appearance: itemAppearance.normal)
@@ -328,22 +330,22 @@ public struct DefaultStyling {
                     .uiColor()
                 itemAppearance.normal.iconColor = nonSelecetedColor
                 itemAppearance.normal.titleTextAttributes = [
-                    .font: Fonts.fontFor(style: .finePrint),
+                    .font: Fonts.fontFor(style: .finePrint, withoutFontMultipler: true),
                     .foregroundColor: nonSelecetedColor,
                 ]
                 itemAppearance.selected.iconColor = selectedColor
                 itemAppearance.selected.titleTextAttributes = [
-                    .font: Fonts.fontFor(style: .finePrint),
+                    .font: Fonts.fontFor(style: .finePrint, withoutFontMultipler: true),
                     .foregroundColor: selectedColor,
                 ]
                 itemAppearance.focused.iconColor = selectedColor
                 itemAppearance.focused.titleTextAttributes = [
-                    .font: Fonts.fontFor(style: .finePrint),
+                    .font: Fonts.fontFor(style: .finePrint, withoutFontMultipler: true),
                     .foregroundColor: selectedColor,
                 ]
                 itemAppearance.disabled.iconColor = nonSelecetedColor
                 itemAppearance.disabled.titleTextAttributes = [
-                    .font: Fonts.fontFor(style: .finePrint),
+                    .font: Fonts.fontFor(style: .finePrint, withoutFontMultipler: true),
                     .foregroundColor: nonSelecetedColor,
                 ]
             }
@@ -379,7 +381,7 @@ public struct DefaultStyling {
     }
 
     private static func setSegmentedControllAppearance() {
-        let font = Fonts.fontFor(style: .label)
+        let font = Fonts.fontFor(style: .label, withoutFontMultipler: true)
 
         UISegmentedControl.appearance()
             .setTitleTextAttributes(

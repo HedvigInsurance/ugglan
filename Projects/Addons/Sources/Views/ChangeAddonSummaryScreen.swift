@@ -41,7 +41,8 @@ extension ChangeAddonViewModel {
                         newDisplayItems: self.selectedQuote?.displayItems ?? []
                     ),
                     insuranceLimits: [],
-                    typeOfContract: nil
+                    typeOfContract: nil,
+                    isAddon: true
                 )
             ],
             total: getTotalPrice(
