@@ -65,6 +65,7 @@ public struct PaymentHistoryView: View {
                                         }
                                         Spacer()
                                         hText(month.paymentData.payment.net.formattedAmount)
+                                        hText(" ")
                                     }
                                 }
                                 .withCustomAccessory {
@@ -91,6 +92,7 @@ public struct PaymentHistoryView: View {
                                     )
                                 )
                                 .padding(.horizontal, -16)
+                                .accessibilityElement(children: .combine)
                             }
                             .withHeader {
                                 hText(item.year)
@@ -149,6 +151,7 @@ struct PaymentHistoryView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.sv_SE)
         Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         return PaymentHistoryView()
     }
 }
