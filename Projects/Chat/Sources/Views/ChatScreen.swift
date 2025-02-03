@@ -164,7 +164,9 @@ public struct ChatScreen: View {
                     .hInfoCardLayoutStyle(.bannerStyle)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                     .accessibilityElement(children: .combine)
+                    .accessibilityAddTraits(.isButton)
                     .accessibilityLabel((vm.conversationStatus == .closed) ? L10n.chatConversationClosedInfo : banner)
+                    .accessibilityHint(L10n.voiceOverInfoHelpcenter)
             }
         }
     }

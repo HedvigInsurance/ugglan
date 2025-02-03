@@ -91,10 +91,10 @@ private struct CloseButtonModifier: ViewModifier {
                         .offset(y: CGFloat(-reducedTopSpacing))
                 }
                 .foregroundColor(hTextColor.Opaque.primary)
+                .accessibilityLabel(L10n.generalCloseButton)
             }
             .introspect(.viewController, on: .iOS(.v13...)) { vc in
                 vm.vc = vc
             }
-            .accessibilityLabel(L10n.generalCloseButton)
     }
 }
