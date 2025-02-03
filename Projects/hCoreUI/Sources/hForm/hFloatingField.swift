@@ -72,6 +72,9 @@ public struct hFloatingField: View {
                 self.startAnimation()
             }
         }
+        .accessibilityAddTraits(.isButton)
+        .accessibilityElement(children: .combine)
+
     }
     private var getTextLabel: some View {
         hText(value, style: size == .large ? .body2 : .body1)

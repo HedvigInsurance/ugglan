@@ -52,6 +52,7 @@ struct SettingsView: View {
                     MemberSubscriptionPreferenceView(vm: memberSubscriptionPreferenceVm)
                         .environmentObject(profileNavigationVm)
                 }
+                .accessibilityAddTraits(.isButton)
                 NotificationsCardView()
                     .padding(.vertical, .padding16)
 

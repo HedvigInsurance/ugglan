@@ -62,6 +62,7 @@ public struct SubmitClaimDeflectScreen: View {
                 }
                 .padding(.top, .padding8)
                 .sectionContainerStyle(.transparent)
+                .accessibilityElement(children: .combine)
 
                 VStack(spacing: 4) {
                     withAnimation(.easeOut) {

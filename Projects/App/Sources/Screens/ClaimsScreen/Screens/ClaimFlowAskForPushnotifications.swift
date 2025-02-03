@@ -44,6 +44,7 @@ struct AskForPushNotifications: View {
                     .resizable()
                     .frame(width: 24, height: 24)
                     .foregroundColor(hSignalColor.Blue.element)
+                    .accessibilityHidden(true)
                 VStack(spacing: 0) {
                     hText(L10n.activateNotificationsTitle)
                     hText(text)
@@ -51,6 +52,7 @@ struct AskForPushNotifications: View {
                         .padding(.horizontal, .padding32)
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
+                .accessibilityElement(children: .combine)
                 hButton.MediumButton(type: .primary) {
                     Task {
                         await UIApplication.shared.appDelegate.registerForPushNotifications()

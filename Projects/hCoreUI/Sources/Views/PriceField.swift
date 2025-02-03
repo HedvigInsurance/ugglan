@@ -26,6 +26,9 @@ public struct PriceField: View {
                     hText(currentPremium?.formattedAmountPerMonth ?? "")
                         .strikethrough()
                         .foregroundColor(hTextColor.Opaque.secondary)
+                        .accessibilityLabel(
+                            L10n.voiceoverCurrentPrice + (currentPremium?.formattedAmountPerMonth ?? "")
+                        )
                 } else {
                     hText(currentPremium?.formattedAmountPerMonth ?? "")
                         .foregroundColor(hTextColor.Opaque.secondary)
@@ -38,12 +41,22 @@ public struct PriceField: View {
                         hText(newPremium?.formattedAmountPerMonth ?? "")
                             .strikethrough()
                             .foregroundColor(hTextColor.Opaque.secondary)
+                            .accessibilityLabel(
+                                L10n.voiceoverCurrentPrice + (currentPremium?.formattedAmountPerMonth ?? "")
+                            )
+
                     } else {
                         hText(newPremium?.formattedAmountPerMonth ?? "")
                             .foregroundColor(hTextColor.Opaque.secondary)
+                            .accessibilityLabel(
+                                L10n.ReferralsActive.Your.New.Price.title + (newPremium?.formattedAmountPerMonth ?? "")
+                            )
                     }
                 } else {
                     hText(newPremium?.formattedAmountPerMonth ?? currentPremium?.formattedAmountPerMonth ?? "")
+                        .accessibilityLabel(
+                            L10n.ReferralsActive.Your.New.Price.title + (newPremium?.formattedAmountPerMonth ?? "")
+                        )
                 }
                 if let currentPremium, let newPremium, newPremium != currentPremium,
                     strikeThroughPrice != .crossOldPrice
@@ -56,6 +69,7 @@ public struct PriceField: View {
                 }
             }
         }
+        .accessibilityElement(children: .combine)
     }
 
     @hColorBuilder

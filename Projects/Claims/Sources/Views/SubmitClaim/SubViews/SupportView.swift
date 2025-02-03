@@ -17,6 +17,7 @@ struct SupportView: View {
                         .foregroundColor(hTextColor.Opaque.secondary)
                         .multilineTextAlignment(.center)
                 }
+                .accessibilityElement(children: .combine)
                 hButton.MediumButton(type: .primary) {
                     router.dismiss()
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {

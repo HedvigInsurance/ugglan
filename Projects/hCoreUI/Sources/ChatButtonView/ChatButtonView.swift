@@ -36,6 +36,19 @@ public enum ToolbarOptionType: Codable, Equatable, Sendable {
         }
     }
 
+    var displayName: String {
+        switch self {
+        case .newOffer:
+            return L10n.InsuranceTab.CrossSells.title
+        case .firstVet:
+            return L10n.hcQuickActionsFirstvetTitle
+        case .chat:
+            return L10n.CrossSell.Info.faqChatButton
+        case .chatNotification(let lastMessageTimeStamp):
+            return "\(tooltipId)\(lastMessageTimeStamp ?? Date())"
+        }
+    }
+
     var tooltipId: String {
         switch self {
         case .newOffer:
@@ -204,6 +217,7 @@ struct ToolbarButtonsView: View {
                                 .scaledToFill()
                                 .frame(width: 40, height: 40)
                                 .shadow(color: .black.opacity(0.15), radius: 1, x: 0, y: 1)
+                                .accessibilityValue(type.displayName)
                         }
                     }
                 }

@@ -314,6 +314,7 @@ struct ShowTagList: View {
                                     .delay(Double.random(in: 0.3...0.6))
                             )
                         )
+                        .accessibilityAddTraits(.isButton)
                     }
                 }
                 hButton.LargeButton(type: .primary) {
@@ -330,6 +331,7 @@ struct ShowTagList: View {
                     hText(L10n.generalContinueButton, style: .body1)
                 }
                 .hButtonIsLoading(buttonIsLoading)
+                .accessibilityHint(selection == nil || selection == "" ? L10n.voiceoverSubmitClaimsTriagingInfo : "")
             }
             .onAppear {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {

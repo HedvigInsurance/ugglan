@@ -193,6 +193,7 @@ public struct ClaimDetailView: View {
                 hSection {
                     VStack(spacing: 8) {
                         claimDetailsRow(title: L10n.ClaimStatus.ClaimDetails.type, value: claim.claimType)
+                            .accessibilityHidden(claim.claimType == "")
                         if let incidentDate = claim.incidentDate {
                             claimDetailsRow(
                                 title: L10n.ClaimStatus.ClaimDetails.incidentDate,
@@ -215,6 +216,8 @@ public struct ClaimDetailView: View {
                             title: L10n.ClaimStatus.ClaimDetails.title,
                             description: L10n.ClaimStatus.ClaimDetails.infoText
                         )
+                        .accessibilityAddTraits(.isButton)
+                        .accessibilityHint(L10n.ClaimStatus.ClaimDetails.title)
                     }
                 }
                 .hWithoutDivider
@@ -234,6 +237,7 @@ public struct ClaimDetailView: View {
             hText(value)
                 .foregroundColor(hTextColor.Opaque.secondary)
         }
+        .accessibilityElement(children: .combine)
     }
 
     @ViewBuilder

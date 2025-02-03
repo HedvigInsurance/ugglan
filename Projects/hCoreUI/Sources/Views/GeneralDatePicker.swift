@@ -70,6 +70,7 @@ public struct DatePickerView: View {
                         hText(vm.dateSelected.displayDateDDMMMYYYYFormat).foregroundColor(hTextColor.Opaque.secondary)
                     }
                 }
+                .accessibilityElement(children: .combine)
             }
         }
     }
