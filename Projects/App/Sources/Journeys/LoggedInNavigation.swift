@@ -322,12 +322,6 @@ struct HomeTab: View {
         ) {
             ClaimsJourneyMain(from: .generic)
         }
-        .detent(
-            item: $homeNavigationVm.document,
-            style: [.large]
-        ) { document in
-            PDFPreview(document: document)
-        }
         .modally(
             presented: $homeNavigationVm.isHelpCenterPresented
         ) {

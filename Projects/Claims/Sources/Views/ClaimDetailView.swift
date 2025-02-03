@@ -15,7 +15,6 @@ public struct ClaimDetailView: View {
     @State var showFilePicker = false
     @State var showCamera = false
     @ObservedObject var vm: ClaimDetailViewModel
-    @EnvironmentObject var homeVm: HomeNavigationViewModel
     @EnvironmentObject var router: Router
 
     public init(
@@ -123,6 +122,12 @@ public struct ClaimDetailView: View {
             .configureTitle(L10n.ClaimStatusDetail.addedFiles)
             .embededInNavigation(tracking: ClaimDetailDetentType.fileUpload)
 
+        }
+        .detent(
+            item: $vm.document,
+            style: [.large]
+        ) { document in
+            PDFPreview(document: document)
         }
         .loading($vm.claimProcessingState)
         .hErrorViewButtonConfig(
@@ -247,7 +252,7 @@ public struct ClaimDetailView: View {
                     Image(uiImage: hCoreUIAssets.arrowNorthEast.image)
                 }
                 .onTap {
-                    homeVm.document = termsAndConditionsDocument
+                    vm.document = termsAndConditionsDocument
                 }
             }
         }
@@ -398,6 +403,7 @@ struct ClaimDetailView_Previews: PreviewProvider {
 @MainActor
 public class ClaimDetailViewModel: ObservableObject {
     @PresentableStore var store: ClaimsStore
+    @Published public var document: hPDFDocument? = nil
     @Published private(set) var claim: ClaimModel? {
         didSet {
             self.setupToolbarOptionType(for: claim)
