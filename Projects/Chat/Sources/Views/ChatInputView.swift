@@ -262,7 +262,7 @@ private class CustomTextView: UITextView, UITextViewDelegate {
     }
 
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
             self?.inputText = textView.text
             self?.updateHeight()
             self?.updateColors()
