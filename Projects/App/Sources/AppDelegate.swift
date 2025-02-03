@@ -24,6 +24,8 @@ import hGraphQL
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var cancellables = Set<AnyCancellable>()
     private var localizationObserverTask: AnyCancellable?
+    private var localizationObserverTask2: AnyCancellable?
+
     let window: UIWindow = {
         var window = UIWindow(frame: UIScreen.main.bounds)
         window.rootViewController = UIViewController()
@@ -163,10 +165,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func application(
-        _: UIApplication,
+        _ application: UIApplication,
         didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         Localization.Locale.currentLocale.send(ApplicationState.preferredLocale)
+        application.accessibilityLanguage = Localization.Locale.currentLocale.value.accessibilityLanguageCode
         window.rootViewController = UIViewController()
         window.makeKeyAndVisible()
         DefaultStyling.installCustom()
