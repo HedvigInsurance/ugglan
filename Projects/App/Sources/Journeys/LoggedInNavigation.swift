@@ -731,8 +731,10 @@ class LoggedInNavigationViewModel: ObservableObject {
             case .changeTier:
                 let contractId = self.getContractId(from: url)
                 handleChangeTier(contractId: contractId)
-            case .addon:
-                handleAddon(url: url)
+            case .travelAddon:
+                Task {
+                    await handleTravelAddon()
+                }
             case nil:
                 let isDeeplink = hGraphQL.Environment.current.isDeeplink(url)
                 if !isDeeplink {
@@ -817,22 +819,26 @@ class LoggedInNavigationViewModel: ObservableObject {
         }
     }
 
-    private func handleAddon(url: URL) {
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        if let contractId = getContractId(from: url),
-            let contract: Contracts.Contract = contractStore.state.contractForId(contractId)
-        {
-            self.isAddonPresented = .init(
-                contractConfigs: [
+    private func handleTravelAddon() async {
+        do {
+            let client: FetchContractsClient = Dependencies.shared.resolve()
+            if let bannerData = try await client.getAddonBannerModel(source: .appUpsellUpgrade) {
+                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                let addonContracts = bannerData.contractIds.compactMap({
+                    contractStore.state.contractForId($0)
+                })
+
+                let addonConfigs: [AddonConfig] = addonContracts.map({
                     .init(
-                        contractId: contract.id,
-                        exposureName: contract.exposureDisplayName,
-                        displayName: contract.currentAgreement?.productVariant.displayName ?? ""
+                        contractId: $0.id,
+                        exposureName: $0.exposureDisplayName,
+                        displayName: $0.currentAgreement?.productVariant.displayName ?? ""
                     )
-                ]
-            )
-        } else if let addonId = getAddonId(from: url) {
-            self.isAddonPresented = .init(addonId: addonId)
+                })
+                self.isAddonPresented = .init(contractConfigs: addonConfigs)
+            }
+        } catch {
+
         }
     }
 
