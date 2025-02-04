@@ -1,4 +1,5 @@
 import Combine
+import AVKit
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import WebKit
@@ -8,6 +9,7 @@ import hCore
 public class DocumentPreviewModel: NSObject, ObservableObject {
     let type: DocumentPreviewType
     let webView = WKWebView()
+    let player: AVPlayer?
     weak var vc: UIViewController?
     @Published var isLoading = true
     @Published var error: String?
@@ -17,9 +19,23 @@ public class DocumentPreviewModel: NSObject, ObservableObject {
     var contentSizeCancellable: AnyCancellable?
     public init(type: DocumentPreviewType) {
         self.type = type
+        
+        switch type {
+        case let .url(url, mimeType):
+            if mimeType.isVideo {
+                player = AVPlayer(url: url)
+                player?.play()
+            } else {
+                player = nil
+            }
+        case .data:
+            player = nil
+        }
         super.init()
         webView.navigationDelegate = self
-        loadURL()
+        if player == nil {
+            loadURL()
+        }
     }
 
     func loadURL() {
@@ -28,7 +44,7 @@ public class DocumentPreviewModel: NSObject, ObservableObject {
             error = nil
         }
         switch type {
-        case .url(let url):
+        case let .url(url, _):
             let request = URLRequest(url: url, timeoutInterval: 5)
             webView.load(request)
         case .data(let data, let mimeType):
@@ -41,20 +57,29 @@ public class DocumentPreviewModel: NSObject, ObservableObject {
         }
 
     }
-
+    
     public enum DocumentPreviewType: Equatable, Identifiable {
         public var id: String {
             switch self {
-            case .url(let url):
+            case let .url(url, _):
                 return url.absoluteString
             case .data(let data, _):
                 return "\(data.count)"
             }
         }
 
-        case url(url: URL)
+        case url(url: URL, mimeType: MimeType)
         case data(data: Data, mimeType: MimeType)
+        var url: URL? {
+            switch self {
+            case .url(url: let url, _):
+                return url
+            case .data:
+                return nil
+            }
+        }
     }
+    
 }
 
 public struct DocumentPreview: View {
@@ -64,50 +89,56 @@ public struct DocumentPreview: View {
     }
 
     public var body: some View {
-        ZStack {
-            BackgroundBlurView()
-                .ignoresSafeArea()
-            DocumentPreviewWebView(documentPreviewModel: vm)
-                .frame(maxHeight: vm.contentHeight)
-                .offset(x: vm.offset)
-                .rotationEffect(.degrees(180 * Double(vm.offset) / 10000))
-                .gesture(
-                    DragGesture()
-                        .onChanged { gesture in
-                            vm.offset = gesture.translation.width
-                        }
-                        .onEnded { _ in
-                            if abs(vm.offset) > 200 {
-                                vm.vc?.dismiss(animated: true)
-                            } else {
-                                withAnimation(.interpolatingSpring(stiffness: 300, damping: 20)) {
-                                    vm.offset = .zero
+        GeometryReader { proxy in
+            ZStack {
+                BackgroundBlurView()
+                    .ignoresSafeArea()
+                if let player = vm.player {
+                    VideoPlayer(player: player)
+                } else {
+                    DocumentPreviewWebView(documentPreviewModel: vm)
+                        .frame(maxHeight: vm.contentHeight)
+                        .offset(x: vm.offset)
+                        .rotationEffect(.degrees(180 * Double(vm.offset) / 10000))
+                        .gesture(
+                            DragGesture()
+                                .onChanged { gesture in
+                                    vm.offset = gesture.translation.width
                                 }
-                            }
-                        }
-                )
-                .opacity(1 - Double(abs(vm.offset) / 1000))
-            if vm.isLoading {
-                DotsActivityIndicator(.standard)
-                    .useDarkColor
-            }
-            if vm.error != nil {
-                GenericErrorView(
-                    title: L10n.somethingWentWrong,
-                    description: L10n.General.errorBody,
-                    formPosition: .center
-                )
-                .hErrorViewButtonConfig(
-                    .init(
-                        actionButton:
+                                .onEnded { _ in
+                                    if abs(vm.offset) > 200 {
+                                        vm.vc?.dismiss(animated: true)
+                                    } else {
+                                        withAnimation(.interpolatingSpring(stiffness: 300, damping: 20)) {
+                                            vm.offset = .zero
+                                        }
+                                    }
+                                }
+                        )
+                        .opacity(1 - Double(abs(vm.offset) / 1000))
+                    if vm.isLoading {
+                        DotsActivityIndicator(.standard)
+                            .useDarkColor
+                    }
+                    if vm.error != nil {
+                        GenericErrorView(
+                            title: L10n.somethingWentWrong,
+                            description: L10n.General.errorBody,
+                            formPosition: .center
+                        )
+                        .hErrorViewButtonConfig(
                             .init(
-                                buttonTitle: L10n.generalRetry,
-                                buttonAction: {
-                                    vm.loadURL()
-                                }
+                                actionButton:
+                                        .init(
+                                            buttonTitle: L10n.generalRetry,
+                                            buttonAction: {
+                                                vm.loadURL()
+                                            }
+                                        )
                             )
-                    )
-                )
+                        )
+                    }
+                }
             }
         }
         .introspect(.viewController, on: .iOS(.v13...)) { vc in
@@ -179,4 +210,10 @@ struct DocumentPreviewWebView: UIViewRepresentable {
     }
 
     func updateUIView(_ webView: WKWebView, context: Context) {}
+}
+
+extension AVPlayerViewController {
+    open override func viewDidLoad() {
+        view.backgroundColor = .clear
+    }
 }

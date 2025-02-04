@@ -99,9 +99,9 @@ struct ChatFileView: View {
                     }
                 }
             }
-        case .url(let url):
-            chatNavigationVm.isFilePresented = .url(url: url)
-        case .data(let data):
+        case let .url(url, mimeType):
+            chatNavigationVm.isFilePresented = .url(url: url, mimeType: mimeType)
+        case let .data(data):
             chatNavigationVm.isFilePresented = .data(data: data, mimeType: file.mimeType)
         }
     }
@@ -112,11 +112,11 @@ struct ChatFileView: View {
             return Kingfisher.Source.provider(
                 hPHPickerResultImageDataProvider(cacheKey: file.id, pickerResult: results!)
             )
-        case .url(let url):
+        case let .url(url, _):
             return Kingfisher.Source.network(
                 Kingfisher.KF.ImageResource(downloadURL: url, cacheKey: file.id)
             )
-        case .data(let data):
+        case let .data(data):
             return Kingfisher.Source.provider(InMemoryImageDataProvider(cacheKey: file.id, data: data))
         }
     }
@@ -130,7 +130,8 @@ struct ChatFileView: View {
         mimeType: .PNG,
         name: "test-image",
         source: .url(
-            url: URL(string: "https://filesamples.com/samples/image/png/sample_640%C3%97426.png")!
+            url: URL(string: "https://filesamples.com/samples/image/png/sample_640%C3%97426.png")!,
+            mimeType: .PNG
         )
     )
     let file2: File = .init(
@@ -139,7 +140,8 @@ struct ChatFileView: View {
         mimeType: .GIF,
         name: "test-image",
         source: .url(
-            url: URL(string: "https://media4.giphy.com/media/nrXif9YExO9EI/giphy.gif")!
+            url: URL(string: "https://media4.giphy.com/media/nrXif9YExO9EI/giphy.gif")!,
+            mimeType: .GIF
         )
     )
 
@@ -149,15 +151,15 @@ struct ChatFileView: View {
         mimeType: .other(type: ""),
         name: "test-image",
         source: .url(
-            url: URL(string: "https://media4.giphy.com/media/nrXif9YExO9EI/giphy.gif")!
+            url: URL(string: "https://media4.giphy.com/media/nrXif9YExO9EI/giphy.gif")!,
+            mimeType: .GIF
         )
     )
 
-    return
-        VStack {
-            ChatFileView(file: file)
-            ChatFileView(file: file2)
-            ChatFileView(file: file3)
-            Spacer()
-        }
+    return VStack {
+        ChatFileView(file: file)
+        ChatFileView(file: file2)
+        ChatFileView(file: file3)
+        Spacer()
+    }
 }
