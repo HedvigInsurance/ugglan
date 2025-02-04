@@ -1,5 +1,6 @@
 import Combine
 import SwiftUI
+import TagKit
 import hCore
 import hCoreUI
 
@@ -78,7 +79,7 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     let activeInFuture: Bool?
     let masterInceptionDate: String?
     let tierDisplayName: String?
-
+    let tagsToShow: [(text: String, type: PillType)]
     public init(
         image: UIImage?,
         contractDisplayName: String,
@@ -98,6 +99,32 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
         self.activeInFuture = activeInFuture
         self.masterInceptionDate = masterInceptionDate
         self.tierDisplayName = tierDisplayName
+        var tagsToShow = [(text: String, type: PillType)]()
+        if let tierDisplayName {
+            tagsToShow.append((tierDisplayName, .tier))
+        }
+        if let terminationMessage {
+            tagsToShow.append((terminationMessage, .text))
+        } else if let activeFrom {
+            tagsToShow.append(
+                (
+                    L10n.dashboardInsuranceStatusActiveUpdateDate(
+                        activeFrom.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                    ), .text
+                )
+            )
+        } else if activeInFuture ?? false {
+            tagsToShow.append(
+                (
+                    L10n.contractStatusActiveInFuture(
+                        masterInceptionDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
+                    ), .text
+                )
+            )
+        } else {
+            tagsToShow.append((L10n.dashboardInsuranceStatusActive, .text))
+        }
+        self.tagsToShow = tagsToShow
     }
 
     @ViewBuilder var background: some View {
@@ -129,31 +156,15 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .top, spacing: .padding6) {
-                if let tierDisplayName {
-                    StatusPill(text: tierDisplayName, type: .tier)
+                TagList(
+                    tags: tagsToShow.map({ $0.text }),
+                    horizontalSpacing: .padding6 / 2,
+                    verticalSpacing: .padding6 / 2
+                ) { tag in
+                    StatusPill(text: tag, type: tagsToShow.first(where: { $0.text == tag })?.type ?? .text)
                 }
-                if let terminationMessage {
-                    StatusPill(text: terminationMessage, type: .text)
-                } else if let activeFrom {
-                    StatusPill(
-                        text: L10n.dashboardInsuranceStatusActiveUpdateDate(
-                            activeFrom.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-                        ),
-                        type: .text
-                    )
-                } else if activeInFuture ?? false {
-                    StatusPill(
-                        text: L10n.contractStatusActiveInFuture(
-                            masterInceptionDate?.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-                        ),
-                        type: .text
-                    )
-                } else {
-                    StatusPill(
-                        text: L10n.dashboardInsuranceStatusActive,
-                        type: .text
-                    )
-                }
+                .padding(.vertical, -.padding6 / 2)
+                .padding(.horizontal, -.padding6 / 2)
                 Spacer()
                 logo
             }
@@ -204,7 +215,6 @@ private struct StatusPill: View {
         VStack {
             hText(text, style: .label)
         }
-        .fixedSize(horizontal: sizeCategory <= .large, vertical: false)
         .padding(.vertical, 3)
         .padding(.horizontal, .padding6)
         .foregroundColor(hTextColor.Opaque.white)
