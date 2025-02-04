@@ -1,5 +1,5 @@
-import Combine
 import AVKit
+import Combine
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import WebKit
@@ -19,7 +19,7 @@ public class DocumentPreviewModel: NSObject, ObservableObject {
     var contentSizeCancellable: AnyCancellable?
     public init(type: DocumentPreviewType) {
         self.type = type
-        
+
         switch type {
         case let .url(url, mimeType):
             if mimeType.isVideo {
@@ -57,7 +57,7 @@ public class DocumentPreviewModel: NSObject, ObservableObject {
         }
 
     }
-    
+
     public enum DocumentPreviewType: Equatable, Identifiable {
         public var id: String {
             switch self {
@@ -72,14 +72,14 @@ public class DocumentPreviewModel: NSObject, ObservableObject {
         case data(data: Data, mimeType: MimeType)
         var url: URL? {
             switch self {
-            case .url(url: let url, _):
+            case .url(let url, _):
                 return url
             case .data:
                 return nil
             }
         }
     }
-    
+
 }
 
 public struct DocumentPreview: View {
@@ -129,12 +129,12 @@ public struct DocumentPreview: View {
                         .hErrorViewButtonConfig(
                             .init(
                                 actionButton:
-                                        .init(
-                                            buttonTitle: L10n.generalRetry,
-                                            buttonAction: {
-                                                vm.loadURL()
-                                            }
-                                        )
+                                    .init(
+                                        buttonTitle: L10n.generalRetry,
+                                        buttonAction: {
+                                            vm.loadURL()
+                                        }
+                                    )
                             )
                         )
                     }
