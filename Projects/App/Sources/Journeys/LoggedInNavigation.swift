@@ -84,6 +84,24 @@ struct LoggedInNavigation: View {
         ) { addonInput in
             ChangeAddonNavigation(input: addonInput)
         }
+        .detent(
+            item: $vm.isAddonErrorPresented,
+            style: [.height],
+            options: .constant([.alwaysOpenOnTop])
+        ) { error in
+            GenericErrorView(description: error, formPosition: .compact)
+                .hErrorViewButtonConfig(
+                    .init(
+                        actionButton: .init(
+                            buttonTitle: L10n.generalCloseButton,
+                            buttonAction: { [weak vm] in
+                                vm?.addonErrorRouter.dismiss()
+                            }
+                        )
+                    )
+                )
+                .embededInNavigation(router: vm.addonErrorRouter, tracking: LoggedInNavigationDetentType.error)
+        }
         .handleTerminateInsurance(vm: vm.terminateInsuranceVm) {
             dismissType in
             switch dismissType {
@@ -455,12 +473,15 @@ private enum LoggedInNavigationDetentType: TrackingViewNameProtocol {
             return .init(describing: FirstVetView.self)
         case .crossSelling:
             return .init(describing: CrossSellingScreen.self)
+        case .error:
+            return .init(describing: GenericErrorView.self)
         }
     }
 
     case submitClaimDeflect
     case firstVet
     case crossSelling
+    case error
 }
 
 @MainActor
@@ -486,6 +507,8 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isMoveContractPresented = false
     @Published var isChangeTierPresented: ChangeTierContractsInput?
     @Published var isAddonPresented: ChangeAddonInput?
+    @Published var isAddonErrorPresented: String?
+    let addonErrorRouter = Router()
     @Published var isEuroBonusPresented = false
     @Published var isUrlPresented: URL?
 
@@ -731,8 +754,10 @@ class LoggedInNavigationViewModel: ObservableObject {
             case .changeTier:
                 let contractId = self.getContractId(from: url)
                 handleChangeTier(contractId: contractId)
-            case .addon:
-                handleAddon(url: url)
+            case .travelAddon:
+                Task {
+                    await handleTravelAddon()
+                }
             case .editCoInsured:
                 handleEditCoInsured(url: url)
             case nil:
@@ -754,12 +779,6 @@ class LoggedInNavigationViewModel: ObservableObject {
         guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
         guard let queryItems = urlComponents.queryItems else { return nil }
         return queryItems.first(where: { $0.name == "conversationId" })?.value
-    }
-
-    private func getAddonId(from url: URL) -> String? {
-        guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
-        guard let queryItems = urlComponents.queryItems else { return nil }
-        return queryItems.first(where: { $0.name == "addonId" })?.value
     }
 
     public func openUrl(url: URL) {
@@ -819,22 +838,28 @@ class LoggedInNavigationViewModel: ObservableObject {
         }
     }
 
-    private func handleAddon(url: URL) {
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        if let contractId = getContractId(from: url),
-            let contract: Contracts.Contract = contractStore.state.contractForId(contractId)
-        {
-            self.isAddonPresented = .init(
-                contractConfigs: [
+    private func handleTravelAddon() async {
+        do {
+            let client: FetchContractsClient = Dependencies.shared.resolve()
+            if let bannerData = try await client.getAddonBannerModel(source: .appUpsellUpgrade) {
+                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                let addonContracts = bannerData.contractIds.compactMap({
+                    contractStore.state.contractForId($0)
+                })
+                guard !addonContracts.isEmpty else {
+                    throw AddonsError.missingContracts
+                }
+                let addonConfigs: [AddonConfig] = addonContracts.map({
                     .init(
-                        contractId: contract.id,
-                        exposureName: contract.exposureDisplayName,
-                        displayName: contract.currentAgreement?.productVariant.displayName ?? ""
+                        contractId: $0.id,
+                        exposureName: $0.exposureDisplayName,
+                        displayName: $0.currentAgreement?.productVariant.displayName ?? ""
                     )
-                ]
-            )
-        } else if let addonId = getAddonId(from: url) {
-            self.isAddonPresented = .init(addonId: addonId)
+                })
+                self.isAddonPresented = .init(contractConfigs: addonConfigs)
+            }
+        } catch {
+            isAddonErrorPresented = error.localizedDescription
         }
     }
 
