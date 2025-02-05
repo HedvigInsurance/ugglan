@@ -1,7 +1,6 @@
 import Combine
 import Foundation
 import hCore
-import hGraphQL
 
 @MainActor
 public protocol ExistingCoInsured {
