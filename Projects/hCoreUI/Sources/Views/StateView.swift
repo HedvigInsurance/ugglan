@@ -40,7 +40,7 @@ struct StateView: View {
                     .padding(.vertical, .padding16)
             }
         } else {
-            if buttonConfig != nil {
+            if buttonConfig != nil && bottomAttachedView == nil {
                 ZStack(alignment: .bottom) {
                     BackgroundView().ignoresSafeArea()
                     VStack {
@@ -121,7 +121,10 @@ struct StateView: View {
                     hButton.LargeButton(type: .ghost) {
                         dismissButton.buttonAction()
                     } content: {
-                        hText(dismissButton.buttonTitle ?? L10n.openChat, style: .body1)
+                        hText(
+                            dismissButton.buttonTitle ?? (type == .success ? L10n.generalCloseButton : L10n.openChat),
+                            style: .body1
+                        )
                     }
                 }
             }

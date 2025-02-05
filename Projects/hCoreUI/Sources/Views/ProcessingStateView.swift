@@ -122,14 +122,19 @@ public struct ProcessingStateView: View {
                 successViewTitle: successViewTitle ?? "",
                 successViewBody: successViewBody ?? ""
             )
-            .hStateViewButtonConfig(
-                .init(
-                    actionButton: nil,
-                    actionButtonAttachedToBottom: nil,
-                    dismissButton: .init(buttonAction: successViewButtonAction ?? {})
-                )
+            .hStateViewButtonConfig(successButtonsView)
+        }
+    }
+
+    private var successButtonsView: StateViewButtonConfig? {
+        if successBottomView == nil {
+            return .init(
+                actionButton: nil,
+                actionButtonAttachedToBottom: nil,
+                dismissButton: .init(buttonTitle: L10n.generalCloseButton, buttonAction: successViewButtonAction ?? {})
             )
         }
+        return nil
     }
 
     @ViewBuilder

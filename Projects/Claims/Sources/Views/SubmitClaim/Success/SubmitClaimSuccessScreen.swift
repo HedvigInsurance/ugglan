@@ -14,9 +14,12 @@ struct SubmitClaimSuccessScreen: View {
             .init(
                 actionButton: nil,
                 actionButtonAttachedToBottom: nil,
-                dismissButton: .init(buttonAction: {
-                    router.dismiss()
-                })
+                dismissButton: .init(
+                    buttonTitle: L10n.generalCloseButton,
+                    buttonAction: {
+                        router.dismiss()
+                    }
+                )
             )
         )
     }

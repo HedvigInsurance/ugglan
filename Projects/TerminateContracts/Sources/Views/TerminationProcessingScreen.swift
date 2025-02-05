@@ -29,3 +29,7 @@ struct TerminationProcessingScreen: View {
         )
     }
 }
+
+#Preview {
+    TerminationProcessingScreen(terminationNavigationVm: .init(configs: [], terminateInsuranceViewModel: nil))
+}

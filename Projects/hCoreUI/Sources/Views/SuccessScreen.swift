@@ -30,32 +30,6 @@ public struct SuccessScreen: View {
     }
 }
 
-public struct SuccessScreenButtonConfig {
-    fileprivate let actionButton: SuccessScreenButton?
-    fileprivate let primaryButton: SuccessScreenButton?
-    fileprivate let ghostButton: SuccessScreenButton?
-
-    public init(
-        actionButton: SuccessScreenButton?,
-        primaryButton: SuccessScreenButton? = nil,
-        ghostButton: SuccessScreenButton? = nil
-    ) {
-        self.primaryButton = primaryButton
-        self.ghostButton = ghostButton
-        self.actionButton = actionButton
-    }
-
-    public struct SuccessScreenButton {
-        fileprivate let buttonTitle: String?
-        fileprivate let buttonAction: () -> Void
-
-        public init(buttonTitle: String? = nil, buttonAction: @escaping () -> Void) {
-            self.buttonTitle = buttonTitle
-            self.buttonAction = buttonAction
-        }
-    }
-}
-
 struct SuccessScreen_Previews: PreviewProvider {
     static var previews: some View {
         SuccessScreen(
