@@ -207,7 +207,7 @@ public class FilesUploadViewModel: ObservableObject {
                 size: 0,
                 mimeType: MimeType.findBy(mimeType: $0.mimeType),
                 name: $0.name,
-                source: .url(url: URL(string: $0.signedUrl)!)
+                source: .url(url: URL(string: $0.signedUrl)!, mimeType: MimeType.findBy(mimeType: $0.mimeType))
             )
         })
         fileGridViewModel = .init(
@@ -313,7 +313,10 @@ public class FilesUploadViewModel: ObservableObject {
                                 size: 0,
                                 mimeType: MimeType.findBy(mimeType: $0.mimeType),
                                 name: $0.name,
-                                source: .url(url: URL(string: $0.url)!)
+                                source: .url(
+                                    url: URL(string: $0.url)!,
+                                    mimeType: MimeType.findBy(mimeType: $0.mimeType)
+                                )
                             )
                         }
                     )

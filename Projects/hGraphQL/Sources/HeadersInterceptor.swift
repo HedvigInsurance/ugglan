@@ -39,19 +39,9 @@ class HeadersInterceptor: @preconcurrency ApolloInterceptor {
                     "hedvig-device-id": deviceIdentifier,
                     "Hedvig-TimeZone": TimeZone.current.identifier,
                 ]
-                try await withUnsafeThrowingContinuation { inCont in
-                    do {
-                        Task {
-                            do {
-                                let token = try await ApolloClient.retreiveToken()!
-                                inCont.resume(returning: ())
-                                httpAdditionalHeaders["Authorization"] = "Bearer " + token.accessToken
-                            } catch let exception {
-                                inCont.resume(throwing: exception)
-                            }
-                        }
-
-                    }
+                let token = try await ApolloClient.retreiveToken()
+                if let token = token {
+                    httpAdditionalHeaders["Authorization"] = "Bearer " + token.accessToken
                 }
 
                 httpAdditionalHeaders.forEach { key, value in request.addHeader(name: key, value: value) }

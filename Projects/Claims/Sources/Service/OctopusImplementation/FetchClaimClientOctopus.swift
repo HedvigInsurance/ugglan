@@ -43,7 +43,7 @@ extension File {
             size: 0,
             mimeType: MimeType.findBy(mimeType: data.mimeType),
             name: data.name,
-            source: .url(url: URL(string: data.url)!)
+            source: .url(url: URL(string: data.url)!, mimeType: MimeType.findBy(mimeType: data.mimeType))
         )
     }
 }

@@ -125,9 +125,9 @@ class FileGridViewModel: ObservableObject {
                     self?.fileModel = .init(type: .data(data: data, mimeType: file.mimeType))
                 }
             }
-        case .url(let url):
-            fileModel = .init(type: .url(url: url))
-        case .data(let data):
+        case let .url(url, mimeType):
+            fileModel = .init(type: .url(url: url, mimeType: mimeType))
+        case let .data(data):
             fileModel = .init(type: .data(data: data, mimeType: file.mimeType))
         }
     }
@@ -140,7 +140,10 @@ class FileGridViewModel: ObservableObject {
             size: 22332,
             mimeType: .PNG,
             name: "test-image",
-            source: .url(url: URL(string: "https://filesamples.com/samples/image/png/sample_640%C3%97426.png")!)
+            source: .url(
+                url: URL(string: "https://filesamples.com/samples/image/png/sample_640%C3%97426.png")!,
+                mimeType: .PNG
+            )
         ),
 
         .init(
@@ -149,7 +152,8 @@ class FileGridViewModel: ObservableObject {
             mimeType: MimeType.PNG,
             name: "test-image2",
             source: .url(
-                url: URL(string: "https://onlinepngtools.com/images/examples-onlinepngtools/giraffe-illustration.png")!
+                url: URL(string: "https://onlinepngtools.com/images/examples-onlinepngtools/giraffe-illustration.png")!,
+                mimeType: .PNG
             )
         ),
         .init(
@@ -157,21 +161,27 @@ class FileGridViewModel: ObservableObject {
             size: 52176,
             mimeType: MimeType.PNG,
             name: "test-image3",
-            source: .url(url: URL(string: "https://cdn.pixabay.com/photo/2017/06/21/15/03/example-2427501_1280.png")!)
+            source: .url(
+                url: URL(string: "https://cdn.pixabay.com/photo/2017/06/21/15/03/example-2427501_1280.png")!,
+                mimeType: .PNG
+            )
         ),
         .init(
             id: "imageId4",
             size: 52176,
             mimeType: MimeType.PNG,
             name: "test-image4",
-            source: .url(url: URL(string: "https://flif.info/example-images/fish.png")!)
+            source: .url(url: URL(string: "https://flif.info/example-images/fish.png")!, mimeType: .PNG)
         ),
         .init(
             id: "imageId5",
             size: 52176,
             mimeType: MimeType.PDF,
             name: "test-pdf long name it is possible to have it is long name .pdf",
-            source: .url(url: URL(string: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf")!)
+            source: .url(
+                url: URL(string: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf")!,
+                mimeType: .PDF
+            )
         ),
     ]
     return FilesGridView(vm: .init(files: files, options: [.delete]))
