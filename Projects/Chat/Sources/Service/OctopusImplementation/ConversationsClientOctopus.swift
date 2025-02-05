@@ -157,7 +157,15 @@ extension OctopusGraphQL.MessageFragment {
             let urlText = text.trimmingCharacters(in: .whitespacesAndNewlines)
             if let url = URL(string: urlText), urlText.isUrl {
                 if urlText.isGIFURL {
-                    return .file(file: .init(id: self.id, size: 0, mimeType: .GIF, name: "", source: .url(url: url)))
+                    return .file(
+                        file: .init(
+                            id: self.id,
+                            size: 0,
+                            mimeType: .GIF,
+                            name: "",
+                            source: .url(url: url, mimeType: .GIF)
+                        )
+                    )
                 } else if urlText.isCrossSell {
                     return .crossSell(url: url)
                 } else if urlText.isDeepLink {
@@ -171,7 +179,15 @@ extension OctopusGraphQL.MessageFragment {
         } else if let file = self.asChatMessageFile {
             if let url = URL(string: file.signedUrl) {
                 let mimeType = MimeType.findBy(mimeType: file.mimeType)
-                return .file(file: .init(id: id, size: 0, mimeType: mimeType, name: "", source: .url(url: url)))
+                return .file(
+                    file: .init(
+                        id: id,
+                        size: 0,
+                        mimeType: mimeType,
+                        name: "",
+                        source: .url(url: url, mimeType: mimeType)
+                    )
+                )
             } else {
                 return .unknown
             }
