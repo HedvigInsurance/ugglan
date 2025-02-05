@@ -44,7 +44,6 @@ public struct ProcessingStateView: View {
     var showSuccessScreen: Bool
 
     @Environment(\.hCustomSuccessView) var customSuccessView
-    @Environment(\.hStateViewButtonConfig) var errorViewButtonConfig
     @Environment(\.hSuccessBottomAttachedView) var successBottomView
 
     public init(
@@ -140,7 +139,6 @@ public struct ProcessingStateView: View {
             description: errorMessage,
             formPosition: .center
         )
-        .hStateViewButtonConfig(errorViewButtonConfig)
     }
 
     @ViewBuilder

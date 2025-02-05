@@ -71,8 +71,6 @@ struct TravelCertificateProcessingScreen: View {
 class ProcessingViewModel: ObservableObject {
     var service = TravelInsuranceService()
     @Published var viewState: ProcessingState = .loading
-    @Published var isLoading = true
-    @Published var error: String?
     @Published var downloadUrl: URL?
     weak var whoIsTravelingViewModel: WhoIsTravelingViewModel?
     weak var startDateViewModel: StartDateViewModel?
@@ -81,7 +79,6 @@ class ProcessingViewModel: ObservableObject {
 
     func submit() {
         Task { @MainActor in
-            isLoading = true
             viewState = .loading
             if let startDateViewModel = startDateViewModel,
                 let whoIsTravelingViewModel = whoIsTravelingViewModel
@@ -107,10 +104,8 @@ class ProcessingViewModel: ObservableObject {
                     AskForRating().askForReview()
                 } catch _ {
                     viewState = .error(errorMessage: L10n.General.errorBody)
-                    error = L10n.General.errorBody
                 }
             }
-            isLoading = false
         }
     }
 
@@ -139,9 +134,7 @@ class ProcessingViewModel: ObservableObject {
             } catch _ {
                 throw FileError.downloadError
             }
-        } catch let exc {
-            error = exc.localizedDescription
-        }
+        } catch {}
     }
 
     func present(activity: UIActivityViewController) {
