@@ -1,6 +1,7 @@
 import Combine
 import Foundation
 import hCore
+import hGraphQL
 
 @MainActor
 public protocol ExistingCoInsured {
@@ -12,6 +13,7 @@ public class EditCoInsuredViewModel: ObservableObject {
     @Published public var editCoInsuredModelDetent: EditCoInsuredNavigationModel?
     @Published public var editCoInsuredModelFullScreen: EditCoInsuredNavigationModel?
     @Published public var editCoInsuredModelMissingAlert: InsuredPeopleConfig?
+    @Published public var editCoInsuredModelError: EditCoInsuredErrorWrapper?
     public let editCoInsuredSharedService = EditCoInsuredSharedService()
     public static var updatedCoInsuredForContractId = PassthroughSubject<String?, Never>()
     let existingCoInsured: ExistingCoInsured
@@ -24,38 +26,43 @@ public class EditCoInsuredViewModel: ObservableObject {
     }
 
     public func start(fromContract: InsuredPeopleConfig? = nil, forMissingCoInsured: Bool = false) {
-
         Task { @MainActor in
-            let activeContracts = try await editCoInsuredSharedService.fetchContracts()
+            do {
+                let activeContracts = try await editCoInsuredSharedService.fetchContracts()
 
-            if let contract = fromContract {
-                editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
-                    return [contract]
-                })
-            } else {
-                let contractsSupportingCoInsured =
-                    activeContracts
-                    .filter({
-                        $0.showEditCoInsuredInfo
-                            && ($0.nbOfMissingCoInsuredWithoutTermination > 0 || !forMissingCoInsured)
-                    })
-                    .compactMap({
-                        InsuredPeopleConfig(
-                            contract: $0,
-                            preSelectedCoInsuredList: existingCoInsured.get(contractId: $0.id),
-                            fromInfoCard: true
-                        )
-                    })
-
-                if contractsSupportingCoInsured.count > 1 {
-                    editCoInsuredModelDetent = .init(contractsSupportingCoInsured: {
-                        return contractsSupportingCoInsured
-                    })
-                } else if !contractsSupportingCoInsured.isEmpty {
+                if let contract = fromContract {
                     editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
-                        return contractsSupportingCoInsured
+                        return [contract]
                     })
+                } else {
+                    let contractsSupportingCoInsured =
+                        activeContracts
+                        .filter({
+                            $0.showEditCoInsuredInfo
+                                && ($0.nbOfMissingCoInsuredWithoutTermination > 0 || !forMissingCoInsured)
+                        })
+                        .compactMap({
+                            InsuredPeopleConfig(
+                                contract: $0,
+                                preSelectedCoInsuredList: existingCoInsured.get(contractId: $0.id),
+                                fromInfoCard: true
+                            )
+                        })
+                    let contractsSupportingCoInsured2 = contractsSupportingCoInsured.filter({ $0.contractId == "1" })
+                    if contractsSupportingCoInsured2.count > 1 {
+                        editCoInsuredModelDetent = .init(contractsSupportingCoInsured: {
+                            return contractsSupportingCoInsured
+                        })
+                    } else if !contractsSupportingCoInsured2.isEmpty {
+                        editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
+                            return contractsSupportingCoInsured
+                        })
+                    } else {  //if empty
+                        throw EditCoInsuedError.missingContracts
+                    }
                 }
+            } catch {
+                editCoInsuredModelError = .init(errorMessage: error.localizedDescription)
             }
         }
     }
@@ -91,6 +98,19 @@ public class EditCoInsuredViewModel: ObservableObject {
     }
 }
 
+enum EditCoInsuedError: Error {
+    case missingContracts
+}
+
+extension EditCoInsuedError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .missingContracts:
+            return L10n.General.defaultError
+        }
+    }
+}
+
 public struct EditCoInsuredNavigationModel: Equatable, Identifiable {
     public var contractsSupportingCoInsured: [InsuredPeopleConfig]
     public let openSpecificScreen: EditCoInsuredScreenType
@@ -113,4 +133,9 @@ public enum EditCoInsuredRedirectType: Hashable {
 public enum EditCoInsuredScreenType {
     case newInsurance
     case none
+}
+
+public struct EditCoInsuredErrorWrapper: Equatable, Identifiable {
+    public let id: String = UUID().uuidString
+    public let errorMessage: String
 }
