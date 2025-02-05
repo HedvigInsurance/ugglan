@@ -10,7 +10,7 @@ struct MovingFlowHouseScreen: View {
 
     var body: some View {
         form.loadingWithButtonLoading($houseInformationInputvm.viewState)
-            .hErrorViewButtonConfig(
+            .hStateViewButtonConfig(
                 .init(
                     actionButton: .init(buttonAction: {
                         houseInformationInputvm.viewState = .success

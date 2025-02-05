@@ -11,7 +11,7 @@ struct TerminationProcessingScreen: View {
             state: $terminationNavigationVm.confirmTerminationState,
             duration: 3
         )
-        .hErrorViewButtonConfig(
+        .hStateViewButtonConfig(
             .init(
                 actionButton:
                     .init(
@@ -28,4 +28,8 @@ struct TerminationProcessingScreen: View {
             )
         )
     }
+}
+
+#Preview {
+    TerminationProcessingScreen(terminationNavigationVm: .init(configs: [], terminateInsuranceViewModel: nil))
 }

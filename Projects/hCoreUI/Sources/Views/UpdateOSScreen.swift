@@ -12,7 +12,7 @@ public struct UpdateOSScreen: View {
             description: L10n.osVersionTooLowBody(UIDevice.current.systemVersion),
             formPosition: .center
         )
-        .hErrorViewButtonConfig(.init())
+        .hStateViewButtonConfig(.init())
     }
 }
 

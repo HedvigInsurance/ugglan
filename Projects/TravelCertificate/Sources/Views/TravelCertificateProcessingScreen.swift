@@ -9,19 +9,27 @@ struct TravelCertificateProcessingScreen: View {
     @EnvironmentObject var whoIsTravelingViewModel: WhoIsTravelingViewModel
 
     var body: some View {
-        ProcesssingView(
-            isLoading: $vm.isLoading,
-            error: $vm.error,
+        ProcessingStateView(
             loadingViewText: L10n.TravelCertificate.generating,
             successViewTitle: L10n.TravelCertificate.travelCertificateReady,
             successViewBody: L10n.TravelCertificate.weHaveSentCopyToYourEmail,
-            onErrorCancelAction: {
-                router.pop()
-            }
+            state: $vm.viewState
         )
         .hSuccessBottomAttachedView {
             bottomSuccessView
         }
+        .hStateViewButtonConfig(
+            .init(
+                actionButton: nil,
+                actionButtonAttachedToBottom: nil,
+                dismissButton: .init(
+                    buttonTitle: L10n.generalCancelButton,
+                    buttonAction: {
+                        router.pop()
+                    }
+                )
+            )
+        )
         .task { [weak vm] in
             vm?.whoIsTravelingViewModel = whoIsTravelingViewModel
             vm?.startDateViewModel = startDateViewModel
@@ -62,8 +70,7 @@ struct TravelCertificateProcessingScreen: View {
 @MainActor
 class ProcessingViewModel: ObservableObject {
     var service = TravelInsuranceService()
-    @Published var isLoading = true
-    @Published var error: String?
+    @Published var viewState: ProcessingState = .loading
     @Published var downloadUrl: URL?
     weak var whoIsTravelingViewModel: WhoIsTravelingViewModel?
     weak var startDateViewModel: StartDateViewModel?
@@ -72,7 +79,7 @@ class ProcessingViewModel: ObservableObject {
 
     func submit() {
         Task { @MainActor in
-            isLoading = true
+            viewState = .loading
             if let startDateViewModel = startDateViewModel,
                 let whoIsTravelingViewModel = whoIsTravelingViewModel
             {
@@ -93,12 +100,12 @@ class ProcessingViewModel: ObservableObject {
                     try await minimumTime.value
 
                     downloadUrl = url
+                    viewState = .success
                     AskForRating().askForReview()
                 } catch _ {
-                    error = L10n.General.errorBody
+                    viewState = .error(errorMessage: L10n.General.errorBody)
                 }
             }
-            isLoading = false
         }
     }
 
@@ -127,9 +134,7 @@ class ProcessingViewModel: ObservableObject {
             } catch _ {
                 throw FileError.downloadError
             }
-        } catch let exc {
-            error = exc.localizedDescription
-        }
+        } catch {}
     }
 
     func present(activity: UIActivityViewController) {
@@ -148,7 +153,22 @@ class ProcessingViewModel: ObservableObject {
 
 struct SuccessScreen_Previews: PreviewProvider {
     static var previews: some View {
-        TravelCertificateProcessingScreen()
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+        return TravelCertificateProcessingScreen()
+            .environmentObject(
+                WhoIsTravelingViewModel(
+                    specification: .init(
+                        contractId: "contractId",
+                        minStartDate: Date(),
+                        maxStartDate: "2025-12-12".localDateToDate ?? Date(),
+                        numberOfCoInsured: 2,
+                        maxDuration: 2,
+                        street: "",
+                        email: "",
+                        fullName: ""
+                    )
+                )
+            )
     }
 }
 

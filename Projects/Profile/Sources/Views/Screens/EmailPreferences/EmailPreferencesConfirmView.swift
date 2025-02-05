@@ -14,9 +14,9 @@ struct EmailPreferencesConfirmView: View {
             description: vm.isUnsubscribed
                 ? L10n.SettingsScreen.subscribeDescription : L10n.SettingsScreen.unsubscribeDescription,
             formPosition: .compact,
-            attachContentToTheBottom: true
+            attachContentToBottom: true
         )
-        .hErrorViewButtonConfig(
+        .hStateViewButtonConfig(
             .init(
                 actionButtonAttachedToBottom:
                     .init(

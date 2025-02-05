@@ -18,7 +18,7 @@ struct ImagesView: View {
                     description: nil,
                     formPosition: nil
                 )
-                .hErrorViewButtonConfig(
+                .hStateViewButtonConfig(
                     .init(
                         actionButton: .init(
                             buttonTitle: L10n.chatOpenAppSettingsButton,

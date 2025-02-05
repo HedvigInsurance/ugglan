@@ -57,8 +57,7 @@ public struct InfoScreen: View {
             StateView(
                 type: .information,
                 title: text,
-                bodyText: nil,
-                button: nil
+                bodyText: nil
             )
             .padding(.bottom, .padding16)
         }

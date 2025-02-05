@@ -14,7 +14,7 @@ public struct PaymentHistoryView: View {
 
     public var body: some View {
         successView.loading($vm.viewState)
-            .hErrorViewButtonConfig(
+            .hStateViewButtonConfig(
                 .init(
                     actionButton: .init(buttonAction: {
                         store.send(.getHistory)
@@ -149,6 +149,7 @@ struct PaymentHistoryView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.sv_SE)
         Dependencies.shared.add(module: Module { () -> hPaymentClient in hPaymentClientDemo() })
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         return PaymentHistoryView()
     }
 }

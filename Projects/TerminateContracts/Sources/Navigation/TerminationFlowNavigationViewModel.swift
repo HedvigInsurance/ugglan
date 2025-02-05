@@ -569,10 +569,13 @@ struct TerminationFlowNavigation: View {
             successViewTitle: L10n.terminationFlowSuccessTitle,
             successViewBody: isDeletion
                 ? L10n.terminateContractTerminationComplete
-                : L10n.terminationFlowSuccessSubtitleWithDate((terminationDate)),
-            buttons: .init(
+                : L10n.terminationFlowSuccessSubtitleWithDate((terminationDate))
+        )
+        .hStateViewButtonConfig(
+            .init(
                 actionButton: nil,
-                primaryButton: .init(buttonAction: { [weak vm] in
+                actionButtonAttachedToBottom: nil,
+                dismissButton: .init(buttonAction: { [weak vm] in
                     vm?.router.dismiss()
                     self.isFlowPresented(.done)
                 })
@@ -586,7 +589,7 @@ struct TerminationFlowNavigation: View {
             description: L10n.somethingWentWrong,
             formPosition: .center
         )
-        .hErrorViewButtonConfig(
+        .hStateViewButtonConfig(
             .init(
                 actionButton: .init(
                     buttonTitle: L10n.openChat,

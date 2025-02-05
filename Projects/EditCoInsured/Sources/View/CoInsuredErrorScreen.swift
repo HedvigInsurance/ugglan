@@ -30,7 +30,7 @@ struct CoInsuredInputErrorView: View {
                 ?? intentViewModel.errorMessageForCoinsuredList,
             formPosition: .compact
         )
-        .hErrorViewButtonConfig(
+        .hStateViewButtonConfig(
             .init(
                 actionButtonAttachedToBottom: .init(
                     buttonTitle: actionButtonTitle,

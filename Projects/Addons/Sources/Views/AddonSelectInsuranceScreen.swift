@@ -10,7 +10,7 @@ public struct AddonSelectInsuranceScreen: View {
 
     public var body: some View {
         successView.loading($changeAddonVm.fetchAddonsViewState)
-            .hErrorViewButtonConfig(
+            .hStateViewButtonConfig(
                 .init(
                     actionButton: .init(
                         buttonTitle: L10n.openChat,
@@ -85,7 +85,9 @@ class AddonSelectInsuranceScreenViewModel: ObservableObject {
 }
 
 #Preview {
-    AddonSelectInsuranceScreen(changeAddonVm: .init(contractId: "contractId"))
+    Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+    return AddonSelectInsuranceScreen(changeAddonVm: .init(contractId: "contractId"))
         .environmentObject(
             ChangeAddonNavigationViewModel(
                 input: .init(

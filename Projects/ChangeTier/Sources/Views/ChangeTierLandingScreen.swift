@@ -28,11 +28,11 @@ public struct ChangeTierLandingScreen: View {
             .hCustomSuccessView {
                 succesView
             }
-            .hErrorViewButtonConfig(errorButtons)
+            .hStateViewButtonConfig(errorButtons)
         }
     }
 
-    private var errorButtons: ErrorViewButtonConfig {
+    private var errorButtons: StateViewButtonConfig {
         .init(
             actionButton: .init(
                 buttonAction: {

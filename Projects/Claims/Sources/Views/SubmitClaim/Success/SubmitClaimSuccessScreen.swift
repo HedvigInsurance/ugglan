@@ -8,17 +8,23 @@ struct SubmitClaimSuccessScreen: View {
     var body: some View {
         SuccessScreen(
             successViewTitle: L10n.claimsSuccessTitle,
-            successViewBody: L10n.claimsSuccessLabel,
-            buttons: .init(
+            successViewBody: L10n.claimsSuccessLabel
+        )
+        .hStateViewButtonConfig(
+            .init(
                 actionButton: nil,
-                ghostButton: .init(buttonAction: {
-                    router.dismiss()
-                })
+                actionButtonAttachedToBottom: nil,
+                dismissButton: .init(
+                    buttonTitle: L10n.generalCloseButton,
+                    buttonAction: {
+                        router.dismiss()
+                    }
+                )
             )
         )
     }
 }
 
-#Preview{
+#Preview {
     SubmitClaimSuccessScreen()
 }

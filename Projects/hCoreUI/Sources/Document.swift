@@ -35,7 +35,7 @@ public struct PDFPreview: View {
                 GenericErrorView(
                     formPosition: .center
                 )
-                .hErrorViewButtonConfig(.init())
+                .hStateViewButtonConfig(.init())
             }
         }
         .navigationTitle(vm.document.displayName)

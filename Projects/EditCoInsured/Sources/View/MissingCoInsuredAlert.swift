@@ -21,7 +21,7 @@ public struct MissingCoInsuredAlert: View {
             description: L10n.contractCoinsuredMissingInformationLabel,
             formPosition: .compact
         )
-        .hErrorViewButtonConfig(
+        .hStateViewButtonConfig(
             .init(
                 actionButtonAttachedToBottom:
                     .init(

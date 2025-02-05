@@ -22,10 +22,10 @@ struct MovingFlowProcessingScreen: View {
             state: $movingFlowConfirmVm.viewState,
             duration: 6
         )
-        .hErrorViewButtonConfig(errorButtons)
+        .hStateViewButtonConfig(errorButtons)
     }
 
-    private var errorButtons: ErrorViewButtonConfig {
+    private var errorButtons: StateViewButtonConfig {
         .init(
             actionButton: .init(buttonAction: {
                 onErrorButtonAction()
@@ -38,6 +38,7 @@ struct MovingFlowProcessingScreen: View {
 struct SuccessScreen_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.sv_SE)
+        Dependencies.shared.add(module: Module { () -> MoveFlowClient in MoveFlowClientDemo() })
 
         return MovingFlowProcessingScreen(
             onSuccessButtonAction: {},

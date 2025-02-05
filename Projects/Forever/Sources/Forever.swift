@@ -26,7 +26,7 @@ public struct ForeverView: View {
     public var body: some View {
         successView
             .loading($foreverVm.viewState)
-            .hErrorViewButtonConfig(
+            .hStateViewButtonConfig(
                 .init(
                     actionButton: .init(buttonAction: {
                         Task {

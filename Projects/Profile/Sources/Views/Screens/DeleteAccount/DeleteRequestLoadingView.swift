@@ -68,7 +68,7 @@ public struct DeleteRequestLoadingView: View {
             description: errorMessage,
             formPosition: .center
         )
-        .hErrorViewButtonConfig(
+        .hStateViewButtonConfig(
             .init(
                 actionButton: .init(
                     buttonTitle: L10n.generalCloseButton,

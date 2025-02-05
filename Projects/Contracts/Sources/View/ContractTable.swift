@@ -41,7 +41,7 @@ struct ContractTable: View {
         VStack(spacing: .padding8) {
             successView
                 .loadingWithButtonLoading($vm.viewState)
-                .hErrorViewButtonConfig(
+                .hStateViewButtonConfig(
                     .init(
                         actionButton: .init(buttonAction: {
                             store.send(.fetchContracts)
