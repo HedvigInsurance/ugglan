@@ -11,6 +11,7 @@ where MainContent: View, BottomContent: View {
     let bottomComponent: (() -> BottomContent)?
     @Environment(\.hCardWithoutSpacing) var cardWithoutSpacing
     @Environment(\.hCardWithDivider) var withDivider
+    @Environment(\.hAccessibilityWithoutCombinedElements) var accessibilityWithoutCombinedElements
 
     public init(
         onSelected: (() -> Void)? = nil,
@@ -27,6 +28,16 @@ where MainContent: View, BottomContent: View {
     }
 
     public var body: some View {
+        if accessibilityWithoutCombinedElements {
+            mainView
+        } else {
+            mainView
+                .accessibilityElement(children: .combine)
+                .accessibilityRemoveTraits(.isHeader)
+        }
+    }
+
+    private var mainView: some View {
         VStack(alignment: .leading, spacing: 0) {
             hRow {
                 mainContent

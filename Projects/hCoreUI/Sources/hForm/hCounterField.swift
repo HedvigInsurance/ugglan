@@ -1,4 +1,5 @@
 import SwiftUI
+import hCore
 
 public struct hCounterField: View {
     private var placeholder: String
@@ -47,28 +48,34 @@ public struct hCounterField: View {
                         getTextLabel
                             .offset(y: shouldMoveLabel ? size.fieldOffset : 0)
                     }
+                    .accessibilityElement(children: .combine)
                     Spacer()
-                    SwiftUI.Button {
-                        if let minValue, minValue < value {
-                            decrease()
+                    Group {
+                        SwiftUI.Button {
+                            if let minValue, minValue < value {
+                                decrease()
+                            }
+                        } label: {
+                            Image(uiImage: hCoreUIAssets.minus.image)
+                                .foregroundColor(
+                                    foregroundColor.opacity(value == 0 ? 0.4 : 1)
+                                )
+                                .frame(width: 35, height: 35)
+                                .accessibilityLabel(L10n.General.remove)
                         }
-                    } label: {
-                        Image(uiImage: hCoreUIAssets.minus.image)
-                            .foregroundColor(
-                                foregroundColor.opacity(value == 0 ? 0.4 : 1)
+                        SwiftUI.Button {
+                            if let maxValue, maxValue > value {
+                                increase()
+                            }
+                        } label: {
+                            Image(uiImage: hCoreUIAssets.plus.image)
+                                .foregroundColor(foregroundColor.opacity(maxValue == value ? 0.4 : 1))
+                                .frame(width: 35, height: 35)
+                                .accessibilityLabel(L10n.generalAddButton)
 
-                            )
-                            .frame(width: 35, height: 35)
-                    }
-                    SwiftUI.Button {
-                        if let maxValue, maxValue > value {
-                            increase()
                         }
-                    } label: {
-                        Image(uiImage: hCoreUIAssets.plus.image)
-                            .foregroundColor(foregroundColor.opacity(maxValue == value ? 0.4 : 1))
-                            .frame(width: 35, height: 35)
                     }
+                    .accessibilityHint(placeholder + String(value))
                 }
                 .padding(.top, size.counterTopPadding)
                 .padding(.bottom, size.counterBottomPadding)

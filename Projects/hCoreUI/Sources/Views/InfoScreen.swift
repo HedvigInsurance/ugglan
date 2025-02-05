@@ -71,7 +71,6 @@ public struct InfoScreen: View {
                 }
             }
             .sectionContainerStyle(.transparent)
-            .padding(.vertical, .padding16)
         }
     }
 }

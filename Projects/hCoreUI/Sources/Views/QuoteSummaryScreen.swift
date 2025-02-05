@@ -220,7 +220,24 @@ public struct QuoteSummaryScreen: View {
         }
     }
 
+    @ViewBuilder
     func contractInfoView(for contract: QuoteSummaryViewModel.ContractInfo, proxy: ScrollViewProxy) -> some View {
+        let index = vm.expandedContracts.firstIndex(of: contract.id)
+        let isExpanded = vm.isAddon ? true : (index != nil)
+
+        if !contract.documents.isEmpty {
+            contractContent(for: contract, proxy: proxy, isExpanded: isExpanded)
+                .hAccessibilityWithoutCombinedElements
+        } else {
+            contractContent(for: contract, proxy: proxy, isExpanded: isExpanded)
+        }
+    }
+
+    func contractContent(
+        for contract: QuoteSummaryViewModel.ContractInfo,
+        proxy: ScrollViewProxy,
+        isExpanded: Bool
+    ) -> some View {
         hSection {
             StatusCard(
                 onSelected: {},
@@ -233,68 +250,75 @@ public struct QuoteSummaryScreen: View {
                 title: nil,
                 subTitle: nil,
                 bottomComponent: {
-                    VStack(spacing: .padding16) {
-                        PriceField(
-                            newPremium: contract.newPremium,
-                            currentPremium: vm.removedContracts.contains(contract.id) ? nil : contract.currentPremium
-                        )
-                        .hWithStrikeThroughPrice(
-                            setTo: vm.strikeThroughPriceType(contract.id)
-                        )
-
-                        let index = vm.expandedContracts.firstIndex(of: contract.id)
-                        let isExpanded = vm.isAddon ? true : (index != nil)
-                        VStack(spacing: 0) {
-                            detailsView(for: contract, isExpanded: isExpanded)
-                                .frame(height: isExpanded ? nil : 0, alignment: .top)
-                                .clipped()
-                            if vm.removedContracts.contains(contract.id) {
-                                hButton.MediumButton(
-                                    type: .secondary
-                                ) {
-                                    withAnimation(.easeInOut(duration: 0.4)) {
-                                        vm.addContract(contract)
-                                    }
-                                } content: {
-                                    hText(
-                                        L10n.addonAddCoverage
-                                    )
-                                    .transition(.scale)
-                                }
-                            } else if contract.shouldShowDetails && !vm.isAddon {
-                                hButton.MediumButton(
-                                    type: .secondary
-                                ) {
-                                    withAnimation(.easeInOut(duration: 0.4)) {
-                                        vm.toggleContract(contract)
-                                        Task { [weak vm] in
-                                            guard let vm else { return }
-                                            try await Task.sleep(nanoseconds: 200_000_000)
-                                            withAnimation(.easeInOut(duration: 0.4)) {
-                                                if vm.expandedContracts.contains(contract.id) {
-                                                    proxy.scrollTo(contract.id, anchor: .top)
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                } content: {
-                                    hText(
-                                        vm.expandedContracts.firstIndex(of: contract.id) != nil
-                                            ? L10n.ClaimStatus.ClaimHideDetails.button
-                                            : L10n.ClaimStatus.ClaimDetails.button
-                                    )
-                                    .transition(.scale)
-                                }
-                            }
-                        }
-                    }
+                    bottomComponent(for: contract, proxy: proxy, isExpanded: isExpanded)
                 }
             )
             .hCardWithoutSpacing
         }
         .padding(.top, .padding8)
         .sectionContainerStyle(.transparent)
+    }
+
+    @ViewBuilder
+    private func bottomComponent(
+        for contract: QuoteSummaryViewModel.ContractInfo,
+        proxy: ScrollViewProxy,
+        isExpanded: Bool
+    ) -> some View {
+        VStack(spacing: .padding16) {
+            PriceField(
+                newPremium: contract.newPremium,
+                currentPremium: vm.removedContracts.contains(contract.id) ? nil : contract.currentPremium
+            )
+            .hWithStrikeThroughPrice(
+                setTo: vm.strikeThroughPriceType(contract.id)
+            )
+
+            VStack(spacing: 0) {
+                detailsView(for: contract, isExpanded: isExpanded)
+                    .frame(height: isExpanded ? nil : 0, alignment: .top)
+                    .clipped()
+                if vm.removedContracts.contains(contract.id) {
+                    hButton.MediumButton(
+                        type: .secondary
+                    ) {
+                        withAnimation(.easeInOut(duration: 0.4)) {
+                            vm.addContract(contract)
+                        }
+                    } content: {
+                        hText(
+                            L10n.addonAddCoverage
+                        )
+                        .transition(.scale)
+                    }
+                } else if contract.shouldShowDetails && !vm.isAddon {
+                    hButton.MediumButton(
+                        type: .secondary
+                    ) {
+                        withAnimation(.easeInOut(duration: 0.4)) {
+                            vm.toggleContract(contract)
+                            Task { [weak vm] in
+                                guard let vm else { return }
+                                try await Task.sleep(nanoseconds: 200_000_000)
+                                withAnimation(.easeInOut(duration: 0.4)) {
+                                    if vm.expandedContracts.contains(contract.id) {
+                                        proxy.scrollTo(contract.id, anchor: .top)
+                                    }
+                                }
+                            }
+                        }
+
+                    } content: {
+                        hText(
+                            vm.expandedContracts.firstIndex(of: contract.id) != nil
+                                ? L10n.ClaimStatus.ClaimHideDetails.button
+                                : L10n.ClaimStatus.ClaimDetails.button
+                        )
+                        .transition(.scale)
+                    }
+                }
+            }
+        }
     }
 
     private var noticeComponent: some View {
@@ -318,6 +342,7 @@ public struct QuoteSummaryScreen: View {
             if !contract.displayItems.isEmpty {
                 VStack(alignment: .leading, spacing: 0) {
                     hText(L10n.summaryScreenOverview)
+                        .accessibilityAddTraits(.isHeader)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     ForEach(contract.displayItems, id: \.displayTitle) { item in
                         rowItem(for: item)
@@ -329,6 +354,7 @@ public struct QuoteSummaryScreen: View {
                 VStack(alignment: .leading, spacing: 0) {
                     hText(L10n.summaryScreenCoverage)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .accessibilityAddTraits(.isHeader)
                     ForEach(contract.insuranceLimits, id: \.limit) { limit in
                         let displayItem: QuoteDisplayItem = .init(title: limit.label, value: limit.limit, id: limit.id)
                         rowItem(for: displayItem)
@@ -340,10 +366,15 @@ public struct QuoteSummaryScreen: View {
                 VStack(alignment: .leading, spacing: .padding4) {
                     hText(L10n.confirmationScreenDocumentTitle)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .accessibilityAddTraits(.isHeader)
                     ForEach(contract.documents, id: \.displayName) { document in
                         documentItem(for: document)
                             .background(hSurfaceColor.Opaque.primary)
+                            .accessibilityElement(children: .combine)
                             .onTapGesture {
+                                contract.onDocumentTap(document)
+                            }
+                            .accessibilityAction {
                                 contract.onDocumentTap(document)
                             }
                     }
@@ -383,14 +414,20 @@ public struct QuoteSummaryScreen: View {
                 if #available(iOS 16.0, *) {
                     hText(oldValue)
                         .strikethrough()
+                        .accessibilityLabel(L10n.voiceoverCurrentValue + oldValue)
                 } else {
                     hText(oldValue)
                         .foregroundColor(hTextColor.Opaque.tertiary)
+                        .accessibilityLabel(L10n.voiceoverCurrentValue + oldValue)
                 }
             }
 
             hText(displayItem.displayValue)
                 .multilineTextAlignment(.trailing)
+                .accessibilityLabel(
+                    displayItem.displayValueOld != nil && displayItem.displayValueOld != displayItem.displayValue
+                        ? L10n.voiceoverNewValue + displayItem.displayValue : displayItem.displayValue
+                )
         }
         .foregroundColor(hTextColor.Translucent.secondary)
     }
@@ -438,6 +475,7 @@ public struct QuoteSummaryScreen: View {
                         hText(amount.formattedAmountPerMonth)
                     }
                 }
+                .accessibilityElement(children: .combine)
                 VStack(spacing: .padding8) {
                     hButton.LargeButton(type: .primary) {
                         vm.onConfirmClick()
@@ -595,3 +633,20 @@ public struct FAQ: Codable, Equatable, Hashable, Sendable {
 
     return QuoteSummaryScreen(vm: vm)
 })
+
+private struct EnvironmentHAccessibilityWithoutCombinedElements: EnvironmentKey {
+    static let defaultValue = false
+}
+
+extension EnvironmentValues {
+    public var hAccessibilityWithoutCombinedElements: Bool {
+        get { self[EnvironmentHAccessibilityWithoutCombinedElements.self] }
+        set { self[EnvironmentHAccessibilityWithoutCombinedElements.self] = newValue }
+    }
+}
+
+extension View {
+    public var hAccessibilityWithoutCombinedElements: some View {
+        self.environment(\.hAccessibilityWithoutCombinedElements, true)
+    }
+}

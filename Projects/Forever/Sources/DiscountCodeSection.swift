@@ -22,8 +22,12 @@ struct DiscountCodeSectionView: View {
                     }
                     .hFieldTrailingView {
                         Image(uiImage: hCoreUIAssets.copy.image)
+                            .accessibilityHidden(true)
                     }
                 }
+                .accessibilityElement(children: .combine)
+                .accessibilityValue(L10n.voiceOverCopyCode)
+                .accessibilityAddTraits(.isButton)
                 hSection {
                     VStack(spacing: 8) {
                         ModalPresentationSourceWrapper(

@@ -27,6 +27,7 @@ public struct ListScreen: View {
                         .resizable()
                         .frame(width: 24, height: 24)
                         .foregroundColor(hSignalColor.Blue.element)
+
                     hText(L10n.TravelCertificate.emptyListMessage)
                         .multilineTextAlignment(.center)
                 }

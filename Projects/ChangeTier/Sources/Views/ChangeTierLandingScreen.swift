@@ -131,6 +131,7 @@ public struct ChangeTierLandingScreen: View {
             ) {
                 changeTierNavigationVm.isEditTierPresented = true
             }
+            .accessibilityHint(L10n.voiceoverPressTo + L10n.contractEditInfo)
         }
     }
 
@@ -159,6 +160,7 @@ public struct ChangeTierLandingScreen: View {
             }
             .disabled(vm.selectedTier == nil)
             .hFieldSize(.small)
+            .accessibilityHint(L10n.voiceoverPressTo + L10n.contractEditInfo)
         }
     }
 

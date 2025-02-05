@@ -322,12 +322,6 @@ struct HomeTab: View {
         ) {
             ClaimsJourneyMain(from: .generic)
         }
-        .detent(
-            item: $homeNavigationVm.document,
-            style: [.large]
-        ) { document in
-            PDFPreview(document: document)
-        }
         .modally(
             presented: $homeNavigationVm.isHelpCenterPresented
         ) {
@@ -554,11 +548,12 @@ class LoggedInNavigationViewModel: ObservableObject {
     }
 
     @objc func openDeepLinkNotification(notification: Notification) {
-        let deepLinkUrl = notification.object as? URL
-        if ApplicationState.currentState == .loggedIn {
-            self.handleDeepLinks(deepLinkUrl: deepLinkUrl)
-        } else {
-            self.deeplinkToBeOpenedAfterLogin = deepLinkUrl
+        if let deepLinkUrl = notification.object as? URL {
+            if ApplicationState.currentState == .loggedIn {
+                self.handleDeepLinks(deepLinkUrl: deepLinkUrl)
+            } else if !deepLinkUrl.absoluteString.contains("//bankid") {
+                self.deeplinkToBeOpenedAfterLogin = deepLinkUrl
+            }
         }
     }
 
@@ -739,13 +734,10 @@ class LoggedInNavigationViewModel: ObservableObject {
             case .addon:
                 handleAddon(url: url)
             case nil:
-                let rootUrls = [hGraphQL.Environment.staging.deepLinkUrl, Environment.production.deepLinkUrl]
-                    .compactMap({ $0.host })
-                guard rootUrls.contains(url.host ?? "") else {
+                let isDeeplink = hGraphQL.Environment.current.isDeeplink(url)
+                if !isDeeplink {
                     openUrl(url: url)
-                    return
                 }
-
             }
         }
     }

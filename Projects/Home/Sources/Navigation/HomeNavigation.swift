@@ -65,9 +65,6 @@ public class HomeNavigationViewModel: ObservableObject {
     @Published public var isSubmitClaimPresented = false
     @Published public var isHelpCenterPresented = false
 
-    //claim details
-    @Published public var document: hPDFDocument? = nil
-
     @Published public var navBarItems = NavBarItems()
 
     @Published public var openChat: ChatConversation?

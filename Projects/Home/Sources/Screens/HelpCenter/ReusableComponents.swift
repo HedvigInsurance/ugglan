@@ -113,11 +113,14 @@ struct SupportView: View {
     var body: some View {
         hSection {
             VStack(spacing: 0) {
-                hText(L10n.hcChatQuestion)
-                    .foregroundColor(hTextColor.Translucent.primary)
-                hText(L10n.hcChatAnswer)
-                    .foregroundColor(hTextColor.Translucent.secondary)
-                    .multilineTextAlignment(.center)
+                VStack(spacing: 0) {
+                    hText(L10n.hcChatQuestion)
+                        .foregroundColor(hTextColor.Translucent.primary)
+                    hText(L10n.hcChatAnswer)
+                        .foregroundColor(hTextColor.Translucent.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .accessibilityElement(children: .combine)
                 PresentableStoreLens(HomeStore.self) { state in
                     state.hasSentOrRecievedAtLeastOneMessage
                 } _: { hasSentOrRecievedAtLeastOneMessage in

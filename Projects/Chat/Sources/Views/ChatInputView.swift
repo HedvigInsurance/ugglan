@@ -27,6 +27,9 @@ struct ChatInputView: View {
                             .background(hSurfaceColor.Opaque.primary)
                             .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusM))
                     }
+                    .accessibilityValue(
+                        vm.showBottomMenu ? L10n.generalCloseButton : L10n.ClaimStatus.UploadedFiles.uploadButton
+                    )
                     HStack(alignment: .bottom, spacing: 0) {
                         CustomTextViewRepresentable(
                             placeholder: L10n.chatInputPlaceholder,
@@ -47,6 +50,7 @@ struct ChatInputView: View {
                                 .frame(width: 24, height: 24)
                                 .padding(.padding8)
                         }
+                        .accessibilityValue(L10n.voiceoverChatSendMessageButton)
                     }
                     .padding(.leading, .padding4)
                     .background(hSurfaceColor.Opaque.primary)
@@ -60,12 +64,15 @@ struct ChatInputView: View {
                             bottomMenuItem(with: hCoreUIAssets.camera.image) {
                                 vm.openCamera()
                             }
+                            .accessibilityValue(L10n.voiceoverChatCamera)
                             bottomMenuItem(with: hCoreUIAssets.image.image) {
                                 vm.openImagePicker()
                             }
+                            .accessibilityValue(L10n.voiceoverChatCameraroll)
                             bottomMenuItem(with: hCoreUIAssets.document.image) {
                                 vm.openFilePicker()
                             }
+                            .accessibilityValue(L10n.voiceoverChatFiles)
                         }
                         .fixedSize(
                             horizontal: /*@START_MENU_TOKEN@*/ true /*@END_MENU_TOKEN@*/,
@@ -225,10 +232,12 @@ private class CustomTextView: UITextView, UITextViewDelegate {
         placeholderLabel.font = Fonts.fontFor(style: .body1)
         placeholderLabel.text = placeholder
         self.addSubview(placeholderLabel)
+        placeholderLabel.accessibilityElementsHidden = true
         placeholderLabel.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(4)
             make.leading.equalToSuperview().offset(8)
         }
+        self.accessibilityLabel = placeholderLabel.text
     }
 
     @objc private func handleDoneButtonTap() {
@@ -253,7 +262,7 @@ private class CustomTextView: UITextView, UITextViewDelegate {
     }
 
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
             self?.inputText = textView.text
             self?.updateHeight()
             self?.updateColors()

@@ -73,6 +73,7 @@ struct StateView: View {
                         .resizable()
                         .frame(width: 40, height: 40)
                         .foregroundColor(type.imageColor)
+                        .accessibilityHidden(true)
                 }
 
                 VStack(spacing: 0) {
@@ -87,6 +88,7 @@ struct StateView: View {
                             .padding(.horizontal, .padding32)
                     }
                 }
+                .accessibilityElement(children: .combine)
 
                 if let button = buttonConfig?.actionButton {
                     hButton.MediumButton(type: .primary) {

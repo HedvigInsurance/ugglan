@@ -10,10 +10,11 @@ struct HeaderView: View {
 
     var body: some View {
         hSection {
-            VStack(spacing: 16) {
+            VStack(spacing: .padding16) {
                 if let monthlyDiscount = foreverNavigationVm.foreverData?.monthlyDiscount, monthlyDiscount.value == 0 {
                     hText(monthlyDiscount.negative.formattedAmount)
                         .foregroundColor(hTextColor.Opaque.secondary)
+                        .accessibilityLabel(L10n.foreverTabMonthlyDiscount + monthlyDiscount.negative.formattedAmount)
                 }
                 let data = foreverNavigationVm.foreverData
                 if let grossAmount = data?.grossAmount,

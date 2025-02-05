@@ -15,7 +15,6 @@ public struct ClaimDetailView: View {
     @State var showFilePicker = false
     @State var showCamera = false
     @ObservedObject var vm: ClaimDetailViewModel
-    @EnvironmentObject var homeVm: HomeNavigationViewModel
     @EnvironmentObject var router: Router
 
     public init(
@@ -124,6 +123,12 @@ public struct ClaimDetailView: View {
             .embededInNavigation(tracking: ClaimDetailDetentType.fileUpload)
 
         }
+        .detent(
+            item: $vm.document,
+            style: [.large]
+        ) { document in
+            PDFPreview(document: document)
+        }
         .loading($vm.claimProcessingState)
         .hStateViewButtonConfig(
             .init(
@@ -188,6 +193,7 @@ public struct ClaimDetailView: View {
                 hSection {
                     VStack(spacing: 8) {
                         claimDetailsRow(title: L10n.ClaimStatus.ClaimDetails.type, value: claim.claimType)
+                            .accessibilityHidden(claim.claimType == "")
                         if let incidentDate = claim.incidentDate {
                             claimDetailsRow(
                                 title: L10n.ClaimStatus.ClaimDetails.incidentDate,
@@ -210,6 +216,8 @@ public struct ClaimDetailView: View {
                             title: L10n.ClaimStatus.ClaimDetails.title,
                             description: L10n.ClaimStatus.ClaimDetails.infoText
                         )
+                        .accessibilityAddTraits(.isButton)
+                        .accessibilityHint(L10n.ClaimStatus.ClaimDetails.title)
                     }
                 }
                 .hWithoutDivider
@@ -229,6 +237,7 @@ public struct ClaimDetailView: View {
             hText(value)
                 .foregroundColor(hTextColor.Opaque.secondary)
         }
+        .accessibilityElement(children: .combine)
     }
 
     @ViewBuilder
@@ -247,7 +256,7 @@ public struct ClaimDetailView: View {
                     Image(uiImage: hCoreUIAssets.arrowNorthEast.image)
                 }
                 .onTap {
-                    homeVm.document = termsAndConditionsDocument
+                    vm.document = termsAndConditionsDocument
                 }
             }
         }
@@ -398,6 +407,7 @@ struct ClaimDetailView_Previews: PreviewProvider {
 @MainActor
 public class ClaimDetailViewModel: ObservableObject {
     @PresentableStore var store: ClaimsStore
+    @Published public var document: hPDFDocument? = nil
     @Published private(set) var claim: ClaimModel? {
         didSet {
             self.setupToolbarOptionType(for: claim)

@@ -19,6 +19,7 @@ struct ChangeTierSummaryScreen: View {
 
     var body: some View {
         QuoteSummaryScreen(vm: quoteSummaryVm)
+            .hAccessibilityWithoutCombinedElements
     }
 }
 

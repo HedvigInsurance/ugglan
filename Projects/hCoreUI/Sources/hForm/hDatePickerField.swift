@@ -89,6 +89,8 @@ public struct hDatePickerField: View {
                 self.animate = false
             }
         }
+        .accessibilityAddTraits(.isButton)
+        .accessibilityElement(children: .combine)
         .disabled(!isEnabled)
         .detent(
             item: $datePickerNavigationModel.isDatePickerPresented,

@@ -184,7 +184,23 @@ struct SetTerminationDateLandingScreen: View {
                     }
                 }
             }
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(accessibilityLabel)
+            .accessibilityAddTraits(.isButton)
         }
+    }
+
+    private var accessibilityLabel: String {
+        var label =
+            L10n.terminationFlowImportantInformationTitle + "\n" + L10n.terminationFlowImportantInformationText + "\n"
+            + L10n.terminationFlowIUnderstandText + "\n"
+
+        if vm.hasAgreedToTerms {
+            label += L10n.voiceoverAccepted
+        } else {
+            label += L10n.voiceoverNotAccepted
+        }
+        return label
     }
 
     @hColorBuilder

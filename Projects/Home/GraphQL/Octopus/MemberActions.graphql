@@ -27,16 +27,6 @@ query MemberActions {
   }
 }
 
-query ChatMessageTimeStamp($until: Instant) {
-  chat(until: $until) {
-    messages {
-        sentAt
-        sender
-        id
-    }
-  }
-}
-
 query ConversationsTimeStamp {
   currentMember {
     conversations {

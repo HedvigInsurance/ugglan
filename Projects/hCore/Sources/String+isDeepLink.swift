@@ -7,7 +7,10 @@ extension String {
         if let match = detector?
             .firstMatch(in: self, options: [], range: NSRange(location: 0, length: utf16.count))
         {
-            return match.range.length == utf16.count && contains(Environment.current.deepLinkUrl.host!)
+            if let url = URL(string: self), Environment.current.isDeeplink(url) {
+                return match.range.length == utf16.count
+            }
+            return false
         } else {
             return false
         }

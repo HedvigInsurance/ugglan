@@ -385,6 +385,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
                 VStack(alignment: .leading) {
                     header
                         .environment(\.defaultHTextStyle, .body1)
+                        .accessibilityAddTraits(.isHeader)
                 }
                 .foregroundColor(hTextColor.Opaque.primary)
                 .padding(.bottom, .padding8)

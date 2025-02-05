@@ -34,6 +34,7 @@ public struct hRadioField<T>: View where T: Equatable {
             .padding(.bottom, size.bottomPadding)
             .addFieldBackground(animate: $animate, error: $error)
             .addFieldError(animate: $animate, error: $error)
+            .accessibilityElement(children: .combine)
             .onTapGesture {
                 ImpactGenerator.soft()
                 withAnimation(.none) {
