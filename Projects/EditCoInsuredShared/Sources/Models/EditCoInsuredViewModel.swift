@@ -47,12 +47,11 @@ public class EditCoInsuredViewModel: ObservableObject {
                                 fromInfoCard: true
                             )
                         })
-                    let contractsSupportingCoInsured2 = contractsSupportingCoInsured.filter({ $0.contractId == "1" })
-                    if contractsSupportingCoInsured2.count > 1 {
+                    if contractsSupportingCoInsured.count > 1 {
                         editCoInsuredModelDetent = .init(contractsSupportingCoInsured: {
                             return contractsSupportingCoInsured
                         })
-                    } else if !contractsSupportingCoInsured2.isEmpty {
+                    } else if !contractsSupportingCoInsured.isEmpty {
                         editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
                             return contractsSupportingCoInsured
                         })
