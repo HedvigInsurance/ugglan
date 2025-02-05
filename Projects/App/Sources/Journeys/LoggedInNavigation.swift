@@ -756,12 +756,6 @@ class LoggedInNavigationViewModel: ObservableObject {
         return queryItems.first(where: { $0.name == "conversationId" })?.value
     }
 
-    private func getAddonId(from url: URL) -> String? {
-        guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
-        guard let queryItems = urlComponents.queryItems else { return nil }
-        return queryItems.first(where: { $0.name == "addonId" })?.value
-    }
-
     public func openUrl(url: URL) {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         contractStore.send(.fetchContracts)
