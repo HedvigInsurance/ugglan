@@ -38,7 +38,10 @@ struct ContractInformationView: View {
                                         if let date = item.displayValue.localDateToDate?.displayDateDDMMMYYYYFormat {
                                             hText(date)
                                         } else {
-                                            hText(item.displayValue)
+                                            ZStack {
+                                                hText(item.displayValue)
+                                                hText(" ")
+                                            }
                                         }
                                     }
                                     .foregroundColor(hTextColor.Opaque.secondary)
