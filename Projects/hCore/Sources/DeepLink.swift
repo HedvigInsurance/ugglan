@@ -66,7 +66,7 @@ public enum DeepLink: String, Codable, CaseIterable {
         case .addon:
             return L10n.addonTitle
         case .editCoInsured:
-            return "edit co-insured"
+            return L10n.hcQuickActionsEditCoinsured
         }
     }
     @MainActor
