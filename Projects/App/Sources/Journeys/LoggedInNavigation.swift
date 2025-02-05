@@ -84,6 +84,24 @@ struct LoggedInNavigation: View {
         ) { addonInput in
             ChangeAddonNavigation(input: addonInput)
         }
+        .detent(
+            item: $vm.isAddonErrorPresented,
+            style: [.height],
+            options: .constant([.alwaysOpenOnTop])
+        ) { error in
+            GenericErrorView(description: error, formPosition: .compact)
+                .hErrorViewButtonConfig(
+                    .init(
+                        actionButton: .init(
+                            buttonTitle: L10n.generalCloseButton,
+                            buttonAction: { [weak vm] in
+                                vm?.addonErrorRouter.dismiss()
+                            }
+                        )
+                    )
+                )
+                .embededInNavigation(router: vm.addonErrorRouter, tracking: LoggedInNavigationDetentType.error)
+        }
         .handleTerminateInsurance(vm: vm.terminateInsuranceVm) {
             dismissType in
             switch dismissType {
@@ -455,12 +473,15 @@ private enum LoggedInNavigationDetentType: TrackingViewNameProtocol {
             return .init(describing: FirstVetView.self)
         case .crossSelling:
             return .init(describing: CrossSellingScreen.self)
+        case .error:
+            return .init(describing: GenericErrorView.self)
         }
     }
 
     case submitClaimDeflect
     case firstVet
     case crossSelling
+    case error
 }
 
 @MainActor
@@ -486,6 +507,8 @@ class LoggedInNavigationViewModel: ObservableObject {
     @Published var isMoveContractPresented = false
     @Published var isChangeTierPresented: ChangeTierContractsInput?
     @Published var isAddonPresented: ChangeAddonInput?
+    @Published var isAddonErrorPresented: String?
+    let addonErrorRouter = Router()
     @Published var isEuroBonusPresented = false
     @Published var isUrlPresented: URL?
 
@@ -823,7 +846,9 @@ class LoggedInNavigationViewModel: ObservableObject {
                 let addonContracts = bannerData.contractIds.compactMap({
                     contractStore.state.contractForId($0)
                 })
-
+                guard !addonContracts.isEmpty else {
+                    throw AddonsError.missingContracts
+                }
                 let addonConfigs: [AddonConfig] = addonContracts.map({
                     .init(
                         contractId: $0.id,
@@ -834,7 +859,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                 self.isAddonPresented = .init(contractConfigs: addonConfigs)
             }
         } catch {
-
+            isAddonErrorPresented = error.localizedDescription
         }
     }
 
