@@ -48,6 +48,19 @@ public enum MimeType: Codable, Equatable, Hashable, Sendable {
         }
     }
 
+    public var isVideo: Bool {
+        switch self {
+        case .WAV: return true
+        case .MP4: return true
+        case .AVI: return true
+        case .MKV: return true
+        case .M4A: return true
+        case .MOV: return true
+        default:
+            return false
+        }
+    }
+
     public var name: String {
         switch self {
         case .PDF: return "pdf"
