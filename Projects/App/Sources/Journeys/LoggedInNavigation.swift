@@ -733,6 +733,8 @@ class LoggedInNavigationViewModel: ObservableObject {
                 handleChangeTier(contractId: contractId)
             case .addon:
                 handleAddon(url: url)
+            case .editCoInsured:
+                handleEditCoInsured(url: url)
             case nil:
                 let isDeeplink = hGraphQL.Environment.current.isDeeplink(url)
                 if !isDeeplink {
@@ -833,6 +835,36 @@ class LoggedInNavigationViewModel: ObservableObject {
             )
         } else if let addonId = getAddonId(from: url) {
             self.isAddonPresented = .init(addonId: addonId)
+        }
+    }
+
+    private func handleEditCoInsured(url: URL) {
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        Task { [weak self] in
+            do {
+                if let contractId = self?.getContractId(from: url),
+                    let contract: Contracts.Contract = contractStore.state.contractForId(contractId)
+                {
+                    let contractConfig: InsuredPeopleConfig = .init(contract: contract, fromInfoCard: false)
+
+                    if contract.nbOfMissingCoInsuredWithoutTermination != 0 {
+                        self?.homeNavigationVm.editCoInsuredVm
+                            .start(
+                                fromContract: contractConfig,
+                                forMissingCoInsured: true
+                            )
+                    } else {
+                        self?.homeNavigationVm.editCoInsuredVm.start(fromContract: contractConfig)
+                    }
+                } else {
+                    // select insurance
+                    self?.homeNavigationVm.editCoInsuredVm.start(fromContract: nil)
+                }
+            } catch let exception {
+                Toasts.shared.displayToastBar(
+                    toast: .init(type: .error, text: exception.localizedDescription)
+                )
+            }
         }
     }
 
