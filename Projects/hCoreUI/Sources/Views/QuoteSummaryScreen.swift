@@ -348,6 +348,8 @@ public struct QuoteSummaryScreen: View {
                         rowItem(for: item)
                     }
                 }
+                .accessibilityElement(children: .combine)
+                .accessibilityRemoveTraits(.isHeader)
             }
 
             if !contract.insuranceLimits.isEmpty {
@@ -355,11 +357,22 @@ public struct QuoteSummaryScreen: View {
                     hText(L10n.summaryScreenCoverage)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .accessibilityAddTraits(.isHeader)
-                    ForEach(contract.insuranceLimits, id: \.limit) { limit in
-                        let displayItem: QuoteDisplayItem = .init(title: limit.label, value: limit.limit, id: limit.id)
-                        rowItem(for: displayItem)
+                    ZStack {
+                        VStack {
+                            ForEach(contract.insuranceLimits, id: \.limit) { limit in
+                                let displayItem: QuoteDisplayItem = .init(
+                                    title: limit.label,
+                                    value: limit.limit,
+                                    id: limit.id
+                                )
+                                rowItem(for: displayItem)
+                            }
+                        }
+                        hText(" ")
                     }
                 }
+                .accessibilityElement(children: .combine)
+                .accessibilityRemoveTraits(.isHeader)
             }
 
             if !contract.documents.isEmpty {

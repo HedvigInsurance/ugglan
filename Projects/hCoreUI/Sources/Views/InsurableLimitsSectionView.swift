@@ -24,10 +24,13 @@ public struct InsurableLimitsSectionView: View {
                     Spacer()
                     HStack(alignment: .top) {
                         Spacer()
-                        hText(limit.limit)
-                            .foregroundColor(hTextColor.Opaque.secondary)
-                            .fixedSize(horizontal: false, vertical: true)
-                            .multilineTextAlignment(.trailing)
+                        ZStack {
+                            hText(limit.limit)
+                                .foregroundColor(hTextColor.Opaque.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .multilineTextAlignment(.trailing)
+                            hText(" ")
+                        }
                         Image(uiImage: hCoreUIAssets.infoFilled.image)
                             .resizable()
                             .foregroundColor(hTextColor.Opaque.secondary)

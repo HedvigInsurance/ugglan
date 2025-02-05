@@ -54,6 +54,7 @@ struct HeaderView: View {
             .padding(.top, .padding64)
         }
         .sectionContainerStyle(.transparent)
+        .accessibilityElement(children: .combine)
     }
 }
 struct HeaderView_Previews: PreviewProvider {

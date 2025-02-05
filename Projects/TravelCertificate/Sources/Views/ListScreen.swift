@@ -47,6 +47,8 @@ public struct ListScreen: View {
                     .onTapGesture {
                         travelCertificateNavigationVm.isDocumentPresented = travelCertificate
                     }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityAddTraits(.isButton)
                 }
                 .hSectionWithoutHorizontalPadding
             }

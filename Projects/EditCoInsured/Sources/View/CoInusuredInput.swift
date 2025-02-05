@@ -60,6 +60,7 @@ struct CoInusuredInputScreen: View {
                                 hText(title)
                             }
                         }
+                        .accessibilityElement(children: .combine)
                     }
                 }
         }
