@@ -842,8 +842,6 @@ class LoggedInNavigationViewModel: ObservableObject {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         Task { [weak self] in
             do {
-                try await Task.sleep(nanoseconds: 200_000_000)
-
                 if let contractId = self?.getContractId(from: url),
                     let contract: Contracts.Contract = contractStore.state.contractForId(contractId)
                 {
