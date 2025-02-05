@@ -856,18 +856,11 @@ class LoggedInNavigationViewModel: ObservableObject {
                                 forMissingCoInsured: true
                             )
                     } else {
-                        self?.homeNavigationVm.editCoInsuredVm
-                            .start(
-                                fromContract: contractConfig,
-                                forMissingCoInsured: false
-                            )
+                        self?.homeNavigationVm.editCoInsuredVm.start(fromContract: contractConfig)
                     }
                 } else {
-                    // redirect to select insurance
-                    self?.homeNavigationVm.editCoInsuredVm
-                        .start(
-                            fromContract: nil
-                        )
+                    // select insurance
+                    self?.homeNavigationVm.editCoInsuredVm.start(fromContract: nil)
                 }
             } catch let exception {
                 Toasts.shared.displayToastBar(
