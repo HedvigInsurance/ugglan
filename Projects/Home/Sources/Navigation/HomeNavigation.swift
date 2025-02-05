@@ -86,7 +86,7 @@ public class HomeNavigationViewModel: ObservableObject {
         }
 
         public enum FileUrlModelType: Codable, Equatable {
-            case url(url: URL)
+            case url(url: URL, mimeType: MimeType)
             case data(data: Data, mimeType: MimeType)
         }
     }
@@ -104,9 +104,9 @@ public class HomeNavigationViewModel: ObservableObject {
 extension HomeNavigationViewModel.FileUrlModel.FileUrlModelType {
     public var asDocumentPreviewModelType: DocumentPreviewModel.DocumentPreviewType {
         switch self {
-        case .url(let url):
-            return .url(url: url)
-        case .data(let data, let mimeType):
+        case let .url(url, mimeType):
+            return .url(url: url, mimeType: mimeType)
+        case let .data(data, mimeType):
             return .data(data: data, mimeType: mimeType)
         }
     }

@@ -23,7 +23,7 @@ public struct FileView: View {
                 switch file.source {
                 case let .localFile(url):
                     imageFromLocalFile(results: url!)
-                case .url(let url):
+                case let .url(url, _):
                     imageFromRemote(url: url)
                 case let .data(data):
                     Rectangle().fill(.clear)
