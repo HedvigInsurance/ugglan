@@ -9,7 +9,7 @@ extension Message {
             hSignalColor.Red.highlight
         } else {
             switch self.sender {
-            case .hedvig:
+            case .hedvig, .automatic:
                 hSurfaceColor.Opaque.primary
             case .member:
                 if conversationStatus == .open {
@@ -24,7 +24,7 @@ extension Message {
     @hColorBuilder
     var textColor: some hColor {
         switch self.sender {
-        case .hedvig:
+        case .hedvig, .automatic:
             hTextColor.Opaque.primary
         case .member:
             hTextColor.Opaque.primary.colorFor(.light, .elevated)
@@ -33,7 +33,7 @@ extension Message {
 
     var horizontalPadding: CGFloat {
         switch type {
-        case .text, .deepLink, .action:
+        case .text, .deepLink, .action, .automaticSuggestions:
             return .padding16
         default:
             return 0
@@ -41,7 +41,7 @@ extension Message {
     }
     var verticalPadding: CGFloat {
         switch type {
-        case .text, .deepLink, .action:
+        case .text, .deepLink, .action, .automaticSuggestions:
             return .padding12
         default:
             return 0

@@ -107,6 +107,13 @@ struct MessageView: View {
                 case let .action(action):
                     ActionView(action: action)
                         .environment(\.colorScheme, .light)
+                case let .automaticSuggestions(suggestions):
+                    ForEach(suggestions.suggestions, id: \.self) { action in
+                        if let action {
+                            ActionView(action: action)
+                                .environment(\.colorScheme, .light)
+                        }
+                    }
                 case .unknown: Text("")
                 }
             }
@@ -222,7 +229,7 @@ struct ActionView: View {
             } content: {
                 hText(action.buttonTitle)
             }
-            hButtonTakeFullWidth(true)
+            .hButtonTakeFullWidth(true)
         }
         .environment(\.colorScheme, .light)
     }
@@ -238,6 +245,41 @@ extension URL {
         return contractStore.state.contractForId(contractIdString ?? "")?.currentAgreement?.productVariant.displayName
     }
 }
+
+#Preview(body: {
+    Dependencies.shared.add(module: Module { () -> ConversationClient in ConversationsDemoClient() })
+    let service = ConversationService(conversationId: "conversationId")
+
+    let url = URL(string: "https://hedvig.com")
+
+    return MessageView(
+        message: .init(
+            localId: nil,
+            remoteId: nil,
+            sender: .automatic,
+            sentAt: Date(),
+            type: .automaticSuggestions(
+                suggestions: AutomaticSuggestions(
+                    suggestions: [
+                        .init(
+                            url: url!,
+                            text: "This is an automated message",
+                            buttonTitle: "Click here"
+                        )
+
+                    ],
+                    escalationReference: "escalationReference"
+                )
+            ),
+            status: .sent
+        ),
+        conversationStatus: .open,
+        vm: .init(chatService: service),
+        height: 300,
+        width: 300,
+        showRetryOptions: true
+    )
+})
 
 #Preview(body: {
     Dependencies.shared.add(module: Module { () -> ConversationClient in ConversationsDemoClient() })

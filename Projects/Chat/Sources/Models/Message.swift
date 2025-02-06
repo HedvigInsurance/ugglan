@@ -91,6 +91,7 @@ public struct Message: Codable, Identifiable, Hashable, Sendable {
 enum MessageSender: Codable, Hashable, Sendable {
     case member
     case hedvig
+    case automatic
 }
 
 enum MessageStatus: Codable, Hashable, Sendable {
@@ -115,7 +116,13 @@ enum MessageType: Codable, Hashable, Sendable {
     case deepLink(url: URL)
     case otherLink(url: URL)
     case action(action: ActionMessage)
+    case automaticSuggestions(suggestions: AutomaticSuggestions)
     case unknown
+}
+
+struct AutomaticSuggestions: Codable, Hashable {
+    let suggestions: [ActionMessage?]
+    let escalationReference: String?
 }
 
 struct ActionMessage: Codable, Hashable {
@@ -136,6 +143,7 @@ extension Message {
             switch sender {
             case .member: return L10n.chatSenderMember
             case .hedvig: return L10n.chatSenderHedvig
+            case .automatic: return "automatic"
             }
         }()
         let message: String = {
@@ -157,6 +165,8 @@ extension Message {
                 return L10n.chatSentAMessage
             case .action:
                 return L10n.chatSentALink
+            case let .automaticSuggestions(suggestions):
+                return "automatic"
             }
         }()
         return "\(senderText): \(message)"

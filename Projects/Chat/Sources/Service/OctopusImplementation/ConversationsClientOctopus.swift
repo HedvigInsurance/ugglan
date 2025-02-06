@@ -141,9 +141,17 @@ extension OctopusGraphQL.MessageFragment {
         return .init(
             remoteId: id,
             type: messageType,
-            sender: self.sender == .hedvig ? .hedvig : .member,
+            sender: getSender,
             date: self.sentAt.localDateToIso8601Date ?? Date()
         )
+    }
+
+    private var getSender: MessageSender {
+        switch self.sender {
+        case .hedvig: return .hedvig
+        case .automation: return .automatic
+        default: return .member
+        }
     }
 
     private var messageType: MessageType {
@@ -191,7 +199,25 @@ extension OctopusGraphQL.MessageFragment {
             } else {
                 return .unknown
             }
+        } else if let action = self.asChatMessageAutomaticSuggestions {
+            return .automaticSuggestions(
+                suggestions: .init(fragment: action.fragments.chatMessageAutomaticSuggestionsFragment)
+            )
         }
         return .unknown
+    }
+}
+
+@MainActor
+extension AutomaticSuggestions {
+    init(fragment: OctopusGraphQL.ChatMessageAutomaticSuggestionsFragment) {
+        self.escalationReference = fragment.escalationReference
+        self.suggestions = fragment.suggestions.map({
+            let urlText = $0.actionUrl.trimmingCharacters(in: .whitespacesAndNewlines)
+            if let url = URL(string: urlText), urlText.isUrl {
+                return .init(url: url, text: $0.text, buttonTitle: $0.actionTitle)
+            }
+            return nil
+        })
     }
 }
