@@ -866,29 +866,23 @@ class LoggedInNavigationViewModel: ObservableObject {
     private func handleEditCoInsured(url: URL) {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         Task { [weak self] in
-            do {
-                if let contractId = self?.getContractId(from: url),
-                    let contract: Contracts.Contract = contractStore.state.contractForId(contractId)
-                {
-                    let contractConfig: InsuredPeopleConfig = .init(contract: contract, fromInfoCard: false)
+            if let contractId = self?.getContractId(from: url),
+                let contract: Contracts.Contract = contractStore.state.contractForId(contractId)
+            {
+                let contractConfig: InsuredPeopleConfig = .init(contract: contract, fromInfoCard: false)
 
-                    if contract.nbOfMissingCoInsuredWithoutTermination != 0 {
-                        self?.homeNavigationVm.editCoInsuredVm
-                            .start(
-                                fromContract: contractConfig,
-                                forMissingCoInsured: true
-                            )
-                    } else {
-                        self?.homeNavigationVm.editCoInsuredVm.start(fromContract: contractConfig)
-                    }
+                if contract.nbOfMissingCoInsuredWithoutTermination != 0 {
+                    self?.homeNavigationVm.editCoInsuredVm
+                        .start(
+                            fromContract: contractConfig,
+                            forMissingCoInsured: true
+                        )
                 } else {
-                    // select insurance
-                    self?.homeNavigationVm.editCoInsuredVm.start(fromContract: nil)
+                    self?.homeNavigationVm.editCoInsuredVm.start(fromContract: contractConfig)
                 }
-            } catch let exception {
-                Toasts.shared.displayToastBar(
-                    toast: .init(type: .error, text: exception.localizedDescription)
-                )
+            } else {
+                // select insurance
+                self?.homeNavigationVm.editCoInsuredVm.start(fromContract: nil)
             }
         }
     }
