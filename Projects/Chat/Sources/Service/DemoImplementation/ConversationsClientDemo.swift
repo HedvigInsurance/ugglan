@@ -99,4 +99,6 @@ public class ConversationsDemoClient: ConversationsClient, ConversationClient {
         }
         return message
     }
+
+    public func escalateChatMessage(reference: String) async throws {}
 }

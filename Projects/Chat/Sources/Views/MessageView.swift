@@ -105,12 +105,12 @@ struct MessageView: View {
                         vm: .init(url: url)
                     )
                 case let .action(action):
-                    ActionView(action: action)
+                    ActionView(action: action, isAutomatic: false)
                         .environment(\.colorScheme, .light)
                 case let .automaticSuggestions(suggestions):
                     ForEach(suggestions.suggestions, id: \.self) { action in
                         if let action {
-                            ActionView(action: action)
+                            ActionView(action: action, isAutomatic: true)
                                 .environment(\.colorScheme, .light)
                         }
                     }
@@ -216,6 +216,7 @@ class LinkViewModel: ObservableObject {
 
 struct ActionView: View {
     let action: ActionMessage
+    let isAutomatic: Bool
 
     var body: some View {
         VStack(spacing: .padding16) {
@@ -225,6 +226,9 @@ struct ActionView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             hButton.MediumButton(type: .secondary) {
+                if isAutomatic {
+                    /* TODO: SEND messageEscalateMutation */
+                }
                 NotificationCenter.default.post(name: .openDeepLink, object: action.url)
             } content: {
                 hText(action.buttonTitle)

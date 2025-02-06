@@ -312,6 +312,14 @@ public class ChatScreenViewModel: ObservableObject {
             }
         }
     }
+    @MainActor
+    private func esacateMessage(reference: String) async {
+        do {
+            try await chatService.escalateMessage(reference: reference)
+        } catch {
+            /* TODO: ADD ERROR HANDLING */
+        }
+    }
 }
 
 enum ConversationsError: Error {

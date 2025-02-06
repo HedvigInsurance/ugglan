@@ -116,6 +116,11 @@ public class ConversationClientOctopus: ConversationClient {
             claimId: conversation.claim?.id
         )
     }
+
+    public func escalateChatMessage(reference: String) async throws {
+        let mutation = hGraphQL.OctopusGraphQL.ChatMessageEscalateMutation(reference: reference)
+        let data = try await octopus.client.perform(mutation: mutation)
+    }
 }
 
 @MainActor

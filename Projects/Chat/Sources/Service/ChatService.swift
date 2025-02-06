@@ -9,6 +9,7 @@ public protocol ChatServiceProtocol {
     func getNewMessages() async throws -> ChatData
     func getPreviousMessages() async throws -> ChatData
     func send(message: Message) async throws -> Message
+    func escalateMessage(reference: String) async throws
 }
 
 public class ConversationService: ChatServiceProtocol {
@@ -69,6 +70,10 @@ public class ConversationService: ChatServiceProtocol {
 
     public func send(message: Message) async throws -> Message {
         return try await client.send(message: message, for: conversationId)
+    }
+
+    public func escalateMessage(reference: String) async throws {
+        return try await client.escalateChatMessage(reference: reference)
     }
 }
 
@@ -133,4 +138,6 @@ public class NewConversationService: ChatServiceProtocol {
         }
         return try await conversationService!.send(message: message)
     }
+
+    public func escalateMessage(reference: String) async throws {}
 }

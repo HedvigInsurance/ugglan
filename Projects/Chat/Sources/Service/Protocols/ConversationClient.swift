@@ -16,6 +16,7 @@ public protocol ConversationClient {
         newerToken: String?
     ) async throws -> ConversationMessagesData
     func send(message: Message, for conversationId: String) async throws -> Message
+    func escalateChatMessage(reference: String) async throws
 }
 
 public struct ConversationMessagesData {
