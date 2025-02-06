@@ -15,7 +15,7 @@ public struct LoginErrorView: View {
             description: message,
             formPosition: .center
         )
-        .hErrorViewButtonConfig(
+        .hStateViewButtonConfig(
             .init(
                 dismissButton: .init(
                     buttonTitle: L10n.generalCloseButton,

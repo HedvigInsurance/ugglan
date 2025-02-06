@@ -126,7 +126,8 @@ struct PaymentsDiscountsView: View {
 
 struct PaymentsDiscountView_Previews: PreviewProvider {
     static var previews: some View {
-        PaymentsDiscountsView(
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+        return PaymentsDiscountsView(
             data: .init(
                 discounts: [
                     .init(
@@ -186,7 +187,7 @@ struct PaymentsDiscountsRootView: View {
 
     var body: some View {
         successView.loading($vm.viewState)
-            .hErrorViewButtonConfig(
+            .hStateViewButtonConfig(
                 .init(
                     actionButton: .init(buttonAction: {
                         store.send(.fetchDiscountsData)

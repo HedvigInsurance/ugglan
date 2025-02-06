@@ -126,7 +126,7 @@ public struct DocumentPreview: View {
                             description: L10n.General.errorBody,
                             formPosition: .center
                         )
-                        .hErrorViewButtonConfig(
+                        .hStateViewButtonConfig(
                             .init(
                                 actionButton:
                                     .init(

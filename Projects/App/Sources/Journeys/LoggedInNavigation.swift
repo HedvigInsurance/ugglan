@@ -90,7 +90,7 @@ struct LoggedInNavigation: View {
             options: .constant([.alwaysOpenOnTop])
         ) { error in
             GenericErrorView(description: error, formPosition: .compact)
-                .hErrorViewButtonConfig(
+                .hStateViewButtonConfig(
                     .init(
                         actionButton: .init(
                             buttonTitle: L10n.generalCloseButton,
