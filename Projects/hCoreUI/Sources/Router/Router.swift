@@ -258,14 +258,12 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
             navigation?.dismiss(animated: true)
         }
 
-        //        DispatchQueue.main.asyncAfter(deadline: .now()) {[weak router] in
         Task { [weak router] in
             for item in router?.routesToBePushedAfterViewAppears ?? [] {
                 router?.push(item)
             }
             router?.routesToBePushedAfterViewAppears = []
         }
-        //        }
 
         return navigation
     }
