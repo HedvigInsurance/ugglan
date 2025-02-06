@@ -54,7 +54,7 @@ struct MessageView: View {
             }
             Group {
                 switch message.type {
-                case let .text(text):
+                case .text:
                     MarkdownView(
                         config: .init(
                             text: message.trimmedText,

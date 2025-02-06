@@ -9,7 +9,7 @@ struct CoInsuredProcessingScreen: View {
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @EnvironmentObject private var editCoInsuredViewModel: EditCoInsuredViewModel
     @ObservedObject private var intentViewModel: IntentViewModel
-    @StateObject var router = Router()
+    private let router = Router()
     init(
         showSuccessScreen: Bool,
         intentVM: IntentViewModel
@@ -46,6 +46,7 @@ struct CoInsuredProcessingScreen: View {
             customBottomSuccessView
         }
         .hStateViewButtonConfig(errorButtons)
+        .embededInNavigation(router: router, options: [.navigationBarHidden], tracking: self)
     }
 
     private var errorButtons: StateViewButtonConfig {

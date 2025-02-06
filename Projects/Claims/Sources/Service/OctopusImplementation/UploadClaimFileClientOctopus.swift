@@ -63,7 +63,7 @@ extension NetworkClient: hClaimFileUploadClient {
                                             }
                                         }
                                     }
-                                case .url(_):
+                                case .url:
                                     break
                                 case .data(let data):
                                     if MimeType.findBy(mimeType: file.element.mimeType).isImage,
