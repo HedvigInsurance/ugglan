@@ -10,7 +10,8 @@ public protocol TrackingViewNameProtocol {
 
 @MainActor
 public class Router: ObservableObject {
-    private var routes = [AnyHashable]()
+    var routes = [AnyHashable]()
+    var routesToBePushedAfterViewAppears = [any Hashable & TrackingViewNameProtocol]()
     fileprivate var onPush:
         ((_ options: RouterDestionationOptions, _ view: AnyView, _ contentName: String) -> UIViewController?)?
     fileprivate var onPop: (() -> Void)?
@@ -22,12 +23,13 @@ public class Router: ObservableObject {
     public init() {}
 
     var builders: [String: Builderrr<AnyView>] = [:]
-
     public func push<T>(_ route: T) where T: Hashable & TrackingViewNameProtocol {
         let key = "\(T.self)"
         if let builder = builders[key], let view = builder.builder(route) {
             _ = onPush?(builder.options, view, route.nameForTracking)
             self.routes.append(key)
+        } else {
+            routesToBePushedAfterViewAppears.append(route)
         }
     }
 
@@ -213,7 +215,6 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
             if options.contains(.hidesBackButton) {
                 vc.navigationItem.setHidesBackButton(true, animated: true)
             }
-
             return vc
         }
 
@@ -256,6 +257,15 @@ private struct RouterWrappedValue<Screen: View>: UIViewControllerRepresentable {
             }
             navigation?.dismiss(animated: true)
         }
+
+        //        DispatchQueue.main.asyncAfter(deadline: .now()) {[weak router] in
+        Task { [weak router] in
+            for item in router?.routesToBePushedAfterViewAppears ?? [] {
+                router?.push(item)
+            }
+            router?.routesToBePushedAfterViewAppears = []
+        }
+        //        }
 
         return navigation
     }

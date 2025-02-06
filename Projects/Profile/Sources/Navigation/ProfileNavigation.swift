@@ -15,7 +15,6 @@ public class ProfileNavigationViewModel: ObservableObject {
 
     public func pushToProfile() {
         Task {
-            try await Task.sleep(nanoseconds: 50_000_000)
             self.profileRouter.push(ProfileRouterType.myInfo)
         }
     }
