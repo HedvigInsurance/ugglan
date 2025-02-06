@@ -22,12 +22,29 @@ fragment MessageFragment on ChatMessage {
     ... ChatMessageActionFragment
     ... ChatMessageFileFragment
     ... ChatMessageTextFragment
+    ... ChatMessageAutomaticSuggestionsFragment
 }
 
 fragment ChatMessageActionFragment on ChatMessageAction {
     actionTitle
     actionUrl
     actionText: text
+}
+
+fragment ChatMessageAutomaticSuggestionsFragment on ChatMessageAutomaticSuggestions {
+    id
+    sender
+    sentAt
+    suggestions {
+        ...ChatMessageAutomaticSuggestionFragment
+    }
+    escalationReference
+}
+
+fragment ChatMessageAutomaticSuggestionFragment on ChatMessageAutomaticSuggestion {
+    text
+    actionUrl
+    actionTitle
 }
 
 fragment ChatMessageFileFragment on ChatMessageFile {
