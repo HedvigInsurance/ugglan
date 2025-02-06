@@ -51,7 +51,7 @@ struct EditCoInsured: ViewModifier {
                 options: .constant([.alwaysOpenOnTop])
             ) { errorModel in
                 GenericErrorView(description: errorModel.errorMessage, formPosition: .compact)
-                    .hErrorViewButtonConfig(
+                    .hStateViewButtonConfig(
                         .init(
                             actionButtonAttachedToBottom: .init(
                                 buttonTitle: L10n.generalCloseButton,
