@@ -283,7 +283,7 @@ public struct DirectDebitSetup: View {
                     description: nil,
                     formPosition: .center
                 )
-                .hErrorViewButtonConfig(
+                .hStateViewButtonConfig(
                     .init(
                         actionButtonAttachedToBottom: .init(
                             buttonTitle: L10n.openChat,

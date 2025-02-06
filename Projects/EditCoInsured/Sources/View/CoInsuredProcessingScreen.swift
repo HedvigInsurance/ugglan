@@ -45,11 +45,11 @@ struct CoInsuredProcessingScreen: View {
         .hSuccessBottomAttachedView {
             customBottomSuccessView
         }
-        .hErrorViewButtonConfig(errorButtons)
+        .hStateViewButtonConfig(errorButtons)
         .embededInNavigation(router: router, options: [.navigationBarHidden], tracking: self)
     }
 
-    private var errorButtons: ErrorViewButtonConfig {
+    private var errorButtons: StateViewButtonConfig {
         .init(
             dismissButton: .init(
                 buttonTitle: L10n.generalCancelButton,
