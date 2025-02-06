@@ -20,12 +20,12 @@ public struct UpdateAppScreen: View {
             description: L10n.embarkUpdateAppBody,
             formPosition: .center
         )
-        .hErrorViewButtonConfig(buttonsInit)
+        .hStateViewButtonConfig(buttonsInit)
     }
 
-    private var buttonsInit: ErrorViewButtonConfig {
+    private var buttonsInit: StateViewButtonConfig {
 
-        var dismissButton: ErrorViewButtonConfig.ErrorViewButton? {
+        var dismissButton: StateViewButtonConfig.StateViewButton? {
             if withoutDismissButton {
                 return nil
             }

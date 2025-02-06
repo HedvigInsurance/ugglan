@@ -66,7 +66,7 @@ public struct MovingFlowHousingTypeScreen: View {
                     }
                     .sectionContainerStyle(.transparent)
                 }
-                .hErrorViewButtonConfig(
+                .hStateViewButtonConfig(
                     .init(
                         actionButton: .init(
                             buttonTitle: L10n.openChat,
@@ -78,10 +78,10 @@ public struct MovingFlowHousingTypeScreen: View {
                     )
                 )
         }
-        .hErrorViewButtonConfig(errorButtons)
+        .hStateViewButtonConfig(errorButtons)
     }
 
-    private var errorButtons: ErrorViewButtonConfig {
+    private var errorButtons: StateViewButtonConfig {
         .init(
             actionButton: .init(
                 buttonTitle: L10n.openChat,

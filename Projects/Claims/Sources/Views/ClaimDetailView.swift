@@ -130,7 +130,7 @@ public struct ClaimDetailView: View {
             PDFPreview(document: document)
         }
         .loading($vm.claimProcessingState)
-        .hErrorViewButtonConfig(
+        .hStateViewButtonConfig(
             .init(
                 actionButton: .init(buttonAction: {
                     vm.fetchClaimDetails()
@@ -284,7 +284,7 @@ public struct ClaimDetailView: View {
                             description: fetchError,
                             formPosition: .center
                         )
-                        .hErrorViewButtonConfig(
+                        .hStateViewButtonConfig(
                             .init(
                                 actionButton: .init(
                                     buttonAction: {

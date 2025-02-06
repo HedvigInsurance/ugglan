@@ -5,127 +5,28 @@ public struct GenericErrorView: View {
     private let title: String?
     private let description: String?
     private let formPosition: ContentPosition?
-
-    private let attachContentToTheBottom: Bool
-
-    @Environment(\.hExtraTopPadding) var extraTopPadding
-    @Environment(\.hErrorViewButtonConfig) var errorViewButtonConfig
+    private let attachContentToBottom: Bool
 
     public init(
         title: String? = nil,
         description: String? = L10n.General.errorBody,
         formPosition: ContentPosition?,
-        attachContentToTheBottom: Bool = false
+        attachContentToBottom: Bool = false
     ) {
         self.title = title
         self.description = description
         self.formPosition = formPosition
-        self.attachContentToTheBottom = attachContentToTheBottom
+        self.attachContentToBottom = attachContentToBottom
     }
 
     public var body: some View {
-        if let formPosition {
-            hForm {
-                if !attachContentToTheBottom {
-                    content
-                        .padding(.bottom, .padding32)
-                        .padding(.top, extraTopPadding ? 32 : 0)
-                }
-            }
-            .hFormContentPosition(formPosition)
-            .hFormAttachToBottom {
-                hSection {
-                    VStack(spacing: 8) {
-                        if attachContentToTheBottom {
-                            content
-                                .padding(.bottom, .padding40)
-                                .padding(.top, extraTopPadding ? 32 : 0)
-                        }
-                        if let actionButton = errorViewButtonConfig?.actionButtonAttachedToBottom {
-                            hButton.LargeButton(type: .primary) {
-                                actionButton.buttonAction()
-                            } content: {
-                                hText(actionButton.buttonTitle ?? "")
-                            }
-                        }
-                        if let dismissButton = errorViewButtonConfig?.dismissButton {
-                            hButton.LargeButton(type: .ghost) {
-                                dismissButton.buttonAction()
-                            } content: {
-                                hText(dismissButton.buttonTitle ?? L10n.openChat, style: .body1)
-                            }
-                        }
-                    }
-                }
-                .sectionContainerStyle(.transparent)
-                .padding(.vertical, .padding16)
-            }
-        } else {
-            ZStack(alignment: .bottom) {
-                VStack {
-                    Spacer()
-                    content
-                    Spacer()
-                }
-            }
-        }
-    }
-
-    private var content: some View {
         StateView(
             type: .error,
             title: title ?? L10n.somethingWentWrong,
             bodyText: description,
-            button: errorViewButtonConfig?.actionButton != nil
-                ? .init(
-                    buttonTitle: errorViewButtonConfig?.actionButton?.buttonTitle,
-                    buttonAction: errorViewButtonConfig?.actionButton?.buttonAction ?? {}
-                ) : nil
+            formPosition: formPosition,
+            attachContentToBottom: attachContentToBottom
         )
-    }
-}
-
-public struct ErrorViewButtonConfig {
-    fileprivate let actionButton: ErrorViewButton?
-    fileprivate let actionButtonAttachedToBottom: ErrorViewButton?
-    fileprivate let dismissButton: ErrorViewButton?
-
-    public init(
-        actionButton: ErrorViewButton? = nil,
-        actionButtonAttachedToBottom: ErrorViewButton? = nil,
-        dismissButton: ErrorViewButton? = nil
-    ) {
-        self.actionButton = actionButton
-        self.actionButtonAttachedToBottom = actionButtonAttachedToBottom
-        self.dismissButton = dismissButton
-    }
-
-    public struct ErrorViewButton {
-        fileprivate let buttonTitle: String?
-        fileprivate let buttonAction: () -> Void
-
-        public init(buttonTitle: String? = nil, buttonAction: @escaping () -> Void) {
-            self.buttonTitle = buttonTitle
-            self.buttonAction = buttonAction
-        }
-    }
-}
-
-@MainActor
-private struct ErrorViewButtonConfigKey: @preconcurrency EnvironmentKey {
-    static let defaultValue: ErrorViewButtonConfig? = nil
-}
-
-extension EnvironmentValues {
-    public var hErrorViewButtonConfig: ErrorViewButtonConfig? {
-        get { self[ErrorViewButtonConfigKey.self] }
-        set { self[ErrorViewButtonConfigKey.self] = newValue }
-    }
-}
-
-extension View {
-    public func hErrorViewButtonConfig(_ errorViewButtonConfigKey: ErrorViewButtonConfig?) -> some View {
-        self.environment(\.hErrorViewButtonConfig, errorViewButtonConfigKey)
     }
 }
 
@@ -134,7 +35,7 @@ struct Error_Previews: PreviewProvider {
         GenericErrorView(
             formPosition: .center
         )
-        .hErrorViewButtonConfig(
+        .hStateViewButtonConfig(
             .init(
                 actionButton: .init(buttonTitle: nil, buttonAction: {}),
                 actionButtonAttachedToBottom:
@@ -156,9 +57,9 @@ struct ErrorAttachToBottom_Previews: PreviewProvider {
     static var previews: some View {
         GenericErrorView(
             formPosition: .center,
-            attachContentToTheBottom: true
+            attachContentToBottom: true
         )
-        .hErrorViewButtonConfig(
+        .hStateViewButtonConfig(
             .init(
                 actionButton: .init(buttonTitle: nil, buttonAction: {}),
                 actionButtonAttachedToBottom:

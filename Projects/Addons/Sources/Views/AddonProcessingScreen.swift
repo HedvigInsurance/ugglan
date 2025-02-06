@@ -18,10 +18,10 @@ struct AddonProcessingScreen: View {
             },
             state: $vm.submittingAddonsViewState
         )
-        .hErrorViewButtonConfig(errorButtons)
+        .hStateViewButtonConfig(errorButtons)
     }
 
-    private var errorButtons: ErrorViewButtonConfig {
+    private var errorButtons: StateViewButtonConfig {
         .init(
             actionButton: .init(
                 buttonAction: {
@@ -43,6 +43,7 @@ struct AddonProcessingScreen: View {
 
 struct AddonProcessingScreen_Previews: PreviewProvider {
     static var previews: some View {
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
         return AddonProcessingScreen(
             vm: .init(contractId: ""),

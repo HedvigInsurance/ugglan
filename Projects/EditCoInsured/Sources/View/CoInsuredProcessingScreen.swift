@@ -45,10 +45,10 @@ struct CoInsuredProcessingScreen: View {
         .hSuccessBottomAttachedView {
             customBottomSuccessView
         }
-        .hErrorViewButtonConfig(errorButtons)
+        .hStateViewButtonConfig(errorButtons)
     }
 
-    private var errorButtons: ErrorViewButtonConfig {
+    private var errorButtons: StateViewButtonConfig {
         .init(
             dismissButton: .init(
                 buttonTitle: L10n.generalCancelButton,
