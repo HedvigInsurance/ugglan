@@ -313,11 +313,12 @@ public class ChatScreenViewModel: ObservableObject {
         }
     }
     @MainActor
-    func esacateMessage(reference: String) async {
+    func esacateMessage(automaticSuggestion: AutomaticSuggestions) async {
         do {
-            try await chatService.escalateMessage(reference: reference)
-        } catch {
-            /* TODO: ADD ERROR HANDLING */
+            try await chatService.escalateMessage(reference: automaticSuggestion.escalationReference ?? "")
+        } catch let ex {
+            let message = Message(type: .automaticSuggestions(suggestions: automaticSuggestion))
+            await handleSendFail(for: message, with: ex.localizedDescription)
         }
     }
 }

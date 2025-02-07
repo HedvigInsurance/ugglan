@@ -119,7 +119,7 @@ struct MessageView: View {
                                             "If it’s not working or if you have any other questions, please let us know and one of our specialists will help out shortly!",
                                         buttonTitle: "Talk to a human"
                                     ),
-                                    escalateReference: suggestions.escalationReference,
+                                    automaticSuggestion: suggestions,
                                     vm: vm
                                 )
                             }
@@ -228,16 +228,16 @@ class LinkViewModel: ObservableObject {
 
 struct ActionView: View {
     let action: ActionMessage
-    let escalateReference: String?
+    let automaticSuggestion: AutomaticSuggestions?
     @ObservedObject var vm: ChatScreenViewModel
 
     init(
         action: ActionMessage,
-        escalateReference: String? = nil,
+        automaticSuggestion: AutomaticSuggestions? = nil,
         vm: ChatScreenViewModel
     ) {
         self.action = action
-        self.escalateReference = escalateReference
+        self.automaticSuggestion = automaticSuggestion
         self.vm = vm
     }
 
@@ -249,9 +249,9 @@ struct ActionView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             hButton.MediumButton(type: .secondary) {
-                if let escalateReference {
+                if let automaticSuggestion {
                     Task {
-                        await vm.esacateMessage(reference: escalateReference)
+                        await vm.esacateMessage(automaticSuggestion: automaticSuggestion)
                     }
                 }
                 NotificationCenter.default.post(name: .openDeepLink, object: action.url)
@@ -296,8 +296,9 @@ extension URL {
                     suggestions: [
                         .init(
                             url: url!,
-                            text: "This is an automated message",
-                            buttonTitle: "Click here"
+                            text:
+                                "Congratulations on the new apartment! To move your insurance, just follow this link:",
+                            buttonTitle: "Get a new price"
                         )
 
                     ],
