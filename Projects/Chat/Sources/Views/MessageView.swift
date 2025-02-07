@@ -105,13 +105,25 @@ struct MessageView: View {
                         vm: .init(url: url)
                     )
                 case let .action(action):
-                    ActionView(action: action, isAutomatic: false)
+                    ActionView(action: action, vm: vm)
                         .environment(\.colorScheme, .light)
                 case let .automaticSuggestions(suggestions):
                     ForEach(suggestions.suggestions, id: \.self) { action in
                         if let action {
-                            ActionView(action: action, isAutomatic: true)
-                                .environment(\.colorScheme, .light)
+                            VStack(spacing: .padding8) {
+                                ActionView(action: action, vm: vm)
+                                ActionView(
+                                    action: .init(
+                                        url: nil,
+                                        text:
+                                            "If it’s not working or if you have any other questions, please let us know and one of our specialists will help out shortly!",
+                                        buttonTitle: "Talk to a human"
+                                    ),
+                                    escalateReference: suggestions.escalationReference,
+                                    vm: vm
+                                )
+                            }
+                            .environment(\.colorScheme, .light)
                         }
                     }
                 case .unknown: Text("")
@@ -119,8 +131,8 @@ struct MessageView: View {
             }
             .padding(.horizontal, message.horizontalPadding)
             .padding(.vertical, message.verticalPadding)
-            .background(message.bgColor(conversationStatus: conversationStatus))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .background(message.bgColor(conversationStatus: conversationStatus, type: message.type))
+            .clipShape(RoundedRectangle(cornerRadius: .padding12))
         }
 
     }
@@ -216,7 +228,18 @@ class LinkViewModel: ObservableObject {
 
 struct ActionView: View {
     let action: ActionMessage
-    let isAutomatic: Bool
+    let escalateReference: String?
+    @ObservedObject var vm: ChatScreenViewModel
+
+    init(
+        action: ActionMessage,
+        escalateReference: String? = nil,
+        vm: ChatScreenViewModel
+    ) {
+        self.action = action
+        self.escalateReference = escalateReference
+        self.vm = vm
+    }
 
     var body: some View {
         VStack(spacing: .padding16) {
@@ -226,8 +249,10 @@ struct ActionView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             hButton.MediumButton(type: .secondary) {
-                if isAutomatic {
-                    /* TODO: SEND messageEscalateMutation */
+                if let escalateReference {
+                    Task {
+                        await vm.esacateMessage(reference: escalateReference)
+                    }
                 }
                 NotificationCenter.default.post(name: .openDeepLink, object: action.url)
             } content: {
@@ -236,6 +261,10 @@ struct ActionView: View {
             .hButtonTakeFullWidth(true)
         }
         .environment(\.colorScheme, .light)
+        .padding(.horizontal, .padding16)
+        .padding(.vertical, .padding12)
+        .background(hSurfaceColor.Opaque.primary)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
 

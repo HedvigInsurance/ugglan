@@ -4,18 +4,23 @@ import hCoreUI
 @MainActor
 extension Message {
     @hColorBuilder
-    func bgColor(conversationStatus: ConversationStatus) -> some hColor {
+    func bgColor(conversationStatus: ConversationStatus, type: MessageType) -> some hColor {
         if case .failed = status {
             hSignalColor.Red.highlight
         } else {
-            switch self.sender {
-            case .hedvig, .automatic:
-                hSurfaceColor.Opaque.primary
-            case .member:
-                if conversationStatus == .open {
-                    hSignalColor.Blue.fill
-                } else {
-                    hFillColor.Opaque.disabled
+            switch type {
+            case .action, .automaticSuggestions:
+                hBackgroundColor.clear
+            default:
+                switch self.sender {
+                case .hedvig, .automatic:
+                    hSurfaceColor.Opaque.primary
+                case .member:
+                    if conversationStatus == .open {
+                        hSignalColor.Blue.fill
+                    } else {
+                        hFillColor.Opaque.disabled
+                    }
                 }
             }
         }
@@ -33,7 +38,7 @@ extension Message {
 
     var horizontalPadding: CGFloat {
         switch type {
-        case .text, .deepLink, .action, .automaticSuggestions:
+        case .text, .deepLink:
             return .padding16
         default:
             return 0
@@ -41,7 +46,7 @@ extension Message {
     }
     var verticalPadding: CGFloat {
         switch type {
-        case .text, .deepLink, .action, .automaticSuggestions:
+        case .text, .deepLink:
             return .padding12
         default:
             return 0

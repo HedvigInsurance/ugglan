@@ -126,7 +126,7 @@ struct AutomaticSuggestions: Codable, Hashable {
 }
 
 struct ActionMessage: Codable, Hashable {
-    let url: URL
+    let url: URL?
     let text: String?
     let buttonTitle: String
 }
