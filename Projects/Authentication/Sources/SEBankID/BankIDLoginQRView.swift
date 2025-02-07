@@ -65,6 +65,7 @@ public struct BankIDLoginQRView: View {
                                     hText(L10n.authenticationBankidLoginLabel)
                                         .foregroundColor(hTextColor.Translucent.secondary)
                                         .multilineTextAlignment(.center)
+                                        .fixedSize(horizontal: false, vertical: true)
                                 }
                                 .sectionContainerStyle(.transparent)
                             }
@@ -245,7 +246,9 @@ class BankIDViewModel: ObservableObject {
 
 struct BankIDLoginQR_Previews: PreviewProvider {
     static var previews: some View {
-        BankIDLoginQRView {}
+        Dependencies.shared.add(module: Module { () -> AuthenticationService in AuthenticationService() })
+        return BankIDLoginQRView {}
+            .environmentObject(Router())
     }
 }
 

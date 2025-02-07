@@ -15,12 +15,13 @@ public enum DeepLink: String, Codable, CaseIterable {
     case helpCenter = "help-center"
     case moveContract = "move-contract"
     case changeTier = "change-tier"
-    case addon = "addon"
+    case travelAddon = "travel-addon"
     case terminateContract = "terminate-contract"
     case conversation = "conversation"
     case chat = "chat"
     case inbox = "inbox"
     case contactInfo = "contact-info"
+    case editCoInsured = "edit-coinsured"
 
     public func wholeText(displayText: String) -> String {
         return L10n.generalGoTo(displayText.lowercased())
@@ -62,24 +63,25 @@ public enum DeepLink: String, Codable, CaseIterable {
             return L10n.chatConversationInbox
         case .changeTier:
             return L10n.InsuranceDetails.changeCoverage
-        case .addon:
-            return L10n.addonTitle
+        case .travelAddon:
+            return L10n.addonTravelDisplayName
+        case .editCoInsured:
+            return L10n.hcQuickActionsEditCoinsured
         }
     }
     @MainActor
     public static func getType(from url: URL) -> DeepLink? {
-        let rootUrls = [Environment.staging.deepLinkUrl, Environment.production.deepLinkUrl].compactMap({ $0.host })
-        guard rootUrls.contains(url.host ?? "") else { return nil }
-
-        guard let type = url.pathComponents.compactMap({ DeepLink(rawValue: $0) }).first else {
+        guard Environment.staging.isDeeplink(url) || Environment.production.isDeeplink(url) else { return nil }
+        guard let type = url.pathComponents.compactMap({ DeepLink(rawValue: $0) }).last else {
             return nil
         }
         return type
     }
 
     public static func getUrl(from deeplink: DeepLink) -> URL? {
-        let path = Environment.current.deepLinkUrl.absoluteString + "/" + deeplink.rawValue
-        guard let url = URL(string: path) else {
+        let paths = Environment.current.deepLinkUrls.compactMap({ $0.absoluteString + "/" + deeplink.rawValue })
+        let url = paths.compactMap({ URL.init(string: $0) }).last
+        guard let url else {
             return nil
         }
         return url

@@ -34,6 +34,11 @@ struct TerminationSurveyScreen: View {
                     hText(L10n.generalContinueButton)
                 }
                 .disabled(!vm.continueEnabled)
+                .accessibilityHint(
+                    vm.selected == nil
+                        ? L10n.voiceoverPickerInfo(L10n.generalContinueButton)
+                        : (L10n.voiceoverOptionSelected + (vm.selectedOption?.title ?? ""))
+                )
             }
             .sectionContainerStyle(.transparent)
         }

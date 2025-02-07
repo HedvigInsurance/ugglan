@@ -54,7 +54,7 @@ struct MessageView: View {
             }
             Group {
                 switch message.type {
-                case let .text(text):
+                case .text:
                     MarkdownView(
                         config: .init(
                             text: message.trimmedText,
@@ -142,12 +142,12 @@ struct LinkView: View {
             .padding(.padding16)
             .transition(.opacity)
         } else if let model = vm.webMetaDataProviderData {
-            VStack(spacing: 8) {
+            VStack(spacing: .padding8) {
                 Image(uiImage: model.image ?? hCoreUIAssets.helipadOutlined.image)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-                    .frame(height: 200)
-                VStack(spacing: 8) {
+                    .frame(minHeight: 200)
+                VStack(spacing: .padding8) {
                     hText(model.title)
                         .foregroundColor(hTextColor.Opaque.primary)
                         .multilineTextAlignment(.leading)

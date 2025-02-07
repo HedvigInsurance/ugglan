@@ -343,7 +343,7 @@ extension ChatScreenViewModel: TitleView {
     }
 
     @objc private func handleTapGesture() {
-        if let claimId {
+        if claimId != nil {
             self.onTitleTap()
         }
     }
@@ -358,5 +358,6 @@ extension ChatScreenViewModel: TitleView {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .combine)
     }
 }

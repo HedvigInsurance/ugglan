@@ -26,6 +26,11 @@ struct Column: View {
                     .verticalPadding(0)
                     .dividerInsets(.leading, tier == vm.tiers.first ? -200 : 0)
                     .modifier(CompareOnRowTap(currentPeril: peril, vm: vm))
+                    .accessibilityLabel(accessibilityText(for: peril, tier: tier))
+                    .accessibilityHint(L10n.voiceoverCurrentTier + (selectedTier?.name ?? ""))
+                    .accessibilityElement(children: .combine)
+                    .accessibilityRemoveTraits(.isImage)
+                    .accessibilityAddTraits(.isButton)
                 }
                 .hSectionWithoutHorizontalPadding
             }
@@ -69,6 +74,14 @@ struct Column: View {
         }
         .frame(width: 24, height: 24)
         .foregroundColor(getIconColor(for: peril, tier: tier))
+    }
+
+    private func accessibilityText(for peril: Perils, tier: Tier) -> String {
+        if !(peril.isDisabled) {
+            return peril.title + L10n.voiceoverIncluded + tier.name
+        } else {
+            return peril.title + L10n.voiceoverNotIncluded + tier.name
+        }
     }
 
     @hColorBuilder

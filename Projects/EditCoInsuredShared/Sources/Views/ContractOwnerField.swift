@@ -49,6 +49,7 @@ public struct ContractOwnerField: View {
             }
         }
         .padding(.bottom, hasContentBelow ? 0 : 16)
+        .accessibilityElement(children: .combine)
     }
 
     @hColorBuilder

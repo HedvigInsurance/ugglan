@@ -93,7 +93,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
             switch redirectAction {
             case .updateAddress:
                 self.router.dismiss()
-                var url = Environment.current.deepLinkUrl
+                var url = Environment.current.deepLinkUrls.last!
                 url.appendPathComponent(DeepLink.moveContract.rawValue)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     NotificationCenter.default.post(name: .openDeepLink, object: url)
@@ -569,10 +569,13 @@ struct TerminationFlowNavigation: View {
             successViewTitle: L10n.terminationFlowSuccessTitle,
             successViewBody: isDeletion
                 ? L10n.terminateContractTerminationComplete
-                : L10n.terminationFlowSuccessSubtitleWithDate((terminationDate)),
-            buttons: .init(
+                : L10n.terminationFlowSuccessSubtitleWithDate((terminationDate))
+        )
+        .hStateViewButtonConfig(
+            .init(
                 actionButton: nil,
-                primaryButton: .init(buttonAction: { [weak vm] in
+                actionButtonAttachedToBottom: nil,
+                dismissButton: .init(buttonAction: { [weak vm] in
                     vm?.router.dismiss()
                     self.isFlowPresented(.done)
                 })
@@ -586,7 +589,7 @@ struct TerminationFlowNavigation: View {
             description: L10n.somethingWentWrong,
             formPosition: .center
         )
-        .hErrorViewButtonConfig(
+        .hStateViewButtonConfig(
             .init(
                 actionButton: .init(
                     buttonTitle: L10n.openChat,

@@ -7,6 +7,57 @@ struct ClaimStatusBar: View {
     let status: ClaimModel.ClaimStatus
     let outcome: ClaimModel.ClaimOutcome
 
+    func accessibilityText(segment: ClaimModel.ClaimStatus) -> String? {
+
+        let claimStatusText = L10n.ClaimStatus.title
+
+        switch status {
+        case .submitted:
+            if segment == .submitted {
+                return claimStatusText + " " + L10n.ClaimStatusDetail.submitted
+            }
+        case .beingHandled:
+            switch segment {
+            case .submitted:
+                return claimStatusText + " " + L10n.Claim.StatusBar.beingHandled + " "
+                    + L10n.ClaimStatusDetail.submitted
+            case .beingHandled:
+                if outcome == .missingReceipt {
+                    return claimStatusText + L10n.Claim.StatusBar.beingHandled + " "
+                        + L10n.ClaimStatusDetail.missingReceipt
+                } else {
+                    return claimStatusText + " " + L10n.Claim.StatusBar.beingHandled
+                }
+            default:
+                return nil
+            }
+        case .closed:
+            if outcome == .paid {
+                return claimStatusText + " " + L10n.Claim.StatusBar.closed + " " + L10n.Claim.Decision.paid
+            } else {
+                return claimStatusText + " " + L10n.Claim.StatusBar.closed
+            }
+        case .reopened:
+            switch segment {
+            case .submitted:
+                return claimStatusText + " " + L10n.Home.ClaimCard.Pill.reopened + ": "
+                    + L10n.ClaimStatusDetail.submitted
+            case .beingHandled:
+                if outcome == .missingReceipt {
+                    return claimStatusText + " " + L10n.Home.ClaimCard.Pill.reopened
+                        + L10n.ClaimStatusDetail.missingReceipt
+                } else {
+                    return claimStatusText + " " + L10n.Home.ClaimCard.Pill.reopened + L10n.Claim.StatusBar.beingHandled
+                }
+            default:
+                return nil
+            }
+        default:
+            return nil
+        }
+        return nil
+    }
+
     @hColorBuilder func barColor(segment: ClaimModel.ClaimStatus) -> some hColor {
         switch status {
         case .submitted:
@@ -98,6 +149,7 @@ struct ClaimStatusBar: View {
                         .lineLimit(1)
                 }
                 .frame(maxWidth: .infinity)
+                .accessibilityLabel(accessibilityText(segment: segment) ?? "")
             }
         }
     }

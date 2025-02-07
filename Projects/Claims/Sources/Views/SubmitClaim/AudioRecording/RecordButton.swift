@@ -19,7 +19,6 @@ struct RecordButton: View {
             SwiftUI.Button {
                 onTap()
             } label: {
-
             }
             .buttonStyle(RecordButtonStyle(isRecording: isRecording))
         }

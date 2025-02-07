@@ -63,6 +63,8 @@ public struct InboxView: View {
             getNewestMessage(for: conversation)
                 .padding(.bottom, 2)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(.isButton)
     }
 
     @ViewBuilder
@@ -201,6 +203,7 @@ class InboxViewModel: ObservableObject {
 
 #Preview {
     let client = ConversationsDemoClient()
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     Dependencies.shared.add(module: Module { () -> ConversationClient in client })
     Dependencies.shared.add(module: Module { () -> ConversationsClient in client })
     return InboxView()

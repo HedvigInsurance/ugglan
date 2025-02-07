@@ -17,12 +17,21 @@ public struct InfoCard: View {
     }
 
     public var body: some View {
+        if buttonsConfig?.count == 1 {
+            mainView.accessibilityHint((buttonsConfig?.first?.buttonTitle ?? ""))
+        } else {
+            mainView
+        }
+    }
+
+    private var mainView: some View {
         HStack(alignment: .top, spacing: 0) {
             VStack(spacing: .padding8) {
                 Image(uiImage: type.image)
                     .resizable()
                     .foregroundColor(type.imageColor)
                     .frame(width: 20, height: 20)
+                    .accessibilityHidden(true)
             }
             if let customContentView = customContentView {
                 customContentView
@@ -43,6 +52,7 @@ public struct InfoCard: View {
         .padding(.horizontal, .padding16)
         .modifier(NotificationStyle(type: type))
         .fixedSize(horizontal: false, vertical: true)
+        .accessibilityElement(children: buttonsConfig?.count ?? 0 > 1 ? .contain : .combine)
         .hButtonTakeFullWidth(true)
     }
 
@@ -73,20 +83,23 @@ public struct InfoCard: View {
                         }
                     }
                 } else {
-                    ForEach(buttonsConfig, id: \.buttonTitle) { config in
-                        if type == .neutral {
-                            hButton.SmallButton(type: .secondary) {
-                                config.buttonAction()
-                            } content: {
-                                hText(config.buttonTitle, style: .label)
+                    ForEach(buttonsConfig, id: \.buttonTitle) {
+                        config in
+                        Group {
+                            if type == .neutral {
+                                hButton.SmallButton(type: .secondary) {
+                                    config.buttonAction()
+                                } content: {
+                                    hText(config.buttonTitle, style: .label)
+                                }
+                            } else {
+                                hButton.SmallButton(type: .secondaryAlt) {
+                                    config.buttonAction()
+                                } content: {
+                                    hText(config.buttonTitle, style: .label)
+                                }
+                                .hUseLightMode
                             }
-                        } else {
-                            hButton.SmallButton(type: .secondaryAlt) {
-                                config.buttonAction()
-                            } content: {
-                                hText(config.buttonTitle, style: .label)
-                            }
-                            .hUseLightMode
                         }
                     }
                 }

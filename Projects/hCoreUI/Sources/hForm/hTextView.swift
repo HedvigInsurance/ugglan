@@ -98,6 +98,9 @@ public struct hTextView: View {
             }
         }
         .fixedSize(horizontal: false, vertical: true)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(placeholder)
+        .accessibilityAddTraits(.isButton)
     }
 
     @hColorBuilder

@@ -15,6 +15,7 @@ struct AddonLearnMoreView: View {
                             .foregroundColor(hTextColor.Opaque.secondary)
                     }
                     .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityElement(children: .combine)
 
                     hPill(text: L10n.addonLearnMoreLabel, color: .blue)
                         .hFieldSize(.medium)

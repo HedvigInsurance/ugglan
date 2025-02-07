@@ -40,10 +40,13 @@ struct DirectDebitResult: View {
         case .success:
             SuccessScreen(
                 successViewTitle: type.headingText,
-                successViewBody: type.messageText,
-                buttons: .init(
+                successViewBody: type.messageText
+            )
+            .hStateViewButtonConfig(
+                .init(
                     actionButton: nil,
-                    ghostButton: .init(buttonAction: {
+                    actionButtonAttachedToBottom: nil,
+                    dismissButton: .init(buttonAction: {
                         router.dismiss()
                     })
                 )
@@ -54,7 +57,7 @@ struct DirectDebitResult: View {
                 description: type.messageText,
                 formPosition: .center
             )
-            .hErrorViewButtonConfig(
+            .hStateViewButtonConfig(
                 .init(
                     actionButton: .init(
                         buttonTitle: type.mainButtonText,

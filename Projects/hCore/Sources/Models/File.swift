@@ -22,7 +22,7 @@ public struct File: Codable, Equatable, Identifiable, Hashable, Sendable {
         switch source {
         case .localFile:
             return nil
-        case .url(let url):
+        case let .url(url, _):
             return url
         default:
             return nil
@@ -56,13 +56,14 @@ public struct File: Codable, Equatable, Identifiable, Hashable, Sendable {
 
 public enum FileSource: Codable, Equatable, Hashable, Sendable {
     case data(data: Data)
-    case url(url: URL)
+    case url(url: URL, mimeType: MimeType)
     case localFile(results: PHPickerResult?)
 
     enum Key: CodingKey {
         case rawValue
         case data
         case url
+        case mimeType
     }
 
     enum CodingError: Error {
@@ -75,9 +76,11 @@ public enum FileSource: Codable, Equatable, Hashable, Sendable {
         case .data(let data):
             try container.encode(0, forKey: .rawValue)
             try container.encode(data, forKey: .data)
-        case .url(let url):
+        case let .url(url, mimeType):
             try container.encode(1, forKey: .rawValue)
             try container.encode(url, forKey: .url)
+            try container.encode(mimeType, forKey: .mimeType)
+
         default:
             throw CodingError.unknownValue
         }
@@ -92,7 +95,8 @@ public enum FileSource: Codable, Equatable, Hashable, Sendable {
             self = .data(data: data)
         case 1:
             let url = try container.decode(URL.self, forKey: .url)
-            self = .url(url: url)
+            let mimeType = try container.decode(MimeType.self, forKey: .mimeType)
+            self = .url(url: url, mimeType: mimeType)
         default:
             throw CodingError.unknownValue
         }

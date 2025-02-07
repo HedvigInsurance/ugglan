@@ -51,6 +51,8 @@ public struct MovingFlowHousingTypeScreen: View {
                                     )
                                 }
                             }
+                            .accessibilityHint(L10n.voiceoverOptionSelected + (vm.selectedHousingType ?? ""))
+
                             if let days = movingFlowNavigationVm.movingFlowVm?.oldAddressCoverageDurationDays {
                                 InfoCard(text: L10n.changeAddressCoverageInfoText(days), type: .info)
                             }
@@ -59,11 +61,12 @@ public struct MovingFlowHousingTypeScreen: View {
                             } content: {
                                 hText(L10n.generalContinueButton, style: .body1)
                             }
+                            .accessibilityHint(L10n.voiceoverOptionSelected + (vm.selectedHousingType ?? ""))
                         }
                     }
                     .sectionContainerStyle(.transparent)
                 }
-                .hErrorViewButtonConfig(
+                .hStateViewButtonConfig(
                     .init(
                         actionButton: .init(
                             buttonTitle: L10n.openChat,
@@ -75,10 +78,10 @@ public struct MovingFlowHousingTypeScreen: View {
                     )
                 )
         }
-        .hErrorViewButtonConfig(errorButtons)
+        .hStateViewButtonConfig(errorButtons)
     }
 
-    private var errorButtons: ErrorViewButtonConfig {
+    private var errorButtons: StateViewButtonConfig {
         .init(
             actionButton: .init(
                 buttonTitle: L10n.openChat,

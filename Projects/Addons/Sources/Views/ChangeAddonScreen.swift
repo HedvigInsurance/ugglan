@@ -15,7 +15,7 @@ struct ChangeAddonScreen: View {
 
     var body: some View {
         successView.loading($changeAddonVm.fetchAddonsViewState)
-            .hErrorViewButtonConfig(
+            .hStateViewButtonConfig(
                 .init(
                     actionButton: .init(
                         buttonAction: {
@@ -131,6 +131,12 @@ struct ChangeAddonScreen: View {
             .padding(.top, .padding16)
             .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary])
             .hSectionWithoutHorizontalPadding
+            .accessibilityHidden(false)
+        }
+        .accessibilityElement(children: .combine)
+        .accessibilityHint(L10n.voiceoverPressTo + L10n.addonFlowSelectSuboptionTitle)
+        .accessibilityAction {
+            changeAddonNavigationVm.isChangeCoverageDaysPresented = addon
         }
         .fixedSize(horizontal: false, vertical: true)
     }
@@ -138,6 +144,7 @@ struct ChangeAddonScreen: View {
 
 #Preview {
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     return ChangeAddonScreen(changeAddonVm: .init(contractId: "id"))
         .environmentObject(ChangeAddonNavigationViewModel(input: .init()))
 }
