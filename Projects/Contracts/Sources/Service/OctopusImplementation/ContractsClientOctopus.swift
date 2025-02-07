@@ -67,7 +67,8 @@ public class FetchContractsClientOctopus: FetchContractsClient {
                 descriptionDisplayName: bannerData.descriptionDisplayName,
                 badges: bannerData.badges
             )
+        } else {
+            throw AddonsError.missingContracts
         }
-        return nil
     }
 }
