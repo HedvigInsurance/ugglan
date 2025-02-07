@@ -105,13 +105,13 @@ struct MessageView: View {
                         vm: .init(url: url)
                     )
                 case let .action(action):
-                    ActionView(action: action, vm: vm)
+                    ActionView(action: action, messageStatus: message.status, vm: vm)
                         .environment(\.colorScheme, .light)
                 case let .automaticSuggestions(suggestions):
                     ForEach(suggestions.suggestions, id: \.self) { action in
                         if let action {
                             VStack(spacing: .padding8) {
-                                ActionView(action: action, vm: vm)
+                                ActionView(action: action, messageStatus: message.status, vm: vm)
                                 ActionView(
                                     action: .init(
                                         url: nil,
@@ -120,6 +120,7 @@ struct MessageView: View {
                                         buttonTitle: "Talk to a human"
                                     ),
                                     automaticSuggestion: suggestions,
+                                    messageStatus: message.status,
                                     vm: vm
                                 )
                             }
@@ -229,15 +230,18 @@ class LinkViewModel: ObservableObject {
 struct ActionView: View {
     let action: ActionMessage
     let automaticSuggestion: AutomaticSuggestions?
+    let messageStatus: MessageStatus
     @ObservedObject var vm: ChatScreenViewModel
 
     init(
         action: ActionMessage,
         automaticSuggestion: AutomaticSuggestions? = nil,
+        messageStatus: MessageStatus,
         vm: ChatScreenViewModel
     ) {
         self.action = action
         self.automaticSuggestion = automaticSuggestion
+        self.messageStatus = messageStatus
         self.vm = vm
     }
 
@@ -263,8 +267,17 @@ struct ActionView: View {
         .environment(\.colorScheme, .light)
         .padding(.horizontal, .padding16)
         .padding(.vertical, .padding12)
-        .background(hSurfaceColor.Opaque.primary)
+        .background(backgroundColor(messageStatus: messageStatus))
         .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    @hColorBuilder
+    private func backgroundColor(messageStatus: MessageStatus) -> some hColor {
+        if case .failed = messageStatus {
+            hSignalColor.Red.highlight
+        } else {
+            hSurfaceColor.Opaque.primary
+        }
     }
 }
 
