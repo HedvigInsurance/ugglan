@@ -65,7 +65,7 @@ public class EditCoInsuredViewModel: ObservableObject {
         }
     }
 
-    public func checkForAlert() {
+    public func checkForAlert(excludingContractId: String? = nil) {
         editCoInsuredModelDetent = nil
         editCoInsuredModelFullScreen = nil
         editCoInsuredModelMissingAlert = nil
@@ -73,6 +73,9 @@ public class EditCoInsuredViewModel: ObservableObject {
         Task { @MainActor in
             let activeContracts = try await editCoInsuredSharedService.fetchContracts()
             let missingContract = activeContracts.first { contract in
+                if contract.id == excludingContractId {
+                    return false
+                }
                 if contract.upcomingChangedAgreement != nil {
                     return false
                 } else {
@@ -82,8 +85,6 @@ public class EditCoInsuredViewModel: ObservableObject {
                         }) != nil
                 }
             }
-            try await Task.sleep(nanoseconds: 400_000_000)
-
             if let missingContract {
                 let missingContractConfig = InsuredPeopleConfig(
                     contract: missingContract,

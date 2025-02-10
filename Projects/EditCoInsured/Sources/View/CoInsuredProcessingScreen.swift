@@ -33,7 +33,7 @@ struct CoInsuredProcessingScreen: View {
                 editCoInsuredNavigation.showProgressScreenWithoutSuccess = false
                 editCoInsuredNavigation.editCoInsuredConfig = nil
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak editCoInsuredViewModel] in
-                    editCoInsuredViewModel?.checkForAlert()
+                    editCoInsuredViewModel?.checkForAlert(excludingContractId: intentViewModel.contractId)
                 }
                 EditCoInsuredViewModel.updatedCoInsuredForContractId.send(
                     intentViewModel.contractId
@@ -66,7 +66,7 @@ struct CoInsuredProcessingScreen: View {
                 editCoInsuredNavigation.showProgressScreenWithSuccess = false
                 editCoInsuredNavigation.showProgressScreenWithoutSuccess = false
                 editCoInsuredNavigation.editCoInsuredConfig = nil
-                editCoInsuredViewModel.checkForAlert()
+                editCoInsuredViewModel.checkForAlert(excludingContractId: intentViewModel.contractId)
                 EditCoInsuredViewModel.updatedCoInsuredForContractId.send(
                     intentViewModel.contractId
                 )
