@@ -105,13 +105,13 @@ struct MessageView: View {
                         vm: .init(url: url)
                     )
                 case let .action(action):
-                    ActionView(action: action, messageStatus: message.status, vm: vm)
+                    ActionView(action: action, message: message, vm: vm)
                         .environment(\.colorScheme, .light)
                 case let .automaticSuggestions(suggestions):
                     ForEach(suggestions.suggestions, id: \.self) { action in
                         if let action {
                             VStack(spacing: .padding8) {
-                                ActionView(action: action, messageStatus: message.status, vm: vm)
+                                ActionView(action: action, message: message, vm: vm)
                                 ActionView(
                                     action: .init(
                                         url: nil,
@@ -120,7 +120,7 @@ struct MessageView: View {
                                         buttonTitle: "Talk to a human"
                                     ),
                                     automaticSuggestion: suggestions,
-                                    messageStatus: message.status,
+                                    message: message,
                                     vm: vm
                                 )
                             }
@@ -230,18 +230,18 @@ class LinkViewModel: ObservableObject {
 struct ActionView: View {
     let action: ActionMessage
     let automaticSuggestion: AutomaticSuggestions?
-    let messageStatus: MessageStatus
+    let message: Message
     @ObservedObject var vm: ChatScreenViewModel
 
     init(
         action: ActionMessage,
         automaticSuggestion: AutomaticSuggestions? = nil,
-        messageStatus: MessageStatus,
+        message: Message,
         vm: ChatScreenViewModel
     ) {
         self.action = action
         self.automaticSuggestion = automaticSuggestion
-        self.messageStatus = messageStatus
+        self.message = message
         self.vm = vm
     }
 
@@ -255,7 +255,7 @@ struct ActionView: View {
             hButton.MediumButton(type: .secondary) {
                 if let automaticSuggestion {
                     Task {
-                        await vm.esacateMessage(automaticSuggestion: automaticSuggestion)
+                        await vm.esacateMessage(message: message, automaticSuggestion: automaticSuggestion)
                     }
                 }
                 NotificationCenter.default.post(name: .openDeepLink, object: action.url)
@@ -267,7 +267,7 @@ struct ActionView: View {
         .environment(\.colorScheme, .light)
         .padding(.horizontal, .padding16)
         .padding(.vertical, .padding12)
-        .background(backgroundColor(messageStatus: messageStatus))
+        .background(backgroundColor(messageStatus: message.status))
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
@@ -318,7 +318,7 @@ extension URL {
                     escalationReference: "escalationReference"
                 )
             ),
-            status: .sent
+            status: .failed(error: "failed")
         ),
         conversationStatus: .open,
         vm: .init(chatService: service),

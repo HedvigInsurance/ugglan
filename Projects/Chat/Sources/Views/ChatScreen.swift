@@ -98,7 +98,10 @@ public struct ChatScreen: View {
             if message.sender == .member {
                 Spacer()
             }
-            VStack(alignment: message.sender == .hedvig ? .leading : .trailing, spacing: 4) {
+            VStack(
+                alignment: (message.sender == .hedvig || message.sender == .automatic) ? .leading : .trailing,
+                spacing: 4
+            ) {
                 MessageView(message: message, conversationStatus: conversationStatus, vm: vm)
                     .frame(
                         maxWidth: 300,
@@ -137,7 +140,7 @@ public struct ChatScreen: View {
             }
             .accessibilityElement(children: .combine)
             .accessibilityLabel(accessilityLabel(for: message))
-            if message.sender == .hedvig {
+            if message.sender == .hedvig || message.sender == .automatic {
                 Spacer()
             }
         }

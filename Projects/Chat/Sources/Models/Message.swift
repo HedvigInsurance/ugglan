@@ -60,17 +60,23 @@ public struct Message: Codable, Identifiable, Hashable, Sendable {
         self.status = sender == .hedvig ? .received : .sent
     }
 
-    private init(localId: String?, type: MessageType, date: Date, status: MessageStatus) {
+    private init(localId: String?, type: MessageType, date: Date, status: MessageStatus, sender: MessageSender?) {
         self.localId = localId
         self.remoteId = nil
-        self.sender = .member
+        self.sender = sender ?? .member
         self.type = type
         self.sentAt = date
         self.status = status
     }
 
-    func asFailed(with error: String) -> Message {
-        return Message(localId: UUID().uuidString, type: type, date: sentAt, status: .failed(error: error))
+    func asFailed(with error: String, sender: MessageSender?) -> Message {
+        return Message(
+            localId: UUID().uuidString,
+            type: type,
+            date: sentAt,
+            status: .failed(error: error),
+            sender: sender
+        )
     }
 
     func copyWith(type: MessageType) -> Message {

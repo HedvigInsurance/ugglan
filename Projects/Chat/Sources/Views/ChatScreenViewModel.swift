@@ -292,7 +292,7 @@ public class ChatScreenViewModel: ObservableObject {
     @MainActor
     private func handleSendFail(for message: Message, with error: String) async {
         if let index = messages.firstIndex(where: { $0.id == message.id }) {
-            let newMessage = message.asFailed(with: error)
+            let newMessage = message.asFailed(with: error, sender: message.sender)
             let oldMessage = messages[index]
             switch oldMessage.status {
             case .failed:
@@ -313,12 +313,19 @@ public class ChatScreenViewModel: ObservableObject {
         }
     }
     @MainActor
-    func esacateMessage(automaticSuggestion: AutomaticSuggestions) async {
+    func esacateMessage(message: Message, automaticSuggestion: AutomaticSuggestions) async {
         do {
             try await chatService.escalateMessage(reference: automaticSuggestion.escalationReference ?? "")
         } catch let ex {
-            let message = Message(type: .automaticSuggestions(suggestions: automaticSuggestion))
-            await handleSendFail(for: message, with: ex.localizedDescription)
+            var newMessage = Message(
+                localId: message.localId,
+                remoteId: message.remoteId,
+                sender: .automatic,
+                sentAt: message.sentAt,
+                type: message.type,
+                status: message.status
+            )
+            await handleSendFail(for: newMessage, with: ex.localizedDescription)
         }
     }
 }
