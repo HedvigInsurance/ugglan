@@ -100,5 +100,7 @@ public class ConversationsDemoClient: ConversationsClient, ConversationClient {
         return message
     }
 
-    public func escalateChatMessage(reference: String) async throws {}
+    public func escalateChatMessage(reference: String) async throws -> Message? {
+        return nil
+    }
 }

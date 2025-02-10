@@ -117,9 +117,35 @@ public class ConversationClientOctopus: ConversationClient {
         )
     }
 
-    public func escalateChatMessage(reference: String) async throws {
+    public func escalateChatMessage(reference: String) async throws -> Message? {
         let mutation = hGraphQL.OctopusGraphQL.ChatMessageEscalateMutation(reference: reference)
-        let data = try await octopus.client.perform(mutation: mutation)
+        do {
+            let data = try await octopus.client.perform(mutation: mutation)
+
+            let chatMessageEscalate = data.chatMessageEscalate
+
+            let message: Message = Message(
+                localId: nil,
+                remoteId: chatMessageEscalate.id,
+                sender: getSender(sender: chatMessageEscalate.sender.value ?? .automation),
+                sentAt: chatMessageEscalate.sentAt.localDateToIso8601Date ?? Date(),
+                type: .automaticSuggestions(
+                    suggestions: .init(suggestions: [], escalationReference: chatMessageEscalate.escalationReference)
+                ),
+                status: .sent
+            )
+
+            return message
+        } catch {}
+        return nil
+    }
+
+    private func getSender(sender: OctopusGraphQL.ChatMessageSender) -> MessageSender {
+        switch sender {
+        case .hedvig: return .hedvig
+        case .automation: return .automatic
+        default: return .member
+        }
     }
 }
 
@@ -138,6 +164,10 @@ extension OctopusGraphQL.ConversationFragment {
             unreadMessageCount: self.unreadMessageCount
         )
     }
+}
+
+extension OctopusGraphQL.ChatMessageSender {
+
 }
 
 @MainActor

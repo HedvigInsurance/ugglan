@@ -1,7 +1,5 @@
 mutation ChatMessageEscalate($reference: String!) {
   chatMessageEscalate(reference: $reference) {
-    text
-    actionUrl
-    actionTitle
+    ...ChatMessageAutomaticSuggestionsFragment
   }
 }

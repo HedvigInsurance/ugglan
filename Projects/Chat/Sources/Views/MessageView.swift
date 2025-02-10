@@ -318,7 +318,7 @@ extension URL {
                     escalationReference: "escalationReference"
                 )
             ),
-            status: .failed(error: "failed")
+            status: .sent
         ),
         conversationStatus: .open,
         vm: .init(chatService: service),

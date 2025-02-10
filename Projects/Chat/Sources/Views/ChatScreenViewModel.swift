@@ -315,7 +315,12 @@ public class ChatScreenViewModel: ObservableObject {
     @MainActor
     func esacateMessage(message: Message, automaticSuggestion: AutomaticSuggestions) async {
         do {
-            try await chatService.escalateMessage(reference: automaticSuggestion.escalationReference ?? "")
+            if let data = try await chatService.escalateMessage(
+                reference: automaticSuggestion.escalationReference ?? ""
+            ) {
+                self.messages.removeAll(where: { $0.id == message.id })
+                self.messages.append(data)
+            }
         } catch let ex {
             var newMessage = Message(
                 localId: message.localId,
