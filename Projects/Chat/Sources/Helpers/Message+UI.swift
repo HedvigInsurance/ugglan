@@ -6,7 +6,11 @@ extension Message {
     @hColorBuilder
     func bgColor(conversationStatus: ConversationStatus, type: MessageType) -> some hColor {
         if case .failed = status {
-            hSignalColor.Red.highlight
+            if case .automaticSuggestions = type {
+                hBackgroundColor.clear
+            } else {
+                hSignalColor.Red.highlight
+            }
         } else {
             switch type {
             case .action, .automaticSuggestions:

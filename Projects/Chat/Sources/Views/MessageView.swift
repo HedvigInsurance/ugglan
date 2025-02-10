@@ -17,7 +17,7 @@ struct MessageView: View {
         HStack(spacing: 0) {
             messageContent
                 .environment(\.colorScheme, .light)
-            if case .failed = message.status {
+            if case .failed = message.status, message.sender != .automatic {
                 hCoreUIAssets.infoFilled.view
                     .resizable()
                     .frame(width: 24, height: 24)
@@ -46,7 +46,7 @@ struct MessageView: View {
     @ViewBuilder
     private var messageContent: some View {
         HStack {
-            if case .failed = message.status {
+            if case .failed = message.status, message.sender != .automatic {
                 hCoreUIAssets.refresh.view
                     .resizable()
                     .frame(width: 24, height: 24)
@@ -111,18 +111,35 @@ struct MessageView: View {
                     ForEach(suggestions.suggestions, id: \.self) { action in
                         if let action {
                             VStack(spacing: .padding8) {
-                                ActionView(action: action, message: message, vm: vm)
-                                ActionView(
-                                    action: .init(
-                                        url: nil,
-                                        text:
-                                            "If it’s not working or if you have any other questions, please let us know and one of our specialists will help out shortly!",
-                                        buttonTitle: "Talk to a human"
-                                    ),
-                                    automaticSuggestion: suggestions,
-                                    message: message,
-                                    vm: vm
-                                )
+                                if case .failed = message.status {
+                                    ActionView(action: action, message: message, vm: vm, showAsFailed: false)
+                                        .padding(.trailing, .padding32)
+                                } else {
+                                    ActionView(action: action, message: message, vm: vm, showAsFailed: false)
+                                }
+                                HStack(alignment: .top, spacing: 0) {
+                                    ActionView(
+                                        action: .init(
+                                            url: nil,
+                                            text:
+                                                "If it’s not working or if you have any other questions, please let us know and one of our specialists will help out shortly!",
+                                            buttonTitle: "Talk to a human"
+                                        ),
+                                        automaticSuggestion: suggestions,
+                                        message: message,
+                                        vm: vm
+                                    )
+                                    if case .failed = message.status {
+                                        hCoreUIAssets.infoFilled.view
+                                            .resizable()
+                                            .frame(width: 24, height: 24)
+                                            .foregroundColor(hSignalColor.Red.element)
+                                            .padding(.leading, .padding8)
+                                            .onTapGesture {
+                                                showRetryOptions = true
+                                            }
+                                    }
+                                }
                             }
                             .environment(\.colorScheme, .light)
                         }
@@ -231,18 +248,21 @@ struct ActionView: View {
     let action: ActionMessage
     let automaticSuggestion: AutomaticSuggestions?
     let message: Message
+    let showAsFailed: Bool
     @ObservedObject var vm: ChatScreenViewModel
 
     init(
         action: ActionMessage,
         automaticSuggestion: AutomaticSuggestions? = nil,
         message: Message,
-        vm: ChatScreenViewModel
+        vm: ChatScreenViewModel,
+        showAsFailed: Bool? = true
     ) {
         self.action = action
         self.automaticSuggestion = automaticSuggestion
         self.message = message
         self.vm = vm
+        self.showAsFailed = showAsFailed ?? true
     }
 
     var body: some View {
@@ -267,13 +287,13 @@ struct ActionView: View {
         .environment(\.colorScheme, .light)
         .padding(.horizontal, .padding16)
         .padding(.vertical, .padding12)
-        .background(backgroundColor(messageStatus: message.status))
+        .background(backgroundColor(messageStatus: message.status, showAsFailed: showAsFailed))
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
     @hColorBuilder
-    private func backgroundColor(messageStatus: MessageStatus) -> some hColor {
-        if case .failed = messageStatus {
+    private func backgroundColor(messageStatus: MessageStatus, showAsFailed: Bool) -> some hColor {
+        if case .failed = messageStatus, showAsFailed {
             hSignalColor.Red.highlight
         } else {
             hSurfaceColor.Opaque.primary
@@ -318,7 +338,7 @@ extension URL {
                     escalationReference: "escalationReference"
                 )
             ),
-            status: .sent
+            status: .failed(error: "error")
         ),
         conversationStatus: .open,
         vm: .init(chatService: service),
