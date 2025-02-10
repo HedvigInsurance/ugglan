@@ -4,8 +4,6 @@ import hCoreUI
 import hGraphQL
 
 public struct HelpCenterModel: Codable, Equatable, Hashable, Sendable {
-    let title: String
-    let description: String
     let commonTopics: [CommonTopic]
     let commonQuestions: [Question]
 }
@@ -18,13 +16,11 @@ public struct CommonTopic: Codable, Equatable, Hashable, Sendable {
 
 public struct Question: Codable, Equatable, Hashable, Sendable {
     let question: String
-    let questionEn: String
     let answer: String
     let relatedQuestions: [Question]
 
     public init(
         question: String,
-        questionEn: String,
         answer: String,
         relatedQuestions: [Question] = []
     ) {
@@ -44,7 +40,6 @@ public struct Question: Codable, Equatable, Hashable, Sendable {
                 )
             }
         }
-        self.questionEn = questionEn
         self.question = question
         self.answer = answer
         self.relatedQuestions = relatedQuestions
