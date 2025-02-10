@@ -322,7 +322,7 @@ public class ChatScreenViewModel: ObservableObject {
                 self.messages.append(data)
             }
         } catch let ex {
-            var newMessage = Message(
+            let newMessage = Message(
                 localId: message.localId,
                 remoteId: message.remoteId,
                 sender: .automatic,
