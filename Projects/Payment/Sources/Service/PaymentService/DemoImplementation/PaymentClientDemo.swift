@@ -9,24 +9,24 @@ public class hPaymentClientDemo: hPaymentClient {
             .init(
                 id: "",
                 payment: .init(
-                    gross: .sek(460),
-                    net: .sek(400),
+                    gross: .sek(400),
+                    net: .sek(370),
                     carriedAdjustment: nil,
                     settlementAdjustment: nil,
-                    date: "2023-11-30"
+                    date: "2025-02-27"
                 ),
                 status: .upcoming,
                 contracts: [
                     .init(
                         id: "id",
-                        title: "Title",
-                        subtitle: "Subtitle",
+                        title: "Hemförsäkring Bostadsrätt Standard",
+                        subtitle: "Bastugatan 25 ∙ Bara du",
                         amount: .sek(200),
                         periods: [
                             .init(
                                 id: "id",
-                                from: "2023-11-01",
-                                to: "2023-11-30",
+                                from: "2025-02-01",
+                                to: "2023-02-28",
                                 amount: .sek(200),
                                 isOutstanding: false,
                                 desciption: nil
@@ -35,52 +35,95 @@ public class hPaymentClientDemo: hPaymentClient {
                     ),
                     .init(
                         id: "id1",
-                        title: "Title 2",
-                        subtitle: "Subtitle 2",
+                        title: "Kattförsäkring Basic",
+                        subtitle: "Lola ∙ Huskatt/blandras",
                         amount: .sek(200),
                         periods: [
                             .init(
                                 id: "id2",
-                                from: "2023-11-01",
-                                to: "2023-11-30",
-                                amount: .sek(100),
+                                from: "2025-02-01",
+                                to: "2023-02-28",
+                                amount: .sek(200),
                                 isOutstanding: false,
                                 desciption: nil
-                            ),
-                            .init(
-                                id: "id12",
-                                from: "2023-10-01",
-                                to: "2023-10-31",
-                                amount: .sek(100),
-                                isOutstanding: true,
-                                desciption: nil
-                            ),
+                            )
                         ]
                     ),
                 ],
                 discounts: [
                     .init(
-                        id: "CODE",
-                        code: "CODE",
-                        amount: .sek(30),
-                        title: "15% off for 1 year",
-                        listOfAffectedInsurances: [.init(id: "1", displayName: "Car Insurance * ABH 234")],
-                        validUntil: "2023-12-10",
-                        canBeDeleted: false
-                    ),
-                    .init(
                         id: "CODE 2",
                         code: "CODE 2",
                         amount: .sek(30),
                         title: "15% off for 1 year",
-                        listOfAffectedInsurances: [.init(id: "1", displayName: "Home insurace &*")],
-                        validUntil: "2023-11-03",
+                        listOfAffectedInsurances: [.init(id: "1", displayName: "Bastugatan 25 ∙ Bara du")],
+                        validUntil: "2025-12-31",
                         canBeDeleted: false
-                    ),
+                    )
                 ],
-                paymentDetails: .init(paymentMethod: "Method", account: "Account", bank: "Bank"),
+                paymentDetails: .init(paymentMethod: "Autogiro", account: "****124124", bank: "Handelsbanken"),
                 addedToThePayment: nil
-            ), []
+            ),
+            [
+                .init(
+                    id: "ongoing",
+                    payment: .init(
+                        gross: .sek(400),
+                        net: .sek(370),
+                        carriedAdjustment: nil,
+                        settlementAdjustment: nil,
+                        date: "2025-01-27"
+                    ),
+                    status: .pending,
+                    contracts: [
+                        .init(
+                            id: "id",
+                            title: "Hemförsäkring Bostadsrätt Standard",
+                            subtitle: "Bastugatan 25 ∙ Bara du",
+                            amount: .sek(200),
+                            periods: [
+                                .init(
+                                    id: "id",
+                                    from: "2025-01-01",
+                                    to: "2023-01-31",
+                                    amount: .sek(200),
+                                    isOutstanding: false,
+                                    desciption: nil
+                                )
+                            ]
+                        ),
+                        .init(
+                            id: "id1",
+                            title: "Kattförsäkring Basic",
+                            subtitle: "Lola ∙ Huskatt/blandras",
+                            amount: .sek(200),
+                            periods: [
+                                .init(
+                                    id: "id2",
+                                    from: "2025-01-01",
+                                    to: "2023-01-31",
+                                    amount: .sek(200),
+                                    isOutstanding: false,
+                                    desciption: nil
+                                )
+                            ]
+                        ),
+                    ],
+                    discounts: [
+                        .init(
+                            id: "CODE 2",
+                            code: "CODE 2",
+                            amount: .sek(30),
+                            title: "15% off for 1 year",
+                            listOfAffectedInsurances: [.init(id: "1", displayName: "Bastugatan 25 ∙ Bara du")],
+                            validUntil: "2025-12-31",
+                            canBeDeleted: false
+                        )
+                    ],
+                    paymentDetails: nil,
+                    addedToThePayment: nil
+                )
+            ]
         )
     }
 
