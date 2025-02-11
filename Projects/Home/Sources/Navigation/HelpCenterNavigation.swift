@@ -20,6 +20,7 @@ public class HelpCenterNavigationViewModel: ObservableObject {
         existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
     )
     let terminateInsuranceVm = TerminateInsuranceViewModel()
+    public let router = Router()
 
     struct QuickActions {
         var editContractActions: EditInsuranceActionsWrapper?
@@ -29,6 +30,31 @@ public class HelpCenterNavigationViewModel: ObservableObject {
         var isFirstVetPresented = false
         var isSickAbroadPresented = false
         var isChangeTierPresented: ChangeTierContractsInput?
+    }
+
+    public func open(topicId id: String) {
+        Task {
+            let store: HomeStore = globalPresentableStoreContainer.get()
+            if store.state.helpCenterFAQModel == nil {
+                await store.sendAsync(.fetchFAQ)
+            }
+            if let helpCenterFAQModel = store.state.helpCenterFAQModel,
+                let topic = helpCenterFAQModel.topics.first(where: { $0.id == id })
+            {
+                router.push(topic)
+            }
+        }
+    }
+    public func open(questionId id: String) {
+        Task {
+            let store: HomeStore = globalPresentableStoreContainer.get()
+            if store.state.getAllFAQ() == nil {
+                await store.sendAsync(.fetchFAQ)
+            }
+            if let allFAQ = store.state.getAllFAQ(), let question = allFAQ.first(where: { $0.id == id }) {
+                router.push(question)
+            }
+        }
     }
 
     public init() {}
@@ -64,7 +90,6 @@ public struct HelpCenterNavigation<Content: View>: View {
     @EnvironmentObject private var homeVm: HomeNavigationViewModel
     @PresentableStore private var store: HomeStore
     @ViewBuilder var redirect: (_ type: HelpCenterRedirectType) -> Content
-    @StateObject var router = Router()
 
     public init(
         helpCenterVm: HelpCenterNavigationViewModel,
@@ -75,7 +100,7 @@ public struct HelpCenterNavigation<Content: View>: View {
     }
 
     public var body: some View {
-        RouterHost(router: router, tracking: HelpCenterDetentRouterType.startView) {
+        RouterHost(router: helpCenterVm.router, tracking: HelpCenterDetentRouterType.startView) {
             HelpCenterStartView(
                 onQuickAction: { quickAction in
                     handle(quickAction: quickAction)
@@ -84,10 +109,10 @@ public struct HelpCenterNavigation<Content: View>: View {
             .navigationTitle(L10n.hcTitle)
             .withDismissButton()
             .routerDestination(for: FAQModel.self) { question in
-                HelpCenterQuestionView(question: question, router: router)
+                HelpCenterQuestionView(question: question, router: helpCenterVm.router)
             }
             .routerDestination(for: FaqTopic.self) { topic in
-                HelpCenterTopicView(topic: topic, router: router)
+                HelpCenterTopicView(topic: topic, router: helpCenterVm.router)
             }
             .routerDestination(for: HelpCenterNavigationRouterType.self) { _ in
                 InboxView()
