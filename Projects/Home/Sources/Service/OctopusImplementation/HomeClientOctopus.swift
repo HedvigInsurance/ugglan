@@ -149,13 +149,14 @@ extension OctopusGraphQL.MemberFAQQuery.Data {
 }
 extension OctopusGraphQL.FAQFragment {
     var asQuestion: FAQModel {
-        .init(question: question, answer: answer)
+        .init(id: id, question: question, answer: answer)
     }
 }
 
 extension OctopusGraphQL.MemberFAQQuery.Data.CurrentMember.MemberFAQ.Topic {
     var asTopic: FaqTopic {
         .init(
+            id: id,
             title: title,
             commonQuestions: commonFAQ.compactMap({ $0.fragments.fAQFragment.asQuestion }),
             allQuestions: otherFAQ.compactMap({ $0.fragments.fAQFragment.asQuestion })
