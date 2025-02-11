@@ -6,43 +6,31 @@ public struct ConfirmChangeAddonScreen: View {
     @EnvironmentObject var addonNavigationVm: ChangeAddonNavigationViewModel
 
     public var body: some View {
-        hForm {}
-            .hFormContentPosition(.compact)
-            .hFormAttachToBottom {
-                hSection {
-                    VStack(spacing: .padding32) {
-                        VStack(alignment: .leading, spacing: 0) {
-                            hText(L10n.addonFlowConfirmationTitle)
-                            hText(
-                                L10n.addonFlowConfirmationDescription(
-                                    addonNavigationVm.changeAddonVm!.addonOffer?.activationDate?
-                                        .displayDateDDMMMYYYYFormat ?? ""
-                                )
-                            )
-                            .foregroundColor(hTextColor.Translucent.secondary)
-                        }
-                        VStack(spacing: .padding8) {
-                            hButton.LargeButton(type: .primary) {
-                                addonNavigationVm.isAddonProcessingPresented = true
-                                addonNavigationVm.isConfirmAddonPresented = false
-                                Task {
-                                    await addonNavigationVm.changeAddonVm!.submitAddons()
-                                }
-                            } content: {
-                                hText(L10n.addonFlowConfirmationButton)
-                            }
-
-                            hButton.LargeButton(type: .ghost) {
-                                addonNavigationVm.isConfirmAddonPresented = false
-                            } content: {
-                                hText(L10n.generalCloseButton)
-                            }
+        ConfirmChangesScreen(
+            title: L10n.addonFlowConfirmationTitle,
+            subTitle: L10n.addonFlowConfirmationDescription(
+                addonNavigationVm.changeAddonVm!.addonOffer?.activationDate?
+                    .displayDateDDMMMYYYYFormat ?? ""
+            ),
+            buttons: .init(
+                mainButton: .init(
+                    buttonTitle: L10n.addonFlowConfirmationButton,
+                    buttonAction: {
+                        addonNavigationVm.isAddonProcessingPresented = true
+                        addonNavigationVm.isConfirmAddonPresented = false
+                        Task {
+                            await addonNavigationVm.changeAddonVm!.submitAddons()
                         }
                     }
-                    .padding(.top, .padding24)
-                }
-                .sectionContainerStyle(.transparent)
-            }
+                ),
+                dismissButton: .init(
+                    buttonTitle: L10n.generalCloseButton,
+                    buttonAction: {
+                        addonNavigationVm.isConfirmAddonPresented = false
+                    }
+                )
+            )
+        )
     }
 }
 
