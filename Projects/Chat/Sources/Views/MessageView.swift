@@ -282,18 +282,24 @@ struct ActionView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             if withButton {
-                hButton.MediumButton(type: .secondary) {
-                    if let automaticSuggestion {
+
+                if let automaticSuggestion {
+                    hButton.SmallButton(type: .ghost) {
                         Task {
                             await vm.escalateMessage(message: message, automaticSuggestion: automaticSuggestion)
                         }
-                    } else {
-                        NotificationCenter.default.post(name: .openDeepLink, object: action.url)
+                    } content: {
+                        hText(action.buttonTitle)
                     }
-                } content: {
-                    hText(action.buttonTitle)
+                    .hButtonTakeFullWidth(true)
+                } else {
+                    hButton.MediumButton(type: .secondary) {
+                        NotificationCenter.default.post(name: .openDeepLink, object: action.url)
+                    } content: {
+                        hText(action.buttonTitle)
+                    }
+                    .hButtonTakeFullWidth(true)
                 }
-                .hButtonTakeFullWidth(true)
             }
         }
         .environment(\.colorScheme, .light)
