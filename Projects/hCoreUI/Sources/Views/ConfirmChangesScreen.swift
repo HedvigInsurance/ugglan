@@ -21,12 +21,13 @@ public struct ConfirmChangesScreen: View {
             .hFormContentPosition(.compact)
             .hFormAttachToBottom {
                 hSection {
-                    VStack(spacing: .padding32) {
+                    VStack(alignment: .leading, spacing: .padding32) {
                         VStack(alignment: .leading, spacing: 0) {
                             hText(title)
                             hText(subTitle)
                                 .foregroundColor(hTextColor.Translucent.secondary)
                         }
+                        .padding(.leading, .padding8)
                         VStack(spacing: .padding8) {
                             hButton.LargeButton(type: .primary) {
                                 buttons.mainButton.buttonAction()
@@ -69,4 +70,12 @@ public struct ConfirmChangesButtonConfig {
             self.buttonAction = buttonAction
         }
     }
+}
+
+#Preview {
+    ConfirmChangesScreen(
+        title: "title",
+        subTitle: "sub title",
+        buttons: .init(mainButton: .init(buttonAction: {}), dismissButton: .init(buttonAction: {}))
+    )
 }
