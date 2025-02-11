@@ -148,8 +148,9 @@ public struct ProcessingStateView: View {
 
     @ViewBuilder
     private var loadingView: some View {
-        hSection {
-            VStack(spacing: 20) {
+        ZStack(alignment: .bottom) {
+            BackgroundView().ignoresSafeArea()
+            VStack {
                 Spacer()
                 hText(loadingViewText)
                 ProgressView(value: vm.progress)
@@ -167,10 +168,8 @@ public struct ProcessingStateView: View {
                     }
                     .progressViewStyle(hProgressViewStyle())
                 Spacer()
-                Spacer()
             }
         }
-        .sectionContainerStyle(.transparent)
     }
 }
 
@@ -178,6 +177,22 @@ public struct ProcessingStateView: View {
     ProcessingStateView(
         loadingViewText: "loading...",
         state: .constant(.error(errorMessage: "error message"))
+    )
+})
+
+#Preview(body: {
+    ProcessingStateView(
+        loadingViewText: "loading...",
+        state: .constant(.loading)
+    )
+})
+
+#Preview(body: {
+    ProcessingStateView(
+        loadingViewText: "loading...",
+        successViewTitle: "Success!",
+        successViewBody: "Your contract was successfully updated.",
+        state: .constant(.success)
     )
 })
 
