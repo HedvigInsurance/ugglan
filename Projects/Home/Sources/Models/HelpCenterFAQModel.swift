@@ -4,19 +4,19 @@ import hCoreUI
 import hGraphQL
 
 public struct HelpCenterFAQModel: Codable, Equatable, Hashable, Sendable {
-    let topics: [FaqTopic]
+    public let topics: [FaqTopic]
     let commonQuestions: [FAQModel]
 }
 
-public struct FaqTopic: Codable, Equatable, Hashable, Sendable {
-    let id: String
+public struct FaqTopic: Codable, Equatable, Hashable, Sendable, Identifiable {
+    public let id: String
     let title: String
     let commonQuestions: [FAQModel]
     let allQuestions: [FAQModel]
 }
 
-public struct FAQModel: Codable, Equatable, Hashable, Sendable {
-    let id: String
+public struct FAQModel: Codable, Equatable, Hashable, Sendable, Identifiable {
+    public let id: String
     let question: String
     let answer: String
     let relatedQuestions: [FAQModel]

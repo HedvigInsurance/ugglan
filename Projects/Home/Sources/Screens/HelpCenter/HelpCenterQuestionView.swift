@@ -1,8 +1,29 @@
+import Chat
 import PresentableStore
 import SwiftUI
 import TravelCertificate
 import hCore
 import hCoreUI
+
+public struct HelpCenterQuestionNavigation: View {
+    private let router = Router()
+    let question: FAQModel
+
+    public init(question: FAQModel) {
+        self.question = question
+    }
+
+    public var body: some View {
+        RouterHost(router: router, options: [.navigationType(type: .large)], tracking: question) {
+            HelpCenterQuestionView(question: question, router: router)
+                .withDismissButton()
+                .routerDestination(for: HelpCenterNavigationRouterType.self) { _ in
+                    InboxView()
+                        .configureTitle(L10n.chatConversationInbox)
+                }
+        }
+    }
+}
 
 struct HelpCenterQuestionView: View {
     private var question: FAQModel

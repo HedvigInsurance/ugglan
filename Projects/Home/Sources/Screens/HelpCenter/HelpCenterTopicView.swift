@@ -1,7 +1,32 @@
+import Chat
 import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
+
+public struct HelpCenterTopicNavigation: View {
+    private let router = Router()
+    let topic: FaqTopic
+
+    public init(topic: FaqTopic) {
+        self.topic = topic
+    }
+
+    public var body: some View {
+        RouterHost(router: router, options: [.navigationType(type: .large)], tracking: topic) {
+            HelpCenterTopicView(topic: topic, router: router)
+                .navigationTitle(topic.title)
+                .withDismissButton()
+                .routerDestination(for: FAQModel.self) { question in
+                    HelpCenterQuestionView(question: question, router: router)
+                }
+                .routerDestination(for: HelpCenterNavigationRouterType.self) { _ in
+                    InboxView()
+                        .configureTitle(L10n.chatConversationInbox)
+                }
+        }
+    }
+}
 
 struct HelpCenterTopicView: View {
     private var topic: FaqTopic

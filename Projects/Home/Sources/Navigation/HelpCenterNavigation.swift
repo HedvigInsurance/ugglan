@@ -32,31 +32,6 @@ public class HelpCenterNavigationViewModel: ObservableObject {
         var isChangeTierPresented: ChangeTierContractsInput?
     }
 
-    public func open(topicId id: String) {
-        Task {
-            let store: HomeStore = globalPresentableStoreContainer.get()
-            if store.state.helpCenterFAQModel == nil {
-                await store.sendAsync(.fetchFAQ)
-            }
-            if let helpCenterFAQModel = store.state.helpCenterFAQModel,
-                let topic = helpCenterFAQModel.topics.first(where: { $0.id == id })
-            {
-                router.push(topic)
-            }
-        }
-    }
-    public func open(questionId id: String) {
-        Task {
-            let store: HomeStore = globalPresentableStoreContainer.get()
-            if store.state.getAllFAQ() == nil {
-                await store.sendAsync(.fetchFAQ)
-            }
-            if let allFAQ = store.state.getAllFAQ(), let question = allFAQ.first(where: { $0.id == id }) {
-                router.push(question)
-            }
-        }
-    }
-
     public init() {}
 }
 

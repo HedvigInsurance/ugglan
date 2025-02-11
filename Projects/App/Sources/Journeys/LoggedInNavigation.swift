@@ -126,6 +126,23 @@ struct LoggedInNavigation: View {
         ) {
             EuroBonusNavigation(useOwnNavigation: true)
         }
+        .detent(
+            item: $vm.isFaqTopicPresented,
+            style: [.large],
+            options: .constant(.alwaysOpenOnTop)
+        ) { topic in
+            HelpCenterTopicNavigation(topic: topic)
+        }
+        .introspect(.tabView, on: .iOS(.v13...)) { tabBar in
+            vm.tabBar = tabBar
+        }
+        .detent(
+            item: $vm.isFaqPresented,
+            style: [.large],
+            options: .constant(.alwaysOpenOnTop)
+        ) { question in
+            HelpCenterQuestionNavigation(question: question)
+        }
         .introspect(.tabView, on: .iOS(.v13...)) { tabBar in
             vm.tabBar = tabBar
         }
@@ -511,6 +528,8 @@ class LoggedInNavigationViewModel: ObservableObject {
     let addonErrorRouter = Router()
     @Published var isEuroBonusPresented = false
     @Published var isUrlPresented: URL?
+    @Published var isFaqTopicPresented: FaqTopic?
+    @Published var isFaqPresented: FAQModel?
 
     private var deeplinkToBeOpenedAfterLogin: URL?
     private var cancellables = Set<AnyCancellable>()
@@ -695,22 +714,31 @@ class LoggedInNavigationViewModel: ObservableObject {
                 }
             case .helpCenterTopic:
                 if let id = url.getParameter(property: .id) {
-                    UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                    self.selectedTab = 0
-                    helpCenterVm.open(topicId: id)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
-                        self?.homeNavigationVm.isHelpCenterPresented = true
+                    Task {
+                        let store: HomeStore = globalPresentableStoreContainer.get()
+                        if store.state.helpCenterFAQModel == nil {
+                            await store.sendAsync(.fetchFAQ)
+                        }
+                        if let helpCenterFAQModel = store.state.helpCenterFAQModel,
+                            let topic = helpCenterFAQModel.topics.first(where: { $0.id == id })
+                        {
+                            isFaqTopicPresented = topic
+                        }
                     }
                 }
             case .helpCenterQuestion:
                 if let id = url.getParameter(property: .id) {
-                    UIApplication.shared.getRootViewController()?.dismiss(animated: true)
-                    self.selectedTab = 0
-                    helpCenterVm.open(questionId: id)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
-                        self?.homeNavigationVm.isHelpCenterPresented = true
+                    Task {
+                        let store: HomeStore = globalPresentableStoreContainer.get()
+                        if store.state.getAllFAQ()?.first(where: { $0.id == id }) == nil {
+                            await store.sendAsync(.fetchFAQ)
+                        }
+                        if let question = store.state.getAllFAQ()?.first(where: { $0.id == id }) {
+                            isFaqPresented = question
+                        }
                     }
                 }
+                break
             case .moveContract:
                 self.isMoveContractPresented = true
             case .terminateContract:

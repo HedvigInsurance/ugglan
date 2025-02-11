@@ -35,7 +35,7 @@ public struct HomeState: StateProtocol {
         return importantMessages.first(where: { $0.id == id })
     }
 
-    func getAllFAQ() -> [FAQModel]? {
+    public func getAllFAQ() -> [FAQModel]? {
         helpCenterFAQModel?.topics
             .reduce(
                 [FAQModel](),
