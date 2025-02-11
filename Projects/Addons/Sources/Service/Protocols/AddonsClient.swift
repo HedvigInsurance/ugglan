@@ -13,6 +13,7 @@ public enum AddonsError: Error {
     case somethingWentWrong
     case submitError
     case errorMessage(message: String)
+    case missingContracts
 }
 
 extension AddonsError: LocalizedError {
@@ -22,6 +23,8 @@ extension AddonsError: LocalizedError {
             return L10n.General.errorBody
         case let .errorMessage(message):
             return message
+        case .missingContracts:
+            return L10n.General.defaultError
         default:
             return L10n.General.errorBody
         }

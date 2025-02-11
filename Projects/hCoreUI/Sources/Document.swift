@@ -35,7 +35,7 @@ public struct PDFPreview: View {
                 GenericErrorView(
                     formPosition: .center
                 )
-                .hErrorViewButtonConfig(.init())
+                .hStateViewButtonConfig(.init())
             }
         }
         .navigationTitle(vm.document.displayName)
@@ -70,9 +70,7 @@ private class PDFPreviewViewModel: ObservableObject {
 
     @MainActor
     private func getData() async {
-        withAnimation {
-            self.isLoading = true
-        }
+        self.isLoading = true
         do {
             let data = try await download()
             withAnimation {

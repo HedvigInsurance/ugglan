@@ -41,7 +41,7 @@ struct ContractTable: View {
         VStack(spacing: .padding8) {
             successView
                 .loadingWithButtonLoading($vm.viewState)
-                .hErrorViewButtonConfig(
+                .hStateViewButtonConfig(
                     .init(
                         actionButton: .init(buttonAction: {
                             store.send(.fetchContracts)
@@ -230,7 +230,7 @@ public class ContractTableViewModel: ObservableObject {
         do {
             self.addonBannerModel = try await service.getAddonBannerModel(source: .appOnlyUpsell)
         } catch {
-
+            self.addonBannerModel = nil
         }
     }
 }

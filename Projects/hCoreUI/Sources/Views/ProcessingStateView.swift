@@ -13,6 +13,25 @@ private struct AnimationTiming {
     let progress: Float
 }
 
+class ProcessingViewModel: ObservableObject {
+    @Published var progress: Float = 0
+}
+
+public struct hProgressViewStyle: ProgressViewStyle {
+    public init() {}
+    public func makeBody(configuration: LinearProgressViewStyle.Configuration) -> some View {
+        return RoundedRectangle(cornerRadius: 2).fill(hSurfaceColor.Translucent.secondary)
+            .overlay {
+                GeometryReader(content: { geometry in
+                    RoundedRectangle(cornerRadius: 2, style: .continuous)
+                        .fill(hFillColor.Opaque.primary)
+                        .frame(width: geometry.size.width * (configuration.fractionCompleted ?? 0))
+                })
+            }
+            .frame(height: 4)
+    }
+}
+
 public struct ProcessingStateView: View {
     @StateObject var vm = ProcessingViewModel()
     @Binding var state: ProcessingState
@@ -25,7 +44,6 @@ public struct ProcessingStateView: View {
     var showSuccessScreen: Bool
 
     @Environment(\.hCustomSuccessView) var customSuccessView
-    @Environment(\.hErrorViewButtonConfig) var errorViewButtonConfig
     @Environment(\.hSuccessBottomAttachedView) var successBottomView
 
     public init(
@@ -102,14 +120,21 @@ public struct ProcessingStateView: View {
         } else {
             SuccessScreen(
                 successViewTitle: successViewTitle ?? "",
-                successViewBody: successViewBody ?? "",
-                buttons: .init(
-                    actionButton: nil,
-                    primaryButton: nil,
-                    ghostButton: .init(buttonAction: successViewButtonAction ?? {})
-                )
+                successViewBody: successViewBody ?? ""
+            )
+            .hStateViewButtonConfig(successButtonsView)
+        }
+    }
+
+    private var successButtonsView: StateViewButtonConfig? {
+        if successBottomView == nil {
+            return .init(
+                actionButton: nil,
+                actionButtonAttachedToBottom: nil,
+                dismissButton: .init(buttonTitle: L10n.generalCloseButton, buttonAction: successViewButtonAction ?? {})
             )
         }
+        return nil
     }
 
     @ViewBuilder
@@ -119,13 +144,13 @@ public struct ProcessingStateView: View {
             description: errorMessage,
             formPosition: .center
         )
-        .hErrorViewButtonConfig(errorViewButtonConfig)
     }
 
     @ViewBuilder
     private var loadingView: some View {
-        hSection {
-            VStack(spacing: 20) {
+        ZStack(alignment: .bottom) {
+            BackgroundView().ignoresSafeArea()
+            VStack {
                 Spacer()
                 hText(loadingViewText)
                 ProgressView(value: vm.progress)
@@ -143,10 +168,8 @@ public struct ProcessingStateView: View {
                     }
                     .progressViewStyle(hProgressViewStyle())
                 Spacer()
-                Spacer()
             }
         }
-        .sectionContainerStyle(.transparent)
     }
 }
 
@@ -154,6 +177,22 @@ public struct ProcessingStateView: View {
     ProcessingStateView(
         loadingViewText: "loading...",
         state: .constant(.error(errorMessage: "error message"))
+    )
+})
+
+#Preview(body: {
+    ProcessingStateView(
+        loadingViewText: "loading...",
+        state: .constant(.loading)
+    )
+})
+
+#Preview(body: {
+    ProcessingStateView(
+        loadingViewText: "loading...",
+        successViewTitle: "Success!",
+        successViewBody: "Your contract was successfully updated.",
+        state: .constant(.success)
     )
 })
 

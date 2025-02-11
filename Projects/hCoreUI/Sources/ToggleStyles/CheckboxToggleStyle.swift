@@ -117,7 +117,6 @@ public struct CheckboxToggleView: View {
             HStack(alignment: .center, spacing: 0) {
                 hText(title, style: getTitleStyle(subtitle: subtitle))
                     .foregroundColor(foregroundColor)
-                    .fixedSize()
                 Spacer()
                 checkbox
             }
@@ -127,6 +126,7 @@ public struct CheckboxToggleView: View {
                     .foregroundColor(hTextColor.Opaque.secondary)
             }
         }
+        .fixedSize(horizontal: false, vertical: true)
     }
 
     private var checkbox: some View {

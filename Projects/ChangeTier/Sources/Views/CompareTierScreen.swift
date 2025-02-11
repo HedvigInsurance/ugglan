@@ -23,7 +23,7 @@ struct CompareTierScreen: View {
 
     var body: some View {
         succesView.loading($vm.viewState)
-            .hErrorViewButtonConfig(
+            .hStateViewButtonConfig(
                 .init(
                     actionButton: .init(
                         buttonAction: {

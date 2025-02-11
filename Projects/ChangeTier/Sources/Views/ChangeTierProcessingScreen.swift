@@ -19,10 +19,10 @@ struct ChangeTierProcessingView: View {
             },
             state: $vm.viewState
         )
-        .hErrorViewButtonConfig(errorButtons)
+        .hStateViewButtonConfig(errorButtons)
     }
 
-    private var errorButtons: ErrorViewButtonConfig {
+    private var errorButtons: StateViewButtonConfig {
         .init(
             actionButton: .init(
                 buttonAction: {
@@ -42,6 +42,7 @@ struct ChangeTierProcessingView: View {
 
 struct ChangeTierProcessingView_Previews: PreviewProvider {
     static var previews: some View {
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         Dependencies.shared.add(module: Module { () -> ChangeTierClient in ChangeTierClientDemo() })
         Localization.Locale.currentLocale.send(.sv_SE)
         return ChangeTierProcessingView(

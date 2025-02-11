@@ -17,7 +17,7 @@ struct LoadingViewWithContent: ViewModifier {
                     description: error,
                     formPosition: .center
                 )
-                .hErrorViewButtonConfig(.init())
+                .hStateViewButtonConfig(.init())
                 .transition(.opacity.animation(.easeInOut(duration: 0.2)))
             } else {
                 content.transition(.opacity.animation(.easeInOut(duration: 0.2)))

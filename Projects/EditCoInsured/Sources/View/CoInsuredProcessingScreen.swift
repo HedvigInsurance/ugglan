@@ -9,7 +9,7 @@ struct CoInsuredProcessingScreen: View {
     @EnvironmentObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @EnvironmentObject private var editCoInsuredViewModel: EditCoInsuredViewModel
     @ObservedObject private var intentViewModel: IntentViewModel
-    @StateObject var router = Router()
+    private let router = Router()
     init(
         showSuccessScreen: Bool,
         intentVM: IntentViewModel
@@ -33,7 +33,7 @@ struct CoInsuredProcessingScreen: View {
                 editCoInsuredNavigation.showProgressScreenWithoutSuccess = false
                 editCoInsuredNavigation.editCoInsuredConfig = nil
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak editCoInsuredViewModel] in
-                    editCoInsuredViewModel?.checkForAlert()
+                    editCoInsuredViewModel?.checkForAlert(excludingContractId: intentViewModel.contractId)
                 }
                 EditCoInsuredViewModel.updatedCoInsuredForContractId.send(
                     intentViewModel.contractId
@@ -45,10 +45,11 @@ struct CoInsuredProcessingScreen: View {
         .hSuccessBottomAttachedView {
             customBottomSuccessView
         }
-        .hErrorViewButtonConfig(errorButtons)
+        .hStateViewButtonConfig(errorButtons)
+        .embededInNavigation(router: router, options: [.navigationBarHidden], tracking: self)
     }
 
-    private var errorButtons: ErrorViewButtonConfig {
+    private var errorButtons: StateViewButtonConfig {
         .init(
             dismissButton: .init(
                 buttonTitle: L10n.generalCancelButton,
@@ -65,7 +66,7 @@ struct CoInsuredProcessingScreen: View {
                 editCoInsuredNavigation.showProgressScreenWithSuccess = false
                 editCoInsuredNavigation.showProgressScreenWithoutSuccess = false
                 editCoInsuredNavigation.editCoInsuredConfig = nil
-                editCoInsuredViewModel.checkForAlert()
+                editCoInsuredViewModel.checkForAlert(excludingContractId: intentViewModel.contractId)
                 EditCoInsuredViewModel.updatedCoInsuredForContractId.send(
                     intentViewModel.contractId
                 )

@@ -413,7 +413,7 @@ public struct ClaimsNavigation: View {
         GenericErrorView(
             formPosition: .center
         )
-        .hErrorViewButtonConfig(
+        .hStateViewButtonConfig(
             .init(
                 actionButton: .init(
                     buttonAction: {

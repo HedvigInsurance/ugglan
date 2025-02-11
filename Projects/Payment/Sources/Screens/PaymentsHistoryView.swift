@@ -14,7 +14,7 @@ public struct PaymentHistoryView: View {
 
     public var body: some View {
         successView.loading($vm.viewState)
-            .hErrorViewButtonConfig(
+            .hStateViewButtonConfig(
                 .init(
                     actionButton: .init(buttonAction: {
                         store.send(.getHistory)

@@ -38,7 +38,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
                 .hCustomSuccessView {
                     successView()
                 }
-                .hErrorViewButtonConfig(
+                .hStateViewButtonConfig(
                     errorButtons
                 )
                 .transition(
@@ -54,7 +54,7 @@ struct SubmitClaimCheckoutTransferringScreen: View {
         }
     }
 
-    private var errorButtons: ErrorViewButtonConfig {
+    private var errorButtons: StateViewButtonConfig {
         .init(
             actionButton: .init(
                 buttonTitle: L10n.generalRetry,

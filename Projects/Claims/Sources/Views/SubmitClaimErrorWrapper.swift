@@ -14,7 +14,7 @@ private struct ClaimErrorTrackerModifier: ViewModifier {
     @EnvironmentObject var router: Router
     func body(content: Content) -> some View {
         content.trackErrorState(for: $processingState)
-            .hErrorViewButtonConfig(
+            .hStateViewButtonConfig(
                 .init(
                     actionButton: .init(
                         buttonAction: {

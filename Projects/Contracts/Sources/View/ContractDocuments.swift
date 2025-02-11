@@ -43,6 +43,7 @@ struct ContractDocumentsView: View {
     private func addonDocumentSection(for addonVariant: AddonVariant) -> some View {
         hSection {
             hPill(text: addonVariant.displayName, color: .blue)
+                .hFieldSize(.medium)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(.top, .padding24)

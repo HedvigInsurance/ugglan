@@ -1,6 +1,7 @@
 import EditCoInsuredShared
 import Foundation
 import SwiftUI
+import hCore
 import hCoreUI
 
 extension View {
@@ -13,7 +14,7 @@ extension View {
 
 struct EditCoInsured: ViewModifier {
     @ObservedObject var vm: EditCoInsuredViewModel
-
+    @State var errorRouter = Router()
     func body(content: Content) -> some View {
         content
             .detent(
@@ -44,6 +45,24 @@ struct EditCoInsured: ViewModifier {
                     missingContractConfig: config
                 )
             }
+            .detent(
+                item: $vm.editCoInsuredModelError,
+                style: [.height],
+                options: .constant([.alwaysOpenOnTop])
+            ) { errorModel in
+                GenericErrorView(description: errorModel.errorMessage, formPosition: .compact)
+                    .hStateViewButtonConfig(
+                        .init(
+                            actionButtonAttachedToBottom: .init(
+                                buttonTitle: L10n.generalCloseButton,
+                                buttonAction: {
+                                    errorRouter.dismiss()
+                                }
+                            )
+                        )
+                    )
+                    .embededInNavigation(router: errorRouter, tracking: InsuredPeopleConfigType.error)
+            }
     }
 
     @ViewBuilder
@@ -70,6 +89,7 @@ struct EditCoInsured: ViewModifier {
 enum InsuredPeopleConfigType {
     case oneItem
     case list
+    case error
 }
 
 extension InsuredPeopleConfigType: TrackingViewNameProtocol {
@@ -79,6 +99,8 @@ extension InsuredPeopleConfigType: TrackingViewNameProtocol {
             return .init(describing: InsuredPeopleNewScreen.self)
         case .list:
             return .init(describing: ItemPickerScreen<InsuredPeopleConfig>.self)
+        case .error:
+            return .init(describing: GenericErrorView.self)
         }
     }
 }
