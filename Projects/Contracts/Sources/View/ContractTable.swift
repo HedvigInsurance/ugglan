@@ -230,7 +230,7 @@ public class ContractTableViewModel: ObservableObject {
         do {
             self.addonBannerModel = try await service.getAddonBannerModel(source: .appOnlyUpsell)
         } catch {
-
+            self.addonBannerModel = nil
         }
     }
 }
