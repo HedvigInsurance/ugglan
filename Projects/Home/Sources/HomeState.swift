@@ -35,6 +35,19 @@ public struct HomeState: StateProtocol {
         return importantMessages.first(where: { $0.id == id })
     }
 
+    func getAllFAQ() -> [FAQModel]? {
+        helpCenterFAQModel?.topics
+            .reduce(
+                [FAQModel](),
+                { results, topic in
+                    var newQuestions: [FAQModel] = results
+                    newQuestions.append(contentsOf: topic.commonQuestions)
+                    newQuestions.append(contentsOf: topic.allQuestions)
+                    return newQuestions
+                }
+            )
+    }
+
     public init() {}
 }
 

@@ -181,11 +181,13 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
             .map({ $0.helpCenterFAQModel })
             .receive(on: RunLoop.main)
             .removeDuplicates()
-            .sink { [weak self] helpCenterFaqModel in
-                self?.setHelpCenter(with: helpCenterFaqModel)
+            .sink { [weak self, weak store] helpCenterFaqModel in
+                self?.helpCenterModel = helpCenterFaqModel
+                self?.allQuestions = store?.state.getAllFAQ() ?? []
             }
             .store(in: &cancellables)
-        setHelpCenter(with: store.state.helpCenterFAQModel)
+        helpCenterModel = store.state.helpCenterFAQModel
+        allQuestions = store.state.getAllFAQ() ?? []
         store.send(.fetchFAQ)
     }
 
@@ -224,20 +226,6 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
             }
         }
         return results
-    }
-    private func setHelpCenter(with model: HelpCenterFAQModel?) {
-        if let model {
-            self.helpCenterModel = model
-            allQuestions = model.topics.reduce(
-                [FAQModel](),
-                { results, topic in
-                    var newQuestions: [FAQModel] = results
-                    newQuestions.append(contentsOf: topic.commonQuestions)
-                    newQuestions.append(contentsOf: topic.allQuestions)
-                    return newQuestions
-                }
-            )
-        }
     }
 }
 
