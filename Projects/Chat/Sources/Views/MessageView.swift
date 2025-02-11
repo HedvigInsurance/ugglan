@@ -115,7 +115,13 @@ struct MessageView: View {
                                     ActionView(action: action, message: message, vm: vm, showAsFailed: false)
                                         .padding(.trailing, .padding32)
                                 } else {
-                                    ActionView(action: action, message: message, vm: vm, showAsFailed: false)
+                                    ActionView(
+                                        action: action,
+                                        message: message,
+                                        vm: vm,
+                                        showAsFailed: false,
+                                        withButton: suggestions.escalationReference != nil
+                                    )
                                 }
                                 HStack(alignment: .top, spacing: 0) {
                                     ActionView(
@@ -249,6 +255,7 @@ struct ActionView: View {
     let automaticSuggestion: AutomaticSuggestions?
     let message: Message
     let showAsFailed: Bool
+    let withButton: Bool
     @ObservedObject var vm: ChatScreenViewModel
 
     init(
@@ -256,13 +263,15 @@ struct ActionView: View {
         automaticSuggestion: AutomaticSuggestions? = nil,
         message: Message,
         vm: ChatScreenViewModel,
-        showAsFailed: Bool? = true
+        showAsFailed: Bool? = true,
+        withButton: Bool? = true
     ) {
         self.action = action
         self.automaticSuggestion = automaticSuggestion
         self.message = message
         self.vm = vm
         self.showAsFailed = showAsFailed ?? true
+        self.withButton = withButton ?? true
     }
 
     var body: some View {
@@ -272,17 +281,20 @@ struct ActionView: View {
                     .foregroundColor(hTextColor.Opaque.primary)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            hButton.MediumButton(type: .secondary) {
-                if let automaticSuggestion {
-                    Task {
-                        await vm.esacateMessage(message: message, automaticSuggestion: automaticSuggestion)
+            if withButton {
+                hButton.MediumButton(type: .secondary) {
+                    if let automaticSuggestion {
+                        Task {
+                            await vm.escalateMessage(message: message, automaticSuggestion: automaticSuggestion)
+                        }
+                    } else {
+                        NotificationCenter.default.post(name: .openDeepLink, object: action.url)
                     }
+                } content: {
+                    hText(action.buttonTitle)
                 }
-                NotificationCenter.default.post(name: .openDeepLink, object: action.url)
-            } content: {
-                hText(action.buttonTitle)
+                .hButtonTakeFullWidth(true)
             }
-            .hButtonTakeFullWidth(true)
         }
         .environment(\.colorScheme, .light)
         .padding(.horizontal, .padding16)

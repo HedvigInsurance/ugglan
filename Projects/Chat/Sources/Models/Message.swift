@@ -69,9 +69,9 @@ public struct Message: Codable, Identifiable, Hashable, Sendable {
         self.status = status
     }
 
-    func asFailed(with error: String, sender: MessageSender?) -> Message {
+    func asFailed(with error: String, message: Message?, sender: MessageSender?) -> Message {
         return Message(
-            localId: UUID().uuidString,
+            localId: message?.id ?? UUID().uuidString,
             type: type,
             date: sentAt,
             status: .failed(error: error),
