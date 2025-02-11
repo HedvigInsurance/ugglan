@@ -9,7 +9,7 @@ public struct ConfirmChangeAddonScreen: View {
         ConfirmChangesScreen(
             title: L10n.addonFlowConfirmationTitle,
             subTitle: L10n.addonFlowConfirmationDescription(
-                addonNavigationVm.changeAddonVm!.addonOffer?.activationDate?
+                addonNavigationVm.changeAddonVm?.addonOffer?.activationDate?
                     .displayDateDDMMMYYYYFormat ?? ""
             ),
             buttons: .init(
@@ -19,7 +19,7 @@ public struct ConfirmChangeAddonScreen: View {
                         addonNavigationVm.isAddonProcessingPresented = true
                         addonNavigationVm.isConfirmAddonPresented = false
                         Task {
-                            await addonNavigationVm.changeAddonVm!.submitAddons()
+                            await addonNavigationVm.changeAddonVm?.submitAddons()
                         }
                     }
                 ),
