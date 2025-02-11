@@ -1,0 +1,25 @@
+query MemberFAQ {
+  currentMember {
+    memberFAQ {
+        commonFAQ {
+            ...FAQFragment
+        }
+        topics {
+            id
+            title
+            commonFAQ {
+                ...FAQFragment
+            }
+            otherFAQ {
+                ...FAQFragment
+            }
+        }
+    }
+  }
+}
+
+fragment FAQFragment on MemberFAQItem {
+    id
+    question
+    answer
+}

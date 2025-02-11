@@ -20,6 +20,7 @@ public class HelpCenterNavigationViewModel: ObservableObject {
         existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
     )
     let terminateInsuranceVm = TerminateInsuranceViewModel()
+    public let router = Router()
 
     struct QuickActions {
         var editContractActions: EditInsuranceActionsWrapper?
@@ -64,7 +65,6 @@ public struct HelpCenterNavigation<Content: View>: View {
     @EnvironmentObject private var homeVm: HomeNavigationViewModel
     @PresentableStore private var store: HomeStore
     @ViewBuilder var redirect: (_ type: HelpCenterRedirectType) -> Content
-    @StateObject var router = Router()
 
     public init(
         helpCenterVm: HelpCenterNavigationViewModel,
@@ -75,7 +75,7 @@ public struct HelpCenterNavigation<Content: View>: View {
     }
 
     public var body: some View {
-        RouterHost(router: router, tracking: HelpCenterDetentRouterType.startView) {
+        RouterHost(router: helpCenterVm.router, tracking: HelpCenterDetentRouterType.startView) {
             HelpCenterStartView(
                 onQuickAction: { quickAction in
                     handle(quickAction: quickAction)
@@ -83,11 +83,11 @@ public struct HelpCenterNavigation<Content: View>: View {
             )
             .navigationTitle(L10n.hcTitle)
             .withDismissButton()
-            .routerDestination(for: Question.self) { question in
-                HelpCenterQuestionView(question: question, router: router)
+            .routerDestination(for: FAQModel.self) { question in
+                HelpCenterQuestionView(question: question, router: helpCenterVm.router)
             }
-            .routerDestination(for: CommonTopic.self) { topic in
-                HelpCenterTopicView(commonTopic: topic, router: router)
+            .routerDestination(for: FaqTopic.self) { topic in
+                HelpCenterTopicView(topic: topic, router: helpCenterVm.router)
             }
             .routerDestination(for: HelpCenterNavigationRouterType.self) { _ in
                 InboxView()
