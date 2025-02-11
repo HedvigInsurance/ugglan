@@ -43,29 +43,14 @@ public enum HomeAction: ActionProtocol {
     case setImportantMessages(messages: [ImportantMessage])
     case setMemberContractState(state: MemberContractState, contracts: [HomeContract])
     case setFutureStatus(status: FutureStatus)
-    case fetchUpcomingRenewalContracts
     case openDocument(contractURL: URL)
     case fetchQuickActions
     case setQuickActions(quickActions: [QuickAction])
-    case startClaim
-    case openFreeTextChat
-    case openHelpCenter
-    case showNewOffer
-    case openFirstVet(partners: [FirstVetPartner])
-    case openCoInsured(contractIds: [InsuredPeopleConfig])
     case fetchChatNotifications
     case setChatNotification(hasNew: Bool)
-    case setChatNotificationTimeStamp(sentAt: Date)
     case setChatNotificationConversationTimeStamp(date: Date)
     case setHasSentOrRecievedAtLeastOneMessage(hasSent: Bool)
-
-    case dismissOtherServices
     case hideImportantMessage(id: String)
-
-    case openHelpCenterTopicView(commonTopic: CommonTopic)
-    case openHelpCenterQuestionView(question: Question)
-    case goToQuickAction(QuickAction)
-    case dismissHelpCenter
 }
 
 public enum FutureStatus: Codable, Equatable, Sendable {
@@ -165,11 +150,6 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         case let .setChatNotification(hasNew):
             newState.showChatNotification = hasNew
             print("STORE TEST SEND: SET TOOLBAR TYPES setChatNotification")
-            setToolbarTypes(&newState)
-        case let .setChatNotificationTimeStamp(sentAt):
-            newState.latestChatTimeStamp = sentAt
-            newState.showChatNotification = false
-            print("STORE TEST SEND: SET TOOLBAR TYPES setChatNotificationTimeStamp")
             setToolbarTypes(&newState)
         case let .setHasSentOrRecievedAtLeastOneMessage(hasSent):
             newState.hasSentOrRecievedAtLeastOneMessage = hasSent

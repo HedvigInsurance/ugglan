@@ -6,6 +6,7 @@ import hCoreUI
 
 public struct FirstVetView: View {
     @PresentableStore var store: HomeStore
+    @EnvironmentObject var router: Router
     private let partners: [FirstVetPartner]
 
     public init(
@@ -48,7 +49,7 @@ public struct FirstVetView: View {
         }
         .hFormAlwaysAttachToBottom {
             hButton.LargeButton(type: .ghost) {
-                store.send(.dismissOtherServices)
+                router.dismiss()
             } content: {
                 hText(L10n.generalCloseButton)
             }
