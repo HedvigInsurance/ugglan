@@ -14,6 +14,7 @@ public struct HomeState: StateProtocol {
     public var contracts: [HomeContract] = []
     public var importantMessages: [ImportantMessage] = []
     public var quickActions: [QuickAction] = []
+    public var helpCenterFAQModel: HelpCenterFAQModel?
     public var toolbarOptionTypes: [ToolbarOptionType] = []
     @Transient(defaultValue: []) var hidenImportantMessages = [String]()
     public var upcomingRenewalContracts: [HomeContract] {
@@ -46,6 +47,8 @@ public enum HomeAction: ActionProtocol {
     case openDocument(contractURL: URL)
     case fetchQuickActions
     case setQuickActions(quickActions: [QuickAction])
+    case fetchFAQ
+    case setFAQ(faq: HelpCenterFAQModel)
     case fetchChatNotifications
     case setChatNotification(hasNew: Bool)
     case setChatNotificationConversationTimeStamp(date: Date)
@@ -62,6 +65,7 @@ public enum FutureStatus: Codable, Equatable, Sendable {
 
 public enum HomeLoadingType: LoadingProtocol {
     case fetchQuickActions
+    case fetchFAQ
 }
 
 public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadingType> {
@@ -106,6 +110,13 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             } catch {
                 self.setError(L10n.General.errorBody, for: .fetchQuickActions)
             }
+        case .fetchFAQ:
+            do {
+                let faq = try await self.homeService.getFAQ()
+                send(.setFAQ(faq: faq))
+            } catch {
+                self.setError(L10n.General.errorBody, for: .fetchFAQ)
+            }
         case .fetchChatNotifications:
             print("STORE TEST SEND: fetchChatNotifications 3")
             do {
@@ -145,6 +156,11 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             newState.quickActions = quickActions
             print("STORE TEST SEND: SET TOOLBAR TYPES setQuickActions")
             setToolbarTypes(&newState)
+        case .fetchFAQ:
+            setLoading(for: .fetchFAQ)
+        case let .setFAQ(faq):
+            removeLoading(for: .fetchFAQ)
+            newState.helpCenterFAQModel = faq
         case let .hideImportantMessage(id):
             newState.hidenImportantMessages.append(id)
         case let .setChatNotification(hasNew):

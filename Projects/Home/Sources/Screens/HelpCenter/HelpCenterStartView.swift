@@ -155,7 +155,7 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
     @Published var searchResultsQuickActions: [QuickAction] = []
     @Published var searchInProgress = false
     private var allQuestions: [FAQModel] = []
-    private var quickActionCancellable: AnyCancellable?
+    private var cancellables: Set<AnyCancellable> = []
     lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: nil)
         searchController.delegate = self
@@ -168,17 +168,25 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
     override init() {
         super.init()
         let store: HomeStore = globalPresentableStoreContainer.get()
-        quickActionCancellable = store.stateSignal
+        store.stateSignal
             .map({ $0.quickActions })
             .receive(on: RunLoop.main)
             .removeDuplicates()
             .sink { [weak self] quickActions in
                 self?.quickActions = quickActions
             }
+            .store(in: &cancellables)
         quickActions = store.state.quickActions
-        Task {
-            await getFAQ()
-        }
+        store.stateSignal
+            .map({ $0.helpCenterFAQModel })
+            .receive(on: RunLoop.main)
+            .removeDuplicates()
+            .sink { [weak self] helpCenterFaqModel in
+                self?.setHelpCenter(with: helpCenterFaqModel)
+            }
+            .store(in: &cancellables)
+        setHelpCenter(with: store.state.helpCenterFAQModel)
+        store.send(.fetchFAQ)
     }
 
     func startSearch(for inputText: String) {
@@ -217,19 +225,19 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
         }
         return results
     }
-    private func getFAQ() async {
-        let helpCenterModel = try! await homeClient.getFAQ()
-        self.helpCenterModel = helpCenterModel
-        allQuestions = helpCenterModel.topics.reduce(
-            [FAQModel](),
-            { results, topic in
-                var newQuestions: [FAQModel] = results
-                newQuestions.append(contentsOf: topic.commonQuestions)
-                newQuestions.append(contentsOf: topic.allQuestions)
-                return newQuestions
-            }
-        )
-
+    private func setHelpCenter(with model: HelpCenterFAQModel?) {
+        if let model {
+            self.helpCenterModel = model
+            allQuestions = model.topics.reduce(
+                [FAQModel](),
+                { results, topic in
+                    var newQuestions: [FAQModel] = results
+                    newQuestions.append(contentsOf: topic.commonQuestions)
+                    newQuestions.append(contentsOf: topic.allQuestions)
+                    return newQuestions
+                }
+            )
+        }
     }
 }
 
