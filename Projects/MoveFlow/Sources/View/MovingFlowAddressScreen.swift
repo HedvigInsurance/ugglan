@@ -57,6 +57,7 @@ struct MovingFlowAddressScreen: View {
                         isStudentField()
                     }
                 }
+                .hFieldSize(.medium)
                 .disabled(vm.viewState == .loading)
                 if let days = movingFlowNavigationVm.movingFlowVm?.oldAddressCoverageDurationDays {
                     hSection {
@@ -169,7 +170,6 @@ struct MovingFlowAddressScreen: View {
             title: L10n.changeAddressStudentLabel,
             isOn: $vm.isStudent.animation(.default)
         )
-        .hFieldSize(.large)
         .onTapGesture {
             withAnimation {
                 vm.isStudent.toggle()
