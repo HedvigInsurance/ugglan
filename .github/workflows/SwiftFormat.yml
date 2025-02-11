@@ -15,7 +15,7 @@ jobs:
         with:
           swift-version: '5'
       - name: Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: build
           key: ${{ runner.os }}
