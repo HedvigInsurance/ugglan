@@ -61,7 +61,7 @@ enum HelpViewSource {
 }
 
 struct QuestionsItems: View {
-    let questions: [Question]
+    let questions: [FAQModel]
     let questionType: QuestionType
     let source: HelpViewSource
     @EnvironmentObject var router: Router

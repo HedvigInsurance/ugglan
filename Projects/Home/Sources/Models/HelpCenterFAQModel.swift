@@ -3,26 +3,26 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct HelpCenterModel: Codable, Equatable, Hashable, Sendable {
-    let commonTopics: [CommonTopic]
-    let commonQuestions: [Question]
+public struct HelpCenterFAQModel: Codable, Equatable, Hashable, Sendable {
+    let topics: [FaqTopic]
+    let commonQuestions: [FAQModel]
 }
 
-public struct CommonTopic: Codable, Equatable, Hashable, Sendable {
+public struct FaqTopic: Codable, Equatable, Hashable, Sendable {
     let title: String
-    let commonQuestions: [Question]
-    let allQuestions: [Question]
+    let commonQuestions: [FAQModel]
+    let allQuestions: [FAQModel]
 }
 
-public struct Question: Codable, Equatable, Hashable, Sendable {
+public struct FAQModel: Codable, Equatable, Hashable, Sendable {
     let question: String
     let answer: String
-    let relatedQuestions: [Question]
+    let relatedQuestions: [FAQModel]
 
     public init(
         question: String,
         answer: String,
-        relatedQuestions: [Question] = []
+        relatedQuestions: [FAQModel] = []
     ) {
         var answer = answer
         if Environment.staging == Environment.current {
@@ -46,13 +46,13 @@ public struct Question: Codable, Equatable, Hashable, Sendable {
     }
 }
 
-extension Question: TrackingViewNameProtocol {
+extension FAQModel: TrackingViewNameProtocol {
     public var nameForTracking: String {
         return .init(describing: HelpCenterQuestionView.self)
     }
 }
 
-extension CommonTopic: TrackingViewNameProtocol {
+extension FaqTopic: TrackingViewNameProtocol {
     public var nameForTracking: String {
         return .init(describing: HelpCenterTopicView.self)
     }

@@ -83,11 +83,11 @@ public struct HelpCenterNavigation<Content: View>: View {
             )
             .navigationTitle(L10n.hcTitle)
             .withDismissButton()
-            .routerDestination(for: Question.self) { question in
+            .routerDestination(for: FAQModel.self) { question in
                 HelpCenterQuestionView(question: question, router: router)
             }
-            .routerDestination(for: CommonTopic.self) { topic in
-                HelpCenterTopicView(commonTopic: topic, router: router)
+            .routerDestination(for: FaqTopic.self) { topic in
+                HelpCenterTopicView(topic: topic, router: router)
             }
             .routerDestination(for: HelpCenterNavigationRouterType.self) { _ in
                 InboxView()

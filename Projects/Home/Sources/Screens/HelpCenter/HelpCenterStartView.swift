@@ -54,7 +54,7 @@ public struct HelpCenterStartView: View {
                             }
                             .accessibilityElement(children: .combine)
                             displayQuickActions(from: vm.quickActions)
-                            displayCommonTopics()
+                            displayTopics()
                             if let helpCenterModel = vm.helpCenterModel {
                                 QuestionsItems(
                                     questions: helpCenterModel.commonQuestions,
@@ -112,20 +112,18 @@ public struct HelpCenterStartView: View {
     }
 
     @ViewBuilder
-    private func displayCommonTopics() -> some View {
+    private func displayTopics() -> some View {
         if let helpCenterModel = vm.helpCenterModel {
             VStack(alignment: .leading, spacing: .padding8) {
                 HelpCenterPill(title: L10n.hcCommonTopicsTitle, color: .yellow)
-
-                let commonTopics = helpCenterModel.commonTopics
-                commonTopicsItems(commonTopics: commonTopics)
+                topicsItems(topics: helpCenterModel.topics)
             }
         }
     }
 
-    private func commonTopicsItems(commonTopics: [CommonTopic]) -> some View {
+    private func topicsItems(topics: [FaqTopic]) -> some View {
         VStack(spacing: .padding4) {
-            ForEach(commonTopics, id: \.self) { item in
+            ForEach(topics, id: \.self) { item in
                 hSection {
                     hRow {
                         hText(item.title)
@@ -146,17 +144,17 @@ public struct HelpCenterStartView: View {
 @MainActor
 class HelpCenterStartViewModel: NSObject, ObservableObject {
     @PresentableStore var store: HomeStore
-    @Published var helpCenterModel: HelpCenterModel?
+    @Published var helpCenterModel: HelpCenterFAQModel?
     var didSetInitialSearchAppearance = false
     @Published var quickActions: [QuickAction] = []
     @Inject var homeClient: HomeClient
 
     //search part
     @Published var focusState: Bool? = false
-    @Published var searchResultsQuestions: [Question] = []
+    @Published var searchResultsQuestions: [FAQModel] = []
     @Published var searchResultsQuickActions: [QuickAction] = []
     @Published var searchInProgress = false
-    private var allQuestions: [Question] = []
+    private var allQuestions: [FAQModel] = []
     private var quickActionCancellable: AnyCancellable?
     lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: nil)
@@ -197,8 +195,8 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
         }
     }
 
-    private func searchInQuestionsByQuery(query: String) -> [Question] {
-        var results: [Question] = [Question]()
+    private func searchInQuestionsByQuery(query: String) -> [FAQModel] {
+        var results: [FAQModel] = [FAQModel]()
         allQuestions.forEach { question in
             if question.answer.lowercased().contains(query) || question.question.lowercased().contains(query) {
                 results.append(question)
@@ -222,10 +220,10 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
     private func getFAQ() async {
         let helpCenterModel = try! await homeClient.getFAQ()
         self.helpCenterModel = helpCenterModel
-        allQuestions = helpCenterModel.commonTopics.reduce(
-            [Question](),
+        allQuestions = helpCenterModel.topics.reduce(
+            [FAQModel](),
             { results, topic in
-                var newQuestions: [Question] = results
+                var newQuestions: [FAQModel] = results
                 newQuestions.append(contentsOf: topic.commonQuestions)
                 newQuestions.append(contentsOf: topic.allQuestions)
                 return newQuestions

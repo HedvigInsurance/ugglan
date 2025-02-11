@@ -4,14 +4,14 @@ import hCore
 import hCoreUI
 
 struct HelpCenterTopicView: View {
-    private var commonTopic: CommonTopic
+    private var topic: FaqTopic
     @PresentableStore var store: HomeStore
     @ObservedObject var router: Router
     public init(
-        commonTopic: CommonTopic,
+        topic: FaqTopic,
         router: Router
     ) {
-        self.commonTopic = commonTopic
+        self.topic = topic
         self.router = router
     }
 
@@ -21,12 +21,12 @@ struct HelpCenterTopicView: View {
                 hSection {
                     VStack(spacing: 40) {
                         QuestionsItems(
-                            questions: commonTopic.commonQuestions,
+                            questions: topic.commonQuestions,
                             questionType: .commonQuestions,
                             source: .topicView
                         )
                         QuestionsItems(
-                            questions: commonTopic.allQuestions,
+                            questions: topic.allQuestions,
                             questionType: .allQuestions,
                             source: .topicView
                         )
@@ -42,7 +42,7 @@ struct HelpCenterTopicView: View {
 }
 
 #Preview {
-    let questions: [Question] = [
+    let questions: [FAQModel] = [
         .init(
             question: "When do you charge for my insurance?",
             answer:
@@ -72,7 +72,7 @@ struct HelpCenterTopicView: View {
     ]
 
     return HelpCenterTopicView(
-        commonTopic: .init(
+        topic: .init(
             title: "Payments",
             commonQuestions: questions,
             allQuestions: questions

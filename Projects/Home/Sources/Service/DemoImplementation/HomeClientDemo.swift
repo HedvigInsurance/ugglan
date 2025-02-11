@@ -27,8 +27,8 @@ public class HomeClientDemo: HomeClient {
     public func getNumberOfClaims() async throws -> Int {
         return 0
     }
-    public func getFAQ() async throws -> HelpCenterModel {
-        return .init(commonTopics: [], commonQuestions: [])
+    public func getFAQ() async throws -> HelpCenterFAQModel {
+        return .init(topics: [], commonQuestions: [])
     }
 
 }
