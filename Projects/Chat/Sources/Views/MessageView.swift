@@ -282,7 +282,6 @@ struct ActionView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             if withButton {
-
                 if let automaticSuggestion {
                     hButton.SmallButton(type: .ghost) {
                         Task {

@@ -327,6 +327,8 @@ public class ChatScreenViewModel: ObservableObject {
             ) {
                 self.messages.removeAll(where: { $0.id == message.id })
                 self.messages.append(data)
+                let memberAutoResponseMessage: Message = .init(type: .text(text: "I want to talk to a human"))
+                await self.send(message: memberAutoResponseMessage)
             }
         } catch let ex {
             let newMessage = Message(
