@@ -149,7 +149,7 @@ extension Message {
             switch sender {
             case .member: return L10n.chatSenderMember
             case .hedvig: return L10n.chatSenderHedvig
-            case .automatic: return "automatic"
+            case .automatic: return L10n.chatSenderAutomation
             }
         }()
         let message: String = {
@@ -172,7 +172,7 @@ extension Message {
             case .action:
                 return L10n.chatSentALink
             case let .automaticSuggestions(suggestions):
-                return "automatic"
+                return suggestions.suggestions.last??.text ?? L10n.chatSentAMessage
             }
         }()
         return "\(senderText): \(message)"
