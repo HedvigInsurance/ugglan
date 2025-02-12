@@ -38,7 +38,7 @@ struct AddonSelectSubOptionScreen: View {
                                         text: L10n.addonFlowPriceLabel(
                                             addonOffer
                                                 .getTotalPrice(selectedQuote: quote)?
-                                                .formattedAmountWithoutSymbol ?? ""
+                                                .formattedAmount ?? ""
                                         ),
                                         color: .grey,
                                         colorLevel: .one

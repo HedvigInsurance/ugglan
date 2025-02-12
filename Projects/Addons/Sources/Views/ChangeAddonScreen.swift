@@ -109,7 +109,7 @@ struct ChangeAddonScreen: View {
                 hPill(
                     text: L10n.addonFlowPriceLabel(
                         changeAddonVm.addonOffer?.getTotalPrice(selectedQuote: changeAddonVm.selectedQuote)?
-                            .formattedAmountWithoutSymbol ?? ""
+                            .formattedAmount ?? ""
                     ),
                     color: .grey,
                     colorLevel: .one
