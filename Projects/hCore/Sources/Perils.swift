@@ -27,12 +27,21 @@ public struct Perils: Codable, Equatable, Hashable, Sendable {
     public init(
         fragment: OctopusGraphQL.AddonVariantFragment.AddonPeril
     ) {
-        id = fragment.title
-        title = fragment.title
-        description = fragment.description ?? ""
-        covered = [fragment.coverageText].compactMap({ $0 })
-        color = fragment.colorCode
-        isDisabled = false
+        var description = fragment.description ?? ""
+        let coverageTexts = [fragment.coverageText].compactMap({ $0 })
+        if !coverageTexts.isEmpty {
+            description += "\r\n"
+        }
+        [fragment.coverageText].compactMap({ $0 })
+            .forEach { coverageText in
+                description += "\r\n \(coverageText)"
+            }
+        self.id = fragment.title
+        self.title = fragment.title
+        self.description = description
+        self.covered = []
+        self.color = fragment.colorCode
+        self.isDisabled = false
     }
 
     public init(
