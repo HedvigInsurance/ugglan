@@ -116,8 +116,7 @@ struct MessageView: View {
                                         action: action,
                                         message: message,
                                         vm: vm,
-                                        showAsFailed: false,
-                                        withButton: true
+                                        showAsFailed: false
                                     )
                                     .padding(.trailing, .padding32)
                                 } else {
@@ -128,28 +127,29 @@ struct MessageView: View {
                                         showAsFailed: false
                                     )
                                 }
-                                HStack(alignment: .top, spacing: 0) {
-                                    ActionView(
-                                        action: .init(
-                                            url: nil,
-                                            text:
-                                                L10n.Chatbot.TalkToHuman.text,
-                                            buttonTitle: L10n.Chatbot.TalkToHuman.buttonTitle
-                                        ),
-                                        automaticSuggestion: suggestions,
-                                        message: message,
-                                        vm: vm,
-                                        withButton: suggestions.escalationReference != nil
-                                    )
-                                    if case .failed = message.status {
-                                        hCoreUIAssets.infoFilled.view
-                                            .resizable()
-                                            .frame(width: 24, height: 24)
-                                            .foregroundColor(hSignalColor.Red.element)
-                                            .padding(.leading, .padding8)
-                                            .onTapGesture {
-                                                showRetryOptions = true
-                                            }
+                                if suggestions.escalationReference != nil {
+                                    HStack(alignment: .top, spacing: 0) {
+                                        ActionView(
+                                            action: .init(
+                                                url: nil,
+                                                text:
+                                                    L10n.Chatbot.TalkToHuman.text,
+                                                buttonTitle: L10n.Chatbot.TalkToHuman.buttonTitle
+                                            ),
+                                            automaticSuggestion: suggestions,
+                                            message: message,
+                                            vm: vm
+                                        )
+                                        if case .failed = message.status {
+                                            hCoreUIAssets.infoFilled.view
+                                                .resizable()
+                                                .frame(width: 24, height: 24)
+                                                .foregroundColor(hSignalColor.Red.element)
+                                                .padding(.leading, .padding8)
+                                                .onTapGesture {
+                                                    showRetryOptions = true
+                                                }
+                                        }
                                     }
                                 }
                             }
@@ -261,7 +261,6 @@ struct ActionView: View {
     let automaticSuggestion: AutomaticSuggestions?
     let message: Message
     let showAsFailed: Bool
-    let withButton: Bool
     @ObservedObject var vm: ChatScreenViewModel
 
     init(
@@ -269,15 +268,13 @@ struct ActionView: View {
         automaticSuggestion: AutomaticSuggestions? = nil,
         message: Message,
         vm: ChatScreenViewModel,
-        showAsFailed: Bool? = true,
-        withButton: Bool? = true
+        showAsFailed: Bool? = true
     ) {
         self.action = action
         self.automaticSuggestion = automaticSuggestion
         self.message = message
         self.vm = vm
         self.showAsFailed = showAsFailed ?? true
-        self.withButton = withButton ?? true
     }
 
     var body: some View {
@@ -288,24 +285,22 @@ struct ActionView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            if withButton {
-                if let automaticSuggestion {
-                    hButton.SmallButton(type: .ghost) {
-                        Task {
-                            await vm.escalateMessage(message: message, automaticSuggestion: automaticSuggestion)
-                        }
-                    } content: {
-                        hText(action.buttonTitle)
+            if let automaticSuggestion {
+                hButton.SmallButton(type: .ghost) {
+                    Task {
+                        await vm.escalateMessage(message: message, automaticSuggestion: automaticSuggestion)
                     }
-                    .hButtonTakeFullWidth(true)
-                } else {
-                    hButton.MediumButton(type: .secondary) {
-                        NotificationCenter.default.post(name: .openDeepLink, object: action.url)
-                    } content: {
-                        hText(action.buttonTitle)
-                    }
-                    .hButtonTakeFullWidth(true)
+                } content: {
+                    hText(action.buttonTitle)
                 }
+                .hButtonTakeFullWidth(true)
+            } else {
+                hButton.MediumButton(type: .secondary) {
+                    NotificationCenter.default.post(name: .openDeepLink, object: action.url)
+                } content: {
+                    hText(action.buttonTitle)
+                }
+                .hButtonTakeFullWidth(true)
             }
         }
         .environment(\.colorScheme, .light)
