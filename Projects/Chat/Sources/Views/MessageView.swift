@@ -112,15 +112,20 @@ struct MessageView: View {
                         if let action {
                             VStack(spacing: .padding8) {
                                 if case .failed = message.status {
-                                    ActionView(action: action, message: message, vm: vm, showAsFailed: false)
-                                        .padding(.trailing, .padding32)
-                                } else {
                                     ActionView(
                                         action: action,
                                         message: message,
                                         vm: vm,
                                         showAsFailed: false,
-                                        withButton: suggestions.escalationReference != nil
+                                        withButton: true
+                                    )
+                                    .padding(.trailing, .padding32)
+                                } else {
+                                    ActionView(
+                                        action: action,
+                                        message: message,
+                                        vm: vm,
+                                        showAsFailed: false
                                     )
                                 }
                                 HStack(alignment: .top, spacing: 0) {
@@ -128,12 +133,13 @@ struct MessageView: View {
                                         action: .init(
                                             url: nil,
                                             text:
-                                                "If it’s not working or if you have any other questions, please let us know and one of our specialists will help out shortly!",
-                                            buttonTitle: "Talk to a human"
+                                                L10n.Chatbot.TalkToHuman.text,
+                                            buttonTitle: L10n.Chatbot.TalkToHuman.buttonTitle
                                         ),
                                         automaticSuggestion: suggestions,
                                         message: message,
-                                        vm: vm
+                                        vm: vm,
+                                        withButton: suggestions.escalationReference != nil
                                     )
                                     if case .failed = message.status {
                                         hCoreUIAssets.infoFilled.view
@@ -279,6 +285,7 @@ struct ActionView: View {
             if let text = action.text {
                 hText(text, style: .body1)
                     .foregroundColor(hTextColor.Opaque.primary)
+                    .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             if withButton {
