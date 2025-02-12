@@ -33,6 +33,7 @@ struct MovingFlowHouseScreen: View {
                     isSubleted
                     extraBuildingTypes
                 }
+                .hFieldSize(.medium)
                 .disabled(houseInformationInputvm.viewState == .loading)
                 if let days = movingFlowNavigationVm.movingFlowVm?.oldAddressCoverageDurationDays {
                     hSection {
@@ -181,7 +182,6 @@ struct MovingFlowHouseScreen: View {
             title: L10n.changeAddressSubletLabel,
             isOn: $houseInformationInputvm.isSubleted.animation(.default)
         )
-        .hFieldSize(.large)
         .onTapGesture {
             withAnimation {
                 houseInformationInputvm.type = nil

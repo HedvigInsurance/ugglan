@@ -14,6 +14,7 @@ public struct HomeState: StateProtocol {
     public var contracts: [HomeContract] = []
     public var importantMessages: [ImportantMessage] = []
     public var quickActions: [QuickAction] = []
+    public var helpCenterFAQModel: HelpCenterFAQModel?
     public var toolbarOptionTypes: [ToolbarOptionType] = []
     @Transient(defaultValue: []) var hidenImportantMessages = [String]()
     public var upcomingRenewalContracts: [HomeContract] {
@@ -34,6 +35,19 @@ public struct HomeState: StateProtocol {
         return importantMessages.first(where: { $0.id == id })
     }
 
+    public func getAllFAQ() -> [FAQModel]? {
+        helpCenterFAQModel?.topics
+            .reduce(
+                [FAQModel](),
+                { results, topic in
+                    var newQuestions: [FAQModel] = results
+                    newQuestions.append(contentsOf: topic.commonQuestions)
+                    newQuestions.append(contentsOf: topic.allQuestions)
+                    return newQuestions
+                }
+            )
+    }
+
     public init() {}
 }
 
@@ -43,29 +57,16 @@ public enum HomeAction: ActionProtocol {
     case setImportantMessages(messages: [ImportantMessage])
     case setMemberContractState(state: MemberContractState, contracts: [HomeContract])
     case setFutureStatus(status: FutureStatus)
-    case fetchUpcomingRenewalContracts
     case openDocument(contractURL: URL)
     case fetchQuickActions
     case setQuickActions(quickActions: [QuickAction])
-    case startClaim
-    case openFreeTextChat
-    case openHelpCenter
-    case showNewOffer
-    case openFirstVet(partners: [FirstVetPartner])
-    case openCoInsured(contractIds: [InsuredPeopleConfig])
+    case fetchFAQ
+    case setFAQ(faq: HelpCenterFAQModel)
     case fetchChatNotifications
     case setChatNotification(hasNew: Bool)
-    case setChatNotificationTimeStamp(sentAt: Date)
     case setChatNotificationConversationTimeStamp(date: Date)
     case setHasSentOrRecievedAtLeastOneMessage(hasSent: Bool)
-
-    case dismissOtherServices
     case hideImportantMessage(id: String)
-
-    case openHelpCenterTopicView(commonTopic: CommonTopic)
-    case openHelpCenterQuestionView(question: Question)
-    case goToQuickAction(QuickAction)
-    case dismissHelpCenter
 }
 
 public enum FutureStatus: Codable, Equatable, Sendable {
@@ -77,6 +78,7 @@ public enum FutureStatus: Codable, Equatable, Sendable {
 
 public enum HomeLoadingType: LoadingProtocol {
     case fetchQuickActions
+    case fetchFAQ
 }
 
 public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadingType> {
@@ -88,19 +90,15 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
     ) async {
         switch action {
         case .fetchImportantMessages:
-            print("STORE TEST SEND: fetchImportantMessages 3")
             do {
                 let messages = try await self.homeService.getImportantMessages()
-                print("STORE TEST SEND: fetchImportantMessages setImportantMessages")
                 send(.setImportantMessages(messages: messages))
             } catch {
 
             }
         case .fetchMemberState:
-            print("STORE TEST SEND: fetchMemberState 3")
             do {
                 let memberData = try await self.homeService.getMemberState()
-                print("STORE TEST SEND: fetchMemberState setMemberContractState")
                 send(
                     .setMemberContractState(
                         state: memberData.contractState,
@@ -113,21 +111,23 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                 self.setError(L10n.General.errorBody, for: .fetchQuickActions)
             }
         case .fetchQuickActions:
-            print("STORE TEST SEND: fetchQuickActions 3")
             do {
                 let quickActions = try await self.homeService.getQuickActions()
-                print("STORE TEST SEND: fetchQuickActions setQuickActions")
                 send(.setQuickActions(quickActions: quickActions))
             } catch {
                 self.setError(L10n.General.errorBody, for: .fetchQuickActions)
             }
+        case .fetchFAQ:
+            do {
+                let faq = try await self.homeService.getFAQ()
+                send(.setFAQ(faq: faq))
+            } catch {
+                self.setError(L10n.General.errorBody, for: .fetchFAQ)
+            }
         case .fetchChatNotifications:
-            print("STORE TEST SEND: fetchChatNotifications 3")
             do {
                 let chatMessagesState = try await self.homeService.getMessagesState()
-                print("STORE TEST SEND: fetchChatNotifications setChatNotification")
                 send(.setChatNotification(hasNew: chatMessagesState.hasNewMessages))
-                print("STORE TEST SEND: fetchChatNotifications setHasSentOrRecievedAtLeastOneMessage")
                 send(
                     .setHasSentOrRecievedAtLeastOneMessage(
                         hasSent: chatMessagesState.hasSentOrRecievedAtLeastOneMessage
@@ -158,26 +158,22 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
         case let .setQuickActions(quickActions):
             removeLoading(for: .fetchQuickActions)
             newState.quickActions = quickActions
-            print("STORE TEST SEND: SET TOOLBAR TYPES setQuickActions")
             setToolbarTypes(&newState)
+        case .fetchFAQ:
+            setLoading(for: .fetchFAQ)
+        case let .setFAQ(faq):
+            removeLoading(for: .fetchFAQ)
+            newState.helpCenterFAQModel = faq
         case let .hideImportantMessage(id):
             newState.hidenImportantMessages.append(id)
         case let .setChatNotification(hasNew):
             newState.showChatNotification = hasNew
-            print("STORE TEST SEND: SET TOOLBAR TYPES setChatNotification")
-            setToolbarTypes(&newState)
-        case let .setChatNotificationTimeStamp(sentAt):
-            newState.latestChatTimeStamp = sentAt
-            newState.showChatNotification = false
-            print("STORE TEST SEND: SET TOOLBAR TYPES setChatNotificationTimeStamp")
             setToolbarTypes(&newState)
         case let .setHasSentOrRecievedAtLeastOneMessage(hasSent):
             newState.hasSentOrRecievedAtLeastOneMessage = hasSent
-            print("STORE TEST SEND: SET TOOLBAR TYPES setHasSentOrRecievedAtLeastOneMessage")
             setToolbarTypes(&newState)
         case let .setChatNotificationConversationTimeStamp(timeStamp):
             newState.latestConversationTimeStamp = timeStamp
-            print("STORE TEST SEND: SET TOOLBAR TYPES setChatNotificationConversationTimeStamp")
             setToolbarTypes(&newState)
         default:
             break
@@ -187,7 +183,6 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
     }
 
     private func setToolbarTypes(_ state: inout HomeState) {
-        print("STORE TEST SEND: SET TOOLBAR TYPES")
         var types: [ToolbarOptionType] = []
         types.append(.newOffer)
 
