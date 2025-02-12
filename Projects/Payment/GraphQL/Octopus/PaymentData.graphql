@@ -25,7 +25,9 @@ fragment MemberReferralInformationCodeFragment on MemberReferralInformation {
 
 
 fragment MemberChargeFragment on MemberCharge{
-      contractsChargeBreakdown {
+      chargeBreakdown {
+        displayTitle
+        displaySubtitle
         gross {
           ...MoneyFragment
         }

@@ -27,8 +27,10 @@ struct ContractDetails: View {
                             )
                             .padding(.top, .padding4)
                     }
-                    hText(contract.subtitle)
-                        .foregroundColor(hTextColor.Opaque.secondary)
+                    if let subtitle = contract.subtitle, !subtitle.isEmpty {
+                        hText(subtitle)
+                            .foregroundColor(hTextColor.Opaque.secondary)
+                    }
                 }
             }
             .withEmptyAccessory
