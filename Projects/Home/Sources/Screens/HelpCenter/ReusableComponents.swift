@@ -61,7 +61,7 @@ enum HelpViewSource {
 }
 
 struct QuestionsItems: View {
-    let questions: [Question]
+    let questions: [FAQModel]
     let questionType: QuestionType
     let source: HelpViewSource
     @EnvironmentObject var router: Router
@@ -86,7 +86,7 @@ struct QuestionsItems: View {
                     .withChevronAccessory
                     .onTap {
                         let attributes: [String: String] = [
-                            "question": item.questionEn,
+                            "question": item.question,
                             "answer": item.answer,
                             "sourcePath": source.title,
                             "questionType": questionType.rawValue,

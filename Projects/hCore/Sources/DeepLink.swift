@@ -13,6 +13,8 @@ public enum DeepLink: String, Codable, CaseIterable {
     case payments
     case travelCertificate = "travelCertificate"
     case helpCenter = "help-center"
+    case helpCenterTopic = "help-center/topic"
+    case helpCenterQuestion = "help-center/question"
     case moveContract = "move-contract"
     case changeTier = "change-tier"
     case travelAddon = "travel-addon"
@@ -49,6 +51,10 @@ public enum DeepLink: String, Codable, CaseIterable {
             return L10n.TravelCertificate.cardTitle
         case .helpCenter:
             return L10n.hcTitle
+        case .helpCenterQuestion:
+            return L10n.hcQuestionTitle
+        case .helpCenterTopic:
+            return L10n.hcTitle
         case .moveContract:
             return L10n.InsuranceDetails.changeAddressButton
         case .terminateContract:
@@ -72,7 +78,8 @@ public enum DeepLink: String, Codable, CaseIterable {
     @MainActor
     public static func getType(from url: URL) -> DeepLink? {
         guard Environment.staging.isDeeplink(url) || Environment.production.isDeeplink(url) else { return nil }
-        guard let type = url.pathComponents.compactMap({ DeepLink(rawValue: $0) }).last else {
+        let components = url.pathComponents.filter { $0 != "/" }.joined(separator: "/")
+        guard let type = DeepLink(rawValue: components) else {
             return nil
         }
         return type
@@ -94,5 +101,19 @@ public enum DeepLink: String, Codable, CaseIterable {
         default:
             return false
         }
+    }
+}
+
+public enum DeeplinkProperty: String {
+    case contractId
+    case conversationId
+    case id
+}
+
+extension URL {
+    public func getParameter(property: DeeplinkProperty) -> String? {
+        guard let urlComponents = URLComponents(url: self, resolvingAgainstBaseURL: false) else { return nil }
+        guard let queryItems = urlComponents.queryItems else { return nil }
+        return queryItems.first(where: { $0.name == property.rawValue })?.value
     }
 }

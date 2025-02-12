@@ -126,6 +126,23 @@ struct LoggedInNavigation: View {
         ) {
             EuroBonusNavigation(useOwnNavigation: true)
         }
+        .detent(
+            item: $vm.isFaqTopicPresented,
+            style: [.large],
+            options: .constant(.alwaysOpenOnTop)
+        ) { topic in
+            HelpCenterTopicNavigation(topic: topic)
+        }
+        .introspect(.tabView, on: .iOS(.v13...)) { tabBar in
+            vm.tabBar = tabBar
+        }
+        .detent(
+            item: $vm.isFaqPresented,
+            style: [.large],
+            options: .constant(.alwaysOpenOnTop)
+        ) { question in
+            HelpCenterQuestionNavigation(question: question)
+        }
         .introspect(.tabView, on: .iOS(.v13...)) { tabBar in
             vm.tabBar = tabBar
         }
@@ -511,6 +528,8 @@ class LoggedInNavigationViewModel: ObservableObject {
     let addonErrorRouter = Router()
     @Published var isEuroBonusPresented = false
     @Published var isUrlPresented: URL?
+    @Published var isFaqTopicPresented: FaqTopic?
+    @Published var isFaqPresented: FAQModel?
 
     private var deeplinkToBeOpenedAfterLogin: URL?
     private var cancellables = Set<AnyCancellable>()
@@ -673,7 +692,7 @@ class LoggedInNavigationViewModel: ObservableObject {
             case .contract:
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 self.selectedTab = 1
-                let contractId = self.getContractId(from: url)
+                let contractId = url.getParameter(property: .contractId)
 
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
                 if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
@@ -693,11 +712,38 @@ class LoggedInNavigationViewModel: ObservableObject {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
                     self?.homeNavigationVm.isHelpCenterPresented = true
                 }
+            case .helpCenterTopic:
+                if let id = url.getParameter(property: .id) {
+                    Task {
+                        let store: HomeStore = globalPresentableStoreContainer.get()
+                        if store.state.helpCenterFAQModel == nil {
+                            await store.sendAsync(.fetchFAQ)
+                        }
+                        if let helpCenterFAQModel = store.state.helpCenterFAQModel,
+                            let topic = helpCenterFAQModel.topics.first(where: { $0.id == id })
+                        {
+                            isFaqTopicPresented = topic
+                        }
+                    }
+                }
+            case .helpCenterQuestion:
+                if let id = url.getParameter(property: .id) {
+                    Task {
+                        let store: HomeStore = globalPresentableStoreContainer.get()
+                        if store.state.getAllFAQ()?.first(where: { $0.id == id }) == nil {
+                            await store.sendAsync(.fetchFAQ)
+                        }
+                        if let question = store.state.getAllFAQ()?.first(where: { $0.id == id }) {
+                            isFaqPresented = question
+                        }
+                    }
+                }
+                break
             case .moveContract:
                 self.isMoveContractPresented = true
             case .terminateContract:
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                let contractId = self.getContractId(from: url)
+                let contractId = url.getParameter(property: .contractId)
                 if let contractId, let contract: Contracts.Contract = contractStore.state.contractForId(contractId) {
                     Task { [weak self] in
                         do {
@@ -729,8 +775,7 @@ class LoggedInNavigationViewModel: ObservableObject {
 
                 }
             case .conversation:
-                let conversationId = self.getConversationId(from: url)
-
+                let conversationId = url.getParameter(property: .conversationId)
                 Task {
                     let conversationClient: ConversationsClient = Dependencies.shared.resolve()
                     let conversations = try await conversationClient.getConversations()
@@ -752,7 +797,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                 self.selectedTab = 4
                 self.profileNavigationVm.pushToProfile()
             case .changeTier:
-                let contractId = self.getContractId(from: url)
+                let contractId = url.getParameter(property: .contractId)
                 handleChangeTier(contractId: contractId)
             case .travelAddon:
                 Task {
@@ -767,18 +812,6 @@ class LoggedInNavigationViewModel: ObservableObject {
                 }
             }
         }
-    }
-
-    private func getContractId(from url: URL) -> String? {
-        guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
-        guard let queryItems = urlComponents.queryItems else { return nil }
-        return queryItems.first(where: { $0.name == "contractId" })?.value
-    }
-
-    private func getConversationId(from url: URL) -> String? {
-        guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
-        guard let queryItems = urlComponents.queryItems else { return nil }
-        return queryItems.first(where: { $0.name == "conversationId" })?.value
     }
 
     public func openUrl(url: URL) {
@@ -866,7 +899,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     private func handleEditCoInsured(url: URL) {
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         Task { [weak self] in
-            if let contractId = self?.getContractId(from: url),
+            if let contractId = url.getParameter(property: .contractId),
                 let contract: Contracts.Contract = contractStore.state.contractForId(contractId)
             {
                 let contractConfig: InsuredPeopleConfig = .init(contract: contract, fromInfoCard: false)

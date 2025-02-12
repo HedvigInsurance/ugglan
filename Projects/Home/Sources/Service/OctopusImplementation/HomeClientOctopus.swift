@@ -131,6 +131,37 @@ public class HomeClientOctopus: HomeClient {
             lastMessageTimeStamp: maxDate
         )
     }
+
+    public func getFAQ() async throws -> HelpCenterFAQModel {
+        let query = OctopusGraphQL.MemberFAQQuery()
+        let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+        return data.asHelpCenterModel
+    }
+}
+extension OctopusGraphQL.MemberFAQQuery.Data {
+    var asHelpCenterModel: HelpCenterFAQModel {
+        let commonQuestions = currentMember.memberFAQ.commonFAQ.compactMap({ $0.fragments.fAQFragment.asQuestion })
+        return .init(
+            topics: currentMember.memberFAQ.topics.compactMap({ $0.asTopic }),
+            commonQuestions: commonQuestions
+        )
+    }
+}
+extension OctopusGraphQL.FAQFragment {
+    var asQuestion: FAQModel {
+        .init(id: id, question: question, answer: answer)
+    }
+}
+
+extension OctopusGraphQL.MemberFAQQuery.Data.CurrentMember.MemberFAQ.Topic {
+    var asTopic: FaqTopic {
+        .init(
+            id: id,
+            title: title,
+            commonQuestions: commonFAQ.compactMap({ $0.fragments.fAQFragment.asQuestion }),
+            allQuestions: otherFAQ.compactMap({ $0.fragments.fAQFragment.asQuestion })
+        )
+    }
 }
 
 @MainActor
