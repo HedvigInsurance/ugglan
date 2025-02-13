@@ -28,7 +28,7 @@ struct EditDeductibleScreen: View {
         hForm {
             hSection {
                 VStack(spacing: .padding4) {
-                    ForEach(quotes.sorted(by: { $0.premium.value > $1.premium.value }), id: \.self) { quote in
+                    ForEach(quotes.sorted(by: { $0.basePremium.value > $1.basePremium.value }), id: \.self) { quote in
                         hRadioField(
                             id: quote.id,
                             leftView: {
@@ -37,7 +37,7 @@ struct EditDeductibleScreen: View {
                                         hText(quote.displayTitle)
                                         Spacer()
                                         hPill(
-                                            text: quote.premium.formattedAmountPerMonth,
+                                            text: quote.basePremium.formattedAmountPerMonth,
                                             color: .grey,
                                             colorLevel: .two
                                         )

@@ -65,14 +65,14 @@ public class ChangeTierViewModel: ObservableObject {
             selectedQuote?.productVariant?.displayName ?? newSelectedTier?.quotes.first?.productVariant?
             .displayName ?? displayName
         self.selectedTier = newSelectedTier
-        self.newPremium = selectedQuote?.premium
+        self.newPremium = selectedQuote?.basePremium
     }
 
     @MainActor
     func setDeductible(for deductibleId: String) {
         if let deductible = selectedTier?.quotes.first(where: { $0.id == deductibleId }) {
             self.selectedQuote = deductible
-            self.newPremium = deductible.premium
+            self.newPremium = deductible.basePremium
         }
     }
 
@@ -127,7 +127,7 @@ public class ChangeTierViewModel: ObservableObject {
                     self.canEditDeductible = true
                 }
 
-                self.newPremium = selectedQuote?.premium
+                self.newPremium = selectedQuote?.basePremium
 
                 withAnimation {
                     self.viewState = .success
