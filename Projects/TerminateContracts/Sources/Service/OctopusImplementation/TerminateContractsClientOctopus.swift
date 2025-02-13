@@ -239,7 +239,8 @@ extension OctopusGraphQL.FlowTerminationSurveyOptionSuggestionFragment {
                     id: optionActionSuggestion.id,
                     action: action,
                     description: description,
-                    buttonTitle: buttonTitle
+                    buttonTitle: buttonTitle,
+                    type: .offer
                 )
             )
         } else if let optionRedirectSuggestion = self.asFlowTerminationSurveyOptionSuggestionRedirect {
@@ -248,7 +249,8 @@ extension OctopusGraphQL.FlowTerminationSurveyOptionSuggestionFragment {
                     id: optionRedirectSuggestion.id,
                     url: optionRedirectSuggestion.url,
                     description: optionRedirectSuggestion.description,
-                    buttonTitle: optionRedirectSuggestion.buttonTitle
+                    buttonTitle: optionRedirectSuggestion.buttonTitle,
+                    type: .offer
                 )
             )
         }

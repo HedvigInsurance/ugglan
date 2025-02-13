@@ -18,6 +18,7 @@ public struct TerminationFlowSurveyStepModelOption: FlowStepModel, Identifiable 
 enum TerminationFlowSurveyStepSuggestion: FlowStepModel {
     case action(action: TerminationFlowSurveyStepSuggestionAction)
     case redirect(redirect: TerminationFlowSurveyStepSuggestionRedirection)
+    case suggestInfo(info: TerminationFlowSurveyStepSuggestionInfo)
 }
 
 public struct TerminationFlowSurveyStepSuggestionAction: FlowStepModel {
@@ -25,6 +26,7 @@ public struct TerminationFlowSurveyStepSuggestionAction: FlowStepModel {
     public let action: FlowTerminationSurveyRedirectAction
     let description: String
     let buttonTitle: String
+    let type: SurveySuggestionInfoType
 }
 
 public enum FlowTerminationSurveyRedirectAction: FlowStepModel {
@@ -38,11 +40,23 @@ struct TerminationFlowSurveyStepSuggestionRedirection: FlowStepModel {
     let url: String
     let description: String
     let buttonTitle: String
+    let type: SurveySuggestionInfoType
+}
+
+struct TerminationFlowSurveyStepSuggestionInfo: FlowStepModel {
+    let id: String
+    let description: String
+    let type: SurveySuggestionInfoType
 }
 
 struct TerminationFlowSurveyStepFeedback: FlowStepModel {
     let id: String
     let isRequired: Bool
+}
+
+enum SurveySuggestionInfoType: Codable {
+    case info
+    case offer
 }
 
 public enum SurveyScreenSubtitleType: Codable, Sendable {
