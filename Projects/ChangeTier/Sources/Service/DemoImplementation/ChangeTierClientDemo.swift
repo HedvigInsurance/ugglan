@@ -19,7 +19,7 @@ public class ChangeTierClientDemo: ChangeTierClient {
                 quoteAmount: .init(amount: "1000", currency: "SEK"),
                 quotePercentage: 0,
                 subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                premium: .init(amount: "1167", currency: "SEK"),
+                basePremium: .init(amount: "1167", currency: "SEK"),
                 displayItems: displayItems,
                 productVariant: .init(
                     termsVersion: "",
@@ -61,7 +61,7 @@ public class ChangeTierClientDemo: ChangeTierClient {
                 quoteAmount: .init(amount: "2000", currency: "SEK"),
                 quotePercentage: 25,
                 subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                premium: .init(amount: "999", currency: "SEK"),
+                basePremium: .init(amount: "999", currency: "SEK"),
                 displayItems: displayItems,
                 productVariant: .init(
                     termsVersion: "",
@@ -103,7 +103,7 @@ public class ChangeTierClientDemo: ChangeTierClient {
                 quoteAmount: .init(amount: "3000", currency: "SEK"),
                 quotePercentage: 15,
                 subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                premium: .init(amount: "569", currency: "SEK"),
+                basePremium: .init(amount: "569", currency: "SEK"),
                 displayItems: displayItems,
                 productVariant: .init(
                     termsVersion: "",
@@ -152,7 +152,7 @@ public class ChangeTierClientDemo: ChangeTierClient {
                     quoteAmount: .init(amount: "220", currency: "SEK"),
                     quotePercentage: 0,
                     subTitle: nil,
-                    premium: .init(amount: "220", currency: "SEK"),
+                    basePremium: .init(amount: "220", currency: "SEK"),
                     displayItems: [],
                     productVariant: nil,
                     addons: []
@@ -194,7 +194,7 @@ public class ChangeTierClientDemo: ChangeTierClient {
                 quoteAmount: .init(amount: "449", currency: "SEK"),
                 quotePercentage: 25,
                 subTitle: "Endast en rörlig del om 25% av skadekostnaden.",
-                premium: .init(amount: "999", currency: "SEK"),
+                basePremium: .init(amount: "999", currency: "SEK"),
                 displayItems: displayItems,
                 productVariant: .init(
                     termsVersion: "",
