@@ -55,7 +55,7 @@ mutation ChangeTierDeductibleCreateIntent($input: ChangeTierDeductibleCreateInte
 
 
 fragment ChangeTierDeductibleFromAgreementFragment on ChangeTierDeductibleFromAgreement {
-        premium {
+        basePremium {
             ...MoneyFragment
         }
         deductible {
