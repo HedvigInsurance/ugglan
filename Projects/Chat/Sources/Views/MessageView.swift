@@ -18,15 +18,8 @@ struct MessageView: View {
             messageContent
                 .environment(\.colorScheme, .light)
             if case .failed = message.status, message.sender != .automatic {
-                hCoreUIAssets.infoFilled.view
-                    .resizable()
-                    .frame(width: 24, height: 24)
-                    .foregroundColor(hSignalColor.Red.element)
-                    .padding(.leading, .padding8)
+                failedView
                     .padding(.vertical, .padding24)
-                    .onTapGesture {
-                        showRetryOptions = true
-                    }
             }
         }
         .confirmationDialog("", isPresented: $showRetryOptions, titleVisibility: .hidden) { [weak vm] in
@@ -41,6 +34,17 @@ struct MessageView: View {
             Button(L10n.generalCancelButton, role: .cancel) {
             }
         }
+    }
+
+    private var failedView: some View {
+        hCoreUIAssets.infoFilled.view
+            .resizable()
+            .frame(width: 24, height: 24)
+            .foregroundColor(hSignalColor.Red.element)
+            .padding(.leading, .padding8)
+            .onTapGesture {
+                showRetryOptions = true
+            }
     }
 
     @ViewBuilder
@@ -108,55 +112,7 @@ struct MessageView: View {
                     ActionView(action: action, message: message, vm: vm)
                         .environment(\.colorScheme, .light)
                 case let .automaticSuggestions(suggestions):
-                    ForEach(suggestions.suggestions, id: \.self) { action in
-                        if let action {
-                            VStack(spacing: .padding8) {
-                                if case .failed = message.status {
-                                    ActionView(
-                                        action: action,
-                                        message: message,
-                                        vm: vm,
-                                        isAutomatedMessage: true,
-                                        showAsFailed: false
-                                    )
-                                    .padding(.trailing, .padding32)
-                                } else {
-                                    ActionView(
-                                        action: action,
-                                        message: message,
-                                        vm: vm,
-                                        isAutomatedMessage: true,
-                                        showAsFailed: false
-                                    )
-                                }
-                                if suggestions.escalationReference != nil {
-                                    HStack(alignment: .top, spacing: 0) {
-                                        ActionView(
-                                            action: .init(
-                                                url: nil,
-                                                text:
-                                                    L10n.Chatbot.TalkToHuman.text,
-                                                buttonTitle: L10n.Chatbot.TalkToHuman.buttonTitle
-                                            ),
-                                            message: message,
-                                            vm: vm
-                                        )
-                                        if case .failed = message.status {
-                                            hCoreUIAssets.infoFilled.view
-                                                .resizable()
-                                                .frame(width: 24, height: 24)
-                                                .foregroundColor(hSignalColor.Red.element)
-                                                .padding(.leading, .padding8)
-                                                .onTapGesture {
-                                                    showRetryOptions = true
-                                                }
-                                        }
-                                    }
-                                }
-                            }
-                            .environment(\.colorScheme, .light)
-                        }
-                    }
+                    automaticSuggestionView(suggestions: suggestions)
                 case .unknown: Text("")
                 }
             }
@@ -165,7 +121,47 @@ struct MessageView: View {
             .background(message.bgColor(conversationStatus: conversationStatus, type: message.type))
             .clipShape(RoundedRectangle(cornerRadius: .padding12))
         }
+    }
 
+    private func automaticSuggestionView(suggestions: AutomaticSuggestions) -> some View {
+        ForEach(suggestions.suggestions, id: \.self) { action in
+            if let action {
+                VStack(spacing: .padding8) {
+                    let suggestionActionView = ActionView(
+                        action: action,
+                        message: message,
+                        vm: vm,
+                        isAutomatedMessage: true,
+                        showAsFailed: false
+                    )
+
+                    if case .failed = message.status {
+                        suggestionActionView
+                            .padding(.trailing, .padding32)
+                    } else {
+                        suggestionActionView
+                    }
+                    if suggestions.escalationReference != nil {
+                        HStack(alignment: .top, spacing: 0) {
+                            ActionView(
+                                action: .init(
+                                    url: nil,
+                                    text:
+                                        L10n.Chatbot.TalkToHuman.text,
+                                    buttonTitle: L10n.Chatbot.TalkToHuman.buttonTitle
+                                ),
+                                message: message,
+                                vm: vm
+                            )
+                            if case .failed = message.status {
+                                failedView
+                            }
+                        }
+                    }
+                }
+                .environment(\.colorScheme, .light)
+            }
+        }
     }
 }
 
