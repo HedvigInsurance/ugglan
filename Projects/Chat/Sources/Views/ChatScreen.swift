@@ -99,13 +99,14 @@ public struct ChatScreen: View {
                 Spacer()
             }
             VStack(
-                alignment: (message.sender == .hedvig || message.sender == .automatic) ? .leading : .trailing,
+                alignment: message.sender == .automatic ? .center : (message.sender == .hedvig ? .leading : .trailing),
                 spacing: 4
             ) {
                 MessageView(message: message, conversationStatus: conversationStatus, vm: vm)
                     .frame(
-                        maxWidth: 300,
-                        alignment: message.sender == .member ? .trailing : .leading
+                        maxWidth: (message.sender != .automatic) ? 300 : .infinity,
+                        alignment: message.sender == .automatic
+                            ? .center : (message.sender == .hedvig ? .leading : .trailing)
                     )
                     .foregroundColor(message.textColor)
                     .onTapGesture {
@@ -116,31 +117,34 @@ public struct ChatScreen: View {
                         }
                     }
                     .id("MessageView_\(message.id)")
-                HStack(spacing: 0) {
-                    if vm.lastDeliveredMessage?.id == message.id {
-                        hText(message.timeStampString)
-                        hText(" ∙ \(L10n.chatDeliveredMessage)")
-                        hCoreUIAssets.checkmarkFilled.view
-                            .resizable()
-                            .frame(width: 16, height: 16)
-                            .foregroundColor(hSignalColor.Blue.element)
-                            .padding(.leading, 2)
-                    } else if case .failed = message.status {
-                        hText(L10n.chatFailedToSend)
-                        hText(" ∙ \(message.timeStampString)")
-                    } else {
-                        hText(message.timeStampString)
+                    .padding(.bottom, message.sender == .automatic ? .padding16 : 0)
+                if message.sender != .automatic {
+                    HStack(spacing: 0) {
+                        if vm.lastDeliveredMessage?.id == message.id {
+                            hText(message.timeStampString)
+                            hText(" ∙ \(L10n.chatDeliveredMessage)")
+                            hCoreUIAssets.checkmarkFilled.view
+                                .resizable()
+                                .frame(width: 16, height: 16)
+                                .foregroundColor(hSignalColor.Blue.element)
+                                .padding(.leading, 2)
+                        } else if case .failed = message.status {
+                            hText(L10n.chatFailedToSend)
+                            hText(" ∙ \(message.timeStampString)")
+                        } else {
+                            hText(message.timeStampString)
+                        }
+
                     }
-
+                    .hTextStyle(.label)
+                    .foregroundColor(hTextColor.Opaque.secondary)
+                    .padding(.bottom, 3)
+                    .frame(maxWidth: .infinity, alignment: message.sender == .member ? .trailing : .leading)
                 }
-                .hTextStyle(.label)
-                .foregroundColor(hTextColor.Opaque.secondary)
-                .padding(.bottom, 3)
-
             }
             .accessibilityElement(children: .combine)
             .accessibilityLabel(accessilityLabel(for: message))
-            if message.sender == .hedvig || message.sender == .automatic {
+            if message.sender == .hedvig {
                 Spacer()
             }
         }

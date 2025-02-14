@@ -116,6 +116,7 @@ struct MessageView: View {
                                         action: action,
                                         message: message,
                                         vm: vm,
+                                        isAutomatedMessage: true,
                                         showAsFailed: false
                                     )
                                     .padding(.trailing, .padding32)
@@ -124,6 +125,7 @@ struct MessageView: View {
                                         action: action,
                                         message: message,
                                         vm: vm,
+                                        isAutomatedMessage: true,
                                         showAsFailed: false
                                     )
                                 }
@@ -136,7 +138,6 @@ struct MessageView: View {
                                                     L10n.Chatbot.TalkToHuman.text,
                                                 buttonTitle: L10n.Chatbot.TalkToHuman.buttonTitle
                                             ),
-                                            automaticSuggestion: suggestions,
                                             message: message,
                                             vm: vm
                                         )
@@ -259,6 +260,7 @@ class LinkViewModel: ObservableObject {
 struct ActionView: View {
     let action: ActionMessage
     let automaticSuggestion: AutomaticSuggestions?
+    let isAutomatedMessage: Bool
     let message: Message
     let showAsFailed: Bool
     @ObservedObject var vm: ChatScreenViewModel
@@ -268,39 +270,60 @@ struct ActionView: View {
         automaticSuggestion: AutomaticSuggestions? = nil,
         message: Message,
         vm: ChatScreenViewModel,
+        isAutomatedMessage: Bool? = false,
         showAsFailed: Bool? = true
     ) {
         self.action = action
         self.automaticSuggestion = automaticSuggestion
         self.message = message
         self.vm = vm
+        self.isAutomatedMessage = isAutomatedMessage ?? false
         self.showAsFailed = showAsFailed ?? true
     }
 
     var body: some View {
-        VStack(spacing: .padding16) {
-            if let text = action.text {
-                hText(text, style: .body1)
-                    .foregroundColor(hTextColor.Opaque.primary)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+        HStack(alignment: .top) {
+            if isAutomatedMessage {
+                Image(systemName: "lightbulb")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 24, height: 36)
+                    .padding(.trailing, 12)
+                    .padding(.leading, 4)
+                    .padding(.top, 8)
+                    .foregroundColor(hGrayscaleOpaqueColor.greyScale500)
             }
-            if let automaticSuggestion {
-                hButton.SmallButton(type: .ghost) {
-                    Task {
-                        await vm.escalateMessage(message: message, automaticSuggestion: automaticSuggestion)
+            VStack(spacing: .padding16) {
+                if let text = action.text {
+                    hText(text, style: .body1)
+                        .foregroundColor(hTextColor.Opaque.primary)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                if let automaticSuggestion {
+                    hButton.SmallButton(type: .ghost) {
+                        Task {
+                            await vm.escalateMessage(message: message, automaticSuggestion: automaticSuggestion)
+                        }
+                    } content: {
+                        hText(action.buttonTitle)
                     }
-                } content: {
-                    hText(action.buttonTitle)
+                    .hButtonTakeFullWidth(true)
+                } else {
+                    hButton.MediumButton(type: .secondary) {
+                        NotificationCenter.default.post(name: .openDeepLink, object: action.url)
+                    } content: {
+                        HStack {
+                            hText(action.buttonTitle)
+                                .frame(maxWidth: .infinity)
+                            if isAutomatedMessage {
+                                Image(uiImage: hCoreUIAssets.chevronRight.image)
+                                    .frame(alignment: .trailing)
+                            }
+                        }
+                    }
+                    .hButtonTakeFullWidth(true)
                 }
-                .hButtonTakeFullWidth(true)
-            } else {
-                hButton.MediumButton(type: .secondary) {
-                    NotificationCenter.default.post(name: .openDeepLink, object: action.url)
-                } content: {
-                    hText(action.buttonTitle)
-                }
-                .hButtonTakeFullWidth(true)
             }
         }
         .environment(\.colorScheme, .light)
@@ -357,7 +380,7 @@ extension URL {
                     escalationReference: "escalationReference"
                 )
             ),
-            status: .failed(error: "error")
+            status: .sent
         ),
         conversationStatus: .open,
         vm: .init(chatService: service),
