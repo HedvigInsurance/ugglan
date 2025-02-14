@@ -62,24 +62,21 @@ struct TerminationSurveyScreen: View {
                                 )
                                 .hFieldSize(.medium)
                                 .zIndex(1)
-                                Group {
-                                    if let suggestion = option.suggestion, option.id == vm.selectedOption?.id {
-                                        suggestionView(for: suggestion)
-                                            .matchedGeometryEffect(id: "buildInfo", in: animationNamespace)
-                                    }
-
-                                    if let feedBack = vm.allFeedBackViewModels[option.id],
-                                        option.id == vm.selectedOption?.id
-                                    {
-                                        TerminationFlowSurveyStepFeedBackView(
-                                            vm: feedBack
-                                        )
-                                    }
-                                }
-                                .frame(minHeight: 120)
                             }
                         }
 
+                    }
+                    if let suggestion = vm.selectedOption?.suggestion {
+                        suggestionView(for: suggestion)
+                            .matchedGeometryEffect(id: "buildInfo", in: animationNamespace)
+                    }
+
+                    if let optionId = vm.selectedOption?.id, let feedBack = vm.allFeedBackViewModels[optionId],
+                        optionId == vm.selectedOption?.id
+                    {
+                        TerminationFlowSurveyStepFeedBackView(
+                            vm: feedBack
+                        )
                     }
                 }
             }
@@ -236,8 +233,16 @@ class SurveyScreenViewModel: ObservableObject {
             return true
         }()
 
-        if selectedOption?.suggestion != nil {
-            continueEnabled = false
+        if let suggestion = selectedOption?.suggestion {
+            switch suggestion {
+            case let .action(action):
+                if action.action == .updateAddress {
+                    continueEnabled = false
+                }
+                continueEnabled = true
+            default:
+                continueEnabled = true
+            }
         } else {
             continueEnabled = status
         }
