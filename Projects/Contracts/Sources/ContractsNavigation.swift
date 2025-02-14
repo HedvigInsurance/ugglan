@@ -73,13 +73,22 @@ public struct ContractsNavigation<Content: View>: View {
                             fromInfoCard: false
                         )
                         contractsNavigationVm.editCoInsuredVm.start(fromContract: configContract)
-                    case .changeAddress:
-                        contractsNavigationVm.isChangeAddressPresented = true
                     case .changeTier:
                         contractsNavigationVm.changeTierInput = .contractWithSource(
                             data: .init(source: .changeTier, contractId: contract.id)
                         )
                     case .cancellation:
+                        let config = TerminationConfirmConfig(contract: contract)
+                        Task {
+                            do {
+                                try await contractsNavigationVm.terminateInsuranceVm.start(with: [config])
+                            } catch let exception {
+                                Toasts.shared.displayToastBar(
+                                    toast: .init(type: .error, text: exception.localizedDescription)
+                                )
+                            }
+                        }
+                    case .changeAddress:
                         break
                     }
                 }
