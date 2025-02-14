@@ -8,7 +8,7 @@ import hCoreUI
 import hGraphQL
 
 public struct HelpCenterStartView: View {
-    @StateObject var vm = HelpCenterStartViewModel(helpCenterModel: .getDefault())
+    @StateObject var vm = HelpCenterStartViewModel()
     @PresentableStore var store: HomeStore
     let onQuickAction: (QuickAction) -> Void
     @EnvironmentObject var router: Router
@@ -27,7 +27,6 @@ public struct HelpCenterStartView: View {
                         if vm.searchInProgress {
                             VStack(spacing: 40) {
                                 displayQuickActions(from: vm.searchResultsQuickActions)
-
                                 if !vm.searchResultsQuestions.isEmpty {
                                     QuestionsItems(
                                         questions: vm.searchResultsQuestions,
@@ -48,20 +47,21 @@ public struct HelpCenterStartView: View {
                                 Spacer()
                             }
                             .accessibilityHidden(true)
-
                             VStack(alignment: .leading, spacing: .padding8) {
-                                hText(vm.helpCenterModel.title)
-                                hText(vm.helpCenterModel.description)
+                                hText(L10n.hcHomeViewQuestion)
+                                hText(L10n.hcHomeViewAnswer)
                                     .foregroundColor(hTextColor.Opaque.secondary)
                             }
                             .accessibilityElement(children: .combine)
                             displayQuickActions(from: vm.quickActions)
-                            displayCommonTopics()
-                            QuestionsItems(
-                                questions: vm.helpCenterModel.commonQuestions,
-                                questionType: .commonQuestions,
-                                source: .homeView
-                            )
+                            displayTopics()
+                            if let helpCenterModel = vm.helpCenterModel {
+                                QuestionsItems(
+                                    questions: helpCenterModel.commonQuestions,
+                                    questionType: .commonQuestions,
+                                    source: .homeView
+                                )
+                            }
                         }
                     }
                 }
@@ -111,18 +111,19 @@ public struct HelpCenterStartView: View {
         }
     }
 
-    private func displayCommonTopics() -> some View {
-        VStack(alignment: .leading, spacing: .padding8) {
-            HelpCenterPill(title: L10n.hcCommonTopicsTitle, color: .yellow)
-
-            let commonTopics = vm.helpCenterModel.commonTopics
-            commonTopicsItems(commonTopics: commonTopics)
+    @ViewBuilder
+    private func displayTopics() -> some View {
+        if let helpCenterModel = vm.helpCenterModel {
+            VStack(alignment: .leading, spacing: .padding8) {
+                HelpCenterPill(title: L10n.hcCommonTopicsTitle, color: .yellow)
+                topicsItems(topics: helpCenterModel.topics)
+            }
         }
     }
 
-    private func commonTopicsItems(commonTopics: [CommonTopic]) -> some View {
+    private func topicsItems(topics: [FaqTopic]) -> some View {
         VStack(spacing: .padding4) {
-            ForEach(commonTopics, id: \.self) { item in
+            ForEach(topics, id: \.self) { item in
                 hSection {
                     hRow {
                         hText(item.title)
@@ -142,18 +143,19 @@ public struct HelpCenterStartView: View {
 
 @MainActor
 class HelpCenterStartViewModel: NSObject, ObservableObject {
-    let helpCenterModel: HelpCenterModel
     @PresentableStore var store: HomeStore
+    @Published var helpCenterModel: HelpCenterFAQModel?
     var didSetInitialSearchAppearance = false
     @Published var quickActions: [QuickAction] = []
+    @Inject var homeClient: HomeClient
 
     //search part
     @Published var focusState: Bool? = false
-    @Published var searchResultsQuestions: [Question] = []
+    @Published var searchResultsQuestions: [FAQModel] = []
     @Published var searchResultsQuickActions: [QuickAction] = []
     @Published var searchInProgress = false
-    private let allQuestions: [Question]
-    private var quickActionCancellable: AnyCancellable?
+    private var allQuestions: [FAQModel] = []
+    private var cancellables: Set<AnyCancellable> = []
     lazy var searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: nil)
         searchController.delegate = self
@@ -163,25 +165,30 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
         return searchController
     }()
 
-    init(helpCenterModel: HelpCenterModel) {
-        allQuestions =
-            PaymentsQuestions.all().asQuestions()
-            + ClaimsQuestions.all().asQuestions()
-            + CoverageQuestions.all().asQuestions()
-            + InsuranceQuestions.all().asQuestions()
-            + OtherQuestions.all().asQuestions()
-        self.helpCenterModel = helpCenterModel
-        let store: HomeStore = globalPresentableStoreContainer.get()
+    override init() {
         super.init()
-
-        quickActionCancellable = store.stateSignal
+        let store: HomeStore = globalPresentableStoreContainer.get()
+        store.stateSignal
             .map({ $0.quickActions })
             .receive(on: RunLoop.main)
             .removeDuplicates()
             .sink { [weak self] quickActions in
                 self?.quickActions = quickActions
             }
+            .store(in: &cancellables)
         quickActions = store.state.quickActions
+        store.stateSignal
+            .map({ $0.helpCenterFAQModel })
+            .receive(on: RunLoop.main)
+            .removeDuplicates()
+            .sink { [weak self, weak store] helpCenterFaqModel in
+                self?.helpCenterModel = helpCenterFaqModel
+                self?.allQuestions = store?.state.getAllFAQ() ?? []
+            }
+            .store(in: &cancellables)
+        helpCenterModel = store.state.helpCenterFAQModel
+        allQuestions = store.state.getAllFAQ() ?? []
+        store.send(.fetchFAQ)
     }
 
     func startSearch(for inputText: String) {
@@ -198,8 +205,8 @@ class HelpCenterStartViewModel: NSObject, ObservableObject {
         }
     }
 
-    private func searchInQuestionsByQuery(query: String) -> [Question] {
-        var results: [Question] = [Question]()
+    private func searchInQuestionsByQuery(query: String) -> [FAQModel] {
+        var results: [FAQModel] = [FAQModel]()
         allQuestions.forEach { question in
             if question.answer.lowercased().contains(query) || question.question.lowercased().contains(query) {
                 results.append(question)
@@ -259,50 +266,4 @@ extension HelpCenterStartViewModel: UISearchControllerDelegate {
 
         }
     )
-}
-
-extension HelpCenterModel {
-    static func getDefault() -> HelpCenterModel {
-        let commonQuestions: [Question] = [
-            ClaimsQuestions.claimsQuestion1.question,
-            InsuranceQuestions.insuranceQuestion5.question,
-            PaymentsQuestions.paymentsQuestion1.question,
-            InsuranceQuestions.insuranceQuestion3.question,
-            InsuranceQuestions.insuranceQuestion1.question,
-        ]
-
-        return .init(
-            title: L10n.hcHomeViewQuestion,
-            description:
-                L10n.hcHomeViewAnswer,
-            commonTopics: [
-                .init(
-                    title: L10n.hcPaymentsTitle,
-                    commonQuestions: PaymentsQuestions.common().asQuestions(),
-                    allQuestions: PaymentsQuestions.others().asQuestions()
-                ),
-                .init(
-                    title: L10n.hcClaimsTitle,
-                    commonQuestions: ClaimsQuestions.common().asQuestions(),
-                    allQuestions: ClaimsQuestions.others().asQuestions()
-                ),
-                .init(
-                    title: L10n.hcCoverageTitle,
-                    commonQuestions: CoverageQuestions.common().asQuestions(),
-                    allQuestions: CoverageQuestions.others().asQuestions()
-                ),
-                .init(
-                    title: L10n.hcInsurancesTitle,
-                    commonQuestions: InsuranceQuestions.common().asQuestions(),
-                    allQuestions: InsuranceQuestions.others().asQuestions()
-                ),
-                .init(
-                    title: L10n.hcGeneralTitle,
-                    commonQuestions: OtherQuestions.common().asQuestions(),
-                    allQuestions: OtherQuestions.others().asQuestions()
-                ),
-            ],
-            commonQuestions: commonQuestions
-        )
-    }
 }

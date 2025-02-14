@@ -50,9 +50,7 @@ public class HomeClientOctopus: HomeClient {
         var quickActions = [QuickAction]()
         let actions = data.currentMember.memberActions
         var contractAction = [QuickAction]()
-        if actions?.isMovingEnabled == true && featureFlags.isMovingFlowEnabled {
-            contractAction.append(.changeAddress)
-        }
+
         if actions?.isEditCoInsuredEnabled == true && featureFlags.isEditCoInsuredEnabled {
             contractAction.append(.editCoInsured)
         }
@@ -68,6 +66,11 @@ public class HomeClientOctopus: HomeClient {
         if !contractAction.isEmpty {
             quickActions.append(.editInsurance(actions: .init(quickActions: contractAction)))
         }
+
+        if actions?.isMovingEnabled == true && featureFlags.isMovingFlowEnabled {
+            quickActions.append(.changeAddress)
+        }
+
         if actions?.isConnectPaymentEnabled == true {
             quickActions.append(.connectPayments)
         }
@@ -129,6 +132,37 @@ public class HomeClientOctopus: HomeClient {
             hasNewMessages: hasNewMessages,
             hasSentOrRecievedAtLeastOneMessage: hasSentOrRecievedAtLeastOneMessage,
             lastMessageTimeStamp: maxDate
+        )
+    }
+
+    public func getFAQ() async throws -> HelpCenterFAQModel {
+        let query = OctopusGraphQL.MemberFAQQuery()
+        let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
+        return data.asHelpCenterModel
+    }
+}
+extension OctopusGraphQL.MemberFAQQuery.Data {
+    var asHelpCenterModel: HelpCenterFAQModel {
+        let commonQuestions = currentMember.memberFAQ.commonFAQ.compactMap({ $0.fragments.fAQFragment.asQuestion })
+        return .init(
+            topics: currentMember.memberFAQ.topics.compactMap({ $0.asTopic }),
+            commonQuestions: commonQuestions
+        )
+    }
+}
+extension OctopusGraphQL.FAQFragment {
+    var asQuestion: FAQModel {
+        .init(id: id, question: question, answer: answer)
+    }
+}
+
+extension OctopusGraphQL.MemberFAQQuery.Data.CurrentMember.MemberFAQ.Topic {
+    var asTopic: FaqTopic {
+        .init(
+            id: id,
+            title: title,
+            commonQuestions: commonFAQ.compactMap({ $0.fragments.fAQFragment.asQuestion }),
+            allQuestions: otherFAQ.compactMap({ $0.fragments.fAQFragment.asQuestion })
         )
     }
 }

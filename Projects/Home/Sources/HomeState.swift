@@ -14,6 +14,7 @@ public struct HomeState: StateProtocol {
     public var contracts: [HomeContract] = []
     public var importantMessages: [ImportantMessage] = []
     public var quickActions: [QuickAction] = []
+    public var helpCenterFAQModel: HelpCenterFAQModel?
     public var toolbarOptionTypes: [ToolbarOptionType] = []
     @Transient(defaultValue: []) var hidenImportantMessages = [String]()
     public var upcomingRenewalContracts: [HomeContract] {
@@ -34,6 +35,19 @@ public struct HomeState: StateProtocol {
         return importantMessages.first(where: { $0.id == id })
     }
 
+    public func getAllFAQ() -> [FAQModel]? {
+        helpCenterFAQModel?.topics
+            .reduce(
+                [FAQModel](),
+                { results, topic in
+                    var newQuestions: [FAQModel] = results
+                    newQuestions.append(contentsOf: topic.commonQuestions)
+                    newQuestions.append(contentsOf: topic.allQuestions)
+                    return newQuestions
+                }
+            )
+    }
+
     public init() {}
 }
 
@@ -46,6 +60,8 @@ public enum HomeAction: ActionProtocol {
     case openDocument(contractURL: URL)
     case fetchQuickActions
     case setQuickActions(quickActions: [QuickAction])
+    case fetchFAQ
+    case setFAQ(faq: HelpCenterFAQModel)
     case fetchChatNotifications
     case setChatNotification(hasNew: Bool)
     case setChatNotificationConversationTimeStamp(date: Date)
@@ -62,6 +78,7 @@ public enum FutureStatus: Codable, Equatable, Sendable {
 
 public enum HomeLoadingType: LoadingProtocol {
     case fetchQuickActions
+    case fetchFAQ
 }
 
 public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadingType> {
@@ -100,6 +117,13 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             } catch {
                 self.setError(L10n.General.errorBody, for: .fetchQuickActions)
             }
+        case .fetchFAQ:
+            do {
+                let faq = try await self.homeService.getFAQ()
+                send(.setFAQ(faq: faq))
+            } catch {
+                self.setError(L10n.General.errorBody, for: .fetchFAQ)
+            }
         case .fetchChatNotifications:
             do {
                 let chatMessagesState = try await self.homeService.getMessagesState()
@@ -135,6 +159,11 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
             removeLoading(for: .fetchQuickActions)
             newState.quickActions = quickActions
             setToolbarTypes(&newState)
+        case .fetchFAQ:
+            setLoading(for: .fetchFAQ)
+        case let .setFAQ(faq):
+            removeLoading(for: .fetchFAQ)
+            newState.helpCenterFAQModel = faq
         case let .hideImportantMessage(id):
             newState.hidenImportantMessages.append(id)
         case let .setChatNotification(hasNew):

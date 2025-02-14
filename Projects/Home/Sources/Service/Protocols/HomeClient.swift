@@ -6,6 +6,7 @@ public protocol HomeClient {
     func getMemberState() async throws -> MemberState
     func getQuickActions() async throws -> [QuickAction]
     func getMessagesState() async throws -> MessageState
+    func getFAQ() async throws -> HelpCenterFAQModel
 }
 
 public struct MemberState: Sendable {

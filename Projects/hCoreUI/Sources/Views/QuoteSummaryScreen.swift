@@ -477,7 +477,7 @@ public struct QuoteSummaryScreen: View {
                     if vm.isAddon {
                         VStack(alignment: .trailing, spacing: 0) {
                             if amount.value >= 0 {
-                                hText(L10n.addonFlowPriceLabel(amount.formattedAmountWithoutSymbol))
+                                hText(L10n.addonFlowPriceLabel(amount.formattedAmount))
                             } else {
                                 hText(amount.formattedAmountPerMonth)
                             }
