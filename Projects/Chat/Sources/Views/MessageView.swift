@@ -15,6 +15,12 @@ struct MessageView: View {
     @ViewBuilder
     public var body: some View {
         HStack(spacing: 0) {
+            if case .failed = message.status {
+                hCoreUIAssets.refresh.view
+                    .resizable()
+                    .frame(width: 24, height: 24)
+                    .foregroundColor(hSignalColor.Red.element)
+            }
             messageContent
                 .environment(\.colorScheme, .light)
             if case .failed = message.status {
@@ -45,19 +51,40 @@ struct MessageView: View {
 
     @ViewBuilder
     private var messageContent: some View {
-        HStack {
-            if case .failed = message.status {
-                hCoreUIAssets.refresh.view
-                    .resizable()
-                    .frame(width: 24, height: 24)
-                    .foregroundColor(hSignalColor.Red.element)
-            }
-            Group {
-                switch message.type {
-                case .text:
+        Group {
+            switch message.type {
+            case .text:
+                MarkdownView(
+                    config: .init(
+                        text: message.trimmedText,
+                        fontStyle: .body1,
+                        color: hTextColor.Opaque.primary,
+                        linkColor: hTextColor.Opaque.primary,
+                        linkUnderlineStyle: .thick,
+                        maxWidth: 300,
+                        onUrlClicked: { url in
+                            NotificationCenter.default.post(name: .openDeepLink, object: url)
+                        }
+                    )
+                )
+
+            case let .file(file):
+                ChatFileView(file: file, status: message.status).frame(maxHeight: 200)
+            case let .crossSell(url):
+                LinkView(vm: .init(url: url))
+            case let .deepLink(url):
+                if let type = DeepLink.getType(from: url) {
+                    Button {
+                        NotificationCenter.default.post(name: .openDeepLink, object: url)
+                    } label: {
+                        hText(type.wholeText(displayText: url.contractName ?? type.importantText))
+                            .foregroundColor(hTextColor.Opaque.primary)
+                            .multilineTextAlignment(.leading)
+                    }
+                } else {
                     MarkdownView(
                         config: .init(
-                            text: message.trimmedText,
+                            text: url.absoluteString,
                             fontStyle: .body1,
                             color: hTextColor.Opaque.primary,
                             linkColor: hTextColor.Opaque.primary,
@@ -68,50 +95,17 @@ struct MessageView: View {
                             }
                         )
                     )
-
-                case let .file(file):
-                    ChatFileView(file: file, status: message.status).frame(maxHeight: 200)
-                case let .crossSell(url):
-                    LinkView(vm: .init(url: url))
-                case let .deepLink(url):
-                    if let type = DeepLink.getType(from: url) {
-                        Button {
-                            NotificationCenter.default.post(name: .openDeepLink, object: url)
-                        } label: {
-                            hText(type.wholeText(displayText: url.contractName ?? type.importantText))
-                                .foregroundColor(hTextColor.Opaque.primary)
-                                .multilineTextAlignment(.leading)
-                        }
-                    } else {
-                        MarkdownView(
-                            config: .init(
-                                text: url.absoluteString,
-                                fontStyle: .body1,
-                                color: hTextColor.Opaque.primary,
-                                linkColor: hTextColor.Opaque.primary,
-                                linkUnderlineStyle: .thick,
-                                maxWidth: 300,
-                                onUrlClicked: { url in
-                                    NotificationCenter.default.post(name: .openDeepLink, object: url)
-                                }
-                            )
-                        )
-                    }
-                case let .otherLink(url):
-                    LinkView(
-                        vm: .init(url: url)
-                    )
-                case let .action(action):
-                    ActionView(action: action)
-                case .unknown: Text("")
                 }
+            case let .otherLink(url):
+                LinkView(
+                    vm: .init(url: url)
+                )
+            case let .action(action):
+                ActionView(action: action)
+            case .unknown: Text("")
             }
-            .padding(.horizontal, message.horizontalPadding)
-            .padding(.vertical, message.verticalPadding)
-            .background(message.bgColor(conversationStatus: conversationStatus))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
         }
-
+        .modifier(MessageViewBackground(message: message, conversationStatus: conversationStatus))
     }
 }
 
@@ -143,7 +137,7 @@ extension URL {
                     buttonTitle: "Go to conversation"
                 )
             ),
-            status: .sent
+            status: .failed(error: "error")
         ),
         conversationStatus: .open,
         vm: .init(chatService: service),
