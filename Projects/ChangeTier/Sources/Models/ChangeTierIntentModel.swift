@@ -89,13 +89,14 @@ public struct Tier: Codable, Equatable, Hashable, Identifiable, Sendable {
     @MainActor
     func getPremiumLabel() -> String? {
         if quotes.count == 1 {
-            return quotes.first?.premium.formattedAmountPerMonth
+            return quotes.first?.basePremium.formattedAmountPerMonth
         } else {
-            if let smallestPremium = quotes.sorted(by: { $0.premium.floatAmount < $1.premium.floatAmount }).first?
-                .premium
-                .formattedAmountWithoutSymbol
+            if let smallestPremium = quotes.sorted(by: { $0.basePremium.floatAmount < $1.basePremium.floatAmount })
+                .first?
+                .basePremium
+                .formattedAmountPerMonth
             {
-                return L10n.tierFlowPriceLabel(smallestPremium)
+                return smallestPremium
             }
         }
         return nil
@@ -107,7 +108,7 @@ public struct Quote: Codable, Hashable, Identifiable, Sendable {
     let deductableAmount: MonetaryAmount?
     let deductablePercentage: Int?
     let subTitle: String?
-    let premium: MonetaryAmount
+    let basePremium: MonetaryAmount
     let displayItems: [DisplayItem]
     public let productVariant: ProductVariant?
     let addons: [Addon]
@@ -116,7 +117,7 @@ public struct Quote: Codable, Hashable, Identifiable, Sendable {
         quoteAmount: MonetaryAmount?,
         quotePercentage: Int?,
         subTitle: String?,
-        premium: MonetaryAmount,
+        basePremium: MonetaryAmount,
         displayItems: [DisplayItem],
         productVariant: ProductVariant?,
         addons: [Addon]
@@ -125,7 +126,7 @@ public struct Quote: Codable, Hashable, Identifiable, Sendable {
         self.deductableAmount = quoteAmount
         self.deductablePercentage = quotePercentage
         self.subTitle = subTitle
-        self.premium = premium
+        self.basePremium = basePremium
         self.displayItems = displayItems
         self.productVariant = productVariant
         self.addons = addons

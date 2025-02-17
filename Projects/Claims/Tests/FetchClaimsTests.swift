@@ -67,7 +67,7 @@ final class FetchClaimsTests: XCTestCase {
                     size: 2.0,
                     mimeType: .SVG,
                     name: "file1",
-                    source: .url(url: URL(string: "https://hedvig.com")!)
+                    source: .url(url: URL(string: "https://hedvig.com")!, mimeType: .PDF)
                 )
             ],
             "file2": [
@@ -76,7 +76,7 @@ final class FetchClaimsTests: XCTestCase {
                     size: 2.0,
                     mimeType: .SVG,
                     name: "file1",
-                    source: .url(url: URL(string: "https://hedvig.com")!)
+                    source: .url(url: URL(string: "https://hedvig.com")!, mimeType: .PDF)
                 ),
                 File(
                     id: "file2",

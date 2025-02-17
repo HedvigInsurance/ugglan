@@ -34,7 +34,7 @@ final class CompareTierVireModelTests: XCTestCase {
                     quoteAmount: nil,
                     quotePercentage: nil,
                     subTitle: nil,
-                    premium: .init(amount: "229", currency: "SEK"),
+                    basePremium: .init(amount: "229", currency: "SEK"),
                     displayItems: [],
                     productVariant: .init(
                         termsVersion: "",

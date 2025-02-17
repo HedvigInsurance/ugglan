@@ -405,7 +405,7 @@ class CompareTierViewModel: ObservableObject {
                 quoteAmount: .init(amount: "220", currency: "SEK"),
                 quotePercentage: 0,
                 subTitle: nil,
-                premium: .init(amount: "220", currency: "SEK"),
+                basePremium: .init(amount: "220", currency: "SEK"),
                 displayItems: [],
                 productVariant: nil,
                 addons: []
@@ -424,7 +424,7 @@ class CompareTierViewModel: ObservableObject {
                 quoteAmount: .init(amount: "220", currency: "SEK"),
                 quotePercentage: 0,
                 subTitle: nil,
-                premium: .init(amount: "220", currency: "SEK"),
+                basePremium: .init(amount: "220", currency: "SEK"),
                 displayItems: [],
                 productVariant: nil,
                 addons: []
@@ -445,7 +445,7 @@ class CompareTierViewModel: ObservableObject {
                         quoteAmount: .init(amount: "220", currency: "SEK"),
                         quotePercentage: 0,
                         subTitle: nil,
-                        premium: .init(amount: "220", currency: "SEK"),
+                        basePremium: .init(amount: "220", currency: "SEK"),
                         displayItems: [],
                         productVariant: nil,
                         addons: []

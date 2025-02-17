@@ -62,7 +62,7 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                             ),
                             quotePercentage: intent.agreementToChange.deductible?.percentage,
                             subTitle: nil,
-                            premium: .init(fragment: intent.agreementToChange.premium.fragments.moneyFragment),
+                            basePremium: .init(fragment: intent.agreementToChange.basePremium.fragments.moneyFragment),
                             displayItems: [],
                             productVariant: .init(
                                 data: intent.agreementToChange.productVariant.fragments.productVariantFragment
@@ -81,7 +81,7 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                         quoteAmount: .init(fragment: deductible.amount.fragments.moneyFragment),
                         quotePercentage: (deductible.percentage == 0) ? nil : deductible.percentage,
                         subTitle: (deductible.displayText == "") ? nil : deductible.displayText,
-                        premium: .init(fragment: agreementToChange.premium.fragments.moneyFragment),
+                        basePremium: .init(fragment: agreementToChange.basePremium.fragments.moneyFragment),
                         displayItems: currentTier.quotes.first?.displayItems ?? [],
                         productVariant: currentTier.quotes.first?.productVariant,
                         addons: []
@@ -96,8 +96,8 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                 activationDate: intent.activationDate.localDateToDate ?? Date(),
                 tiers: filteredTiers,
                 currentPremium: .init(
-                    amount: String(agreementToChange.premium.amount),
-                    currency: agreementToChange.premium.currencyCode.rawValue
+                    amount: String(agreementToChange.basePremium.amount),
+                    currency: agreementToChange.basePremium.currencyCode.rawValue
                 ),
                 currentTier: currentTier,
                 currentQuote: currentDeductible,
@@ -169,7 +169,7 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                         quotePercentage: (quote.deductible?.percentage == 0)
                             ? nil : quote.deductible?.percentage,
                         subTitle: (quote.deductible?.displayText == "") ? nil : quote.deductible?.displayText,
-                        premium: .init(fragment: quote.premium.fragments.moneyFragment),
+                        basePremium: .init(fragment: quote.premium.fragments.moneyFragment),
                         displayItems: quote.displayItems.map({
                             .init(
                                 title: $0.displayTitle,
