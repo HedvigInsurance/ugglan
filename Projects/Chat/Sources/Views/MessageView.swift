@@ -12,44 +12,18 @@ struct MessageView: View {
     @State var height: CGFloat = 0
     @State var width: CGFloat = 0
     @State var showRetryOptions = false
-    @ViewBuilder
+
     public var body: some View {
         HStack(spacing: 0) {
             if case .failed = message.status {
-                hCoreUIAssets.refresh.view
-                    .resizable()
-                    .frame(width: 24, height: 24)
-                    .foregroundColor(hSignalColor.Red.element)
-            }
-            messageContent
-                .environment(\.colorScheme, .light)
-            if case .failed = message.status {
-                hCoreUIAssets.infoFilled.view
-                    .resizable()
-                    .frame(width: 24, height: 24)
-                    .foregroundColor(hSignalColor.Red.element)
-                    .padding(.leading, .padding8)
-                    .padding(.vertical, .padding24)
-                    .onTapGesture {
-                        showRetryOptions = true
-                    }
+                messageFailContent
+            } else {
+                messageContent
             }
         }
-        .confirmationDialog("", isPresented: $showRetryOptions, titleVisibility: .hidden) { [weak vm] in
-            Button(L10n.generalRetry) {
-                Task {
-                    await vm?.retrySending(message: message)
-                }
-            }
-            Button(L10n.General.remove, role: .destructive) {
-                vm?.deleteFailed(message: message)
-            }
-            Button(L10n.generalCancelButton, role: .cancel) {
-            }
-        }
+        .modifier(MessageViewConfirmationDialog(message: message, showRetryOptions: $showRetryOptions, vm: vm))
     }
 
-    @ViewBuilder
     private var messageContent: some View {
         Group {
             switch message.type {
@@ -106,6 +80,47 @@ struct MessageView: View {
             }
         }
         .modifier(MessageViewBackground(message: message, conversationStatus: conversationStatus))
+    }
+
+    @ViewBuilder
+    private var messageFailContent: some View {
+        hCoreUIAssets.refresh.view
+            .resizable()
+            .frame(width: 24, height: 24)
+            .foregroundColor(hSignalColor.Red.element)
+        messageContent
+            .environment(\.colorScheme, .light)
+        hCoreUIAssets.infoFilled.view
+            .resizable()
+            .frame(width: 24, height: 24)
+            .foregroundColor(hSignalColor.Red.element)
+            .padding(.leading, .padding8)
+            .padding(.vertical, .padding24)
+            .onTapGesture {
+                showRetryOptions = true
+            }
+    }
+}
+
+struct MessageViewConfirmationDialog: ViewModifier {
+    let message: Message
+    @Binding var showRetryOptions: Bool
+    @ObservedObject var vm: ChatScreenViewModel
+
+    func body(content: Content) -> some View {
+        content
+            .confirmationDialog("", isPresented: $showRetryOptions, titleVisibility: .hidden) { [weak vm] in
+                Button(L10n.generalRetry) {
+                    Task {
+                        await vm?.retrySending(message: message)
+                    }
+                }
+                Button(L10n.General.remove, role: .destructive) {
+                    vm?.deleteFailed(message: message)
+                }
+                Button(L10n.generalCancelButton, role: .cancel) {
+                }
+            }
     }
 }
 
