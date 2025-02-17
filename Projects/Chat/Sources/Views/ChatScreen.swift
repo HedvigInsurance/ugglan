@@ -98,11 +98,11 @@ public struct ChatScreen: View {
             if message.sender == .member {
                 Spacer()
             }
-            VStack(alignment: message.sender == .hedvig ? .leading : .trailing, spacing: 4) {
+            VStack(alignment: message.sender.alignment.horizontal, spacing: 4) {
                 MessageView(message: message, conversationStatus: conversationStatus, vm: vm)
                     .frame(
                         maxWidth: 300,
-                        alignment: message.sender == .member ? .trailing : .leading
+                        alignment: message.sender.alignment
                     )
                     .foregroundColor(message.textColor)
                     .onTapGesture {
@@ -113,27 +113,7 @@ public struct ChatScreen: View {
                         }
                     }
                     .id("MessageView_\(message.id)")
-                HStack(spacing: 0) {
-                    if vm.lastDeliveredMessage?.id == message.id {
-                        hText(message.timeStampString)
-                        hText(" ∙ \(L10n.chatDeliveredMessage)")
-                        hCoreUIAssets.checkmarkFilled.view
-                            .resizable()
-                            .frame(width: 16, height: 16)
-                            .foregroundColor(hSignalColor.Blue.element)
-                            .padding(.leading, 2)
-                    } else if case .failed = message.status {
-                        hText(L10n.chatFailedToSend)
-                        hText(" ∙ \(message.timeStampString)")
-                    } else {
-                        hText(message.timeStampString)
-                    }
-
-                }
-                .hTextStyle(.label)
-                .foregroundColor(hTextColor.Opaque.secondary)
-                .padding(.bottom, 3)
-
+                messageTimeStamp(message: message)
             }
             .accessibilityElement(children: .combine)
             .accessibilityLabel(accessilityLabel(for: message))
@@ -142,6 +122,29 @@ public struct ChatScreen: View {
             }
         }
         .id(message.id)
+    }
+
+    private func messageTimeStamp(message: Message) -> some View {
+        HStack(spacing: 0) {
+            if vm.lastDeliveredMessage?.id == message.id {
+                hText(message.timeStampString)
+                hText(" ∙ \(L10n.chatDeliveredMessage)")
+                hCoreUIAssets.checkmarkFilled.view
+                    .resizable()
+                    .frame(width: 16, height: 16)
+                    .foregroundColor(hSignalColor.Blue.element)
+                    .padding(.leading, 2)
+            } else if case .failed = message.status {
+                hText(L10n.chatFailedToSend)
+                hText(" ∙ \(message.timeStampString)")
+            } else {
+                hText(message.timeStampString)
+            }
+
+        }
+        .hTextStyle(.label)
+        .foregroundColor(hTextColor.Opaque.secondary)
+        .padding(.bottom, 3)
     }
 
     private func accessilityLabel(for message: Message) -> String {
@@ -242,5 +245,14 @@ class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
             return vc?.navigationController?.view.superview?.viewController ?? vc
         }
         return nil
+    }
+}
+
+extension MessageSender {
+    var alignment: Alignment {
+        switch self {
+        case .member: return .trailing
+        case .hedvig: return .leading
+        }
     }
 }

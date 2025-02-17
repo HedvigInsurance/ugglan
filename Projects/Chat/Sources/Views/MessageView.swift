@@ -68,7 +68,6 @@ struct MessageView: View {
                             }
                         )
                     )
-                    .environment(\.colorScheme, .light)
 
                 case let .file(file):
                     ChatFileView(file: file, status: message.status).frame(maxHeight: 200)
@@ -82,7 +81,6 @@ struct MessageView: View {
                             hText(type.wholeText(displayText: url.contractName ?? type.importantText))
                                 .foregroundColor(hTextColor.Opaque.primary)
                                 .multilineTextAlignment(.leading)
-                                .environment(\.colorScheme, .light)
                         }
                     } else {
                         MarkdownView(
@@ -98,7 +96,6 @@ struct MessageView: View {
                                 }
                             )
                         )
-                        .environment(\.colorScheme, .light)
                     }
                 case let .otherLink(url):
                     LinkView(
@@ -106,7 +103,6 @@ struct MessageView: View {
                     )
                 case let .action(action):
                     ActionView(action: action)
-                        .environment(\.colorScheme, .light)
                 case .unknown: Text("")
                 }
             }
@@ -116,115 +112,6 @@ struct MessageView: View {
             .clipShape(RoundedRectangle(cornerRadius: 12))
         }
 
-    }
-}
-
-struct LinkView: View {
-    @StateObject var vm: LinkViewModel
-    @State var height: CGFloat = 0
-    @State var width: CGFloat = 0
-    var body: some View {
-        if let error = vm.error {
-            MarkdownView(
-                config: .init(
-                    text: error,
-                    fontStyle: .body1,
-                    color: hTextColor.Opaque.primary,
-                    linkColor: hTextColor.Opaque.primary,
-                    linkUnderlineStyle: .thick,
-                    maxWidth: 300,
-                    onUrlClicked: { url in
-                        NotificationCenter.default.post(name: .openDeepLink, object: url)
-                    }
-                )
-            )
-            .environment(\.colorScheme, .light)
-            .padding(.padding16)
-            .transition(.opacity)
-        } else if let model = vm.webMetaDataProviderData {
-            VStack(spacing: .padding8) {
-                Image(uiImage: model.image ?? hCoreUIAssets.helipadOutlined.image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(minHeight: 200)
-                VStack(spacing: .padding8) {
-                    hText(model.title)
-                        .foregroundColor(hTextColor.Opaque.primary)
-                        .multilineTextAlignment(.leading)
-                        .fixedSize(horizontal: false, vertical: true)
-                    hButton.MediumButton(type: .primaryAlt) {
-                        NotificationCenter.default.post(name: .openDeepLink, object: vm.url)
-                    } content: {
-                        hText(L10n.ImportantMessage.readMore)
-                    }
-                    .hButtonTakeFullWidth(true)
-
-                }
-                .padding([.horizontal, .bottom], .padding16)
-            }
-            .transition(.opacity)
-            .frame(width: 300)
-        } else {
-            ProgressView()
-                .foregroundColor(hTextColor.Opaque.primary)
-                .frame(width: 300, height: 200)
-                .transition(.opacity)
-        }
-    }
-}
-
-@MainActor
-class LinkViewModel: ObservableObject {
-    @Published var webMetaDataProviderData: WebMetaDataProviderData?
-    @Published var error: String?
-    let url: URL
-
-    init(url: URL) {
-        self.url = url
-        getData()
-
-    }
-
-    @MainActor
-    func getData() {
-        Task {
-            do {
-                if let webMetaDataProviderData = try await WebMetaDataProvider.shared.data(for: url) {
-                    withAnimation {
-                        self.webMetaDataProviderData = webMetaDataProviderData
-                    }
-                } else {
-                    withAnimation {
-                        self.error = url.absoluteString
-                    }
-                }
-            } catch let ex {
-                withAnimation {
-                    error = ex.localizedDescription
-                }
-            }
-        }
-    }
-}
-
-struct ActionView: View {
-    let action: ActionMessage
-
-    var body: some View {
-        VStack(spacing: .padding16) {
-            if let text = action.text {
-                hText(text, style: .body1)
-                    .foregroundColor(hTextColor.Opaque.primary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            hButton.MediumButton(type: .secondary) {
-                NotificationCenter.default.post(name: .openDeepLink, object: action.url)
-            } content: {
-                hText(action.buttonTitle)
-            }
-            hButtonTakeFullWidth(true)
-        }
-        .environment(\.colorScheme, .light)
     }
 }
 
