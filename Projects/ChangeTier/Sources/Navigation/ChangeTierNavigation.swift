@@ -288,10 +288,19 @@ public struct ChangeTierNavigation: View {
     private var wrapperHost: some View {
         Group {
             if let changeTierContracts = changeTierNavigationVm.changeTierContractsInput {
-                SelectInsuranceScreen(changeTierContractsInput: changeTierContracts)
-                    .routerDestination(for: ChangeTierContract.self) { changeTierContract in
-                        getScreen
-                    }
+                if changeTierContracts.contracts.isEmpty {
+                    GenericErrorView(
+                        title: L10n.somethingWentWrong,
+                        description: L10n.General.defaultError,
+                        formPosition: .center
+                    )
+                    .withDismissButton()
+                } else {
+                    SelectInsuranceScreen(changeTierContractsInput: changeTierContracts)
+                        .routerDestination(for: ChangeTierContract.self) { changeTierContract in
+                            getScreen
+                        }
+                }
             } else {
                 getScreen
             }
