@@ -98,21 +98,8 @@ public struct ChatScreen: View {
             if message.sender == .member {
                 Spacer()
             }
-            VStack(alignment: message.sender.alignment.horizontal, spacing: 4) {
+            VStack(alignment: message.sender.alignment.horizontal, spacing: .padding4) {
                 MessageView(message: message, conversationStatus: conversationStatus, vm: vm)
-                    .frame(
-                        maxWidth: 300,
-                        alignment: message.sender.alignment
-                    )
-                    .foregroundColor(message.textColor)
-                    .onTapGesture {
-                        if case .failed = message.status {
-                            Task {
-                                await vm.retrySending(message: message)
-                            }
-                        }
-                    }
-                    .id("MessageView_\(message.id)")
                 messageTimeStamp(message: message)
             }
             .accessibilityElement(children: .combine)
@@ -133,14 +120,13 @@ public struct ChatScreen: View {
                     .resizable()
                     .frame(width: 16, height: 16)
                     .foregroundColor(hSignalColor.Blue.element)
-                    .padding(.leading, 2)
+                    .padding(.leading, .padding2)
             } else if case .failed = message.status {
                 hText(L10n.chatFailedToSend)
                 hText(" ∙ \(message.timeStampString)")
             } else {
                 hText(message.timeStampString)
             }
-
         }
         .hTextStyle(.label)
         .foregroundColor(hTextColor.Opaque.secondary)

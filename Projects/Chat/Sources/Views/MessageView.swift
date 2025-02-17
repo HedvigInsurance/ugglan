@@ -9,8 +9,6 @@ struct MessageView: View {
     let message: Message
     let conversationStatus: ConversationStatus
     @ObservedObject var vm: ChatScreenViewModel
-    @State var height: CGFloat = 0
-    @State var width: CGFloat = 0
     @State var showRetryOptions = false
 
     public var body: some View {
@@ -21,6 +19,19 @@ struct MessageView: View {
                 messageContent
             }
         }
+        .frame(
+            maxWidth: 300,
+            alignment: message.sender.alignment
+        )
+        .foregroundColor(message.textColor)
+        .onTapGesture {
+            if case .failed = message.status {
+                Task {
+                    await vm.retrySending(message: message)
+                }
+            }
+        }
+        .id("MessageView_\(message.id)")
         .modifier(MessageViewConfirmationDialog(message: message, showRetryOptions: $showRetryOptions, vm: vm))
     }
 
@@ -156,8 +167,6 @@ extension URL {
         ),
         conversationStatus: .open,
         vm: .init(chatService: service),
-        height: 300,
-        width: 300,
         showRetryOptions: true
     )
 })
