@@ -33,9 +33,6 @@ public struct DropdownView: View {
             }
         }
         .hAnimateField(false)
-        .accessibilityElement(children: .combine)
-        .accessibilityAddTraits(.isButton)
-        .accessibilityLabel(placeHolder + value)
     }
 
     @hColorBuilder

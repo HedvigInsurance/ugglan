@@ -74,12 +74,15 @@ struct ContractDetails: View {
                     }
                 }
                 .withEmptyAccessory
+                .accessibilityElement(children: .combine)
                 if contract.periods.count - 1 == offset {
                     hRow {
                         hText(L10n.paymentsSubtotal)
                         Spacer()
                         hText(contract.amount.formattedAmount)
+                        hText(" ")
                     }
+                    .accessibilityElement(children: .combine)
                 }
             }
             .hSectionWithoutHorizontalPadding
@@ -95,4 +98,37 @@ struct ContractDetails: View {
             baseColor
         }
     }
+}
+
+#Preview {
+    @State var isExpanded: [String] = ["id1"]
+    Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+
+    return ContractDetails(
+        expandedContracts: $isExpanded,
+        contract: .init(
+            id: "id1",
+            title: "title",
+            subtitle: "subtitle",
+            amount: .sek(200),
+            periods: [
+                .init(
+                    id: "1",
+                    from: "2023-11-10",
+                    to: "2023-11-23",
+                    amount: .sek(100),
+                    isOutstanding: false,
+                    desciption: nil
+                ),
+                .init(
+                    id: "2",
+                    from: "2023-11-23",
+                    to: "2023-11-30",
+                    amount: .sek(80),
+                    isOutstanding: true,
+                    desciption: nil
+                ),
+            ]
+        )
+    )
 }
