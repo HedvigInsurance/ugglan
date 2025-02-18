@@ -29,7 +29,9 @@ struct PerilCollection_Previews: PreviewProvider {
                     title: "title",
                     description: "lkflihf uhreuidhf iwureahriur ekfshiuf erhfw iueherfuihgfeuihfgrui fruhfiuehf",
                     color: "#C45F4F",
-                    covered: []
+                    covered: [
+                        "covered 1"
+                    ]
                 ),
                 .init(
                     id: "2",
