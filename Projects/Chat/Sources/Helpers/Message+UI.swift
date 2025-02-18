@@ -59,6 +59,7 @@ struct MessageViewBackground: ViewModifier {
             .padding(.horizontal, message.horizontalPadding)
             .padding(.vertical, message.verticalPadding)
             .background(message.bgColor(conversationStatus: conversationStatus))
+            .foregroundColor(message.textColor)
             .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }

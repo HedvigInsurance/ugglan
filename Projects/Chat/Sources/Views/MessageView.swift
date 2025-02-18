@@ -23,7 +23,6 @@ struct MessageView: View {
             maxWidth: 300,
             alignment: message.sender.alignment
         )
-        .foregroundColor(message.textColor)
         .onTapGesture {
             if case .failed = message.status {
                 Task {
