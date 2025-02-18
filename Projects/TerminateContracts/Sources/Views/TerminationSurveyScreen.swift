@@ -111,7 +111,7 @@ struct TerminationSurveyScreen: View {
                     )
                 ])
                 .hButtonIsLoading(false)
-        case .suggestInfo(let info):
+        case .suggestionInfo(let info):
             InfoCard(text: info.description, type: info.type == .offer ? .campaign : .info)
         }
     }
@@ -281,7 +281,7 @@ class SurveyScreenViewModel: ObservableObject {
         .init(
             id: "optionId3",
             title: "Option title 3",
-            suggestion: .suggestInfo(
+            suggestion: .suggestionInfo(
                 info: .init(
                     id: "id",
                     description: "description",

@@ -18,7 +18,7 @@ public struct TerminationFlowSurveyStepModelOption: FlowStepModel, Identifiable 
 enum TerminationFlowSurveyStepSuggestion: FlowStepModel {
     case action(action: TerminationFlowSurveyStepSuggestionAction)
     case redirect(redirect: TerminationFlowSurveyStepSuggestionRedirection)
-    case suggestInfo(info: TerminationFlowSurveyStepSuggestionInfo)
+    case suggestionInfo(info: TerminationFlowSurveyStepSuggestionInfo)
 }
 
 public struct TerminationFlowSurveyStepSuggestionAction: FlowStepModel {

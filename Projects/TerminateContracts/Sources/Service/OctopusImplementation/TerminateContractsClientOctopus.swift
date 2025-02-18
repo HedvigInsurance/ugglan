@@ -240,7 +240,7 @@ extension OctopusGraphQL.FlowTerminationSurveyOptionSuggestionFragment {
                     action: action,
                     description: description,
                     buttonTitle: buttonTitle,
-                    type: .offer
+                    type: optionActionSuggestion.infoType.value?.asInfoType ?? .offer
                 )
             )
         } else if let optionRedirectSuggestion = self.asFlowTerminationSurveyOptionSuggestionRedirect {
@@ -250,7 +250,15 @@ extension OctopusGraphQL.FlowTerminationSurveyOptionSuggestionFragment {
                     url: optionRedirectSuggestion.url,
                     description: optionRedirectSuggestion.description,
                     buttonTitle: optionRedirectSuggestion.buttonTitle,
-                    type: .offer
+                    type: optionRedirectSuggestion.infoType.value?.asInfoType ?? .offer
+                )
+            )
+        } else if let optionSuggestionInfo = self.asFlowTerminationSurveyOptionSuggestionInfo {
+            return .suggestionInfo(
+                info: .init(
+                    id: optionSuggestionInfo.id,
+                    description: optionSuggestionInfo.description,
+                    type: optionSuggestionInfo.infoType.value?.asInfoType ?? .offer
                 )
             )
         }
@@ -279,6 +287,15 @@ extension GraphQLEnum<OctopusGraphQL.FlowTerminationSurveyRedirectAction> {
 extension OctopusGraphQL.FlowTerminationSurveyOptionFeedbackFragment {
     var asFeedback: TerminationFlowSurveyStepFeedback? {
         .init(id: self.id, isRequired: self.isRequired)
+    }
+}
+
+extension OctopusGraphQL.FlowTerminationSurveyOptionSuggestionInfoType {
+    var asInfoType: SurveySuggestionInfoType {
+        switch self {
+        case .info: return .info
+        case .offer: return .offer
+        }
     }
 }
 
