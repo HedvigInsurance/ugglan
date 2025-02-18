@@ -113,8 +113,8 @@ extension PaymentData.PaymentStack {
 extension PaymentData.ContractPaymentDetails {
     init(with data: OctopusGraphQL.MemberChargeFragment.ChargeBreakdown) {
         id = UUID().uuidString
-        title = data.displayTitle ?? data.contract?.currentAgreement.productVariant.displayName ?? ""
-        subtitle = data.displaySubtitle ?? data.contract?.exposureDisplayName
+        title = data.displayTitle
+        subtitle = data.displaySubtitle
         amount = .init(fragment: data.gross.fragments.moneyFragment)
         periods = data.periods.compactMap({ .init(with: $0) })
     }

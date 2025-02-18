@@ -39,14 +39,6 @@ fragment MemberChargeFragment on MemberCharge{
           }
           isPreviouslyFailedCharge
         }
-        contract {
-          exposureDisplayName
-          currentAgreement {
-            productVariant {
-              displayName
-            }
-          }
-        }
       }
       date
       discount {
