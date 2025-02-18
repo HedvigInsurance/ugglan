@@ -174,7 +174,7 @@ class SurveyScreenViewModel: ObservableObject {
     }
 
     @Published var viewState: ProcessingState = .success
-    @Inject private var service: TerminateContractsClient
+    private let terminateContractsService = TerminateContractsService()
 
     init(options: [TerminationFlowSurveyStepModelOption], subtitleType: SurveyScreenSubtitleType) {
         self.options = options
@@ -209,7 +209,11 @@ class SurveyScreenViewModel: ObservableObject {
             viewState = .loading
         }
         do {
-            let data = try await service.sendSurvey(terminationContext: context, option: option, inputData: inputData)
+            let data = try await terminateContractsService.sendSurvey(
+                terminationContext: context,
+                option: option,
+                inputData: inputData
+            )
             withAnimation {
                 viewState = .success
             }

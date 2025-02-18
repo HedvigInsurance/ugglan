@@ -166,7 +166,7 @@ public class TerminationFlowNavigationViewModel: ObservableObject, @preconcurren
     }
     let router = Router()
 
-    @Inject private var terminateContractsService: TerminateContractsClient
+    private let terminateContractsService = TerminateContractsService()
 
     @Published var currentContext: String?
     @Published var progress: Float? = 0
