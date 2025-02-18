@@ -95,6 +95,7 @@ struct InsuredPeopleScreen: View {
                     contractId: vm.config.contractId
                 )
             }
+            .accessibilityLabel(L10n.voiceoverDeleteCoinsuredButton)
     }
 
     @ViewBuilder
@@ -166,38 +167,15 @@ struct ConfirmChangesView: View {
 
     var body: some View {
         hSection {
-            VStack(spacing: 16) {
-                VStack(spacing: 2) {
-                    HStack(spacing: 8) {
-                        hText(L10n.contractAddCoinsuredTotal)
-                        Spacer()
-                        if #available(iOS 16.0, *) {
-                            hText(
-                                intentViewModel.intent.currentPremium.formattedAmount
-                                    + L10n.perMonth
-                            )
-                            .strikethrough()
-                            .foregroundColor(hTextColor.Opaque.secondary)
-                        } else {
-                            hText(
-                                intentViewModel.intent.currentPremium.formattedAmount
-                                    + L10n.perMonth
-                            )
-                            .foregroundColor(hTextColor.Opaque.secondary)
-
-                        }
-                        hText(intentViewModel.intent.newPremium.formattedAmount + L10n.perMonth)
-                    }
-                    hText(
-                        L10n.contractAddCoinsuredStartsFrom(
-                            intentViewModel.intent.activationDate.localDateToDate?
-                                .displayDateDDMMMYYYYFormat ?? ""
-                        ),
-                        style: .label
+            VStack(spacing: .padding16) {
+                PriceField(
+                    newPremium: intentViewModel.intent.newPremium,
+                    currentPremium: intentViewModel.intent.currentPremium,
+                    subTitle: L10n.contractAddCoinsuredStartsFrom(
+                        intentViewModel.intent.activationDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
                     )
-                    .foregroundColor(hTextColor.Opaque.secondary)
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                }
+                )
+                .hWithStrikeThroughPrice(setTo: .crossOldPrice)
 
                 hButton.LargeButton(type: .primary) {
                     editCoInsuredNavigation.showProgressScreenWithSuccess = true

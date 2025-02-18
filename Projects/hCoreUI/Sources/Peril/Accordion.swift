@@ -109,8 +109,10 @@ struct AccordionButtonStyle: SwiftUI.ButtonStyle {
                     if let perilCover = peril?.covered {
                         ForEach(Array(perilCover.enumerated()), id: \.offset) { index, item in
                             HStack(alignment: .top, spacing: 8) {
-                                hText(String(format: "%02d", index + 1), style: .label)
-                                    .foregroundColor(hTextColor.Opaque.tertiary)
+                                if perilCover.count > 1 {
+                                    hText(String(format: "%02d", index + 1), style: .label)
+                                        .foregroundColor(hTextColor.Opaque.tertiary)
+                                }
                                 hText(item, style: .label)
                             }
                         }

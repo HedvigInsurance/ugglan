@@ -39,6 +39,7 @@ public struct SubmitClaimSummaryScreen: View {
                     }
                 }
                 .sectionContainerStyle(.transparent)
+                .accessibilityElement(children: .combine)
 
                 hSection {
                     hRowDivider()

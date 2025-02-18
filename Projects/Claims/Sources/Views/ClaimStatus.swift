@@ -49,6 +49,7 @@ struct ClaimStatus: View {
                     }
                     extendedBottomView
                 }
+                .fixedSize(horizontal: false, vertical: true)
             }
         )
     }
