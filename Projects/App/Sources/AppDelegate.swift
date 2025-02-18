@@ -203,7 +203,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             if ApplicationState.currentState != .notLoggedIn {
                 self?.dissmissAllVC()
                 DispatchQueue.main.async {
-                    self?.dissmissAllVC()
                     ApplicationState.preserveState(.notLoggedIn)
                     ApplicationState.state = .notLoggedIn
                     self?.logout()
