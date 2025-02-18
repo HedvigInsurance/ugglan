@@ -50,9 +50,7 @@ public class HomeClientOctopus: HomeClient {
         var quickActions = [QuickAction]()
         let actions = data.currentMember.memberActions
         var contractAction = [QuickAction]()
-        if actions?.isMovingEnabled == true && featureFlags.isMovingFlowEnabled {
-            contractAction.append(.changeAddress)
-        }
+
         if actions?.isEditCoInsuredEnabled == true && featureFlags.isEditCoInsuredEnabled {
             contractAction.append(.editCoInsured)
         }
@@ -68,6 +66,11 @@ public class HomeClientOctopus: HomeClient {
         if !contractAction.isEmpty {
             quickActions.append(.editInsurance(actions: .init(quickActions: contractAction)))
         }
+
+        if actions?.isMovingEnabled == true && featureFlags.isMovingFlowEnabled {
+            quickActions.append(.changeAddress)
+        }
+
         if actions?.isConnectPaymentEnabled == true {
             quickActions.append(.connectPayments)
         }

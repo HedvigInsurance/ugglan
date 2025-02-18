@@ -134,9 +134,11 @@ struct PaymentDetailsView: View {
                     }
                 }
                 hText(data.payment.net.formattedAmount)
+                hText(" ")
             }
         }
         .hWithoutHorizontalPadding
+        .accessibilityElement(children: .combine)
     }
 
     @ViewBuilder var paymentDue: some View {
@@ -161,6 +163,7 @@ struct PaymentDetailsView: View {
             }
         }
         .hWithoutHorizontalPadding
+        .accessibilityElement(children: .combine)
     }
 
     @ViewBuilder
@@ -215,6 +218,7 @@ struct PaymentDetailsView: View {
 struct PaymentDetails_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         let data = PaymentData(
             id: "id",
             payment: .init(

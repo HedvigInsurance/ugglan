@@ -38,7 +38,10 @@ struct ContractInformationView: View {
                                         if let date = item.displayValue.localDateToDate?.displayDateDDMMMYYYYFormat {
                                             hText(date)
                                         } else {
-                                            hText(item.displayValue)
+                                            ZStack {
+                                                hText(item.displayValue)
+                                                hText(" ")
+                                            }
                                         }
                                     }
                                     .foregroundColor(hTextColor.Opaque.secondary)
@@ -78,9 +81,7 @@ struct ContractInformationView: View {
                                         }
                                     }
                                 }
-                                if contract.canTerminate {
-                                    displayTerminationButton
-                                }
+                                moveAddressButton(contract: contract)
                             }
                             .padding(.bottom, .padding16)
                         }
@@ -308,44 +309,19 @@ struct ContractInformationView: View {
     }
 
     @ViewBuilder
-    private var displayTerminationButton: some View {
-        if Dependencies.featureFlags().isTerminationFlowEnabled {
-            PresentableStoreLens(
-                ContractStore.self,
-                getter: { state in
-                    state.contractForId(id)
-                }
-            ) { contract in
-                if contract?.canTerminate ?? false {
-                    hSection {
-                        hButton.LargeButton(type: .ghost) {
-                            if let contract {
-                                let config = TerminationConfirmConfig(contract: contract)
-                                Task {
-                                    withAnimation {
-                                        vm.cancelInsuranceState = .loading
-                                    }
-                                    do {
-                                        try await contractsNavigationVm.terminateInsuranceVm.start(with: [config])
-                                    } catch let exception {
-                                        Toasts.shared.displayToastBar(
-                                            toast: .init(type: .error, text: exception.localizedDescription)
-                                        )
-                                    }
-                                    withAnimation {
-                                        vm.cancelInsuranceState = .success
-                                    }
-                                }
-                            }
-                        } content: {
-                            hText(L10n.terminationButton, style: .body1)
-                                .foregroundColor(hTextColor.Opaque.secondary)
-                        }
-                    }
-                    .sectionContainerStyle(.transparent)
-                    .hButtonIsLoading(vm.cancelInsuranceState == .loading)
+    private func moveAddressButton(contract: Contract) -> some View {
+        let contractsThatSupportsMoving = store.state.activeContracts.filter({ $0.supportsAddressChange })
+        if contract.supportsAddressChange && Dependencies.featureFlags().isMovingFlowEnabled
+            && contractsThatSupportsMoving.count < 2
+        {
+            hSection {
+                hButton.LargeButton(type: .ghost) {
+                    contractsNavigationVm.isChangeAddressPresented = true
+                } content: {
+                    hText(L10n.InsuranceDetails.moveButton, style: .body1)
                 }
             }
+            .sectionContainerStyle(.transparent)
         }
     }
 }
@@ -353,7 +329,6 @@ struct ContractInformationView: View {
 @MainActor
 private class ContractsInformationViewModel: ObservableObject {
     var cancellable: AnyCancellable?
-    @Published var cancelInsuranceState: ProcessingState = .success
     func getListToDisplay(contract: Contract) -> [CoInsuredListType] {
         return contract.coInsured
             .map {
