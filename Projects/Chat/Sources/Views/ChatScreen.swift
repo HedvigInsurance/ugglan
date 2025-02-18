@@ -21,37 +21,20 @@ public struct ChatScreen: View {
         ScrollViewReader { proxy in
             loadingPreviousMessages
             messagesContainer(with: proxy)
+                .flippedUpsideDown()
+                .padding(.bottom, -8)
             infoCard
                 .padding(.bottom, -8)
             ChatInputView(vm: vm.chatInputVm)
                 .padding(.bottom, .padding16)
         }
-        .dismissKeyboard()
-        .findScrollView({ sv in
-            sv.delegate = chatScrollViewDelegate
-        })
-        .task {
-            vm.chatNavigationVm = chatNavigationVm
-        }
-        .configureTitleView(vm)
-        .onAppear {
-            vm.scrollCancellable = chatScrollViewDelegate.isScrolling
-                .subscribe(on: RunLoop.main)
-                .sink { [weak vm] _ in
-                    withAnimation {
-                        vm?.chatInputVm.showBottomMenu = false
-                    }
-                }
-            Task {
-                await vm.startFetchingNewMessages()
-            }
-        }
-        .fileDrop(isTargetedForDropdown: $isTargetedForDropdown) { file in
-            Task {
-                let message = Message(type: .file(file: file))
-                await vm.send(message: message)
-            }
-        }
+        .modifier(
+            ChatScreenModifier(
+                vm: vm,
+                chatScrollViewDelegate: chatScrollViewDelegate,
+                isTargetedForDropdown: $isTargetedForDropdown
+            )
+        )
     }
 
     @ViewBuilder
@@ -89,8 +72,6 @@ public struct ChatScreen: View {
                 }
             }
         }
-        .flippedUpsideDown()
-        .padding(.bottom, -8)
     }
 
     private func messageView(for message: Message, conversationStatus: ConversationStatus) -> some View {
@@ -177,8 +158,44 @@ public struct ChatScreen: View {
     }
 }
 
-class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
+struct ChatScreenModifier: ViewModifier {
+    @ObservedObject var vm: ChatScreenViewModel
+    @ObservedObject var chatScrollViewDelegate: ChatScrollViewDelegate
+    @EnvironmentObject var chatNavigationVm: ChatNavigationViewModel
+    @Binding var isTargetedForDropdown: Bool
 
+    func body(content: Content) -> some View {
+        content
+            .dismissKeyboard()
+            .findScrollView({ sv in
+                sv.delegate = chatScrollViewDelegate
+            })
+            .task {
+                vm.chatNavigationVm = chatNavigationVm
+            }
+            .configureTitleView(vm)
+            .onAppear {
+                vm.scrollCancellable = chatScrollViewDelegate.isScrolling
+                    .subscribe(on: RunLoop.main)
+                    .sink { [weak vm] _ in
+                        withAnimation {
+                            vm?.chatInputVm.showBottomMenu = false
+                        }
+                    }
+                Task {
+                    await vm.startFetchingNewMessages()
+                }
+            }
+            .fileDrop(isTargetedForDropdown: $isTargetedForDropdown) { file in
+                Task {
+                    let message = Message(type: .file(file: file))
+                    await vm.send(message: message)
+                }
+            }
+    }
+}
+
+class ChatScrollViewDelegate: NSObject, UIScrollViewDelegate, ObservableObject {
     let isScrolling = PassthroughSubject<Bool, Never>()
 
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
