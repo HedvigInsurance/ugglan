@@ -201,7 +201,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         forceLogoutHook = { [weak self] in
             if ApplicationState.currentState != .notLoggedIn {
-                self?.dissmissAllVC()
+                self?.dismissAllVCs()
                 DispatchQueue.main.async {
                     ApplicationState.preserveState(.notLoggedIn)
                     ApplicationState.state = .notLoggedIn
@@ -217,7 +217,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
 
-    private func dissmissAllVC() {
+    private func dismissAllVCs() {
         Task {
             var hasPresentedVC = true
             while hasPresentedVC {
