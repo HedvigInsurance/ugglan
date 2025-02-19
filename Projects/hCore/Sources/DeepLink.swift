@@ -78,12 +78,7 @@ public enum DeepLink: String, Codable, CaseIterable {
     @MainActor
     public static func getType(from url: URL) -> DeepLink? {
         guard Environment.staging.isDeeplink(url) || Environment.production.isDeeplink(url) else { return nil }
-
-        let components = url.pathComponents
-            .filter {
-                $0 != "/" && $0 != "deeplink"
-            }
-            .joined(separator: "/")
+        let components = url.pathComponents.filter { $0 != "/" }.filter({ $0 != "deeplink" }).joined(separator: "/")
 
         guard let type = DeepLink(rawValue: components) else {
             return nil
