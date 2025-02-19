@@ -68,7 +68,6 @@ struct TerminationSurveyScreen: View {
                     }
                     if let suggestion = vm.selectedOption?.suggestion {
                         suggestionView(for: suggestion)
-                            .matchedGeometryEffect(id: "buildInfo", in: animationNamespace)
                     }
 
                     if let optionId = vm.selectedOption?.id, let feedBack = vm.allFeedBackViewModels[optionId],
@@ -88,7 +87,7 @@ struct TerminationSurveyScreen: View {
     func suggestionView(for suggestion: TerminationFlowSurveyStepSuggestion) -> some View {
         switch suggestion {
         case .action(let action):
-            InfoCard(text: action.description, type: action.type == .offer ? .campaign : .info)
+            InfoCard(text: action.description, type: action.type.notificationType)
                 .buttons([
                     .init(
                         buttonTitle: action.buttonTitle,
@@ -99,7 +98,7 @@ struct TerminationSurveyScreen: View {
                 ])
                 .hButtonIsLoading(terminationFlowNavigationViewModel.redirectActionLoadingState == .loading)
         case .redirect(let redirect):
-            InfoCard(text: redirect.description, type: redirect.type == .offer ? .campaign : .info)
+            InfoCard(text: redirect.description, type: redirect.type.notificationType)
                 .buttons([
                     .init(
                         buttonTitle: redirect.buttonTitle,
@@ -112,7 +111,7 @@ struct TerminationSurveyScreen: View {
                 ])
                 .hButtonIsLoading(false)
         case .suggestionInfo(let info):
-            InfoCard(text: info.description, type: info.type == .offer ? .campaign : .info)
+            InfoCard(text: info.description, type: info.type.notificationType)
         }
     }
 
