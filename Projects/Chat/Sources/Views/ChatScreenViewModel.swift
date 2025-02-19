@@ -24,15 +24,14 @@ public class ChatScreenViewModel: ObservableObject {
     var scrollCancellable: AnyCancellable?
     private var pollTimerCancellable: AnyCancellable?
     var hideBannerCancellable: AnyCancellable?
-
     private var addedMessagesIds: [String] = []
     private var hasNext: Bool?
-    private var isFetching = false
     private var haveSentAMessage = false
     private var openDeepLinkObserver: NSObjectProtocol?
     private var onTitleTap: () -> Void?
     private var claimId: String?
     private var sendingMessagesIds = [String]()
+
     public init(
         chatService: ChatServiceProtocol,
         onTitleTap: @escaping () -> Void = {}
