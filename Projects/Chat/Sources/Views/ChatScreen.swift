@@ -39,7 +39,7 @@ public struct ChatScreen: View {
 
     @ViewBuilder
     private var loadingPreviousMessages: some View {
-        if vm.isFetchingPreviousMessages {
+        if vm.messageVm.isFetchingPreviousMessages {
             DotsActivityIndicator(.standard)
                 .useDarkColor
                 .fixedSize()
@@ -52,21 +52,21 @@ public struct ChatScreen: View {
     private func messagesContainer(with proxy: ScrollViewProxy?) -> some View {
         ScrollView {
             LazyVStack(spacing: 8) {
-                ForEach(vm.messages) { message in
-                    messageView(for: message, conversationStatus: vm.conversationStatus)
+                ForEach(vm.messageVm.messages) { message in
+                    messageView(for: message, conversationStatus: vm.messageVm.conversationVm.conversationStatus)
                         .flippedUpsideDown()
                         .onAppear {
-                            if message.id == vm.messages.last?.id {
+                            if message.id == vm.messageVm.messages.last?.id {
                                 Task {
-                                    await vm.fetchPreviousMessages()
+                                    await vm.messageVm.fetchPreviousMessages()
                                 }
                             }
                         }
                 }
             }
             .padding([.horizontal, .bottom], .padding16)
-            .padding(.top, vm.banner != nil ? .padding8 : 0)
-            .onChange(of: vm.scrollToMessage?.id) { id in
+            .padding(.top, vm.messageVm.conversationVm.banner != nil ? .padding8 : 0)
+            .onChange(of: vm.messageVm.scrollToMessage?.id) { id in
                 withAnimation {
                     proxy?.scrollTo(id, anchor: .bottom)
                 }
@@ -94,7 +94,7 @@ public struct ChatScreen: View {
 
     private func messageTimeStamp(message: Message) -> some View {
         HStack(spacing: 0) {
-            if vm.lastDeliveredMessage?.id == message.id {
+            if vm.messageVm.lastDeliveredMessage?.id == message.id {
                 hText(message.timeStampString)
                 hText(" ∙ \(L10n.chatDeliveredMessage)")
                 hCoreUIAssets.checkmarkFilled.view
@@ -131,13 +131,14 @@ public struct ChatScreen: View {
 
     @ViewBuilder
     private var infoCard: some View {
-        if vm.shouldShowBanner {
-            if let banner = vm.banner {
+        if vm.messageVm.conversationVm.shouldShowBanner {
+            if let banner = vm.messageVm.conversationVm.banner {
                 InfoCard(text: "", type: .info)
                     .hInfoCardCustomView {
                         MarkdownView(
                             config: .init(
-                                text: (vm.conversationStatus == .closed) ? L10n.chatConversationClosedInfo : banner,
+                                text: (vm.messageVm.conversationVm.conversationStatus == .closed)
+                                    ? L10n.chatConversationClosedInfo : banner,
                                 fontStyle: .label,
                                 color: hSignalColor.Blue.text,
                                 linkColor: hSignalColor.Blue.text,
@@ -151,7 +152,10 @@ public struct ChatScreen: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                     .accessibilityElement(children: .combine)
                     .accessibilityAddTraits(.isButton)
-                    .accessibilityLabel((vm.conversationStatus == .closed) ? L10n.chatConversationClosedInfo : banner)
+                    .accessibilityLabel(
+                        (vm.messageVm.conversationVm.conversationStatus == .closed)
+                            ? L10n.chatConversationClosedInfo : banner
+                    )
                     .accessibilityHint(L10n.voiceOverInfoHelpcenter)
             }
         }
@@ -171,9 +175,9 @@ struct ChatScreenModifier: ViewModifier {
                 sv.delegate = chatScrollViewDelegate
             })
             .task {
-                vm.chatNavigationVm = chatNavigationVm
+                vm.messageVm.chatNavigationVm = chatNavigationVm
             }
-            .configureTitleView(vm)
+            .configureTitleView(vm.messageVm.conversationVm)
             .onAppear {
                 vm.scrollCancellable = chatScrollViewDelegate.isScrolling
                     .subscribe(on: RunLoop.main)
@@ -189,7 +193,7 @@ struct ChatScreenModifier: ViewModifier {
             .fileDrop(isTargetedForDropdown: $isTargetedForDropdown) { file in
                 Task {
                     let message = Message(type: .file(file: file))
-                    await vm.send(message: message)
+                    await vm.messageVm.send(message: message)
                 }
             }
     }

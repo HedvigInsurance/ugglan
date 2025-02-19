@@ -26,7 +26,7 @@ struct MessageView: View {
         .onTapGesture {
             if case .failed = message.status {
                 Task {
-                    await vm.retrySending(message: message)
+                    await vm.messageVm.retrySending(message: message)
                 }
             }
         }
@@ -122,11 +122,11 @@ struct MessageViewConfirmationDialog: ViewModifier {
             .confirmationDialog("", isPresented: $showRetryOptions, titleVisibility: .hidden) { [weak vm] in
                 Button(L10n.generalRetry) {
                     Task {
-                        await vm?.retrySending(message: message)
+                        await vm?.messageVm.retrySending(message: message)
                     }
                 }
                 Button(L10n.General.remove, role: .destructive) {
-                    vm?.deleteFailed(message: message)
+                    vm?.messageVm.deleteFailed(message: message)
                 }
                 Button(L10n.generalCancelButton, role: .cancel) {
                 }
