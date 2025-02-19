@@ -45,7 +45,8 @@ public struct AddonSelectInsuranceScreen: View {
                     if let selectedContract = selected.first?.0 {
                         vm.selectedItems = selected.compactMap({ $0.0 })
                         changeAddonNavigationVm.changeAddonVm = .init(
-                            contractId: selectedContract.contractId
+                            contractId: selectedContract.contractId,
+                            addonSource: changeAddonNavigationVm.input.addonSource
                         )
                         vm.observer = changeAddonNavigationVm.changeAddonVm!.$fetchAddonsViewState
                             .sink { value in
@@ -87,10 +88,11 @@ class AddonSelectInsuranceScreenViewModel: ObservableObject {
 #Preview {
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    return AddonSelectInsuranceScreen(changeAddonVm: .init(contractId: "contractId"))
+    return AddonSelectInsuranceScreen(changeAddonVm: .init(contractId: "contractId", addonSource: .insurances))
         .environmentObject(
             ChangeAddonNavigationViewModel(
                 input: .init(
+                    addonSource: .insurances,
                     contractConfigs: [
                         .init(contractId: "1", exposureName: "1", displayName: "1"),
                         .init(contractId: "2", exposureName: "2", displayName: "2"),
