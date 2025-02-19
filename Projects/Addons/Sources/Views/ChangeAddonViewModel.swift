@@ -11,9 +11,10 @@ public class ChangeAddonViewModel: ObservableObject {
     @Published var selectedQuote: AddonQuote?
     @Published var addonOffer: AddonOffer?
     let contractId: String
-
-    init(contractId: String) {
+    let addonSource: AddonSource
+    init(contractId: String, addonSource: AddonSource) {
         self.contractId = contractId
+        self.addonSource = addonSource
         Task {
             await getAddons()
             self._selectedQuote = Published(
@@ -29,7 +30,6 @@ public class ChangeAddonViewModel: ObservableObject {
 
         do {
             let data = try await addonService.getAddon(contractId: contractId)
-
             withAnimation {
                 self.addonOffer = data
                 self.fetchAddonsViewState = .success
@@ -48,6 +48,19 @@ public class ChangeAddonViewModel: ObservableObject {
                 quoteId: selectedQuote?.quoteId ?? "",
                 addonId: selectedQuote?.addonId ?? ""
             )
+            let logInfoModel = AddonLogInfo(
+                flow: addonSource,
+                subType: selectedQuote?.displayName ?? "",
+                type: .travelAddon
+            )
+            let eventType =
+                addonOffer?.currentAddon == nil ? AddonEventType.addonPurchased : AddonEventType.addonUpgraded
+            log.event(
+                "Addon event: \(eventType.rawValue)",
+                eventName: eventType.rawValue,
+                attributes: logInfoModel.asAddonAttributes
+            )
+
             Task {
                 try await Task.sleep(nanoseconds: 1_000_000_000)
                 NotificationCenter.default.post(

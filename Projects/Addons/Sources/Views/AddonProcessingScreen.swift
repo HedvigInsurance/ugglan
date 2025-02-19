@@ -46,7 +46,7 @@ struct AddonProcessingScreen_Previews: PreviewProvider {
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
         return AddonProcessingScreen(
-            vm: .init(contractId: ""),
+            vm: .init(contractId: "", addonSource: .insurances),
             addonNavigationVm: .init()
         )
     }

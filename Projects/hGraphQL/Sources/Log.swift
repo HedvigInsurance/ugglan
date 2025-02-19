@@ -53,6 +53,12 @@ public protocol Logging {
     /// the same key already exist in this logger, it will be overridden (just for this message).
     func critical(_ message: String, error: Error?, attributes: [AttributeKey: AttributeValue]?)
 
+    /// Sends an event  log message.
+    /// - Parameters:
+    ///   - message: the message to be logged
+    ///   - eventAttributes: a dictionary of attributes to add for this event.
+    func event(_ message: String, eventName: String, attributes: [AttributeKey: AttributeValue]?)
+
     /// Sends RUM action.
     /// - Parameters:
     ///   - type: type of action
@@ -170,6 +176,8 @@ class DemoLogger: Logging {
     func error(_ message: String, error: Error?, attributes: [AttributeKey: AttributeValue]?) {}
 
     func critical(_ message: String, error: Error?, attributes: [AttributeKey: AttributeValue]?) {}
+
+    func event(_ message: String, eventName: String, attributes: [AttributeKey: AttributeValue]?) {}
 
     func addUserAction(
         type: LoggingAction,

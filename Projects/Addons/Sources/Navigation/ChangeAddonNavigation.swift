@@ -8,14 +8,13 @@ public struct ChangeAddonInput: Identifiable, Equatable {
     public var id: String = UUID().uuidString
 
     let contractConfigs: [AddonConfig]?
-    let addonId: String?
-
+    let addonSource: AddonSource
     public init(
-        contractConfigs: [AddonConfig]? = nil,
-        addonId: String? = nil
+        addonSource: AddonSource,
+        contractConfigs: [AddonConfig]? = nil
     ) {
+        self.addonSource = addonSource
         self.contractConfigs = contractConfigs
-        self.addonId = addonId
     }
 
     public static func == (lhs: ChangeAddonInput, rhs: ChangeAddonInput) -> Bool {
@@ -23,14 +22,15 @@ public struct ChangeAddonInput: Identifiable, Equatable {
     }
 }
 
-public enum AddonSource: Codable {
-    case appUpsellUpgrade
-    case appOnlyUpsell
+public enum AddonSource: String, Codable {
+    case insurances
+    case travelCertificates
+    case deeplink
 
     public var getSource: OctopusGraphQL.UpsellTravelAddonFlow {
         switch self {
-        case .appOnlyUpsell: return .appOnlyUpsale
-        case .appUpsellUpgrade: return .appUpsellUpgrade
+        case .insurances: return .appOnlyUpsale
+        case .travelCertificates, .deeplink: return .appUpsellUpgrade
         }
     }
 }
@@ -50,7 +50,7 @@ class ChangeAddonNavigationViewModel: ObservableObject {
     @Published var isAddonProcessingPresented = false
     @Published var changeAddonVm: ChangeAddonViewModel?
     @Published var document: hPDFDocument?
-    @Published var input: ChangeAddonInput
+    let input: ChangeAddonInput
 
     let router = Router()
 
@@ -59,7 +59,10 @@ class ChangeAddonNavigationViewModel: ObservableObject {
     ) {
         self.input = input
         if input.contractConfigs?.count ?? 0 == 1, let config = input.contractConfigs?.first {
-            changeAddonVm = .init(contractId: config.contractId)
+            changeAddonVm = .init(
+                contractId: config.contractId,
+                addonSource: input.addonSource
+            )
         }
     }
 }
@@ -162,13 +165,8 @@ public struct ChangeAddonNavigation: View {
     }
 
     private var selectInsuranceScreen: some View {
-        AddonSelectInsuranceScreen(
-            changeAddonVm: changeAddonNavigationVm.changeAddonVm
-                ?? .init(
-                    contractId: changeAddonNavigationVm.input.contractConfigs?.first?.contractId ?? ""
-                )
-        )
-        .withDismissButton()
+        AddonSelectInsuranceScreen()
+            .withDismissButton()
     }
 }
 
