@@ -126,6 +126,8 @@ public struct ContractsNavigation<Content: View>: View {
             redirectAction(.termination(action: dismissType))
             switch dismissType {
             case .done, .chat, .openFeedback:
+                let contractStore: ContractStore = globalPresentableStoreContainer.get()
+                contractStore.send(.fetchContracts)
                 contractsNavigationVm.contractsRouter.popToRoot()
             case .changeTierFoundBetterPriceStarted, .changeTierMissingCoverageAndTermsStarted:
                 break
