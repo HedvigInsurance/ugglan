@@ -201,6 +201,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         forceLogoutHook = { [weak self] in
             if ApplicationState.currentState != .notLoggedIn {
+                self?.dismissAllVCs()
                 DispatchQueue.main.async {
                     ApplicationState.preserveState(.notLoggedIn)
                     ApplicationState.state = .notLoggedIn
@@ -212,6 +213,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     )
                     Toasts.shared.displayToastBar(toast: toast)
                 }
+            }
+        }
+    }
+
+    private func dismissAllVCs() {
+        Task {
+            var hasPresentedVC = true
+            while hasPresentedVC {
+                let vcToDismiss = UIApplication.shared.getRootViewController()?.presentedViewController
+                if let vcToDismiss {
+                    vcToDismiss.dismiss(animated: true)
+                } else {
+                    hasPresentedVC = false
+                }
+                try await Task.sleep(nanoseconds: 50_000_000)
             }
         }
     }
