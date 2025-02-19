@@ -215,6 +215,10 @@ public class ContractTableViewModel: ObservableObject {
             Task {
                 await self?.getAddonBanner()
             }
+            Task {
+                let store: ContractStore = await globalPresentableStoreContainer.get()
+                store.send(.fetchContracts)
+            }
         }
     }
 

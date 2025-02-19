@@ -75,16 +75,20 @@ fragment FlowTerminationSurveyStepOptionFragment on FlowTerminationSurveyOption 
 
 fragment FlowTerminationSurveyOptionSuggestionFragment on FlowTerminationSurveyOptionSuggestion {
          id
+         infoType
          ... on FlowTerminationSurveyOptionSuggestionAction {
-           action
-           buttonTitle
-           description
+            action
+            buttonTitle
+            description
          }
          ... on FlowTerminationSurveyOptionSuggestionRedirect {
-           url
-           description
-           buttonTitle
+            url
+            description
+            buttonTitle
          }
+        ... on FlowTerminationSurveyOptionSuggestionInfo {
+            description
+        }
 }
 
 fragment FlowTerminationSurveyOptionFeedbackFragment on FlowTerminationSurveyOptionFeedback {

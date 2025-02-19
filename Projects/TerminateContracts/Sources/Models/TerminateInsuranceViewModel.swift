@@ -6,7 +6,7 @@ import hCoreUI
 
 @MainActor
 public class TerminateInsuranceViewModel: ObservableObject {
-    @Inject var terminateContractsService: TerminateContractsClient
+    private let terminateContractsService = TerminateContractsService()
     @Published var flowNavigationVm: TerminationFlowNavigationViewModel?
     @Published var changeTierInput: ChangeTierInput?
     public init() {}
