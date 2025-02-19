@@ -34,7 +34,7 @@ public enum ExternalDependencies: CaseIterable {
 
     public func swiftPackages() -> [Package] {
         switch self {
-        case .hero: return [.package(url: "https://github.com/HeroTransitions/Hero", .upToNextMajor(from: "1.6.3"))]
+        case .hero: return [.package(url: "https://github.com/HeroTransitions/Hero", .upToNextMajor(from: "1.6.4"))]
         case .apollo:
             return [.package(url: "https://github.com/apollographql/apollo-ios", .upToNextMajor(from: "1.17.0"))]
         case .dynamiccolor:
@@ -56,14 +56,14 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .reveal: return []
         case .datadog:
-            return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("2.16.0"))]
+            return [.package(url: "https://github.com/DataDog/dd-sdk-ios.git", .exact("2.23.0"))]
         case .authlib:
             return [
                 .package(url: "https://github.com/HedvigInsurance/authlib.git", .exact("1.4.120241009085400"))
             ]
         case .tagkit:
             return [
-                .package(url: "https://github.com/danielsaidi/TagKit.git", .exact("0.1.1"))
+                .package(url: "https://github.com/danielsaidi/TagKit.git", .exact("0.4.1"))
             ]
         case .introspect:
             return [
@@ -75,7 +75,7 @@ public enum ExternalDependencies: CaseIterable {
             ]
         case .unleashProxyClientSwift:
             return [
-                .package(url: "https://github.com/Unleash/unleash-proxy-client-swift", .upToNextMajor(from: "1.5.1"))
+                .package(url: "https://github.com/Unleash/unleash-proxy-client-swift", .upToNextMajor(from: "1.7.0"))
             ]
         case .apolloIosCodegen:
             return [
