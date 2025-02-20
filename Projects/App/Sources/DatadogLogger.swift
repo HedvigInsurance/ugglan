@@ -66,12 +66,6 @@ class DatadogLogger: hGraphQL.Logging {
         datadogLogger.critical(message, error: error, attributes: attributes)
     }
 
-    public func event(_ message: String, eventName: String, attributes: [AttributeKey: AttributeValue]?) {
-        var allAttributes = attributes ?? [:]
-        allAttributes["evt"] = ["name": eventName]
-        datadogLogger.info(message, error: nil, attributes: allAttributes)
-    }
-
     public func addUserAction(
         type: LoggingAction,
         name: String,

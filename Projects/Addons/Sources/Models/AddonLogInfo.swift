@@ -4,7 +4,7 @@ struct AddonLogInfo: Codable {
     let type: AddonType
 
     enum AddonType: String, Codable {
-        case travelAddon
+        case travelAddon = "TRAVEL_ADDON"
     }
 
     var asAddonAttributes: [String: AddonLogInfo] {
@@ -13,6 +13,6 @@ struct AddonLogInfo: Codable {
 }
 
 enum AddonEventType: String, Codable {
-    case addonPurchased
-    case addonUpgraded
+    case addonPurchased = "ADDON_PURCHASED"
+    case addonUpgraded = "ADDON_UPGRADED"
 }

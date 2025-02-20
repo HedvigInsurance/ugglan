@@ -44,20 +44,23 @@ public class ChangeAddonViewModel: ObservableObject {
             self.submittingAddonsViewState = .loading
         }
         do {
+
             try await addonService.submitAddon(
                 quoteId: selectedQuote?.quoteId ?? "",
                 addonId: selectedQuote?.addonId ?? ""
             )
+
             let logInfoModel = AddonLogInfo(
                 flow: addonSource,
                 subType: selectedQuote?.displayName ?? "",
                 type: .travelAddon
             )
-            let eventType =
+            let actionType =
                 addonOffer?.currentAddon == nil ? AddonEventType.addonPurchased : AddonEventType.addonUpgraded
-            log.event(
-                "Addon event: \(eventType.rawValue)",
-                eventName: eventType.rawValue,
+            log.addUserAction(
+                type: .custom,
+                name: actionType.rawValue,
+                error: nil,
                 attributes: logInfoModel.asAddonAttributes
             )
 
