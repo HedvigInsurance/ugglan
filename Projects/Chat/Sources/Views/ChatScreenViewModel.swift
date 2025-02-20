@@ -13,7 +13,6 @@ public class ChatConversationViewModel: ObservableObject {
     var claimId: String?
     @Published var banner: Markdown?
     @Published var shouldShowBanner = true
-
     @Published var title: String = L10n.chatTitle
     @Published var subTitle: String?
     private let onTitleTap: () -> Void?
@@ -30,16 +29,15 @@ public class ChatMessageViewModel: ObservableObject {
     let chatService: ChatServiceProtocol
     var chatNavigationVm: ChatNavigationViewModel?
     let conversationVm: ChatConversationViewModel
+    private var hasNext: Bool?
+    var haveSentAMessage = false
+    private var sendingMessagesIds = [String]()
+    private var addedMessagesIds: [String] = []
 
     @Published var scrollToMessage: Message?
     @Published var lastDeliveredMessage: Message?
     @Published var messages: [Message] = []
     @Published var isFetchingPreviousMessages = false
-
-    private var hasNext: Bool?
-    var haveSentAMessage = false
-    private var sendingMessagesIds = [String]()
-    private var addedMessagesIds: [String] = []
 
     public init(
         chatService: ChatServiceProtocol,
