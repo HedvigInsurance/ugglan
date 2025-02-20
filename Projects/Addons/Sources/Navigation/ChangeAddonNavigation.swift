@@ -165,14 +165,8 @@ public struct ChangeAddonNavigation: View {
     }
 
     private var selectInsuranceScreen: some View {
-        AddonSelectInsuranceScreen(
-            changeAddonVm: changeAddonNavigationVm.changeAddonVm
-                ?? .init(
-                    contractId: changeAddonNavigationVm.input.contractConfigs?.first?.contractId ?? "",
-                    addonSource: changeAddonNavigationVm.input.addonSource
-                )
-        )
-        .withDismissButton()
+        AddonSelectInsuranceScreen()
+            .withDismissButton()
     }
 }
 

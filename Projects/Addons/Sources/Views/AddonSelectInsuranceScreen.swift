@@ -6,17 +6,18 @@ import hCoreUI
 public struct AddonSelectInsuranceScreen: View {
     @EnvironmentObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
     @StateObject var vm = AddonSelectInsuranceScreenViewModel()
-    @ObservedObject var changeAddonVm: ChangeAddonViewModel
 
     public var body: some View {
-        successView.loading($changeAddonVm.fetchAddonsViewState)
+        successView
+            .loading($vm.processingState)
             .hStateViewButtonConfig(
                 .init(
                     actionButton: .init(
-                        buttonTitle: L10n.openChat,
                         buttonAction: {
-                            changeAddonNavigationVm.router.dismiss()
-                            NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
+                            withAnimation {
+                                vm.observer = nil
+                                vm.processingState = .success
+                            }
                         }
                     )
                 )
@@ -49,8 +50,14 @@ public struct AddonSelectInsuranceScreen: View {
                             addonSource: changeAddonNavigationVm.input.addonSource
                         )
                         vm.observer = changeAddonNavigationVm.changeAddonVm!.$fetchAddonsViewState
-                            .sink { value in
-                                vm.processingState = value
+                            .sink { [weak vm] value in
+                                withAnimation {
+                                    vm?.processingState = value
+                                }
+                                if value == .success {
+                                    changeAddonNavigationVm.router.push(ChangeAddonRouterActions.addonLandingScreen)
+                                    vm?.observer = nil
+                                }
                             }
                     }
                 },
@@ -66,16 +73,6 @@ public struct AddonSelectInsuranceScreen: View {
             subTitle: .init(.small, .heading2, L10n.addonFlowSelectInsuranceSubtitle)
         )
         .hFieldSize(.small)
-        .trackErrorState(for: $vm.processingState)
-        .hButtonIsLoading(vm.processingState == .loading)
-        .onChange(of: vm.processingState) { value in
-            switch value {
-            case .success:
-                changeAddonNavigationVm.router.push(ChangeAddonRouterActions.addonLandingScreen)
-            default:
-                break
-            }
-        }
     }
 }
 
@@ -88,7 +85,7 @@ class AddonSelectInsuranceScreenViewModel: ObservableObject {
 #Preview {
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-    return AddonSelectInsuranceScreen(changeAddonVm: .init(contractId: "contractId", addonSource: .insurances))
+    return AddonSelectInsuranceScreen()
         .environmentObject(
             ChangeAddonNavigationViewModel(
                 input: .init(
