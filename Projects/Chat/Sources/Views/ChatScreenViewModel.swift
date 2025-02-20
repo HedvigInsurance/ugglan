@@ -205,6 +205,7 @@ public class ChatMessageViewModel: ObservableObject {
         if let index = messages.firstIndex(where: { $0.id == localMessage.id }) {
             withAnimation {
                 messages[index] = remoteMessage
+                self.messages.sort(by: { $0.sentAt > $1.sentAt })
             }
         }
 
