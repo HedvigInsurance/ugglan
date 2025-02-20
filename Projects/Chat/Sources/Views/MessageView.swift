@@ -42,7 +42,7 @@ struct MessageView: View {
                     config: .init(
                         text: message.trimmedText,
                         fontStyle: .body1,
-                        color: hTextColor.Opaque.primary,
+                        color: message.textColor,
                         linkColor: hTextColor.Opaque.primary,
                         linkUnderlineStyle: .thick,
                         maxWidth: 300,
@@ -70,7 +70,7 @@ struct MessageView: View {
                         config: .init(
                             text: url.absoluteString,
                             fontStyle: .body1,
-                            color: hTextColor.Opaque.primary,
+                            color: message.textColor,
                             linkColor: hTextColor.Opaque.primary,
                             linkUnderlineStyle: .thick,
                             maxWidth: 300,
