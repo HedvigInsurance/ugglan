@@ -60,7 +60,8 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                             quoteAmount: .init(
                                 optionalFragment: intent.agreementToChange.deductible?.amount.fragments.moneyFragment
                             ),
-                            quotePercentage: intent.agreementToChange.deductible?.percentage,
+                            quotePercentage: (intent.agreementToChange.deductible?.percentage == 0)
+                                ? nil : intent.agreementToChange.deductible?.percentage,
                             subTitle: nil,
                             basePremium: .init(fragment: intent.agreementToChange.basePremium.fragments.moneyFragment),
                             displayItems: [],
