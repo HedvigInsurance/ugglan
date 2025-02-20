@@ -117,9 +117,6 @@ public class ChatMessageViewModel: ObservableObject {
             } catch _ {
                 //We ignore this errors since we will fetch this every 5 seconds
             }
-        } else {
-            let ss = sendingMessagesIds.count
-            let sss = ""
         }
     }
 
