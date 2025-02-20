@@ -16,7 +16,7 @@ public class ChatConversationViewModel: ObservableObject {
 
     @Published var title: String = L10n.chatTitle
     @Published var subTitle: String?
-    private var onTitleTap: () -> Void?
+    private let onTitleTap: () -> Void?
 
     public init(
         onTitleTap: @escaping () -> Void = {}
@@ -29,7 +29,7 @@ public class ChatConversationViewModel: ObservableObject {
 public class ChatMessageViewModel: ObservableObject {
     let chatService: ChatServiceProtocol
     var chatNavigationVm: ChatNavigationViewModel?
-    @Published public var conversationVm: ChatConversationViewModel
+    let conversationVm: ChatConversationViewModel
 
     @Published var scrollToMessage: Message?
     @Published var lastDeliveredMessage: Message?
@@ -238,8 +238,8 @@ public class ChatMessageViewModel: ObservableObject {
 
 @MainActor
 public class ChatScreenViewModel: ObservableObject {
-    var chatInputVm: ChatInputViewModel = .init()
-    var messageVm: ChatMessageViewModel
+    let chatInputVm: ChatInputViewModel = .init()
+    let messageVm: ChatMessageViewModel
 
     var scrollCancellable: AnyCancellable?
     private var pollTimerCancellable: AnyCancellable?
