@@ -29,7 +29,7 @@ public class ChatConversationViewModel: ObservableObject {
 public class ChatMessageViewModel: ObservableObject {
     let chatService: ChatServiceProtocol
     var chatNavigationVm: ChatNavigationViewModel?
-    @StateObject var conversationVm: ChatConversationViewModel
+    @Published public var conversationVm: ChatConversationViewModel
 
     @Published var scrollToMessage: Message?
     @Published var lastDeliveredMessage: Message?
@@ -46,7 +46,7 @@ public class ChatMessageViewModel: ObservableObject {
         onTitleTap: @escaping () -> Void = {}
     ) {
         self.chatService = chatService
-        self._conversationVm = StateObject(wrappedValue: .init(onTitleTap: onTitleTap))
+        self.conversationVm = .init(onTitleTap: onTitleTap)
     }
 
     @MainActor
@@ -239,7 +239,7 @@ public class ChatMessageViewModel: ObservableObject {
 @MainActor
 public class ChatScreenViewModel: ObservableObject {
     var chatInputVm: ChatInputViewModel = .init()
-    @StateObject var messageVm: ChatMessageViewModel
+    var messageVm: ChatMessageViewModel
 
     var scrollCancellable: AnyCancellable?
     private var pollTimerCancellable: AnyCancellable?
@@ -250,7 +250,7 @@ public class ChatScreenViewModel: ObservableObject {
         chatService: ChatServiceProtocol,
         onTitleTap: @escaping () -> Void = {}
     ) {
-        self._messageVm = StateObject(wrappedValue: .init(chatService: chatService))
+        self.messageVm = .init(chatService: chatService)
 
         chatInputVm.sendMessage = { [weak self] message in
             Task { [weak self] in
