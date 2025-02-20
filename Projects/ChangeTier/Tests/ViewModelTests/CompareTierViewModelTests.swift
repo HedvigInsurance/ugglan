@@ -83,7 +83,8 @@ final class CompareTierVireModelTests: XCTestCase {
                 description: peril1.description,
                 colorCode: peril1.color,
                 cells: [
-                    .init(isCovered: !peril1.isDisabled, coverageText: peril1.covered.first)
+                    .init(isCovered: !peril1.isDisabled, coverageText: peril1.covered.first),
+                    .init(isCovered: !peril1.isDisabled, coverageText: peril1.covered.first),
                 ]
             )
         ]
@@ -99,7 +100,18 @@ final class CompareTierVireModelTests: XCTestCase {
                 displayName: "",
                 displayNameTier: "Standard",
                 tierDescription: "tier description"
-            )
+            ),
+            .init(
+                termsVersion: "",
+                typeOfContract: "",
+                partner: "",
+                perils: [peril1],
+                insurableLimits: [],
+                documents: [],
+                displayName: "",
+                displayNameTier: "Max",
+                tierDescription: "tier description"
+            ),
         ]
 
         let comparisonData = ProductVariantComparison(rows: rows, variantColumns: columns)
@@ -118,7 +130,7 @@ final class CompareTierVireModelTests: XCTestCase {
         assert(model.tiers == tiers)
         assert(model.tiers.first == tiers.first)
         assert(model.tiers.count == tiers.count)
-        assert(model.perils.first! == ("Standard", [peril1]))
+        assert(model.perils.first! == ("standard", [peril1]))
         assert(model.viewState == .success)
     }
 
