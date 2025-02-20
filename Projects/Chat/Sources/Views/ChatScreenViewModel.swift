@@ -81,38 +81,45 @@ public class ChatMessageViewModel: ObservableObject {
 
     @MainActor
     func fetchMessages() async {
-        do {
-            let store: ChatStore = globalPresentableStoreContainer.get()
-            let chatData = try await chatService.getNewMessages()
-            self.conversationVm.conversationId = chatData.conversationId
-            let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
-            withAnimation {
-                self.messages.append(contentsOf: newMessages)
+        //skip if have message that are in process of sending
+        if sendingMessagesIds.isEmpty {
+            do {
+                let store: ChatStore = globalPresentableStoreContainer.get()
+                let chatData = try await chatService.getNewMessages()
+                self.conversationVm.conversationId = chatData.conversationId
+                let newMessages = chatData.messages.filterNotAddedIn(list: addedMessagesIds)
+                withAnimation {
+                    self.messages.append(contentsOf: newMessages)
+
+                    if hasNext == nil {
+                        if let conversationId = conversationVm.conversationId,
+                            let failedMessages = store.state.failedMessages[conversationId]
+                        {
+                            self.messages.insert(contentsOf: failedMessages.reversed(), at: 0)
+                            addedMessagesIds.append(contentsOf: failedMessages.compactMap({ $0.id }))
+                        }
+                    }
+                    self.messages.sort(by: { $0.sentAt > $1.sentAt })
+                    self.lastDeliveredMessage = self.messages.first(where: {
+                        $0.sender == .member && $0.remoteId != nil
+                    })
+                }
+                self.conversationVm.banner = chatData.banner
+                self.conversationVm.conversationStatus = chatData.conversationStatus ?? .open
+                addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
 
                 if hasNext == nil {
-                    if let conversationId = conversationVm.conversationId,
-                        let failedMessages = store.state.failedMessages[conversationId]
-                    {
-                        self.messages.insert(contentsOf: failedMessages.reversed(), at: 0)
-                        addedMessagesIds.append(contentsOf: failedMessages.compactMap({ $0.id }))
-                    }
+                    hasNext = chatData.hasPreviousMessage
                 }
-
-                self.messages.sort(by: { $0.sentAt > $1.sentAt })
-                self.lastDeliveredMessage = self.messages.first(where: { $0.sender == .member && $0.remoteId != nil })
+                self.conversationVm.title = chatData.title ?? L10n.chatTitle
+                self.conversationVm.subTitle = chatData.subtitle
+                self.conversationVm.claimId = chatData.claimId
+            } catch _ {
+                //We ignore this errors since we will fetch this every 5 seconds
             }
-            self.conversationVm.banner = chatData.banner
-            self.conversationVm.conversationStatus = chatData.conversationStatus ?? .open
-            addedMessagesIds.append(contentsOf: newMessages.compactMap({ $0.id }))
-
-            if hasNext == nil {
-                hasNext = chatData.hasPreviousMessage
-            }
-            self.conversationVm.title = chatData.title ?? L10n.chatTitle
-            self.conversationVm.subTitle = chatData.subtitle
-            self.conversationVm.claimId = chatData.claimId
-        } catch _ {
-            //We ignore this errors since we will fetch this every 5 seconds
+        } else {
+            let ss = sendingMessagesIds.count
+            let sss = ""
         }
     }
 
@@ -194,6 +201,21 @@ public class ChatMessageViewModel: ObservableObject {
             }
         default:
             break
+        }
+        addedMessagesIds.append(remoteMessage.id)
+
+        //replace local message with remote one
+        if let index = messages.firstIndex(where: { $0.id == localMessage.id }) {
+            withAnimation {
+                messages[index] = remoteMessage
+            }
+        }
+
+        //add some delay so it looks smoother
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+            withAnimation {
+                self?.lastDeliveredMessage = self?.messages.first(where: { $0.sender == .member && $0.remoteId != nil })
+            }
         }
     }
 
