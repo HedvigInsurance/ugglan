@@ -48,10 +48,13 @@ public class ChangeAddonViewModel: ObservableObject {
                 quoteId: selectedQuote?.quoteId ?? "",
                 addonId: selectedQuote?.addonId ?? ""
             )
-            NotificationCenter.default.post(
-                name: .addonAdded,
-                object: nil
-            )
+            Task {
+                try await Task.sleep(nanoseconds: 1_000_000_000)
+                NotificationCenter.default.post(
+                    name: .addonAdded,
+                    object: nil
+                )
+            }
             withAnimation {
                 self.submittingAddonsViewState = .success
             }

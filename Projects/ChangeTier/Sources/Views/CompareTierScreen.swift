@@ -343,7 +343,7 @@ class CompareTierViewModel: ObservableObject {
 
                 let columns = productVariantComparisionData.variantColumns
                 let rows = productVariantComparisionData.rows
-                let tierNames = columns.compactMap({ $0.displayNameTier })
+                let tierNames = tiers.compactMap({ $0.name })
 
                 self.perils = getPerils(tierNames: tierNames, rows: rows)
                 withAnimation {

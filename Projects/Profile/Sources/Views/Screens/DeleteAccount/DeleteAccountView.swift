@@ -39,7 +39,8 @@ public struct DeleteAccountView: View {
                                 linkUnderlineStyle: .single,
                                 textAlignment: vm.textAlignment
                             ) { url in
-                                dismissAction(.openChat)
+                                router.dismiss()
+                                NotificationCenter.default.post(name: .openDeepLink, object: url)
                             }
                         )
                     }
