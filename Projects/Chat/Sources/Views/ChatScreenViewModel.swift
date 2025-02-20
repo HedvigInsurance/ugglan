@@ -25,7 +25,6 @@ public class ChatConversationViewModel: ObservableObject {
     }
 }
 
-// things related to a message
 @MainActor
 public class ChatMessageViewModel: ObservableObject {
     let chatService: ChatServiceProtocol
