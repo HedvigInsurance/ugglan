@@ -111,6 +111,7 @@ extension AddonSelectSubOptionScreen: TitleView {
         displayName: "45 days",
         quoteId: "quoteId45",
         addonId: "addonId45",
+        addonSubtype: "addonId45",
         displayItems: [
             .init(displayTitle: "Coverage", displayValue: "45 days"),
             .init(
@@ -144,6 +145,7 @@ extension AddonSelectSubOptionScreen: TitleView {
                     displayName: "60 days",
                     quoteId: "quoteId60",
                     addonId: "addonId60",
+                    addonSubtype: "addonId60",
                     displayItems: [
                         .init(displayTitle: "Coverage", displayValue: "45 days"),
                         .init(displayTitle: "Insured people", displayValue: "You+1"),
@@ -164,7 +166,7 @@ extension AddonSelectSubOptionScreen: TitleView {
             ]
         ),
         changeAddonNavigationVm: .init(
-            input: .init()
+            input: .init(addonSource: .insurances)
         )
     )
 }

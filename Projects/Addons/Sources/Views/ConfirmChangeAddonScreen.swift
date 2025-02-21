@@ -38,5 +38,5 @@ public struct ConfirmChangeAddonScreen: View {
     Dependencies.shared.add(module: Module { () -> AddonsClient in AddonsClientDemo() })
     Dependencies.shared.add(module: Module { () -> DateService in DateService() })
     return ConfirmChangeAddonScreen()
-        .environmentObject(ChangeAddonNavigationViewModel(input: .init()))
+        .environmentObject(ChangeAddonNavigationViewModel(input: .init(addonSource: .insurances)))
 }

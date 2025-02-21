@@ -25,6 +25,7 @@ mutation UpsellTravelAddonOffer($contractId: ID!) {
 fragment UpsellTravelAddonQuoteFragment on UpsellTravelAddonQuote {
     quoteId
     addonId
+    addonSubtype
     displayName
     displayItems {
         ...UpsellTravelAddonDisplayItemFragment
