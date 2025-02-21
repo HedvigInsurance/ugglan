@@ -50,7 +50,7 @@ public struct PaymentData: Codable, Equatable, Hashable, Sendable {
     struct ContractPaymentDetails: Codable, Equatable, Identifiable, Hashable, Sendable {
         let id: String
         let title: String
-        let subtitle: String
+        let subtitle: String?
         let amount: MonetaryAmount
         let periods: [PeriodInfo]
     }
