@@ -52,7 +52,7 @@ public class ChangeTierClientOctopus: ChangeTierClient {
                 })
                 ?? Tier(
                     id: intent.agreementToChange.tierName ?? "",
-                    name: intent.agreementToChange.tierName?.capitalized ?? "",
+                    name: intent.agreementToChange.productVariant.displayNameTier ?? "",
                     level: intent.agreementToChange.tierLevel ?? 0,
                     quotes: [
                         .init(
