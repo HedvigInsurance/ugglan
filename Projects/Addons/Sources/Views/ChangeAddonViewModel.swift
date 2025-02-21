@@ -49,21 +49,7 @@ public class ChangeAddonViewModel: ObservableObject {
                 quoteId: selectedQuote?.quoteId ?? "",
                 addonId: selectedQuote?.addonId ?? ""
             )
-
-            let logInfoModel = AddonLogInfo(
-                flow: addonSource,
-                subType: selectedQuote?.displayName ?? "",
-                type: .travelAddon
-            )
-            let actionType =
-                addonOffer?.currentAddon == nil ? AddonEventType.addonPurchased : AddonEventType.addonUpgraded
-            log.addUserAction(
-                type: .custom,
-                name: actionType.rawValue,
-                error: nil,
-                attributes: logInfoModel.asAddonAttributes
-            )
-
+            logAddonEvent()
             Task {
                 try await Task.sleep(nanoseconds: 1_000_000_000)
                 NotificationCenter.default.post(
@@ -77,6 +63,22 @@ public class ChangeAddonViewModel: ObservableObject {
         } catch let exception {
             self.submittingAddonsViewState = .error(errorMessage: exception.localizedDescription)
         }
+    }
+
+    private func logAddonEvent() {
+        let logInfoModel = AddonLogInfo(
+            flow: addonSource,
+            subType: selectedQuote?.displayName ?? "",
+            type: .travelAddon
+        )
+        let actionType =
+            addonOffer?.currentAddon == nil ? AddonEventType.addonPurchased : AddonEventType.addonUpgraded
+        log.addUserAction(
+            type: .custom,
+            name: actionType.rawValue,
+            error: nil,
+            attributes: logInfoModel.asAddonAttributes
+        )
     }
 
     func compareAddonDisplayItems(
