@@ -312,7 +312,7 @@ struct ContractInformationView: View {
     private func moveAddressButton(contract: Contract) -> some View {
         let contractsThatSupportsMoving = store.state.activeContracts.filter({ $0.supportsAddressChange })
         if contract.supportsAddressChange && Dependencies.featureFlags().isMovingFlowEnabled
-            && contractsThatSupportsMoving.count < 2
+            && contractsThatSupportsMoving.count < 2 && !contract.isTerminated
         {
             hSection {
                 hButton.LargeButton(type: .ghost) {
