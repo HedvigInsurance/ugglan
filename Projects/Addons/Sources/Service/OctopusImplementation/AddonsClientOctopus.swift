@@ -43,6 +43,7 @@ public class AddonsClientOctopus: AddonsClient {
                     displayName: "",
                     quoteId: "quoteId",
                     addonId: "addonId",
+                    addonSubtype: "addonSubtype",
                     displayItems: currentAddon.displayItems.map({
                         .init(fragment: $0.fragments.upsellTravelAddonDisplayItemFragment)
                     }),
@@ -98,6 +99,7 @@ extension AddonQuote {
     ) {
         self.quoteId = fragment.quoteId
         self.addonId = fragment.addonId
+        self.addonSubtype = fragment.addonSubtype
         self.displayName = fragment.displayName
         self.displayItems = fragment.displayItems.map({
             .init(fragment: $0.fragments.upsellTravelAddonDisplayItemFragment)

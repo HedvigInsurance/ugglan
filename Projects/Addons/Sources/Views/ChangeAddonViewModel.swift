@@ -68,7 +68,7 @@ public class ChangeAddonViewModel: ObservableObject {
     private func logAddonEvent() {
         let logInfoModel = AddonLogInfo(
             flow: addonSource,
-            subType: selectedQuote?.displayName ?? "",
+            subType: selectedQuote?.addonSubtype ?? "",
             type: .travelAddon
         )
         let actionType =
