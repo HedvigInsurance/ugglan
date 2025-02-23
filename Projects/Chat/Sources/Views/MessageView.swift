@@ -9,57 +9,68 @@ struct MessageView: View {
     let message: Message
     let conversationStatus: ConversationStatus
     @ObservedObject var vm: ChatScreenViewModel
-    @State var height: CGFloat = 0
-    @State var width: CGFloat = 0
     @State var showRetryOptions = false
-    @ViewBuilder
+
     public var body: some View {
         HStack(spacing: 0) {
-            messageContent
-                .environment(\.colorScheme, .light)
             if case .failed = message.status {
-                hCoreUIAssets.infoFilled.view
-                    .resizable()
-                    .frame(width: 24, height: 24)
-                    .foregroundColor(hSignalColor.Red.element)
-                    .padding(.leading, .padding8)
-                    .padding(.vertical, .padding24)
-                    .onTapGesture {
-                        showRetryOptions = true
-                    }
+                messageFailContent
+            } else {
+                messageContent
             }
         }
-        .confirmationDialog("", isPresented: $showRetryOptions, titleVisibility: .hidden) { [weak vm] in
-            Button(L10n.generalRetry) {
+        .frame(
+            maxWidth: 300,
+            alignment: message.sender.alignment
+        )
+        .onTapGesture {
+            if case .failed = message.status {
                 Task {
-                    await vm?.retrySending(message: message)
+                    await vm.messageVm.retrySending(message: message)
                 }
             }
-            Button(L10n.General.remove, role: .destructive) {
-                vm?.deleteFailed(message: message)
-            }
-            Button(L10n.generalCancelButton, role: .cancel) {
-            }
         }
+        .id("MessageView_\(message.id)")
+        .modifier(MessageViewConfirmationDialog(message: message, showRetryOptions: $showRetryOptions, vm: vm))
     }
 
-    @ViewBuilder
     private var messageContent: some View {
-        HStack {
-            if case .failed = message.status {
-                hCoreUIAssets.refresh.view
-                    .resizable()
-                    .frame(width: 24, height: 24)
-                    .foregroundColor(hSignalColor.Red.element)
-            }
-            Group {
-                switch message.type {
-                case .text:
+        Group {
+            switch message.type {
+            case .text:
+                MarkdownView(
+                    config: .init(
+                        text: message.trimmedText,
+                        fontStyle: .body1,
+                        color: message.textColor,
+                        linkColor: hTextColor.Opaque.primary,
+                        linkUnderlineStyle: .thick,
+                        maxWidth: 300,
+                        onUrlClicked: { url in
+                            NotificationCenter.default.post(name: .openDeepLink, object: url)
+                        }
+                    )
+                )
+
+            case let .file(file):
+                ChatFileView(file: file, status: message.status).frame(maxHeight: 200)
+            case let .crossSell(url):
+                LinkView(vm: .init(url: url))
+            case let .deepLink(url):
+                if let type = DeepLink.getType(from: url) {
+                    Button {
+                        NotificationCenter.default.post(name: .openDeepLink, object: url)
+                    } label: {
+                        hText(type.wholeText(displayText: url.contractName ?? type.importantText))
+                            .foregroundColor(hTextColor.Opaque.primary)
+                            .multilineTextAlignment(.leading)
+                    }
+                } else {
                     MarkdownView(
                         config: .init(
-                            text: message.trimmedText,
+                            text: url.absoluteString,
                             fontStyle: .body1,
-                            color: hTextColor.Opaque.primary,
+                            color: message.textColor,
                             linkColor: hTextColor.Opaque.primary,
                             linkUnderlineStyle: .thick,
                             maxWidth: 300,
@@ -68,163 +79,58 @@ struct MessageView: View {
                             }
                         )
                     )
-                    .environment(\.colorScheme, .light)
-
-                case let .file(file):
-                    ChatFileView(file: file, status: message.status).frame(maxHeight: 200)
-                case let .crossSell(url):
-                    LinkView(vm: .init(url: url))
-                case let .deepLink(url):
-                    if let type = DeepLink.getType(from: url) {
-                        Button {
-                            NotificationCenter.default.post(name: .openDeepLink, object: url)
-                        } label: {
-                            hText(type.wholeText(displayText: url.contractName ?? type.importantText))
-                                .foregroundColor(hTextColor.Opaque.primary)
-                                .multilineTextAlignment(.leading)
-                                .environment(\.colorScheme, .light)
-                        }
-                    } else {
-                        MarkdownView(
-                            config: .init(
-                                text: url.absoluteString,
-                                fontStyle: .body1,
-                                color: hTextColor.Opaque.primary,
-                                linkColor: hTextColor.Opaque.primary,
-                                linkUnderlineStyle: .thick,
-                                maxWidth: 300,
-                                onUrlClicked: { url in
-                                    NotificationCenter.default.post(name: .openDeepLink, object: url)
-                                }
-                            )
-                        )
-                        .environment(\.colorScheme, .light)
-                    }
-                case let .otherLink(url):
-                    LinkView(
-                        vm: .init(url: url)
-                    )
-                case let .action(action):
-                    ActionView(action: action)
-                        .environment(\.colorScheme, .light)
-                case .unknown: Text("")
                 }
-            }
-            .padding(.horizontal, message.horizontalPadding)
-            .padding(.vertical, message.verticalPadding)
-            .background(message.bgColor(conversationStatus: conversationStatus))
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-        }
-
-    }
-}
-
-struct LinkView: View {
-    @StateObject var vm: LinkViewModel
-    @State var height: CGFloat = 0
-    @State var width: CGFloat = 0
-    var body: some View {
-        if let error = vm.error {
-            MarkdownView(
-                config: .init(
-                    text: error,
-                    fontStyle: .body1,
-                    color: hTextColor.Opaque.primary,
-                    linkColor: hTextColor.Opaque.primary,
-                    linkUnderlineStyle: .thick,
-                    maxWidth: 300,
-                    onUrlClicked: { url in
-                        NotificationCenter.default.post(name: .openDeepLink, object: url)
-                    }
+            case let .otherLink(url):
+                LinkView(
+                    vm: .init(url: url)
                 )
-            )
+            case let .action(action):
+                ActionView(action: action)
+            case .unknown: Text("")
+            }
+        }
+        .modifier(MessageViewBackground(message: message, conversationStatus: conversationStatus))
+    }
+
+    @ViewBuilder
+    private var messageFailContent: some View {
+        hCoreUIAssets.refresh.view
+            .resizable()
+            .frame(width: 24, height: 24)
+            .foregroundColor(hSignalColor.Red.element)
+        messageContent
             .environment(\.colorScheme, .light)
-            .padding(.padding16)
-            .transition(.opacity)
-        } else if let model = vm.webMetaDataProviderData {
-            VStack(spacing: .padding8) {
-                Image(uiImage: model.image ?? hCoreUIAssets.helipadOutlined.image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(minHeight: 200)
-                VStack(spacing: .padding8) {
-                    hText(model.title)
-                        .foregroundColor(hTextColor.Opaque.primary)
-                        .multilineTextAlignment(.leading)
-                        .fixedSize(horizontal: false, vertical: true)
-                    hButton.MediumButton(type: .primaryAlt) {
-                        NotificationCenter.default.post(name: .openDeepLink, object: vm.url)
-                    } content: {
-                        hText(L10n.ImportantMessage.readMore)
-                    }
-                    .hButtonTakeFullWidth(true)
-
-                }
-                .padding([.horizontal, .bottom], .padding16)
+        hCoreUIAssets.infoFilled.view
+            .resizable()
+            .frame(width: 24, height: 24)
+            .foregroundColor(hSignalColor.Red.element)
+            .padding(.leading, .padding8)
+            .padding(.vertical, .padding24)
+            .onTapGesture {
+                showRetryOptions = true
             }
-            .transition(.opacity)
-            .frame(width: 300)
-        } else {
-            ProgressView()
-                .foregroundColor(hTextColor.Opaque.primary)
-                .frame(width: 300, height: 200)
-                .transition(.opacity)
-        }
     }
 }
 
-@MainActor
-class LinkViewModel: ObservableObject {
-    @Published var webMetaDataProviderData: WebMetaDataProviderData?
-    @Published var error: String?
-    let url: URL
+struct MessageViewConfirmationDialog: ViewModifier {
+    let message: Message
+    @Binding var showRetryOptions: Bool
+    @ObservedObject var vm: ChatScreenViewModel
 
-    init(url: URL) {
-        self.url = url
-        getData()
-
-    }
-
-    @MainActor
-    func getData() {
-        Task {
-            do {
-                if let webMetaDataProviderData = try await WebMetaDataProvider.shared.data(for: url) {
-                    withAnimation {
-                        self.webMetaDataProviderData = webMetaDataProviderData
-                    }
-                } else {
-                    withAnimation {
-                        self.error = url.absoluteString
+    func body(content: Content) -> some View {
+        content
+            .confirmationDialog("", isPresented: $showRetryOptions, titleVisibility: .hidden) { [weak vm] in
+                Button(L10n.generalRetry) {
+                    Task {
+                        await vm?.messageVm.retrySending(message: message)
                     }
                 }
-            } catch let ex {
-                withAnimation {
-                    error = ex.localizedDescription
+                Button(L10n.General.remove, role: .destructive) {
+                    vm?.messageVm.deleteFailed(message: message)
+                }
+                Button(L10n.generalCancelButton, role: .cancel) {
                 }
             }
-        }
-    }
-}
-
-struct ActionView: View {
-    let action: ActionMessage
-
-    var body: some View {
-        VStack(spacing: .padding16) {
-            if let text = action.text {
-                hText(text, style: .body1)
-                    .foregroundColor(hTextColor.Opaque.primary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            hButton.MediumButton(type: .secondary) {
-                NotificationCenter.default.post(name: .openDeepLink, object: action.url)
-            } content: {
-                hText(action.buttonTitle)
-            }
-            hButtonTakeFullWidth(true)
-        }
-        .environment(\.colorScheme, .light)
     }
 }
 
@@ -256,12 +162,10 @@ extension URL {
                     buttonTitle: "Go to conversation"
                 )
             ),
-            status: .sent
+            status: .failed(error: "error")
         ),
         conversationStatus: .open,
         vm: .init(chatService: service),
-        height: 300,
-        width: 300,
         showRetryOptions: true
     )
 })

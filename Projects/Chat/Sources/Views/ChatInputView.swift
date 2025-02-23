@@ -9,83 +9,91 @@ import hCoreUI
 struct ChatInputView: View {
     @StateObject var vm: ChatInputViewModel
     @State var height: CGFloat = 0
+
     var body: some View {
         VStack(spacing: 0) {
             Rectangle().fill(hBorderColor.primary).frame(height: 1)
             VStack(alignment: .leading, spacing: 8) {
                 HStack(alignment: .bottom) {
-                    Button {
-                        withAnimation {
-                            self.vm.showBottomMenu.toggle()
-                        }
-                    } label: {
-                        Image(uiImage: hCoreUIAssets.plus.image)
-                            .resizable().frame(width: 24, height: 24)
-                            .rotationEffect(vm.showBottomMenu ? .degrees(45) : .zero)
-                            .foregroundColor(hTextColor.Opaque.primary)
-                            .padding(.padding8)
-                            .background(hSurfaceColor.Opaque.primary)
-                            .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusM))
-                    }
-                    .accessibilityValue(
-                        vm.showBottomMenu ? L10n.generalCloseButton : L10n.ClaimStatus.UploadedFiles.uploadButton
-                    )
-                    HStack(alignment: .bottom, spacing: 0) {
-                        CustomTextViewRepresentable(
-                            placeholder: L10n.chatInputPlaceholder,
-                            text: $vm.inputText,
-                            height: $height,
-                            keyboardIsShown: $vm.keyboardIsShown
-                        ) { file in
-                            vm.sendMessage(.init(type: .file(file: file)))
-                        }
-                        .frame(height: height)
-                        .frame(minHeight: 40)
-
-                        Button {
-                            vm.sendTextMessage()
-                        } label: {
-                            hCoreUIAssets.sendChat.view
-                                .resizable()
-                                .frame(width: 24, height: 24)
-                                .padding(.padding8)
-                        }
-                        .accessibilityValue(L10n.voiceoverChatSendMessageButton)
-                    }
-                    .padding(.leading, .padding4)
-                    .background(hSurfaceColor.Opaque.primary)
-                    .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusM))
+                    addFilesButton
+                    inputField
                 }
-                .padding([.horizontal, .top], 16)
-                .fixedSize(horizontal: false, vertical: true)
+                .padding([.horizontal, .top], .padding8)
+
                 if vm.showBottomMenu {
-                    HStack(spacing: 8) {
-                        VStack(spacing: 8) {
-                            bottomMenuItem(with: hCoreUIAssets.camera.image) {
-                                vm.openCamera()
-                            }
-                            .accessibilityValue(L10n.voiceoverChatCamera)
-                            bottomMenuItem(with: hCoreUIAssets.image.image) {
-                                vm.openImagePicker()
-                            }
-                            .accessibilityValue(L10n.voiceoverChatCameraroll)
-                            bottomMenuItem(with: hCoreUIAssets.document.image) {
-                                vm.openFilePicker()
-                            }
-                            .accessibilityValue(L10n.voiceoverChatFiles)
-                        }
-                        .fixedSize(
-                            horizontal: /*@START_MENU_TOKEN@*/ true /*@END_MENU_TOKEN@*/,
-                            vertical: /*@START_MENU_TOKEN@*/ true /*@END_MENU_TOKEN@*/
-                        )
-                        ImagesView(vm: vm.imagesViewModel)
-                    }
-                    .fixedSize(horizontal: false, vertical: true)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                    .padding(.leading, .padding16)
+                    bottomMenu
                 }
             }
         }
+    }
+
+    private var addFilesButton: some View {
+        Button {
+            withAnimation {
+                self.vm.showBottomMenu.toggle()
+            }
+        } label: {
+            Image(uiImage: hCoreUIAssets.plus.image)
+                .resizable().frame(width: 24, height: 24)
+                .rotationEffect(vm.showBottomMenu ? .degrees(45) : .zero)
+                .foregroundColor(hTextColor.Opaque.primary)
+                .padding(.padding8)
+                .background(hSurfaceColor.Opaque.primary)
+                .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusM))
+        }
+        .accessibilityValue(
+            vm.showBottomMenu ? L10n.generalCloseButton : L10n.ClaimStatus.UploadedFiles.uploadButton
+        )
+    }
+
+    private var inputField: some View {
+        HStack(alignment: .bottom, spacing: 0) {
+            CustomTextViewRepresentable(
+                placeholder: L10n.chatInputPlaceholder,
+                text: $vm.inputText,
+                height: $height,
+                keyboardIsShown: $vm.keyboardIsShown
+            ) { file in
+                vm.sendMessage(.init(type: .file(file: file)))
+            }
+            .frame(height: height)
+            .frame(minHeight: 40)
+
+            Button {
+                vm.sendTextMessage()
+            } label: {
+                hCoreUIAssets.sendChat.view
+                    .resizable()
+                    .frame(width: 24, height: 24)
+                    .padding(.padding8)
+            }
+            .accessibilityValue(L10n.voiceoverChatSendMessageButton)
+        }
+        .padding(.leading, .padding4)
+        .background(hSurfaceColor.Opaque.primary)
+        .clipShape(RoundedRectangle(cornerRadius: .cornerRadiusM))
+    }
+
+    private var bottomMenu: some View {
+        HStack(spacing: .padding8) {
+            VStack(spacing: .padding8) {
+                bottomMenuItem(with: hCoreUIAssets.camera.image) {
+                    vm.openCamera()
+                }
+                .accessibilityValue(L10n.voiceoverChatCamera)
+                bottomMenuItem(with: hCoreUIAssets.image.image) {
+                    vm.openImagePicker()
+                }
+                .accessibilityValue(L10n.voiceoverChatCameraroll)
+                bottomMenuItem(with: hCoreUIAssets.document.image) {
+                    vm.openFilePicker()
+                }
+                .accessibilityValue(L10n.voiceoverChatFiles)
+            }
+            ImagesView(vm: vm.imagesViewModel)
+        }
+        .transition(.move(edge: .bottom).combined(with: .opacity))
+        .padding(.leading, .padding16)
     }
 
     private func bottomMenuItem(with image: UIImage, action: @escaping () -> Void) -> some View {
