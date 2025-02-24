@@ -92,6 +92,15 @@ extension ApolloClient {
                 break
             case .refreshFailed:
                 log.error("graphQL error \(operation)", error: error, attributes: [:])
+            case .networkIssue:
+                log.info("graphQL error \(operation)", error: error, attributes: [:])
+            }
+        } else if let error = error as? URLSessionClient.URLSessionClientError {
+            switch error {
+            case .networkError:
+                log.info("graphQL error \(operation)", error: error, attributes: [:])
+            default:
+                log.error("graphQL error \(operation)", error: error, attributes: [:])
             }
         } else {
             log.error("graphQL error \(operation)", error: error, attributes: [:])

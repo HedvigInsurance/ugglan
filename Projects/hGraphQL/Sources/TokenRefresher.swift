@@ -48,6 +48,9 @@ public class TokenRefresher {
         } else if Date() > token.refreshTokenExpirationDate {
             log.info("Refresh token expired at \(token.refreshTokenExpirationDate) forcing logout")
             forceLogoutHook()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                self?.cancellables.removeAll()
+            }
             throw AuthError.refreshTokenExpired
         } else {
             self.isRefreshing.send(true)
@@ -59,12 +62,20 @@ public class TokenRefresher {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
                     self?.cancellables.removeAll()
                 }
-            } catch let error {
+            } catch {
                 log.error("Refreshing failed \(error.localizedDescription), forcing logout")
-                forceLogoutHook()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-                    self?.cancellables.removeAll()
+                if let error = error as? AuthError {
+                    switch error {
+                    case .refreshTokenExpired, .refreshFailed:
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                            self?.cancellables.removeAll()
+                        }
+                        forceLogoutHook()
+                    case .networkIssue:
+                        break
+                    }
                 }
+                self.isRefreshing.send(false)
                 throw error
             }
         }
