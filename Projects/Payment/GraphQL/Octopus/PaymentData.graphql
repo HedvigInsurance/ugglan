@@ -25,7 +25,9 @@ fragment MemberReferralInformationCodeFragment on MemberReferralInformation {
 
 
 fragment MemberChargeFragment on MemberCharge{
-      contractsChargeBreakdown {
+      chargeBreakdown {
+        displayTitle
+        displaySubtitle
         gross {
           ...MoneyFragment
         }
@@ -36,14 +38,6 @@ fragment MemberChargeFragment on MemberCharge{
             ...MoneyFragment
           }
           isPreviouslyFailedCharge
-        }
-        contract {
-          exposureDisplayName
-          currentAgreement {
-            productVariant {
-              displayName
-            }
-          }
         }
       }
       date

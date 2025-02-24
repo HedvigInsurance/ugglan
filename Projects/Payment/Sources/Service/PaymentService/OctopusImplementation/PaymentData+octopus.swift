@@ -15,7 +15,7 @@ extension PaymentData {
         let chargeFragment = futureCharge.fragments.memberChargeFragment
         payment = .init(with: chargeFragment)
         status = PaymentData.PaymentStatus.getStatus(for: chargeFragment, with: data.currentMember)
-        contracts = chargeFragment.contractsChargeBreakdown.compactMap({ .init(with: $0) })
+        contracts = chargeFragment.chargeBreakdown.compactMap({ .init(with: $0) })
         let redeemedCampaigns = data.currentMember.redeemedCampaigns
         discounts = chargeFragment.discountBreakdown.compactMap({ discountBreakdown in
             if let campaing = redeemedCampaigns.first(where: { $0.code == discountBreakdown.code }) {
@@ -38,7 +38,7 @@ extension PaymentData {
         self.id = data.id ?? ""
         payment = .init(with: data)
         status = PaymentData.PaymentStatus.getStatus(for: data, with: paymentDataQueryCurrentMember)
-        contracts = data.contractsChargeBreakdown.compactMap({ .init(with: $0) })
+        contracts = data.chargeBreakdown.compactMap({ .init(with: $0) })
         let redeemedCampaigns = paymentDataQueryCurrentMember.redeemedCampaigns
         discounts = data.discountBreakdown.compactMap({ discountBreakdown in
             if let campaing = redeemedCampaigns.first(where: { $0.code == discountBreakdown.code }) {
@@ -83,7 +83,7 @@ extension PaymentData.PaymentStatus {
                 return .success
             case .upcoming:
                 let previousChargesPeriods =
-                    data.futureCharge?.contractsChargeBreakdown.flatMap({ $0.periods })
+                    data.futureCharge?.chargeBreakdown.flatMap({ $0.periods })
                     .filter({ $0.isPreviouslyFailedCharge }) ?? []
                 let from = previousChargesPeriods.compactMap({ $0.fromDate.localDateToDate }).min()
                 let to = previousChargesPeriods.compactMap({ $0.toDate.localDateToDate }).max()
@@ -111,10 +111,10 @@ extension PaymentData.PaymentStack {
 
 @MainActor
 extension PaymentData.ContractPaymentDetails {
-    init(with data: OctopusGraphQL.MemberChargeFragment.ContractsChargeBreakdown) {
+    init(with data: OctopusGraphQL.MemberChargeFragment.ChargeBreakdown) {
         id = UUID().uuidString
-        title = data.contract.currentAgreement.productVariant.displayName
-        subtitle = data.contract.exposureDisplayName
+        title = data.displayTitle
+        subtitle = data.displaySubtitle
         amount = .init(fragment: data.gross.fragments.moneyFragment)
         periods = data.periods.compactMap({ .init(with: $0) })
     }
@@ -122,7 +122,7 @@ extension PaymentData.ContractPaymentDetails {
 
 @MainActor
 extension PaymentData.PeriodInfo {
-    init(with data: OctopusGraphQL.MemberChargeFragment.ContractsChargeBreakdown.Period) {
+    init(with data: OctopusGraphQL.MemberChargeFragment.ChargeBreakdown.Period) {
         id = UUID().uuidString
         from = data.fromDate
         to = data.toDate
@@ -137,7 +137,7 @@ extension PaymentData.PeriodInfo {
 }
 
 @MainActor
-extension OctopusGraphQL.MemberChargeFragment.ContractsChargeBreakdown.Period {
+extension OctopusGraphQL.MemberChargeFragment.ChargeBreakdown.Period {
     fileprivate var getDescription: String? {
         guard let fromDate = fromDate.localDateToDate,
             let toDate = toDate.localDateToDate
