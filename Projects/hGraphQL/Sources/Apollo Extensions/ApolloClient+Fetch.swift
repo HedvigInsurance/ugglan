@@ -96,7 +96,7 @@ extension ApolloClient {
             default:
                 log.error("graphQL error \(operation)", error: error, attributes: [:])
             }
-        } else if let error = error as? GraphQLError{
+        } else if let error = error as? GraphQLError {
             log.addError(error: error, type: .network, attributes: ["desc": error.logDescription])
             log.error("graphQL error \(error.logDescription)", error: error, attributes: [:])
         } else {
