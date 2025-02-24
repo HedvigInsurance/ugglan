@@ -9,7 +9,6 @@ public class ChangeTierClientOctopus: ChangeTierClient {
     public init() {}
 
     public func getTier(input: ChangeTierInputData) async throws -> ChangeTierIntentModel {
-
         let source: OctopusGraphQL.ChangeTierDeductibleSource = {
             switch input.source {
             case .changeTier: return .selfService
@@ -41,54 +40,13 @@ public class ChangeTierClientOctopus: ChangeTierClient {
             }
             let currentContract = contractResponse.contract
             let agreementToChange = intent.agreementToChange
-
-            /* get filtered tiers  */
             let filteredTiers = getFilteredTiers(currentContract: currentContract, intent: intent)
-
-            /* get current tier */
-            let currentTier: Tier =
-                filteredTiers.first(where: {
-                    $0.name.lowercased() == intent.agreementToChange.tierName?.lowercased()
-                })
-                ?? Tier(
-                    id: intent.agreementToChange.tierName ?? "",
-                    name: intent.agreementToChange.tierName?.capitalized ?? "",
-                    level: intent.agreementToChange.tierLevel ?? 0,
-                    quotes: [
-                        .init(
-                            id: "currentTier",
-                            quoteAmount: .init(
-                                optionalFragment: intent.agreementToChange.deductible?.amount.fragments.moneyFragment
-                            ),
-                            quotePercentage: intent.agreementToChange.deductible?.percentage,
-                            subTitle: nil,
-                            basePremium: .init(fragment: intent.agreementToChange.basePremium.fragments.moneyFragment),
-                            displayItems: [],
-                            productVariant: .init(
-                                data: intent.agreementToChange.productVariant.fragments.productVariantFragment
-                            ),
-                            addons: []
-                        )
-                    ],
-                    exposureName: currentContract.exposureDisplayName
-                )
-            /* get current deductible */
-            let deductible = agreementToChange.deductible
-            let currentDeductible: Quote? = {
-                if let deductible {
-                    return Quote(
-                        id: "current",
-                        quoteAmount: .init(fragment: deductible.amount.fragments.moneyFragment),
-                        quotePercentage: (deductible.percentage == 0) ? nil : deductible.percentage,
-                        subTitle: (deductible.displayText == "") ? nil : deductible.displayText,
-                        basePremium: .init(fragment: agreementToChange.basePremium.fragments.moneyFragment),
-                        displayItems: currentTier.quotes.first?.displayItems ?? [],
-                        productVariant: currentTier.quotes.first?.productVariant,
-                        addons: []
-                    )
-                }
-                return nil
-            }()
+            let currentTier: Tier = getCurrentTier(
+                filteredTiers: filteredTiers,
+                currentContract: currentContract,
+                intent: intent
+            )
+            let currentDeductible = getCurrentDeductible(agreementToChange: agreementToChange, currentTier: currentTier)
 
             let intentModel: ChangeTierIntentModel = .init(
                 displayName: (currentDeductible?.productVariant?.displayName
@@ -195,6 +153,64 @@ public class ChangeTierClientOctopus: ChangeTierClient {
 
         })
         return allTiers
+    }
+
+    private func getCurrentTier(
+        filteredTiers: [Tier],
+        currentContract: OctopusGraphQL.ContractQuery.Data.Contract,
+        intent: OctopusGraphQL.ChangeTierDeductibleCreateIntentMutation.Data.ChangeTierDeductibleCreateIntent.Intent
+    ) -> Tier {
+        return filteredTiers.first(where: {
+            $0.name.lowercased() == intent.agreementToChange.tierName?.lowercased()
+        })
+            ?? Tier(
+                id: intent.agreementToChange.tierName ?? "",
+                name: intent.agreementToChange.productVariant.displayNameTier ?? "",
+                level: intent.agreementToChange.tierLevel ?? 0,
+                quotes: [
+                    .init(
+                        id: "currentTier",
+                        quoteAmount: .init(
+                            optionalFragment: intent.agreementToChange.deductible?.amount.fragments.moneyFragment
+                        ),
+                        quotePercentage: (intent.agreementToChange.deductible?.percentage == 0)
+                            ? nil : intent.agreementToChange.deductible?.percentage,
+                        subTitle: nil,
+                        basePremium: .init(fragment: intent.agreementToChange.basePremium.fragments.moneyFragment),
+                        displayItems: [],
+                        productVariant: .init(
+                            data: intent.agreementToChange.productVariant.fragments.productVariantFragment
+                        ),
+                        addons: []
+                    )
+                ],
+                exposureName: currentContract.exposureDisplayName
+            )
+
+    }
+
+    private func getCurrentDeductible(
+        agreementToChange: OctopusGraphQL.ChangeTierDeductibleCreateIntentMutation.Data.ChangeTierDeductibleCreateIntent
+            .Intent.AgreementToChange,
+        currentTier: Tier
+    ) -> Quote? {
+        let deductible = agreementToChange.deductible
+        let currentDeductible: Quote? = {
+            if let deductible {
+                return Quote(
+                    id: "current",
+                    quoteAmount: .init(fragment: deductible.amount.fragments.moneyFragment),
+                    quotePercentage: (deductible.percentage == 0) ? nil : deductible.percentage,
+                    subTitle: (deductible.displayText == "") ? nil : deductible.displayText,
+                    basePremium: .init(fragment: agreementToChange.basePremium.fragments.moneyFragment),
+                    displayItems: currentTier.quotes.first?.displayItems ?? [],
+                    productVariant: currentTier.quotes.first?.productVariant,
+                    addons: []
+                )
+            }
+            return nil
+        }()
+        return currentDeductible
     }
 
     public func compareProductVariants(termsVersion: [String]) async throws -> ProductVariantComparison {

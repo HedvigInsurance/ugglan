@@ -77,8 +77,11 @@ public struct hFloatingField: View {
 
     }
     private var getTextLabel: some View {
-        hText(value, style: size == .large ? .body2 : .body1)
-            .foregroundColor(foregroundColor)
+        HStack(spacing: 0) {
+            hText(value, style: size == .large ? .body2 : .body1)
+                .foregroundColor(foregroundColor)
+            hText(" ")
+        }
     }
 
     @hColorBuilder

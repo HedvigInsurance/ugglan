@@ -53,7 +53,7 @@ extension PaymentData {
         let chargeFragment = data
         payment = .init(with: chargeFragment)
         status = PaymentData.PaymentStatus.getStatus(with: chargeFragment, and: nextPayment)
-        contracts = chargeFragment.contractsChargeBreakdown.compactMap({ .init(with: $0) })
+        contracts = chargeFragment.chargeBreakdown.compactMap({ .init(with: $0) })
         let redeemedCampaigns = campaings.redeemedCampaigns
         discounts = chargeFragment.discountBreakdown.compactMap({ discountBreakdown in
             if discountBreakdown.isReferral {

@@ -256,14 +256,6 @@ public struct ClaimFlowItemProblemOptionModel: Codable, Equatable, Hashable, Sen
     }
 }
 
-//<<<<<<< HEAD:Projects/Claims/Sources/Models/FlowClamSingleItemStepModel.swift
-//public enum SelectedModel: Codable, Equatable, Hashable, Sendable {
-//    case model(ClaimFlowItemModelOptionModel)
-//    case custom(brand: ClaimFlowItemBrandOptionModel, name: String)
-//}
-//
-//=======
-//>>>>>>> main:Projects/Claims/Sources/Models/FlowClaimSingleItemStepModel.swift
 extension ClaimFlowItemBrandOptionModel: TrackingViewNameProtocol {
     public var nameForTracking: String {
         return .init(describing: ModelPickerView.self)

@@ -68,8 +68,8 @@ struct ContractTable: View {
                             AddonCardView(
                                 openAddon: {
                                     contractsNavigationVm.isAddonPresented = .init(
-                                        contractConfigs: addonContractConfig,
-                                        addonId: nil
+                                        addonSource: .insurances,
+                                        contractConfigs: addonContractConfig
                                     )
                                 },
                                 addon: banner
@@ -215,6 +215,10 @@ public class ContractTableViewModel: ObservableObject {
             Task {
                 await self?.getAddonBanner()
             }
+            Task {
+                let store: ContractStore = await globalPresentableStoreContainer.get()
+                store.send(.fetchContracts)
+            }
         }
     }
 
@@ -228,7 +232,7 @@ public class ContractTableViewModel: ObservableObject {
 
     func getAddonBanner() async {
         do {
-            self.addonBannerModel = try await service.getAddonBannerModel(source: .appOnlyUpsell)
+            self.addonBannerModel = try await service.getAddonBannerModel(source: .insurances)
         } catch {
             self.addonBannerModel = nil
         }

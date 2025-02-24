@@ -65,6 +65,7 @@ public struct PaymentHistoryView: View {
                                         }
                                         Spacer()
                                         hText(month.paymentData.payment.net.formattedAmount)
+                                        hText(" ")
                                     }
                                 }
                                 .withCustomAccessory {
@@ -91,6 +92,7 @@ public struct PaymentHistoryView: View {
                                     )
                                 )
                                 .padding(.horizontal, -16)
+                                .accessibilityElement(children: .combine)
                             }
                             .withHeader {
                                 hText(item.year)

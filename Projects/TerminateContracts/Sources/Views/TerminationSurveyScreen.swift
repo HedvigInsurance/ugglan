@@ -62,24 +62,20 @@ struct TerminationSurveyScreen: View {
                                 )
                                 .hFieldSize(.medium)
                                 .zIndex(1)
-                                Group {
-                                    if let suggestion = option.suggestion, option.id == vm.selectedOption?.id {
-                                        buildInfo(for: suggestion)
-                                            .matchedGeometryEffect(id: "buildInfo", in: animationNamespace)
-                                    }
-
-                                    if let feedBack = vm.allFeedBackViewModels[option.id],
-                                        option.id == vm.selectedOption?.id
-                                    {
-                                        TerminationFlowSurveyStepFeedBackView(
-                                            vm: feedBack
-                                        )
-                                    }
-                                }
-                                .frame(minHeight: 120)
                             }
                         }
 
+                    }
+                    if let suggestion = vm.selectedOption?.suggestion {
+                        suggestionView(for: suggestion)
+                    }
+
+                    if let optionId = vm.selectedOption?.id, let feedBack = vm.allFeedBackViewModels[optionId],
+                        optionId == vm.selectedOption?.id
+                    {
+                        TerminationFlowSurveyStepFeedBackView(
+                            vm: feedBack
+                        )
                     }
                 }
             }
@@ -88,10 +84,10 @@ struct TerminationSurveyScreen: View {
     }
 
     @ViewBuilder
-    func buildInfo(for suggestion: TerminationFlowSurveyStepSuggestion) -> some View {
+    func suggestionView(for suggestion: TerminationFlowSurveyStepSuggestion) -> some View {
         switch suggestion {
         case .action(let action):
-            InfoCard(text: action.description, type: .campaign)
+            InfoCard(text: action.description, type: action.type.notificationType)
                 .buttons([
                     .init(
                         buttonTitle: action.buttonTitle,
@@ -102,7 +98,7 @@ struct TerminationSurveyScreen: View {
                 ])
                 .hButtonIsLoading(terminationFlowNavigationViewModel.redirectActionLoadingState == .loading)
         case .redirect(let redirect):
-            InfoCard(text: redirect.description, type: .campaign)
+            InfoCard(text: redirect.description, type: redirect.type.notificationType)
                 .buttons([
                     .init(
                         buttonTitle: redirect.buttonTitle,
@@ -114,6 +110,8 @@ struct TerminationSurveyScreen: View {
                     )
                 ])
                 .hButtonIsLoading(false)
+        case .suggestionInfo(let info):
+            InfoCard(text: info.description, type: info.type.notificationType)
         }
     }
 
@@ -174,7 +172,7 @@ class SurveyScreenViewModel: ObservableObject {
     }
 
     @Published var viewState: ProcessingState = .success
-    @Inject private var service: TerminateContractsClient
+    private let terminateContractsService = TerminateContractsService()
 
     init(options: [TerminationFlowSurveyStepModelOption], subtitleType: SurveyScreenSubtitleType) {
         self.options = options
@@ -209,7 +207,11 @@ class SurveyScreenViewModel: ObservableObject {
             viewState = .loading
         }
         do {
-            let data = try await service.sendSurvey(terminationContext: context, option: option, inputData: inputData)
+            let data = try await terminateContractsService.sendSurvey(
+                terminationContext: context,
+                option: option,
+                inputData: inputData
+            )
             withAnimation {
                 viewState = .success
             }
@@ -234,8 +236,16 @@ class SurveyScreenViewModel: ObservableObject {
             return true
         }()
 
-        if selectedOption?.suggestion != nil {
-            continueEnabled = false
+        if let suggestion = selectedOption?.suggestion {
+            switch suggestion {
+            case let .action(action):
+                if action.action == .updateAddress {
+                    continueEnabled = false
+                }
+                continueEnabled = true
+            default:
+                continueEnabled = true
+            }
         } else {
             continueEnabled = status
         }
@@ -254,7 +264,8 @@ class SurveyScreenViewModel: ObservableObject {
                     id: "actionId",
                     action: .updateAddress,
                     description: "description",
-                    buttonTitle: "button title"
+                    buttonTitle: "button title",
+                    type: .offer
                 )
             ),
             feedBack: nil,
@@ -273,11 +284,14 @@ class SurveyScreenViewModel: ObservableObject {
         .init(
             id: "optionId3",
             title: "Option title 3",
-            suggestion: nil,
-            feedBack: .init(
-                id: "feedbackId",
-                isRequired: true
+            suggestion: .suggestionInfo(
+                info: .init(
+                    id: "id",
+                    description: "description",
+                    type: .info
+                )
             ),
+            feedBack: nil,
             subOptions: nil
         ),
         .init(
@@ -295,6 +309,7 @@ class SurveyScreenViewModel: ObservableObject {
     return NavigationView {
         TerminationSurveyScreen(vm: .init(options: options, subtitleType: .default))
             .navigationBarTitleDisplayMode(.inline)
+            .environmentObject(TerminationFlowNavigationViewModel(configs: [], terminateInsuranceViewModel: .init()))
     }
 }
 

@@ -162,7 +162,11 @@ struct LoggedInNavigation: View {
         ContractsNavigation(contractsNavigationVm: vm.contractsNavigationVm) { redirectType in
             switch redirectType {
             case .chat:
-                ChatScreen(vm: .init(chatService: NewConversationService()))
+                ChatScreen(
+                    vm: .init(
+                        chatService: NewConversationService()
+                    )
+                )
             case .movingFlow:
                 MovingFlowNavigation {
                     let store: ContractStore = globalPresentableStoreContainer.get()
@@ -860,7 +864,7 @@ class LoggedInNavigationViewModel: ObservableObject {
     private func handleTravelAddon() async {
         do {
             let client: FetchContractsClient = Dependencies.shared.resolve()
-            if let bannerData = try await client.getAddonBannerModel(source: .appUpsellUpgrade) {
+            if let bannerData = try await client.getAddonBannerModel(source: .deeplink) {
                 let contractStore: ContractStore = globalPresentableStoreContainer.get()
                 let addonContracts = bannerData.contractIds.compactMap({
                     contractStore.state.contractForId($0)
@@ -875,7 +879,10 @@ class LoggedInNavigationViewModel: ObservableObject {
                         displayName: $0.currentAgreement?.productVariant.displayName ?? ""
                     )
                 })
-                self.isAddonPresented = .init(contractConfigs: addonConfigs)
+                self.isAddonPresented = .init(
+                    addonSource: .deeplink,
+                    contractConfigs: addonConfigs
+                )
             }
         } catch {
             isAddonErrorPresented = error.localizedDescription

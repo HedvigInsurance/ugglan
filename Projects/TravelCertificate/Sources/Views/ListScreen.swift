@@ -47,6 +47,8 @@ public struct ListScreen: View {
                     .onTapGesture {
                         travelCertificateNavigationVm.isDocumentPresented = travelCertificate
                     }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityAddTraits(.isButton)
                 }
                 .hSectionWithoutHorizontalPadding
             }
@@ -106,6 +108,7 @@ public struct ListScreen: View {
                         )
                     })
                     travelCertificateNavigationVm.isAddonPresented = .init(
+                        addonSource: .travelCertificates,
                         contractConfigs: addonConfigs
                     )
                 },
@@ -197,7 +200,7 @@ class ListScreenViewModel: ObservableObject {
             isLoading = true
         }
         do {
-            let (list, canCreateTravelInsurance, banner) = try await self.service.getList(source: .appUpsellUpgrade)
+            let (list, canCreateTravelInsurance, banner) = try await self.service.getList(source: .travelCertificates)
             withAnimation {
                 self.list = list
                 self.canCreateTravelInsurance = canCreateTravelInsurance

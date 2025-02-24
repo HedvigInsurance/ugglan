@@ -38,7 +38,10 @@ struct ContractInformationView: View {
                                         if let date = item.displayValue.localDateToDate?.displayDateDDMMMYYYYFormat {
                                             hText(date)
                                         } else {
-                                            hText(item.displayValue)
+                                            ZStack {
+                                                hText(item.displayValue)
+                                                hText(" ")
+                                            }
                                         }
                                     }
                                     .foregroundColor(hTextColor.Opaque.secondary)
@@ -309,7 +312,7 @@ struct ContractInformationView: View {
     private func moveAddressButton(contract: Contract) -> some View {
         let contractsThatSupportsMoving = store.state.activeContracts.filter({ $0.supportsAddressChange })
         if contract.supportsAddressChange && Dependencies.featureFlags().isMovingFlowEnabled
-            && contractsThatSupportsMoving.count < 2
+            && contractsThatSupportsMoving.count < 2 && !contract.isTerminated
         {
             hSection {
                 hButton.LargeButton(type: .ghost) {
