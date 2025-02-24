@@ -4,7 +4,6 @@ import hCore
 import hCoreUI
 
 public struct PickLanguage: View {
-    let currentMarket: Market
     let onSave: ((String) -> Void)?
     let onCancel: (() -> Void)?
     @PresentableStore var store: MarketStore
@@ -12,10 +11,7 @@ public struct PickLanguage: View {
     @State var currentLocale: Localization.Locale = .currentLocale.value
     @State var code: String? = Localization.Locale.currentLocale.value.lprojCode
 
-    public init(
-        currentMarket: Market
-    ) {
-        self.currentMarket = currentMarket
+    public init() {
         onSave = nil
         onCancel = nil
     }
@@ -24,8 +20,6 @@ public struct PickLanguage: View {
         onSave: @escaping (String) -> Void,
         onCancel: @escaping () -> Void
     ) {
-        let store: MarketStore = globalPresentableStoreContainer.get()
-        currentMarket = store.state.market
         self.onSave = onSave
         self.onCancel = onCancel
     }
@@ -42,7 +36,7 @@ public struct PickLanguage: View {
                 }
                 hSection {
                     VStack(spacing: 4) {
-                        ForEach(currentMarket.languages, id: \.lprojCode) { locale in
+                        ForEach(Localization.Locale.allCases, id: \.lprojCode) { locale in
                             hRadioField(
                                 id: locale.lprojCode,
                                 leftView: {
