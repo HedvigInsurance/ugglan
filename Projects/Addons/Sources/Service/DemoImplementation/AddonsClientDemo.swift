@@ -8,6 +8,7 @@ public class AddonsClientDemo: AddonsClient {
             displayName: "45 days",
             quoteId: "quoteId45",
             addonId: "addonId45",
+            addonSubtype: "addonSubtype45",
             displayItems: [
                 .init(displayTitle: "Coverage", displayValue: "45 days"),
                 .init(displayTitle: "Insured people", displayValue: "You+1"),
@@ -27,6 +28,7 @@ public class AddonsClientDemo: AddonsClient {
                     displayName: "60 days",
                     quoteId: "quoteId60",
                     addonId: "addonId60",
+                    addonSubtype: "addonSubtype60",
                     displayItems: [
                         .init(displayTitle: "Coverage", displayValue: "60 days"),
                         .init(displayTitle: "Insured people", displayValue: "You+1"),
