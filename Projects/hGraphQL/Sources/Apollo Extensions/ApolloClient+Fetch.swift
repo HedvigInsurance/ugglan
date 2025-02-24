@@ -38,7 +38,7 @@ extension ApolloClient {
                 cachePolicy: cachePolicy,
                 contextIdentifier: nil,
                 queue: queue
-            ) {[weak self] result in
+            ) { [weak self] result in
                 switch result {
                 case let .success(result):
                     if let errors = result.errors {
@@ -66,7 +66,7 @@ extension ApolloClient {
             self.perform(
                 mutation: mutation,
                 queue: queue
-            ) {[weak self] result in
+            ) { [weak self] result in
                 switch result {
                 case let .success(result):
                     if let errors = result.errors {
@@ -84,7 +84,7 @@ extension ApolloClient {
             }
         }
     }
-    
+
     private func logGraphQLException(error: Error, for operation: any GraphQLOperation) {
         if let error = error as? AuthError {
             switch error {
