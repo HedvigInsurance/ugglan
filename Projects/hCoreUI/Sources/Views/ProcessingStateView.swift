@@ -1,37 +1,6 @@
 import SwiftUI
 import hCore
 
-public enum ProcessingState: Equatable {
-    case loading
-    case success
-    case error(errorMessage: String)
-}
-
-private struct AnimationTiming {
-    let delay: Float
-    let duration: Float
-    let progress: Float
-}
-
-class ProcessingViewModel: ObservableObject {
-    @Published var progress: Float = 0
-}
-
-public struct hProgressViewStyle: ProgressViewStyle {
-    public init() {}
-    public func makeBody(configuration: LinearProgressViewStyle.Configuration) -> some View {
-        return RoundedRectangle(cornerRadius: 2).fill(hSurfaceColor.Translucent.secondary)
-            .overlay {
-                GeometryReader(content: { geometry in
-                    RoundedRectangle(cornerRadius: 2, style: .continuous)
-                        .fill(hFillColor.Opaque.primary)
-                        .frame(width: geometry.size.width * (configuration.fractionCompleted ?? 0))
-                })
-            }
-            .frame(height: 4)
-    }
-}
-
 public struct ProcessingStateView: View {
     @StateObject var vm = ProcessingViewModel()
     @Binding var state: ProcessingState
@@ -155,6 +124,7 @@ public struct ProcessingStateView: View {
                 hText(loadingViewText)
                 ProgressView(value: vm.progress)
                     .frame(width: UIScreen.main.bounds.width * 0.53)
+                    .accessibilityHidden(true)
                     .onAppear {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                             animationTimings.forEach { item in
@@ -170,6 +140,38 @@ public struct ProcessingStateView: View {
                 Spacer()
             }
         }
+        .accessibilityElement(children: .combine)
+    }
+}
+
+public enum ProcessingState: Equatable {
+    case loading
+    case success
+    case error(errorMessage: String)
+}
+
+private struct AnimationTiming {
+    let delay: Float
+    let duration: Float
+    let progress: Float
+}
+
+class ProcessingViewModel: ObservableObject {
+    @Published var progress: Float = 0
+}
+
+public struct hProgressViewStyle: ProgressViewStyle {
+    public init() {}
+    public func makeBody(configuration: LinearProgressViewStyle.Configuration) -> some View {
+        return RoundedRectangle(cornerRadius: 2).fill(hSurfaceColor.Translucent.secondary)
+            .overlay {
+                GeometryReader(content: { geometry in
+                    RoundedRectangle(cornerRadius: 2, style: .continuous)
+                        .fill(hFillColor.Opaque.primary)
+                        .frame(width: geometry.size.width * (configuration.fractionCompleted ?? 0))
+                })
+            }
+            .frame(height: 4)
     }
 }
 
