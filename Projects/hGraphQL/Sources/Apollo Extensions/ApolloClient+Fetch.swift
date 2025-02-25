@@ -1,8 +1,8 @@
 import Apollo
 import SwiftUI
 
-extension GraphQLError {
-    var logDescription: String? {
+extension hGraphQL.GraphQLError {
+    var logDescription: String {
         switch self {
         case .graphQLError(let errors):
             let messages = errors.map { $0.localizedDescription }
@@ -16,12 +16,6 @@ extension GraphQLError {
 public enum GraphQLError: Error {
     case graphQLError(errors: [Error])
     case otherError(error: Error)
-}
-
-func logGraphQLError(error: GraphQLError) {
-    Task { @MainActor in
-        log.addError(error: error, type: .network, attributes: ["desc": error.logDescription])
-    }
 }
 
 @MainActor
@@ -38,11 +32,11 @@ extension ApolloClient {
                 cachePolicy: cachePolicy,
                 contextIdentifier: nil,
                 queue: queue
-            ) {[weak self] result in
+            ) { [weak self] result in
                 switch result {
                 case let .success(result):
                     if let errors = result.errors {
-                        logGraphQLError(error: .graphQLError(errors: errors))
+                        self?.logGraphQLException(error: GraphQLError.graphQLError(errors: errors), for: query)
                         inCont.resume(throwing: GraphQLError.graphQLError(errors: errors))
                     } else if let data = result.data {
                         Task { @MainActor in
@@ -66,11 +60,11 @@ extension ApolloClient {
             self.perform(
                 mutation: mutation,
                 queue: queue
-            ) {[weak self] result in
+            ) { [weak self] result in
                 switch result {
                 case let .success(result):
                     if let errors = result.errors {
-                        logGraphQLError(error: .graphQLError(errors: errors))
+                        self?.logGraphQLException(error: GraphQLError.graphQLError(errors: errors), for: mutation)
                         inCont.resume(throwing: GraphQLError.graphQLError(errors: errors))
                     } else if let data = result.data {
                         Task { @MainActor in
@@ -84,7 +78,7 @@ extension ApolloClient {
             }
         }
     }
-    
+
     private func logGraphQLException(error: Error, for operation: any GraphQLOperation) {
         if let error = error as? AuthError {
             switch error {
@@ -92,7 +86,19 @@ extension ApolloClient {
                 break
             case .refreshFailed:
                 log.error("graphQL error \(operation)", error: error, attributes: [:])
+            case .networkIssue:
+                log.info("graphQL error \(operation)", error: error, attributes: [:])
             }
+        } else if let error = error as? URLSessionClient.URLSessionClientError {
+            switch error {
+            case .networkError:
+                log.info("graphQL error \(operation)", error: error, attributes: [:])
+            default:
+                log.error("graphQL error \(operation)", error: error, attributes: [:])
+            }
+        } else if let error = error as? GraphQLError {
+            log.addError(error: error, type: .network, attributes: ["desc": error.logDescription])
+            log.error("graphQL error \(error.logDescription)", error: error, attributes: [:])
         } else {
             log.error("graphQL error \(operation)", error: error, attributes: [:])
         }
