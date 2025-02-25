@@ -62,7 +62,8 @@ struct CompareTierScreen: View {
                 perilRow(for: peril)
             }
             .sectionContainerStyle(.transparent)
-            .hSectionWithoutHorizontalPadding
+            .hWithoutDividerPadding
+            .hWithoutHorizontalPadding
         }
     }
 
@@ -89,7 +90,6 @@ struct CompareTierScreen: View {
                 }
             )
             .padding(.top, 20)
-            .padding(.horizontal, horizontalSizeClass == .regular ? .padding60 : 0)
         }
         .hFormTitle(
             title: .init(
