@@ -82,6 +82,7 @@ struct CompareTierScreen: View {
                         )
 
                 }
+                .padding(.trailing, 100)
                 .modifier(hFontModifier(style: .body1))
                 Spacer()
                 peril.getRowDescription
