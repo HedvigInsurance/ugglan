@@ -7,8 +7,27 @@ import hGraphQL
 public class ForeverNavigationViewModel: ObservableObject {
     @Published var isChangeCodePresented = false
     @Published var foreverData: ForeverData?
-    @Published var foreverVm = ForeverViewModel()
+    @Inject var foreverService: ForeverClient
+    @Published var viewState: ProcessingState = .loading
 
+    func fetchForeverData() async throws {
+        if foreverData == nil {
+            withAnimation {
+                viewState = .loading
+            }
+        }
+        do {
+            let data = try await self.foreverService.getMemberReferralInformation()
+            foreverData = data
+            withAnimation {
+                viewState = .success
+            }
+        } catch let exception {
+            withAnimation {
+                viewState = .error(errorMessage: exception.localizedDescription)
+            }
+        }
+    }
     var modalPresentationSourceWrapperViewModel = ModalPresentationSourceWrapperViewModel()
 
     func shareCode(code: String) {
