@@ -26,7 +26,8 @@ struct CompareTierScreen: View {
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
     @State var scrollableSegmentedViewModel: ScrollableSegmentedViewModel
     @SwiftUI.Environment(\.horizontalSizeClass) var horizontalSizeClass
-
+    @SwiftUI.Environment(\.colorScheme) var colorSchema
+    @State var plusImage = hCoreUIAssets.plus.image.getImageFor(style: .body1)
     @State var width: CGFloat?
 
     init(
@@ -72,44 +73,21 @@ struct CompareTierScreen: View {
     private func perilRow(for peril: Perils) -> some View {
         hRow {
             HStack(spacing: .padding4) {
-                hText(peril.title)
-                    .overlay(
-                        GeometryReader { proxy in
-                            let imagePadding = getImageLeadingPadding(text: peril.title, proxy: proxy)
+                Group {
+                    Text(peril.title)
+                        + Text(Image(uiImage: plusImage).renderingMode(.template))
+                        .foregroundColor(
+                            hFillColor.Translucent.secondary.colorFor(colorSchema == .light ? .light : .dark, .base)
+                                .color
+                        )
 
-                            Image(uiImage: hCoreUIAssets.plus.image)
-                                .resizable()
-                                .frame(width: 24, height: 24)
-                                .foregroundColor(hFillColor.Translucent.secondary)
-                                .padding(.leading, imagePadding.leading)
-                                .padding(.top, imagePadding.top)
-                        }
-                    )
-                    .padding(.trailing, 100)
+                }
+                .modifier(hFontModifier(style: .body1))
                 Spacer()
                 peril.getRowDescription
             }
         }
         .modifier(CompareOnRowTap(currentPeril: peril, vm: vm))
-    }
-
-    private func getImageLeadingPadding(text: String, proxy: GeometryProxy) -> (leading: CGFloat, top: CGFloat) {
-        let totalTextViewWidth = proxy.size.width
-        let totalTextViewHeight = proxy.size.height
-
-        var leadingPadding = totalTextViewWidth
-        var topPadding: CGFloat = 0
-
-        // 2 rows
-        if totalTextViewHeight > HFontTextStyle.body1.fontSize * 2 {
-            let totalTextWidthString = CGFloat(text.count) * HFontTextStyle.body1.fontSize / 2.1
-
-            let widthOnSecondRow = totalTextWidthString - totalTextViewWidth
-
-            leadingPadding = widthOnSecondRow
-            topPadding = totalTextViewHeight / 2
-        }
-        return (leadingPadding, topPadding)
     }
 
     @ViewBuilder
@@ -354,4 +332,18 @@ class CompareTierViewModel: ObservableObject {
                 onChangedTier: {}
             )
         )
+}
+extension UIImage {
+    fileprivate func getImageFor(style: HFontTextStyle) -> UIImage {
+        let height = style.fontSize * style.multiplier
+        let renderFormat = UIGraphicsImageRendererFormat.default()
+        renderFormat.opaque = false
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: height, height: height), format: renderFormat)
+        let newImage = renderer.image {
+            (context) in
+            self.draw(in: CGRect(x: 0, y: height * 0.2, width: height, height: height))
+        }
+
+        return newImage
+    }
 }
