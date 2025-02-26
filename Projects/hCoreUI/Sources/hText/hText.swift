@@ -66,7 +66,7 @@ public enum HFontTextStyle {
     case displayXSShort
     case displayXSLong
 
-    var fontSize: CGFloat {
+    public var fontSize: CGFloat {
         switch self {
         // Standard
         case .display1: return 54

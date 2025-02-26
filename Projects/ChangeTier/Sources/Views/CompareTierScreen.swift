@@ -27,6 +27,8 @@ struct CompareTierScreen: View {
     @State var scrollableSegmentedViewModel: ScrollableSegmentedViewModel
     @SwiftUI.Environment(\.horizontalSizeClass) var horizontalSizeClass
 
+    @State var width: CGFloat?
+
     init(
         vm: CompareTierViewModel
     ) {
@@ -69,15 +71,45 @@ struct CompareTierScreen: View {
 
     private func perilRow(for peril: Perils) -> some View {
         hRow {
-            HStack(alignment: .bottom, spacing: .padding4) {
+            HStack(spacing: .padding4) {
                 hText(peril.title)
-                Image(uiImage: hCoreUIAssets.plus.image)
-                    .foregroundColor(hFillColor.Translucent.secondary)
+                    .overlay(
+                        GeometryReader { proxy in
+                            let imagePadding = getImageLeadingPadding(text: peril.title, proxy: proxy)
+
+                            Image(uiImage: hCoreUIAssets.plus.image)
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                                .foregroundColor(hFillColor.Translucent.secondary)
+                                .padding(.leading, imagePadding.leading)
+                                .padding(.top, imagePadding.top)
+                        }
+                    )
+                    .padding(.trailing, 100)
                 Spacer()
                 peril.getRowDescription
             }
         }
         .modifier(CompareOnRowTap(currentPeril: peril, vm: vm))
+    }
+
+    private func getImageLeadingPadding(text: String, proxy: GeometryProxy) -> (leading: CGFloat, top: CGFloat) {
+        let totalTextViewWidth = proxy.size.width
+        let totalTextViewHeight = proxy.size.height
+
+        var leadingPadding = totalTextViewWidth
+        var topPadding: CGFloat = 0
+
+        // 2 rows
+        if totalTextViewHeight > HFontTextStyle.body1.fontSize * 2 {
+            let totalTextWidthString = CGFloat(text.count) * HFontTextStyle.body1.fontSize / 2.1
+
+            let widthOnSecondRow = totalTextWidthString - totalTextViewWidth
+
+            leadingPadding = widthOnSecondRow
+            topPadding = totalTextViewHeight / 2
+        }
+        return (leadingPadding, topPadding)
     }
 
     @ViewBuilder
@@ -316,4 +348,10 @@ class CompareTierViewModel: ObservableObject {
     )
 
     return CompareTierScreen(vm: vm)
+        .environmentObject(
+            ChangeTierNavigationViewModel(
+                changeTierContractsInput: .init(source: .changeTier, contracts: []),
+                onChangedTier: {}
+            )
+        )
 }
