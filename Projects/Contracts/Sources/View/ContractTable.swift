@@ -51,32 +51,21 @@ struct ContractTable: View {
                 )
             if !showTerminated {
                 VStack(spacing: .padding8) {
-                    hSection {
-                        if Dependencies.featureFlags().isAddonsEnabled, let banner = vm.addonBannerModel {
-                            let addonContracts = banner.contractIds.compactMap({
-                                store.state.contractForId($0)
-                            })
-
-                            let addonContractConfig: [AddonConfig] = addonContracts.map({
-                                .init(
-                                    contractId: $0.id,
-                                    exposureName: $0.exposureDisplayName,
-                                    displayName: $0.currentAgreement?.productVariant.displayName ?? ""
-                                )
-                            })
-
+                    if Dependencies.featureFlags().isAddonsEnabled, let banner = vm.addonBannerModel {
+                        hSection {
+                            let addonConfigs = store.getAddonConfigsFor(contractIds: banner.contractIds)
                             AddonCardView(
                                 openAddon: {
                                     contractsNavigationVm.isAddonPresented = .init(
                                         addonSource: .insurances,
-                                        contractConfigs: addonContractConfig
+                                        contractConfigs: addonConfigs
                                     )
                                 },
                                 addon: banner
                             )
                         }
+                        .sectionContainerStyle(.transparent)
                     }
-                    .sectionContainerStyle(.transparent)
 
                     movingToANewHomeView
                     CrossSellingStack(withHeader: true)
