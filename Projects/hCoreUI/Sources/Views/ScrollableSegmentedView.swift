@@ -42,6 +42,9 @@ public struct ScrollableSegmentedView<Content: View>: View {
                         HStack(spacing: .padding4) {
                             ForEach(vm.pageModels) { model in
                                 headerElement(for: model)
+                                    .accessibilityLabel(
+                                        model.title + "\n\n" + L10n.voiceoverSegmentedcontrolSelectedTab(vm.currentId)
+                                    )
                             }
                         }
                     }

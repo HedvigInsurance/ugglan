@@ -63,11 +63,13 @@ struct CompareTierScreen: View {
         VStack {
             hSection(vm.getPerils(for: tierName), id: \.title) { peril in
                 perilRow(for: peril)
+
             }
             .sectionContainerStyle(.transparent)
             .hWithoutDividerPadding
             .hWithoutHorizontalPadding
         }
+        .accessibilityHint(L10n.tierFlowCoverageLabel + tierName)
     }
 
     private func perilRow(for peril: Perils) -> some View {
@@ -89,6 +91,8 @@ struct CompareTierScreen: View {
             }
         }
         .modifier(CompareOnRowTap(currentPeril: peril, vm: vm))
+        .accessibilityElement(children: .combine)
+        .accessibilityHint(L10n.voiceoverTierComparisionClick(peril.title))
     }
 
     @ViewBuilder
