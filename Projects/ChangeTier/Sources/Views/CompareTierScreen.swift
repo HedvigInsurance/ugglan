@@ -10,7 +10,6 @@ struct CompareTierScreen: View {
     @SwiftUI.Environment(\.horizontalSizeClass) var horizontalSizeClass
     @SwiftUI.Environment(\.colorScheme) var colorSchema
     @State var plusImage = hCoreUIAssets.plus.image.getImageFor(style: .body1)
-    @State var width: CGFloat?
 
     init(
         vm: CompareTierViewModel
