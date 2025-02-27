@@ -42,9 +42,7 @@ public struct ScrollableSegmentedView<Content: View>: View {
                         HStack(spacing: .padding4) {
                             ForEach(vm.pageModels) { model in
                                 headerElement(for: model)
-                                    .accessibilityLabel(
-                                        model.title + "\n\n" + L10n.voiceoverSegmentedcontrolSelectedTab(vm.currentId)
-                                    )
+                                    .accessibilityLabel(accessibilityLabel(model: model, vm: vm))
                             }
                         }
                     }
@@ -60,6 +58,18 @@ public struct ScrollableSegmentedView<Content: View>: View {
                 scrollView.bounces = false
             }
         }
+    }
+
+    private func accessibilityLabel(model: PageModel, vm: ScrollableSegmentedViewModel) -> String {
+        let currentPageModel = vm.pageModels.first(where: { $0.id == vm.currentId })
+        let selectedTabString =
+            L10n.voiceoverSegmentedcontrolSelectedTab(currentPageModel?.title ?? "") + "\n\n"
+            + L10n.voiceoverSegmentedcontrolSwitchTab
+
+        if currentPageModel?.id == model.id {
+            return model.title + "\n\n" + L10n.voiceoverSegmentedcontrolSwitchTab
+        }
+        return model.title + "\n\n" + selectedTabString
     }
 
     var selectedPageHeaderBackground: some View {
