@@ -3,24 +3,6 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-extension Perils {
-    @ViewBuilder @MainActor
-    var getRowDescription: some View {
-        Group {
-            if let covered = self.covered.first, covered != "" {
-                hText(covered)
-            } else if !self.isDisabled {
-                Image(
-                    uiImage: hCoreUIAssets.checkmark.image
-                )
-                .resizable()
-                .frame(width: 24, height: 24)
-            }
-        }
-        .foregroundColor(hFillColor.Opaque.secondary)
-    }
-}
-
 struct CompareTierScreen: View {
     @ObservedObject private var vm: CompareTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
@@ -60,15 +42,13 @@ struct CompareTierScreen: View {
     }
 
     private func comparisionView(for tierName: String) -> some View {
-        VStack {
-            hSection(vm.getPerils(for: tierName), id: \.title) { peril in
-                perilRow(for: peril)
+        hSection(vm.getPerils(for: tierName), id: \.title) { peril in
+            perilRow(for: peril)
 
-            }
-            .sectionContainerStyle(.transparent)
-            .hWithoutDividerPadding
-            .hWithoutHorizontalPadding
         }
+        .sectionContainerStyle(.transparent)
+        .hWithoutDividerPadding
+        .hWithoutHorizontalPadding
         .accessibilityHint(L10n.tierFlowCoverageLabel + tierName)
     }
 
@@ -84,7 +64,6 @@ struct CompareTierScreen: View {
                         )
 
                 }
-                .padding(.trailing, 100)
                 .modifier(hFontModifier(style: .body1))
                 Spacer()
                 peril.getRowDescription
@@ -259,6 +238,25 @@ class CompareTierViewModel: ObservableObject {
 
     func getPerils(for tierName: String) -> [Perils] {
         perils.first(where: { $0.0 == tierName })?.1.filter({ !$0.isDisabled }) ?? []
+    }
+}
+
+extension Perils {
+    @ViewBuilder @MainActor
+    var getRowDescription: some View {
+        Group {
+            if let covered = self.covered.first, covered != "" {
+                hText(covered)
+            } else if !self.isDisabled {
+                Image(
+                    uiImage: hCoreUIAssets.checkmark.image
+                )
+                .resizable()
+                .frame(width: 24, height: 24)
+            }
+        }
+        .foregroundColor(hFillColor.Opaque.secondary)
+        .frame(minWidth: 150, alignment: .trailing)
     }
 }
 
