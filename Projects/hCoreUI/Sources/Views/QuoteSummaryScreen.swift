@@ -362,7 +362,7 @@ public struct QuoteSummaryScreen: View {
                             ForEach(contract.insuranceLimits, id: \.limit) { limit in
                                 let displayItem: QuoteDisplayItem = .init(
                                     title: limit.label,
-                                    value: limit.limit,
+                                    value: limit.limit ?? "",
                                     id: limit.id
                                 )
                                 rowItem(for: displayItem)

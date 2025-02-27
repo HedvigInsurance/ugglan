@@ -68,7 +68,7 @@ struct CompareTierScreen: View {
                 peril.getRowDescription
             }
         }
-        .modifier(CompareOnRowTap(currentPeril: peril, vm: vm))
+        .modifier(CompareOnRowTap(currentPeril: peril))
         .accessibilityElement(children: .combine)
         .accessibilityHint(L10n.voiceoverTierComparisionClick(peril.title))
     }
@@ -102,15 +102,12 @@ struct CompareTierScreen: View {
 
 struct CompareOnRowTap: ViewModifier {
     let currentPeril: Perils
-    @ObservedObject private var vm: CompareTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
 
     init(
-        currentPeril: Perils,
-        vm: CompareTierViewModel
+        currentPeril: Perils
     ) {
         self.currentPeril = currentPeril
-        self.vm = vm
     }
 
     func body(content: Content) -> some View {
@@ -118,33 +115,9 @@ struct CompareOnRowTap: ViewModifier {
             .onTapGesture {
                 changeTierNavigationVm.isInsurableLimitPresented = .init(
                     label: currentPeril.title,
-                    limit: "",
                     description: currentPeril.description
                 )
             }
-            .onLongPressGesture(minimumDuration: 0.1) {
-                if #available(iOS 18.0, *) {
-                    withAnimation {
-                        vm.selectedPeril = currentPeril
-                    }
-                }
-            } onPressingChanged: { isPressing in
-                if !isPressing {
-                    withAnimation {
-                        vm.selectedPeril = nil
-                    }
-                }
-            }
-            .background(getRowColor(for: currentPeril))
-    }
-
-    @hColorBuilder
-    private func getRowColor(for peril: Perils) -> some hColor {
-        if peril.title == vm.selectedPeril?.title {
-            hButtonColor.Ghost.hover
-        } else {
-            hBackgroundColor.clear
-        }
     }
 }
 
@@ -152,19 +125,13 @@ struct CompareOnRowTap: ViewModifier {
 class CompareTierViewModel: ObservableObject {
     private let service = ChangeTierService()
     @Published var viewState: ProcessingState = .loading
-    @Published var selectedTier: Tier?
-    @Published var currentTier: Tier?
     @Published var tiers: [Tier]
     @Published var selectedPeril: Perils?
     @Published var perils: [(String, [Perils])] = []
 
     init(
-        tiers: [Tier],
-        selectedTier: Tier? = nil,
-        currentTier: Tier?
+        tiers: [Tier]
     ) {
-        self.selectedTier = selectedTier
-        self.currentTier = currentTier
         self.tiers = tiers
         self.productVariantComparision()
     }
@@ -245,7 +212,10 @@ extension Perils {
     var getRowDescription: some View {
         Group {
             if let covered = self.covered.first, covered != "" {
-                hText(covered)
+                ZStack {
+                    hText(covered)
+                    hText(" ")
+                }
             } else if !self.isDisabled {
                 Image(
                     uiImage: hCoreUIAssets.checkmark.image
@@ -322,9 +292,7 @@ extension Perils {
             ),
             standardTier,
             premiumTier,
-        ],
-        selectedTier: standardTier,
-        currentTier: standardTier
+        ]
     )
 
     return CompareTierScreen(vm: vm)
