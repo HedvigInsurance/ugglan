@@ -11,11 +11,9 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct HomeView<Claims: View>: View {
-    @PresentableStore var store: HomeStore
+public struct HomeScreen<Claims: View>: View {
     @StateObject var vm: HomeVM
     @Inject var featureFlags: FeatureFlags
-
     @EnvironmentObject var navigationVm: HomeNavigationViewModel
 
     var claimsContent: Claims
@@ -31,8 +29,7 @@ public struct HomeView<Claims: View>: View {
     }
 }
 
-extension HomeView {
-
+extension HomeScreen {
     public var body: some View {
         hForm {
             centralContent
@@ -132,7 +129,7 @@ extension HomeView {
         let showHelpCenter =
             !contractStore.state.activeContracts.allSatisfy({ $0.isNonPayingMember })
             || contractStore.state.activeContracts.count == 0
-        if showHelpCenter && Dependencies.featureFlags().isHelpCenterEnabled {
+        if showHelpCenter && featureFlags.isHelpCenterEnabled {
             hButton.LargeButton(type: .secondary) {
                 navigationVm.isHelpCenterPresented = true
             } content: {
@@ -185,7 +182,7 @@ class HomeVM: ObservableObject {
         chatNotificationPullTimerCancellable = chatNotificationPullTimer.receive(on: RunLoop.main)
             .sink { _ in
                 let currentVCDescription = UIApplication.shared.getTopVisibleVc()?.debugDescription
-                let compareToDescirption = String(describing: HomeView<EmptyView>.self).components(separatedBy: "<")
+                let compareToDescirption = String(describing: HomeScreen<EmptyView>.self).components(separatedBy: "<")
                     .first
                 if currentVCDescription == compareToDescirption {
                     let store: HomeStore = globalPresentableStoreContainer.get()
@@ -233,7 +230,7 @@ struct Active_Preview: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
 
-        return HomeView(
+        return HomeScreen(
             claimsContent: Text(""),
             memberId: {
                 "ID"
@@ -256,7 +253,7 @@ struct Active_Preview: PreviewProvider {
 struct ActiveInFuture_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
-        return HomeView(
+        return HomeScreen(
             claimsContent: Text(""),
             memberId: {
                 "ID"
@@ -280,7 +277,7 @@ struct ActiveInFuture_Previews: PreviewProvider {
 struct TerminatedToday_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
-        return HomeView(
+        return HomeScreen(
             claimsContent: Text(""),
             memberId: {
                 "ID"
@@ -303,7 +300,7 @@ struct TerminatedToday_Previews: PreviewProvider {
 struct Terminated_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
-        return HomeView(
+        return HomeScreen(
             claimsContent: Text(""),
             memberId: {
                 "ID"
@@ -326,7 +323,7 @@ struct Terminated_Previews: PreviewProvider {
 struct Deleted_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
-        return HomeView(
+        return HomeScreen(
             claimsContent: Text(""),
             memberId: {
                 "ID"

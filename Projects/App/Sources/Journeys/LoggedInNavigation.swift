@@ -333,7 +333,7 @@ struct HomeTab: View {
     let claims = Claims()
     var body: some View {
         return RouterHost(router: homeNavigationVm.router, tracking: self) {
-            HomeView(
+            HomeScreen(
                 claimsContent: claims,
                 memberId: {
                     let profileStrore: ProfileStore = globalPresentableStoreContainer.get()
