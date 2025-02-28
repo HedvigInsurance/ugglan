@@ -193,7 +193,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             consoleLogFormat: .shortWith(prefix: "[Hedvig] ")
         )
         let datadogLogger = Logger.create(with: config)
-        hGraphQL.log = DatadogLogger(datadogLogger: datadogLogger)
+        hGraphQL.graphQlLogger = DatadogLogger(datadogLogger: datadogLogger)
+        log = DatadogLogger(datadogLogger: datadogLogger)
 
         setupPresentableStoreLogger()
 
