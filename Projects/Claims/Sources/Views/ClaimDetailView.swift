@@ -104,24 +104,6 @@ public struct ClaimDetailView: View {
             }
             .ignoresSafeArea()
         }
-        .modally(item: $vm.showFilesView) { [weak vm] item in
-            ClaimFilesView(endPoint: item.endPoint, files: item.files) { _ in
-                let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
-                claimStore.send(.fetchClaims)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    let nav = UIApplication.shared.getTopViewControllerNavigation()
-                    nav?.setNavigationBarHidden(false, animated: true)
-                    vm?.showFilesView = nil
-                    Task {
-                        await vm?.fetchFiles()
-                    }
-                }
-            }
-            .withDismissButton()
-            .configureTitle(L10n.ClaimStatusDetail.addedFiles)
-            .embededInNavigation(tracking: ClaimDetailDetentType.fileUpload)
-
-        }
         .detent(
             item: $vm.document,
             style: [.large]
