@@ -5,6 +5,7 @@ import DatadogCrashReporting
 import DatadogLogs
 import DatadogRUM
 import DatadogTrace
+import Environment
 import PresentableStore
 import Profile
 import SwiftUI
@@ -79,7 +80,7 @@ extension AppDelegate {
             )
         )
         CrashReporting.enable()
-        if hGraphQL.Environment.current == .staging || hGraphQL.Environment.hasOverridenDefault {
+        if Environment.current == .staging || Environment.hasOverridenDefault {
             Datadog.verbosityLevel = .debug
         }
         logStartView = { key, name in

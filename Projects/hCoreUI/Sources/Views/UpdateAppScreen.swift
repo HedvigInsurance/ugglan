@@ -1,6 +1,6 @@
 import SwiftUI
 import hCore
-import hGraphQL
+import Environment
 
 public struct UpdateAppScreen: View {
     let onSelected: () -> Void
