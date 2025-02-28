@@ -6,16 +6,19 @@ import hCore
 public struct ScrollableSegmentedView<Content: View>: View {
     @ObservedObject var vm: ScrollableSegmentedViewModel
     @ViewBuilder var contentFor: (_ id: String) -> Content
+    let headerBottomPadding: CGFloat
 
     public init(
         vm: ScrollableSegmentedViewModel,
+        headerBottomPadding: CGFloat? = .padding16,
         contentFor: @escaping (_ id: String) -> Content
     ) {
         self.vm = vm
+        self.headerBottomPadding = headerBottomPadding ?? .padding16
         self.contentFor = contentFor
     }
     public var body: some View {
-        VStack(spacing: .padding16) {
+        VStack(spacing: headerBottomPadding) {
             headerControl
             scrollableContent
         }
@@ -42,6 +45,7 @@ public struct ScrollableSegmentedView<Content: View>: View {
                         HStack(spacing: .padding4) {
                             ForEach(vm.pageModels) { model in
                                 headerElement(for: model)
+                                    .accessibilityLabel(accessibilityLabel(model: model, vm: vm))
                             }
                         }
                     }
@@ -57,6 +61,18 @@ public struct ScrollableSegmentedView<Content: View>: View {
                 scrollView.bounces = false
             }
         }
+    }
+
+    private func accessibilityLabel(model: PageModel, vm: ScrollableSegmentedViewModel) -> String {
+        let currentPageModel = vm.pageModels.first(where: { $0.id == vm.currentId })
+        let selectedTabString =
+            L10n.voiceoverSegmentedcontrolSelectedTab(currentPageModel?.title ?? "") + "\n\n"
+            + L10n.voiceoverSegmentedcontrolSwitchTab
+
+        if currentPageModel?.id == model.id {
+            return model.title + "\n\n" + L10n.voiceoverSegmentedcontrolSwitchTab
+        }
+        return model.title + "\n\n" + selectedTabString
     }
 
     var selectedPageHeaderBackground: some View {
