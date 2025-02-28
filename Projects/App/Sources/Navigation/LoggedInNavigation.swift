@@ -359,7 +359,7 @@ struct HomeTab: View {
             style: [.height],
             options: .constant(.withoutGrabber)
         ) {
-            ClaimsJourneyMain(from: .generic)
+            ClaimsMainNavigation(from: .generic)
         }
         .modally(
             presented: $homeNavigationVm.isHelpCenterPresented

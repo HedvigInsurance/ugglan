@@ -13,7 +13,7 @@ import hCore
 import hCoreUI
 
 @main
-struct MainNavigationJourney: App {
+struct MainNavigation: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject var vm = MainNavigationViewModel()
     @AppStorage(ApplicationState.key) public var state: ApplicationState.Screen = .notLoggedIn
