@@ -1,4 +1,3 @@
-// swift-tools-version: 6.0
 import Foundation
 
 public enum Environment: Hashable {
