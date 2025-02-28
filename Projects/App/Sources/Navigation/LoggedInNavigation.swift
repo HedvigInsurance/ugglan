@@ -334,8 +334,8 @@ struct HomeTab: View {
         return RouterHost(router: homeNavigationVm.router, tracking: self) {
             HomeScreen(
                 memberId: {
-                    let profileStrore: ProfileStore = globalPresentableStoreContainer.get()
-                    return profileStrore.state.memberDetails?.id ?? ""
+                    let profileStore: ProfileStore = globalPresentableStoreContainer.get()
+                    return profileStore.state.memberDetails?.id ?? ""
                 }
             )
             .routerDestination(for: ClaimModel.self, options: [.hidesBottomBarWhenPushed]) { claim in
