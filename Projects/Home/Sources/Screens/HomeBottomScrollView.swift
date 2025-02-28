@@ -239,7 +239,8 @@ class HomeBottomScrollViewModel: ObservableObject {
 
 struct HomeBottomScrollView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeBottomScrollView(vm: .init(memberId: ""))
+        Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlagsDemo() })
+        return HomeBottomScrollView(vm: .init(memberId: ""))
     }
 }
 

@@ -7,13 +7,11 @@ import hCoreUI
 import hGraphQL
 
 @MainActor
-public struct Claims {
+public struct ClaimsCard: View {
     @StateObject var vm = ClaimsViewModel()
 
     public init() {}
-}
 
-extension Claims: View {
     public var body: some View {
         VStack {
             if vm.claims.isEmpty {

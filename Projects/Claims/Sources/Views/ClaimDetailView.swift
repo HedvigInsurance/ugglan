@@ -1,6 +1,5 @@
 import Chat
 import Combine
-import Home
 import Kingfisher
 import Payment
 import Photos
@@ -104,24 +103,6 @@ public struct ClaimDetailView: View {
 
             }
             .ignoresSafeArea()
-        }
-        .modally(item: $vm.showFilesView) { [weak vm] item in
-            ClaimFilesView(endPoint: item.endPoint, files: item.files) { _ in
-                let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
-                claimStore.send(.fetchClaims)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    let nav = UIApplication.shared.getTopViewControllerNavigation()
-                    nav?.setNavigationBarHidden(false, animated: true)
-                    vm?.showFilesView = nil
-                    Task {
-                        await vm?.fetchFiles()
-                    }
-                }
-            }
-            .withDismissButton()
-            .configureTitle(L10n.ClaimStatusDetail.addedFiles)
-            .embededInNavigation(tracking: ClaimDetailDetentType.fileUpload)
-
         }
         .detent(
             item: $vm.document,
@@ -369,6 +350,8 @@ private enum ClaimDetailDetentType: TrackingViewNameProtocol {
 struct ClaimDetailView_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in FetchClaimsClientDemo() })
+        Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in FetchClaimDetailsClientDemo() })
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         let featureFlags = FeatureFlagsDemo()
         Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlags })
 
@@ -400,7 +383,6 @@ struct ClaimDetailView_Previews: PreviewProvider {
             claim: claim,
             type: .claim(id: claim.id)
         )
-        .environmentObject(HomeNavigationViewModel())
     }
 }
 

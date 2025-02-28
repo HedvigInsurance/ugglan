@@ -75,22 +75,6 @@ public class HomeNavigationViewModel: ObservableObject {
         public var isNewOfferPresented = false
     }
 
-    public struct FileUrlModel: Identifiable, Equatable {
-        public var id: String?
-        public var type: FileUrlModelType
-
-        public init(
-            type: FileUrlModelType
-        ) {
-            self.type = type
-        }
-
-        public enum FileUrlModelType: Codable, Equatable {
-            case url(url: URL, mimeType: MimeType)
-            case data(data: Data, mimeType: MimeType)
-        }
-    }
-
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
@@ -99,15 +83,4 @@ public class HomeNavigationViewModel: ObservableObject {
     public var editCoInsuredVm = EditCoInsuredViewModel(
         existingCoInsured: globalPresentableStoreContainer.get(of: ContractStore.self)
     )
-}
-
-extension HomeNavigationViewModel.FileUrlModel.FileUrlModelType {
-    public var asDocumentPreviewModelType: DocumentPreviewModel.DocumentPreviewType {
-        switch self {
-        case let .url(url, mimeType):
-            return .url(url: url, mimeType: mimeType)
-        case let .data(data, mimeType):
-            return .data(data: data, mimeType: mimeType)
-        }
-    }
 }

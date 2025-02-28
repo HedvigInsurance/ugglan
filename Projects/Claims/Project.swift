@@ -4,7 +4,7 @@ import ProjectDescriptionHelpers
 let project = Project.framework(
     name: "Claims",
     targets: Set([.framework, .tests, .example]),
-    projects: ["hCore", "hCoreUI", "Contracts", "Home"],
+    projects: ["hCore", "hCoreUI", "Contracts", "Chat"],
     sdks: [],
     includesGraphQL: true
 )

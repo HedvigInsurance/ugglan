@@ -584,5 +584,6 @@ struct EntrypointState: Codable, Equatable, Hashable {
 }
 
 #Preview {
-    ClaimsNavigation(origin: .generic)
+    Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in FetchEntrypointsClientDemo() })
+    return ClaimsNavigation(origin: .generic)
 }
