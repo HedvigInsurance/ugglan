@@ -75,13 +75,13 @@ extension ContractStore {
         let addonContracts = ids.compactMap({
             self.state.contractForId($0)
         })
-        let addonContractConfig: [AddonConfig] = addonContracts.map({
+        let addonContractsConfig: [AddonConfig] = addonContracts.map({
             .init(
                 contractId: $0.id,
                 exposureName: $0.exposureDisplayName,
                 displayName: $0.currentAgreement?.productVariant.displayName ?? ""
             )
         })
-        return addonContractConfig
+        return addonContractsConfig
     }
 }
