@@ -5,14 +5,14 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-private class ClaimsJourneyMainNavigationViewModel: ObservableObject {
+private class ClaimsMainNavigationViewModel: ObservableObject {
     @Published var isClaimsFlowPresented = false
 }
 
-public struct ClaimsJourneyMain: View {
+public struct ClaimsMainNavigation: View {
     var from: ClaimsOrigin
     @StateObject var claimsRouter = Router()
-    @StateObject private var claimsNavigationVm = ClaimsJourneyMainNavigationViewModel()
+    @StateObject private var claimsNavigationVm = ClaimsMainNavigationViewModel()
     @State var shouldHideHonestyPledge = false
 
     public var body: some View {
@@ -71,7 +71,7 @@ public struct ClaimsJourneyMain: View {
     }
 }
 
-extension ClaimsJourneyMain: TrackingViewNameProtocol {
+extension ClaimsMainNavigation: TrackingViewNameProtocol {
     public var nameForTracking: String {
         return .init(describing: HonestyPledge.self)
 

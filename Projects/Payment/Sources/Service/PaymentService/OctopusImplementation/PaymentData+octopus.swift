@@ -18,12 +18,15 @@ extension PaymentData {
         contracts = chargeFragment.chargeBreakdown.compactMap({ .init(with: $0) })
         let redeemedCampaigns = data.currentMember.redeemedCampaigns
         discounts = chargeFragment.discountBreakdown.compactMap({ discountBreakdown in
-            if let campaing = redeemedCampaigns.first(where: { $0.code == discountBreakdown.code }) {
-                return .init(with: discountBreakdown, discount: campaing)
-            } else {
+            if discountBreakdown.isReferral {
                 let dto = data.currentMember.referralInformation.fragments.memberReferralInformationCodeFragment
                     .asReedeemedCampaing()
                 return .init(with: discountBreakdown, discountDto: dto)
+            } else {
+                return .init(
+                    with: discountBreakdown,
+                    discount: redeemedCampaigns.first(where: { $0.code == discountBreakdown.code })
+                )
             }
         })
         self.paymentDetails = paymentDetails
@@ -161,7 +164,7 @@ extension Discount {
         id = UUID().uuidString
         code = data.code ?? discount?.code ?? ""
         amount = .init(fragment: data.discount.fragments.moneyFragment)
-        title = discount?.description ?? ""
+        title = discount?.description
         listOfAffectedInsurances =
             discount?.onlyApplicableToContracts?.compactMap({ .init(id: $0.id, displayName: $0.exposureDisplayName) })
             ?? []
