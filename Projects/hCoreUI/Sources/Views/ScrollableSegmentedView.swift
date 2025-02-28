@@ -6,16 +6,19 @@ import hCore
 public struct ScrollableSegmentedView<Content: View>: View {
     @ObservedObject var vm: ScrollableSegmentedViewModel
     @ViewBuilder var contentFor: (_ id: String) -> Content
+    let headerBottomPadding: CGFloat
 
     public init(
         vm: ScrollableSegmentedViewModel,
+        headerBottomPadding: CGFloat? = .padding16,
         contentFor: @escaping (_ id: String) -> Content
     ) {
         self.vm = vm
+        self.headerBottomPadding = headerBottomPadding ?? .padding16
         self.contentFor = contentFor
     }
     public var body: some View {
-        VStack(spacing: .padding16) {
+        VStack(spacing: headerBottomPadding) {
             headerControl
             scrollableContent
         }

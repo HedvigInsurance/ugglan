@@ -46,6 +46,7 @@ struct CompareTierScreen: View {
 
         }
         .sectionContainerStyle(.transparent)
+        .padding(.bottom, .padding24)
         .hWithoutDividerPadding
         .hWithoutHorizontalPadding
         .accessibilityHint(L10n.tierFlowCoverageLabel + tierName)
@@ -78,11 +79,12 @@ struct CompareTierScreen: View {
         hForm {
             ScrollableSegmentedView(
                 vm: scrollableSegmentedViewModel,
+                headerBottomPadding: 0,
                 contentFor: { id in
                     comparisionView(for: vm.tiers.first(where: { $0.id == id })?.name ?? "")
                 }
             )
-            .padding(.top, 20)
+            .padding(.top, .padding24)
         }
         .hFormTitle(
             title: .init(
@@ -305,7 +307,7 @@ extension Perils {
 }
 extension UIImage {
     fileprivate func getImageFor(style: HFontTextStyle) -> UIImage {
-        let height = style.fontSize * style.multiplier
+        let height = 24 * style.multiplier
         let renderFormat = UIGraphicsImageRendererFormat.default()
         renderFormat.opaque = false
         let renderer = UIGraphicsImageRenderer(size: CGSize(width: height, height: height), format: renderFormat)
