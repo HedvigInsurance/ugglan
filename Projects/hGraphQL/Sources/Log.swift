@@ -1,5 +1,6 @@
-import Foundation
 import Environment
+import Foundation
+
 public typealias AttributeKey = String
 
 public typealias AttributeValue = Encodable

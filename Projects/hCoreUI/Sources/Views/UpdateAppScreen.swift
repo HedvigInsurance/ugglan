@@ -1,6 +1,6 @@
+import Environment
 import SwiftUI
 import hCore
-import Environment
 
 public struct UpdateAppScreen: View {
     let onSelected: () -> Void

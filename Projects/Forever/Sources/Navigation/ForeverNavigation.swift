@@ -1,7 +1,7 @@
+import Environment
 import SwiftUI
 import hCore
 import hCoreUI
-import Environment
 
 @MainActor
 public class ForeverNavigationViewModel: ObservableObject {
