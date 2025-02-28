@@ -35,15 +35,15 @@ struct PaymentDetailsDiscountView: View {
                     Spacer()
                     if vm.options.contains(.forPayment), let discount = vm.discount.amount {
                         hText(discount.formattedNegativeAmount)
-                    } else {
-                        hText(vm.discount.title)
+                    } else if let title = vm.discount.title {
+                        hText(title)
                     }
                 }
                 VStack(alignment: .leading, spacing: 0) {
                     HStack(alignment: .top) {
-                        if vm.options.contains(.forPayment) {
-                            hText(vm.discount.title, style: .label)
-                        } else {
+                        if let title = vm.discount.title, vm.options.contains(.forPayment) {
+                            hText(title, style: .label)
+                        } else if !vm.discount.listOfAffectedInsurances.isEmpty {
                             VStack(alignment: .leading, spacing: 0) {
                                 ForEach(vm.discount.listOfAffectedInsurances) { affectedInsurance in
                                     hText(affectedInsurance.displayName, style: .label)
