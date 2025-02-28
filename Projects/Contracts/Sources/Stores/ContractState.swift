@@ -1,3 +1,4 @@
+import Addons
 import Apollo
 import EditCoInsuredShared
 import PresentableStore
@@ -66,5 +67,21 @@ extension ContractState {
 extension ContractStore: ExistingCoInsured {
     public func get(contractId: String) -> [EditCoInsuredShared.CoInsuredModel] {
         return state.fetchAllCoInsuredNotInContract(contractId: contractId)
+    }
+}
+
+extension ContractStore {
+    public func getAddonConfigsFor(contractIds ids: [String]) -> [AddonConfig] {
+        let addonContracts = ids.compactMap({
+            self.state.contractForId($0)
+        })
+        let addonContractsConfig: [AddonConfig] = addonContracts.map({
+            .init(
+                contractId: $0.id,
+                exposureName: $0.exposureDisplayName,
+                displayName: $0.currentAgreement?.productVariant.displayName ?? ""
+            )
+        })
+        return addonContractsConfig
     }
 }

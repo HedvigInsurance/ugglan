@@ -96,17 +96,7 @@ public struct ListScreen: View {
             AddonCardView(
                 openAddon: {
                     let contractStore: ContractStore = globalPresentableStoreContainer.get()
-                    let addonContracts = banner.contractIds.compactMap({
-                        contractStore.state.contractForId($0)
-                    })
-
-                    let addonConfigs: [AddonConfig] = addonContracts.map({
-                        .init(
-                            contractId: $0.id,
-                            exposureName: $0.exposureDisplayName,
-                            displayName: $0.currentAgreement?.productVariant.displayName ?? ""
-                        )
-                    })
+                    let addonConfigs = contractStore.getAddonConfigsFor(contractIds: banner.contractIds)
                     travelCertificateNavigationVm.isAddonPresented = .init(
                         addonSource: .travelCertificates,
                         contractConfigs: addonConfigs
