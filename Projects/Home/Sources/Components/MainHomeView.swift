@@ -7,7 +7,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-struct ActiveSectionView: View {
+struct MainHomeView: View {
     var body: some View {
         hSection {
             hText(L10n.HomeTab.welcomeTitleWithoutName, style: .displayXSLong)
@@ -15,5 +15,6 @@ struct ActiveSectionView: View {
                 .fixedSize(horizontal: false, vertical: true)
             ClaimsCard()
         }
+        .sectionContainerStyle(.transparent)
     }
 }

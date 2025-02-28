@@ -56,12 +56,10 @@ extension HomeScreen {
     @ViewBuilder
     private var centralContent: some View {
         switch vm.memberContractState {
-        case .active:
-            ActiveSectionView()
+        case .active, .terminated:
+            MainHomeView()
         case .future:
             hText(L10n.hedvigNameText, style: .heading3)
-        case .terminated:
-            TerminatedSectionView()
         case .loading:
             EmptyView()
         }
@@ -71,33 +69,25 @@ extension HomeScreen {
         hSection {
             VStack(spacing: 0) {
                 switch vm.memberContractState {
-                case .active:
-                    VStack(spacing: 16) {
+                case .active, .terminated:
+                    VStack(spacing: .padding16) {
                         HomeBottomScrollView(vm: vm.homeBottomScrollViewModel)
-                        VStack(spacing: 8) {
+                        VStack(spacing: .padding8) {
                             startAClaimButton
                             openHelpCenter
                         }
                     }
                 case .future:
-                    VStack(spacing: 16) {
+                    VStack(spacing: .padding16) {
                         HomeBottomScrollView(vm: vm.homeBottomScrollViewModel)
                         FutureSectionInfoView()
                             .slideUpFadeAppearAnimation()
-                        VStack(spacing: 8) {
-                            openHelpCenter
-                        }
-                    }
-                case .terminated:
-                    VStack(spacing: 16) {
-                        HomeBottomScrollView(vm: vm.homeBottomScrollViewModel)
-                        VStack(spacing: 8) {
-                            startAClaimButton
+                        VStack(spacing: .padding8) {
                             openHelpCenter
                         }
                     }
                 case .loading:
-                    VStack(spacing: 8) {
+                    VStack(spacing: .padding8) {
                         openHelpCenter
                     }
                 }
