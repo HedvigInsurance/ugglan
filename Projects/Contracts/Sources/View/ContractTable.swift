@@ -232,9 +232,14 @@ public class ContractTableViewModel: ObservableObject {
 
     func getAddonBanner() async {
         do {
-            self.addonBannerModel = try await service.getAddonBannerModel(source: .insurances)
+            let data = try await service.getAddonBannerModel(source: .insurances)
+            withAnimation {
+                self.addonBannerModel = data
+            }
         } catch {
-            self.addonBannerModel = nil
+            withAnimation {
+                self.addonBannerModel = nil
+            }
         }
     }
 }
