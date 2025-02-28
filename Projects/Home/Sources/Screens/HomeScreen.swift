@@ -1,5 +1,6 @@
 import Apollo
 import Chat
+import Claims
 import Combine
 import Contracts
 import Foundation
@@ -11,21 +12,15 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct HomeScreen<Claims: View>: View {
+public struct HomeScreen: View {
     @StateObject var vm: HomeVM
     @Inject var featureFlags: FeatureFlags
     @EnvironmentObject var navigationVm: HomeNavigationViewModel
 
-    var claimsContent: Claims
-    var memberId: String
-
     public init(
-        claimsContent: Claims,
         memberId: @escaping () -> String
     ) {
         self._vm = StateObject(wrappedValue: .init(memberId: memberId()))
-        self.claimsContent = claimsContent
-        self.memberId = memberId()
     }
 }
 
@@ -62,13 +57,11 @@ extension HomeScreen {
     private var centralContent: some View {
         switch vm.memberContractState {
         case .active:
-            ActiveSectionView(
-                claimsContent: claimsContent
-            )
+            ActiveSectionView()
         case .future:
             hText(L10n.hedvigNameText, style: .heading3)
         case .terminated:
-            TerminatedSectionView(claimsContent: claimsContent)
+            TerminatedSectionView()
         case .loading:
             EmptyView()
         }
@@ -182,7 +175,7 @@ class HomeVM: ObservableObject {
         chatNotificationPullTimerCancellable = chatNotificationPullTimer.receive(on: RunLoop.main)
             .sink { _ in
                 let currentVCDescription = UIApplication.shared.getTopVisibleVc()?.debugDescription
-                let compareToDescirption = String(describing: HomeScreen<EmptyView>.self).components(separatedBy: "<")
+                let compareToDescirption = String(describing: HomeScreen.self).components(separatedBy: "<")
                     .first
                 if currentVCDescription == compareToDescirption {
                     let store: HomeStore = globalPresentableStoreContainer.get()
@@ -231,7 +224,6 @@ struct Active_Preview: PreviewProvider {
         Localization.Locale.currentLocale.send(.en_SE)
 
         return HomeScreen(
-            claimsContent: Text(""),
             memberId: {
                 "ID"
             }
@@ -254,7 +246,6 @@ struct ActiveInFuture_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
         return HomeScreen(
-            claimsContent: Text(""),
             memberId: {
                 "ID"
             }
@@ -278,7 +269,6 @@ struct TerminatedToday_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
         return HomeScreen(
-            claimsContent: Text(""),
             memberId: {
                 "ID"
             }
@@ -301,7 +291,6 @@ struct Terminated_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
         return HomeScreen(
-            claimsContent: Text(""),
             memberId: {
                 "ID"
             }
@@ -324,7 +313,6 @@ struct Deleted_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
         return HomeScreen(
-            claimsContent: Text(""),
             memberId: {
                 "ID"
             }

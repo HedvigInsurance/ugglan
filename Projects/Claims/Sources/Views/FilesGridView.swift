@@ -1,5 +1,4 @@
 import Foundation
-import Home
 import Kingfisher
 import SafariServices
 import SwiftUI
@@ -55,12 +54,6 @@ struct FilesGridView: View {
                 .transition(.scale.combined(with: .opacity))
             }
         }
-        .detent(
-            item: $vm.fileModel,
-            style: [.large]
-        ) { model in
-            DocumentPreview(vm: .init(type: model.type.asDocumentPreviewModelType))
-        }
     }
 }
 
@@ -68,7 +61,7 @@ struct FilesGridView: View {
 class FileGridViewModel: ObservableObject {
     @Published var files: [File]
     @Published private(set) var options: ClaimFilesViewModel.ClaimFilesViewOptions
-    @Published var fileModel: HomeNavigationViewModel.FileUrlModel?
+    @Published var fileModel: FileUrlModel?
     var onDelete: ((_ file: File) -> Void)?
 
     init(

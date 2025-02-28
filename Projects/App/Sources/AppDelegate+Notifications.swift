@@ -88,7 +88,7 @@ extension AppDelegate: @preconcurrency UNUserNotificationCenterDelegate {
         let shouldShowNotification: Bool = {
             if let topPresentedVCDescription = UIApplication.shared.getTopVisibleVc()?.debugDescription {
                 let listToCheck: [String] = [
-                    String(describing: HomeScreen<EmptyView>.self).components(separatedBy: "<").first ?? "",
+                    String(describing: HomeScreen.self).components(separatedBy: "<").first ?? "",
                     .init(describing: ClaimDetailView.self),
                     .init(describing: InboxView.self),
                     .init(describing: ChatScreen.self),

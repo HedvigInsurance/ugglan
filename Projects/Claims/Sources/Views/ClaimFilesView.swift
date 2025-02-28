@@ -251,6 +251,21 @@ class ClaimFilesViewModel: ObservableObject {
         nav?.setNavigationBarHidden(hidden, animated: true)
     }
 }
+public struct FileUrlModel: Identifiable, Equatable {
+    public var id: String?
+    public var type: FileUrlModelType
+
+    public init(
+        type: FileUrlModelType
+    ) {
+        self.type = type
+    }
+
+    public enum FileUrlModelType: Codable, Equatable {
+        case url(url: URL, mimeType: MimeType)
+        case data(data: Data, mimeType: MimeType)
+    }
+}
 
 #Preview {
     let files: [File] = [

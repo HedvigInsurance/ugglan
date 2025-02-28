@@ -330,11 +330,9 @@ struct LoggedInNavigation: View {
 struct HomeTab: View {
     @ObservedObject var homeNavigationVm: HomeNavigationViewModel
     @ObservedObject var loggedInVm: LoggedInNavigationViewModel
-    let claims = Claims()
     var body: some View {
         return RouterHost(router: homeNavigationVm.router, tracking: self) {
             HomeScreen(
-                claimsContent: claims,
                 memberId: {
                     let profileStrore: ProfileStore = globalPresentableStoreContainer.get()
                     return profileStrore.state.memberDetails?.id ?? ""
