@@ -79,7 +79,7 @@ struct CompareTierScreen: View {
         hForm {
             ScrollableSegmentedView(
                 vm: scrollableSegmentedViewModel,
-                headerBottomPadding: 0,
+                headerBottomPadding: .padding8,
                 contentFor: { id in
                     comparisionView(for: vm.tiers.first(where: { $0.id == id })?.name ?? "")
                 }
