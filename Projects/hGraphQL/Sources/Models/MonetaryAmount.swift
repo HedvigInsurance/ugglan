@@ -1,3 +1,5 @@
+import Foundation
+
 public struct MonetaryAmount: Equatable, Hashable, Codable, Sendable {
     public init(
         amount: String,
