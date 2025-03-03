@@ -1,3 +1,5 @@
+import hGraphQL
+
 public struct hPDFDocument: Codable, Equatable, Hashable, Identifiable, Sendable {
     public var id: String?
     public var displayName: String
