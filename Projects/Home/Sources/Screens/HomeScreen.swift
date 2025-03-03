@@ -13,15 +13,11 @@ import hCoreUI
 import hGraphQL
 
 public struct HomeScreen: View {
-    @StateObject var vm: HomeVM
+    @StateObject var vm = HomeVM()
     @Inject var featureFlags: FeatureFlags
     @EnvironmentObject var navigationVm: HomeNavigationViewModel
 
-    public init(
-        memberId: @escaping () -> String
-    ) {
-        self._vm = StateObject(wrappedValue: .init(memberId: memberId()))
-    }
+    public init() {}
 }
 
 extension HomeScreen {
@@ -49,7 +45,7 @@ extension HomeScreen {
         .sectionContainerStyle(.transparent)
         .hFormContentPosition(.center)
         .onAppear {
-            vm.fetch()
+            vm.fetchHomeState()
         }
     }
 
@@ -131,9 +127,11 @@ class HomeVM: ObservableObject {
     @Published var toolbarOptionTypes: [ToolbarOptionType] = []
     private var chatNotificationPullTimer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
 
-    init(memberId: String) {
-        homeBottomScrollViewModel = .init(memberId: memberId)
+    init() {
         let store: HomeStore = globalPresentableStoreContainer.get()
+        store.send(.fetchMemberState)
+        let memberId = store.state.memberId
+        homeBottomScrollViewModel = .init(memberId: memberId)
         memberContractState = store.state.memberContractState
         store.stateSignal
             .map({ $0.memberContractState })
@@ -147,7 +145,7 @@ class HomeVM: ObservableObject {
         observeToolbarOptionTypes()
     }
 
-    func fetch() {
+    func fetchHomeState() {
         let store: HomeStore = globalPresentableStoreContainer.get()
         print("STORE TEST SEND: fetchMemberState 1")
         store.send(.fetchMemberState)
@@ -189,7 +187,7 @@ class HomeVM: ObservableObject {
 
     @objc func notification(notification: Notification) {
         Task { [weak self] in
-            self?.fetch()
+            self?.fetchHomeState()
         }
     }
 
@@ -213,21 +211,20 @@ struct Active_Preview: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
 
-        return HomeScreen(
-            memberId: {
-                "ID"
-            }
-        )
-        .onAppear {
-            let store: HomeStore = globalPresentableStoreContainer.get()
-            store.send(
-                .setMemberContractState(
-                    state: .active,
-                    contracts: []
-                )
+        return HomeScreen(//            memberId: {
+        //                "ID"
+        //            }
             )
-            store.send(.setFutureStatus(status: .none))
-        }
+            .onAppear {
+                let store: HomeStore = globalPresentableStoreContainer.get()
+                store.send(
+                    .setMemberContractState(
+                        state: .active,
+                        contracts: []
+                    )
+                )
+                store.send(.setFutureStatus(status: .none))
+            }
 
     }
 }
@@ -235,22 +232,21 @@ struct Active_Preview: PreviewProvider {
 struct ActiveInFuture_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
-        return HomeScreen(
-            memberId: {
-                "ID"
-            }
-        )
-        .onAppear {
-            ApolloClient.removeDeleteAccountStatus(for: "ID")
-            let store: HomeStore = globalPresentableStoreContainer.get()
-            store.send(
-                .setMemberContractState(
-                    state: .future,
-                    contracts: []
-                )
+        return HomeScreen(//            memberId: {
+        //                "ID"
+        //            }
             )
-            store.send(.setFutureStatus(status: .activeInFuture(inceptionDate: "2023-11-23")))
-        }
+            .onAppear {
+                ApolloClient.removeDeleteAccountStatus(for: "ID")
+                let store: HomeStore = globalPresentableStoreContainer.get()
+                store.send(
+                    .setMemberContractState(
+                        state: .future,
+                        contracts: []
+                    )
+                )
+                store.send(.setFutureStatus(status: .activeInFuture(inceptionDate: "2023-11-23")))
+            }
 
     }
 }
@@ -258,21 +254,20 @@ struct ActiveInFuture_Previews: PreviewProvider {
 struct TerminatedToday_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
-        return HomeScreen(
-            memberId: {
-                "ID"
-            }
-        )
-        .onAppear {
-            let store: HomeStore = globalPresentableStoreContainer.get()
-            store.send(
-                .setMemberContractState(
-                    state: .terminated,
-                    contracts: []
-                )
+        return HomeScreen(//            memberId: {
+        //                "ID"
+        //            }
             )
-            store.send(.setFutureStatus(status: .pendingSwitchable))
-        }
+            .onAppear {
+                let store: HomeStore = globalPresentableStoreContainer.get()
+                store.send(
+                    .setMemberContractState(
+                        state: .terminated,
+                        contracts: []
+                    )
+                )
+                store.send(.setFutureStatus(status: .pendingSwitchable))
+            }
 
     }
 }
@@ -280,21 +275,20 @@ struct TerminatedToday_Previews: PreviewProvider {
 struct Terminated_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
-        return HomeScreen(
-            memberId: {
-                "ID"
-            }
-        )
-        .onAppear {
-            let store: HomeStore = globalPresentableStoreContainer.get()
-            store.send(
-                .setMemberContractState(
-                    state: .terminated,
-                    contracts: []
-                )
+        return HomeScreen(//            memberId: {
+        //                "ID"
+        //            }
             )
-            store.send(.setFutureStatus(status: .pendingSwitchable))
-        }
+            .onAppear {
+                let store: HomeStore = globalPresentableStoreContainer.get()
+                store.send(
+                    .setMemberContractState(
+                        state: .terminated,
+                        contracts: []
+                    )
+                )
+                store.send(.setFutureStatus(status: .pendingSwitchable))
+            }
 
     }
 }
@@ -302,22 +296,21 @@ struct Terminated_Previews: PreviewProvider {
 struct Deleted_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
-        return HomeScreen(
-            memberId: {
-                "ID"
-            }
-        )
-        .onAppear {
-            ApolloClient.saveDeleteAccountStatus(for: "ID")
-            let store: HomeStore = globalPresentableStoreContainer.get()
-            store.send(
-                .setMemberContractState(
-                    state: .active,
-                    contracts: []
-                )
+        return HomeScreen(//            memberId: {
+        //                "ID"
+        //            }
             )
-            store.send(.setFutureStatus(status: .pendingSwitchable))
-        }
+            .onAppear {
+                ApolloClient.saveDeleteAccountStatus(for: "ID")
+                let store: HomeStore = globalPresentableStoreContainer.get()
+                store.send(
+                    .setMemberContractState(
+                        state: .active,
+                        contracts: []
+                    )
+                )
+                store.send(.setFutureStatus(status: .pendingSwitchable))
+            }
 
     }
 }

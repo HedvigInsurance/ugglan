@@ -1,5 +1,6 @@
 query Home {
   currentMember {
+    id
     activeContracts {
         ...ContractFragment
     }
