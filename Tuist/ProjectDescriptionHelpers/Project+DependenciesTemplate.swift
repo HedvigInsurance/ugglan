@@ -19,6 +19,7 @@ public enum ExternalDependencies: CaseIterable {
     case argumentParser
     case hero
     case presentableStore
+    case environment
     public var isTestDependency: Bool { false }
 
     public var isDevDependency: Bool { false }
@@ -89,6 +90,10 @@ public enum ExternalDependencies: CaseIterable {
             return [
                 .package(path: .relativeToRoot("LocalModules/PresentableStore"))
             ]
+        case .environment:
+            return [
+                .package(path: .relativeToRoot("LocalModules/Environment"))
+            ]
         }
     }
 
@@ -153,6 +158,9 @@ public enum ExternalDependencies: CaseIterable {
             return [.package(product: "ArgumentParser")]
         case .presentableStore:
             return [.package(product: "PresentableStore")]
+        case .environment:
+            return [.package(product: "Environment")]
+
         }
     }
 }
