@@ -332,22 +332,17 @@ struct HomeTab: View {
     @ObservedObject var loggedInVm: LoggedInNavigationViewModel
     var body: some View {
         return RouterHost(router: homeNavigationVm.router, tracking: self) {
-            HomeScreen(
-                memberId: {
-                    let profileStore: ProfileStore = globalPresentableStoreContainer.get()
-                    return profileStore.state.memberDetails?.id ?? ""
+            HomeScreen()
+                .routerDestination(for: ClaimModel.self, options: [.hidesBottomBarWhenPushed]) { claim in
+                    ClaimDetailView(claim: claim, type: .claim(id: claim.id))
+                        .environmentObject(homeNavigationVm)
+                        .configureTitle(L10n.claimsYourClaim)
                 }
-            )
-            .routerDestination(for: ClaimModel.self, options: [.hidesBottomBarWhenPushed]) { claim in
-                ClaimDetailView(claim: claim, type: .claim(id: claim.id))
-                    .environmentObject(homeNavigationVm)
-                    .configureTitle(L10n.claimsYourClaim)
-            }
-            .routerDestination(for: String.self) { conversation in
-                InboxView()
-                    .configureTitle(L10n.chatConversationInbox)
-                    .environmentObject(homeNavigationVm)
-            }
+                .routerDestination(for: String.self) { conversation in
+                    InboxView()
+                        .configureTitle(L10n.chatConversationInbox)
+                        .environmentObject(homeNavigationVm)
+                }
         }
         .environmentObject(homeNavigationVm)
         .handleConnectPayment(with: homeNavigationVm.connectPaymentVm)

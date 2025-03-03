@@ -10,6 +10,7 @@ public protocol HomeClient {
 }
 
 public struct MemberState: Sendable {
+    let id: String
     let contracts: [HomeContract]
     let contractState: MemberContractState
     let futureState: FutureStatus

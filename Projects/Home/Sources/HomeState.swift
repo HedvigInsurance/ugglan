@@ -10,6 +10,7 @@ import hCoreUI
 
 public struct HomeState: StateProtocol {
     public var memberContractState: MemberContractState = .loading
+    public var memberId: String = ""
     public var futureStatus: FutureStatus = .none
     public var contracts: [HomeContract] = []
     public var importantMessages: [ImportantMessage] = []
@@ -56,6 +57,7 @@ public enum HomeAction: ActionProtocol {
     case fetchImportantMessages
     case setImportantMessages(messages: [ImportantMessage])
     case setMemberContractState(state: MemberContractState, contracts: [HomeContract])
+    case setMemberId(id: String)
     case setFutureStatus(status: FutureStatus)
     case openDocument(contractURL: URL)
     case fetchQuickActions
@@ -107,6 +109,7 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
                 )
 
                 send(.setFutureStatus(status: memberData.futureState))
+                send(.setMemberId(id: memberData.id))
             } catch _ {
                 self.setError(L10n.General.errorBody, for: .fetchQuickActions)
             }
@@ -146,6 +149,8 @@ public final class HomeStore: LoadingStateStore<HomeState, HomeAction, HomeLoadi
     public override func reduce(_ state: HomeState, _ action: HomeAction) async -> HomeState {
         var newState = state
         switch action {
+        case .setMemberId(let id):
+            newState.memberId = id
         case .setMemberContractState(let memberState, let contracts):
             newState.memberContractState = memberState
             newState.contracts = contracts

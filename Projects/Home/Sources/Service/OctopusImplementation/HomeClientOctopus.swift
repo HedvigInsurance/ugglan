@@ -29,11 +29,13 @@ public class HomeClientOctopus: HomeClient {
             .client
             .fetch(query: OctopusGraphQL.HomeQuery(), cachePolicy: .fetchIgnoringCacheCompletely)
 
+        let memberId = data.currentMember.id
         let contracts = data.currentMember.activeContracts.map { HomeContract(contract: $0) }
         let contractState = data.currentMember.homeState
         let futureStatus = data.currentMember.futureStatus
 
         return .init(
+            id: memberId,
             contracts: contracts,
             contractState: contractState,
             futureState: futureStatus
