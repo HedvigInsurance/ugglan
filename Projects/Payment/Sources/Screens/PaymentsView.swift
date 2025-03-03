@@ -145,7 +145,7 @@ public struct PaymentsView: View {
         .onTap {
             router.push(PaymentsRouterAction.discounts)
         }
-        .hWithoutHorizontalPadding
+        .hRowWithoutHorizontalPadding
         .dividerInsets(.all, 0)
 
     }
@@ -161,7 +161,7 @@ public struct PaymentsView: View {
         .onTap {
             router.push(PaymentsRouterAction.history)
         }
-        .hWithoutHorizontalPadding
+        .hRowWithoutHorizontalPadding
         .dividerInsets(.all, 0)
     }
 
@@ -179,7 +179,7 @@ public struct PaymentsView: View {
         .withCustomAccessory {
             hText(descriptor).foregroundColor(hTextColor.Opaque.secondary)
         }
-        .hWithoutHorizontalPadding
+        .hRowWithoutHorizontalPadding
         .dividerInsets(.all, 0)
     }
 

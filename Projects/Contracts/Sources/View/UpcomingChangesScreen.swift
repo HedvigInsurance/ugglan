@@ -58,7 +58,7 @@ struct UpcomingChangesScreen: View {
             }
             .padding(.top, .padding16)
         }
-        .hWithoutHorizontalPadding
+        .hRowWithoutHorizontalPadding
         .hWithoutDividerPadding
     }
 }

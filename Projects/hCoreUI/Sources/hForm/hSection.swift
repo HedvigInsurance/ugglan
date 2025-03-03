@@ -309,15 +309,15 @@ private struct EnvironmentHWithoutHorizontalPadding: EnvironmentKey {
 }
 
 extension EnvironmentValues {
-    public var hWithoutHorizontalPadding: Bool {
+    public var hRowWithoutHorizontalPadding: Bool {
         get { self[EnvironmentHWithoutHorizontalPadding.self] }
         set { self[EnvironmentHWithoutHorizontalPadding.self] = newValue }
     }
 }
 
 extension View {
-    public var hWithoutHorizontalPadding: some View {
-        self.environment(\.hWithoutHorizontalPadding, true)
+    public var hRowWithoutHorizontalPadding: some View {
+        self.environment(\.hRowWithoutHorizontalPadding, true)
     }
 }
 

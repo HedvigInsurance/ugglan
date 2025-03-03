@@ -20,7 +20,7 @@ public struct CheckboxToggleStyle: ToggleStyle {
                 configuration.label
             }
             .verticalPadding(0)
-            .hWithoutHorizontalPadding
+            .hRowWithoutHorizontalPadding
             .padding(.top, getTopPadding)
             .padding(.bottom, getBottomPadding)
             .padding(.horizontal, getHorizontalPadding)

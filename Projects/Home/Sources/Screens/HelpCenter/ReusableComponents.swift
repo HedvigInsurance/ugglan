@@ -94,7 +94,7 @@ struct QuestionsItems: View {
                         log.info("question clicked", error: nil, attributes: ["helpCenter": attributes])
                         router.push(item)
                     }
-                    .hWithoutHorizontalPadding
+                    .hRowWithoutHorizontalPadding
                     .hWithoutDividerPadding
                 }
                 .hSectionWithoutHorizontalPadding

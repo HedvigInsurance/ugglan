@@ -94,7 +94,7 @@ struct PaymentDetailsView: View {
                     InfoCard(text: L10n.paymentsCarriedAdjustmentInfo, type: .info)
                 }
             }
-            .hWithoutHorizontalPadding
+            .hRowWithoutHorizontalPadding
         }
     }
 
@@ -111,7 +111,7 @@ struct PaymentDetailsView: View {
                     InfoCard(text: L10n.paymentsSettlementAdjustmentInfo, type: .info)
                 }
             }
-            .hWithoutHorizontalPadding
+            .hRowWithoutHorizontalPadding
         }
     }
 
@@ -137,7 +137,7 @@ struct PaymentDetailsView: View {
                 hText(" ")
             }
         }
-        .hWithoutHorizontalPadding
+        .hRowWithoutHorizontalPadding
         .accessibilityElement(children: .combine)
     }
 
@@ -162,7 +162,7 @@ struct PaymentDetailsView: View {
                 }
             }
         }
-        .hWithoutHorizontalPadding
+        .hRowWithoutHorizontalPadding
         .accessibilityElement(children: .combine)
     }
 
@@ -191,7 +191,7 @@ struct PaymentDetailsView: View {
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
             }
-            .hWithoutHorizontalPadding
+            .hRowWithoutHorizontalPadding
             .dividerInsets(.all, 0)
 
             list.append((item.key, AnyView(view)))
@@ -211,7 +211,7 @@ struct PaymentDetailsView: View {
                 .foregroundColor(hTextColor.Opaque.secondary)
             }
         }
-        .hWithoutHorizontalPadding
+        .hRowWithoutHorizontalPadding
     }
 }
 
