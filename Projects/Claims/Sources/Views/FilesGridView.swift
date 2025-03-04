@@ -1,5 +1,4 @@
 import Foundation
-import Home
 import Kingfisher
 import SafariServices
 import SwiftUI
@@ -10,20 +9,20 @@ struct FilesGridView: View {
     @ObservedObject var vm: FileGridViewModel
 
     private let adaptiveColumn = [
-        GridItem(.flexible(), spacing: 8),
-        GridItem(.flexible(), spacing: 8),
-        GridItem(.flexible(), spacing: 8),
+        GridItem(.flexible(), spacing: .padding8),
+        GridItem(.flexible(), spacing: .padding8),
+        GridItem(.flexible(), spacing: .padding8),
     ]
 
     var body: some View {
-        LazyVGrid(columns: adaptiveColumn, spacing: 8) {
+        LazyVGrid(columns: adaptiveColumn, spacing: .padding8) {
             ForEach(vm.files, id: \.id) { file in
                 ZStack(alignment: Alignment(horizontal: .trailing, vertical: .top)) {
                     FileView(file: file) {
                         vm.show(file: file)
                     }
                     .aspectRatio(1, contentMode: .fit)
-                    .cornerRadius(12)
+                    .cornerRadius(.padding12)
                     .contentShape(Rectangle())
                     .opacity(vm.options.contains(.loading) ? 0.5 : 1)
                     if vm.options.contains(.delete) {
@@ -68,7 +67,7 @@ struct FilesGridView: View {
 class FileGridViewModel: ObservableObject {
     @Published var files: [File]
     @Published private(set) var options: ClaimFilesViewModel.ClaimFilesViewOptions
-    @Published var fileModel: HomeNavigationViewModel.FileUrlModel?
+    @Published var fileModel: FileUrlModel?
     var onDelete: ((_ file: File) -> Void)?
 
     init(

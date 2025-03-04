@@ -330,26 +330,19 @@ struct LoggedInNavigation: View {
 struct HomeTab: View {
     @ObservedObject var homeNavigationVm: HomeNavigationViewModel
     @ObservedObject var loggedInVm: LoggedInNavigationViewModel
-    let claims = Claims()
     var body: some View {
         return RouterHost(router: homeNavigationVm.router, tracking: self) {
-            HomeView(
-                claimsContent: claims,
-                memberId: {
-                    let profileStrore: ProfileStore = globalPresentableStoreContainer.get()
-                    return profileStrore.state.memberDetails?.id ?? ""
+            HomeScreen()
+                .routerDestination(for: ClaimModel.self, options: [.hidesBottomBarWhenPushed]) { claim in
+                    ClaimDetailView(claim: claim, type: .claim(id: claim.id))
+                        .environmentObject(homeNavigationVm)
+                        .configureTitle(L10n.claimsYourClaim)
                 }
-            )
-            .routerDestination(for: ClaimModel.self, options: [.hidesBottomBarWhenPushed]) { claim in
-                ClaimDetailView(claim: claim, type: .claim(id: claim.id))
-                    .environmentObject(homeNavigationVm)
-                    .configureTitle(L10n.claimsYourClaim)
-            }
-            .routerDestination(for: String.self) { conversation in
-                InboxView()
-                    .configureTitle(L10n.chatConversationInbox)
-                    .environmentObject(homeNavigationVm)
-            }
+                .routerDestination(for: String.self) { conversation in
+                    InboxView()
+                        .configureTitle(L10n.chatConversationInbox)
+                        .environmentObject(homeNavigationVm)
+                }
         }
         .environmentObject(homeNavigationVm)
         .handleConnectPayment(with: homeNavigationVm.connectPaymentVm)

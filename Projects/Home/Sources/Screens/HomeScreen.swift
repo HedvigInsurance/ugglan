@@ -1,5 +1,6 @@
 import Apollo
 import Chat
+import Claims
 import Combine
 import Contracts
 import Foundation
@@ -11,28 +12,15 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct HomeView<Claims: View>: View {
-    @PresentableStore var store: HomeStore
-    @StateObject var vm: HomeVM
+public struct HomeScreen: View {
+    @StateObject var vm = HomeVM()
     @Inject var featureFlags: FeatureFlags
-
     @EnvironmentObject var navigationVm: HomeNavigationViewModel
 
-    var claimsContent: Claims
-    var memberId: String
-
-    public init(
-        claimsContent: Claims,
-        memberId: @escaping () -> String
-    ) {
-        self._vm = StateObject(wrappedValue: .init(memberId: memberId()))
-        self.claimsContent = claimsContent
-        self.memberId = memberId()
-    }
+    public init() {}
 }
 
-extension HomeView {
-
+extension HomeScreen {
     public var body: some View {
         hForm {
             centralContent
@@ -57,21 +45,17 @@ extension HomeView {
         .sectionContainerStyle(.transparent)
         .hFormContentPosition(.center)
         .onAppear {
-            vm.fetch()
+            vm.fetchHomeState()
         }
     }
 
     @ViewBuilder
     private var centralContent: some View {
         switch vm.memberContractState {
-        case .active:
-            ActiveSectionView(
-                claimsContent: claimsContent
-            )
+        case .active, .terminated:
+            MainHomeView()
         case .future:
             hText(L10n.hedvigNameText, style: .heading3)
-        case .terminated:
-            TerminatedSectionView(claimsContent: claimsContent)
         case .loading:
             EmptyView()
         }
@@ -81,33 +65,25 @@ extension HomeView {
         hSection {
             VStack(spacing: 0) {
                 switch vm.memberContractState {
-                case .active:
-                    VStack(spacing: 16) {
+                case .active, .terminated:
+                    VStack(spacing: .padding16) {
                         HomeBottomScrollView(vm: vm.homeBottomScrollViewModel)
-                        VStack(spacing: 8) {
+                        VStack(spacing: .padding8) {
                             startAClaimButton
                             openHelpCenter
                         }
                     }
                 case .future:
-                    VStack(spacing: 16) {
+                    VStack(spacing: .padding16) {
                         HomeBottomScrollView(vm: vm.homeBottomScrollViewModel)
                         FutureSectionInfoView()
                             .slideUpFadeAppearAnimation()
-                        VStack(spacing: 8) {
-                            openHelpCenter
-                        }
-                    }
-                case .terminated:
-                    VStack(spacing: 16) {
-                        HomeBottomScrollView(vm: vm.homeBottomScrollViewModel)
-                        VStack(spacing: 8) {
-                            startAClaimButton
+                        VStack(spacing: .padding8) {
                             openHelpCenter
                         }
                     }
                 case .loading:
-                    VStack(spacing: 8) {
+                    VStack(spacing: .padding8) {
                         openHelpCenter
                     }
                 }
@@ -132,7 +108,7 @@ extension HomeView {
         let showHelpCenter =
             !contractStore.state.activeContracts.allSatisfy({ $0.isNonPayingMember })
             || contractStore.state.activeContracts.count == 0
-        if showHelpCenter && Dependencies.featureFlags().isHelpCenterEnabled {
+        if showHelpCenter && featureFlags.isHelpCenterEnabled {
             hButton.LargeButton(type: .secondary) {
                 navigationVm.isHelpCenterPresented = true
             } content: {
@@ -145,14 +121,13 @@ extension HomeView {
 @MainActor
 class HomeVM: ObservableObject {
     @Published var memberContractState: MemberContractState = .loading
-    private(set) var homeBottomScrollViewModel: HomeBottomScrollViewModel
+    let homeBottomScrollViewModel = HomeBottomScrollViewModel()
     private var cancellables = Set<AnyCancellable>()
     private var chatNotificationPullTimerCancellable: AnyCancellable?
     @Published var toolbarOptionTypes: [ToolbarOptionType] = []
     private var chatNotificationPullTimer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
 
-    init(memberId: String) {
-        homeBottomScrollViewModel = .init(memberId: memberId)
+    init() {
         let store: HomeStore = globalPresentableStoreContainer.get()
         memberContractState = store.state.memberContractState
         store.stateSignal
@@ -162,12 +137,13 @@ class HomeVM: ObservableObject {
                 self?.memberContractState = value
             })
             .store(in: &cancellables)
+
         toolbarOptionTypes = store.state.toolbarOptionTypes
         addObserverForApplicationDidBecomeActive()
         observeToolbarOptionTypes()
     }
 
-    func fetch() {
+    func fetchHomeState() {
         let store: HomeStore = globalPresentableStoreContainer.get()
         print("STORE TEST SEND: fetchMemberState 1")
         store.send(.fetchMemberState)
@@ -185,8 +161,7 @@ class HomeVM: ObservableObject {
         chatNotificationPullTimerCancellable = chatNotificationPullTimer.receive(on: RunLoop.main)
             .sink { _ in
                 let currentVCDescription = UIApplication.shared.getTopVisibleVc()?.debugDescription
-                let compareToDescirption = String(describing: HomeView<EmptyView>.self).components(separatedBy: "<")
-                    .first
+                let compareToDescirption = String(describing: HomeScreen.self)
                 if currentVCDescription == compareToDescirption {
                     let store: HomeStore = globalPresentableStoreContainer.get()
                     store.send(.fetchChatNotifications)
@@ -209,7 +184,7 @@ class HomeVM: ObservableObject {
 
     @objc func notification(notification: Notification) {
         Task { [weak self] in
-            self?.fetch()
+            self?.fetchHomeState()
         }
     }
 
@@ -233,22 +208,17 @@ struct Active_Preview: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
 
-        return HomeView(
-            claimsContent: Text(""),
-            memberId: {
-                "ID"
-            }
-        )
-        .onAppear {
-            let store: HomeStore = globalPresentableStoreContainer.get()
-            store.send(
-                .setMemberContractState(
-                    state: .active,
-                    contracts: []
+        return HomeScreen()
+            .onAppear {
+                let store: HomeStore = globalPresentableStoreContainer.get()
+                store.send(
+                    .setMemberContractState(
+                        state: .active,
+                        contracts: []
+                    )
                 )
-            )
-            store.send(.setFutureStatus(status: .none))
-        }
+                store.send(.setFutureStatus(status: .none))
+            }
 
     }
 }
@@ -256,23 +226,18 @@ struct Active_Preview: PreviewProvider {
 struct ActiveInFuture_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
-        return HomeView(
-            claimsContent: Text(""),
-            memberId: {
-                "ID"
-            }
-        )
-        .onAppear {
-            ApolloClient.removeDeleteAccountStatus(for: "ID")
-            let store: HomeStore = globalPresentableStoreContainer.get()
-            store.send(
-                .setMemberContractState(
-                    state: .future,
-                    contracts: []
+        return HomeScreen()
+            .onAppear {
+                ApolloClient.removeDeleteAccountStatus(for: "ID")
+                let store: HomeStore = globalPresentableStoreContainer.get()
+                store.send(
+                    .setMemberContractState(
+                        state: .future,
+                        contracts: []
+                    )
                 )
-            )
-            store.send(.setFutureStatus(status: .activeInFuture(inceptionDate: "2023-11-23")))
-        }
+                store.send(.setFutureStatus(status: .activeInFuture(inceptionDate: "2023-11-23")))
+            }
 
     }
 }
@@ -280,22 +245,17 @@ struct ActiveInFuture_Previews: PreviewProvider {
 struct TerminatedToday_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
-        return HomeView(
-            claimsContent: Text(""),
-            memberId: {
-                "ID"
-            }
-        )
-        .onAppear {
-            let store: HomeStore = globalPresentableStoreContainer.get()
-            store.send(
-                .setMemberContractState(
-                    state: .terminated,
-                    contracts: []
+        return HomeScreen()
+            .onAppear {
+                let store: HomeStore = globalPresentableStoreContainer.get()
+                store.send(
+                    .setMemberContractState(
+                        state: .terminated,
+                        contracts: []
+                    )
                 )
-            )
-            store.send(.setFutureStatus(status: .pendingSwitchable))
-        }
+                store.send(.setFutureStatus(status: .pendingSwitchable))
+            }
 
     }
 }
@@ -303,22 +263,17 @@ struct TerminatedToday_Previews: PreviewProvider {
 struct Terminated_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
-        return HomeView(
-            claimsContent: Text(""),
-            memberId: {
-                "ID"
-            }
-        )
-        .onAppear {
-            let store: HomeStore = globalPresentableStoreContainer.get()
-            store.send(
-                .setMemberContractState(
-                    state: .terminated,
-                    contracts: []
+        return HomeScreen()
+            .onAppear {
+                let store: HomeStore = globalPresentableStoreContainer.get()
+                store.send(
+                    .setMemberContractState(
+                        state: .terminated,
+                        contracts: []
+                    )
                 )
-            )
-            store.send(.setFutureStatus(status: .pendingSwitchable))
-        }
+                store.send(.setFutureStatus(status: .pendingSwitchable))
+            }
 
     }
 }
@@ -326,23 +281,18 @@ struct Terminated_Previews: PreviewProvider {
 struct Deleted_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
-        return HomeView(
-            claimsContent: Text(""),
-            memberId: {
-                "ID"
-            }
-        )
-        .onAppear {
-            ApolloClient.saveDeleteAccountStatus(for: "ID")
-            let store: HomeStore = globalPresentableStoreContainer.get()
-            store.send(
-                .setMemberContractState(
-                    state: .active,
-                    contracts: []
+        return HomeScreen()
+            .onAppear {
+                ApolloClient.saveDeleteAccountStatus(for: "ID")
+                let store: HomeStore = globalPresentableStoreContainer.get()
+                store.send(
+                    .setMemberContractState(
+                        state: .active,
+                        contracts: []
+                    )
                 )
-            )
-            store.send(.setFutureStatus(status: .pendingSwitchable))
-        }
+                store.send(.setFutureStatus(status: .pendingSwitchable))
+            }
 
     }
 }
