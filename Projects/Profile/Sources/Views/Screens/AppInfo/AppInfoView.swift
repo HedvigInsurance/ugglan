@@ -20,7 +20,7 @@ public struct AppInfoView: View {
             }
             .padding(.top, .padding8)
         }
-        .hWithoutHorizontalPadding
+        .hRowWithoutHorizontalPadding
         .hWithoutDividerPadding
         .sectionContainerStyle(.transparent)
         .hFormAlwaysAttachToBottom {

@@ -48,7 +48,7 @@ public struct ProfileView: View {
                 }
                 .sectionContainerStyle(.transparent)
                 .padding(.top, .padding16)
-                .hWithoutHorizontalPadding
+                .hRowWithoutHorizontalPadding
                 .hWithoutDividerPadding
             }
         }

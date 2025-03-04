@@ -52,13 +52,13 @@ public class hPaymentClientDemo: hPaymentClient {
                 ],
                 discounts: [
                     .init(
-                        id: "CODE 2",
                         code: "CODE 2",
                         amount: .sek(30),
                         title: "15% off for 1 year",
                         listOfAffectedInsurances: [.init(id: "1", displayName: "Bastugatan 25 ∙ Bara du")],
                         validUntil: "2025-12-31",
-                        canBeDeleted: false
+                        canBeDeleted: false,
+                        discountId: "CODE 2"
                     )
                 ],
                 paymentDetails: .init(paymentMethod: "Autogiro", account: "****124124", bank: "Handelsbanken"),
@@ -111,13 +111,13 @@ public class hPaymentClientDemo: hPaymentClient {
                     ],
                     discounts: [
                         .init(
-                            id: "CODE 2",
                             code: "CODE 2",
                             amount: .sek(30),
                             title: "15% off for 1 year",
                             listOfAffectedInsurances: [.init(id: "1", displayName: "Bastugatan 25 ∙ Bara du")],
                             validUntil: "2025-12-31",
-                            canBeDeleted: false
+                            canBeDeleted: false,
+                            discountId: "CODE 2"
                         )
                     ],
                     paymentDetails: nil,
@@ -141,22 +141,22 @@ public class hPaymentClientDemo: hPaymentClient {
         return .init(
             discounts: [
                 .init(
-                    id: "CODE",
                     code: "CODE",
                     amount: .sek(30),
                     title: "15% off for 1 year",
                     listOfAffectedInsurances: [.init(id: "1", displayName: "Car Insurance * ABH 234")],
                     validUntil: "2023-12-10",
-                    canBeDeleted: true
+                    canBeDeleted: true,
+                    discountId: "CODE"
                 ),
                 .init(
-                    id: "CODE 2",
                     code: "CODE 2",
                     amount: .sek(30),
                     title: "15% off for 1 year",
                     listOfAffectedInsurances: [.init(id: "1", displayName: "Home insurace &*")],
                     validUntil: "2023-11-03",
-                    canBeDeleted: false
+                    canBeDeleted: false,
+                    discountId: "CODE 2"
                 ),
             ],
             referralsData: .init(

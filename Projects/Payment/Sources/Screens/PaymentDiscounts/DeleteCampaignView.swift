@@ -102,7 +102,7 @@ class DeleteCampaignViewModel: ObservableObject {
 
         do {
             error = nil
-            try await campaignService.remove(codeId: discount.id)
+            try await campaignService.remove(codeId: discount.discountId)
             store.send(.load)
             store.send(.fetchDiscountsData)
             withAnimation {
@@ -133,13 +133,13 @@ struct DeleteCampaignView_Previews: PreviewProvider {
         DeleteCampaignView(
             vm: .init(
                 discount: .init(
-                    id: "id",
                     code: "CODE",
                     amount: nil,
                     title: "Title",
                     listOfAffectedInsurances: [],
                     validUntil: nil,
-                    canBeDeleted: false
+                    canBeDeleted: false,
+                    discountId: "id"
                 )
             )
         )
