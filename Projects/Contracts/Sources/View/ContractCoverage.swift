@@ -24,7 +24,7 @@ struct ContractCoverageView: View {
                     },
                     perils: contract.allPerils
                 )
-                .hRowWithoutHorizontalPadding
+                .hWithoutHorizontalPadding([.row])
             }
         }
     }
