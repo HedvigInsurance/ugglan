@@ -121,7 +121,7 @@ extension HomeScreen {
 @MainActor
 class HomeVM: ObservableObject {
     @Published var memberContractState: MemberContractState = .loading
-    private(set) var homeBottomScrollViewModel: HomeBottomScrollViewModel
+    let homeBottomScrollViewModel = HomeBottomScrollViewModel()
     private var cancellables = Set<AnyCancellable>()
     private var chatNotificationPullTimerCancellable: AnyCancellable?
     @Published var toolbarOptionTypes: [ToolbarOptionType] = []
@@ -129,7 +129,6 @@ class HomeVM: ObservableObject {
 
     init() {
         let store: HomeStore = globalPresentableStoreContainer.get()
-        homeBottomScrollViewModel = .init()
         memberContractState = store.state.memberContractState
         store.stateSignal
             .map({ $0.memberContractState })
