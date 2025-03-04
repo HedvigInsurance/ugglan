@@ -165,8 +165,7 @@ class HomeVM: ObservableObject {
         chatNotificationPullTimerCancellable = chatNotificationPullTimer.receive(on: RunLoop.main)
             .sink { _ in
                 let currentVCDescription = UIApplication.shared.getTopVisibleVc()?.debugDescription
-                let compareToDescirption = String(describing: HomeScreen.self).components(separatedBy: "<")
-                    .first
+                let compareToDescirption = String(describing: HomeScreen.self)
                 if currentVCDescription == compareToDescirption {
                     let store: HomeStore = globalPresentableStoreContainer.get()
                     store.send(.fetchChatNotifications)
