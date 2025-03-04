@@ -62,7 +62,6 @@ class HomeBottomScrollViewModel: ObservableObject {
     }
     private var showConnectPaymentCardView = false
     var cancellables = Set<AnyCancellable>()
-    var memberIdObserver = Set<AnyCancellable>()
 
     init() {
         handlePayments()
@@ -196,7 +195,7 @@ class HomeBottomScrollViewModel: ObservableObject {
             .sink { memberId in
                 self.handleDeleteRequests(memberId: memberId)
             }
-            .store(in: &memberIdObserver)
+            .store(in: &cancellables)
     }
 
     private func handleDeleteRequests(memberId: String) {
