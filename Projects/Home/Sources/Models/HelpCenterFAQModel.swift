@@ -1,7 +1,7 @@
+import Environment
 import Foundation
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct HelpCenterFAQModel: Codable, Equatable, Hashable, Sendable {
     public let topics: [FaqTopic]
