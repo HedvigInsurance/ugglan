@@ -12,10 +12,10 @@ public class ChatNavigationViewModel: ObservableObject {
 
     init() {}
 
-    struct FileUrlModel: Identifiable, Equatable {
-        public var id: String?
-        var url: URL
-    }
+    //    struct FileUrlModel: Identifiable, Equatable {
+    //        public var id: String?
+    //        var url: URL
+    //    }
 
     private var toastPublisher: AnyCancellable?
     func checkForPushNotificationStatus() async {

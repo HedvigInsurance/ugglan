@@ -132,6 +132,7 @@ struct ForeverView_Previews: PreviewProvider {
             .onAppear {
                 Dependencies.shared.add(module: Module { () -> ForeverClient in ForeverClientDemo() })
             }
+            .environmentObject(ForeverNavigationViewModel())
     }
 }
 
