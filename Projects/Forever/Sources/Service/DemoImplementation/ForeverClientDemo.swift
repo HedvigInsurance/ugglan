@@ -1,5 +1,3 @@
-import hCore
-
 public class ForeverClientDemo: ForeverClient {
     var code: String = "CODE"
     public init() {}
