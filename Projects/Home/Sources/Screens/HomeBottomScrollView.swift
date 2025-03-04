@@ -62,15 +62,16 @@ class HomeBottomScrollViewModel: ObservableObject {
     }
     private var showConnectPaymentCardView = false
     var cancellables = Set<AnyCancellable>()
-    init(memberId: String) {
+
+    init() {
         handlePayments()
         if Dependencies.featureFlags().isEditCoInsuredEnabled {
             handleMissingCoInsured()
         }
         handleImportantMessages()
         handleRenewalCardView()
-        handleDeleteRequests(memberId: memberId)
         handleTerminatedMessage()
+        handleUpdateOfMemberId()
     }
 
     private func handleItem(_ item: InfoCardType, with addItem: Bool) {
@@ -185,6 +186,18 @@ class HomeBottomScrollViewModel: ObservableObject {
         handleItem(.renewal, with: homeStore.state.upcomingRenewalContracts.count > 0)
     }
 
+    private func handleUpdateOfMemberId() {
+        let store: HomeStore = globalPresentableStoreContainer.get()
+        store.stateSignal
+            .compactMap({ $0.memberId })
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { memberId in
+                self.handleDeleteRequests(memberId: memberId)
+            }
+            .store(in: &cancellables)
+    }
+
     private func handleDeleteRequests(memberId: String) {
         Task {
             let members = ApolloClient.retreiveMembersWithDeleteRequests()
@@ -240,7 +253,7 @@ class HomeBottomScrollViewModel: ObservableObject {
 struct HomeBottomScrollView_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlagsDemo() })
-        return HomeBottomScrollView(vm: .init(memberId: ""))
+        return HomeBottomScrollView(vm: .init())
     }
 }
 
