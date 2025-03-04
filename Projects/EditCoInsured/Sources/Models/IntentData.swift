@@ -1,5 +1,5 @@
 import Foundation
-import hGraphQL
+import hCore
 
 public struct Intent: Sendable {
     let activationDate: String
