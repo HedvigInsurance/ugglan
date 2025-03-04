@@ -54,6 +54,12 @@ struct FilesGridView: View {
                 .transition(.scale.combined(with: .opacity))
             }
         }
+        .detent(
+            item: $vm.fileModel,
+            style: [.large]
+        ) { model in
+            DocumentPreview(vm: .init(type: model.type.asDocumentPreviewModelType))
+        }
     }
 }
 
