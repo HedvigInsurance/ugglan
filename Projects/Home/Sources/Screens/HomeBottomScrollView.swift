@@ -62,7 +62,7 @@ class HomeBottomScrollViewModel: ObservableObject {
     }
     private var showConnectPaymentCardView = false
     var cancellables = Set<AnyCancellable>()
-    @State var memberIdObserver = Set<AnyCancellable>()
+    var memberIdObserver = Set<AnyCancellable>()
 
     init() {
         handlePayments()
