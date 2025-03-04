@@ -115,4 +115,5 @@ enum PushNotificationType: String {
     case CROSS_SELL
     case OPEN_CONTACT_INFO
     case CHANGE_TIER
+    case ADDON_TRAVEL
 }

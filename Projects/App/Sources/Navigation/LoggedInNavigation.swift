@@ -662,6 +662,10 @@ class LoggedInNavigationViewModel: ObservableObject {
                 let userInfo = notification.userInfo
                 let contractId = userInfo?["contractId"] as? String
                 handleChangeTier(contractId: contractId)
+            case .ADDON_TRAVEL:
+                Task {
+                    await handleTravelAddon()
+                }
             }
         }
     }
