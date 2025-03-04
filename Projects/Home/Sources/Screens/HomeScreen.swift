@@ -210,10 +210,7 @@ struct Active_Preview: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
 
-        return HomeScreen(  //            memberId: {
-            //                "ID"
-            //            }
-            )
+        return HomeScreen()
             .onAppear {
                 let store: HomeStore = globalPresentableStoreContainer.get()
                 store.send(
@@ -231,10 +228,7 @@ struct Active_Preview: PreviewProvider {
 struct ActiveInFuture_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
-        return HomeScreen(  //            memberId: {
-            //                "ID"
-            //            }
-            )
+        return HomeScreen()
             .onAppear {
                 ApolloClient.removeDeleteAccountStatus(for: "ID")
                 let store: HomeStore = globalPresentableStoreContainer.get()
@@ -253,10 +247,7 @@ struct ActiveInFuture_Previews: PreviewProvider {
 struct TerminatedToday_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
-        return HomeScreen(  //            memberId: {
-            //                "ID"
-            //            }
-            )
+        return HomeScreen()
             .onAppear {
                 let store: HomeStore = globalPresentableStoreContainer.get()
                 store.send(
@@ -274,10 +265,7 @@ struct TerminatedToday_Previews: PreviewProvider {
 struct Terminated_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
-        return HomeScreen(  //            memberId: {
-            //                "ID"
-            //            }
-            )
+        return HomeScreen()
             .onAppear {
                 let store: HomeStore = globalPresentableStoreContainer.get()
                 store.send(
@@ -295,10 +283,7 @@ struct Terminated_Previews: PreviewProvider {
 struct Deleted_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
-        return HomeScreen(  //            memberId: {
-            //                "ID"
-            //            }
-            )
+        return HomeScreen()
             .onAppear {
                 ApolloClient.saveDeleteAccountStatus(for: "ID")
                 let store: HomeStore = globalPresentableStoreContainer.get()
