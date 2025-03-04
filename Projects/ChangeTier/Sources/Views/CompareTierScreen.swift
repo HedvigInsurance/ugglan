@@ -6,19 +6,18 @@ import hGraphQL
 struct CompareTierScreen: View {
     @ObservedObject private var vm: CompareTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
-    @State var shadowIntensity: CGFloat = 0
-    @State var shouldShowDivider = true
-    @ObservedObject var tracingOffsetVm = TracingOffsetViewModel()
-    private let setOffsetVm = SetOffsetViewModel()
-
+    @State var scrollableSegmentedViewModel: ScrollableSegmentedViewModel
     @SwiftUI.Environment(\.horizontalSizeClass) var horizontalSizeClass
-    @SwiftUI.Environment(\.colorScheme) private var colorScheme
-    @State private var leftColumnWidth: CGFloat = 0
+    @SwiftUI.Environment(\.colorScheme) var colorSchema
+    @State var plusImage = hCoreUIAssets.plus.image.getImageFor(style: .body1)
 
     init(
         vm: CompareTierViewModel
     ) {
         self.vm = vm
+        scrollableSegmentedViewModel = ScrollableSegmentedViewModel(
+            pageModels: vm.tiers.map({ .init(id: $0.id, title: $0.name) })
+        )
     }
 
     var body: some View {
@@ -41,92 +40,51 @@ struct CompareTierScreen: View {
             )
     }
 
-    private var scrollContent: some View {
-        HStack(spacing: 0) {
-            ForEach(vm.tiers, id: \.id) { tier in
-                Column(
-                    tier: tier,
-                    selectedTier: vm.selectedTier,
-                    perils: vm.getPerils(for: tier.name),
-                    vm: vm
-                )
-            }
-            Spacing(height: Float(horizontalSizeClass == .regular ? CGFloat.padding64 : CGFloat.padding16))
+    private func comparisionView(for tierName: String) -> some View {
+        hSection(vm.getPerils(for: tierName), id: \.title) { peril in
+            perilRow(for: peril)
+
         }
+        .sectionContainerStyle(.transparent)
+        .padding(.bottom, .padding24)
+        .hWithoutDividerPadding
+        .hRowWithoutHorizontalPadding
+        .accessibilityHint(L10n.tierFlowCoverageLabel + tierName)
+    }
+
+    private func perilRow(for peril: Perils) -> some View {
+        hRow {
+            HStack(spacing: .padding4) {
+                Group {
+                    Text(peril.title)
+                        + Text(Image(uiImage: plusImage).renderingMode(.template))
+                        .foregroundColor(
+                            hFillColor.Translucent.secondary.colorFor(colorSchema == .light ? .light : .dark, .base)
+                                .color
+                        )
+
+                }
+                .modifier(hFontModifier(style: .body1))
+                Spacer()
+                peril.getRowDescription
+            }
+        }
+        .modifier(CompareOnRowTap(currentPeril: peril))
+        .accessibilityElement(children: .combine)
+        .accessibilityHint(L10n.voiceoverTierComparisionClick(peril.title))
     }
 
     @ViewBuilder
-    var succesView: some View {
+    private var succesView: some View {
         hForm {
-            ZStack {
-                HStack(spacing: 0) {
-                    ZStack {
-                        shadowDividerView
-                        perilTitleColumn
-                    }
-                    .frame(width: leftColumnWidth)
-                    .zIndex(2)
-                    if shouldShowDivider {
-                        Rectangle()
-                            .fill(hBorderColor.secondary)
-                            .frame(width: 1)
-                            .padding(.top, 32)
-                    }
-
-                    ScrollViewReader { scrollView in
-                        ScrollView(
-                            [.horizontal],
-                            showsIndicators: false,
-                            content: {
-                                scrollContent
-                            }
-                        )
-                        .modifier(TrackingOffsetModifier(vm: tracingOffsetVm))
-                        .modifier(SetOffsetModifier(vm: setOffsetVm))
-                        .onAppear {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak setOffsetVm, weak vm] in
-                                guard let setOffsetVm = setOffsetVm, let vm = vm else { return }
-                                if vm.tiers.first == vm.selectedTier {
-                                    setOffsetVm.animate(
-                                        with: .init(duration: 1, damping: 0.6, offset: .init(x: 60, y: 0))
-                                    )
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
-                                        setOffsetVm.animate(with: .init(duration: 1, damping: 0.6, offset: .zero))
-                                    }
-                                } else {
-                                    if let selectedTierIndex = vm.tiers.firstIndex(where: { $0 == vm.selectedTier }) {
-                                        let columnWidth = 108
-                                        let offset = selectedTierIndex * columnWidth - columnWidth / 2
-                                        setOffsetVm.animate(
-                                            with: .init(duration: 1, damping: 0.6, offset: .init(x: offset, y: 0))
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    .zIndex(1)
+            ScrollableSegmentedView(
+                vm: scrollableSegmentedViewModel,
+                headerBottomPadding: .padding8,
+                contentFor: { id in
+                    comparisionView(for: vm.tiers.first(where: { $0.id == id })?.name ?? "")
                 }
-                .sectionContainerStyle(.transparent)
-                .hWithoutHorizontalPadding
-                .padding(.top, .padding16)
-
-                //added to measure current left size - aprox 140 on default text size
-                hText("hhhhhhhhhhhhhhhhh", style: .label)
-                    .foregroundColor(.clear)
-                    .background {
-                        GeometryReader { proxy in
-                            Color.clear
-                                .onAppear {
-                                    leftColumnWidth = min(proxy.size.width, 300)
-                                }
-                                .onChange(of: proxy.size) { newValue in
-                                    leftColumnWidth = min(proxy.size.width, 300)
-                                }
-                        }
-                    }
-            }
-            .padding(.leading, horizontalSizeClass == .regular ? .padding60 : .padding16)
+            )
+            .padding(.top, .padding24)
         }
         .hFormTitle(
             title: .init(
@@ -141,133 +99,27 @@ struct CompareTierScreen: View {
                 L10n.tierComparisonSubtitle
             )
         )
-        .onChange(of: tracingOffsetVm.currentOffset) { _ in
-            setShadowAndDivider()
-        }
-        .onChange(of: colorScheme) { _ in
-            setShadowAndDivider()
-        }
-        .onAppear {
-            setShadowAndDivider()
-        }
-    }
-
-    private func setShadowAndDivider() {
-        withAnimation {
-            shadowIntensity = {
-                guard colorScheme == .light else { return 0 }
-                let absoluteValue = min(max(tracingOffsetVm.currentOffset.x, 2), 5)  // goes from 2 - 5
-                let relativeValue = absoluteValue / 5
-                return relativeValue
-            }()
-            shouldShowDivider = colorScheme == .dark
-        }
-    }
-
-    private var shadowDividerView: some View {
-        VStack(spacing: 0) {
-            hText(" ", style: .label)
-                .padding(.top, 7)
-            Rectangle()
-                .fill(hBackgroundColor.black)
-                .frame(width: leftColumnWidth, alignment: .leading)
-                .shadow(
-                    color: shadowColor.opacity(0.05),
-                    radius: shadowIntensity * 5,
-                    x: 0,
-                    y: 4
-                )
-                .shadow(
-                    color: shadowColor.opacity(0.1),
-                    radius: shadowIntensity * 1,
-                    x: 0,
-                    y: 2
-                )
-                .mask {
-                    Rectangle()
-                        .offset(x: leftColumnWidth, y: 0)
-                        .padding(.vertical, -20)
-                        .frame(width: leftColumnWidth)
-                }
-        }
-    }
-
-    private var shadowColor: Color {
-        hTextColor.Opaque.primary.colorFor(colorScheme == .light ? .light : .dark, .base).color
-    }
-
-    private var perilTitleColumn: some View {
-        VStack(alignment: .leading) {
-            hText(" ", style: .label)
-                .padding(.top, 7)
-            let firstTier = vm.tiers.first?.name ?? ""
-
-            hSection(vm.getPerils(for: firstTier), id: \.self) { peril in
-                hRow {
-                    ZStack {
-                        hText(peril.title, style: .label)
-                            .frame(height: .padding40, alignment: .center)
-                            .lineLimit(1)
-                    }
-                }
-                .verticalPadding(0)
-                .frame(width: leftColumnWidth)
-                .modifier(CompareOnRowTap(currentPeril: peril, vm: vm))
-            }
-            .hWithoutDividerPadding
-            .hSectionWithoutHorizontalPadding
-        }
-        .fixedSize()
     }
 }
 
 struct CompareOnRowTap: ViewModifier {
     let currentPeril: Perils
-    @ObservedObject private var vm: CompareTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
 
     init(
-        currentPeril: Perils,
-        vm: CompareTierViewModel
+        currentPeril: Perils
     ) {
         self.currentPeril = currentPeril
-        self.vm = vm
     }
 
     func body(content: Content) -> some View {
         content
             .onTapGesture {
-                let descriptionText = vm.getDescriptionText
-
                 changeTierNavigationVm.isInsurableLimitPresented = .init(
                     label: currentPeril.title,
-                    limit: "",
-                    description: descriptionText(currentPeril)
+                    description: currentPeril.description
                 )
             }
-            .onLongPressGesture(minimumDuration: 0.1) {
-                if #available(iOS 18.0, *) {
-                    withAnimation {
-                        vm.selectedPeril = currentPeril
-                    }
-                }
-            } onPressingChanged: { isPressing in
-                if !isPressing {
-                    withAnimation {
-                        vm.selectedPeril = nil
-                    }
-                }
-            }
-            .background(getRowColor(for: currentPeril))
-    }
-
-    @hColorBuilder
-    private func getRowColor(for peril: Perils) -> some hColor {
-        if peril.title == vm.selectedPeril?.title {
-            hButtonColor.Ghost.hover
-        } else {
-            hBackgroundColor.clear
-        }
     }
 }
 
@@ -275,19 +127,13 @@ struct CompareOnRowTap: ViewModifier {
 class CompareTierViewModel: ObservableObject {
     private let service = ChangeTierService()
     @Published var viewState: ProcessingState = .loading
-    @Published var selectedTier: Tier?
-    @Published var currentTier: Tier?
     @Published var tiers: [Tier]
     @Published var selectedPeril: Perils?
     @Published var perils: [(String, [Perils])] = []
 
     init(
-        tiers: [Tier],
-        selectedTier: Tier? = nil,
-        currentTier: Tier?
+        tiers: [Tier]
     ) {
-        self.selectedTier = selectedTier
-        self.currentTier = currentTier
         self.tiers = tiers
         self.productVariantComparision()
     }
@@ -341,7 +187,6 @@ class CompareTierViewModel: ObservableObject {
                     termsVersion: termsVersionsToCompare
                 )
 
-                let columns = productVariantComparisionData.variantColumns
                 let rows = productVariantComparisionData.rows
                 let tierNames = tiers.compactMap({ $0.name })
 
@@ -359,36 +204,30 @@ class CompareTierViewModel: ObservableObject {
         }
     }
 
-    func getDescriptionText(for currentPeril: Perils) -> String {
-        var allMatchingPerils: [(String, Perils)] = []
-        perils.forEach { tierName, allTierNamePerils in
-            allTierNamePerils.forEach { peril in
-                if currentPeril.title == peril.title {
-                    allMatchingPerils.append((tierName, peril))
-                }
-            }
-        }
-
-        var coverageTexts: [String] = []
-        allMatchingPerils.forEach { tierName, peril in
-            if let coverageText = peril.covered.first, coverageText != "" {
-                coverageTexts.append(tierName + ": " + coverageText)
-            }
-        }
-
-        var coverageTextDisplayString: String = ""
-        coverageTexts.forEach { text in
-            coverageTextDisplayString += "\n" + text
-        }
-
-        if coverageTextDisplayString != "" {
-            return currentPeril.description + "\n" + coverageTextDisplayString
-        }
-        return currentPeril.description
-    }
-
     func getPerils(for tierName: String) -> [Perils] {
-        perils.first(where: { $0.0 == tierName })?.1 ?? []
+        perils.first(where: { $0.0 == tierName })?.1.filter({ !$0.isDisabled }) ?? []
+    }
+}
+
+extension Perils {
+    @ViewBuilder @MainActor
+    var getRowDescription: some View {
+        Group {
+            if let covered = self.covered.first, covered != "" {
+                ZStack {
+                    hText(covered)
+                    hText(" ")
+                }
+            } else if !self.isDisabled {
+                Image(
+                    uiImage: hCoreUIAssets.checkmark.image
+                )
+                .resizable()
+                .frame(width: 24, height: 24)
+            }
+        }
+        .foregroundColor(hFillColor.Opaque.secondary)
+        .frame(minWidth: 150, alignment: .trailing)
     }
 }
 
@@ -455,10 +294,28 @@ class CompareTierViewModel: ObservableObject {
             ),
             standardTier,
             premiumTier,
-        ],
-        selectedTier: standardTier,
-        currentTier: standardTier
+        ]
     )
 
     return CompareTierScreen(vm: vm)
+        .environmentObject(
+            ChangeTierNavigationViewModel(
+                changeTierContractsInput: .init(source: .changeTier, contracts: []),
+                onChangedTier: {}
+            )
+        )
+}
+extension UIImage {
+    fileprivate func getImageFor(style: HFontTextStyle) -> UIImage {
+        let height = 24 * style.multiplier
+        let renderFormat = UIGraphicsImageRendererFormat.default()
+        renderFormat.opaque = false
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: height, height: height), format: renderFormat)
+        let newImage = renderer.image {
+            (context) in
+            self.draw(in: CGRect(x: 0, y: height * 0.2, width: height, height: height))
+        }
+
+        return newImage
+    }
 }

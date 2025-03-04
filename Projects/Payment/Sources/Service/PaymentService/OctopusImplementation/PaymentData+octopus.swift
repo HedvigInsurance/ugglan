@@ -161,7 +161,6 @@ extension Discount {
         with data: OctopusGraphQL.MemberChargeFragment.DiscountBreakdown,
         discount: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.RedeemedCampaign?
     ) {
-        id = UUID().uuidString
         code = data.code ?? discount?.code ?? ""
         amount = .init(fragment: data.discount.fragments.moneyFragment)
         title = discount?.description
@@ -170,19 +169,20 @@ extension Discount {
             ?? []
         validUntil = nil
         canBeDeleted = false
+        discountId = UUID().uuidString
     }
 
     init(
         with data: OctopusGraphQL.MemberChargeFragment.DiscountBreakdown,
         discountDto discount: ReedeemedCampaingDTO?
     ) {
-        id = UUID().uuidString
         code = data.code ?? discount?.code ?? ""
         amount = .init(fragment: data.discount.fragments.moneyFragment)
         title = discount?.description ?? ""
         listOfAffectedInsurances = []
         validUntil = nil
         canBeDeleted = false
+        discountId = UUID().uuidString
     }
 
 }
