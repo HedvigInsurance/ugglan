@@ -10,7 +10,7 @@ import hCoreUI
 
 public struct HomeState: StateProtocol {
     public var memberContractState: MemberContractState = .loading
-    public var memberId: String = ""
+    public var memberId: String?
     public var futureStatus: FutureStatus = .none
     public var contracts: [HomeContract] = []
     public var importantMessages: [ImportantMessage] = []

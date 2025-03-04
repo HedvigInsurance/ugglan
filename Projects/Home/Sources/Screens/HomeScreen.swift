@@ -129,9 +129,7 @@ class HomeVM: ObservableObject {
 
     init() {
         let store: HomeStore = globalPresentableStoreContainer.get()
-        store.send(.fetchMemberState)
-        let memberId = store.state.memberId
-        homeBottomScrollViewModel = .init(memberId: memberId)
+        homeBottomScrollViewModel = .init()
         memberContractState = store.state.memberContractState
         store.stateSignal
             .map({ $0.memberContractState })
@@ -140,6 +138,7 @@ class HomeVM: ObservableObject {
                 self?.memberContractState = value
             })
             .store(in: &cancellables)
+
         toolbarOptionTypes = store.state.toolbarOptionTypes
         addObserverForApplicationDidBecomeActive()
         observeToolbarOptionTypes()
@@ -211,9 +210,9 @@ struct Active_Preview: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
 
-        return HomeScreen(//            memberId: {
-        //                "ID"
-        //            }
+        return HomeScreen(  //            memberId: {
+            //                "ID"
+            //            }
             )
             .onAppear {
                 let store: HomeStore = globalPresentableStoreContainer.get()
@@ -232,9 +231,9 @@ struct Active_Preview: PreviewProvider {
 struct ActiveInFuture_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
-        return HomeScreen(//            memberId: {
-        //                "ID"
-        //            }
+        return HomeScreen(  //            memberId: {
+            //                "ID"
+            //            }
             )
             .onAppear {
                 ApolloClient.removeDeleteAccountStatus(for: "ID")
@@ -254,9 +253,9 @@ struct ActiveInFuture_Previews: PreviewProvider {
 struct TerminatedToday_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
-        return HomeScreen(//            memberId: {
-        //                "ID"
-        //            }
+        return HomeScreen(  //            memberId: {
+            //                "ID"
+            //            }
             )
             .onAppear {
                 let store: HomeStore = globalPresentableStoreContainer.get()
@@ -275,9 +274,9 @@ struct TerminatedToday_Previews: PreviewProvider {
 struct Terminated_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
-        return HomeScreen(//            memberId: {
-        //                "ID"
-        //            }
+        return HomeScreen(  //            memberId: {
+            //                "ID"
+            //            }
             )
             .onAppear {
                 let store: HomeStore = globalPresentableStoreContainer.get()
@@ -296,9 +295,9 @@ struct Terminated_Previews: PreviewProvider {
 struct Deleted_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
-        return HomeScreen(//            memberId: {
-        //                "ID"
-        //            }
+        return HomeScreen(  //            memberId: {
+            //                "ID"
+            //            }
             )
             .onAppear {
                 ApolloClient.saveDeleteAccountStatus(for: "ID")
