@@ -23,9 +23,6 @@ fragment CrossSellFragment on Member {
       id
       title
       description
-      about
-      imageUrl
-      blurHash
       storeUrl
       type
     }
