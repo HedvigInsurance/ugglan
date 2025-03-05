@@ -38,11 +38,13 @@ public struct CrossSell: Codable, Equatable, Hashable, Sendable {
     }
 
     public init?(_ data: OctopusGraphQL.CrossSellFragment.CrossSell) {
+        let type = data.type.crossSellType
+        guard type != .unknown else { return nil }
         title = data.title
         description = data.description
 
         webActionURL = data.storeUrl
-        type = data.type.crossSellType
+        self.type = type
         hasBeenSeen = UserDefaults.standard.bool(
             forKey: Self.hasBeenSeenKey(typeOfContract: type.rawValue)
         )
