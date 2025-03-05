@@ -14,7 +14,21 @@ public class MoveFlowClientDemo: MoveFlowClient {
             maxMovingDate: "2025-06-01",
             suggestedNumberCoInsured: 2,
             currentHomeAddresses: [],
-            potentialHomeQuotes: [],
+            potentialHomeQuotes: [
+                .init(
+                    premium: .init(amount: "229", currency: "SEK"),
+                    startDate: "2025-01-01",
+                    displayName: "Quote1",
+                    insurableLimits: [],
+                    perils: [],
+                    documents: [],
+                    contractType: .seApartmentBrf,
+                    id: "quoteId1",
+                    displayItems: [],
+                    exposureName: "exposure name",
+                    addons: []
+                )
+            ],
             mtaQuotes: [],
             faqs: [],
             extraBuildingTypes: []

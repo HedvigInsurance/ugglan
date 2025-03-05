@@ -8,16 +8,19 @@ import hGraphQL
 
 @MainActor
 public class MovingFlowNavigationViewModel: ObservableObject {
+    @Inject private var service: MoveFlowClient
     @Published var isAddExtraBuildingPresented: HouseInformationInputModel?
     @Published public var document: hPDFDocument? = nil
-
     @Published public var addressInputModel = AddressInputModel()
     @Published public var movingFlowVm: MovingFlowModel?
     @Published public var houseInformationInputvm = HouseInformationInputModel()
+    @Published var viewState: ProcessingState = .loading
     var movingFlowConfirmViewModel: MovingFlowConfirmViewModel?
     var quoteSummaryViewModel: QuoteSummaryViewModel?
 
-    init() {}
+    init() {
+        initializeData()
+    }
 
     func setMovingFlowSummaryViewModel(
         using movingFlowConfirmVm: MovingFlowConfirmViewModel,
@@ -80,6 +83,42 @@ public class MovingFlowNavigationViewModel: ObservableObject {
         }
         return allQuotes
     }
+
+    private func initializeData() {
+        Task {
+            let movingFlowModel = try await getMoveIntent()
+            movingFlowVm = movingFlowModel
+
+            let addressModel = AddressInputModel()
+            addressModel.moveFromAddressId = movingFlowModel?.currentHomeAddresses.first?.id
+            addressModel.nbOfCoInsured = movingFlowModel?.suggestedNumberCoInsured ?? 5
+            addressInputModel = addressModel
+        }
+    }
+
+    @MainActor
+    func getMoveIntent() async throws -> MovingFlowModel? {
+        withAnimation {
+            self.viewState = .loading
+        }
+
+        do {
+            let movingFlowData = try await service.sendMoveIntent()
+
+            withAnimation {
+                self.viewState = .success
+            }
+
+            return movingFlowData
+        } catch {
+            if let error = error as? MovingFlowError {
+                self.viewState = .error(errorMessage: error.localizedDescription)
+            } else {
+                self.viewState = .error(errorMessage: L10n.General.errorBody)
+            }
+            return nil
+        }
+    }
 }
 
 enum MovingFlowRouterWithHiddenBackButtonActions: Hashable {
@@ -97,6 +136,7 @@ extension MovingFlowRouterWithHiddenBackButtonActions: TrackingViewNameProtocol 
 }
 
 enum MovingFlowRouterActions: Hashable {
+    case housing
     case confirm
     case houseFill
     case selectTier(changeTierModel: ChangeTierIntentModel)
@@ -111,6 +151,8 @@ extension MovingFlowRouterActions: TrackingViewNameProtocol {
             return .init(describing: MovingFlowHouseScreen.self)
         case .selectTier:
             return .init(describing: ChangeTierLandingScreen.self)
+        case .housing:
+            return .init(describing: MovingFlowHousingTypeScreen.self)
         }
     }
 
@@ -126,7 +168,6 @@ struct ExtraBuildingTypeNavigationModel: Identifiable, Equatable {
 
     var addExtraBuildingVm: MovingFlowAddExtraBuildingViewModel
 }
-
 public struct MovingFlowNavigation: View {
     @StateObject private var movingFlowNavigationVm = MovingFlowNavigationViewModel()
     @StateObject var router = Router()
@@ -142,7 +183,7 @@ public struct MovingFlowNavigation: View {
 
     public var body: some View {
         RouterHost(router: router, tracking: MovingFlowDetentType.selectHousingType) {
-            openSelectHousingScreen()
+            getInitalScreen()
                 .routerDestination(for: HousingType.self) { housingType in
                     openApartmentFillScreen()
                 }
@@ -155,6 +196,8 @@ public struct MovingFlowNavigation: View {
                 }
                 .routerDestination(for: MovingFlowRouterActions.self) { action in
                     switch action {
+                    case .housing:
+                        openSelectHousingScreen()
                     case .confirm:
                         openConfirmScreen()
                     case .houseFill:
@@ -195,6 +238,21 @@ public struct MovingFlowNavigation: View {
         .onDisappear {
             onMoved()
         }
+    }
+
+    @ViewBuilder
+    func getInitalScreen() -> some View {
+        let movingVm = movingFlowNavigationVm.movingFlowVm
+        if movingVm?.potentialHomeQuotes.count ?? 0 + (movingVm?.mtaQuotes.count ?? 0) > 1 {
+            openSelectInsuranceScreen()
+        } else {
+            openSelectHousingScreen()
+        }
+    }
+
+    func openSelectInsuranceScreen() -> some View {
+        MovingFlowSelectContractScreen(navigationVm: movingFlowNavigationVm)
+            .withAlertDismiss()
     }
 
     func openSelectHousingScreen() -> some View {
