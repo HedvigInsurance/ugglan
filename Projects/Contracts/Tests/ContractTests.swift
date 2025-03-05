@@ -71,17 +71,11 @@ final class ContractsTests: XCTestCase {
             .init(
                 title: "car",
                 description: "description",
-                imageURL: URL(string: "url")!,
-                blurHash: "",
-                typeOfContract: "",
                 type: .car
             ),
             .init(
                 title: "pet",
                 description: "description",
-                imageURL: URL(string: "url")!,
-                blurHash: "",
-                typeOfContract: "",
                 type: .pet
             ),
         ]
