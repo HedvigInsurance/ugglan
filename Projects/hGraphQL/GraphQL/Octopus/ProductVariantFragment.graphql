@@ -20,7 +20,6 @@ fragment ProductVariantFragment on ProductVariant {
 
 fragment CrossSellFragment on Member {
     crossSells {
-      id
       title
       description
       storeUrl
