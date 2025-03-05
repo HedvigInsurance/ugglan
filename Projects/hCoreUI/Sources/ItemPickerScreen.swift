@@ -5,7 +5,7 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
     typealias PickerModel = (object: T, displayName: ItemModel)
 
     var items: [PickerModel]
-    var preSelectedItems: [T]
+    var preSelectedItems: [T]?
     let onSelected: ([(object: T?, displayName: String?)]) -> Void
     let onCancel: (() -> Void)?
     let singleSelect: Bool?
@@ -28,7 +28,7 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
 
     public init(
         items: [(object: T, displayName: ItemModel)],
-        preSelectedItems: @escaping () -> [T],
+        preSelectedItems: (() -> [T])? = nil,
         onSelected: @escaping ([(T?, String?)]) -> Void,
         onCancel: (() -> Void)? = nil,
         singleSelect: Bool? = false,
@@ -44,7 +44,7 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
         useAlwaysAttachedToBottom: Bool = false
     ) {
         self.items = items
-        self.preSelectedItems = preSelectedItems()
+        self.preSelectedItems = preSelectedItems?()
         self.onSelected = onSelected
         self.onCancel = onCancel
         self.singleSelect = singleSelect
@@ -173,7 +173,10 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     }
 
     private func onAppear(with proxy: ScrollViewProxy) {
-        config.selectedItems = config.items.filter({ config.preSelectedItems.contains($0.object) })
+        config.selectedItems = config.items
+            .filter({
+                config.preSelectedItems?.contains($0.object) ?? false
+            })
             .map({
                 $0.object
             })

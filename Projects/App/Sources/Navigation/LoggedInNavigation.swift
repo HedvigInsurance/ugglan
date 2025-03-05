@@ -65,10 +65,7 @@ struct LoggedInNavigation: View {
             presented: $vm.isMoveContractPresented,
             options: .constant(.alwaysOpenOnTop)
         ) {
-            MovingFlowNavigation {
-                let store: ContractStore = globalPresentableStoreContainer.get()
-                store.send(.fetchContracts)
-            }
+            HandleMoving()
         }
         .modally(
             item: $vm.isChangeTierPresented,
@@ -168,10 +165,7 @@ struct LoggedInNavigation: View {
                     )
                 )
             case .movingFlow:
-                MovingFlowNavigation {
-                    let store: ContractStore = globalPresentableStoreContainer.get()
-                    store.send(.fetchContracts)
-                }
+                HandleMoving()
             case let .pdf(document):
                 PDFPreview(document: document)
             case let .changeTier(input):
@@ -315,6 +309,7 @@ struct LoggedInNavigation: View {
                     }
                 )
                 .embededInNavigation(tracking: ProfileRedirectType.deleteRequestLoading)
+                .embededInNavigation(tracking: ProfileRedirectType.deleteRequestLoading)
             }
         }
         .tabItem {
@@ -324,6 +319,17 @@ struct LoggedInNavigation: View {
             hText(L10n.ProfileTab.title)
         }
         .tag(4)
+    }
+}
+
+struct HandleMoving: View {
+    var body: some View {
+        let store: ContractStore = globalPresentableStoreContainer.get()
+        MovingFlowNavigation(
+            onMoved: {
+                store.send(.fetchContracts)
+            }
+        )
     }
 }
 
@@ -362,10 +368,7 @@ struct HomeTab: View {
             ) { redirectType in
                 switch redirectType {
                 case .moveFlow:
-                    MovingFlowNavigation {
-                        let store: ContractStore = globalPresentableStoreContainer.get()
-                        store.send(.fetchContracts)
-                    }
+                    HandleMoving()
                 case .travelInsurance:
                     TravelCertificateNavigation(
                         vm: loggedInVm.travelCertificateNavigationVm,
