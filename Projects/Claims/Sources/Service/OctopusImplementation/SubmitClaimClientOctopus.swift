@@ -1,5 +1,7 @@
 import Combine
+import Contracts
 import Foundation
+import PresentableStore
 import hCore
 import hGraphQL
 
@@ -697,6 +699,7 @@ extension FlowClaimPhoneNumberStepModel {
     }
 }
 
+@MainActor
 extension FlowClaimContractSelectStepModel {
     init(
         with data: OctopusGraphQL.FlowClaimContractSelectStepFragment
@@ -706,12 +709,15 @@ extension FlowClaimContractSelectStepModel {
     }
 }
 
+@MainActor
 extension FlowClaimContractSelectOptionModel {
     init(
         with data: OctopusGraphQL.FlowClaimContractSelectStepFragment.Option
     ) {
-        self.displayName = data.displayName
         self.id = data.id
+        self.displayName = data.displayName
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        self.subTitle = contractStore.state.contractForId(data.id)?.exposureDisplayName
     }
 }
 
