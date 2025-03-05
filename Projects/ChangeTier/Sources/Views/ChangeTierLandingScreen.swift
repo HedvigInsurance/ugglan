@@ -91,7 +91,6 @@ public struct ChangeTierLandingScreen: View {
                 }
                 .hFieldSize(.small)
                 .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary])
-                .hRowWithoutHorizontalPadding
 
                 hRow {
                     PriceField(

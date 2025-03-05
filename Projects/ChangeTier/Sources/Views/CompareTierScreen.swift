@@ -47,8 +47,7 @@ struct CompareTierScreen: View {
         }
         .sectionContainerStyle(.transparent)
         .padding(.bottom, .padding24)
-        .hWithoutDividerPadding
-        .hRowWithoutHorizontalPadding
+        .hWithoutHorizontalPadding([.row, .divider])
         .accessibilityHint(L10n.tierFlowCoverageLabel + tierName)
     }
 

@@ -40,7 +40,7 @@ public struct AddonCardView: View {
                 }
             }
         }
-        .hSectionWithoutHorizontalPadding
+        .hWithoutHorizontalPadding([.section])
         .sectionContainerStyle(.opaque)
         .overlay(
             RoundedRectangle(cornerRadius: .cornerRadiusL).stroke(hBorderColor.primary, lineWidth: 1)

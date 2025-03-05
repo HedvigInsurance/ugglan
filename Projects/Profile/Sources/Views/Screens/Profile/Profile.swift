@@ -48,8 +48,7 @@ public struct ProfileView: View {
                 }
                 .sectionContainerStyle(.transparent)
                 .padding(.top, .padding16)
-                .hRowWithoutHorizontalPadding
-                .hWithoutDividerPadding
+                .hWithoutHorizontalPadding([.row, .divider])
             }
         }
         .hFormAttachToBottom {

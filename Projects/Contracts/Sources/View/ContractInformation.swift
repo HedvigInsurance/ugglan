@@ -50,7 +50,7 @@ struct ContractInformationView: View {
                             }
                             if contract.supportsCoInsured {
                                 hRowDivider()
-                                    .padding(.horizontal, 16)
+                                    .padding(.horizontal, .padding16)
                                 addCoInsuredView(contract: contract)
                             }
 
@@ -86,7 +86,7 @@ struct ContractInformationView: View {
                             .padding(.bottom, .padding16)
                         }
                     }
-                    .hRowWithoutHorizontalPadding
+                    .hWithoutHorizontalPadding([.row, .divider])
                 }
             }
         }

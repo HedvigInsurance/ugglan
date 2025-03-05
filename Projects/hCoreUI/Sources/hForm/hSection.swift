@@ -287,37 +287,26 @@ extension View {
     }
 }
 
-private struct EnvironmentHWithoutSectionHorizontalPadding: EnvironmentKey {
-    static let defaultValue = false
-}
-
-extension EnvironmentValues {
-    public var hWithoutSectionHorizontalPadding: Bool {
-        get { self[EnvironmentHWithoutSectionHorizontalPadding.self] }
-        set { self[EnvironmentHWithoutSectionHorizontalPadding.self] = newValue }
-    }
-}
-
-extension View {
-    public var hSectionWithoutHorizontalPadding: some View {
-        self.environment(\.hWithoutSectionHorizontalPadding, true)
-    }
+public enum HorizontalPadding: Sendable {
+    case section
+    case row
+    case divider
 }
 
 private struct EnvironmentHWithoutHorizontalPadding: EnvironmentKey {
-    static let defaultValue = false
+    static let defaultValue: [HorizontalPadding] = []
 }
 
 extension EnvironmentValues {
-    public var hRowWithoutHorizontalPadding: Bool {
+    public var hWithoutHorizontalPadding: [HorizontalPadding] {
         get { self[EnvironmentHWithoutHorizontalPadding.self] }
         set { self[EnvironmentHWithoutHorizontalPadding.self] = newValue }
     }
 }
 
 extension View {
-    public var hRowWithoutHorizontalPadding: some View {
-        self.environment(\.hRowWithoutHorizontalPadding, true)
+    public func hWithoutHorizontalPadding(_ attributes: [HorizontalPadding]) -> some View {
+        self.environment(\.hWithoutHorizontalPadding, attributes)
     }
 }
 
@@ -353,7 +342,7 @@ struct hSectionContainer<Content: View>: View {
 public struct hSection<Header: View, Content: View, Footer: View>: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @Environment(\.hEmbeddedHeader) var embeddedHeader
-    @Environment(\.hWithoutSectionHorizontalPadding) var hSectionWithoutHorizontalPadding
+    @Environment(\.hWithoutHorizontalPadding) var hWithoutHorizontalPadding
     @Environment(\.hFieldSize) var fieldSize
     var header: Header?
     var content: Content
@@ -413,7 +402,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
         .frame(maxWidth: .infinity)
         .padding(
             .horizontal,
-            hSectionWithoutHorizontalPadding
+            hWithoutHorizontalPadding.contains(.section)
                 ? 0 : (horizontalSizeClass == .regular ? .padding60 : fieldSize.horizontalPadding)
         )
     }

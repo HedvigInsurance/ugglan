@@ -87,7 +87,7 @@ struct ContractDetails: View {
                     .accessibilityElement(children: .combine)
                 }
             }
-            .hSectionWithoutHorizontalPadding
+            .hWithoutHorizontalPadding([.section])
             .transition(.opacity)
         }
     }

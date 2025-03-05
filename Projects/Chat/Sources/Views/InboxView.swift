@@ -33,8 +33,7 @@ public struct InboxView: View {
                 }
                 .background(getBackgroundColor(for: conversation))
         }
-        .hSectionWithoutHorizontalPadding
-        .hWithoutDividerPadding
+        .hWithoutHorizontalPadding([.section])
         .sectionContainerStyle(.transparent)
     }
 

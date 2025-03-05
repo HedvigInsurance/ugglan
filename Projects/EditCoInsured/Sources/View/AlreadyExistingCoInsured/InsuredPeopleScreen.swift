@@ -33,7 +33,7 @@ struct InsuredPeopleScreen: View {
                     .verticalPadding(0)
                     .padding(.top, .padding16)
                 }
-                .hSectionWithoutHorizontalPadding
+                .hWithoutHorizontalPadding([.section])
                 .sectionContainerStyle(.transparent)
 
                 hSection(listToDisplay) { coInsured in
@@ -46,7 +46,7 @@ struct InsuredPeopleScreen: View {
                         )
                     }
                 }
-                .hSectionWithoutHorizontalPadding
+                .hWithoutHorizontalPadding([.section])
                 .sectionContainerStyle(.transparent)
 
                 hSection {

@@ -94,10 +94,9 @@ struct QuestionsItems: View {
                         log.info("question clicked", error: nil, attributes: ["helpCenter": attributes])
                         router.push(item)
                     }
-                    .hRowWithoutHorizontalPadding
-                    .hWithoutDividerPadding
+                    .hWithoutHorizontalPadding([.row, .divider])
                 }
-                .hSectionWithoutHorizontalPadding
+                .hWithoutHorizontalPadding([.section])
                 .sectionContainerStyle(.transparent)
                 .padding(.leading, 2)
             }
@@ -185,7 +184,7 @@ struct QuickActionView: View {
                 onQuickAction()
             }
         }
-        .hSectionWithoutHorizontalPadding
+        .hWithoutHorizontalPadding([.section])
         .sectionContainerStyle(.opaque)
     }
 }

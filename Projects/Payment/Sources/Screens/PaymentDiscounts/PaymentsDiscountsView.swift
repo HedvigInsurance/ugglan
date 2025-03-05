@@ -119,7 +119,7 @@ struct PaymentsDiscountsView: View {
         hRow {
             ReferralView(referral: referral)
         }
-        .hRowWithoutHorizontalPadding
+        .hWithoutHorizontalPadding([.row])
         .dividerInsets(.all, 0)
     }
 }

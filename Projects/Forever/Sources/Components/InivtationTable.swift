@@ -59,7 +59,7 @@ struct InvitationTable: View {
             hSection(getInvitationRows(for: foreverData), id: \.id) { row in
                 row.view
             }
-            .hSectionWithoutHorizontalPadding
+            .hWithoutHorizontalPadding([.section])
             .sectionContainerStyle(.transparent)
             .padding(.vertical, .padding16)
         }
