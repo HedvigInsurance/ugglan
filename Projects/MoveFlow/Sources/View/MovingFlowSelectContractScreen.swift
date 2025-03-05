@@ -56,7 +56,7 @@ struct MovingFlowSelectContractScreen: View {
             )
         )
         .hFormTitle(
-            title: .init(.small, .heading2, L10n.movingFlowTitle, alignment: .leading),
+            title: .init(.small, .heading2, L10n.movingEmbarkTitle, alignment: .leading),
             subTitle: .init(.small, .heading2, L10n.movingFlowBody)
         )
         .withDismissButton()
