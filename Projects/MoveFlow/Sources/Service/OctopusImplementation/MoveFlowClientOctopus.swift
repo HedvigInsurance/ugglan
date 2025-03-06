@@ -159,14 +159,6 @@ extension MoveIntentModel {
         homeQuotes = data.homeQuotes?.compactMap({ MovingFlowQuote(from: $0) }) ?? []
 
         self.extraBuildingTypes = data.extraBuildingTypes.compactMap({ $0.rawValue })
-
-        var faqs = [FAQ]()
-        faqs.append(.init(title: L10n.changeAddressFaqDateTitle, description: L10n.changeAddressFaqDateLabel))
-        faqs.append(.init(title: L10n.changeAddressFaqPriceTitle, description: L10n.changeAddressFaqPriceLabel))
-        faqs.append(.init(title: L10n.changeAddressFaqRentbrfTitle, description: L10n.changeAddressFaqRentbrfLabel))
-        faqs.append(.init(title: L10n.changeAddressFaqStorageTitle, description: L10n.changeAddressFaqStorageLabel))
-        faqs.append(.init(title: L10n.changeAddressFaqStudentTitle, description: L10n.changeAddressFaqStudentLabel))
-        self.faqs = faqs
     }
 }
 

@@ -30,8 +30,7 @@ public class MoveFlowClientDemo: MoveFlowClient {
             maxMovingDate: "2025-06-01",
             minMovingDate: Date().localDateString,
             mtaQuotes: [],
-            suggestedNumberCoInsured: 2,
-            faqs: []
+            suggestedNumberCoInsured: 2
         )
     }
 
@@ -54,8 +53,7 @@ public class MoveFlowClientDemo: MoveFlowClient {
             maxMovingDate: "2025-06-01",
             minMovingDate: Date().localDateString,
             mtaQuotes: [],
-            suggestedNumberCoInsured: 2,
-            faqs: []
+            suggestedNumberCoInsured: 2
         )
     }
 

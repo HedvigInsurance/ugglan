@@ -22,7 +22,6 @@ public struct MoveIntentModel {
     let mtaQuotes: [MovingFlowQuote]
     let suggestedNumberCoInsured: Int
     let changeTierModel: ChangeTierIntentModel?
-    let faqs: [FAQ]
 
     init(
         id: String,
@@ -37,8 +36,7 @@ public struct MoveIntentModel {
         maxMovingDate: String,
         minMovingDate: String,
         mtaQuotes: [MovingFlowQuote],
-        suggestedNumberCoInsured: Int,
-        faqs: [FAQ]
+        suggestedNumberCoInsured: Int
     ) {
         self.id = id
         self.currentHomeAddresses = currentHomeAddresses
@@ -54,7 +52,6 @@ public struct MoveIntentModel {
         self.mtaQuotes = mtaQuotes
         self.suggestedNumberCoInsured = suggestedNumberCoInsured
         self.changeTierModel = nil
-        self.faqs = faqs
     }
 
     func maxNumberOfCoinsuredFor(_ type: HousingType) -> Int {
