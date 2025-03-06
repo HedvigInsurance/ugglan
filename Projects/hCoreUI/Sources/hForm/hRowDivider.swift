@@ -16,26 +16,9 @@ extension EnvironmentValues {
     }
 }
 
-private struct EnvironmentHWithoutPadding: EnvironmentKey {
-    static let defaultValue = false
-}
-
-extension EnvironmentValues {
-    public var hWithoutDividerPadding: Bool {
-        get { self[EnvironmentHWithoutPadding.self] }
-        set { self[EnvironmentHWithoutPadding.self] = newValue }
-    }
-}
-
-extension View {
-    public var hWithoutDividerPadding: some View {
-        self.environment(\.hWithoutDividerPadding, true)
-    }
-}
-
 public struct hRowDivider: View {
     @Environment(\.hRowDividerSettings) var settings
-    @Environment(\.hWithoutDividerPadding) var withoutPadding: Bool
+    @Environment(\.hWithoutHorizontalPadding) var hWithoutHorizontalPadding
     public init() {}
 
     public var body: some View {
@@ -43,7 +26,7 @@ public struct hRowDivider: View {
         RoundedRectangle(cornerRadius: 1, style: .circular)
             .fill(hBorderColor.secondary)
             .frame(height: 1)
-            .padding(withoutPadding ? noPaddingInsets : settings.insets)
+            .padding(hWithoutHorizontalPadding.contains(.divider) ? noPaddingInsets : settings.insets)
     }
 }
 

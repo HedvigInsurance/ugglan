@@ -201,7 +201,6 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                         .foregroundColor(hTextColor.Translucent.secondary)
                 })
                 .hEmbeddedHeader
-                .hWithoutDividerPadding
                 .disabled(isLoading)
             } else {
                 ForEach(config.items, id: \.object) { item in
