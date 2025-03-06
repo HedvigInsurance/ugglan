@@ -16,7 +16,7 @@ struct MovingFlowProcessingScreen: View {
             loadingViewText: L10n.changeAddressMakingChanges,
             successViewTitle: L10n.changeAddressSuccessTitle,
             successViewBody: L10n.changeAddressSuccessSubtitle(
-                movingFlowNavigationVm.movingFlowRequestIntentVm?.movingDate ?? ""
+                movingFlowNavigationVm.movingDate
             ),
             successViewButtonAction: {
                 onSuccessButtonAction()

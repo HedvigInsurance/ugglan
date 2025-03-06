@@ -23,39 +23,34 @@ public class MoveFlowClientOctopus: MoveFlowClient {
         throw MovingFlowError.missingDataError(message: L10n.General.errorBody)
     }
 
-    public func requestMoveIntent(
-        intentId: String,
-        addressInputModel: AddressInputModel,
-        houseInformationInputModel: HouseInformationInputModel,
-        selectedAddressId: String
-    ) async throws -> MoveIntentModel {
+    public func requestMoveIntent(input: RequestMoveIntentInput) async throws -> MoveRequestModel {
         let moveIntentRequestInput = OctopusGraphQL.MoveIntentRequestInput(
             apiVersion: .init(.v2TiersAndDeductibles),
             moveToAddress: .init(
-                street: addressInputModel.address,
-                postalCode: addressInputModel.postalCode.replacingOccurrences(of: " ", with: "")
+                street: input.addressInputModel.address,
+                postalCode: input.addressInputModel.postalCode.replacingOccurrences(of: " ", with: "")
             ),
-            moveFromAddressId: selectedAddressId,
-            movingDate: addressInputModel.accessDate?.localDateString ?? "",
-            numberCoInsured: addressInputModel.nbOfCoInsured,
-            squareMeters: Int(addressInputModel.squareArea) ?? 0,
-            apartment: GraphQLNullable(optionalValue: apartmentInput(addressInputModel: addressInputModel)),
+            moveFromAddressId: input.selectedAddressId,
+            movingDate: input.addressInputModel.accessDate?.localDateString ?? "",
+            numberCoInsured: input.addressInputModel.nbOfCoInsured,
+            squareMeters: Int(input.addressInputModel.squareArea) ?? 0,
+            apartment: GraphQLNullable(optionalValue: apartmentInput(addressInputModel: input.addressInputModel)),
             house: GraphQLNullable(
                 optionalValue: houseInput(
-                    selectedHousingType: addressInputModel.selectedHousingType,
-                    houseInformationInputModel: houseInformationInputModel
+                    selectedHousingType: input.addressInputModel.selectedHousingType,
+                    houseInformationInputModel: input.houseInformationInputModel
                 )
             )
         )
 
         let mutation = OctopusGraphQL.MoveIntentRequestMutation(
-            intentId: intentId,
+            intentId: input.intentId,
             input: moveIntentRequestInput
         )
 
         let data = try await octopus.client.perform(mutation: mutation)
         if let moveIntentFragment = data.moveIntentRequest.moveIntent?.fragments.moveIntentFragment {
-            return MoveIntentModel(from: moveIntentFragment)
+            return MoveRequestModel(from: moveIntentFragment)
         } else if let userError = data.moveIntentRequest.userError?.message {
             throw MovingFlowError.serverError(message: userError)
         }
@@ -94,12 +89,13 @@ public class MoveFlowClientOctopus: MoveFlowClient {
 
     private func houseInput(
         selectedHousingType: HousingType,
-        houseInformationInputModel: HouseInformationInputModel
+        houseInformationInputModel: HouseInformationInputModel?
     ) -> OctopusGraphQL.MoveToHouseInput? {
         switch selectedHousingType {
         case .apartment, .rental:
             return nil
         case .house:
+            guard let houseInformationInputModel = houseInformationInputModel else { return nil }
             return OctopusGraphQL.MoveToHouseInput(
                 ancillaryArea: Int(houseInformationInputModel.ancillaryArea) ?? 0,
                 yearOfConstruction: Int(houseInformationInputModel.yearOfConstruction) ?? 0,
@@ -148,7 +144,13 @@ extension MoveIntentModel {
         currentHomeAddresses = data.currentHomeAddresses.compactMap({
             MoveAddress(from: $0.fragments.moveAddressFragment)
         })
+        self.extraBuildingTypes = data.extraBuildingTypes.compactMap({ $0.rawValue })
+    }
+}
 
+@MainActor
+extension MoveRequestModel {
+    init(from data: OctopusGraphQL.MoveIntentFragment) {
         mtaQuotes = data.fragments.quoteFragment.mtaQuotes?.compactMap({ MovingFlowQuote(from: $0) }) ?? []
         changeTierModel = {
             if let data = data.fragments.quoteFragment.homeQuotes, !data.isEmpty {
@@ -157,8 +159,6 @@ extension MoveIntentModel {
             return nil
         }()
         homeQuotes = data.homeQuotes?.compactMap({ MovingFlowQuote(from: $0) }) ?? []
-
-        self.extraBuildingTypes = data.extraBuildingTypes.compactMap({ $0.rawValue })
     }
 }
 

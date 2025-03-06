@@ -200,14 +200,14 @@ struct MovingFlowHouseScreen: View {
     func continuePressed() {
         if houseInformationInputvm.isInputValid() {
             Task {
-                if let movingFlowData = await houseInformationInputvm.requestMoveIntent(
-                    intentId: movingFlowNavigationVm.movingFlowCreateIntentVm?.id ?? "",
+                if let requestVm = await houseInformationInputvm.requestMoveIntent(
+                    intentId: movingFlowNavigationVm.intentVm?.id ?? "",
                     addressInputModel: movingFlowNavigationVm.addressInputModel,
                     selectedAddressId: movingFlowNavigationVm.selectedHomeAddress?.id ?? ""
                 ) {
-                    movingFlowNavigationVm.movingFlowRequestIntentVm = movingFlowData
+                    movingFlowNavigationVm.requestVm = requestVm
 
-                    if let changeTierModel = movingFlowData.changeTierModel {
+                    if let changeTierModel = requestVm.changeTierModel {
                         router.push(MovingFlowRouterActions.selectTier(changeTierModel: changeTierModel))
                     } else {
                         router.push(MovingFlowRouterActions.confirm)
@@ -272,18 +272,19 @@ public class HouseInformationInputModel: ObservableObject, @preconcurrency Equat
         intentId: String,
         addressInputModel: AddressInputModel,
         selectedAddressId: String
-    ) async -> MoveIntentModel? {
+    ) async -> MoveRequestModel? {
         withAnimation {
             self.viewState = .loading
         }
 
         do {
-            let movingFlowData = try await service.requestMoveIntent(
+            let input = RequestMoveIntentInput(
                 intentId: intentId,
                 addressInputModel: addressInputModel,
                 houseInformationInputModel: self,
                 selectedAddressId: selectedAddressId
             )
+            let movingFlowData = try await service.requestMoveIntent(input: input)
 
             withAnimation {
                 self.viewState = .success
