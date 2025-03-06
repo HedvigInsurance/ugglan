@@ -12,12 +12,13 @@ public class MovingFlowNavigationViewModel: ObservableObject {
     @Published var isAddExtraBuildingPresented: HouseInformationInputModel?
     @Published public var document: hPDFDocument? = nil
     @Published public var addressInputModel = AddressInputModel()
-    @Published public var movingFlowVm: MovingFlowModel?
+    @Published public var movingFlowCreateIntentVm: MoveIntentModel?
+    @Published public var movingFlowRequestIntentVm: MoveIntentModel?
     @Published public var houseInformationInputvm = HouseInformationInputModel()
     @Published var viewState: ProcessingState = .loading
     @Published var selectedHomeAddress: MoveAddress?
     var movingFlowConfirmViewModel: MovingFlowConfirmViewModel?
-    var quoteSummaryViewModel: QuoteSummaryViewModel?
+    var quoteSummaryViewModel = QuoteSummaryViewModel(contract: [])
 
     init() {
         initializeData()
@@ -27,8 +28,8 @@ public class MovingFlowNavigationViewModel: ObservableObject {
         using movingFlowConfirmVm: MovingFlowConfirmViewModel,
         router: Router
     ) {
-        if let movingFlowModel = movingFlowVm {
-            let movingFlowQuotes = getQuotes(from: movingFlowModel)
+        if let movingFlowRequestIntentVm = movingFlowRequestIntentVm {
+            let movingFlowQuotes = getQuotes(from: movingFlowRequestIntentVm)
             var contractInfos: [QuoteSummaryViewModel.ContractInfo] = []
             movingFlowQuotes.forEach { quote in
                 let contractQuote = QuoteSummaryViewModel.ContractInfo(
@@ -66,8 +67,8 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                 Task { [weak movingFlowConfirmVm, weak vm] in
                     guard let movingFlowConfirmVm, let vm else { return }
                     await movingFlowConfirmVm.confirmMoveIntent(
-                        intentId: self.movingFlowVm?.id ?? "",
-                        homeQuoteId: self.movingFlowVm?.homeQuote?.id ?? "",
+                        intentId: self.movingFlowRequestIntentVm?.id ?? "",
+                        currentHomeQuoteId: self.movingFlowCreateIntentVm?.currentHomeQuote?.id ?? "",
                         removedAddons: vm.getRemovedContractsIds()
                     )
                 }
@@ -77,9 +78,9 @@ public class MovingFlowNavigationViewModel: ObservableObject {
         }
     }
 
-    private func getQuotes(from data: MovingFlowModel) -> [MovingFlowQuote] {
+    private func getQuotes(from data: MoveIntentModel) -> [MovingFlowQuote] {
         var allQuotes = data.mtaQuotes
-        if let homeQuote = data.homeQuote {
+        if let homeQuote = data.currentHomeQuote {
             allQuotes.insert(homeQuote, at: 0)
         }
         return allQuotes
@@ -106,7 +107,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                 addressModel.nbOfCoInsured = movingFlowModel.suggestedNumberCoInsured
                 addressInputModel = addressModel
             }
-            movingFlowVm = movingFlowModel
+            movingFlowCreateIntentVm = movingFlowModel
 
             withAnimation {
                 self.viewState = .success
@@ -243,7 +244,7 @@ public struct MovingFlowNavigation: View {
 
     @ViewBuilder
     func getInitalScreen() -> some View {
-        let movingVm = movingFlowNavigationVm.movingFlowVm
+        let movingVm = movingFlowNavigationVm.movingFlowCreateIntentVm
         if movingVm?.currentHomeAddresses.count ?? 0 > 1 {
             openSelectInsuranceScreen()
         } else {
@@ -277,7 +278,7 @@ public struct MovingFlowNavigation: View {
             using: movingFlowNavigationVm.movingFlowConfirmViewModel!,
             router: router
         )
-        let model = movingFlowNavigationVm.quoteSummaryViewModel!
+        let model = movingFlowNavigationVm.quoteSummaryViewModel
         return MovingFlowConfirmScreen(quoteSummaryViewModel: model)
             .navigationTitle(L10n.changeAddressSummaryTitle)
             .withAlertDismiss()
@@ -297,13 +298,13 @@ public struct MovingFlowNavigation: View {
 
     func openChangeTier(model: ChangeTierIntentModel) -> some View {
         let model = ChangeTierInput.existingIntent(intent: model) { (tier, deductible) in
-            var movingFlowModel = movingFlowNavigationVm.movingFlowVm
+            var movingFlowModel = movingFlowNavigationVm.movingFlowRequestIntentVm
             let id = deductible.id
-            if let homeQuote = movingFlowNavigationVm.movingFlowVm?.potentialHomeQuotes.first(where: { $0.id == id }) {
-                movingFlowModel?.homeQuote = homeQuote
+            if let currentHomeQuote = movingFlowModel?.homeQuotes.first(where: { $0.id == id }) {
+                movingFlowModel?.currentHomeQuote = currentHomeQuote
             }
             if let movingFlowModel {
-                movingFlowNavigationVm.movingFlowVm = movingFlowModel
+                movingFlowNavigationVm.movingFlowRequestIntentVm = movingFlowModel
             }
             router.push(MovingFlowRouterActions.confirm)
         }

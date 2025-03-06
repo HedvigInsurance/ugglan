@@ -6,75 +6,55 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct MovingFlowModel: Codable, Equatable, Hashable, Sendable {
+public struct MoveIntentModel {
     let id: String
+    let currentHomeAddresses: [MoveAddress]
+    let extraBuildingTypes: [ExtraBuildingType]
+    var currentHomeQuote: MovingFlowQuote?
+    let homeQuotes: [MovingFlowQuote]
     let isApartmentAvailableforStudent: Bool
     let maxApartmentNumberCoInsured: Int?
     let maxApartmentSquareMeters: Int?
     let maxHouseNumberCoInsured: Int?
     let maxHouseSquareMeters: Int?
-    let minMovingDate: String
     let maxMovingDate: String
-    let suggestedNumberCoInsured: Int
-    let currentHomeAddresses: [MoveAddress]
-    let potentialHomeQuotes: [MovingFlowQuote]
-    var homeQuote: MovingFlowQuote?
+    let minMovingDate: String
     let mtaQuotes: [MovingFlowQuote]
-    let faqs: [FAQ]
-    let extraBuildingTypes: [ExtraBuildingType]
+    let suggestedNumberCoInsured: Int
     let changeTierModel: ChangeTierIntentModel?
+    let faqs: [FAQ]
 
     init(
         id: String,
+        currentHomeAddresses: [MoveAddress],
+        extraBuildingTypes: [ExtraBuildingType],
+        homeQuotes: [MovingFlowQuote],
         isApartmentAvailableforStudent: Bool,
         maxApartmentNumberCoInsured: Int?,
         maxApartmentSquareMeters: Int?,
         maxHouseNumberCoInsured: Int?,
         maxHouseSquareMeters: Int?,
-        minMovingDate: String,
         maxMovingDate: String,
-        suggestedNumberCoInsured: Int,
-        currentHomeAddresses: [MoveAddress],
-        potentialHomeQuotes: [MovingFlowQuote],
+        minMovingDate: String,
         mtaQuotes: [MovingFlowQuote],
-        faqs: [FAQ],
-        extraBuildingTypes: [ExtraBuildingType]
+        suggestedNumberCoInsured: Int,
+        faqs: [FAQ]
     ) {
         self.id = id
+        self.currentHomeAddresses = currentHomeAddresses
+        self.extraBuildingTypes = extraBuildingTypes
+        self.homeQuotes = homeQuotes
         self.isApartmentAvailableforStudent = isApartmentAvailableforStudent
         self.maxApartmentNumberCoInsured = maxApartmentNumberCoInsured
         self.maxApartmentSquareMeters = maxApartmentSquareMeters
         self.maxHouseNumberCoInsured = maxHouseNumberCoInsured
         self.maxHouseSquareMeters = maxHouseSquareMeters
-        self.minMovingDate = minMovingDate
         self.maxMovingDate = maxMovingDate
-        self.suggestedNumberCoInsured = suggestedNumberCoInsured
-        self.currentHomeAddresses = currentHomeAddresses
-        self.potentialHomeQuotes = potentialHomeQuotes
+        self.minMovingDate = minMovingDate
         self.mtaQuotes = mtaQuotes
-        self.faqs = faqs
-        self.extraBuildingTypes = extraBuildingTypes
+        self.suggestedNumberCoInsured = suggestedNumberCoInsured
         self.changeTierModel = nil
-    }
-
-    @MainActor
-    var total: MonetaryAmount {
-        let quoteAmount = mtaQuotes.reduce(0, { $0 + $1.premium.floatAmount }) + (homeQuote?.premium.floatAmount ?? 0)
-        let addonAmount =
-            mtaQuotes
-            .compactMap({ $0.addons })
-            .joined()
-            .reduce(0, { $0 + $1.price.floatAmount })
-
-        let addonHomeQuote = homeQuote?.addons.reduce(0, { $0 + $1.price.floatAmount }) ?? 0
-        let totalAmount = quoteAmount + addonAmount + addonHomeQuote
-
-        let currency = homeQuote?.premium.currency ?? mtaQuotes.first?.premium.currency ?? ""
-        return MonetaryAmount(amount: totalAmount, currency: currency)
-    }
-
-    var movingDate: String {
-        return homeQuote?.startDate ?? mtaQuotes.first?.startDate ?? ""
+        self.faqs = faqs
     }
 
     func maxNumberOfCoinsuredFor(_ type: HousingType) -> Int {
@@ -86,10 +66,9 @@ public struct MovingFlowModel: Codable, Equatable, Hashable, Sendable {
         }
     }
 
-    var oldAddressCoverageDurationDays: Int? {
-        currentHomeAddresses.first?.oldAddressCoverageDurationDays
+    var movingDate: String {
+        return currentHomeQuote?.startDate ?? mtaQuotes.first?.startDate ?? ""
     }
-
 }
 
 enum MovingFlowError: Error {

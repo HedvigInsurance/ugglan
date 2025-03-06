@@ -11,12 +11,12 @@ public class MoveFlowClientOctopus: MoveFlowClient {
 
     public init() {}
 
-    public func sendMoveIntent() async throws -> MovingFlowModel {
+    public func sendMoveIntent() async throws -> MoveIntentModel {
         let mutation = OctopusGraphQL.MoveIntentCreateMutation()
         let data = try await octopus.client.perform(mutation: mutation)
 
         if let moveIntentFragment = data.moveIntentCreate.moveIntent?.fragments.moveIntentFragment {
-            return MovingFlowModel(from: moveIntentFragment)
+            return MoveIntentModel(from: moveIntentFragment)
         } else if let userError = data.moveIntentCreate.userError?.message {
             throw MovingFlowError.serverError(message: userError)
         }
@@ -28,7 +28,7 @@ public class MoveFlowClientOctopus: MoveFlowClient {
         addressInputModel: AddressInputModel,
         houseInformationInputModel: HouseInformationInputModel,
         selectedAddressId: String
-    ) async throws -> MovingFlowModel {
+    ) async throws -> MoveIntentModel {
         let moveIntentRequestInput = OctopusGraphQL.MoveIntentRequestInput(
             apiVersion: .init(.v2TiersAndDeductibles),
             moveToAddress: .init(
@@ -55,17 +55,17 @@ public class MoveFlowClientOctopus: MoveFlowClient {
 
         let data = try await octopus.client.perform(mutation: mutation)
         if let moveIntentFragment = data.moveIntentRequest.moveIntent?.fragments.moveIntentFragment {
-            return MovingFlowModel(from: moveIntentFragment)
+            return MoveIntentModel(from: moveIntentFragment)
         } else if let userError = data.moveIntentRequest.userError?.message {
             throw MovingFlowError.serverError(message: userError)
         }
         throw MovingFlowError.missingDataError(message: L10n.General.errorBody)
     }
 
-    public func confirmMoveIntent(intentId: String, homeQuoteId: String, removedAddons: [String]) async throws {
+    public func confirmMoveIntent(intentId: String, currentHomeQuoteId: String, removedAddons: [String]) async throws {
         let mutation = OctopusGraphQL.MoveIntentCommitMutation(
             intentId: intentId,
-            homeQuoteId: GraphQLNullable.init(optionalValue: homeQuoteId),
+            homeQuoteId: GraphQLNullable.init(optionalValue: currentHomeQuoteId),
             removedAddons: GraphQLNullable.init(optionalValue: removedAddons)
         )
         let delayTask = Task {
@@ -119,7 +119,7 @@ public class MoveFlowClientOctopus: MoveFlowClient {
 }
 
 @MainActor
-extension MovingFlowModel {
+extension MoveIntentModel {
     init(from data: OctopusGraphQL.MoveIntentFragment) {
         id = data.id
         let minMovingDate = data.minMovingDate
@@ -156,7 +156,7 @@ extension MovingFlowModel {
             }
             return nil
         }()
-        potentialHomeQuotes = data.homeQuotes?.compactMap({ MovingFlowQuote(from: $0) }) ?? []
+        homeQuotes = data.homeQuotes?.compactMap({ MovingFlowQuote(from: $0) }) ?? []
 
         self.extraBuildingTypes = data.extraBuildingTypes.compactMap({ $0.rawValue })
 

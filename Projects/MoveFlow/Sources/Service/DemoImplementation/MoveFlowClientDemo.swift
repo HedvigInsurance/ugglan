@@ -2,19 +2,12 @@ import Foundation
 
 @MainActor
 public class MoveFlowClientDemo: MoveFlowClient {
-    public func sendMoveIntent() async throws -> MovingFlowModel {
-        return MovingFlowModel(
+    public func sendMoveIntent() async throws -> MoveIntentModel {
+        return MoveIntentModel(
             id: "id",
-            isApartmentAvailableforStudent: false,
-            maxApartmentNumberCoInsured: nil,
-            maxApartmentSquareMeters: nil,
-            maxHouseNumberCoInsured: nil,
-            maxHouseSquareMeters: nil,
-            minMovingDate: Date().localDateString,
-            maxMovingDate: "2025-06-01",
-            suggestedNumberCoInsured: 2,
             currentHomeAddresses: [],
-            potentialHomeQuotes: [
+            extraBuildingTypes: [],
+            homeQuotes: [
                 .init(
                     premium: .init(amount: "229", currency: "SEK"),
                     startDate: "2025-01-01",
@@ -29,9 +22,16 @@ public class MoveFlowClientDemo: MoveFlowClient {
                     addons: []
                 )
             ],
+            isApartmentAvailableforStudent: false,
+            maxApartmentNumberCoInsured: nil,
+            maxApartmentSquareMeters: nil,
+            maxHouseNumberCoInsured: nil,
+            maxHouseSquareMeters: nil,
+            maxMovingDate: "2025-06-01",
+            minMovingDate: Date().localDateString,
             mtaQuotes: [],
-            faqs: [],
-            extraBuildingTypes: []
+            suggestedNumberCoInsured: 2,
+            faqs: []
         )
     }
 
@@ -40,25 +40,25 @@ public class MoveFlowClientDemo: MoveFlowClient {
         addressInputModel: AddressInputModel,
         houseInformationInputModel: HouseInformationInputModel,
         selectedAddressId: String
-    ) async throws -> MovingFlowModel {
-        return MovingFlowModel(
+    ) async throws -> MoveIntentModel {
+        return MoveIntentModel(
             id: "id",
+            currentHomeAddresses: [],
+            extraBuildingTypes: [],
+            homeQuotes: [],
             isApartmentAvailableforStudent: false,
             maxApartmentNumberCoInsured: nil,
             maxApartmentSquareMeters: nil,
             maxHouseNumberCoInsured: nil,
             maxHouseSquareMeters: nil,
-            minMovingDate: Date().localDateString,
             maxMovingDate: "2025-06-01",
-            suggestedNumberCoInsured: 2,
-            currentHomeAddresses: [],
-            potentialHomeQuotes: [],
+            minMovingDate: Date().localDateString,
             mtaQuotes: [],
-            faqs: [],
-            extraBuildingTypes: []
+            suggestedNumberCoInsured: 2,
+            faqs: []
         )
     }
 
-    public func confirmMoveIntent(intentId: String, homeQuoteId: String, removedAddons: [String]) async throws {
+    public func confirmMoveIntent(intentId: String, currentHomeQuoteId: String, removedAddons: [String]) async throws {
     }
 }

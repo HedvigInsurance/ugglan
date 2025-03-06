@@ -35,7 +35,7 @@ struct MovingFlowHouseScreen: View {
                 }
                 .hFieldSize(.medium)
                 .disabled(houseInformationInputvm.viewState == .loading)
-                if let days = movingFlowNavigationVm.movingFlowVm?.oldAddressCoverageDurationDays {
+                if let days = movingFlowNavigationVm.selectedHomeAddress?.oldAddressCoverageDurationDays {
                     hSection {
                         InfoCard(text: L10n.changeAddressCoverageInfoText(days), type: .info)
                     }
@@ -201,11 +201,11 @@ struct MovingFlowHouseScreen: View {
         if houseInformationInputvm.isInputValid() {
             Task {
                 if let movingFlowData = await houseInformationInputvm.requestMoveIntent(
-                    intentId: movingFlowNavigationVm.movingFlowVm?.id ?? "",
+                    intentId: movingFlowNavigationVm.movingFlowCreateIntentVm?.id ?? "",
                     addressInputModel: movingFlowNavigationVm.addressInputModel,
                     selectedAddressId: movingFlowNavigationVm.selectedHomeAddress?.id ?? ""
                 ) {
-                    movingFlowNavigationVm.movingFlowVm = movingFlowData
+                    movingFlowNavigationVm.movingFlowRequestIntentVm = movingFlowData
 
                     if let changeTierModel = movingFlowData.changeTierModel {
                         router.push(MovingFlowRouterActions.selectTier(changeTierModel: changeTierModel))
@@ -221,7 +221,10 @@ struct MovingFlowHouseScreen: View {
 struct MovingFlowHouseView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.nb_NO)
+        Dependencies.shared.add(module: Module { () -> MoveFlowClient in MoveFlowClientDemo() })
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         return MovingFlowHouseScreen(houseInformationInputvm: HouseInformationInputModel())
+            .environmentObject(MovingFlowNavigationViewModel())
     }
 }
 
@@ -269,7 +272,7 @@ public class HouseInformationInputModel: ObservableObject, @preconcurrency Equat
         intentId: String,
         addressInputModel: AddressInputModel,
         selectedAddressId: String
-    ) async -> MovingFlowModel? {
+    ) async -> MoveIntentModel? {
         withAnimation {
             self.viewState = .loading
         }

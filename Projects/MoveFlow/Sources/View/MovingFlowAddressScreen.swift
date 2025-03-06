@@ -59,7 +59,7 @@ struct MovingFlowAddressScreen: View {
                 }
                 .hFieldSize(.medium)
                 .disabled(vm.viewState == .loading)
-                if let days = movingFlowNavigationVm.movingFlowVm?.oldAddressCoverageDurationDays {
+                if let days = movingFlowNavigationVm.selectedHomeAddress?.oldAddressCoverageDurationDays {
                     hSection {
                         InfoCard(text: L10n.changeAddressCoverageInfoText(days), type: .info)
                     }
@@ -132,7 +132,7 @@ struct MovingFlowAddressScreen: View {
             value: $vm.nbOfCoInsured,
             placeholder: L10n.changeAddressCoInsuredLabel,
             minValue: 0,
-            maxValue: movingFlowNavigationVm.movingFlowVm?.maxNumberOfCoinsuredFor(vm.selectedHousingType)
+            maxValue: movingFlowNavigationVm.movingFlowCreateIntentVm?.maxNumberOfCoinsuredFor(vm.selectedHousingType)
         ) { value in
             vm.type = nil
             if value > 0 {
@@ -144,8 +144,8 @@ struct MovingFlowAddressScreen: View {
     }
 
     func accessDateField() -> some View {
-        let minStartDate = movingFlowNavigationVm.movingFlowVm?.minMovingDate.localDateToDate
-        let maxStartDate = movingFlowNavigationVm.movingFlowVm?.maxMovingDate.localDateToDate
+        let minStartDate = movingFlowNavigationVm.movingFlowCreateIntentVm?.minMovingDate.localDateToDate
+        let maxStartDate = movingFlowNavigationVm.movingFlowCreateIntentVm?.maxMovingDate.localDateToDate
 
         return hDatePickerField(
             config: .init(
@@ -183,10 +183,10 @@ struct MovingFlowAddressScreen: View {
             case .apartment, .rental:
                 Task { @MainActor in
                     if let movingFlowData = await vm.requestMoveIntent(
-                        intentId: movingFlowNavigationVm.movingFlowVm?.id ?? "",
+                        intentId: movingFlowNavigationVm.movingFlowCreateIntentVm?.id ?? "",
                         selectedAddressId: movingFlowNavigationVm.selectedHomeAddress?.id ?? ""
                     ) {
-                        movingFlowNavigationVm.movingFlowVm = movingFlowData
+                        movingFlowNavigationVm.movingFlowRequestIntentVm = movingFlowData
 
                         if let changeTierModel = movingFlowData.changeTierModel {
                             router.push(MovingFlowRouterActions.selectTier(changeTierModel: changeTierModel))
@@ -208,9 +208,9 @@ struct MovingFlowAddressScreen: View {
             let sizeToCompare: Int? = {
                 switch vm.selectedHousingType {
                 case .apartment, .rental:
-                    return movingFlowNavigationVm.movingFlowVm?.maxApartmentSquareMeters
+                    return movingFlowNavigationVm.movingFlowCreateIntentVm?.maxApartmentSquareMeters
                 case .house:
-                    return movingFlowNavigationVm.movingFlowVm?.maxHouseSquareMeters
+                    return movingFlowNavigationVm.movingFlowCreateIntentVm?.maxHouseSquareMeters
                 }
             }()
             if let sizeToCompare {
@@ -224,7 +224,7 @@ struct MovingFlowAddressScreen: View {
     var isStudentEnabled: Bool {
         switch vm.selectedHousingType {
         case .apartment, .rental:
-            return movingFlowNavigationVm.movingFlowVm?.isApartmentAvailableforStudent ?? false
+            return movingFlowNavigationVm.movingFlowCreateIntentVm?.isApartmentAvailableforStudent ?? false
         case .house:
             return false
         }
@@ -248,8 +248,9 @@ struct MovingFlowAddressScreen: View {
 struct SelectAddress_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> MoveFlowClient in MoveFlowClientDemo() })
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         Localization.Locale.currentLocale.send(.en_SE)
-        return VStack { MovingFlowAddressScreen(vm: .init()) }
+        return VStack { MovingFlowAddressScreen(vm: .init()).environmentObject(MovingFlowNavigationViewModel()) }
     }
 }
 
@@ -293,7 +294,7 @@ public class AddressInputModel: ObservableObject {
     @Published var viewState: ProcessingState = .success
 
     @MainActor
-    func requestMoveIntent(intentId: String, selectedAddressId: String) async -> MovingFlowModel? {
+    func requestMoveIntent(intentId: String, selectedAddressId: String) async -> MoveIntentModel? {
         withAnimation {
             self.viewState = .loading
         }

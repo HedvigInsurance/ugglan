@@ -17,7 +17,7 @@ struct MovingFlowSelectContractScreen: View {
             config: .init(
                 items: {
                     let currentHomeAddresses =
-                        navigationVm.movingFlowVm?.currentHomeAddresses
+                        navigationVm.movingFlowCreateIntentVm?.currentHomeAddresses
                         .map({
                             (
                                 object: $0,
