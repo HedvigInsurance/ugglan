@@ -71,9 +71,9 @@ public class FetchContractsClientDemo: FetchContractsClient {
         return .init(activeContracts: [contract], pendingContracts: [], terminatedContracts: [])
     }
 
-    public func getCrossSell() async throws -> [CrossSell] {
-        return []
-    }
+    //    public func getCrossSell() async throws -> [CrossSell] {
+    //        return []
+    //    }
 
     public func getAddonBannerModel(source: AddonSource) async throws -> AddonBannerModel? {
         let bannerData = AddonBannerModel(

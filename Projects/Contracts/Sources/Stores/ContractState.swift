@@ -11,7 +11,7 @@ public struct ContractState: StateProtocol {
     public var activeContracts: [Contract] = []
     public var terminatedContracts: [Contract] = []
     public var pendingContracts: [Contract] = []
-    public var crossSells: [CrossSell] = []
+    //    public var crossSells: [CrossSell] = []
 
     public var fetchAllCoInsured: [CoInsuredModel] {
         let coInsuredList = activeContracts.flatMap { coInsured in
@@ -54,9 +54,9 @@ public struct ContractState: StateProtocol {
 }
 
 extension ContractState {
-    public var hasUnseenCrossSell: Bool {
-        crossSells.contains(where: { crossSell in !crossSell.hasBeenSeen })
-    }
+    //    public var hasUnseenCrossSell: Bool {
+    //        crossSells.contains(where: { crossSell in !crossSell.hasBeenSeen })
+    //    }
 
     public var hasActiveContracts: Bool {
         !(activeContracts.compactMap { $0 }.isEmpty)

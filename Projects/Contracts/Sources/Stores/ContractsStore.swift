@@ -11,13 +11,13 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
         _ action: ContractAction
     ) async {
         switch action {
-        case .fetchCrossSale:
-            do {
-                let crossSells = try await self.fetchContractsService.getCrossSell()
-                send(.setCrossSells(crossSells: crossSells))
-            } catch let error {
-                self.setError(error.localizedDescription, for: .fetchCrossSell)
-            }
+//        case .fetchCrossSale:
+//            do {
+//                let crossSells = try await self.fetchContractsService.getCrossSell()
+//                send(.setCrossSells(crossSells: crossSells))
+//            } catch let error {
+//                self.setError(error.localizedDescription, for: .fetchCrossSell)
+//            }
         case .fetchContracts:
             do {
                 let data = try await self.fetchContractsService.getContracts()
@@ -28,7 +28,7 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
                 self.setError(error.localizedDescription, for: .fetchContracts)
             }
         case .fetch:
-            await sendAsync(.fetchCrossSale)
+//            await sendAsync(.fetchCrossSale)
             await sendAsync(.fetchContracts)
         default:
             break
@@ -47,14 +47,14 @@ public final class ContractStore: LoadingStateStore<ContractState, ContractActio
         case let .setPendingContracts(contracts):
             removeLoading(for: .fetchContracts)
             newState.pendingContracts = contracts
-        case let .setCrossSells(crossSells):
-            newState.crossSells = crossSells
-        case let .hasSeenCrossSells(value):
-            newState.crossSells = newState.crossSells.map { crossSell in
-                var newCrossSell = crossSell
-                newCrossSell.hasBeenSeen = value
-                return newCrossSell
-            }
+//        case let .setCrossSells(crossSells):
+//            newState.crossSells = crossSells
+//        case let .hasSeenCrossSells(value):
+//            newState.crossSells = newState.crossSells.map { crossSell in
+//                var newCrossSell = crossSell
+//                newCrossSell.hasBeenSeen = value
+//                return newCrossSell
+//            }
         default:
             break
         }
