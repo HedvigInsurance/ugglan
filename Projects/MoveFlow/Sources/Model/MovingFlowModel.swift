@@ -108,11 +108,10 @@ extension MovingFlowError: LocalizedError {
     }
 }
 
-struct MoveAddress: Codable, Equatable, Hashable {
+public struct MoveAddress: Codable, Equatable, Hashable, Sendable {
     let id: String
-    let street: String
-    let postalCode: String
-    let city: String?
+    let displayName: String
+    let exposureName: String
     let oldAddressCoverageDurationDays: Int?
 }
 

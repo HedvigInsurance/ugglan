@@ -183,7 +183,8 @@ struct MovingFlowAddressScreen: View {
             case .apartment, .rental:
                 Task { @MainActor in
                     if let movingFlowData = await vm.requestMoveIntent(
-                        intentId: movingFlowNavigationVm.movingFlowVm?.id ?? ""
+                        intentId: movingFlowNavigationVm.movingFlowVm?.id ?? "",
+                        selectedAddressId: movingFlowNavigationVm.selectedHomeAddress?.id ?? ""
                     ) {
                         movingFlowNavigationVm.movingFlowVm = movingFlowData
 
@@ -277,7 +278,6 @@ enum MovingFlowNewAddressViewFieldType: hTextFieldFocusStateCompliant, Codable {
 @MainActor
 public class AddressInputModel: ObservableObject {
     @Inject private var service: MoveFlowClient
-    @Published var moveFromAddressId: String?
     @Published var address: String = ""
     @Published var postalCode: String = ""
     @Published var squareArea: String = ""
@@ -293,7 +293,7 @@ public class AddressInputModel: ObservableObject {
     @Published var viewState: ProcessingState = .success
 
     @MainActor
-    func requestMoveIntent(intentId: String) async -> MovingFlowModel? {
+    func requestMoveIntent(intentId: String, selectedAddressId: String) async -> MovingFlowModel? {
         withAnimation {
             self.viewState = .loading
         }
@@ -302,7 +302,8 @@ public class AddressInputModel: ObservableObject {
             let movingFlowData = try await service.requestMoveIntent(
                 intentId: intentId,
                 addressInputModel: self,
-                houseInformationInputModel: .init()
+                houseInformationInputModel: .init(),
+                selectedAddressId: selectedAddressId
             )
 
             withAnimation {

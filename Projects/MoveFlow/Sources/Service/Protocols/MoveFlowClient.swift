@@ -7,7 +7,8 @@ public protocol MoveFlowClient {
     func requestMoveIntent(
         intentId: String,
         addressInputModel: AddressInputModel,
-        houseInformationInputModel: HouseInformationInputModel
+        houseInformationInputModel: HouseInformationInputModel,
+        selectedAddressId: String
     ) async throws -> MovingFlowModel
     func confirmMoveIntent(intentId: String, homeQuoteId: String, removedAddons: [String]) async throws
 }

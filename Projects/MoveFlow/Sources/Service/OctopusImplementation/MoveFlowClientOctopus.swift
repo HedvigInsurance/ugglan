@@ -26,7 +26,8 @@ public class MoveFlowClientOctopus: MoveFlowClient {
     public func requestMoveIntent(
         intentId: String,
         addressInputModel: AddressInputModel,
-        houseInformationInputModel: HouseInformationInputModel
+        houseInformationInputModel: HouseInformationInputModel,
+        selectedAddressId: String
     ) async throws -> MovingFlowModel {
         let moveIntentRequestInput = OctopusGraphQL.MoveIntentRequestInput(
             apiVersion: .init(.v2TiersAndDeductibles),
@@ -34,7 +35,7 @@ public class MoveFlowClientOctopus: MoveFlowClient {
                 street: addressInputModel.address,
                 postalCode: addressInputModel.postalCode.replacingOccurrences(of: " ", with: "")
             ),
-            moveFromAddressId: addressInputModel.moveFromAddressId ?? "",
+            moveFromAddressId: selectedAddressId,
             movingDate: addressInputModel.accessDate?.localDateString ?? "",
             numberCoInsured: addressInputModel.nbOfCoInsured,
             squareMeters: Int(addressInputModel.squareArea) ?? 0,
@@ -172,10 +173,9 @@ extension MovingFlowModel {
 extension MoveAddress {
     init(from data: OctopusGraphQL.MoveAddressFragment) {
         id = data.id
-        street = data.street
-        postalCode = data.postalCode
-        city = data.city
         oldAddressCoverageDurationDays = data.oldAddressCoverageDurationDays
+        displayName = ""
+        exposureName = ""
     }
 }
 

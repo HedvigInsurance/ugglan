@@ -13,23 +13,11 @@ struct MovingFlowSelectContractScreen: View {
     }
 
     var body: some View {
-        ItemPickerScreen<MovingFlowQuote>(
+        ItemPickerScreen<MoveAddress>(
             config: .init(
                 items: {
-                    let homeQuotes =
-                        navigationVm.movingFlowVm?.potentialHomeQuotes
-                        .map({
-                            (
-                                object: $0,
-                                displayName: ItemModel(
-                                    title: "",
-                                    subTitle: ""
-                                )
-                            )
-                        }) ?? []
-
-                    let mtaQuotes =
-                        navigationVm.movingFlowVm?.mtaQuotes
+                    let currentHomeAddresses =
+                        navigationVm.movingFlowVm?.currentHomeAddresses
                         .map({
                             (
                                 object: $0,
@@ -40,11 +28,11 @@ struct MovingFlowSelectContractScreen: View {
                             )
                         }) ?? []
 
-                    return homeQuotes + mtaQuotes
+                    return currentHomeAddresses
                 }(),
                 onSelected: { selected in
                     if let selectedQuote = selected.first?.0 {
-                        navigationVm.addressInputModel.moveFromAddressId = selectedQuote.id
+                        navigationVm.selectedHomeAddress = selectedQuote
                         router.push(MovingFlowRouterActions.housing)
                     }
                 },

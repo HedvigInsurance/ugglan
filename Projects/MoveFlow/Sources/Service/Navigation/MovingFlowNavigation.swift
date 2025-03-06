@@ -15,6 +15,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
     @Published public var movingFlowVm: MovingFlowModel?
     @Published public var houseInformationInputvm = HouseInformationInputModel()
     @Published var viewState: ProcessingState = .loading
+    @Published var selectedHomeAddress: MoveAddress?
     var movingFlowConfirmViewModel: MovingFlowConfirmViewModel?
     var quoteSummaryViewModel: QuoteSummaryViewModel?
 
@@ -86,37 +87,36 @@ public class MovingFlowNavigationViewModel: ObservableObject {
 
     private func initializeData() {
         Task {
-            let movingFlowModel = try await getMoveIntent()
-            movingFlowVm = movingFlowModel
-
-            let addressModel = AddressInputModel()
-            addressModel.moveFromAddressId = movingFlowModel?.currentHomeAddresses.first?.id
-            addressModel.nbOfCoInsured = movingFlowModel?.suggestedNumberCoInsured ?? 5
-            addressInputModel = addressModel
+            await getMoveIntent()
         }
     }
 
     @MainActor
-    func getMoveIntent() async throws -> MovingFlowModel? {
+    func getMoveIntent() async {
         withAnimation {
             self.viewState = .loading
         }
 
         do {
-            let movingFlowData = try await service.sendMoveIntent()
+            let movingFlowModel = try await service.sendMoveIntent()
+
+            if movingFlowModel.currentHomeAddresses.count == 1 {
+                let addressModel = AddressInputModel()
+                selectedHomeAddress = movingFlowModel.currentHomeAddresses.first
+                addressModel.nbOfCoInsured = movingFlowModel.suggestedNumberCoInsured
+                addressInputModel = addressModel
+            }
+            movingFlowVm = movingFlowModel
 
             withAnimation {
                 self.viewState = .success
             }
-
-            return movingFlowData
         } catch {
             if let error = error as? MovingFlowError {
                 self.viewState = .error(errorMessage: error.localizedDescription)
             } else {
                 self.viewState = .error(errorMessage: L10n.General.errorBody)
             }
-            return nil
         }
     }
 }
@@ -207,6 +207,7 @@ public struct MovingFlowNavigation: View {
                     }
                 }
         }
+        .loading($movingFlowNavigationVm.viewState)
         .environmentObject(movingFlowNavigationVm)
         .detent(
             item: $movingFlowNavigationVm.isAddExtraBuildingPresented,
@@ -243,7 +244,7 @@ public struct MovingFlowNavigation: View {
     @ViewBuilder
     func getInitalScreen() -> some View {
         let movingVm = movingFlowNavigationVm.movingFlowVm
-        if movingVm?.potentialHomeQuotes.count ?? 0 + (movingVm?.mtaQuotes.count ?? 0) > 1 {
+        if movingVm?.currentHomeAddresses.count ?? 0 > 1 {
             openSelectInsuranceScreen()
         } else {
             openSelectHousingScreen()

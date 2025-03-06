@@ -202,7 +202,8 @@ struct MovingFlowHouseScreen: View {
             Task {
                 if let movingFlowData = await houseInformationInputvm.requestMoveIntent(
                     intentId: movingFlowNavigationVm.movingFlowVm?.id ?? "",
-                    addressInputModel: movingFlowNavigationVm.addressInputModel
+                    addressInputModel: movingFlowNavigationVm.addressInputModel,
+                    selectedAddressId: movingFlowNavigationVm.selectedHomeAddress?.id ?? ""
                 ) {
                     movingFlowNavigationVm.movingFlowVm = movingFlowData
 
@@ -264,7 +265,11 @@ public class HouseInformationInputModel: ObservableObject, @preconcurrency Equat
     init() {}
 
     @MainActor
-    func requestMoveIntent(intentId: String, addressInputModel: AddressInputModel) async -> MovingFlowModel? {
+    func requestMoveIntent(
+        intentId: String,
+        addressInputModel: AddressInputModel,
+        selectedAddressId: String
+    ) async -> MovingFlowModel? {
         withAnimation {
             self.viewState = .loading
         }
@@ -273,7 +278,8 @@ public class HouseInformationInputModel: ObservableObject, @preconcurrency Equat
             let movingFlowData = try await service.requestMoveIntent(
                 intentId: intentId,
                 addressInputModel: addressInputModel,
-                houseInformationInputModel: self
+                houseInformationInputModel: self,
+                selectedAddressId: selectedAddressId
             )
 
             withAnimation {

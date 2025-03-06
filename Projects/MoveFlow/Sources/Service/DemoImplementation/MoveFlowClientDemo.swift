@@ -38,7 +38,8 @@ public class MoveFlowClientDemo: MoveFlowClient {
     public func requestMoveIntent(
         intentId: String,
         addressInputModel: AddressInputModel,
-        houseInformationInputModel: HouseInformationInputModel
+        houseInformationInputModel: HouseInformationInputModel,
+        selectedAddressId: String
     ) async throws -> MovingFlowModel {
         return MovingFlowModel(
             id: "id",
