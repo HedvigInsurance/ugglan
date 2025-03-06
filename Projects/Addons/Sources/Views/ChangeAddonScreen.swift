@@ -130,7 +130,7 @@ struct ChangeAddonScreen: View {
             }
             .padding(.top, .padding16)
             .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary])
-            .hSectionWithoutHorizontalPadding
+            .hWithoutHorizontalPadding([.section])
             .accessibilityHidden(false)
         }
         .accessibilityElement(children: .combine)
