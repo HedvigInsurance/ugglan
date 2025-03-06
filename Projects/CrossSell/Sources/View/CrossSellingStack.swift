@@ -13,6 +13,7 @@ public struct CrossSellingStack: View {
     }
 
     public var body: some View {
+        /* TODO: ADD ERROR VIEW? */
         if !vm.crossSells.isEmpty {
             hSection {
                 VStack(spacing: 16) {
@@ -53,21 +54,19 @@ class CrossSellingViewModel: ObservableObject {
     }
 
     @MainActor
-    func getCrossSells() async -> [CrossSell] {
+    func getCrossSells() async {
         withAnimation {
             self.viewState = .loading
         }
         do {
             let crossSellData = try await service.getCrossSell()
+            self.crossSells = crossSellData
 
             withAnimation {
                 self.viewState = .success
             }
-
-            return crossSellData
         } catch {
             self.viewState = .error(errorMessage: error.localizedDescription)
         }
-        return []
     }
 }
