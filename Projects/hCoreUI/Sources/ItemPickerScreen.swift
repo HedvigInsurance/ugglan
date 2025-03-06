@@ -446,8 +446,8 @@ struct ItemPickerScreen_Previews: PreviewProvider {
                         .asAnyView
                 }
             )
-            //            .hEmbeddedHeader
-            //            .hIncludeManualInput
+            .hEmbeddedHeader
+            .hIncludeManualInput
         }
     }
 }
