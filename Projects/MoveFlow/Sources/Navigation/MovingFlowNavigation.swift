@@ -9,13 +9,15 @@ import hGraphQL
 @MainActor
 public class MovingFlowNavigationViewModel: ObservableObject {
     @Inject private var service: MoveFlowClient
+    @Published var viewState: ProcessingState = .loading
+
     @Published var isAddExtraBuildingPresented: HouseInformationInputModel?
     @Published var document: hPDFDocument? = nil
-    @Published var addressInputModel = AddressInputModel()
+
     @Published var intentVm: MoveIntentModel?
     @Published var requestVm: MoveRequestModel?
+    @Published var addressInputModel = AddressInputModel()
     @Published var houseInformationInputvm = HouseInformationInputModel()
-    @Published var viewState: ProcessingState = .loading
     @Published var selectedHomeQuote: MovingFlowQuote?
     @Published var selectedHomeAddress: MoveAddress?
     var movingFlowConfirmViewModel: MovingFlowConfirmViewModel?
