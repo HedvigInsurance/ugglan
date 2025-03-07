@@ -52,7 +52,7 @@ public struct MovingFlowHousingTypeScreen: View {
                             }
                             .accessibilityHint(L10n.voiceoverOptionSelected + (vm.selectedHousingType ?? ""))
 
-                            if let days = movingFlowNavigationVm.movingFlowVm?.oldAddressCoverageDurationDays {
+                            if let days = movingFlowNavigationVm.selectedHomeAddress?.oldAddressCoverageDurationDays {
                                 InfoCard(text: L10n.changeAddressCoverageInfoText(days), type: .info)
                             }
                             hButton.LargeButton(type: .primary) {
