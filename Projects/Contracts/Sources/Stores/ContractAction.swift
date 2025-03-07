@@ -8,9 +8,6 @@ import hCoreUI
 import hGraphQL
 
 public enum ContractAction: ActionProtocol, Hashable {
-
-    // fetch everything
-    case fetch
     // Fetch contracts for terminated
     case fetchContracts
 

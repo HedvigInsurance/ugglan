@@ -154,7 +154,7 @@ class HomeVM: ObservableObject {
         print("STORE TEST SEND: fetchChatNotifications 1")
         store.send(.fetchChatNotifications)
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        contractStore.send(.fetch)
+        contractStore.send(.fetchContracts)
         let paymentStore: PaymentStore = globalPresentableStoreContainer.get()
         paymentStore.send(.fetchPaymentStatus)
         chatNotificationPullTimer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
