@@ -13,7 +13,22 @@ public struct CrossSellingStack: View {
     }
 
     public var body: some View {
-        /* TODO: ADD ERROR VIEW? */
+        successView.loading($vm.viewState)
+            .hStateViewButtonConfig(
+                .init(
+                    actionButton: .init(
+                        buttonAction: {
+                            Task {
+                                await vm.getCrossSells()
+                            }
+                        }
+                    )
+                )
+            )
+    }
+
+    @ViewBuilder
+    private var successView: some View {
         if !vm.crossSells.isEmpty {
             hSection {
                 VStack(spacing: 16) {
