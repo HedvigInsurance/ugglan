@@ -59,6 +59,7 @@ struct CompareTierScreen: View {
                         )
                 }
                 .modifier(hFontModifier(style: .body1))
+                .fixedSize(horizontal: false, vertical: true)
                 Spacer()
                 peril.getRowDescription
             }
