@@ -26,7 +26,7 @@ public struct CrossSellingStack: View {
             .withHeader {
                 if withHeader {
                     HStack(alignment: .center, spacing: 8) {
-                        CrossSellingUnseenCircle()
+                        CrossSellingUnseenCircle(vm: vm)
                         hText(L10n.InsuranceTab.CrossSells.title)
                             .padding(.leading, 2)
                             .foregroundColor(hTextColor.Opaque.primary)
@@ -44,12 +44,15 @@ public struct CrossSellingStack: View {
 @MainActor
 class CrossSellingViewModel: ObservableObject {
     @Published var crossSells: [CrossSell] = []
+    @Published var hasUnseenCrossSell: Bool = false
     @Published var viewState: ProcessingState = .loading
     private var service = CrossSellService()
-
     init() {
         Task {
             await getCrossSells()
+            hasUnseenCrossSell = crossSells.contains(where: { crossSell in
+                !crossSell.hasBeenSeen
+            })
         }
     }
 
