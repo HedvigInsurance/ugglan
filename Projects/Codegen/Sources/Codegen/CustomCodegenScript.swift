@@ -12,25 +12,28 @@ let endpoint = (name: "octopus", url: URL(string: "https://apollo-router.dev.hed
 
 func findAllGraphQLFolders(basePath: String = sourceRootURL?.path ?? "") -> [URL] {
     guard let dirs = try? FileManager.default.contentsOfDirectory(atPath: basePath) else { return [] }
-
-    let ownDirs = dirs.filter { $0 == "GraphQL" }
-        .map { URL(string: "file://\(basePath)/\($0)") }
-        .compactMap { $0 }
-
-    let nestedDirs = dirs.compactMap { $0 }
-        .map { val -> [URL] in findAllGraphQLFolders(basePath: "\(basePath)/\(val)") }
-        .flatMap { $0 }
-        .filter { !$0.absoluteString.contains("Derived") }
-
-    return [ownDirs, nestedDirs].flatMap { $0 }
+    let nestedDirs = dirs.compactMap {
+        URL(string: basePath + "/" + $0)?
+            .appendingPathComponent("Sources")
+            .appendingPathComponent("Derived")
+            .appendingPathComponent("GraphQL")
+    }
+    return nestedDirs
 }
-
-let sourceUrls = findAllGraphQLFolders()
 
 @main
 struct CustomCodegenScript: AsyncParsableCommand {
     func run() async throws {
+        try await downloadSchema()
+        await cleanDerivedData()
+        let url = sourceRootURL!
+            .appendingPathComponent("hGraphQL")
+            .appendingPathComponent("GraphQL")
+            .appendingPathComponent(endpoint.name.capitalized)
+        await buildSchema(sourceUrl: url)
+    }
 
+    func downloadSchema() async throws {
         try FileManager.default.createDirectory(at: cliFolderURL, withIntermediateDirectories: true, attributes: nil)
 
         let downloadConfiguration = ApolloSchemaDownloadConfiguration(
@@ -44,11 +47,14 @@ struct CustomCodegenScript: AsyncParsableCommand {
         } catch let error {
             print("Failed to download schema ", error)
         }
-        let url = sourceRootURL!
-            .appendingPathComponent("hGraphQL")
-            .appendingPathComponent("GraphQL")
-            .appendingPathComponent(endpoint.name.capitalized)
-        await buildSchema(sourceUrl: url)
+    }
+
+    func cleanDerivedData() async {
+
+        for sourceUrl in findAllGraphQLFolders() {
+            let url = sourceUrl.path
+            try? ApolloFileManager.default.deleteDirectory(atPath: url)
+        }
     }
 
     func buildSchema(sourceUrl: URL) async {
