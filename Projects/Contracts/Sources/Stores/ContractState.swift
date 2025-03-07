@@ -54,10 +54,6 @@ public struct ContractState: StateProtocol {
 }
 
 extension ContractState {
-    //    public var hasUnseenCrossSell: Bool {
-    //        crossSells.contains(where: { crossSell in !crossSell.hasBeenSeen })
-    //    }
-
     public var hasActiveContracts: Bool {
         !(activeContracts.compactMap { $0 }.isEmpty)
     }
