@@ -75,12 +75,6 @@ struct CrossSellingItem: View {
         crossSell: .init(
             title: "Accident Insurance",
             description: "From 79 SEK/mo.",
-            imageURL: URL(
-                string:
-                    "https://images.unsplash.com/photo-1599501887769-a945a7e4fece?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8"
-            )!,
-            blurHash: "LEHV6nWB2yk8pyo0adR*.7kCMdnj",
-            typeOfContract: "SE_ACCIDENT",
             type: .accident
         )
     )

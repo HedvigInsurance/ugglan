@@ -39,7 +39,7 @@ struct RowButtonStyle: SwiftUI.ButtonStyle {
 public struct hRow<Content: View, Accessory: View>: View {
     @SwiftUI.Environment(\.hRowPosition) var position: hRowPosition
     @Environment(\.hWithoutDivider) var hWithoutDivider
-    @Environment(\.hWithoutHorizontalPadding) var withoutHorizontalPadding
+    @Environment(\.hWithoutHorizontalPadding) var hWithoutHorizontalPadding
 
     var content: Content
     var accessory: Accessory
@@ -91,7 +91,7 @@ public struct hRow<Content: View, Accessory: View>: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, withoutHorizontalPadding ? 0 : horizontalPadding)
+            .padding(.horizontal, hWithoutHorizontalPadding.contains(.row) ? 0 : horizontalPadding)
             .padding(.vertical, verticalPadding)
             .padding(.top, topPadding)
             .padding(.bottom, bottomPadding)

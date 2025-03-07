@@ -94,7 +94,7 @@ struct PaymentDetailsView: View {
                     InfoCard(text: L10n.paymentsCarriedAdjustmentInfo, type: .info)
                 }
             }
-            .hWithoutHorizontalPadding
+            .hWithoutHorizontalPadding([.row])
         }
     }
 
@@ -111,7 +111,7 @@ struct PaymentDetailsView: View {
                     InfoCard(text: L10n.paymentsSettlementAdjustmentInfo, type: .info)
                 }
             }
-            .hWithoutHorizontalPadding
+            .hWithoutHorizontalPadding([.row])
         }
     }
 
@@ -137,7 +137,7 @@ struct PaymentDetailsView: View {
                 hText(" ")
             }
         }
-        .hWithoutHorizontalPadding
+        .hWithoutHorizontalPadding([.row])
         .accessibilityElement(children: .combine)
     }
 
@@ -162,7 +162,7 @@ struct PaymentDetailsView: View {
                 }
             }
         }
-        .hWithoutHorizontalPadding
+        .hWithoutHorizontalPadding([.row])
         .accessibilityElement(children: .combine)
     }
 
@@ -191,7 +191,7 @@ struct PaymentDetailsView: View {
                         .foregroundColor(hTextColor.Opaque.secondary)
                 }
             }
-            .hWithoutHorizontalPadding
+            .hWithoutHorizontalPadding([.row])
             .dividerInsets(.all, 0)
 
             list.append((item.key, AnyView(view)))
@@ -211,7 +211,7 @@ struct PaymentDetailsView: View {
                 .foregroundColor(hTextColor.Opaque.secondary)
             }
         }
-        .hWithoutHorizontalPadding
+        .hWithoutHorizontalPadding([.row])
     }
 }
 
@@ -281,7 +281,6 @@ struct PaymentDetails_Previews: PreviewProvider {
             ],
             discounts: [
                 .init(
-                    id: "CODE",
                     code: "CODE",
                     amount: .sek(100),
                     title: "Title",
@@ -289,10 +288,10 @@ struct PaymentDetails_Previews: PreviewProvider {
                         .init(id: "1", displayName: "Car 15%")
                     ],
                     validUntil: "2023-11-20",
-                    canBeDeleted: false
+                    canBeDeleted: false,
+                    discountId: "CODE"
                 ),
                 .init(
-                    id: "CODE2",
                     code: "CODE2",
                     amount: .sek(99),
                     title: "Title1",
@@ -300,17 +299,17 @@ struct PaymentDetails_Previews: PreviewProvider {
                         .init(id: "2", displayName: "House 15%")
                     ],
                     validUntil: "2023-11-22",
-                    canBeDeleted: false
+                    canBeDeleted: false,
+                    discountId: "CODE2"
                 ),
                 .init(
-                    id: "FRIENDS",
                     code: "MY CODE",
                     amount: .sek(30),
                     title: "3 friends invited",
                     listOfAffectedInsurances: [],
                     validUntil: nil,
-                    canBeDeleted: false
-
+                    canBeDeleted: false,
+                    discountId: "FRIENDS"
                 ),
             ],
             paymentDetails: nil,

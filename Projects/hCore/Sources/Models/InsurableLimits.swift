@@ -3,12 +3,12 @@ import hGraphQL
 public struct InsurableLimits: Codable, Hashable, Identifiable, Sendable {
     public var id: String?
     public let label: String
-    public let limit: String
+    public let limit: String?
     public let description: String
 
     public init(
         label: String,
-        limit: String,
+        limit: String? = nil,
         description: String
     ) {
         self.label = label

@@ -119,7 +119,7 @@ struct PaymentsDiscountsView: View {
         hRow {
             ReferralView(referral: referral)
         }
-        .hWithoutHorizontalPadding
+        .hWithoutHorizontalPadding([.row])
         .dividerInsets(.all, 0)
     }
 }
@@ -131,7 +131,6 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
             data: .init(
                 discounts: [
                     .init(
-                        id: "id",
                         code: "code",
                         amount: .sek(100),
                         title: "title",
@@ -139,10 +138,10 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                             .init(id: "id1", displayName: "name")
                         ],
                         validUntil: "2023-11-10",
-                        canBeDeleted: true
+                        canBeDeleted: true,
+                        discountId: "id"
                     ),
                     .init(
-                        id: "id2",
                         code: "code 2",
                         amount: .sek(100),
                         title: "title 2",
@@ -150,7 +149,8 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                             .init(id: "id21", displayName: "name 2")
                         ],
                         validUntil: "2023-11-03",
-                        canBeDeleted: false
+                        canBeDeleted: false,
+                        discountId: "id2"
                     ),
                 ],
                 referralsData: .init(

@@ -20,8 +20,7 @@ public struct AppInfoView: View {
             }
             .padding(.top, .padding8)
         }
-        .hWithoutHorizontalPadding
-        .hWithoutDividerPadding
+        .hWithoutHorizontalPadding([.row, .divider])
         .sectionContainerStyle(.transparent)
         .hFormAlwaysAttachToBottom {
             submitBugButton

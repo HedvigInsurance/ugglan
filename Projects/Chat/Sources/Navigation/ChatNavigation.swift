@@ -12,11 +12,6 @@ public class ChatNavigationViewModel: ObservableObject {
 
     init() {}
 
-    struct FileUrlModel: Identifiable, Equatable {
-        public var id: String?
-        var url: URL
-    }
-
     private var toastPublisher: AnyCancellable?
     func checkForPushNotificationStatus() async {
         let status = await UNUserNotificationCenter.current().notificationSettings()

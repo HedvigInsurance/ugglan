@@ -337,7 +337,7 @@ public struct QuoteSummaryScreen: View {
     func detailsView(for contract: QuoteSummaryViewModel.ContractInfo, isExpanded: Bool) -> some View {
         VStack(spacing: .padding16) {
             hRowDivider()
-                .hWithoutDividerPadding
+                .hWithoutHorizontalPadding([.divider])
 
             if !contract.displayItems.isEmpty {
                 VStack(alignment: .leading, spacing: 0) {
@@ -362,7 +362,7 @@ public struct QuoteSummaryScreen: View {
                             ForEach(contract.insuranceLimits, id: \.limit) { limit in
                                 let displayItem: QuoteDisplayItem = .init(
                                     title: limit.label,
-                                    value: limit.limit,
+                                    value: limit.limit ?? "",
                                     id: limit.id
                                 )
                                 rowItem(for: displayItem)

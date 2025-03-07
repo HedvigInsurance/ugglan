@@ -71,7 +71,7 @@ struct PaymentDetailsDiscountView: View {
             }
             .foregroundColor(hTextColor.Opaque.secondary)
         }
-        .hWithoutHorizontalPadding
+        .hWithoutHorizontalPadding([.row])
         .dividerInsets(.all, 0)
     }
 
@@ -123,7 +123,6 @@ struct PaymentDetailsDiscount_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> hCampaignClient in hCampaignClientDemo() })
         let discount: Discount = .init(
-            id: "1",
             code: "231223",
             amount: .sek(100),
             title: "23",
@@ -132,7 +131,8 @@ struct PaymentDetailsDiscount_Previews: PreviewProvider {
                 .init(id: "id 12", displayName: "DISPLAY NAME 2"),
             ],
             validUntil: "2023-12-06",
-            canBeDeleted: false
+            canBeDeleted: false,
+            discountId: "1"
         )
         return PaymentDetailsDiscountView(vm: .init(options: [.showExpire, .forPayment], discount: discount))
     }

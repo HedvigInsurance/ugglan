@@ -1,6 +1,5 @@
 import Chat
 import Combine
-import Home
 import Kingfisher
 import Payment
 import Photos
@@ -369,6 +368,8 @@ private enum ClaimDetailDetentType: TrackingViewNameProtocol {
 struct ClaimDetailView_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in FetchClaimsClientDemo() })
+        Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in FetchClaimDetailsClientDemo() })
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
         let featureFlags = FeatureFlagsDemo()
         Dependencies.shared.add(module: Module { () -> FeatureFlags in featureFlags })
 
@@ -400,7 +401,6 @@ struct ClaimDetailView_Previews: PreviewProvider {
             claim: claim,
             type: .claim(id: claim.id)
         )
-        .environmentObject(HomeNavigationViewModel())
     }
 }
 
