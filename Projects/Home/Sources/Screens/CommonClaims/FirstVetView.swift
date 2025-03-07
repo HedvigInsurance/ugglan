@@ -17,12 +17,12 @@ public struct FirstVetView: View {
 
     public var body: some View {
         hForm {
-            VStack(spacing: 8) {
+            VStack(spacing: .padding8) {
                 ForEach(partners, id: \.id) { partner in
                     hSection {
                         hRow {
-                            VStack(alignment: .leading, spacing: 16) {
-                                HStack(spacing: 8) {
+                            VStack(alignment: .leading, spacing: .padding16) {
+                                HStack(spacing: .padding8) {
                                     Image(uiImage: hCoreUIAssets.firstVetQuickNav.image)
                                     hText(partner.title ?? "")
                                     Spacer()

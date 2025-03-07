@@ -19,9 +19,6 @@ struct MockData {
                 .init(
                     title: "title",
                     description: "description",
-                    imageURL: URL(string: "url")!,
-                    blurHash: "",
-                    typeOfContract: "",
                     type: .home
                 )
             ]
