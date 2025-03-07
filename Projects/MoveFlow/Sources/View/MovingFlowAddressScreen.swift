@@ -132,7 +132,7 @@ struct MovingFlowAddressScreen: View {
             value: $vm.nbOfCoInsured,
             placeholder: L10n.changeAddressCoInsuredLabel,
             minValue: 0,
-            maxValue: movingFlowNavigationVm.movingFlowCreateIntentVm?.maxNumberOfCoinsuredFor(vm.selectedHousingType)
+            maxValue: movingFlowNavigationVm.moveConfigurationModel?.maxNumberOfCoinsuredFor(vm.selectedHousingType)
         ) { value in
             vm.type = nil
             if value > 0 {
@@ -144,8 +144,8 @@ struct MovingFlowAddressScreen: View {
     }
 
     func accessDateField() -> some View {
-        let minStartDate = movingFlowNavigationVm.movingFlowCreateIntentVm?.minMovingDate.localDateToDate
-        let maxStartDate = movingFlowNavigationVm.movingFlowCreateIntentVm?.maxMovingDate.localDateToDate
+        let minStartDate = movingFlowNavigationVm.moveConfigurationModel?.minMovingDate.localDateToDate
+        let maxStartDate = movingFlowNavigationVm.moveConfigurationModel?.maxMovingDate.localDateToDate
 
         return hDatePickerField(
             config: .init(
@@ -182,13 +182,12 @@ struct MovingFlowAddressScreen: View {
             switch vm.selectedHousingType {
             case .apartment, .rental:
                 Task { @MainActor in
-                    if let movingFlowData = await vm.requestMoveIntent(
-                        intentId: movingFlowNavigationVm.movingFlowCreateIntentVm?.id ?? "",
+                    if let requestVm = await vm.requestMoveIntent(
+                        intentId: movingFlowNavigationVm.moveConfigurationModel?.id ?? "",
                         selectedAddressId: movingFlowNavigationVm.selectedHomeAddress?.id ?? ""
                     ) {
-                        movingFlowNavigationVm.movingFlowRequestIntentVm = movingFlowData
-
-                        if let changeTierModel = movingFlowData.changeTierModel {
+                        movingFlowNavigationVm.moveQuotesModel = requestVm
+                        if let changeTierModel = requestVm.changeTierModel {
                             router.push(MovingFlowRouterActions.selectTier(changeTierModel: changeTierModel))
                         } else {
                             router.push(MovingFlowRouterActions.confirm)
@@ -208,9 +207,9 @@ struct MovingFlowAddressScreen: View {
             let sizeToCompare: Int? = {
                 switch vm.selectedHousingType {
                 case .apartment, .rental:
-                    return movingFlowNavigationVm.movingFlowCreateIntentVm?.maxApartmentSquareMeters
+                    return movingFlowNavigationVm.moveConfigurationModel?.maxApartmentSquareMeters
                 case .house:
-                    return movingFlowNavigationVm.movingFlowCreateIntentVm?.maxHouseSquareMeters
+                    return movingFlowNavigationVm.moveConfigurationModel?.maxHouseSquareMeters
                 }
             }()
             if let sizeToCompare {
@@ -224,7 +223,7 @@ struct MovingFlowAddressScreen: View {
     var isStudentEnabled: Bool {
         switch vm.selectedHousingType {
         case .apartment, .rental:
-            return movingFlowNavigationVm.movingFlowCreateIntentVm?.isApartmentAvailableforStudent ?? false
+            return movingFlowNavigationVm.moveConfigurationModel?.isApartmentAvailableforStudent ?? false
         case .house:
             return false
         }
@@ -294,17 +293,20 @@ public class AddressInputModel: ObservableObject {
     @Published var viewState: ProcessingState = .success
 
     @MainActor
-    func requestMoveIntent(intentId: String, selectedAddressId: String) async -> MoveIntentModel? {
+    func requestMoveIntent(intentId: String, selectedAddressId: String) async -> MoveQuotesModel? {
         withAnimation {
             self.viewState = .loading
         }
 
         do {
-            let movingFlowData = try await service.requestMoveIntent(
+            let input = RequestMoveIntentInput(
                 intentId: intentId,
                 addressInputModel: self,
-                houseInformationInputModel: .init(),
+                houseInformationInputModel: nil,
                 selectedAddressId: selectedAddressId
+            )
+            let movingFlowData = try await service.requestMoveIntent(
+                input: input
             )
 
             withAnimation {

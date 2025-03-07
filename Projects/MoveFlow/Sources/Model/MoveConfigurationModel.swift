@@ -6,12 +6,10 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct MoveIntentModel {
+public struct MoveConfigurationModel {
     let id: String
     let currentHomeAddresses: [MoveAddress]
     let extraBuildingTypes: [ExtraBuildingType]
-    var currentHomeQuote: MovingFlowQuote?
-    let homeQuotes: [MovingFlowQuote]
     let isApartmentAvailableforStudent: Bool
     let maxApartmentNumberCoInsured: Int?
     let maxApartmentSquareMeters: Int?
@@ -19,15 +17,12 @@ public struct MoveIntentModel {
     let maxHouseSquareMeters: Int?
     let maxMovingDate: String
     let minMovingDate: String
-    let mtaQuotes: [MovingFlowQuote]
     let suggestedNumberCoInsured: Int
-    let changeTierModel: ChangeTierIntentModel?
 
     init(
         id: String,
         currentHomeAddresses: [MoveAddress],
         extraBuildingTypes: [ExtraBuildingType],
-        homeQuotes: [MovingFlowQuote],
         isApartmentAvailableforStudent: Bool,
         maxApartmentNumberCoInsured: Int?,
         maxApartmentSquareMeters: Int?,
@@ -35,13 +30,11 @@ public struct MoveIntentModel {
         maxHouseSquareMeters: Int?,
         maxMovingDate: String,
         minMovingDate: String,
-        mtaQuotes: [MovingFlowQuote],
         suggestedNumberCoInsured: Int
     ) {
         self.id = id
         self.currentHomeAddresses = currentHomeAddresses
         self.extraBuildingTypes = extraBuildingTypes
-        self.homeQuotes = homeQuotes
         self.isApartmentAvailableforStudent = isApartmentAvailableforStudent
         self.maxApartmentNumberCoInsured = maxApartmentNumberCoInsured
         self.maxApartmentSquareMeters = maxApartmentSquareMeters
@@ -49,9 +42,7 @@ public struct MoveIntentModel {
         self.maxHouseSquareMeters = maxHouseSquareMeters
         self.maxMovingDate = maxMovingDate
         self.minMovingDate = minMovingDate
-        self.mtaQuotes = mtaQuotes
         self.suggestedNumberCoInsured = suggestedNumberCoInsured
-        self.changeTierModel = nil
     }
 
     func maxNumberOfCoinsuredFor(_ type: HousingType) -> Int {
@@ -63,9 +54,6 @@ public struct MoveIntentModel {
         }
     }
 
-    var movingDate: String {
-        return currentHomeQuote?.startDate ?? mtaQuotes.first?.startDate ?? ""
-    }
 }
 
 enum MovingFlowError: Error {
@@ -89,48 +77,4 @@ public struct MoveAddress: Codable, Equatable, Hashable, Sendable {
     let displayName: String
     let exposureName: String
     let oldAddressCoverageDurationDays: Int?
-}
-
-struct MovingFlowQuote: Codable, Equatable, Hashable {
-    typealias KeyValue = (key: String, value: String)
-    let premium: MonetaryAmount
-    let startDate: String
-    let displayName: String
-    let insurableLimits: [InsurableLimits]
-    let perils: [Perils]
-    let documents: [InsuranceDocument]
-    let contractType: TypeOfContract?
-    let id: String
-    let displayItems: [DisplayItem]
-    let exposureName: String?
-    let addons: [AddonDataModel]
-}
-
-struct InsuranceDocument: Codable, Equatable, Hashable {
-    let displayName: String
-    let url: String
-}
-
-struct DisplayItem: Codable, Equatable, Hashable {
-    let displaySubtitle: String?
-    let displayTitle: String
-    let displayValue: String
-}
-
-struct AddonDataModel: Codable, Equatable, Hashable {
-    let id: String
-    let quoteInfo: InfoViewDataModel
-    let displayItems: [DisplayItem]
-    let coverageDisplayName: String
-    let price: MonetaryAmount
-    let addonVariant: AddonVariant
-    let startDate: Date
-    let removeDialogInfo: RemoveDialogInfo?
-}
-
-struct RemoveDialogInfo: Codable, Equatable, Hashable {
-    let title: String
-    let description: String
-    let confirmButtonTitle: String
-    let cancelButtonTitle: String
 }
