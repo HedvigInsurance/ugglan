@@ -58,16 +58,19 @@ public struct CrossSellingStack: View {
 
 @MainActor
 class CrossSellingViewModel: ObservableObject {
-    @Published var crossSells: [CrossSell] = []
+    @Published var crossSells: [CrossSell] = [] {
+        didSet {
+            self.hasUnseenCrossSell = crossSells.contains(where: { crossSell in
+                !crossSell.hasBeenSeen
+            })
+        }
+    }
     @Published var hasUnseenCrossSell: Bool = false
     @Published var viewState: ProcessingState = .loading
     private var service = CrossSellService()
     init() {
         Task {
             await getCrossSells()
-            hasUnseenCrossSell = crossSells.contains(where: { crossSell in
-                !crossSell.hasBeenSeen
-            })
         }
     }
 
