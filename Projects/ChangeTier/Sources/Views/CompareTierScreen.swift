@@ -124,7 +124,6 @@ class CompareTierViewModel: ObservableObject {
     private let service = ChangeTierService()
     @Published var viewState: ProcessingState = .loading
     private let tiers: [Tier]
-    @Published var selectedTier: String?
     @Published var selectedPeril: Perils?
     @Published var perils: [(String, [Perils])] = []
     @Published var scrollableSegmentedViewModel: ScrollableSegmentedViewModel?
