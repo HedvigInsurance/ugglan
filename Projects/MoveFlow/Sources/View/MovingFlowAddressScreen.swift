@@ -132,7 +132,7 @@ struct MovingFlowAddressScreen: View {
             value: $vm.nbOfCoInsured,
             placeholder: L10n.changeAddressCoInsuredLabel,
             minValue: 0,
-            maxValue: movingFlowNavigationVm.intentVm?.maxNumberOfCoinsuredFor(vm.selectedHousingType)
+            maxValue: movingFlowNavigationVm.moveConfigurationModel?.maxNumberOfCoinsuredFor(vm.selectedHousingType)
         ) { value in
             vm.type = nil
             if value > 0 {
@@ -144,8 +144,8 @@ struct MovingFlowAddressScreen: View {
     }
 
     func accessDateField() -> some View {
-        let minStartDate = movingFlowNavigationVm.intentVm?.minMovingDate.localDateToDate
-        let maxStartDate = movingFlowNavigationVm.intentVm?.maxMovingDate.localDateToDate
+        let minStartDate = movingFlowNavigationVm.moveConfigurationModel?.minMovingDate.localDateToDate
+        let maxStartDate = movingFlowNavigationVm.moveConfigurationModel?.maxMovingDate.localDateToDate
 
         return hDatePickerField(
             config: .init(
@@ -183,10 +183,10 @@ struct MovingFlowAddressScreen: View {
             case .apartment, .rental:
                 Task { @MainActor in
                     if let requestVm = await vm.requestMoveIntent(
-                        intentId: movingFlowNavigationVm.intentVm?.id ?? "",
+                        intentId: movingFlowNavigationVm.moveConfigurationModel?.id ?? "",
                         selectedAddressId: movingFlowNavigationVm.selectedHomeAddress?.id ?? ""
                     ) {
-                        movingFlowNavigationVm.requestVm = requestVm
+                        movingFlowNavigationVm.moveQuotesModel = requestVm
                         if let changeTierModel = requestVm.changeTierModel {
                             router.push(MovingFlowRouterActions.selectTier(changeTierModel: changeTierModel))
                         } else {
@@ -207,9 +207,9 @@ struct MovingFlowAddressScreen: View {
             let sizeToCompare: Int? = {
                 switch vm.selectedHousingType {
                 case .apartment, .rental:
-                    return movingFlowNavigationVm.intentVm?.maxApartmentSquareMeters
+                    return movingFlowNavigationVm.moveConfigurationModel?.maxApartmentSquareMeters
                 case .house:
-                    return movingFlowNavigationVm.intentVm?.maxHouseSquareMeters
+                    return movingFlowNavigationVm.moveConfigurationModel?.maxHouseSquareMeters
                 }
             }()
             if let sizeToCompare {
@@ -223,7 +223,7 @@ struct MovingFlowAddressScreen: View {
     var isStudentEnabled: Bool {
         switch vm.selectedHousingType {
         case .apartment, .rental:
-            return movingFlowNavigationVm.intentVm?.isApartmentAvailableforStudent ?? false
+            return movingFlowNavigationVm.moveConfigurationModel?.isApartmentAvailableforStudent ?? false
         case .house:
             return false
         }
@@ -293,7 +293,7 @@ public class AddressInputModel: ObservableObject {
     @Published var viewState: ProcessingState = .success
 
     @MainActor
-    func requestMoveIntent(intentId: String, selectedAddressId: String) async -> MoveRequestModel? {
+    func requestMoveIntent(intentId: String, selectedAddressId: String) async -> MoveQuotesModel? {
         withAnimation {
             self.viewState = .loading
         }

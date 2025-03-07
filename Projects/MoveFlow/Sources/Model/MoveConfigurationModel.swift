@@ -6,7 +6,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct MoveIntentModel {
+public struct MoveConfigurationModel {
     let id: String
     let currentHomeAddresses: [MoveAddress]
     let extraBuildingTypes: [ExtraBuildingType]

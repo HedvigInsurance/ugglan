@@ -201,11 +201,11 @@ struct MovingFlowHouseScreen: View {
         if houseInformationInputvm.isInputValid() {
             Task {
                 if let requestVm = await houseInformationInputvm.requestMoveIntent(
-                    intentId: movingFlowNavigationVm.intentVm?.id ?? "",
+                    intentId: movingFlowNavigationVm.moveConfigurationModel?.id ?? "",
                     addressInputModel: movingFlowNavigationVm.addressInputModel,
                     selectedAddressId: movingFlowNavigationVm.selectedHomeAddress?.id ?? ""
                 ) {
-                    movingFlowNavigationVm.requestVm = requestVm
+                    movingFlowNavigationVm.moveQuotesModel = requestVm
 
                     if let changeTierModel = requestVm.changeTierModel {
                         router.push(MovingFlowRouterActions.selectTier(changeTierModel: changeTierModel))
@@ -272,7 +272,7 @@ public class HouseInformationInputModel: ObservableObject, @preconcurrency Equat
         intentId: String,
         addressInputModel: AddressInputModel,
         selectedAddressId: String
-    ) async -> MoveRequestModel? {
+    ) async -> MoveQuotesModel? {
         withAnimation {
             self.viewState = .loading
         }

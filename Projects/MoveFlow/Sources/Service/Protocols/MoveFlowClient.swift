@@ -3,8 +3,8 @@ import hGraphQL
 
 @MainActor
 public protocol MoveFlowClient {
-    func sendMoveIntent() async throws -> MoveIntentModel
-    func requestMoveIntent(input: RequestMoveIntentInput) async throws -> MoveRequestModel
+    func sendMoveIntent() async throws -> MoveConfigurationModel
+    func requestMoveIntent(input: RequestMoveIntentInput) async throws -> MoveQuotesModel
     func confirmMoveIntent(intentId: String, currentHomeQuoteId: String, removedAddons: [String]) async throws
 }
 

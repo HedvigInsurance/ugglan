@@ -14,8 +14,8 @@ public class MovingFlowNavigationViewModel: ObservableObject {
     @Published var isAddExtraBuildingPresented: HouseInformationInputModel?
     @Published var document: hPDFDocument? = nil
 
-    @Published var intentVm: MoveIntentModel?
-    @Published var requestVm: MoveRequestModel?
+    @Published var moveConfigurationModel: MoveConfigurationModel?
+    @Published var moveQuotesModel: MoveQuotesModel?
     @Published var addressInputModel = AddressInputModel()
     @Published var houseInformationInputvm = HouseInformationInputModel()
     @Published var selectedHomeQuote: MovingFlowQuote?
@@ -46,7 +46,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                 selectedHomeAddress = intentVm.currentHomeAddresses.first
             }
             addressInputModel.nbOfCoInsured = intentVm.suggestedNumberCoInsured
-            self.intentVm = intentVm
+            self.moveConfigurationModel = intentVm
 
             withAnimation {
                 self.viewState = .success
@@ -103,7 +103,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                     let vm
                 else { return }
                 await movingFlowConfirmViewModel.confirmMoveIntent(
-                    intentId: self.intentVm?.id ?? "",
+                    intentId: self.moveConfigurationModel?.id ?? "",
                     currentHomeQuoteId: self.selectedHomeQuote?.id ?? "",
                     removedAddons: vm.getRemovedContractsIds()
                 )
@@ -114,7 +114,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
     }
 
     private func getQuotes() -> [MovingFlowQuote] {
-        var allQuotes = requestVm?.mtaQuotes ?? []
+        var allQuotes = moveQuotesModel?.mtaQuotes ?? []
         if let selectedHomeQuote = selectedHomeQuote {
             allQuotes.insert(selectedHomeQuote, at: 0)
         }
@@ -122,7 +122,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
     }
 
     var movingDate: String {
-        return selectedHomeQuote?.startDate ?? requestVm?.mtaQuotes.first?.startDate ?? ""
+        return selectedHomeQuote?.startDate ?? moveQuotesModel?.mtaQuotes.first?.startDate ?? ""
     }
 }
 
@@ -248,7 +248,7 @@ public struct MovingFlowNavigation: View {
 
     @ViewBuilder
     func getInitalScreen() -> some View {
-        let intentVm = movingFlowNavigationVm.intentVm
+        let intentVm = movingFlowNavigationVm.moveConfigurationModel
         if intentVm?.currentHomeAddresses.count ?? 0 > 1 {
             openSelectInsuranceScreen()
         } else {
@@ -300,13 +300,13 @@ public struct MovingFlowNavigation: View {
 
     func openChangeTier(model: ChangeTierIntentModel) -> some View {
         let model = ChangeTierInput.existingIntent(intent: model) { (tier, deductible) in
-            let requestVm = movingFlowNavigationVm.requestVm
+            let requestVm = movingFlowNavigationVm.moveQuotesModel
             let id = deductible.id
             if let currentHomeQuote = requestVm?.homeQuotes.first(where: { $0.id == id }) {
                 self.movingFlowNavigationVm.selectedHomeQuote = currentHomeQuote
             }
             if let requestVm {
-                movingFlowNavigationVm.requestVm = requestVm
+                movingFlowNavigationVm.moveQuotesModel = requestVm
             }
             router.push(MovingFlowRouterActions.confirm)
         }

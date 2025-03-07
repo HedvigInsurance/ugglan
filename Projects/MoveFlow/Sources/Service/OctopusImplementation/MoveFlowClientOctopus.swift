@@ -11,19 +11,19 @@ public class MoveFlowClientOctopus: MoveFlowClient {
 
     public init() {}
 
-    public func sendMoveIntent() async throws -> MoveIntentModel {
+    public func sendMoveIntent() async throws -> MoveConfigurationModel {
         let mutation = OctopusGraphQL.MoveIntentCreateMutation()
         let data = try await octopus.client.perform(mutation: mutation)
 
         if let moveIntentFragment = data.moveIntentCreate.moveIntent?.fragments.moveIntentFragment {
-            return MoveIntentModel(from: moveIntentFragment)
+            return MoveConfigurationModel(from: moveIntentFragment)
         } else if let userError = data.moveIntentCreate.userError?.message {
             throw MovingFlowError.serverError(message: userError)
         }
         throw MovingFlowError.missingDataError(message: L10n.General.errorBody)
     }
 
-    public func requestMoveIntent(input: RequestMoveIntentInput) async throws -> MoveRequestModel {
+    public func requestMoveIntent(input: RequestMoveIntentInput) async throws -> MoveQuotesModel {
         let moveIntentRequestInput = OctopusGraphQL.MoveIntentRequestInput(
             apiVersion: .init(.v2TiersAndDeductibles),
             moveToAddress: .init(
@@ -50,7 +50,7 @@ public class MoveFlowClientOctopus: MoveFlowClient {
 
         let data = try await octopus.client.perform(mutation: mutation)
         if let moveIntentFragment = data.moveIntentRequest.moveIntent?.fragments.moveIntentFragment {
-            return MoveRequestModel(from: moveIntentFragment)
+            return MoveQuotesModel(from: moveIntentFragment)
         } else if let userError = data.moveIntentRequest.userError?.message {
             throw MovingFlowError.serverError(message: userError)
         }
@@ -115,7 +115,7 @@ public class MoveFlowClientOctopus: MoveFlowClient {
 }
 
 @MainActor
-extension MoveIntentModel {
+extension MoveConfigurationModel {
     init(from data: OctopusGraphQL.MoveIntentFragment) {
         id = data.id
         let minMovingDate = data.minMovingDate
@@ -149,7 +149,7 @@ extension MoveIntentModel {
 }
 
 @MainActor
-extension MoveRequestModel {
+extension MoveQuotesModel {
     init(from data: OctopusGraphQL.MoveIntentFragment) {
         mtaQuotes = data.fragments.quoteFragment.mtaQuotes?.compactMap({ MovingFlowQuote(from: $0) }) ?? []
         changeTierModel = {

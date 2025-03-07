@@ -22,7 +22,7 @@ struct TypeOfBuildingPickerScreen: View {
         ItemPickerScreen<ExtraBuildingType>(
             config: .init(
                 items: {
-                    return movingFlowNavigationVm.intentVm?.extraBuildingTypes
+                    return movingFlowNavigationVm.moveConfigurationModel?.extraBuildingTypes
                         .compactMap({ (object: $0, displayName: .init(title: $0.translatedValue)) }) ?? []
                 }(),
                 preSelectedItems: {
