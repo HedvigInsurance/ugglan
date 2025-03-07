@@ -24,6 +24,7 @@ final class AddonsServiceTests: XCTestCase {
                     displayName: "option title",
                     quoteId: "quoteId1",
                     addonId: "addonId1",
+                    addonSubtype: "addonSubtype1",
                     displayItems: [],
                     price: .init(amount: "49", currency: "SEK"),
                     addonVariant: .init(
@@ -38,6 +39,7 @@ final class AddonsServiceTests: XCTestCase {
                     displayName: "option title",
                     quoteId: "quoteId2",
                     addonId: "addonId2",
+                    addonSubtype: "addonSubtype2",
                     displayItems: [],
                     price: .init(amount: "79", currency: "SEK"),
                     addonVariant: .init(
