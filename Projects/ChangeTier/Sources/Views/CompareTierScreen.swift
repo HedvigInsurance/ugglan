@@ -53,15 +53,14 @@ struct CompareTierScreen: View {
 
     private func perilRow(for peril: Perils) -> some View {
         hRow {
-            HStack(spacing: .padding4) {
+            HStack(alignment: .top, spacing: .padding4) {
                 Group {
-                    Text(peril.title)
+                    Text("peril.title long text hat ")
                         + Text(Image(uiImage: plusImage).renderingMode(.template))
                         .foregroundColor(
                             hFillColor.Translucent.secondary.colorFor(colorSchema == .light ? .light : .dark, .base)
                                 .color
                         )
-
                 }
                 .modifier(hFontModifier(style: .body1))
                 Spacer()
