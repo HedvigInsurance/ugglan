@@ -20,6 +20,7 @@ final class AddonsViewModelTests: XCTestCase {
             displayName: "option title",
             quoteId: "quoteId1",
             addonId: "addonId1",
+            addonSubtype: "addonSubtype1",
             displayItems: [],
             price: .init(amount: "49", currency: "SEK"),
             addonVariant: .init(
@@ -42,6 +43,7 @@ final class AddonsViewModelTests: XCTestCase {
                     displayName: "option title",
                     quoteId: "quoteId2",
                     addonId: "addonId2",
+                    addonSubtype: "addonSubtype1",
                     displayItems: [],
                     price: .init(amount: "79", currency: "SEK"),
                     addonVariant: .init(
@@ -61,7 +63,7 @@ final class AddonsViewModelTests: XCTestCase {
 
         self.sut = mockService
 
-        let model = ChangeAddonViewModel(contractId: "contractId")
+        let model = ChangeAddonViewModel(contractId: "contractId", addonSource: .insurances)
 
         self.vm = model
 
@@ -82,7 +84,7 @@ final class AddonsViewModelTests: XCTestCase {
 
         self.sut = mockService
 
-        let model = ChangeAddonViewModel(contractId: "contractId")
+        let model = ChangeAddonViewModel(contractId: "contractId", addonSource: .insurances)
 
         self.vm = model
 
@@ -106,7 +108,7 @@ final class AddonsViewModelTests: XCTestCase {
 
         self.sut = mockService
 
-        let model = ChangeAddonViewModel(contractId: "contractId")
+        let model = ChangeAddonViewModel(contractId: "contractId", addonSource: .insurances)
 
         self.vm = model
         await model.submitAddons()
@@ -127,7 +129,7 @@ final class AddonsViewModelTests: XCTestCase {
 
         self.sut = mockService
 
-        let model = ChangeAddonViewModel(contractId: "contractId")
+        let model = ChangeAddonViewModel(contractId: "contractId", addonSource: .insurances)
 
         self.vm = model
         await model.submitAddons()
