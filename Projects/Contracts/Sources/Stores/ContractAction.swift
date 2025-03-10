@@ -21,7 +21,6 @@ public enum ContractLoadingAction: LoadingProtocol {
     case fetchContracts
     case postCoInsured
     case fetchNameFromSSN
-    case fetchCrossSell
 }
 
 @MainActor
