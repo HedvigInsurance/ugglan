@@ -156,8 +156,6 @@ class HomeVM: ObservableObject {
         store.send(.fetchChatNotifications)
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         contractStore.send(.fetchContracts)
-        let crossSellStore: CrossSellStore = globalPresentableStoreContainer.get()
-        crossSellStore.send(.fetchCrossSell)
         let paymentStore: PaymentStore = globalPresentableStoreContainer.get()
         paymentStore.send(.fetchPaymentStatus)
         chatNotificationPullTimer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
