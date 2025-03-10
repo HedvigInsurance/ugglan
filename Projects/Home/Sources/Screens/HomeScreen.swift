@@ -3,7 +3,6 @@ import Chat
 import Claims
 import Combine
 import Contracts
-import CrossSell
 import Foundation
 import Payment
 import PresentableStore
