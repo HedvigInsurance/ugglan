@@ -11,7 +11,6 @@ public struct ContractState: StateProtocol {
     public var activeContracts: [Contract] = []
     public var terminatedContracts: [Contract] = []
     public var pendingContracts: [Contract] = []
-    //    public var crossSells: [CrossSell] = []
 
     public var fetchAllCoInsured: [CoInsuredModel] {
         let coInsuredList = activeContracts.flatMap { coInsured in
