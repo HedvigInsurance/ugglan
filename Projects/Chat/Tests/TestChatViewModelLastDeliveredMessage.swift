@@ -22,8 +22,8 @@ final class TestChatViewModelLastDeliveredMessage: XCTestCase {
             sendMessage: { message in message }
         )
         let model = ChatScreenViewModel(chatService: mockService)
-        await model.send(message: message)
-        assert(model.lastDeliveredMessage == message)
+        await model.messageVm.send(message: message)
+        assert(model.messageVm.lastDeliveredMessage == message)
         self.sut = mockService
     }
 
@@ -34,8 +34,8 @@ final class TestChatViewModelLastDeliveredMessage: XCTestCase {
             sendMessage: { message in throw ChatError.sendMessageFailed }
         )
         let model = ChatScreenViewModel(chatService: mockService)
-        await model.send(message: message)
-        assert(model.lastDeliveredMessage == nil)
+        await model.messageVm.send(message: message)
+        assert(model.messageVm.lastDeliveredMessage == nil)
         self.sut = mockService
     }
 
@@ -46,28 +46,28 @@ final class TestChatViewModelLastDeliveredMessage: XCTestCase {
             sendMessage: { message in message }
         )
         let model = ChatScreenViewModel(chatService: mockService)
-        await model.send(message: message)
-        assert(model.lastDeliveredMessage == message)
+        await model.messageVm.send(message: message)
+        assert(model.messageVm.lastDeliveredMessage == message)
         let newMessage = Message(type: messageType)
-        await model.send(message: newMessage)
-        assert(model.lastDeliveredMessage == newMessage)
+        await model.messageVm.send(message: newMessage)
+        assert(model.messageVm.lastDeliveredMessage == newMessage)
         self.sut = mockService
     }
 
-    func testSendMultipleMessagesFailure() async {
+    func testSendMultipleMessagesFailure() async throws {
         let messageType = MessageType.text(text: "test")
         let firstMessage = Message(type: messageType)
         let mockService = MockData.createMockChatService(
             sendMessage: { message in message }
         )
         let model = ChatScreenViewModel(chatService: mockService)
-        await model.send(message: firstMessage)
-        assert(model.lastDeliveredMessage == firstMessage)
+        await model.messageVm.send(message: firstMessage)
+        assert(model.messageVm.lastDeliveredMessage == firstMessage)
 
         mockService.sendMessage = { message in throw ChatError.sendMessageFailed }
         let newMessage = Message(type: messageType)
-        await model.send(message: newMessage)
-        assert(model.lastDeliveredMessage == firstMessage)
+        await model.messageVm.send(message: newMessage)
+        assert(model.messageVm.lastDeliveredMessage == firstMessage)
         self.sut = mockService
     }
 

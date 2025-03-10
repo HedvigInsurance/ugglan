@@ -23,8 +23,8 @@ final class TestChatViewModelFetchNewMessages: XCTestCase {
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
-        assert(model.messages.count == 1)
-        assert(model.messages.first?.type == messageType)
+        assert(model.messageVm.messages.count == 1)
+        assert(model.messageVm.messages.first?.type == messageType)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getNewMessages)
         self.sut = mockService
@@ -34,7 +34,7 @@ final class TestChatViewModelFetchNewMessages: XCTestCase {
         let mockService = MockData.createMockChatService(fetchNewMessages: { throw ChatError.fetchMessagesFailed })
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
-        assert(model.messages.isEmpty)
+        assert(model.messageVm.messages.isEmpty)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getNewMessages)
         self.sut = mockService

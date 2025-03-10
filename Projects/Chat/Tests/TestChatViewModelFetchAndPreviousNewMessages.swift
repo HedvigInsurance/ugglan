@@ -26,9 +26,9 @@ final class TestChatViewModelFetchAndPreviousNewMessages: XCTestCase {
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
-        assert(model.messages.count == newMessages.count)
-        await model.fetchPreviousMessages(retry: false)
-        assert(model.messages.count == newMessages.count + previousMessages.count)
+        assert(model.messageVm.messages.count == newMessages.count)
+        await model.messageVm.fetchPreviousMessages(retry: false)
+        assert(model.messageVm.messages.count == newMessages.count + previousMessages.count)
         self.sut = mockService
     }
 
@@ -39,9 +39,9 @@ final class TestChatViewModelFetchAndPreviousNewMessages: XCTestCase {
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
-        assert(model.messages.isEmpty)
-        await model.fetchPreviousMessages(retry: false)
-        assert(model.messages.isEmpty)
+        assert(model.messageVm.messages.isEmpty)
+        await model.messageVm.fetchPreviousMessages(retry: false)
+        assert(model.messageVm.messages.isEmpty)
         self.sut = mockService
     }
 }

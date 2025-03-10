@@ -21,7 +21,7 @@ final class TestChatViewModelIsConversationOpen: XCTestCase {
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
-        assert(model.conversationStatus == .open)
+        assert(model.messageVm.conversationVm.conversationStatus == .open)
         self.sut = mockService
     }
 
@@ -30,9 +30,9 @@ final class TestChatViewModelIsConversationOpen: XCTestCase {
             fetchNewMessages: { throw ChatError.fetchMessagesFailed }
         )
         let model = ChatScreenViewModel(chatService: mockService)
-        let initialValue = model.conversationStatus
+        let initialValue = model.messageVm.conversationVm.conversationStatus
         await model.startFetchingNewMessages()
-        assert(model.conversationStatus == initialValue)
+        assert(model.messageVm.conversationVm.conversationStatus == initialValue)
         self.sut = mockService
     }
 
@@ -42,7 +42,7 @@ final class TestChatViewModelIsConversationOpen: XCTestCase {
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
-        assert(model.conversationStatus == .closed)
+        assert(model.messageVm.conversationVm.conversationStatus == .closed)
         self.sut = mockService
     }
 
@@ -51,9 +51,9 @@ final class TestChatViewModelIsConversationOpen: XCTestCase {
             fetchNewMessages: { throw ChatError.fetchMessagesFailed }
         )
         let model = ChatScreenViewModel(chatService: mockService)
-        let initialValue = model.conversationStatus
+        let initialValue = model.messageVm.conversationVm.conversationStatus
         await model.startFetchingNewMessages()
-        assert(model.conversationStatus == initialValue)
+        assert(model.messageVm.conversationVm.conversationStatus == initialValue)
         self.sut = mockService
     }
 

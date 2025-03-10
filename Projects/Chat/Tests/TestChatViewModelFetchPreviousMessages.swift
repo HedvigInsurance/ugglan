@@ -5,7 +5,6 @@ import Foundation
 
 @MainActor
 final class TestChatViewModelFetchPreviousMessages: XCTestCase {
-
     weak var sut: MockConversationService?
     override func setUp() {
         super.setUp()
@@ -24,9 +23,9 @@ final class TestChatViewModelFetchPreviousMessages: XCTestCase {
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
-        await model.fetchPreviousMessages(retry: false)
-        assert(model.messages.count == 1)
-        assert(model.messages.first?.type == messageType)
+        await model.messageVm.fetchPreviousMessages(retry: false)
+        assert(model.messageVm.messages.count == 1)
+        assert(model.messageVm.messages.first?.type == messageType)
         assert(mockService.events.count == 2)
         assert(mockService.events.first == .getNewMessages)
         assert(mockService.events.last == .getPreviousMessages)
@@ -40,8 +39,8 @@ final class TestChatViewModelFetchPreviousMessages: XCTestCase {
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
-        await model.fetchPreviousMessages(retry: false)
-        assert(model.messages.count == 0)
+        await model.messageVm.fetchPreviousMessages(retry: false)
+        assert(model.messageVm.messages.count == 0)
         assert(mockService.events.count == 2)
         assert(mockService.events.first == .getNewMessages)
         assert(mockService.events.last == .getPreviousMessages)
@@ -61,9 +60,9 @@ final class TestChatViewModelFetchPreviousMessages: XCTestCase {
         }
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
-        await model.fetchPreviousMessages(retry: true)
-        assert(model.messages.count == 1)
-        assert(model.messages.first?.type == messageType)
+        await model.messageVm.fetchPreviousMessages(retry: true)
+        assert(model.messageVm.messages.count == 1)
+        assert(model.messageVm.messages.first?.type == messageType)
         assert(mockService.events.count == 3)
         assert(mockService.events.first == .getNewMessages)
         assert(mockService.events.last == .getPreviousMessages)
