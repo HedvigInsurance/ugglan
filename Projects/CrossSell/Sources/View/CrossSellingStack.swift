@@ -1,3 +1,5 @@
+import Combine
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -5,6 +7,7 @@ import hCoreUI
 public struct CrossSellingStack: View {
     let withHeader: Bool
     @StateObject var vm = CrossSellingViewModel()
+    @PresentableStore var store: CrossSellStore
 
     public init(
         withHeader: Bool
@@ -13,18 +16,10 @@ public struct CrossSellingStack: View {
     }
 
     public var body: some View {
-        successView.loading($vm.viewState)
-            .hStateViewButtonConfig(
-                .init(
-                    actionButton: .init(
-                        buttonAction: {
-                            Task {
-                                await vm.getCrossSells()
-                            }
-                        }
-                    )
-                )
-            )
+        successView
+            .onAppear {
+                store.send(.fetchCrossSell)
+            }
     }
 
     @ViewBuilder
@@ -66,8 +61,10 @@ class CrossSellingViewModel: ObservableObject {
         }
     }
     @Published var hasUnseenCrossSell: Bool = false
-    @Published var viewState: ProcessingState = .loading
+    @PresentableStore var store: CrossSellStore
     private var service = CrossSellService()
+    var cancellables = Set<AnyCancellable>()
+
     init() {
         Task {
             await getCrossSells()
@@ -76,18 +73,15 @@ class CrossSellingViewModel: ObservableObject {
 
     @MainActor
     func getCrossSells() async {
-        withAnimation {
-            self.viewState = .loading
-        }
-        do {
-            let crossSellData = try await service.getCrossSell()
-            self.crossSells = crossSellData
+        store.send(.fetchCrossSell)
 
-            withAnimation {
-                self.viewState = .success
+        store.stateSignal
+            .compactMap({ $0.crossSells })
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { crossSells in
+                self.crossSells = crossSells
             }
-        } catch {
-            self.viewState = .error(errorMessage: error.localizedDescription)
-        }
+            .store(in: &cancellables)
     }
 }
