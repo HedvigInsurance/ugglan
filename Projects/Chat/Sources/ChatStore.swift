@@ -2,12 +2,12 @@ import Foundation
 import PresentableStore
 import hCore
 
-public typealias ConverastionId = String
+public typealias ConversationId = String
 public struct ChatState: StateProtocol {
     public init() {}
 
     @Transient(defaultValue: false) var askedForPushNotificationsPermission: Bool
-    public var failedMessages: [ConverastionId: [Message]] = [:]
+    public var failedMessages: [ConversationId: [Message]] = [:]
 }
 
 public enum ChatAction: ActionProtocol {

@@ -21,10 +21,10 @@ final class TestChatViewModelSendMessage: XCTestCase {
             sendMessage: { message in message }
         )
         let model = ChatScreenViewModel(chatService: mockService)
-        await model.send(message: .init(type: messageType))
-        assert(model.messages.count == 1)
-        assert(model.messages.first?.type == messageType)
-        assert(model.messages.first?.status == .sent)
+        await model.messageVm.send(message: .init(type: messageType))
+        assert(model.messageVm.messages.count == 1)
+        assert(model.messageVm.messages.first?.type == messageType)
+        assert(model.messageVm.messages.first?.status == .sent)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .sendMessage)
         self.sut = mockService
@@ -36,10 +36,10 @@ final class TestChatViewModelSendMessage: XCTestCase {
             sendMessage: { message in throw ChatError.sendMessageFailed }
         )
         let model = ChatScreenViewModel(chatService: mockService)
-        await model.send(message: .init(type: messageType))
-        assert(model.messages.count == 1)
+        await model.messageVm.send(message: .init(type: messageType))
+        assert(model.messageVm.messages.count == 1)
         assert(
-            model.messages.first?.status
+            model.messageVm.messages.first?.status
                 == Message(type: messageType).asFailed(with: ChatError.sendMessageFailed.localizedDescription).status
         )
         assert(mockService.events.count == 1)

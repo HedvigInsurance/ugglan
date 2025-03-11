@@ -8,27 +8,16 @@ import hCoreUI
 import hGraphQL
 
 public enum ContractAction: ActionProtocol, Hashable {
-
-    // fetch everything
-    case fetch
     // Fetch contracts for terminated
-    case fetchCrossSale
     case fetchContracts
 
     case setActiveContracts(contracts: [Contract])
     case setTerminatedContracts(contracts: [Contract])
     case setPendingContracts(contracts: [Contract])
-
-    case setCrossSells(crossSells: [CrossSell])
-    case hasSeenCrossSells(value: Bool)
 }
 
 public enum ContractLoadingAction: LoadingProtocol {
-    case fetchContractBundles
     case fetchContracts
-    case postCoInsured
-    case fetchNameFromSSN
-    case fetchCrossSell
 }
 
 @MainActor

@@ -1,14 +1,22 @@
-import Foundation
+import Combine
 import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
-struct CrossSellingStack: View {
+public struct CrossSellingStack: View {
     let withHeader: Bool
-    var body: some View {
+    @PresentableStore var store: CrossSellStore
+
+    public init(
+        withHeader: Bool
+    ) {
+        self.withHeader = withHeader
+    }
+
+    public var body: some View {
         PresentableStoreLens(
-            ContractStore.self,
+            CrossSellStore.self,
             getter: { state in
                 state.crossSells
             }
@@ -38,6 +46,8 @@ struct CrossSellingStack: View {
                 .transition(.slide)
             }
         }
-        .presentableStoreLensAnimation(.spring())
+        .onAppear {
+            store.send(.fetchCrossSell)
+        }
     }
 }
