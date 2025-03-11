@@ -2,7 +2,6 @@ import Foundation
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 @MainActor
 public class ChangeTierNavigationViewModel: ObservableObject {
@@ -122,8 +121,8 @@ public struct ChangeTierInputData: Equatable, Identifiable, Codable {
         self.contractId = contractId
     }
 
-    let source: ChangeTierSource
-    let contractId: String
+    public let source: ChangeTierSource
+    public let contractId: String
 }
 
 public struct ChangeTierContractsInput: Equatable, Identifiable {

@@ -2,7 +2,6 @@ import Apollo
 import Foundation
 import PresentableStore
 import hCore
-import hGraphQL
 
 public final class ContractStore: LoadingStateStore<ContractState, ContractAction, ContractLoadingAction> {
     @Inject var fetchContractsService: FetchContractsClient

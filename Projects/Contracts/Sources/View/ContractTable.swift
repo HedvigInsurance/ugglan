@@ -6,7 +6,6 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct ContractTable: View {
     @PresentableStore var store: ContractStore
