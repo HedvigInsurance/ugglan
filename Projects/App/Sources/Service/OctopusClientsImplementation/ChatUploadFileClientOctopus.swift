@@ -1,4 +1,5 @@
 import Apollo
+import Chat
 import Environment
 import Foundation
 import Kingfisher
