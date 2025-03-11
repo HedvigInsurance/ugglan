@@ -17,10 +17,7 @@ public enum ContractAction: ActionProtocol, Hashable {
 }
 
 public enum ContractLoadingAction: LoadingProtocol {
-    case fetchContractBundles
     case fetchContracts
-    case postCoInsured
-    case fetchNameFromSSN
 }
 
 @MainActor
