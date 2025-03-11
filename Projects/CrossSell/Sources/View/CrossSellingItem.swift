@@ -1,17 +1,11 @@
-import Foundation
-import Kingfisher
-import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct CrossSellingItem: View {
-    @PresentableStore var store: ContractStore
     let crossSell: CrossSell
     @State var fieldIsClicked = false
-
-    @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
+    //    @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
 
     func openExternal() {
         if let urlString = crossSell.webActionURL, let url = URL(string: urlString) {

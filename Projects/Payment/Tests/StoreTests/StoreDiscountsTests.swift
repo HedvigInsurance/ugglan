@@ -21,13 +21,13 @@ final class StoreDiscountsTests: XCTestCase {
         let discountsData: PaymentDiscountsData = .init(
             discounts: [
                 .init(
-                    id: "id",
                     code: "code",
                     amount: .init(amount: "30", currency: "SEK"),
                     title: "title",
                     listOfAffectedInsurances: [],
                     validUntil: nil,
-                    canBeDeleted: true
+                    canBeDeleted: true,
+                    discountId: "id"
                 )
             ],
             referralsData: .init(
