@@ -24,7 +24,7 @@ final class TestChatViewModelSendMessage: XCTestCase {
         await model.messageVm.send(message: .init(type: messageType))
         assert(model.messageVm.messages.count == 1)
         assert(model.messageVm.messages.first?.type == messageType)
-        assert(model.messageVm.messages.first?.status == .draft)
+        assert(model.messageVm.messages.first?.status == .sent)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .sendMessage)
         self.sut = mockService

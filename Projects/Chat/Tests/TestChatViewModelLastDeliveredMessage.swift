@@ -15,7 +15,7 @@ final class TestChatViewModelLastDeliveredMessage: XCTestCase {
         XCTAssertNil(sut)
     }
 
-    func testSendNewMessageSuccess() async {
+    func testSendNewMessageSuccess() async throws {
         let messageType = MessageType.text(text: "test")
         let message = Message(type: messageType)
         let mockService = MockData.createMockChatService(
@@ -23,6 +23,7 @@ final class TestChatViewModelLastDeliveredMessage: XCTestCase {
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.messageVm.send(message: message)
+        try await Task.sleep(nanoseconds: 200_000_000)
         assert(model.messageVm.lastDeliveredMessage == message)
         self.sut = mockService
     }
@@ -39,7 +40,7 @@ final class TestChatViewModelLastDeliveredMessage: XCTestCase {
         self.sut = mockService
     }
 
-    func testSendMultipleMessagesSuccess() async {
+    func testSendMultipleMessagesSuccess() async throws {
         let messageType = MessageType.text(text: "test")
         let message = Message(type: messageType)
         let mockService = MockData.createMockChatService(
@@ -47,9 +48,11 @@ final class TestChatViewModelLastDeliveredMessage: XCTestCase {
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.messageVm.send(message: message)
+        try await Task.sleep(nanoseconds: 200_000_000)
         assert(model.messageVm.lastDeliveredMessage == message)
         let newMessage = Message(type: messageType)
         await model.messageVm.send(message: newMessage)
+        try await Task.sleep(nanoseconds: 200_000_000)
         assert(model.messageVm.lastDeliveredMessage == newMessage)
         self.sut = mockService
     }
@@ -62,6 +65,7 @@ final class TestChatViewModelLastDeliveredMessage: XCTestCase {
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.messageVm.send(message: firstMessage)
+        try await Task.sleep(nanoseconds: 200_000_000)
         assert(model.messageVm.lastDeliveredMessage == firstMessage)
 
         mockService.sendMessage = { message in throw ChatError.sendMessageFailed }

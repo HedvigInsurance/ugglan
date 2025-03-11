@@ -5,8 +5,8 @@ import Foundation
 
 @MainActor
 final class TestChatViewModelFetchNewMessages: XCTestCase {
-
     weak var sut: MockConversationService?
+
     override func setUp() {
         super.setUp()
     }
@@ -18,13 +18,19 @@ final class TestChatViewModelFetchNewMessages: XCTestCase {
 
     func testFetchNewMessagesSuccess() async {
         let messageType = MessageType.text(text: "test")
+        let message = Message(type: messageType)
         let mockService = MockData.createMockChatService(
-            fetchNewMessages: { .init(with: [.init(type: messageType)]) }
+            fetchNewMessages: {
+                .init(with: [
+                    .init(remoteId: message.id, type: message.type, sender: message.sender, date: message.sentAt)
+                ])
+            }
         )
         let model = ChatScreenViewModel(chatService: mockService)
         await model.startFetchingNewMessages()
-        assert(model.messageVm.messages.count == 1)
-        assert(model.messageVm.messages.first?.type == messageType)
+        let successMessages = model.messageVm.messages.filter({ $0.status == .sent || $0.status == .received })
+        assert(successMessages.count == 1)
+        assert(successMessages.first?.type == messageType)
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getNewMessages)
         self.sut = mockService
