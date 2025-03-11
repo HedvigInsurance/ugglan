@@ -502,27 +502,6 @@ public class CoInusuredInputViewModel: ObservableObject {
         if !(coInsuredModel.SSN ?? "").isEmpty {
             nameFetchedFromSSN = true
         }
-        $noSSN.combineLatest($nameFetchedFromSSN).combineLatest($SSNError)
-            .receive(on: RunLoop.main)
-            .sink { _ in
-                for i in 0...10 {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.05) {
-                        if #available(iOS 16.0, *) {
-                            UIApplication.shared.getTopViewController()?.sheetPresentationController?
-                                .animateChanges {
-                                    UIApplication.shared.getTopViewController()?.sheetPresentationController?
-                                        .invalidateDetents()
-                                }
-                        } else {
-                            UIApplication.shared.getTopViewController()?.sheetPresentationController?
-                                .animateChanges {
-
-                                }
-                        }
-                    }
-                }
-            }
-            .store(in: &cancellables)
     }
 
     @MainActor
