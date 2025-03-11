@@ -12,7 +12,9 @@ struct SelectContractView: View {
             config: .init(
                 items: {
                     return contractStep?.availableContractOptions
-                        .compactMap({ (object: $0, displayName: .init(title: $0.displayName, subTitle: $0.subTitle)) })
+                        .compactMap({
+                            (object: $0, displayName: .init(title: $0.displayTitle, subTitle: $0.displaySubTitle))
+                        })
                         ?? []
                 }(),
                 preSelectedItems: {
@@ -40,7 +42,8 @@ struct SelectContractView: View {
                     }
                 },
                 singleSelect: true,
-                attachToBottom: true
+                attachToBottom: true,
+                fieldSize: .medium
             )
         )
         .padding(.bottom, .padding16)

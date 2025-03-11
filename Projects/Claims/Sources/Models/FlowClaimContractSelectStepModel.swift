@@ -15,7 +15,7 @@ public struct FlowClaimContractSelectStepModel: FlowClaimStepModel {
 }
 
 public struct FlowClaimContractSelectOptionModel: Codable, Equatable, Hashable, Sendable {
-    let displayName: String
-    let subTitle: String?
+    let displayTitle: String
+    let displaySubTitle: String?
     let id: String
 }

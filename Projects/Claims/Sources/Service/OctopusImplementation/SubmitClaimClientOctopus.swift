@@ -1,7 +1,6 @@
 import Combine
 import Contracts
 import Foundation
-import PresentableStore
 import hCore
 import hGraphQL
 
@@ -715,9 +714,8 @@ extension FlowClaimContractSelectOptionModel {
         with data: OctopusGraphQL.FlowClaimContractSelectStepFragment.Option
     ) {
         self.id = data.id
-        self.displayName = data.displayName
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        self.subTitle = contractStore.state.contractForId(data.id)?.exposureDisplayName
+        self.displayTitle = data.displayTitle
+        self.displaySubTitle = data.displaySubtitle
     }
 }
 
