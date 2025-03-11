@@ -1,6 +1,5 @@
 import Foundation
 import hCore
-import hGraphQL
 
 @MainActor
 public class EditCoInsuredSharedService {
