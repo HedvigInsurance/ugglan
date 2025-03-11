@@ -6,7 +6,6 @@ import hGraphQL
 struct CompareTierScreen: View {
     @ObservedObject private var vm: CompareTierViewModel
     @EnvironmentObject var changeTierNavigationVm: ChangeTierNavigationViewModel
-    @State var scrollableSegmentedViewModel: ScrollableSegmentedViewModel
     @SwiftUI.Environment(\.horizontalSizeClass) var horizontalSizeClass
     @SwiftUI.Environment(\.colorScheme) var colorSchema
     @State var plusImage = hCoreUIAssets.plus.image.getImageFor(style: .body1)
@@ -15,9 +14,6 @@ struct CompareTierScreen: View {
         vm: CompareTierViewModel
     ) {
         self.vm = vm
-        scrollableSegmentedViewModel = ScrollableSegmentedViewModel(
-            pageModels: vm.tiers.map({ .init(id: $0.id, title: $0.name) })
-        )
     }
 
     var body: some View {
@@ -53,7 +49,7 @@ struct CompareTierScreen: View {
 
     private func perilRow(for peril: Perils) -> some View {
         hRow {
-            HStack(spacing: .padding4) {
+            HStack(alignment: .top, spacing: .padding4) {
                 Group {
                     Text(peril.title)
                         + Text(Image(uiImage: plusImage).renderingMode(.template))
@@ -61,9 +57,9 @@ struct CompareTierScreen: View {
                             hFillColor.Translucent.secondary.colorFor(colorSchema == .light ? .light : .dark, .base)
                                 .color
                         )
-
                 }
                 .modifier(hFontModifier(style: .body1))
+                .fixedSize(horizontal: false, vertical: true)
                 Spacer()
                 peril.getRowDescription
             }
@@ -76,14 +72,16 @@ struct CompareTierScreen: View {
     @ViewBuilder
     private var succesView: some View {
         hForm {
-            ScrollableSegmentedView(
-                vm: scrollableSegmentedViewModel,
-                headerBottomPadding: .padding8,
-                contentFor: { id in
-                    comparisionView(for: vm.tiers.first(where: { $0.id == id })?.name ?? "")
-                }
-            )
-            .padding(.top, .padding24)
+            if let scrollableSegmentedViewModel = vm.scrollableSegmentedViewModel {
+                ScrollableSegmentedView(
+                    vm: scrollableSegmentedViewModel,
+                    headerBottomPadding: .padding8,
+                    contentFor: { id in
+                        comparisionView(for: id)
+                    }
+                )
+                .padding(.top, .padding24)
+            }
         }
         .hFormTitle(
             title: .init(
@@ -126,9 +124,10 @@ struct CompareOnRowTap: ViewModifier {
 class CompareTierViewModel: ObservableObject {
     private let service = ChangeTierService()
     @Published var viewState: ProcessingState = .loading
-    @Published var tiers: [Tier]
+    private let tiers: [Tier]
     @Published var selectedPeril: Perils?
     @Published var perils: [(String, [Perils])] = []
+    @Published var scrollableSegmentedViewModel: ScrollableSegmentedViewModel?
 
     init(
         tiers: [Tier]
@@ -187,9 +186,11 @@ class CompareTierViewModel: ObservableObject {
                 )
 
                 let rows = productVariantComparisionData.rows
-                let tierNames = tiers.compactMap({ $0.name })
-
-                self.perils = getPerils(tierNames: tierNames, rows: rows)
+                let namesOfTiers = productVariantComparisionData.variantColumns.compactMap({ $0.displayNameTier })
+                self.perils = getPerils(tierNames: namesOfTiers, rows: rows)
+                scrollableSegmentedViewModel = ScrollableSegmentedViewModel(
+                    pageModels: namesOfTiers.map({ .init(id: $0, title: $0) })
+                )
                 withAnimation {
                     viewState = .success
                 }

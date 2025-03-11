@@ -122,7 +122,7 @@ final class CompareTierVireModelTests: XCTestCase {
 
         self.sut = mockService
 
-        let model = CompareTierViewModel(tiers: tiers, currentTier: currentTier)
+        let model = CompareTierViewModel(tiers: tiers)
         self.vm = model
         model.productVariantComparision()
 
@@ -141,7 +141,7 @@ final class CompareTierVireModelTests: XCTestCase {
 
         self.sut = mockService
 
-        let model = CompareTierViewModel(tiers: tiers, currentTier: currentTier)
+        let model = CompareTierViewModel(tiers: tiers)
         self.vm = model
         model.productVariantComparision()
 
