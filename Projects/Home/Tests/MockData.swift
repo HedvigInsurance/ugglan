@@ -12,6 +12,7 @@ struct MockData {
         },
         fetchMemberState: @escaping FetchMemberState = {
             .init(
+                id: "id",
                 contracts: [],
                 contractState: .active,
                 futureState: .none
