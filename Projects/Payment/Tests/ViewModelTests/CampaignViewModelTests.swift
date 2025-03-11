@@ -58,13 +58,13 @@ final class CampaignViewModelTests: XCTestCase {
         self.sut = mockService
 
         let discount: Discount = .init(
-            id: "id",
             code: "code",
             amount: .init(amount: "20", currency: "SEK"),
             title: "title",
             listOfAffectedInsurances: [],
             validUntil: nil,
-            canBeDeleted: true
+            canBeDeleted: true,
+            discountId: "id"
         )
 
         let model = DeleteCampaignViewModel(discount: discount)
@@ -84,13 +84,13 @@ final class CampaignViewModelTests: XCTestCase {
         self.sut = mockService
 
         let discount: Discount = .init(
-            id: "id",
             code: "code",
             amount: .init(amount: "20", currency: "SEK"),
             title: "title",
             listOfAffectedInsurances: [],
             validUntil: nil,
-            canBeDeleted: true
+            canBeDeleted: true,
+            discountId: "id"
         )
 
         let model = DeleteCampaignViewModel(discount: discount)

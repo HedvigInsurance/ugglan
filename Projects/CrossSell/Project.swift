@@ -2,9 +2,9 @@ import ProjectDescription
 import ProjectDescriptionHelpers
 
 let project = Project.framework(
-    name: "Contracts",
+    name: "CrossSell",
     targets: Set([.framework, .tests, .example]),
-    projects: ["hCore", "hCoreUI", "TerminateContracts", "EditCoInsuredShared", "ChangeTier", "Addons", "CrossSell"],
+    projects: ["hCore", "hCoreUI"],
     sdks: [],
     includesGraphQL: false
 )

@@ -35,7 +35,7 @@ struct Contracts: View {
             fetch()
         }
         .onPullToRefresh {
-            await store.sendAsync(.fetch)
+            await store.sendAsync(.fetchContracts)
         }
     }
 }

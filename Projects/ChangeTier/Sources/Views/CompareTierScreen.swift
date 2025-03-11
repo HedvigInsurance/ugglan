@@ -123,7 +123,7 @@ struct CompareOnRowTap: ViewModifier {
 class CompareTierViewModel: ObservableObject {
     private let service = ChangeTierService()
     @Published var viewState: ProcessingState = .loading
-    private let tiers: [Tier]
+    let tiers: [Tier]
     @Published var selectedPeril: Perils?
     @Published var perils: [(String, [Perils])] = []
     @Published var scrollableSegmentedViewModel: ScrollableSegmentedViewModel?
