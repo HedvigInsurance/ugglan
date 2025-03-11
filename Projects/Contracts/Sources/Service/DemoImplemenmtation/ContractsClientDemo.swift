@@ -72,9 +72,6 @@ public class FetchContractsClientDemo: FetchContractsClient {
     }
 
     public func getCrossSell() async throws -> [CrossSell] {
-        if let url = URL(string: "") {
-            return [CrossSell(title: "", description: "", imageURL: url, blurHash: "", typeOfContract: "", type: .home)]
-        }
         return []
     }
 

@@ -19,6 +19,7 @@ struct SubmitClaimCarView: View {
                     hText(L10n.submitClaimCarReportClaimTitle)
                     hText(L10n.submitClaimCarReportClaimText)
                         .foregroundColor(hTextColor.Opaque.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
             }
             .sectionContainerStyle(.transparent)

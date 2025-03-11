@@ -159,17 +159,11 @@ extension CrossSell {
         .init(
             title: "car",
             description: "description",
-            imageURL: URL(string: "https://hedvig.com")!,
-            blurHash: "",
-            typeOfContract: "",
             type: .car
         ),
         .init(
             title: "home",
             description: "description",
-            imageURL: URL(string: "https://hedvig.com")!,
-            blurHash: "",
-            typeOfContract: "",
             type: .home
         ),
     ]

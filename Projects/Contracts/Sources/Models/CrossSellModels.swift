@@ -4,16 +4,13 @@ import hCoreUI
 import hGraphQL
 
 public struct CrossSell: Codable, Equatable, Hashable, Sendable {
-    public var typeOfContract: String
     public var title: String
     public var description: String
-    public var imageURL: URL
-    public var blurHash: String
     public var webActionURL: String?
     public var type: CrossSellType
     public var hasBeenSeen: Bool {
         didSet {
-            UserDefaults.standard.set(hasBeenSeen, forKey: Self.hasBeenSeenKey(typeOfContract: typeOfContract))
+            UserDefaults.standard.set(hasBeenSeen, forKey: Self.hasBeenSeenKey(typeOfContract: type.rawValue))
             UserDefaults.standard.synchronize()
         }
     }
@@ -23,44 +20,34 @@ public struct CrossSell: Codable, Equatable, Hashable, Sendable {
     }
 
     public static func == (lhs: CrossSell, rhs: CrossSell) -> Bool {
-        return lhs.typeOfContract == rhs.typeOfContract
+        return lhs.type == rhs.type
     }
 
     public init(
         title: String,
         description: String,
-        imageURL: URL,
-        blurHash: String,
         webActionURL: String? = nil,
         hasBeenSeen: Bool = false,
-        typeOfContract: String,
         type: CrossSellType
     ) {
         self.title = title
         self.description = description
-        self.imageURL = imageURL
-        self.blurHash = blurHash
         self.webActionURL = webActionURL
         self.hasBeenSeen = hasBeenSeen
-        self.typeOfContract = typeOfContract
         self.type = type
     }
 
     public init?(_ data: OctopusGraphQL.CrossSellFragment.CrossSell) {
+        let type = data.type.crossSellType
+        guard type != .unknown else { return nil }
         title = data.title
         description = data.description
 
-        guard let parsedImageURL = URL(string: data.imageUrl) else {
-            return nil
-        }
-        imageURL = parsedImageURL
-        blurHash = data.blurHash
-        hasBeenSeen = UserDefaults.standard.bool(
-            forKey: Self.hasBeenSeenKey(typeOfContract: data.id)
-        )
         webActionURL = data.storeUrl
-        typeOfContract = data.id
-        type = data.type.crossSellType
+        self.type = type
+        hasBeenSeen = UserDefaults.standard.bool(
+            forKey: Self.hasBeenSeenKey(typeOfContract: type.rawValue)
+        )
     }
 }
 
@@ -96,7 +83,7 @@ extension GraphQLEnum<OctopusGraphQL.CrossSellType> {
     }
 }
 
-public enum CrossSellType: Codable, Hashable, Sendable {
+public enum CrossSellType: String, Codable, Hashable, Sendable {
     case car
     case home
     case accident

@@ -91,7 +91,6 @@ public struct ChangeTierLandingScreen: View {
                 }
                 .hFieldSize(.small)
                 .hBackgroundOption(option: (colorScheme == .light) ? [.negative] : [.secondary])
-                .hRowWithoutHorizontalPadding
 
                 hRow {
                     PriceField(
@@ -122,7 +121,7 @@ public struct ChangeTierLandingScreen: View {
                         .padding(.leading, .padding16)
                 }
             }
-            .padding(.bottom, 8)
+            .padding(.bottom, .padding8)
         } else {
             DropdownView(
                 value: vm.selectedTier?.name ?? "",
