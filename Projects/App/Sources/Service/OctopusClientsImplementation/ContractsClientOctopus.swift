@@ -67,6 +67,7 @@ public class FetchContractsClientOctopus: FetchContractsClient {
     }
 }
 
+@MainActor
 extension Contract {
     init(
         pendingContract: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.PendingContract,

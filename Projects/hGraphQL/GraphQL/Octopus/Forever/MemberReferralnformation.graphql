@@ -13,22 +13,18 @@ query MemberReferralInformation {
         }
         referralInformation {
             code
-                monthlyDiscountExcludingReferrals {
-                    ...MoneyFragment
-                }
-                monthlyDiscountPerReferral {
-                    ...MoneyFragment
-                }
-                referrals {
-                    ...MemberReferralFragment
-                }
-                    referredBy {
-            activeDiscount {
+            monthlyDiscountExcludingReferrals {
                 ...MoneyFragment
             }
-            name
-            status
-        }
+            monthlyDiscountPerReferral {
+                ...MoneyFragment
+            }
+            referrals {
+                ...MemberReferralFragment
+            }
+            referredBy {
+                ...MemberReferralFragment
+            }
         }
     }
 }
