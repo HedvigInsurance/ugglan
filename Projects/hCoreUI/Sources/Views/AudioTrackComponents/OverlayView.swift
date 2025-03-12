@@ -1,5 +1,4 @@
 import SwiftUI
-import hCoreUI
 
 struct OverlayView: View {
     @ObservedObject var audioPlayer: AudioPlayer

@@ -1,4 +1,5 @@
 import SwiftUI
+import hCoreUI
 
 public struct RecordButton: View {
     var isRecording: Bool

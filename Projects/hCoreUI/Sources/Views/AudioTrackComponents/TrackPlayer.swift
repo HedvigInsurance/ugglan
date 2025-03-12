@@ -1,6 +1,5 @@
 import SwiftUI
 import hCore
-import hCoreUI
 
 struct TrackPlayer: View {
     @ObservedObject var audioPlayer: AudioPlayer

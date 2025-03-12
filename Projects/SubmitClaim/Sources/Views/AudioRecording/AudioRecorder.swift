@@ -1,6 +1,7 @@
 import AVFAudio
 import Combine
 import SwiftUI
+import hCoreUI
 
 public class AudioRecorder: ObservableObject {
     public static let audioFileExtension = "m4a"
