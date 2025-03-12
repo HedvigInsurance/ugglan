@@ -12,7 +12,10 @@ struct SelectContractView: View {
             config: .init(
                 items: {
                     return contractStep?.availableContractOptions
-                        .compactMap({ (object: $0, displayName: .init(title: $0.displayName)) }) ?? []
+                        .compactMap({
+                            (object: $0, displayName: .init(title: $0.displayTitle, subTitle: $0.displaySubTitle))
+                        })
+                        ?? []
                 }(),
                 preSelectedItems: {
                     if let preselected = contractStep?.availableContractOptions
@@ -39,7 +42,8 @@ struct SelectContractView: View {
                     }
                 },
                 singleSelect: true,
-                attachToBottom: true
+                attachToBottom: true,
+                fieldSize: .medium
             )
         )
         .padding(.bottom, .padding16)
@@ -88,6 +92,8 @@ public class SelectContractViewModel: ObservableObject {
 
 struct SelectContractScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SelectContractView()
+        Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in FetchEntrypointsClientDemo() })
+        return SelectContractView()
+            .environmentObject(ClaimsNavigationViewModel())
     }
 }
