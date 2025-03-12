@@ -8,6 +8,7 @@ public struct FirstVetView: View {
     @PresentableStore var store: HomeStore
     @EnvironmentObject var router: Router
     private let partners: [FirstVetPartner]
+    @State private var orientation = UIDevice.current.orientation
 
     public init(
         partners: [FirstVetPartner]
@@ -16,45 +17,66 @@ public struct FirstVetView: View {
     }
 
     public var body: some View {
-        hForm {
-            VStack(spacing: .padding8) {
-                ForEach(partners, id: \.id) { partner in
-                    hSection {
-                        hRow {
-                            VStack(alignment: .leading, spacing: .padding16) {
-                                HStack(spacing: .padding8) {
-                                    Image(uiImage: hCoreUIAssets.firstVetQuickNav.image)
-                                    hText(partner.title ?? "")
-                                    Spacer()
-                                }
-                                hText(partner.description ?? "")
-                                    .foregroundColor(hTextColor.Opaque.secondary)
-                                    .fixedSize(horizontal: false, vertical: true)
-                                hButton.MediumButton(type: .secondaryAlt) {
-                                    if let url = URL(
-                                        string: partner.url
-                                    ) {
-                                        UIApplication.shared.open(url)
-                                    }
-                                } content: {
-                                    hText(L10n.commonClaimButton)
-                                }
-                                .hButtonTakeFullWidth(true)
-                            }
-                        }
+        Group {
+            if orientation == .portrait || orientation == .portraitUpsideDown {
+                hForm {
+                    mainContent
+                }
+                .hFormAlwaysAttachToBottom {
+                    buttonComponent
+                }
+                .navigationBarTitleDisplayMode(.inline)
+            } else {
+                hForm {
+                    VStack(spacing: .padding16) {
+                        mainContent
+                        buttonComponent
                     }
                 }
-                .hWithoutDivider
-            }
-        }
-        .hFormAlwaysAttachToBottom {
-            hButton.LargeButton(type: .ghost) {
-                router.dismiss()
-            } content: {
-                hText(L10n.generalCloseButton)
             }
         }
         .navigationBarTitleDisplayMode(.inline)
+        .detectOrientation($orientation)
+    }
+
+    private var mainContent: some View {
+        VStack(spacing: .padding8) {
+            ForEach(partners, id: \.id) { partner in
+                hSection {
+                    hRow {
+                        VStack(alignment: .leading, spacing: .padding16) {
+                            HStack(spacing: .padding8) {
+                                Image(uiImage: hCoreUIAssets.firstVetQuickNav.image)
+                                hText(partner.title ?? "")
+                                Spacer()
+                            }
+                            hText(partner.description ?? "")
+                                .foregroundColor(hTextColor.Opaque.secondary)
+                                .fixedSize(horizontal: false, vertical: true)
+                            hButton.MediumButton(type: .secondaryAlt) {
+                                if let url = URL(
+                                    string: partner.url
+                                ) {
+                                    UIApplication.shared.open(url)
+                                }
+                            } content: {
+                                hText(L10n.commonClaimButton)
+                            }
+                            .hButtonTakeFullWidth(true)
+                        }
+                    }
+                }
+            }
+            .hWithoutDivider
+        }
+    }
+
+    private var buttonComponent: some View {
+        hButton.LargeButton(type: .ghost) {
+            router.dismiss()
+        } content: {
+            hText(L10n.generalCloseButton)
+        }
     }
 }
 
