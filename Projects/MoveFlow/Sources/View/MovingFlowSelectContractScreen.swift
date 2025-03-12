@@ -22,8 +22,8 @@ struct MovingFlowSelectContractScreen: View {
                             (
                                 object: $0,
                                 displayName: ItemModel(
-                                    title: $0.displayName,
-                                    subTitle: $0.exposureName
+                                    title: $0.displayTitle,
+                                    subTitle: $0.displaySubtitle
                                 )
                             )
                         }) ?? []

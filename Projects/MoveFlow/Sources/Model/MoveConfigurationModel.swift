@@ -15,9 +15,6 @@ public struct MoveConfigurationModel {
     let maxApartmentSquareMeters: Int?
     let maxHouseNumberCoInsured: Int?
     let maxHouseSquareMeters: Int?
-    let maxMovingDate: String
-    let minMovingDate: String
-    let suggestedNumberCoInsured: Int
 
     init(
         id: String,
@@ -27,10 +24,7 @@ public struct MoveConfigurationModel {
         maxApartmentNumberCoInsured: Int?,
         maxApartmentSquareMeters: Int?,
         maxHouseNumberCoInsured: Int?,
-        maxHouseSquareMeters: Int?,
-        maxMovingDate: String,
-        minMovingDate: String,
-        suggestedNumberCoInsured: Int
+        maxHouseSquareMeters: Int?
     ) {
         self.id = id
         self.currentHomeAddresses = currentHomeAddresses
@@ -40,9 +34,6 @@ public struct MoveConfigurationModel {
         self.maxApartmentSquareMeters = maxApartmentSquareMeters
         self.maxHouseNumberCoInsured = maxHouseNumberCoInsured
         self.maxHouseSquareMeters = maxHouseSquareMeters
-        self.maxMovingDate = maxMovingDate
-        self.minMovingDate = minMovingDate
-        self.suggestedNumberCoInsured = suggestedNumberCoInsured
     }
 
     func maxNumberOfCoinsuredFor(_ type: HousingType) -> Int {
@@ -74,7 +65,10 @@ extension MovingFlowError: LocalizedError {
 
 public struct MoveAddress: Codable, Equatable, Hashable, Sendable {
     let id: String
-    let displayName: String
-    let exposureName: String
+    let displayTitle: String
+    let displaySubtitle: String?
     let oldAddressCoverageDurationDays: Int?
+    let maxMovingDate: String
+    let minMovingDate: String
+    let suggestedNumberCoInsured: Int
 }

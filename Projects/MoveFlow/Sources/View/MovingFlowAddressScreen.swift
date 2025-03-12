@@ -144,8 +144,8 @@ struct MovingFlowAddressScreen: View {
     }
 
     func accessDateField() -> some View {
-        let minStartDate = movingFlowNavigationVm.moveConfigurationModel?.minMovingDate.localDateToDate
-        let maxStartDate = movingFlowNavigationVm.moveConfigurationModel?.maxMovingDate.localDateToDate
+        let minStartDate = movingFlowNavigationVm.selectedHomeAddress?.minMovingDate.localDateToDate
+        let maxStartDate = movingFlowNavigationVm.selectedHomeAddress?.maxMovingDate.localDateToDate
 
         return hDatePickerField(
             config: .init(

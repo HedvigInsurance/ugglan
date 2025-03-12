@@ -118,29 +118,11 @@ public class MoveFlowClientOctopus: MoveFlowClient {
 extension MoveConfigurationModel {
     init(from data: OctopusGraphQL.MoveIntentFragment) {
         id = data.id
-        let minMovingDate = data.minMovingDate
-        let maxMovingDate = data.maxMovingDate
-        let minMovingDateDate = minMovingDate.localDateToDate
-        let maxMovingDateDate = maxMovingDate.localDateToDate
-        if let minMovingDateDate, let maxMovingDateDate {
-            if minMovingDateDate < maxMovingDateDate {
-                self.minMovingDate = minMovingDate
-                self.maxMovingDate = maxMovingDate
-            } else {
-                self.maxMovingDate = minMovingDate
-                self.minMovingDate = maxMovingDate
-            }
-        } else {
-            self.minMovingDate = data.minMovingDate
-            self.maxMovingDate = data.maxMovingDate
-        }
         isApartmentAvailableforStudent = data.isApartmentAvailableforStudent ?? false
         maxApartmentNumberCoInsured = data.maxApartmentNumberCoInsured
         maxApartmentSquareMeters = data.maxApartmentSquareMeters
         maxHouseNumberCoInsured = data.maxHouseNumberCoInsured
         maxHouseSquareMeters = data.maxHouseSquareMeters
-
-        suggestedNumberCoInsured = data.suggestedNumberCoInsured
         currentHomeAddresses = data.currentHomeAddresses.compactMap({
             MoveAddress(from: $0.fragments.moveAddressFragment)
         })
@@ -162,12 +144,30 @@ extension MoveQuotesModel {
     }
 }
 
+@MainActor
 extension MoveAddress {
     init(from data: OctopusGraphQL.MoveAddressFragment) {
-        id = data.id
-        oldAddressCoverageDurationDays = data.oldAddressCoverageDurationDays
-        displayName = ""
-        exposureName = ""
+        self.id = data.id
+        self.oldAddressCoverageDurationDays = data.oldAddressCoverageDurationDays
+        self.suggestedNumberCoInsured = data.suggestedNumberCoInsured
+        let minMovingDate = data.minMovingDate
+        let maxMovingDate = data.maxMovingDate
+        let minMovingDateDate = minMovingDate.localDateToDate
+        let maxMovingDateDate = maxMovingDate.localDateToDate
+        if let minMovingDateDate, let maxMovingDateDate {
+            if minMovingDateDate < maxMovingDateDate {
+                self.minMovingDate = minMovingDate
+                self.maxMovingDate = maxMovingDate
+            } else {
+                self.maxMovingDate = minMovingDate
+                self.minMovingDate = maxMovingDate
+            }
+        } else {
+            self.minMovingDate = data.minMovingDate
+            self.maxMovingDate = data.maxMovingDate
+        }
+        self.displayTitle = data.displayTitle
+        self.displaySubtitle = data.displaySubtitle
     }
 }
 

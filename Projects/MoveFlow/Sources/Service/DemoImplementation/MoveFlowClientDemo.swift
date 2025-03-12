@@ -11,10 +11,7 @@ public class MoveFlowClientDemo: MoveFlowClient {
             maxApartmentNumberCoInsured: nil,
             maxApartmentSquareMeters: nil,
             maxHouseNumberCoInsured: nil,
-            maxHouseSquareMeters: nil,
-            maxMovingDate: "2025-06-01",
-            minMovingDate: Date().localDateString,
-            suggestedNumberCoInsured: 2
+            maxHouseSquareMeters: nil
         )
     }
 

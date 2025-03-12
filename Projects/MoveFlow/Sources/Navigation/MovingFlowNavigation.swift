@@ -45,7 +45,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
             if intentVm.currentHomeAddresses.count == 1 {
                 selectedHomeAddress = intentVm.currentHomeAddresses.first
             }
-            addressInputModel.nbOfCoInsured = intentVm.suggestedNumberCoInsured
+            addressInputModel.nbOfCoInsured = selectedHomeAddress?.suggestedNumberCoInsured ?? 0
             self.moveConfigurationModel = intentVm
 
             withAnimation {
