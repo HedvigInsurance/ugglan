@@ -150,8 +150,8 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
     }
 }
 
-extension ClaimModel: TrackingViewNameProtocol {
-    public var nameForTracking: String {
-        return .init(describing: ClaimDetailView.self)
-    }
-}
+//extension ClaimModel: TrackingViewNameProtocol {
+//    public var nameForTracking: String {
+//        return .init(describing: ClaimDetailView.self)
+//    }
+//}
