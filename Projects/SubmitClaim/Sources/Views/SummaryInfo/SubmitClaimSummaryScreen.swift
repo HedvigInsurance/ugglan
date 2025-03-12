@@ -1,3 +1,4 @@
+import Claims
 import Kingfisher
 import SwiftUI
 import hCore
@@ -5,10 +6,10 @@ import hCoreUI
 
 public struct SubmitClaimSummaryScreen: View {
     @StateObject fileprivate var vm: SubmitClaimSummaryScreenViewModel
-    @ObservedObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @ObservedObject var claimsNavigationVm: SubmitClaimNavigationViewModel
 
     public init(
-        claimsNavigationVm: ClaimsNavigationViewModel
+        claimsNavigationVm: SubmitClaimNavigationViewModel
     ) {
         self.claimsNavigationVm = claimsNavigationVm
         _vm = StateObject(

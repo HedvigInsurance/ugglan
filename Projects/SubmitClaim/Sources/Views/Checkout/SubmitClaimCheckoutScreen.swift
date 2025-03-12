@@ -4,7 +4,7 @@ import hCoreUI
 import hGraphQL
 
 public struct SubmitClaimCheckoutScreen: View {
-    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @EnvironmentObject var claimsNavigationVm: SubmitClaimNavigationViewModel
     @ObservedObject var vm: SubmitClaimCheckoutViewModel
     public init(vm: SubmitClaimCheckoutViewModel) {
         self.vm = vm

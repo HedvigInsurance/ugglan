@@ -4,7 +4,7 @@ import hCoreUI
 
 struct ModelPickerView: View {
     @EnvironmentObject var router: Router
-    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @EnvironmentObject var claimsNavigationVm: SubmitClaimNavigationViewModel
     let brand: ClaimFlowItemBrandOptionModel
 
     var body: some View {

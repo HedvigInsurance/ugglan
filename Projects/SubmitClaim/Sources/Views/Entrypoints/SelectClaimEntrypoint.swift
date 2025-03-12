@@ -5,7 +5,7 @@ import hCore
 import hCoreUI
 
 public struct SelectClaimEntrypointGroup: View {
-    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @EnvironmentObject var claimsNavigationVm: SubmitClaimNavigationViewModel
     @ObservedObject var vm: SelectClaimEntrypointViewModel
     @State var buttonIsLoading: Bool = false
 
@@ -65,7 +65,7 @@ public struct SelectClaimEntrypointGroup: View {
 
                                     claimsNavigationVm.entrypoints.selectedEntrypoints =
                                         claimsNavigationVm.selectClaimEntrypointVm.claimEntrypoints
-                                    claimsNavigationVm.router.push(ClaimsRouterActions.triagingEntrypoint)
+                                    claimsNavigationVm.router.push(SubmitClaimRouterActions.triagingEntrypoint)
                                 }
 
                             }
@@ -104,7 +104,7 @@ struct SelectClaimEntrypointType: View {
     @State var selectedClaimEntrypoint: String? = nil
     @State var buttonIsLoading: Bool = false
 
-    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @EnvironmentObject var claimsNavigationVm: SubmitClaimNavigationViewModel
     @EnvironmentObject var router: Router
 
     public init() {}
@@ -153,7 +153,7 @@ struct SelectClaimEntrypointType: View {
                                 }
 
                             } else {
-                                router.push(ClaimsRouterActions.triagingOption)
+                                router.push(SubmitClaimRouterActions.triagingOption)
                             }
                         }
                     },
@@ -197,7 +197,7 @@ struct SelectClaimEntrypointType: View {
 
 struct SelectClaimEntrypointOption: View {
     @State var selectedClaimOption: String? = nil
-    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @EnvironmentObject var claimsNavigationVm: SubmitClaimNavigationViewModel
     @State var buttonIsLoading: Bool = false
 
     public init() {}

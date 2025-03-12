@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct SubmitClaimCheckoutTransferringScreen: View {
-    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @EnvironmentObject var claimsNavigationVm: SubmitClaimNavigationViewModel
     @ObservedObject var vm: SubmitClaimCheckoutViewModel
     @State var loadingAnimation: Bool = false
     @State var successAnimation: Bool = false
@@ -141,5 +141,5 @@ struct SubmitClaimCheckoutTransferringScreen: View {
     Dependencies.shared.add(module: Module { () -> SubmitClaimClient in SubmitClaimClientDemo() })
     Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in FetchEntrypointsClientDemo() })
     return SubmitClaimCheckoutTransferringScreen(vm: .init())
-        .environmentObject(ClaimsNavigationViewModel())
+        .environmentObject(SubmitClaimNavigationViewModel())
 }

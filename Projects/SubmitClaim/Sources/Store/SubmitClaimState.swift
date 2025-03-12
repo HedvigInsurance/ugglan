@@ -6,14 +6,14 @@ import hGraphQL
 
 public struct SubmitClaimState: StateProtocol {
     var loadingStates: [SubmitClaimAction: LoadingState<String>] = [:]
-    var claims: [ClaimModel]? = nil
-    var files: [String: [File]] = [:]
+//    var claims: [ClaimModel]? = nil
+//    var files: [String: [File]] = [:]
 
     public init() {}
 
-    private enum CodingKeys: String, CodingKey {
-        case claims
-    }
+//    private enum CodingKeys: String, CodingKey {
+//        case claims
+//    }
 
     //    public var hasActiveClaims: Bool {
     //        if let claims = claims {

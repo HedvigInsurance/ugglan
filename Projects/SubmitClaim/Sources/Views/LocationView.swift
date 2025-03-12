@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct LocationView: View {
-    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @EnvironmentObject var claimsNavigationVm: SubmitClaimNavigationViewModel
     @EnvironmentObject var router: Router
 
     var body: some View {

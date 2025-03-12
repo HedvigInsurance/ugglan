@@ -1,9 +1,16 @@
 import SwiftUI
-import hCoreUI
 
-struct RecordButton: View {
+public struct RecordButton: View {
     var isRecording: Bool
     var onTap: () -> Void
+
+    public init(
+        isRecording: Bool = false,
+        onTap: @escaping () -> Void = {}
+    ) {
+        self.isRecording = isRecording
+        self.onTap = onTap
+    }
 
     @ViewBuilder var pulseBackground: some View {
         if isRecording {
@@ -13,7 +20,7 @@ struct RecordButton: View {
         }
     }
 
-    var body: some View {
+    public var body: some View {
         ZStack {
             pulseBackground
             SwiftUI.Button {

@@ -1,3 +1,4 @@
+import Claims
 import Combine
 import SwiftUI
 import hCore
@@ -8,10 +9,10 @@ struct SubmitClaimFilesUploadScreen: View {
     @State var showFilePicker = false
     @State var showCamera = false
     @StateObject fileprivate var vm: FilesUploadViewModel
-    @ObservedObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @ObservedObject var claimsNavigationVm: SubmitClaimNavigationViewModel
 
     init(
-        claimsNavigationVm: ClaimsNavigationViewModel
+        claimsNavigationVm: SubmitClaimNavigationViewModel
     ) {
         self.claimsNavigationVm = claimsNavigationVm
         let model = claimsNavigationVm.fileUploadModel ?? .init(id: "", title: "", targetUploadUrl: "", uploads: [])
@@ -199,7 +200,7 @@ public class FilesUploadViewModel: ObservableObject {
     private var initObservers = [AnyCancellable]()
     private let submitClaimService = SubmitClaimService()
 
-    init(model: FlowClaimFileUploadStepModel) {
+    public init(model: FlowClaimFileUploadStepModel) {
         self.model = model
         let files = model.uploads.compactMap({
             File(

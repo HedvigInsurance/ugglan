@@ -5,7 +5,7 @@ import hCore
 import hGraphQL
 
 public indirect enum ClaimsAction: ActionProtocol, Hashable, Sendable {
-    case submitNewClaim(from: ClaimsOrigin)
+    //    case submitNewClaim(from: ClaimsOrigin)
     case fetchClaims
     case setClaims(claims: [ClaimModel])
     case setFilesForClaim(claimId: String, files: [File])

@@ -5,20 +5,20 @@ import SwiftUI
 import hCore
 
 @MainActor
-class AudioPlayer: NSObject, @preconcurrency ObservableObject {
-    internal init(
+public class AudioPlayer: NSObject, @preconcurrency ObservableObject {
+    public init(
         url: URL?
     ) {
         self.url = url
         self.sampleHeights = generateGaussianHeights()
     }
 
-    let objectWillChange = PassthroughSubject<AudioPlayer, Never>()
+    public let objectWillChange = PassthroughSubject<AudioPlayer, Never>()
     var audioPlayer: AVPlayer?
     let sampleHeights: [Int]
     var observerStatus: NSKeyValueObservation?
 
-    enum PlaybackState: Equatable {
+    public enum PlaybackState: Equatable {
         case idle
         case playing(paused: Bool)
         case error(message: String)
@@ -26,7 +26,7 @@ class AudioPlayer: NSObject, @preconcurrency ObservableObject {
         case finished
     }
 
-    var playbackState: PlaybackState = .idle {
+    public var playbackState: PlaybackState = .idle {
         didSet {
             switch playbackState {
             case .idle:
@@ -56,7 +56,7 @@ class AudioPlayer: NSObject, @preconcurrency ObservableObject {
         }
     }
 
-    var url: URL? {
+    public var url: URL? {
         didSet {
             withAnimation {
                 objectWillChange.send(self)
@@ -153,7 +153,7 @@ class AudioPlayer: NSObject, @preconcurrency ObservableObject {
         audioPlayer?.play()
     }
 
-    override func observeValue(
+    override public func observeValue(
         forKeyPath keyPath: String?,
         of object: Any?,
         change: [NSKeyValueChangeKey: Any]?,

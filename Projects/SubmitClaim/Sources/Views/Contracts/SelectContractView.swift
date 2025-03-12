@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct SelectContractView: View {
-    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @EnvironmentObject var claimsNavigationVm: SubmitClaimNavigationViewModel
     @StateObject var vm = SelectContractViewModel()
 
     var body: some View {

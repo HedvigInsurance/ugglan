@@ -3,12 +3,12 @@ import hCore
 import hCoreUI
 
 struct SubmitClaimOccurrencePlusLocationScreen: View {
-    @ObservedObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @ObservedObject var claimsNavigationVm: SubmitClaimNavigationViewModel
     @State private var options: SubmitClaimOption
     @StateObject private var vm = SubmitClaimOccurrencePlusLocationViewModel()
 
     init(
-        claimsNavigationVm: ClaimsNavigationViewModel
+        claimsNavigationVm: SubmitClaimNavigationViewModel
     ) {
         self.claimsNavigationVm = claimsNavigationVm
 

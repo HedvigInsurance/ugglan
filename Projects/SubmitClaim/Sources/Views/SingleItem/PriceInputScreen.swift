@@ -7,12 +7,12 @@ struct PriceInputScreen: View {
     @State var purchasePrice: String = ""
     @State var type: ClaimsFlowSingleItemFieldType? = .purchasePrice
     @EnvironmentObject var router: Router
-    @ObservedObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @ObservedObject var claimsNavigationVm: SubmitClaimNavigationViewModel
 
     let currency: String
 
     init(
-        claimsNavigationVm: ClaimsNavigationViewModel
+        claimsNavigationVm: SubmitClaimNavigationViewModel
     ) {
         self.claimsNavigationVm = claimsNavigationVm
         self.currency = claimsNavigationVm.singleItemModel?.prefferedCurrency ?? ""

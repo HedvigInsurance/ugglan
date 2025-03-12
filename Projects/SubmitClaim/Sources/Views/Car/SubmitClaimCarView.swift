@@ -4,7 +4,7 @@ import hCoreUI
 
 struct SubmitClaimCarView: View {
     let model: FlowClaimDeflectStepModel?
-    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @EnvironmentObject var claimsNavigationVm: SubmitClaimNavigationViewModel
 
     init(
         model: FlowClaimDeflectStepModel?

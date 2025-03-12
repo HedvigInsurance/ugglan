@@ -1,11 +1,16 @@
 import SwiftUI
 import hCore
-import hCoreUI
 
-struct TrackPlayerView: View {
+public struct TrackPlayerView: View {
     @ObservedObject var audioPlayer: AudioPlayer
 
-    var body: some View {
+    public init(
+        audioPlayer: AudioPlayer
+    ) {
+        self.audioPlayer = audioPlayer
+    }
+
+    public var body: some View {
         switch audioPlayer.playbackState {
         case .error:
             InfoCard(text: L10n.ClaimStatusDetail.InfoError.body, type: .attention)

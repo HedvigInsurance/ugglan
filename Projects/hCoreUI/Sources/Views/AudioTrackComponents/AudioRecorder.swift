@@ -1,21 +1,22 @@
 import AVFAudio
 import Combine
 import SwiftUI
-import hCoreUI
 
-class AudioRecorder: ObservableObject {
-    static let audioFileExtension = "m4a"
+public class AudioRecorder: ObservableObject {
+    public static let audioFileExtension = "m4a"
     private let filePath: URL
-    init(filePath: URL) {
+    
+    public init(filePath: URL) {
         self.filePath = filePath
     }
-    private(set) var isRecording = false {
+    
+    public var isRecording = false {
         didSet {
             objectWillChange.send(self)
         }
     }
 
-    private(set) var recording: Recording? {
+    public var recording: Recording? {
         didSet {
             objectWillChange.send(self)
         }
@@ -29,10 +30,11 @@ class AudioRecorder: ObservableObject {
 
     let recordingTimer = Timer.publish(every: 1 / 30, on: .main, in: .common)
         .autoconnect()
-    let objectWillChange = PassthroughSubject<AudioRecorder, Never>()
+    
+    public let objectWillChange = PassthroughSubject<AudioRecorder, Never>()
     var recorder: AVAudioRecorder?
 
-    func toggleRecording() {
+    public func toggleRecording() {
         if isRecording {
             stopRecording()
         } else {
@@ -40,7 +42,7 @@ class AudioRecorder: ObservableObject {
         }
     }
 
-    func restart() {
+    public func restart() {
         recording = nil
     }
 
@@ -109,8 +111,8 @@ struct AudioPulseBackground: View {
     }
 }
 
-struct Recording {
-    var url: URL
+public struct Recording {
+    public var url: URL
     var created: Date
     var sample: [CGFloat]
     var max: CGFloat {

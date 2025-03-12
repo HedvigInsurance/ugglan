@@ -5,7 +5,7 @@ import hCoreUI
 
 public struct SubmitClaimContactScreen: View, KeyboardReadable {
     @StateObject var vm = SubmitClaimContractViewModel(phoneNumber: "")
-    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @EnvironmentObject var claimsNavigationVm: SubmitClaimNavigationViewModel
 
     public init(
         model: FlowClaimPhoneNumberStepModel

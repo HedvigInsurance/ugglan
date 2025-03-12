@@ -4,7 +4,7 @@ import hCore
 import hCoreUI
 
 public struct SubmitClaimEditSummaryScreen: View {
-    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @EnvironmentObject var claimsNavigationVm: SubmitClaimNavigationViewModel
     @State var purchasePrice: String = ""
 
     public init() {}

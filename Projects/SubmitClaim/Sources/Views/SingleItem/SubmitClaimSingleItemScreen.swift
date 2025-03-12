@@ -6,7 +6,7 @@ import hGraphQL
 
 public struct SubmitClaimSingleItemScreen: View {
     @State var type: ClaimsFlowSingleItemFieldType?
-    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @EnvironmentObject var claimsNavigationVm: SubmitClaimNavigationViewModel
     @StateObject var vm = SubmitClaimSingleItemViewModel()
 
     public init() {}

@@ -4,7 +4,7 @@ import hCoreUI
 
 struct BrandPickerView: View {
     @EnvironmentObject var router: Router
-    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @EnvironmentObject var claimsNavigationVm: SubmitClaimNavigationViewModel
 
     var body: some View {
         ListScreen<ClaimFlowItemBrandOptionModel>(

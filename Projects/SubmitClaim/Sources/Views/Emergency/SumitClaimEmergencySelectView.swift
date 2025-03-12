@@ -3,7 +3,7 @@ import hCore
 import hCoreUI
 
 struct SumitClaimEmergencySelectView: View {
-    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @EnvironmentObject var claimsNavigationVm: SubmitClaimNavigationViewModel
     @StateObject var vm = SumitClaimEmergencySelectViewModel()
     @State var selectedValue: Bool = true
     let title: String

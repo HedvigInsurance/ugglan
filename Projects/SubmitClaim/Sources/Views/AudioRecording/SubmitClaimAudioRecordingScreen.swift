@@ -7,7 +7,7 @@ import hCoreUI
 import hGraphQL
 
 public struct SubmitClaimAudioRecordingScreen: View {
-    @ObservedObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @ObservedObject var claimsNavigationVm: SubmitClaimNavigationViewModel
     @ObservedObject var audioPlayer: AudioPlayer
     @ObservedObject var audioRecorder: AudioRecorder
     @StateObject var audioRecordingVm = SubmitClaimAudioRecordingScreenModel()
@@ -24,7 +24,7 @@ public struct SubmitClaimAudioRecordingScreen: View {
 
     public init(
         url: URL?,
-        claimsNavigationVm: ClaimsNavigationViewModel
+        claimsNavigationVm: SubmitClaimNavigationViewModel
     ) {
         audioPlayer = AudioPlayer(url: url)
         self.claimsNavigationVm = claimsNavigationVm
@@ -325,7 +325,7 @@ struct SubmitClaimAudioRecordingScreen_Previews: PreviewProvider {
     static var previews: some View {
         let client = FetchEntrypointsClientDemo()
         Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in client })
-        let navigation = ClaimsNavigationViewModel()
+        let navigation = SubmitClaimNavigationViewModel()
         navigation.audioRecordingModel = .init(
             id: "id",
             questions: [
