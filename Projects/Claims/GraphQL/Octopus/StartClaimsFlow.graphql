@@ -236,7 +236,8 @@ fragment FlowClaimDeflectPartnerFragment on FlowClaimDeflectPartner {
 }
 
 fragment FlowClaimContractOptionFragment on FlowClaimContractOption {
-    displayName
+    displayTitle
+    displaySubtitle
     id
 }
 
