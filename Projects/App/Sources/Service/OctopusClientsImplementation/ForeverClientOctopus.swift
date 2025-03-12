@@ -1,3 +1,4 @@
+import Forever
 import Foundation
 import hCore
 import hGraphQL
@@ -12,12 +13,12 @@ public class ForeverClientOctopus: ForeverClient {
             .currentMember
 
         let referrals: [Referral] = data.referralInformation.referrals.map { referral in
-            Referral(from: referral)
+            Referral(from: referral.fragments.memberReferralFragment)
         }
 
         var referredBy: Referral? {
             if let referral = data.referralInformation.referredBy {
-                return Referral(from: referral)
+                return Referral(from: referral.fragments.memberReferralFragment)
             }
             return nil
         }
@@ -49,44 +50,30 @@ public class ForeverClientOctopus: ForeverClient {
 }
 
 extension Referral {
-    fileprivate init(
-        from data: OctopusGraphQL.MemberReferralInformationQuery.Data.CurrentMember.ReferralInformation.Referral
-    ) {
-        self.name = data.name
-        if let activeDiscount = data.activeDiscount?.fragments.moneyFragment {
-            self.activeDiscount = MonetaryAmount(fragment: activeDiscount)
-        } else {
-            activeDiscount = MonetaryAmount(amount: "", currency: "")
-        }
-        if data.status == .active {
-            self.status = .active
-        } else if data.status == .pending {
-            self.status = .pending
-        } else if data.status == .terminated {
-            self.status = .terminated
-        } else {
-            self.status = .pending
-        }
-    }
+    fileprivate init(from data: OctopusGraphQL.MemberReferralFragment) {
+        let activeDiscount = {
+            if let activeDiscount = data.activeDiscount?.fragments.moneyFragment {
+                return MonetaryAmount(fragment: activeDiscount)
+            } else {
+                return MonetaryAmount(amount: "", currency: "")
+            }
+        }()
 
-    fileprivate init(
-        from data: OctopusGraphQL.MemberReferralInformationQuery.Data.CurrentMember.ReferralInformation.ReferredBy
-    ) {
-        self.name = data.name
-        if let activeDiscount = data.activeDiscount?.fragments.moneyFragment {
-            self.activeDiscount = MonetaryAmount(fragment: activeDiscount)
-        } else {
-            activeDiscount = MonetaryAmount(amount: "", currency: "")
-        }
-
-        if data.status == .active {
-            self.status = .active
-        } else if data.status == .pending {
-            self.status = .pending
-        } else if data.status == .terminated {
-            self.status = .terminated
-        } else {
-            self.status = .pending
-        }
+        let status: Referral.State = {
+            if data.status == .active {
+                return .active
+            } else if data.status == .pending {
+                return .pending
+            } else if data.status == .terminated {
+                return .terminated
+            } else {
+                return .pending
+            }
+        }()
+        self.init(
+            name: data.name,
+            activeDiscount: activeDiscount,
+            status: status
+        )
     }
 }
