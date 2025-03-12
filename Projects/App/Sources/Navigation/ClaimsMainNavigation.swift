@@ -1,6 +1,7 @@
 import Claims
 import PresentableStore
 import Profile
+import SubmitClaim
 import SwiftUI
 import hCore
 import hCoreUI
@@ -24,7 +25,7 @@ public struct ClaimsMainNavigation: View {
                 }
                 .hidden($shouldHideHonestyPledge)
                 .routerDestination(
-                    for: ClaimsRouterActionsWithoutBackButton.self,
+                    for: SubmitClaimRouterActionsWithoutBackButton.self,
                     options: .hidesBackButton
                 ) { [weak claimsNavigationVm] destination in
                     if destination == .askForPushNotifications {
@@ -47,7 +48,7 @@ public struct ClaimsMainNavigation: View {
         .modally(
             presented: $claimsNavigationVm.isClaimsFlowPresented
         ) {
-            ClaimsNavigation(origin: from)
+            SubmitClaimNavigation(origin: from)
                 .onAppear {
                     shouldHideHonestyPledge = true
                 }
@@ -63,7 +64,7 @@ public struct ClaimsMainNavigation: View {
         HonestyPledge(onConfirmAction: { [weak claimsNavigationVm, weak claimsRouter] in
             let profileStore: ProfileStore = globalPresentableStoreContainer.get()
             if profileStore.state.pushNotificationCurrentStatus() != .authorized {
-                claimsRouter?.push(ClaimsRouterActionsWithoutBackButton.askForPushNotifications)
+                claimsRouter?.push(SubmitClaimRouterActionsWithoutBackButton.askForPushNotifications)
             } else {
                 claimsNavigationVm?.isClaimsFlowPresented = true
             }

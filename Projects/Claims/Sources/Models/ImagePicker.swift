@@ -5,10 +5,16 @@ import PhotosUI
 import SwiftUI
 import hCore
 
-struct ImagePicker: UIViewControllerRepresentable {
+public struct ImagePicker: UIViewControllerRepresentable {
     let filesSelected: (_ files: [File]) -> Void
 
-    func makeUIViewController(context: Context) -> PHPickerViewController {
+    public init(
+        filesSelected: @escaping (_: [File]) -> Void
+    ) {
+        self.filesSelected = filesSelected
+    }
+
+    public func makeUIViewController(context: Context) -> PHPickerViewController {
         var config = PHPickerConfiguration()
         config.filter = .any(of: [.images, .videos])
 
@@ -18,22 +24,22 @@ struct ImagePicker: UIViewControllerRepresentable {
         return picker
     }
 
-    func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {
+    public func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {
 
     }
 
-    func makeCoordinator() -> Coordinator {
+    public func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
 
-    class Coordinator: NSObject, PHPickerViewControllerDelegate {
+    public class Coordinator: NSObject, PHPickerViewControllerDelegate {
         let parent: ImagePicker
         var didFinishAdding = false
         init(_ parent: ImagePicker) {
             self.parent = parent
         }
 
-        func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        public func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
             picker.isEditing = false
             guard !didFinishAdding else { return }
             didFinishAdding = true
@@ -72,27 +78,32 @@ struct ImagePicker: UIViewControllerRepresentable {
     }
 }
 
-struct FileImporterView: UIViewControllerRepresentable {
+public struct FileImporterView: UIViewControllerRepresentable {
     let imagesSelected: (_ filesSelected: [File]) -> Void
-
     @Environment(\.presentationMode) var presentationMode
 
-    func makeCoordinator() -> Coordinator {
+    public init(
+        imagesSelected: @escaping (_: [File]) -> Void
+    ) {
+        self.imagesSelected = imagesSelected
+    }
+
+    public func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
 
-    func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
+    public func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
         let picker = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.item])
         picker.allowsMultipleSelection = true
         picker.delegate = context.coordinator
         return picker
     }
 
-    func updateUIViewController(_ uiViewController: UIDocumentPickerViewController, context: Context) {
+    public func updateUIViewController(_ uiViewController: UIDocumentPickerViewController, context: Context) {
         // No update needed
     }
 
-    class Coordinator: NSObject, UIDocumentPickerDelegate {
+    public class Coordinator: NSObject, UIDocumentPickerDelegate {
         let parent: FileImporterView
         var didFinishAdding = false
 
@@ -100,7 +111,7 @@ struct FileImporterView: UIViewControllerRepresentable {
             self.parent = parent
         }
 
-        func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        public func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
             var files: [File] = []
             guard !didFinishAdding else { return }
             didFinishAdding = true
@@ -117,7 +128,7 @@ struct FileImporterView: UIViewControllerRepresentable {
 
         }
 
-        func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+        public func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
             parent.presentationMode.wrappedValue.dismiss()
         }
     }

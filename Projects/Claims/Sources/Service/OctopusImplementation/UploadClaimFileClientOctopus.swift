@@ -9,6 +9,8 @@ import hGraphQL
 public class hClaimFileUploadService {
     @Inject var client: hClaimFileUploadClient
 
+    public init() {}
+
     public func upload(
         endPoint: String,
         files: [File],
@@ -101,15 +103,15 @@ extension NetworkClient: hClaimFileUploadClient {
 }
 
 public struct ClaimFileUploadResponse: Codable, Sendable {
-    let file: FileUpload?
+    public let file: FileUpload?
     let error: String?
 }
 
-struct FileUpload: Codable, Sendable {
-    let fileId: String
-    let name: String
-    let mimeType: String
-    let url: String
+public struct FileUpload: Codable, Sendable {
+    public let fileId: String
+    public let name: String
+    public let mimeType: String
+    public let url: String
 }
 
 @MainActor

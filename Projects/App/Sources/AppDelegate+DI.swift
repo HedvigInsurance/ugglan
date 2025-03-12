@@ -15,6 +15,7 @@ import MoveFlow
 import Payment
 import PresentableStore
 import Profile
+import SubmitClaim
 import TerminateContracts
 import TravelCertificate
 import hCore
