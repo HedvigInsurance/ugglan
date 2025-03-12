@@ -1,3 +1,4 @@
+import Chat
 import Foundation
 import PresentableStore
 import hCore
@@ -193,5 +194,31 @@ extension OctopusGraphQL.MessageFragment {
             }
         }
         return .unknown
+    }
+}
+
+extension Conversation {
+    public init(
+        fragment: OctopusGraphQL.ConversationFragment,
+        type: ConversationType
+    ) {
+        let newestMessage: Message? = {
+            if let newestMessage = fragment.newestMessage?.fragments.messageFragment.asMessage() {
+                return .init(newestMessage)
+            }
+            return nil
+        }()
+
+        self.init(
+            id: fragment.id,
+            type: type,
+            newestMessage: newestMessage,
+            createdAt: fragment.createdAt,
+            statusMessage: fragment.statusMessage,
+            status: fragment.isOpen ? .open : .closed,
+            hasClaim: fragment.claim != nil,
+            claimType: fragment.claim?.claimType,
+            unreadMessageCount: fragment.unreadMessageCount
+        )
     }
 }
