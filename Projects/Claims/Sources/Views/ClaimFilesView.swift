@@ -240,7 +240,7 @@ public class ClaimFilesViewModel: ObservableObject {
     @MainActor
     public struct ClaimFilesViewOptions: @preconcurrency OptionSet {
         public let rawValue: UInt
-        
+
         public init(
             rawValue: UInt
         ) {

@@ -5,11 +5,11 @@ import SwiftUI
 public class AudioRecorder: ObservableObject {
     public static let audioFileExtension = "m4a"
     private let filePath: URL
-    
+
     public init(filePath: URL) {
         self.filePath = filePath
     }
-    
+
     public var isRecording = false {
         didSet {
             objectWillChange.send(self)
@@ -30,7 +30,7 @@ public class AudioRecorder: ObservableObject {
 
     let recordingTimer = Timer.publish(every: 1 / 30, on: .main, in: .common)
         .autoconnect()
-    
+
     public let objectWillChange = PassthroughSubject<AudioRecorder, Never>()
     var recorder: AVAudioRecorder?
 
