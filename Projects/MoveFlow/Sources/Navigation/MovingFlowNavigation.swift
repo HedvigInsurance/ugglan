@@ -8,7 +8,7 @@ import hGraphQL
 
 @MainActor
 public class MovingFlowNavigationViewModel: ObservableObject {
-    @Inject private var service: MoveFlowClient
+    private var service = MoveFlowClientOctopus()
     @Published var viewState: ProcessingState = .loading
 
     @Published var isAddExtraBuildingPresented: HouseInformationInputModel?
@@ -173,6 +173,7 @@ struct ExtraBuildingTypeNavigationModel: Identifiable, Equatable {
 
     var addExtraBuildingVm: MovingFlowAddExtraBuildingViewModel
 }
+
 public struct MovingFlowNavigation: View {
     @StateObject private var movingFlowNavigationVm = MovingFlowNavigationViewModel()
     @StateObject var router = Router()
