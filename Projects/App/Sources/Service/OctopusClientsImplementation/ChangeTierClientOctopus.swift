@@ -1,7 +1,8 @@
+import ChangeTier
 import Foundation
 import hCore
 import hCoreUI
-@preconcurrency import hGraphQL
+import hGraphQL
 
 public class ChangeTierClientOctopus: ChangeTierClient {
     @Inject @preconcurrency var octopus: hOctopus
@@ -245,10 +246,12 @@ extension ProductVariantComparison.ProductVariantComparisonRow {
     init(
         data: OctopusGraphQL.ProductVariantComparisonRowFragment
     ) {
-        self.title = data.title
-        self.description = data.description
-        self.colorCode = data.colorCode
-        self.cells = data.cells.map({ .init(isCovered: $0.isCovered, coverageText: $0.coverageText) })
+        self.init(
+            title: data.title,
+            description: data.description,
+            colorCode: data.colorCode,
+            cells: data.cells.map({ .init(isCovered: $0.isCovered, coverageText: $0.coverageText) })
+        )
     }
 }
 
@@ -257,12 +260,14 @@ extension Quote.Addon {
         with data: OctopusGraphQL.ChangeTierDeductibleCreateIntentMutation.Data.ChangeTierDeductibleCreateIntent.Intent
             .Quote.Addon
     ) {
-        addonId = data.addonId
-        addonVariant = .init(fragment: data.addonVariant.fragments.addonVariantFragment)
-        displayItems = data.displayItems.map({ Quote.DisplayItem.init(with: $0) })
-        displayName = data.displayName
-        premium = .init(fragment: data.premium.fragments.moneyFragment)
-        previousPremium = .init(fragment: data.previousPremium.fragments.moneyFragment)
+        self.init(
+            addonId: data.addonId,
+            addonVariant: .init(fragment: data.addonVariant.fragments.addonVariantFragment),
+            displayItems: data.displayItems.map({ Quote.DisplayItem.init(with: $0) }),
+            displayName: data.displayName,
+            premium: .init(fragment: data.premium.fragments.moneyFragment),
+            previousPremium: .init(fragment: data.previousPremium.fragments.moneyFragment)
+        )
     }
 }
 
@@ -271,8 +276,10 @@ extension Quote.DisplayItem {
         with data: OctopusGraphQL.ChangeTierDeductibleCreateIntentMutation.Data.ChangeTierDeductibleCreateIntent.Intent
             .Quote.Addon.DisplayItem
     ) {
-        self.title = data.displayTitle
-        self.subTitle = data.displaySubtitle
-        self.value = data.displayValue
+        self.init(
+            title: data.displayTitle,
+            subTitle: data.displaySubtitle,
+            value: data.displayValue
+        )
     }
 }

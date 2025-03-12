@@ -34,12 +34,12 @@ public enum FetchClaimDetailsType {
     case conversation(id: String)
 }
 
-enum FetchClaimDetailsError: Error {
+public enum FetchClaimDetailsError: Error {
     case noClaimFound
 }
 
 extension FetchClaimDetailsError: LocalizedError {
-    var errorDescription: String? {
+    public var errorDescription: String? {
         return L10n.General.errorBody
     }
 

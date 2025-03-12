@@ -3,7 +3,6 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct ContractCoverageView: View {
     @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel

@@ -1,3 +1,4 @@
+import Claims
 import Foundation
 import hCore
 import hGraphQL
@@ -21,18 +22,20 @@ extension ClaimModel {
     init(
         claim: OctopusGraphQL.ClaimFragment
     ) {
-        self.id = claim.id
-        self.status = ClaimStatus(rawValue: claim.status?.rawValue ?? "") ?? .none
-        self.outcome = .init(rawValue: claim.outcome?.rawValue ?? "") ?? .none
-        self.submittedAt = claim.submittedAt
-        self.signedAudioURL = claim.audioUrl ?? ""
-        self.memberFreeText = claim.memberFreeText
-        self.payoutAmount = MonetaryAmount(optionalFragment: claim.payoutAmount?.fragments.moneyFragment)
-        self.targetFileUploadUri = claim.targetFileUploadUri
-        self.incidentDate = claim.incidentDate
-        self.productVariant = .init(data: claim.productVariant?.fragments.productVariantFragment)
-        self.claimType = claim.claimType ?? ""
-        self.conversation = .init(fragment: claim.conversation.fragments.conversationFragment, type: .claim)
+        self.init(
+            id: claim.id,
+            status: ClaimStatus(rawValue: claim.status?.rawValue ?? "") ?? .none,
+            outcome: .init(rawValue: claim.outcome?.rawValue ?? "") ?? .none,
+            submittedAt: claim.submittedAt,
+            signedAudioURL: claim.audioUrl ?? "",
+            memberFreeText: claim.memberFreeText,
+            payoutAmount: MonetaryAmount(optionalFragment: claim.payoutAmount?.fragments.moneyFragment),
+            targetFileUploadUri: claim.targetFileUploadUri,
+            claimType: claim.claimType ?? "",
+            incidentDate: claim.incidentDate,
+            productVariant: .init(data: claim.productVariant?.fragments.productVariantFragment),
+            conversation: .init(fragment: claim.conversation.fragments.conversationFragment, type: .claim)
+        )
     }
 }
 

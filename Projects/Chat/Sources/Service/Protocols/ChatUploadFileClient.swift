@@ -10,5 +10,5 @@ public protocol ChatFileUploaderClient {
 }
 
 public struct ChatUploadFileResponseModel: Decodable, Sendable {
-    let uploadToken: String
+    public let uploadToken: String
 }

@@ -1,31 +1,8 @@
 import Addons
 import Foundation
+import TravelCertificate
 import hCore
 import hGraphQL
-
-@MainActor
-public class TravelInsuranceService {
-    @Inject var service: TravelInsuranceClient
-
-    public func getSpecifications() async throws -> [TravelInsuranceContractSpecification] {
-        log.info("TravelInsuranceService: getSpecifications", error: nil, attributes: nil)
-        return try await service.getSpecifications()
-    }
-
-    public func submitForm(dto: TravelInsuranceFormDTO) async throws -> URL {
-        log.info("TravelInsuranceClient: submitForm", error: nil, attributes: ["data": dto])
-        return try await service.submitForm(dto: dto)
-    }
-
-    public func getList(
-        source: AddonSource
-    ) async throws -> (
-        list: [TravelCertificateModel], canAddTravelInsurance: Bool, banner: AddonBannerModel?
-    ) {
-        log.info("TravelInsuranceService: getList", error: nil, attributes: nil)
-        return try await service.getList(source: source)
-    }
-}
 
 @MainActor
 public class TravelInsuranceClientOctopus: TravelInsuranceClient {
@@ -140,23 +117,27 @@ extension TravelInsuranceContractSpecification {
         email: String,
         fullName: String
     ) {
-        self.contractId = data.contractId
-        self.minStartDate = data.minStartDate.localDateToDate ?? Date()
-        self.maxStartDate = data.maxStartDate.localDateToDate ?? Date().addingTimeInterval(60 * 60 * 24 * 90)
-        self.numberOfCoInsured = data.numberOfCoInsured
-        self.maxDuration = data.maxDurationDays
-        self.street = data.location?.street ?? ""
-        self.email = email
-        self.fullName = fullName
+        self.init(
+            contractId: data.contractId,
+            minStartDate: data.minStartDate.localDateToDate ?? Date(),
+            maxStartDate: data.maxStartDate.localDateToDate ?? Date().addingTimeInterval(60 * 60 * 24 * 90),
+            numberOfCoInsured: data.numberOfCoInsured,
+            maxDuration: data.maxDurationDays,
+            street: data.location?.street ?? "",
+            email: email,
+            fullName: fullName
+        )
     }
 }
 
 extension TravelCertificateModel {
     init?(_ data: OctopusGraphQL.TravelCertificatesQuery.Data.CurrentMember.TravelCertificate) {
         guard let url = URL(string: data.signedUrl) else { return nil }
-        self.id = data.id
-        self.date = data.startDate.localDateToDate ?? Date()
-        self.valid = (data.expiryDate.localDateToDate ?? Date()) > Date()
-        self.url = url
+        self.init(
+            id: data.id,
+            date: data.startDate.localDateToDate ?? Date(),
+            valid: (data.expiryDate.localDateToDate ?? Date()) > Date(),
+            url: url
+        )
     }
 }

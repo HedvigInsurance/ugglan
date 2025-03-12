@@ -5,14 +5,13 @@ import PresentableStore
 import TerminateContracts
 import hCore
 import hCoreUI
-import hGraphQL
 
 public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
     public init(
         id: String,
-        currentAgreement: Agreement,
+        currentAgreement: Agreement?,
         exposureDisplayName: String,
-        masterInceptionDate: String,
+        masterInceptionDate: String?,
         terminationDate: String?,
         supportsAddressChange: Bool,
         supportsCoInsured: Bool,
@@ -168,60 +167,6 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable, Sendable {
         }
         return false
     }
-
-    init(
-        pendingContract: OctopusGraphQL.ContractBundleQuery.Data.CurrentMember.PendingContract,
-        firstName: String,
-        lastName: String,
-        ssn: String?
-    ) {
-        exposureDisplayName = pendingContract.exposureDisplayName
-        id = pendingContract.id
-        currentAgreement = .init(
-            premium: .init(fragment: pendingContract.premium.fragments.moneyFragment),
-            displayItems: pendingContract.displayItems.map({ .init(data: $0.fragments.agreementDisplayItemFragment) }),
-            productVariant: .init(data: pendingContract.productVariant.fragments.productVariantFragment),
-            addonVariant: []
-        )
-        masterInceptionDate = nil
-        terminationDate = nil
-        supportsAddressChange = false
-        supportsCoInsured = false
-        supportsTravelCertificate = false
-        supportsChangeTier = false
-        upcomingChangedAgreement = nil
-        upcomingRenewal = nil
-        typeOfContract = TypeOfContract.resolve(for: pendingContract.productVariant.typeOfContract)
-        coInsured = []
-        self.firstName = firstName
-        self.lastName = lastName
-        self.ssn = ssn
-    }
-
-    init(
-        contract: OctopusGraphQL.ContractFragment,
-        firstName: String,
-        lastName: String,
-        ssn: String?
-    ) {
-        id = contract.id
-        currentAgreement =
-            .init(agreement: contract.currentAgreement.fragments.agreementFragment)
-        exposureDisplayName = contract.exposureDisplayName
-        masterInceptionDate = contract.masterInceptionDate
-        terminationDate = contract.terminationDate
-        supportsAddressChange = contract.supportsMoving
-        supportsCoInsured = contract.supportsCoInsured
-        supportsTravelCertificate = contract.supportsTravelCertificate
-        supportsChangeTier = contract.supportsChangeTier
-        upcomingChangedAgreement = .init(agreement: contract.upcomingChangedAgreement?.fragments.agreementFragment)
-        upcomingRenewal = .init(upcoming: contract.upcomingChangedAgreement?.fragments.agreementFragment)
-        typeOfContract = TypeOfContract.resolve(for: contract.currentAgreement.productVariant.typeOfContract)
-        coInsured = contract.coInsured?.map({ .init(data: $0.fragments.coInsuredFragment) }) ?? []
-        self.firstName = firstName
-        self.lastName = lastName
-        self.ssn = ssn
-    }
 }
 
 extension TypeOfContract {
@@ -332,18 +277,12 @@ public struct ContractRenewal: Codable, Hashable, Sendable {
     public let renewalDate: String
     public let certificateUrl: String?
 
-    init(
+    public init(
         renewalDate: String,
-        certificateUrl: String
+        certificateUrl: String?
     ) {
         self.renewalDate = renewalDate
         self.certificateUrl = certificateUrl
-    }
-
-    init?(upcoming: OctopusGraphQL.AgreementFragment?) {
-        guard let upcoming = upcoming, upcoming.creationCause == .renewal else { return nil }
-        self.renewalDate = upcoming.activeFrom
-        self.certificateUrl = upcoming.certificateUrl
     }
 }
 
@@ -374,7 +313,7 @@ public struct Agreement: Codable, Hashable, Sendable {
     public let productVariant: hCore.ProductVariant
     public let addonVariant: [AddonVariant]
 
-    init(
+    public init(
         premium: MonetaryAmount,
         displayItems: [AgreementDisplayItem],
         productVariant: hCore.ProductVariant,
@@ -388,21 +327,6 @@ public struct Agreement: Codable, Hashable, Sendable {
         self.activeFrom = nil
         self.activeTo = nil
     }
-
-    init?(
-        agreement: OctopusGraphQL.AgreementFragment?
-    ) {
-        guard let agreement = agreement else {
-            return nil
-        }
-        certificateUrl = agreement.certificateUrl
-        activeFrom = agreement.activeFrom
-        activeTo = agreement.activeTo
-        premium = .init(fragment: agreement.premium.fragments.moneyFragment)
-        displayItems = agreement.displayItems.map({ .init(data: $0.fragments.agreementDisplayItemFragment) })
-        productVariant = .init(data: agreement.productVariant.fragments.productVariantFragment)
-        addonVariant = agreement.addons.map({ .init(fragment: $0.addonVariant.fragments.addonVariantFragment) })
-    }
 }
 
 public struct AgreementDisplayItem: Codable, Hashable, Sendable {
@@ -415,12 +339,6 @@ public struct AgreementDisplayItem: Codable, Hashable, Sendable {
     ) {
         self.displayTitle = displayTitle
         self.displayValue = displayValue
-    }
-    public init(
-        data: OctopusGraphQL.AgreementDisplayItemFragment
-    ) {
-        self.displayTitle = data.displayTitle
-        self.displayValue = data.displayValue
     }
 }
 
