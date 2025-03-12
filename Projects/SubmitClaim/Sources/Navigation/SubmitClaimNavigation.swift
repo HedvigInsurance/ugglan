@@ -273,46 +273,46 @@ public struct SubmitClaimNavigation: View {
                     for: $submitClaimNavigationVm.progress
                 )
                 .addDismissClaimsFlow()
-                //                .routerDestination(for: SubmitClaimRouterActions.self) { routerAction in
-                //                    Group {
-                //                        switch routerAction {
-                //                        case .triagingEntrypoint:
-                //                            SelectClaimEntrypointType()
-                //                        case .triagingOption:
-                //                            SelectClaimEntrypointOption()
-                //                        case .dateOfOccurrancePlusLocation:
-                //                            SubmitClaimOccurrencePlusLocationScreen(claimsNavigationVm: submitClaimNavigationVm)
-                //                        case .selectContract:
-                //                            SelectContractView()
-                //                        case let .phoneNumber(model):
-                //                            SubmitClaimContactScreen(model: model)
-                //                        case .audioRecording:
-                //                            let url = submitClaimNavigationVm.audioRecordingModel?.getUrl()
-                //                            SubmitClaimAudioRecordingScreen(url: url, claimsNavigationVm: submitClaimNavigationVm)
-                //                        case .singleItem:
-                //                            SubmitClaimSingleItemScreen()
-                //                        case .summary:
-                //                            SubmitClaimSummaryScreen(claimsNavigationVm: submitClaimNavigationVm)
-                //                                .configureTitle(L10n.Claims.Summary.Screen.title)
-                //                        case .deflect:
-                //                            openDeflectStepScreen()
-                //                        case .emergencySelect:
-                //                            SumitClaimEmergencySelectView(
-                //                                title: submitClaimNavigationVm.emergencyConfirmModel?.text ?? ""
-                //                            )
-                //                        case .uploadFiles:
-                //                            SubmitClaimFilesUploadScreen(claimsNavigationVm: submitClaimNavigationVm)
-                //                        case .checkOutNoRepair:
-                //                            SubmitClaimCheckoutScreen(vm: submitClaimNavigationVm.submitClaimCheckoutVm)
-                //                                .configureTitle(L10n.Claims.Payout.Summary.title)
-                //                        }
-                //                    }
-                //                    .addDismissClaimsFlow()
-                //                    .resetProgressOnDismiss(
-                //                        to: submitClaimNavigationVm.previousProgress,
-                //                        for: $submitClaimNavigationVm.progress
-                //                    )
-                //                }
+                .routerDestination(for: SubmitClaimRouterActions.self) { routerAction in
+                    Group {
+                        switch routerAction {
+                        case .triagingEntrypoint:
+                            SelectClaimEntrypointType()
+                        case .triagingOption:
+                            SelectClaimEntrypointOption()
+                        case .dateOfOccurrancePlusLocation:
+                            SubmitClaimOccurrencePlusLocationScreen(claimsNavigationVm: submitClaimNavigationVm)
+                        case .selectContract:
+                            SelectContractView()
+                        case let .phoneNumber(model):
+                            SubmitClaimContactScreen(model: model)
+                        case .audioRecording:
+                            let url = submitClaimNavigationVm.audioRecordingModel?.getUrl()
+                            SubmitClaimAudioRecordingScreen(url: url, claimsNavigationVm: submitClaimNavigationVm)
+                        case .singleItem:
+                            SubmitClaimSingleItemScreen()
+                        case .summary:
+                            SubmitClaimSummaryScreen(claimsNavigationVm: submitClaimNavigationVm)
+                                .configureTitle(L10n.Claims.Summary.Screen.title)
+                        case .deflect:
+                            openDeflectStepScreen()
+                        case .emergencySelect:
+                            SumitClaimEmergencySelectView(
+                                title: submitClaimNavigationVm.emergencyConfirmModel?.text ?? ""
+                            )
+                        case .uploadFiles:
+                            SubmitClaimFilesUploadScreen(claimsNavigationVm: submitClaimNavigationVm)
+                        case .checkOutNoRepair:
+                            SubmitClaimCheckoutScreen(vm: submitClaimNavigationVm.submitClaimCheckoutVm)
+                                .configureTitle(L10n.Claims.Payout.Summary.title)
+                        }
+                    }
+                    .addDismissClaimsFlow()
+                    .resetProgressOnDismiss(
+                        to: submitClaimNavigationVm.previousProgress,
+                        for: $submitClaimNavigationVm.progress
+                    )
+                }
                 .routerDestination(
                     for: SubmitClaimRouterActionsWithoutBackButton.self,
                     options: .hidesBackButton
