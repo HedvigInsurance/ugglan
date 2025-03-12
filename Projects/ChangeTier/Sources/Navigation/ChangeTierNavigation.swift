@@ -291,10 +291,13 @@ public struct ChangeTierNavigation: View {
                     )
                     .withDismissButton()
                 } else {
-                    SelectInsuranceScreen(changeTierContractsInput: changeTierContracts)
-                        .routerDestination(for: ChangeTierContract.self) { changeTierContract in
-                            getScreen
-                        }
+                    SelectInsuranceScreen(
+                        changeTierContractsInput: changeTierContracts,
+                        changeTierNavigationVm: changeTierNavigationVm
+                    )
+                    .routerDestination(for: ChangeTierContract.self) { changeTierContract in
+                        getScreen
+                    }
                 }
             } else {
                 getScreen

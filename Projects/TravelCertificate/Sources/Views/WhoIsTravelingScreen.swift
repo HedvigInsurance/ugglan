@@ -8,64 +8,61 @@ import hCoreUI
 
 struct WhoIsTravelingScreen: View {
     @ObservedObject var vm: WhoIsTravelingViewModel
-    @EnvironmentObject var router: Router
-    @EnvironmentObject var travelCertificateNavigationVm: TravelCertificateNavigationViewModel
+    @ObservedObject var travelCertificateNavigationVm: TravelCertificateNavigationViewModel
+    let itemConfig: ItemConfig<CoInsuredModel>
+    init(vm: WhoIsTravelingViewModel, travelCertificateNavigationVm: TravelCertificateNavigationViewModel) {
+        self.vm = vm
+        self.travelCertificateNavigationVm = travelCertificateNavigationVm
+        itemConfig = .init(
+            items: {
+                return vm.coInsuredModelData.compactMap({
+                    (object: $0, displayName: ItemModel(title: $0.fullName ?? ""))
+                })
+            }(),
+            preSelectedItems: {
+                if let first = vm.coInsuredModelData.first {
+                    return [first]
+                }
+                return []
+            },
+            onSelected: { selectedCoInsured in
+                let listOfIncludedTravellers = selectedCoInsured.map {
+                    PolicyCoinsuredPersonModel(
+                        fullName: ($0.0?.fullName ?? $0.0?.firstName) ?? "",
+                        personalNumber: $0.0?.SSN,
+                        birthDate: $0.0?.birthDate
+                    )
+                }
+                vm.setCoInsured(data: listOfIncludedTravellers)
+                vm.validateAndSubmit()
+            },
+            hButtonText: L10n.General.submit,
+            infoCard: vm.hasMissingCoInsuredData
+                ? .init(
+                    text: L10n.TravelCertificate.missingCoinsuredInfo,
+                    buttons: [
+                        .init(
+                            buttonTitle: L10n.TravelCertificate.missingCoinsuredButton,
+                            buttonAction: {
+                                vm.router.dismiss()
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                                    travelCertificateNavigationVm.editCoInsuredVm.start()
+                                }
+                            }
+                        )
+                    ],
+                    placement: .bottom
+                ) : nil,
+            contentPosition: .bottom
+        )
+    }
 
     var body: some View {
         ItemPickerScreen<CoInsuredModel>(
-            config: .init(
-                items: {
-                    return vm.coInsuredModelData.compactMap({
-                        (object: $0, displayName: ItemModel(title: $0.fullName ?? ""))
-                    })
-                }(),
-                preSelectedItems: {
-                    if let first = vm.coInsuredModelData.first {
-                        return [first]
-                    }
-                    return []
-                },
-                onSelected: { selectedCoInsured in
-                    let listOfIncludedTravellers = selectedCoInsured.map {
-                        PolicyCoinsuredPersonModel(
-                            fullName: ($0.0?.fullName ?? $0.0?.firstName) ?? "",
-                            personalNumber: $0.0?.SSN,
-                            birthDate: $0.0?.birthDate
-                        )
-                    }
-                    vm.setCoInsured(data: listOfIncludedTravellers)
-                    validateAndSubmit()
-                },
-                hButtonText: L10n.General.submit,
-                infoCard: vm.hasMissingCoInsuredData
-                    ? .init(
-                        text: L10n.TravelCertificate.missingCoinsuredInfo,
-                        buttons: [
-                            .init(
-                                buttonTitle: L10n.TravelCertificate.missingCoinsuredButton,
-                                buttonAction: {
-                                    router.dismiss()
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                                        travelCertificateNavigationVm.editCoInsuredVm.start()
-                                    }
-                                }
-                            )
-                        ],
-                        placement: .bottom
-                    ) : nil,
-                contentPosition: .bottom
-            )
+            config: itemConfig
         )
         .hFormTitle(title: .init(.small, .heading2, L10n.TravelCertificate.whoIsTraveling, alignment: .leading))
         .disabled(vm.isLoading)
-    }
-
-    func validateAndSubmit() {
-        let (valid, _) = vm.isValidWithMessage()
-        if valid {
-            UIApplication.dismissKeyboard()
-            router.push(TravelCertificateRouterActionsWithoutBackButton.processingScreen)
-        }
     }
 }
 
@@ -79,9 +76,10 @@ class WhoIsTravelingViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var error: String?
     let contract: Contracts.Contract?
-    init(specification: TravelInsuranceContractSpecification) {
+    let router: Router
+    init(specification: TravelInsuranceContractSpecification, router: Router) {
         self.specification = specification
-
+        self.router = router
         let contractStore: ContractStore = globalPresentableStoreContainer.get()
         contract = contractStore.state.contractForId(specification.contractId)
         let insuranceHolder = CoInsuredModel(
@@ -117,25 +115,34 @@ class WhoIsTravelingViewModel: ObservableObject {
         }
         return (isValid, message)
     }
+
+    func validateAndSubmit() {
+        let (valid, _) = isValidWithMessage()
+        if valid {
+            UIApplication.dismissKeyboard()
+            router.push(TravelCertificateRouterActionsWithoutBackButton.processingScreen)
+        }
+    }
 }
 
 struct WhoIsTravelingView_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
         return WhoIsTravelingScreen(
-            vm:
-                .init(
-                    specification: .init(
-                        contractId: "",
-                        minStartDate: Date(),
-                        maxStartDate: Date(),
-                        numberOfCoInsured: 2,
-                        maxDuration: 45,
-                        street: "Street",
-                        email: "email",
-                        fullName: "full name"
-                    )
-                )
+            vm: .init(
+                specification: .init(
+                    contractId: "",
+                    minStartDate: Date(),
+                    maxStartDate: Date(),
+                    numberOfCoInsured: 2,
+                    maxDuration: 45,
+                    street: "Street",
+                    email: "email",
+                    fullName: "full name"
+                ),
+                router: .init()
+            ),
+            travelCertificateNavigationVm: .init()
         )
     }
 }

@@ -279,7 +279,7 @@ public struct ClaimsNavigation: View {
                         case .dateOfOccurrancePlusLocation:
                             SubmitClaimOccurrencePlusLocationScreen(claimsNavigationVm: claimsNavigationVm)
                         case .selectContract:
-                            SelectContractView()
+                            SelectContractView(claimsNavigationVm: claimsNavigationVm)
                         case let .phoneNumber(model):
                             SubmitClaimContactScreen(model: model)
                         case .audioRecording:
@@ -332,7 +332,7 @@ public struct ClaimsNavigation: View {
             presented: $claimsNavigationVm.isLocationPickerPresented,
             style: [.height]
         ) {
-            LocationView()
+            LocationView(claimsNavigationVm: claimsNavigationVm, router: claimsNavigationVm.router)
                 .environmentObject(claimsNavigationVm)
                 .navigationTitle(L10n.Claims.Incident.Screen.location)
                 .embededInNavigation(options: .navigationType(type: .large), tracking: ClaimsDetentType.locationPicker)
@@ -347,9 +347,12 @@ public struct ClaimsNavigation: View {
                 .routerDestination(
                     for: ClaimFlowItemBrandOptionModel.self
                 ) { brandModel in
-                    ModelPickerView(brand: brandModel)
-                        .environmentObject(claimsNavigationVm)
-                        .navigationTitle(L10n.claimsChooseModelTitle)
+                    ModelPickerView(
+                        router: claimsNavigationVm.router,
+                        claimsNavigationVm: claimsNavigationVm,
+                        brand: brandModel
+                    )
+                    .navigationTitle(L10n.claimsChooseModelTitle)
                 }
                 .embededInNavigation(options: .navigationType(type: .large), tracking: ClaimsDetentType.brandPicker)
         }
