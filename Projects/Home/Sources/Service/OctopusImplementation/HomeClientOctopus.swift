@@ -211,7 +211,8 @@ extension OctopusGraphQL.HomeQuery.Data.CurrentMember {
         let hasActiveContractsInFuture = activeContracts.allSatisfy { contract in
             return contract.currentAgreement.activeFrom.localDateToDate ?? Date() > Date()
         }
-        return (!activeContracts.isEmpty && hasActiveContractsInFuture) || !pendingContracts.isEmpty
+        return (!activeContracts.isEmpty && hasActiveContractsInFuture)
+            || (!pendingContracts.isEmpty && activeContracts.isEmpty)
     }
 }
 
