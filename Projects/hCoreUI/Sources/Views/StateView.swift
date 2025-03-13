@@ -51,8 +51,6 @@ struct StateView: View {
                 VStack(spacing: 0) {
                     VStack {
                         Spacer()
-                        Spacer()
-                        Spacer()
                         centralContent
                         Spacer()
                     }
