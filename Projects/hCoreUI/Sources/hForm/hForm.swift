@@ -13,6 +13,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
     @Environment(\.hFormIgnoreBottomPadding) var hFormIgnoreBottomPadding
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
+    @State private var orientation: DeviceOrientation
 
     @StateObject fileprivate var vm = hUpdatedFormViewModel()
     @Namespace var animationNamespace
@@ -22,13 +23,14 @@ public struct hForm<Content: View>: View, KeyboardReadable {
         @ViewBuilder _ builder: () -> Content
     ) {
         self.content = builder()
+        orientation = UIDevice.current.orientation.getDeviceOrientation
     }
     public var body: some View {
         ZStack {
             BackgroundView().ignoresSafeArea()
             VStack(spacing: 0) {
                 scrollView
-                if !vm.keyboardVisible && !voiceOverEnabled {
+                if !vm.keyboardVisible && !voiceOverEnabled && orientation == .portrait {
                     getAlwaysVisibleBottomView
                         .matchedGeometryEffect(id: "bottom", in: animationNamespace)
                 }
@@ -50,6 +52,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
         .task {
             vm.scrollBounces = hEnableScrollBounce
         }
+        .detectOrientation($orientation)
     }
 
     private var scrollView: some View {
@@ -134,7 +137,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                 content
                 getBottomAttachedView
             }
-            if vm.keyboardVisible || voiceOverEnabled {
+            if vm.keyboardVisible || voiceOverEnabled || orientation == .landscape {
                 getAlwaysVisibleBottomView
                     .matchedGeometryEffect(id: "bottom", in: animationNamespace)
             }

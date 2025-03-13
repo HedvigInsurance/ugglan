@@ -17,58 +17,41 @@ public struct FirstVetView: View {
     }
 
     public var body: some View {
-        Group {
-            if orientation == .portrait || orientation == .portraitUpsideDown {
-                hForm {
-                    mainContent
-                }
-                .hFormAlwaysAttachToBottom {
-                    buttonComponent
-                }
-                .navigationBarTitleDisplayMode(.inline)
-            } else {
-                hForm {
-                    VStack(spacing: .padding16) {
-                        mainContent
-                        buttonComponent
-                    }
-                }
-            }
-        }
-        .navigationBarTitleDisplayMode(.inline)
-        .detectOrientation($orientation)
-    }
-
-    private var mainContent: some View {
-        VStack(spacing: .padding8) {
-            ForEach(partners, id: \.id) { partner in
-                hSection {
-                    hRow {
-                        VStack(alignment: .leading, spacing: .padding16) {
-                            HStack(spacing: .padding8) {
-                                Image(uiImage: hCoreUIAssets.firstVetQuickNav.image)
-                                hText(partner.title ?? "")
-                                Spacer()
-                            }
-                            hText(partner.description ?? "")
-                                .foregroundColor(hTextColor.Opaque.secondary)
-                                .fixedSize(horizontal: false, vertical: true)
-                            hButton.MediumButton(type: .secondaryAlt) {
-                                if let url = URL(
-                                    string: partner.url
-                                ) {
-                                    UIApplication.shared.open(url)
+        hForm {
+            VStack(spacing: .padding8) {
+                ForEach(partners, id: \.id) { partner in
+                    hSection {
+                        hRow {
+                            VStack(alignment: .leading, spacing: .padding16) {
+                                HStack(spacing: .padding8) {
+                                    Image(uiImage: hCoreUIAssets.firstVetQuickNav.image)
+                                    hText(partner.title ?? "")
+                                    Spacer()
                                 }
-                            } content: {
-                                hText(L10n.commonClaimButton)
+                                hText(partner.description ?? "")
+                                    .foregroundColor(hTextColor.Opaque.secondary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                                hButton.MediumButton(type: .secondaryAlt) {
+                                    if let url = URL(
+                                        string: partner.url
+                                    ) {
+                                        UIApplication.shared.open(url)
+                                    }
+                                } content: {
+                                    hText(L10n.commonClaimButton)
+                                }
+                                .hButtonTakeFullWidth(true)
                             }
-                            .hButtonTakeFullWidth(true)
                         }
                     }
                 }
+                .hWithoutDivider
             }
-            .hWithoutDivider
         }
+        .hFormAlwaysAttachToBottom {
+            buttonComponent
+        }
+        .navigationBarTitleDisplayMode(.inline)
     }
 
     private var buttonComponent: some View {
