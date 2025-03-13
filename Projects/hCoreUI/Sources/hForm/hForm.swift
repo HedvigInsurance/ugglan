@@ -161,7 +161,8 @@ public struct hForm<Content: View>: View, KeyboardReadable {
             .padding(.top, hFormTitle.title.type.topMargin)
             .padding(
                 .bottom,
-                hFormTitle.subTitle?.type.bottomMargin ?? hFormTitle.title.type.bottomMargin
+                hFormTitle.subTitle?.type.bottomMargin(orientation: orientation)
+                    ?? hFormTitle.title.type.bottomMargin(orientation: orientation)
             )
             .padding(.horizontal, horizontalSizeClass == .regular ? .padding60 : .padding16)
             .accessibilityElement(children: .combine)
@@ -401,12 +402,12 @@ public enum HFormTitleSpacingType {
         }
     }
 
-    var bottomMargin: CGFloat {
+    func bottomMargin(orientation: DeviceOrientation) -> CGFloat {
         switch self {
         case .standard:
             return 64
         case .small, .none:
-            return 0
+            return orientation == .landscape ? .padding8 : 0
         }
     }
 }
