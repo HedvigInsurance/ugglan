@@ -8,7 +8,7 @@ struct CoInsuredSelectScreen: View {
     @ObservedObject var vm: InsuredPeopleNewScreenModel
     @ObservedObject private var editCoInsuredNavigation: EditCoInsuredNavigationViewModel
     @ObservedObject private var intentViewModel: IntentViewModel
-    let itemConfig: ItemConfig<CoInsuredModel>
+    let itemPickerConfig: ItemConfig<CoInsuredModel>
     public init(
         contractId: String,
         editCoInsuredNavigation: EditCoInsuredNavigationViewModel
@@ -22,7 +22,7 @@ struct CoInsuredSelectScreen: View {
             })
         let intentViewModel = editCoInsuredNavigation.intentViewModel
 
-        itemConfig = .init(
+        itemPickerConfig = .init(
             items: {
                 return
                     alreadyAddedCoinsuredMembers
@@ -105,7 +105,7 @@ struct CoInsuredSelectScreen: View {
 
     var picker: some View {
         ItemPickerScreen<CoInsuredModel>(
-            config: itemConfig
+            config: itemPickerConfig
         )
         .hItemPickerBottomAttachedView {
             hButton.LargeButton(type: .ghost) {

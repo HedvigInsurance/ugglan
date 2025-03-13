@@ -5,14 +5,14 @@ import hCoreUI
 struct SelectInsuranceScreen: View {
     let changeTierContractsInput: ChangeTierContractsInput
     @ObservedObject var changeTierNavigationVm: ChangeTierNavigationViewModel
-    let itemConfig: ItemConfig<ChangeTierContract>
+    let itemPickerConfig: ItemConfig<ChangeTierContract>
     init(
         changeTierContractsInput: ChangeTierContractsInput,
         changeTierNavigationVm: ChangeTierNavigationViewModel
     ) {
         self.changeTierContractsInput = changeTierContractsInput
         self.changeTierNavigationVm = changeTierNavigationVm
-        self.itemConfig = .init(
+        self.itemPickerConfig = .init(
             items: {
                 let items = changeTierContractsInput.contracts.map({
                     (
@@ -49,7 +49,7 @@ struct SelectInsuranceScreen: View {
 
     var body: some View {
         ItemPickerScreen<ChangeTierContract>(
-            config: itemConfig
+            config: itemPickerConfig
         )
         .hFormTitle(
             title: .init(.small, .body2, L10n.tierFlowTitle, alignment: .leading),

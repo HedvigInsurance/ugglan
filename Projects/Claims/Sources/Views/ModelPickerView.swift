@@ -6,7 +6,7 @@ struct ModelPickerView: View {
     @ObservedObject var router: Router
     @ObservedObject var claimsNavigationVm: ClaimsNavigationViewModel
     let brand: ClaimFlowItemBrandOptionModel
-    var itemConfig: ItemConfig<ClaimFlowItemModelOptionModel>
+    var itemPickerConfig: ItemConfig<ClaimFlowItemModelOptionModel>
 
     init(router: Router, claimsNavigationVm: ClaimsNavigationViewModel, brand: ClaimFlowItemBrandOptionModel) {
         self.router = router
@@ -14,7 +14,7 @@ struct ModelPickerView: View {
         self.brand = brand
         let step = claimsNavigationVm.singleItemModel
         let customName = step?.selectedItemBrand == brand.itemBrandId ? step?.customName : nil
-        self.itemConfig = .init(
+        self.itemPickerConfig = .init(
             items: {
                 return step?.getListOfModels(for: brand.itemBrandId)?
                     .compactMap({ ($0, .init(title: $0.displayName)) }) ?? []
@@ -54,7 +54,7 @@ struct ModelPickerView: View {
 
     var body: some View {
         return ItemPickerScreen<ClaimFlowItemModelOptionModel>(
-            config: itemConfig
+            config: itemPickerConfig
         )
         .hIncludeManualInput
     }

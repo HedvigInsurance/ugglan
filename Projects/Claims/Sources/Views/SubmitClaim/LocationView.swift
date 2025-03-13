@@ -5,12 +5,12 @@ import hCoreUI
 struct LocationView: View {
     @ObservedObject var claimsNavigationVm: ClaimsNavigationViewModel
     @ObservedObject var router: Router
-    let itemConfig: ItemConfig<ClaimFlowLocationOptionModel>
+    let itemPickerConfig: ItemConfig<ClaimFlowLocationOptionModel>
 
     init(claimsNavigationVm: ClaimsNavigationViewModel, router: Router) {
         self.claimsNavigationVm = claimsNavigationVm
         self.router = router
-        self.itemConfig = .init(
+        self.itemPickerConfig = .init(
             items: {
                 return claimsNavigationVm.occurrencePlusLocationModel?.locationModel?.options
                     .compactMap({ (object: $0, displayName: .init(title: $0.displayName)) }) ?? []
@@ -38,7 +38,7 @@ struct LocationView: View {
     }
     var body: some View {
         ItemPickerScreen<ClaimFlowLocationOptionModel>(
-            config: itemConfig
+            config: itemPickerConfig
         )
     }
 }

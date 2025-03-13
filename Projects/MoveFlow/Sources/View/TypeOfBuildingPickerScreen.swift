@@ -6,7 +6,7 @@ struct TypeOfBuildingPickerScreen: View {
     var currentlySelected: ExtraBuildingType?
     @ObservedObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
     @ObservedObject var addExtraBuidlingViewModel: MovingFlowAddExtraBuildingViewModel
-    let itemConfig: ItemConfig<ExtraBuildingType>
+    let itemPickerConfig: ItemConfig<ExtraBuildingType>
     public init(
         currentlySelected: ExtraBuildingType?,
         movingFlowNavigationVm: MovingFlowNavigationViewModel,
@@ -15,7 +15,7 @@ struct TypeOfBuildingPickerScreen: View {
         self.movingFlowNavigationVm = movingFlowNavigationVm
         self.currentlySelected = currentlySelected
         self.addExtraBuidlingViewModel = addExtraBuidlingViewModel
-        self.itemConfig = .init(
+        self.itemPickerConfig = .init(
             items: {
                 return movingFlowNavigationVm.movingFlowVm?.extraBuildingTypes
                     .compactMap({ (object: $0, displayName: .init(title: $0.translatedValue)) }) ?? []
@@ -44,7 +44,7 @@ struct TypeOfBuildingPickerScreen: View {
 
     var body: some View {
         ItemPickerScreen<ExtraBuildingType>(
-            config: itemConfig
+            config: itemPickerConfig
         )
     }
 }

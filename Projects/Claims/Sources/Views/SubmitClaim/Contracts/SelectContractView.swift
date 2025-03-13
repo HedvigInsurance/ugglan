@@ -5,7 +5,7 @@ import hCoreUI
 struct SelectContractView: View {
     @ObservedObject var claimsNavigationVm: ClaimsNavigationViewModel
     @ObservedObject var vm = SelectContractViewModel()
-    let itemConfig: ItemConfig<FlowClaimContractSelectOptionModel>
+    let itemPickerConfig: ItemConfig<FlowClaimContractSelectOptionModel>
 
     init(
         claimsNavigationVm: ClaimsNavigationViewModel,
@@ -13,7 +13,7 @@ struct SelectContractView: View {
     ) {
         self.claimsNavigationVm = claimsNavigationVm
         self.vm = vm
-        self.itemConfig = .init(
+        self.itemPickerConfig = .init(
             items: {
                 return claimsNavigationVm.contractSelectModel?.availableContractOptions
                     .compactMap({
@@ -54,7 +54,7 @@ struct SelectContractView: View {
     }
     var body: some View {
         ItemPickerScreen<FlowClaimContractSelectOptionModel>(
-            config: itemConfig
+            config: itemPickerConfig
         )
         .padding(.bottom, .padding16)
         .hFormTitle(

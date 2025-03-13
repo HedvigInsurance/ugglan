@@ -6,7 +6,7 @@ import hCoreUI
 public struct AddonSelectInsuranceScreen: View {
     @ObservedObject var changeAddonNavigationVm: ChangeAddonNavigationViewModel
     @ObservedObject var vm: AddonSelectInsuranceScreenViewModel
-    let itemConfig: ItemConfig<AddonConfig>
+    let itemPickerConfig: ItemConfig<AddonConfig>
 
     init(
         changeAddonNavigationVm: ChangeAddonNavigationViewModel,
@@ -14,7 +14,7 @@ public struct AddonSelectInsuranceScreen: View {
     ) {
         self.changeAddonNavigationVm = changeAddonNavigationVm
         self.vm = vm
-        self.itemConfig = .init(
+        self.itemPickerConfig = .init(
             items: {
                 let addonContractConfigs: [AddonConfig] = changeAddonNavigationVm.input.contractConfigs ?? []
                 let items = addonContractConfigs.map({
@@ -75,7 +75,7 @@ public struct AddonSelectInsuranceScreen: View {
 
     private var successView: some View {
         ItemPickerScreen<AddonConfig>(
-            config: itemConfig
+            config: itemPickerConfig
         )
         .hFormTitle(
             title: .init(.small, .heading2, L10n.addonFlowSelectInsuranceTitle, alignment: .leading),

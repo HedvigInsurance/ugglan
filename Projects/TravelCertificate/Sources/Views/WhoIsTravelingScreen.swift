@@ -9,11 +9,11 @@ import hCoreUI
 struct WhoIsTravelingScreen: View {
     @ObservedObject var vm: WhoIsTravelingViewModel
     @ObservedObject var travelCertificateNavigationVm: TravelCertificateNavigationViewModel
-    let itemConfig: ItemConfig<CoInsuredModel>
+    let itemPickerConfig: ItemConfig<CoInsuredModel>
     init(vm: WhoIsTravelingViewModel, travelCertificateNavigationVm: TravelCertificateNavigationViewModel) {
         self.vm = vm
         self.travelCertificateNavigationVm = travelCertificateNavigationVm
-        itemConfig = .init(
+        itemPickerConfig = .init(
             items: {
                 return vm.coInsuredModelData.compactMap({
                     (object: $0, displayName: ItemModel(title: $0.fullName ?? ""))
@@ -59,7 +59,7 @@ struct WhoIsTravelingScreen: View {
 
     var body: some View {
         ItemPickerScreen<CoInsuredModel>(
-            config: itemConfig
+            config: itemPickerConfig
         )
         .hFormTitle(title: .init(.small, .heading2, L10n.TravelCertificate.whoIsTraveling, alignment: .leading))
         .disabled(vm.isLoading)

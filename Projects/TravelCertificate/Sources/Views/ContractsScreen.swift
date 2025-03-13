@@ -6,7 +6,7 @@ struct ContractsScreen: View {
     @State var isLoading: Bool = false
     let specifications: [TravelInsuranceContractSpecification]
     let router: Router
-    let itemConfig: ItemConfig<TravelInsuranceContractSpecification>
+    let itemPickerConfig: ItemConfig<TravelInsuranceContractSpecification>
 
     init(
         router: Router,
@@ -14,7 +14,7 @@ struct ContractsScreen: View {
     ) {
         self.specifications = specifications
         self.router = router
-        itemConfig = .init(
+        itemPickerConfig = .init(
             items: {
                 return specifications.map {
                     (object: $0, displayName: .init(title: $0.street))
@@ -39,7 +39,7 @@ struct ContractsScreen: View {
 
     public var body: some View {
         ItemPickerScreen<TravelInsuranceContractSpecification>(
-            config: itemConfig
+            config: itemPickerConfig
         )
         .padding(.bottom, .padding16)
         .hFormTitle(title: .init(.small, .heading2, L10n.TravelCertificate.selectContractTitle, alignment: .leading))
