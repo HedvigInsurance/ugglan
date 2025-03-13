@@ -1,6 +1,5 @@
 import Foundation
 import hCore
-import hGraphQL
 
 @MainActor
 public struct Conversation: Codable, Identifiable, Hashable, Sendable {
@@ -40,25 +39,6 @@ public struct Conversation: Codable, Identifiable, Hashable, Sendable {
     let claimType: String?
     let unreadMessageCount: Int
 
-    public init(
-        fragment: OctopusGraphQL.ConversationFragment,
-        type: ConversationType
-    ) {
-        self.id = fragment.id
-        if let newestMessage = fragment.newestMessage?.fragments.messageFragment.asMessage() {
-            self.newestMessage = .init(newestMessage)
-        } else {
-            self.newestMessage = nil
-        }
-        self.createdAt = fragment.createdAt
-        self.statusMessage = fragment.statusMessage
-        self.type = type
-        self.status = fragment.isOpen ? .open : .closed
-        self.hasClaim = fragment.claim != nil
-        self.claimType = fragment.claim?.claimType
-        self.unreadMessageCount = fragment.unreadMessageCount
-    }
-
     var getConversationTitle: String {
         if self.type == .legacy {
             return L10n.chatConversationHistoryTitle
@@ -81,15 +61,15 @@ public struct Conversation: Codable, Identifiable, Hashable, Sendable {
     }
 
     @MainActor
-    var getAnyDate: Date {
+    public var getAnyDate: Date {
         newestMessage?.sentAt ?? createdAt?.localDateToIso8601Date ?? Date()
     }
 
-    var isOpened: Bool {
+    public var isOpened: Bool {
         status == .open
     }
 
-    var isClosed: Bool {
+    public var isClosed: Bool {
         status == .closed
     }
 }

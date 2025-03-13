@@ -1,4 +1,5 @@
 import Apollo
+import Environment
 import Foundation
 @preconcurrency import authlib
 import hCore
@@ -304,7 +305,7 @@ enum AuthentificationError: Error {
     case logoutFailure
 }
 
-extension hGraphQL.Environment {
+extension Environment {
     fileprivate var authEnvironment: AuthEnvironment {
         switch self {
         case .staging: return .staging

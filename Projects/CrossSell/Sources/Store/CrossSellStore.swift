@@ -2,7 +2,7 @@ import PresentableStore
 import hCore
 
 public final class CrossSellStore: LoadingStateStore<CrossSellState, CrossSellAction, CrossSellLoadingAction> {
-    @Inject var crossSellService: CrossSellClient
+    let crossSellService = CrossSellService()
     public override func effects(
         _ getState: @escaping () -> CrossSellState,
         _ action: CrossSellAction

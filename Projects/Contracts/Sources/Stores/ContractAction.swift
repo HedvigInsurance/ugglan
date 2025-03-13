@@ -5,7 +5,6 @@ import SwiftUI
 import TerminateContracts
 import hCore
 import hCoreUI
-import hGraphQL
 
 public enum ContractAction: ActionProtocol, Hashable {
     // Fetch contracts for terminated

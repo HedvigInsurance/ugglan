@@ -1,7 +1,7 @@
+import Environment
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 @MainActor
 public class ForeverNavigationViewModel: ObservableObject {
@@ -33,7 +33,7 @@ public class ForeverNavigationViewModel: ObservableObject {
     func shareCode(code: String) {
         let discount = foreverData?.monthlyDiscountPerReferral.formattedAmount
         let url =
-            "\(hGraphQL.Environment.current.webBaseURL)/\(hCore.Localization.Locale.currentLocale.value.webPath)/forever/\(code)"
+            "\(Environment.current.webBaseURL)/\(hCore.Localization.Locale.currentLocale.value.webPath)/forever/\(code)"
         let message = L10n.referralSmsMessage(discount ?? "", url)
 
         let activityVC = UIActivityViewController(

@@ -5,7 +5,6 @@ import SwiftUI
 import TerminateContracts
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct Contracts: View {
     @PresentableStore var store: ContractStore
