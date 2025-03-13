@@ -136,6 +136,7 @@ public struct EditCoInsuredNavigation: View {
         ) { selectCoInsured in
             openCoInsuredSelectScreen(contractId: selectCoInsured.id)
                 .environmentObject(editCoInsuredNavigationVm)
+                .embededInNavigation(tracking: EditCoInsuredDetentType.selectCoInsured)
         }
         .modally(presented: $editCoInsuredNavigationVm.showProgressScreenWithSuccess) {
             openProgress(showSuccess: true)

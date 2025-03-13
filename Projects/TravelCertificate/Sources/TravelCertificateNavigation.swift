@@ -72,6 +72,8 @@ public enum ListToolBarPlacement {
 public struct TravelCertificateNavigation: View {
     @ObservedObject var vm: TravelCertificateNavigationViewModel
     @StateObject var router = Router()
+    @StateObject var createNewRouter = Router()
+
     private var infoButtonPlacement: ListToolBarPlacement
     private let useOwnNavigation: Bool
 
@@ -152,6 +154,7 @@ public struct TravelCertificateNavigation: View {
                     }
                 }
                 .embededInNavigation(
+                    router: createNewRouter,
                     tracking: specificationModel.specification.count > 1
                         ? TravelCertificateRouterActions.list(specifications: specificationModel.specification)
                         : TravelCertificateRouterActions.startDate(
@@ -182,8 +185,11 @@ public struct TravelCertificateNavigation: View {
     private func showContractsList(
         for specifications: [TravelInsuranceContractSpecification]
     ) -> some View {
-        ContractsScreen(specifications: specifications)
-            .addDismissFlow()
+        ContractsScreen(
+            router: createNewRouter,
+            specifications: specifications
+        )
+        .addDismissFlow()
     }
 
     private func showStartDateScreen(
@@ -197,9 +203,10 @@ public struct TravelCertificateNavigation: View {
     private func showWhoIsTravelingScreen(
         specification: TravelInsuranceContractSpecification
     ) -> some View {
-        vm.whoIsTravelingViewModel = WhoIsTravelingViewModel(specification: specification)
+        vm.whoIsTravelingViewModel = WhoIsTravelingViewModel(specification: specification, router: createNewRouter)
         return WhoIsTravelingScreen(
-            vm: vm.whoIsTravelingViewModel!
+            vm: vm.whoIsTravelingViewModel!,
+            travelCertificateNavigationVm: vm
         )
         .environmentObject(vm)
         .addDismissFlow()
