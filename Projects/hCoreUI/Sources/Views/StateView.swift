@@ -41,18 +41,17 @@ struct StateView: View {
             }
         } else {
             if buttonConfig != nil && bottomAttachedView == nil {
-                ZStack(alignment: .bottom) {
-                    BackgroundView().ignoresSafeArea()
-                    VStack {
-                        Spacer()
-                        centralContent
-                        Spacer()
-                    }
+                VStack(spacing: .padding8) {
+                    Spacer()
+                    centralContent
+                    Spacer()
                     bottomButtonsView
                 }
             } else {
-                ZStack(alignment: .bottom) {
+                VStack(spacing: 0) {
                     VStack {
+                        Spacer()
+                        Spacer()
                         Spacer()
                         centralContent
                         Spacer()
