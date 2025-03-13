@@ -10,13 +10,10 @@ struct MovingFlowAddExtraBuildingScreen: View {
     @ObservedObject var houseInformationInputVm: HouseInformationInputModel
 
     @EnvironmentObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
-    @Binding var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
 
     init(
-        isBuildingTypePickerPresented: Binding<ExtraBuildingTypeNavigationModel?>,
         houseInformationInputVm: HouseInformationInputModel
     ) {
-        self._isBuildingTypePickerPresented = isBuildingTypePickerPresented
         self.houseInformationInputVm = houseInformationInputVm
     }
 
@@ -62,7 +59,7 @@ struct MovingFlowAddExtraBuildingScreen: View {
             placeholder: L10n.changeAddressExtraBuildingContainerTitle,
             error: $vm.buildingTypeError
         ) {
-            isBuildingTypePickerPresented = ExtraBuildingTypeNavigationModel(
+            movingFlowNavigationVm.isBuildingTypePickerPresented = ExtraBuildingTypeNavigationModel(
                 extraBuildingType: vm.buildingType,
                 addExtraBuildingVm: vm
             )
@@ -140,11 +137,8 @@ public class MovingFlowAddExtraBuildingViewModel: ObservableObject {
 }
 
 struct MovingFlowAddExtraBuildingView_Previews: PreviewProvider {
-    @State static var isOn: ExtraBuildingTypeNavigationModel? = .init(addExtraBuildingVm: .init())
-
     static var previews: some View {
         MovingFlowAddExtraBuildingScreen(
-            isBuildingTypePickerPresented: $isOn,
             houseInformationInputVm: .init()
         )
     }

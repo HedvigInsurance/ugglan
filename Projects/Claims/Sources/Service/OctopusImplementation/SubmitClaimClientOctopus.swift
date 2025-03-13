@@ -703,7 +703,7 @@ extension FlowClaimContractSelectStepModel {
     init(
         with data: OctopusGraphQL.FlowClaimContractSelectStepFragment
     ) {
-        self.selectedContractId = data.options.first?.id
+        self.selectedContractId = data.selectedOptionId ?? data.options.first?.id
         self.availableContractOptions = data.options.map({ .init(with: $0) })
     }
 }

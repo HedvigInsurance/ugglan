@@ -30,6 +30,14 @@ struct MovingFlowSelectContractScreen: View {
 
                     return currentHomeAddresses
                 }(),
+                preSelectedItems: {
+                    if let preSelected = navigationVm.moveConfigurationModel?.currentHomeAddresses
+                        .first(where: { $0 == navigationVm.selectedHomeAddress })
+                    {
+                        return [preSelected]
+                    }
+                    return []
+                },
                 onSelected: { selected in
                     if let selectedQuote = selected.first?.0 {
                         navigationVm.selectedHomeAddress = selectedQuote

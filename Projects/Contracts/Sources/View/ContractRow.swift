@@ -121,6 +121,8 @@ private struct ContractRowButtonStyle: SwiftUI.ButtonStyle {
                     ), .text
                 )
             )
+        } else if masterInceptionDate == nil {
+            tagsToShow.append((L10n.contractStatusPending, .text))
         } else {
             tagsToShow.append((L10n.dashboardInsuranceStatusActive, .text))
         }
