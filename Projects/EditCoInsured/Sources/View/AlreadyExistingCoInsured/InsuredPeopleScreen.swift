@@ -223,6 +223,7 @@ class InsuredPeopleNewScreenModel: ObservableObject {
     @Published var coInsuredDeleted: [CoInsuredModel] = []
     @Published var noSSN = false
     var config: InsuredPeopleConfig = InsuredPeopleConfig()
+    @Published var isLoading = false
 
     func completeList(
         coInsuredAdded: [CoInsuredModel]? = nil,

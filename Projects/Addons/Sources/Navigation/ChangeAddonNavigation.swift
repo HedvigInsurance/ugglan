@@ -157,7 +157,7 @@ public struct ChangeAddonNavigation: View {
     }
 
     private var selectInsuranceScreen: some View {
-        AddonSelectInsuranceScreen()
+        AddonSelectInsuranceScreen(changeAddonNavigationVm: changeAddonNavigationVm)
             .withDismissButton()
     }
 }

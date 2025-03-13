@@ -166,7 +166,8 @@ struct SuccessScreen_Previews: PreviewProvider {
                         street: "",
                         email: "",
                         fullName: ""
-                    )
+                    ),
+                    router: .init()
                 )
             )
     }

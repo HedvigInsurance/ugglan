@@ -3,40 +3,46 @@ import hCore
 import hCoreUI
 
 struct LocationView: View {
-    @EnvironmentObject var claimsNavigationVm: ClaimsNavigationViewModel
-    @EnvironmentObject var router: Router
+    @ObservedObject var claimsNavigationVm: ClaimsNavigationViewModel
+    @ObservedObject var router: Router
+    let itemPickerConfig: ItemConfig<ClaimFlowLocationOptionModel>
 
+    init(claimsNavigationVm: ClaimsNavigationViewModel, router: Router) {
+        self.claimsNavigationVm = claimsNavigationVm
+        self.router = router
+        self.itemPickerConfig = .init(
+            items: {
+                return claimsNavigationVm.occurrencePlusLocationModel?.locationModel?.options
+                    .compactMap({ (object: $0, displayName: .init(title: $0.displayName)) }) ?? []
+            }(),
+            preSelectedItems: {
+                if let value = claimsNavigationVm.occurrencePlusLocationModel?.locationModel?
+                    .getSelectedOption()
+                {
+                    return [value]
+                }
+                return []
+            },
+            onSelected: { [weak claimsNavigationVm] selectedLocation in
+                if let object = selectedLocation.first?.0 {
+                    claimsNavigationVm?.isLocationPickerPresented = false
+                    claimsNavigationVm?.occurrencePlusLocationModel?.locationModel?.location =
+                        object.value
+                }
+            },
+            onCancel: { [weak router] in
+                router?.dismiss()
+            },
+            singleSelect: true
+        )
+    }
     var body: some View {
         ItemPickerScreen<ClaimFlowLocationOptionModel>(
-            config: .init(
-                items: {
-                    return claimsNavigationVm.occurrencePlusLocationModel?.locationModel?.options
-                        .compactMap({ (object: $0, displayName: .init(title: $0.displayName)) }) ?? []
-                }(),
-                preSelectedItems: {
-                    if let value = claimsNavigationVm.occurrencePlusLocationModel?.locationModel?
-                        .getSelectedOption()
-                    {
-                        return [value]
-                    }
-                    return []
-                },
-                onSelected: { [weak claimsNavigationVm] selectedLocation in
-                    if let object = selectedLocation.first?.0 {
-                        claimsNavigationVm?.isLocationPickerPresented = false
-                        claimsNavigationVm?.occurrencePlusLocationModel?.locationModel?.location =
-                            object.value
-                    }
-                },
-                onCancel: { [weak router] in
-                    router?.dismiss()
-                },
-                singleSelect: true
-            )
+            config: itemPickerConfig
         )
     }
 }
 
 #Preview {
-    LocationView()
+    LocationView(claimsNavigationVm: .init(), router: .init())
 }
