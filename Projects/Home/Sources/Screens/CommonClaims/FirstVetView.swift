@@ -8,7 +8,6 @@ public struct FirstVetView: View {
     @PresentableStore var store: HomeStore
     @EnvironmentObject var router: Router
     private let partners: [FirstVetPartner]
-    @State private var orientation = UIDevice.current.orientation
 
     public init(
         partners: [FirstVetPartner]
