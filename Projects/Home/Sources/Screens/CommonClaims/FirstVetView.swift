@@ -48,13 +48,17 @@ public struct FirstVetView: View {
             }
         }
         .hFormAlwaysAttachToBottom {
-            hButton.LargeButton(type: .ghost) {
-                router.dismiss()
-            } content: {
-                hText(L10n.generalCloseButton)
-            }
+            buttonComponent
         }
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var buttonComponent: some View {
+        hButton.LargeButton(type: .ghost) {
+            router.dismiss()
+        } content: {
+            hText(L10n.generalCloseButton)
+        }
     }
 }
 

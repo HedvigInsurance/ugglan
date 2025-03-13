@@ -30,7 +30,16 @@ public struct SuccessScreen: View {
     }
 }
 
-struct SuccessScreen_Previews: PreviewProvider {
+struct SuccessScreenWithoutButtons_Previews: PreviewProvider {
+    static var previews: some View {
+        SuccessScreen(
+            successViewTitle: "SUCCESS",
+            successViewBody: "success"
+        )
+    }
+}
+
+struct SuccessScreenWithButtons_Previews: PreviewProvider {
     static var previews: some View {
         SuccessScreen(
             successViewTitle: "SUCCESS",

@@ -13,6 +13,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
     @Environment(\.hFormIgnoreBottomPadding) var hFormIgnoreBottomPadding
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
+    @Environment(\.verticalSizeClass) var verticalSizeClass
 
     @StateObject fileprivate var vm = hUpdatedFormViewModel()
     @Namespace var animationNamespace
@@ -28,7 +29,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
             BackgroundView().ignoresSafeArea()
             VStack(spacing: 0) {
                 scrollView
-                if !vm.keyboardVisible && !voiceOverEnabled {
+                if !vm.keyboardVisible && !voiceOverEnabled && verticalSizeClass == .regular {
                     getAlwaysVisibleBottomView
                         .matchedGeometryEffect(id: "bottom", in: animationNamespace)
                 }
@@ -134,7 +135,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                 content
                 getBottomAttachedView
             }
-            if vm.keyboardVisible || voiceOverEnabled {
+            if vm.keyboardVisible || voiceOverEnabled || verticalSizeClass == .compact {
                 getAlwaysVisibleBottomView
                     .matchedGeometryEffect(id: "bottom", in: animationNamespace)
             }
@@ -158,7 +159,8 @@ public struct hForm<Content: View>: View, KeyboardReadable {
             .padding(.top, hFormTitle.title.type.topMargin)
             .padding(
                 .bottom,
-                hFormTitle.subTitle?.type.bottomMargin ?? hFormTitle.title.type.bottomMargin
+                hFormTitle.subTitle?.type.bottomMargin
+                    ?? hFormTitle.title.type.bottomMargin
             )
             .padding(.horizontal, horizontalSizeClass == .regular ? .padding60 : .padding16)
             .accessibilityElement(children: .combine)
@@ -399,11 +401,12 @@ public enum HFormTitleSpacingType {
     }
 
     var bottomMargin: CGFloat {
+        @Environment(\.verticalSizeClass) var verticalSizeClass
         switch self {
         case .standard:
             return 64
         case .small, .none:
-            return 0
+            return verticalSizeClass == .compact ? .padding8 : 0
         }
     }
 }
