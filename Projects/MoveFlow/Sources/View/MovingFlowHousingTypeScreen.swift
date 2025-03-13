@@ -5,21 +5,20 @@ import hCoreUI
 import hGraphQL
 
 public struct MovingFlowHousingTypeScreen: View {
-    @ObservedObject var vm: MovingFlowHousingTypeViewModel
+    @ObservedObject var vm = MovingFlowHousingTypeViewModel()
     @EnvironmentObject var router: Router
     @ObservedObject var movingFlowNavigationVm: MovingFlowNavigationViewModel
 
     init(
         movingFlowNavigationVm: MovingFlowNavigationViewModel
     ) {
-        self.vm = .init(movingFlowNavigationVm: movingFlowNavigationVm)
         self.movingFlowNavigationVm = movingFlowNavigationVm
     }
 
     public var body: some View {
         ProcessingStateView(
             loadingViewText: L10n.embarkLoading,
-            state: $vm.viewState
+            state: $movingFlowNavigationVm.viewState
         )
         .hCustomSuccessView {
             hForm {}
@@ -53,7 +52,7 @@ public struct MovingFlowHousingTypeScreen: View {
                             }
                             .accessibilityHint(L10n.voiceoverOptionSelected + (vm.selectedHousingType ?? ""))
 
-                            if let days = movingFlowNavigationVm.movingFlowVm?.oldAddressCoverageDurationDays {
+                            if let days = movingFlowNavigationVm.selectedHomeAddress?.oldAddressCoverageDurationDays {
                                 InfoCard(text: L10n.changeAddressCoverageInfoText(days), type: .info)
                             }
                             hButton.LargeButton(type: .primary) {
@@ -114,51 +113,8 @@ struct MovingFlowTypeOfHome_Previews: PreviewProvider {
 
 @MainActor
 class MovingFlowHousingTypeViewModel: ObservableObject {
-    @Inject private var service: MoveFlowClient
     @Published var selectedHousingType: String? = HousingType.apartment.rawValue
-    @Published var viewState: ProcessingState = .loading
-    let movingFlowNavigationVm: MovingFlowNavigationViewModel
-
-    init(movingFlowNavigationVm: MovingFlowNavigationViewModel) {
-        self.movingFlowNavigationVm = movingFlowNavigationVm
-        self.initializeData()
-    }
-
-    private func initializeData() {
-        Task {
-            let movingFlowModel = try await getMoveIntent()
-            movingFlowNavigationVm.movingFlowVm = movingFlowModel
-
-            let addressModel = AddressInputModel()
-            addressModel.moveFromAddressId = movingFlowModel?.currentHomeAddresses.first?.id
-            addressModel.nbOfCoInsured = movingFlowModel?.suggestedNumberCoInsured ?? 5
-            movingFlowNavigationVm.addressInputModel = addressModel
-        }
-    }
-
-    @MainActor
-    func getMoveIntent() async throws -> MovingFlowModel? {
-        withAnimation {
-            self.viewState = .loading
-        }
-
-        do {
-            let movingFlowData = try await service.sendMoveIntent()
-
-            withAnimation {
-                self.viewState = .success
-            }
-
-            return movingFlowData
-        } catch {
-            if let error = error as? MovingFlowError {
-                self.viewState = .error(errorMessage: error.localizedDescription)
-            } else {
-                self.viewState = .error(errorMessage: L10n.General.errorBody)
-            }
-            return nil
-        }
-    }
+    init() {}
 }
 
 public enum HousingType: String, CaseIterable, Codable, Equatable, Hashable {

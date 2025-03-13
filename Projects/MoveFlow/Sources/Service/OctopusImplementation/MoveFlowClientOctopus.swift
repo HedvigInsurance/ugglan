@@ -11,60 +11,56 @@ public class MoveFlowClientOctopus: MoveFlowClient {
 
     public init() {}
 
-    public func sendMoveIntent() async throws -> MovingFlowModel {
+    public func sendMoveIntent() async throws -> MoveConfigurationModel {
         let mutation = OctopusGraphQL.MoveIntentCreateMutation()
         let data = try await octopus.client.perform(mutation: mutation)
 
         if let moveIntentFragment = data.moveIntentCreate.moveIntent?.fragments.moveIntentFragment {
-            return MovingFlowModel(from: moveIntentFragment)
+            return MoveConfigurationModel(from: moveIntentFragment)
         } else if let userError = data.moveIntentCreate.userError?.message {
             throw MovingFlowError.serverError(message: userError)
         }
         throw MovingFlowError.missingDataError(message: L10n.General.errorBody)
     }
 
-    public func requestMoveIntent(
-        intentId: String,
-        addressInputModel: AddressInputModel,
-        houseInformationInputModel: HouseInformationInputModel
-    ) async throws -> MovingFlowModel {
+    public func requestMoveIntent(input: RequestMoveIntentInput) async throws -> MoveQuotesModel {
         let moveIntentRequestInput = OctopusGraphQL.MoveIntentRequestInput(
             apiVersion: .init(.v2TiersAndDeductibles),
             moveToAddress: .init(
-                street: addressInputModel.address,
-                postalCode: addressInputModel.postalCode.replacingOccurrences(of: " ", with: "")
+                street: input.addressInputModel.address,
+                postalCode: input.addressInputModel.postalCode.replacingOccurrences(of: " ", with: "")
             ),
-            moveFromAddressId: addressInputModel.moveFromAddressId ?? "",
-            movingDate: addressInputModel.accessDate?.localDateString ?? "",
-            numberCoInsured: addressInputModel.nbOfCoInsured,
-            squareMeters: Int(addressInputModel.squareArea) ?? 0,
-            apartment: GraphQLNullable(optionalValue: apartmentInput(addressInputModel: addressInputModel)),
+            moveFromAddressId: input.selectedAddressId,
+            movingDate: input.addressInputModel.accessDate?.localDateString ?? "",
+            numberCoInsured: input.addressInputModel.nbOfCoInsured,
+            squareMeters: Int(input.addressInputModel.squareArea) ?? 0,
+            apartment: GraphQLNullable(optionalValue: apartmentInput(addressInputModel: input.addressInputModel)),
             house: GraphQLNullable(
                 optionalValue: houseInput(
-                    selectedHousingType: addressInputModel.selectedHousingType,
-                    houseInformationInputModel: houseInformationInputModel
+                    selectedHousingType: input.addressInputModel.selectedHousingType,
+                    houseInformationInputModel: input.houseInformationInputModel
                 )
             )
         )
 
         let mutation = OctopusGraphQL.MoveIntentRequestMutation(
-            intentId: intentId,
+            intentId: input.intentId,
             input: moveIntentRequestInput
         )
 
         let data = try await octopus.client.perform(mutation: mutation)
         if let moveIntentFragment = data.moveIntentRequest.moveIntent?.fragments.moveIntentFragment {
-            return MovingFlowModel(from: moveIntentFragment)
+            return MoveQuotesModel(from: moveIntentFragment)
         } else if let userError = data.moveIntentRequest.userError?.message {
             throw MovingFlowError.serverError(message: userError)
         }
         throw MovingFlowError.missingDataError(message: L10n.General.errorBody)
     }
 
-    public func confirmMoveIntent(intentId: String, homeQuoteId: String, removedAddons: [String]) async throws {
+    public func confirmMoveIntent(intentId: String, currentHomeQuoteId: String, removedAddons: [String]) async throws {
         let mutation = OctopusGraphQL.MoveIntentCommitMutation(
             intentId: intentId,
-            homeQuoteId: GraphQLNullable.init(optionalValue: homeQuoteId),
+            homeQuoteId: GraphQLNullable.init(optionalValue: currentHomeQuoteId),
             removedAddons: GraphQLNullable.init(optionalValue: removedAddons)
         )
         let delayTask = Task {
@@ -93,12 +89,13 @@ public class MoveFlowClientOctopus: MoveFlowClient {
 
     private func houseInput(
         selectedHousingType: HousingType,
-        houseInformationInputModel: HouseInformationInputModel
+        houseInformationInputModel: HouseInformationInputModel?
     ) -> OctopusGraphQL.MoveToHouseInput? {
         switch selectedHousingType {
         case .apartment, .rental:
             return nil
         case .house:
+            guard let houseInformationInputModel = houseInformationInputModel else { return nil }
             return OctopusGraphQL.MoveToHouseInput(
                 ancillaryArea: Int(houseInformationInputModel.ancillaryArea) ?? 0,
                 yearOfConstruction: Int(houseInformationInputModel.yearOfConstruction) ?? 0,
@@ -118,9 +115,41 @@ public class MoveFlowClientOctopus: MoveFlowClient {
 }
 
 @MainActor
-extension MovingFlowModel {
+extension MoveConfigurationModel {
     init(from data: OctopusGraphQL.MoveIntentFragment) {
         id = data.id
+        isApartmentAvailableforStudent = data.isApartmentAvailableforStudent ?? false
+        maxApartmentNumberCoInsured = data.maxApartmentNumberCoInsured
+        maxApartmentSquareMeters = data.maxApartmentSquareMeters
+        maxHouseNumberCoInsured = data.maxHouseNumberCoInsured
+        maxHouseSquareMeters = data.maxHouseSquareMeters
+        currentHomeAddresses = data.currentHomeAddresses.compactMap({
+            MoveAddress(from: $0.fragments.moveAddressFragment)
+        })
+        self.extraBuildingTypes = data.extraBuildingTypes.compactMap({ $0.rawValue })
+    }
+}
+
+@MainActor
+extension MoveQuotesModel {
+    init(from data: OctopusGraphQL.MoveIntentFragment) {
+        mtaQuotes = data.fragments.quoteFragment.mtaQuotes?.compactMap({ MovingFlowQuote(from: $0) }) ?? []
+        changeTierModel = {
+            if let data = data.fragments.quoteFragment.homeQuotes, !data.isEmpty {
+                return ChangeTierIntentModel.initWith(data: data)
+            }
+            return nil
+        }()
+        homeQuotes = data.homeQuotes?.compactMap({ MovingFlowQuote(from: $0) }) ?? []
+    }
+}
+
+@MainActor
+extension MoveAddress {
+    init(from data: OctopusGraphQL.MoveAddressFragment) {
+        self.id = data.id
+        self.oldAddressCoverageDurationDays = data.oldAddressCoverageDurationDays
+        self.suggestedNumberCoInsured = data.suggestedNumberCoInsured
         let minMovingDate = data.minMovingDate
         let maxMovingDate = data.maxMovingDate
         let minMovingDateDate = minMovingDate.localDateToDate
@@ -137,45 +166,8 @@ extension MovingFlowModel {
             self.minMovingDate = data.minMovingDate
             self.maxMovingDate = data.maxMovingDate
         }
-        isApartmentAvailableforStudent = data.isApartmentAvailableforStudent ?? false
-        maxApartmentNumberCoInsured = data.maxApartmentNumberCoInsured
-        maxApartmentSquareMeters = data.maxApartmentSquareMeters
-        maxHouseNumberCoInsured = data.maxHouseNumberCoInsured
-        maxHouseSquareMeters = data.maxHouseSquareMeters
-
-        suggestedNumberCoInsured = data.suggestedNumberCoInsured
-        currentHomeAddresses = data.currentHomeAddresses.compactMap({
-            MoveAddress(from: $0.fragments.moveAddressFragment)
-        })
-
-        mtaQuotes = data.fragments.quoteFragment.mtaQuotes?.compactMap({ MovingFlowQuote(from: $0) }) ?? []
-        changeTierModel = {
-            if let data = data.fragments.quoteFragment.homeQuotes, !data.isEmpty {
-                return ChangeTierIntentModel.initWith(data: data)
-            }
-            return nil
-        }()
-        potentialHomeQuotes = data.homeQuotes?.compactMap({ MovingFlowQuote(from: $0) }) ?? []
-
-        self.extraBuildingTypes = data.extraBuildingTypes.compactMap({ $0.rawValue })
-
-        var faqs = [FAQ]()
-        faqs.append(.init(title: L10n.changeAddressFaqDateTitle, description: L10n.changeAddressFaqDateLabel))
-        faqs.append(.init(title: L10n.changeAddressFaqPriceTitle, description: L10n.changeAddressFaqPriceLabel))
-        faqs.append(.init(title: L10n.changeAddressFaqRentbrfTitle, description: L10n.changeAddressFaqRentbrfLabel))
-        faqs.append(.init(title: L10n.changeAddressFaqStorageTitle, description: L10n.changeAddressFaqStorageLabel))
-        faqs.append(.init(title: L10n.changeAddressFaqStudentTitle, description: L10n.changeAddressFaqStudentLabel))
-        self.faqs = faqs
-    }
-}
-
-extension MoveAddress {
-    init(from data: OctopusGraphQL.MoveAddressFragment) {
-        id = data.id
-        street = data.street
-        postalCode = data.postalCode
-        city = data.city
-        oldAddressCoverageDurationDays = data.oldAddressCoverageDurationDays
+        self.displayTitle = data.displayTitle
+        self.displaySubtitle = data.displaySubtitle
     }
 }
 
