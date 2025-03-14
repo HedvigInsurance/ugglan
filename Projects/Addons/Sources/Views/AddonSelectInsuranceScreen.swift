@@ -49,11 +49,7 @@ public struct AddonSelectInsuranceScreen: View {
                         }
                 }
             },
-            singleSelect: true,
-            attachToBottom: true,
-            disableIfNoneSelected: true,
-            hButtonText: L10n.generalContinueButton,
-            fieldSize: .small
+            buttonText: L10n.generalContinueButton
         )
     }
     public var body: some View {
@@ -74,14 +70,11 @@ public struct AddonSelectInsuranceScreen: View {
     }
 
     private var successView: some View {
-        ItemPickerScreen<AddonConfig>(
-            config: itemPickerConfig
+        ContractSelectView(
+            itemPickerConfig: itemPickerConfig,
+            title: L10n.addonFlowSelectInsuranceTitle,
+            subtitle: L10n.addonFlowSelectInsuranceSubtitle
         )
-        .hFormTitle(
-            title: .init(.small, .heading2, L10n.addonFlowSelectInsuranceTitle, alignment: .leading),
-            subTitle: .init(.small, .heading2, L10n.addonFlowSelectInsuranceSubtitle)
-        )
-        .hFieldSize(.small)
     }
 }
 

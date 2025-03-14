@@ -31,18 +31,16 @@ struct ContractsScreen: View {
                     router.push(TravelCertificateRouterActions.startDate(specification: selected))
                 }
             },
-            singleSelect: true,
-            attachToBottom: true,
-            hButtonText: L10n.generalContinueButton
+            buttonText: L10n.generalContinueButton
         )
     }
 
     public var body: some View {
-        ItemPickerScreen<TravelInsuranceContractSpecification>(
-            config: itemPickerConfig
+        ContractSelectView(
+            itemPickerConfig: itemPickerConfig,
+            title: L10n.TravelCertificate.selectContractTitle,
+            subtitle: nil
         )
-        .padding(.bottom, .padding16)
-        .hFormTitle(title: .init(.small, .heading2, L10n.TravelCertificate.selectContractTitle, alignment: .leading))
         .hButtonIsLoading(isLoading)
     }
 }

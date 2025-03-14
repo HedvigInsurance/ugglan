@@ -36,7 +36,7 @@ struct WhoIsTravelingScreen: View {
                 vm.setCoInsured(data: listOfIncludedTravellers)
                 vm.validateAndSubmit()
             },
-            hButtonText: L10n.General.submit,
+            buttonText: L10n.General.submit,
             infoCard: vm.hasMissingCoInsuredData
                 ? .init(
                     text: L10n.TravelCertificate.missingCoinsuredInfo,
@@ -61,6 +61,7 @@ struct WhoIsTravelingScreen: View {
         ItemPickerScreen<CoInsuredModel>(
             config: itemPickerConfig
         )
+        .hFieldSize(.large)
         .hFormTitle(title: .init(.small, .heading2, L10n.TravelCertificate.whoIsTraveling, alignment: .leading))
         .disabled(vm.isLoading)
     }
