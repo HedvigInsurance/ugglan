@@ -31,7 +31,6 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
     let disableIfNoneSelected: Bool
     let hButtonText: String
     let infoCard: ItemPickerInfoCard?
-    let listTitle: String?
     let contentPosition: ContentPosition?
     let useAlwaysAttachedToBottom: Bool
     var manualInput: ItemManualInput
@@ -49,7 +48,6 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
         attachToBottom: Bool = false,
         disableIfNoneSelected: Bool = false,
         manualInputConfig: ItemManualInput? = nil,
-        withTitle: String? = nil,
         hButtonText: String? = L10n.generalSaveButton,
         infoCard: ItemPickerInfoCard? = nil,
         fieldSize: hFieldSize? = nil,
@@ -61,7 +59,6 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
         self.onSelected = onSelected
         self.onCancel = onCancel
         self.singleSelect = singleSelect
-        self.listTitle = withTitle
         self.attachToBottom = attachToBottom
         self.disableIfNoneSelected = disableIfNoneSelected
         self.manualInput = manualInputConfig ?? .init(placeholder: nil)
@@ -193,25 +190,12 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
 
     private func content(with proxy: ScrollViewProxy) -> some View {
         VStack(spacing: .padding4) {
-            if let listTitle = config.listTitle {
-                hSection(config.items, id: \.object) { item in
+            ForEach(config.items, id: \.object) { item in
+                hSection {
                     getCell(item: item.object)
                         .id(item.object)
                 }
-                .withHeader({
-                    hText(listTitle, style: .label)
-                        .foregroundColor(hTextColor.Translucent.secondary)
-                })
-                .hEmbeddedHeader
                 .disabled(isLoading)
-            } else {
-                ForEach(config.items, id: \.object) { item in
-                    hSection {
-                        getCell(item: item.object)
-                            .id(item.object)
-                    }
-                    .disabled(isLoading)
-                }
             }
 
             let showOtherCell = config.manualInput.placeholder != nil && !config.items.isEmpty
@@ -442,7 +426,6 @@ struct ItemPickerScreen_Previews: PreviewProvider {
                         singleSelect: true,
                         attachToBottom: true,
                         manualInputConfig: .init(placeholder: "Enter brand name"),
-                        withTitle: "Label",
                         fieldSize: .small
                     ),
                 leftView: { _ in
