@@ -39,21 +39,16 @@ struct SelectInsuranceScreen: View {
                     changeTierNavigationVm.router.push(selectedContract)
                 }
             },
-            hButtonText: L10n.generalContinueButton
+            buttonText: L10n.generalContinueButton
         )
     }
 
     var body: some View {
-        ItemPickerScreen<ChangeTierContract>(
-            config: itemPickerConfig
+        ContractSelectView(
+            itemPickerConfig: itemPickerConfig,
+            title: L10n.tierFlowTitle,
+            subtitle: L10n.tierFlowSelectInsuranceSubtitle
         )
-        .hFormTitle(
-            title: .init(.small, .body2, L10n.tierFlowTitle, alignment: .leading),
-            subTitle: .init(.small, .body2, L10n.tierFlowSelectInsuranceSubtitle)
-        )
-        .hFieldSize(.small)
-        .hItemPickerAttributes([.singleSelect, .attachToBottom, .disableIfNoneSelected])
-        .withDismissButton()
     }
 }
 

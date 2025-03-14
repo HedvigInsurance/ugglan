@@ -36,7 +36,7 @@ struct WhoIsTravelingScreen: View {
                 vm.setCoInsured(data: listOfIncludedTravellers)
                 vm.validateAndSubmit()
             },
-            hButtonText: L10n.General.submit,
+            buttonText: L10n.General.submit,
             infoCard: vm.hasMissingCoInsuredData
                 ? .init(
                     text: L10n.TravelCertificate.missingCoinsuredInfo,

@@ -26,7 +26,7 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
     var preSelectedItems: [T]
     let onSelected: ([(object: T?, displayName: String?)]) -> Void
     let onCancel: (() -> Void)?
-    let hButtonText: String
+    let buttonText: String
     let infoCard: ItemPickerInfoCard?
     let contentPosition: ContentPosition?
     var manualInput: ItemManualInput
@@ -40,7 +40,7 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
         onSelected: @escaping ([(T?, String?)]) -> Void,
         onCancel: (() -> Void)? = nil,
         manualInputConfig: ItemManualInput? = nil,
-        hButtonText: String? = L10n.generalSaveButton,
+        buttonText: String? = L10n.generalSaveButton,
         infoCard: ItemPickerInfoCard? = nil,
         contentPosition: ContentPosition? = nil
     ) {
@@ -49,7 +49,7 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
         self.onSelected = onSelected
         self.onCancel = onCancel
         self.manualInput = manualInputConfig ?? .init(placeholder: nil)
-        self.hButtonText = hButtonText ?? L10n.generalSaveButton
+        self.buttonText = buttonText ?? L10n.generalSaveButton
         self.infoCard = infoCard
         self.contentPosition = contentPosition
         self.selectedItems = preSelectedItems()
@@ -100,8 +100,8 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                 hForm {}
                     .accessibilityLabel(
                         attributes.contains(.singleSelect)
-                            ? L10n.voiceoverPickerInfo(config.hButtonText)
-                            : L10n.voiceoverPickerInfoMultiple(config.hButtonText)
+                            ? L10n.voiceoverPickerInfo(config.buttonText)
+                            : L10n.voiceoverPickerInfoMultiple(config.buttonText)
                     )
                     .hFormContentPosition(config.contentPosition ?? .bottom)
                     .hFormAttachToBottom {
@@ -207,9 +207,9 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     var accessibilityText: String {
         if config.selectedItems.isEmpty {
             if attributes.contains(.singleSelect) {
-                return L10n.voiceoverPickerInfo(config.hButtonText)
+                return L10n.voiceoverPickerInfo(config.buttonText)
             }
-            return L10n.voiceoverPickerInfoMultiple(config.hButtonText)
+            return L10n.voiceoverPickerInfoMultiple(config.buttonText)
         }
         let selectedItemsDisplayName = config.selectedItems.map { selectedItem in
             config.items.first(where: { $0.object == selectedItem })?.displayName.title ?? ""
@@ -225,7 +225,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                 hButton.LargeButton(type: .primary) {
                     sendSelectedItems
                 } content: {
-                    hText(config.hButtonText, style: .body1)
+                    hText(config.buttonText, style: .body1)
                 }
                 .hButtonIsLoading(isLoading)
                 .disabled(attributes.contains(.disableIfNoneSelected) ? config.selectedItems.isEmpty : false)
@@ -400,7 +400,8 @@ struct ItemPickerScreen_Previews: PreviewProvider {
                         },
                         onCancel: {
                         },
-                        manualInputConfig: .init(placeholder: "Enter brand name")
+                        manualInputConfig: .init(placeholder: "Enter brand name"),
+                        buttonText: L10n.generalSaveButton
                     ),
                 leftView: { _ in
                     Image(uiImage: hCoreUIAssets.pillowHome.image)

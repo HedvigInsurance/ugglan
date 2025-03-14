@@ -46,24 +46,16 @@ struct SelectContractView: View {
                     }
                 }
             },
-            hButtonText: L10n.generalContinueButton
+            buttonText: L10n.generalContinueButton
         )
     }
     var body: some View {
-        ItemPickerScreen<FlowClaimContractSelectOptionModel>(
-            config: itemPickerConfig
+        ContractSelectView(
+            itemPickerConfig: itemPickerConfig,
+            title: L10n.claimTriagingAboutTitile,
+            subtitle: nil
         )
-        .padding(.bottom, .padding16)
         .hItemPickerAttributes([.singleSelect, .attachToBottom])
-        .hFormTitle(
-            title: .init(
-                .small,
-                .heading2,
-                L10n.claimTriagingAboutTitile,
-                alignment: .leading
-            )
-        )
-        .hFieldSize(.medium)
         .hButtonIsLoading(vm.state == .loading)
         .claimErrorTrackerForState($vm.state)
     }

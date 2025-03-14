@@ -259,39 +259,11 @@ public struct EditCoInsuredSelectInsuranceNavigation: View {
     }
 
     func openSelectInsurance() -> some View {
-        ItemPickerScreen<InsuredPeopleConfig>(
-            config: .init(
-                items: {
-                    return configs.compactMap({
-                        (object: $0, displayName: .init(title: $0.displayName))
-                    })
-                }(),
-                preSelectedItems: {
-                    if let first = configs.first {
-                        return [first]
-                    }
-                    return []
-                },
-                onSelected: { [weak editCoInsuredViewModel] selectedConfigs in
-                    if let selectedConfig = selectedConfigs.first {
-                        if let object = selectedConfig.0 {
-                            editCoInsuredViewModel?.editCoInsuredModelDetent = nil
-                            editCoInsuredViewModel?.editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
-                                return [object]
-                            })
-                            self.editCoInsuredNavigationVm.coInsuredViewModel.initializeCoInsured(with: object)
-                        }
-                    }
-                },
-                onCancel: { [weak router] in
-                    router?.dismiss()
-                },
-                hButtonText: L10n.generalContinueButton
-            )
+        CoInsuredSelectInsuranceScreen(
+            configs: configs,
+            editCoInsuredNavigationVm: editCoInsuredNavigationVm,
+            editCoInsuredViewModel: editCoInsuredViewModel
         )
-        .hFieldSize(.large)
-        .hItemPickerAttributes([.singleSelect])
-        .configureTitle(L10n.SelectInsurance.NavigationBar.CenterElement.title)
     }
 }
 
