@@ -31,8 +31,6 @@ struct ContractsScreen: View {
                     router.push(TravelCertificateRouterActions.startDate(specification: selected))
                 }
             },
-            singleSelect: true,
-            attachToBottom: true,
             hButtonText: L10n.generalContinueButton
         )
     }
@@ -42,6 +40,8 @@ struct ContractsScreen: View {
             config: itemPickerConfig
         )
         .padding(.bottom, .padding16)
+        .hFieldSize(.large)
+        .hItemPickerAttributes([.singleSelect, .attachToBottom])
         .hFormTitle(title: .init(.small, .heading2, L10n.TravelCertificate.selectContractTitle, alignment: .leading))
         .hButtonIsLoading(isLoading)
     }

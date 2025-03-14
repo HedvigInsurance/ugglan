@@ -286,10 +286,11 @@ public struct EditCoInsuredSelectInsuranceNavigation: View {
                 onCancel: { [weak router] in
                     router?.dismiss()
                 },
-                singleSelect: true,
                 hButtonText: L10n.generalContinueButton
             )
         )
+        .hFieldSize(.large)
+        .hItemPickerAttributes([.singleSelect])
         .configureTitle(L10n.SelectInsurance.NavigationBar.CenterElement.title)
     }
 }

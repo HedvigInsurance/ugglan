@@ -26,15 +26,10 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
     var preSelectedItems: [T]
     let onSelected: ([(object: T?, displayName: String?)]) -> Void
     let onCancel: (() -> Void)?
-    let singleSelect: Bool?
-    let attachToBottom: Bool
-    let disableIfNoneSelected: Bool
     let hButtonText: String
     let infoCard: ItemPickerInfoCard?
     let contentPosition: ContentPosition?
-    let useAlwaysAttachedToBottom: Bool
     var manualInput: ItemManualInput
-    var fieldSize: hFieldSize
 
     @Published var type: ItemPickerFieldType? = nil
     @Published var selectedItems: [T] = []
@@ -44,39 +39,19 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
         preSelectedItems: @escaping () -> [T],
         onSelected: @escaping ([(T?, String?)]) -> Void,
         onCancel: (() -> Void)? = nil,
-        singleSelect: Bool? = false,
-        attachToBottom: Bool = false,
-        disableIfNoneSelected: Bool = false,
         manualInputConfig: ItemManualInput? = nil,
         hButtonText: String? = L10n.generalSaveButton,
         infoCard: ItemPickerInfoCard? = nil,
-        fieldSize: hFieldSize? = nil,
-        contentPosition: ContentPosition? = nil,
-        useAlwaysAttachedToBottom: Bool = false
+        contentPosition: ContentPosition? = nil
     ) {
         self.items = items
         self.preSelectedItems = preSelectedItems()
         self.onSelected = onSelected
         self.onCancel = onCancel
-        self.singleSelect = singleSelect
-        self.attachToBottom = attachToBottom
-        self.disableIfNoneSelected = disableIfNoneSelected
         self.manualInput = manualInputConfig ?? .init(placeholder: nil)
         self.hButtonText = hButtonText ?? L10n.generalSaveButton
-
-        if fieldSize != nil {
-            self.fieldSize = fieldSize ?? .large
-        } else {
-            if items.count > 3 {
-                self.fieldSize = .small
-            } else {
-                self.fieldSize = .large
-            }
-        }
-
         self.infoCard = infoCard
         self.contentPosition = contentPosition
-        self.useAlwaysAttachedToBottom = useAlwaysAttachedToBottom
         self.selectedItems = preSelectedItems()
     }
 
@@ -105,9 +80,11 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
 public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     @Environment(\.hButtonIsLoading) var isLoading
     @Environment(\.hItemPickerBottomAttachedView) var bottomAttachedView
+    @Environment(\.hItemPickerAttributes) var attributes
+    @Environment(\.hFieldSize) var fieldSize
     @ObservedObject private var config: ItemConfig<T>
-
     let leftView: ((T?) -> AnyView?)?
+
     public init(
         config: ItemConfig<T>,
         leftView: ((T?) -> AnyView?)? = nil
@@ -119,10 +96,10 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     @ViewBuilder
     public var body: some View {
         ScrollViewReader { proxy in
-            if config.attachToBottom {
+            if attributes.contains(.attachToBottom) {
                 hForm {}
                     .accessibilityLabel(
-                        config.singleSelect ?? false
+                        attributes.contains(.singleSelect)
                             ? L10n.voiceoverPickerInfo(config.hButtonText)
                             : L10n.voiceoverPickerInfoMultiple(config.hButtonText)
                     )
@@ -152,7 +129,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                     }
             } else {
                 Group {
-                    if config.useAlwaysAttachedToBottom {
+                    if attributes.contains(.alwaysAttachToBottom) {
                         hForm {
                             content(with: proxy)
                         }
@@ -175,7 +152,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                 }
             }
         }
-        .hFieldSize(config.fieldSize)
+        .hFieldSize(fieldSize)
     }
 
     private func onAppear(with proxy: ScrollViewProxy) {
@@ -229,7 +206,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
 
     var accessibilityText: String {
         if config.selectedItems.isEmpty {
-            if config.singleSelect ?? false {
+            if attributes.contains(.singleSelect) {
                 return L10n.voiceoverPickerInfo(config.hButtonText)
             }
             return L10n.voiceoverPickerInfoMultiple(config.hButtonText)
@@ -251,7 +228,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                     hText(config.hButtonText, style: .body1)
                 }
                 .hButtonIsLoading(isLoading)
-                .disabled(config.disableIfNoneSelected ? config.selectedItems.isEmpty : false)
+                .disabled(attributes.contains(.disableIfNoneSelected) ? config.selectedItems.isEmpty : false)
                 .accessibilityHint(accessibilityText)
                 if let onCancel = config.onCancel {
                     hButton.LargeButton(type: .ghost) {
@@ -320,7 +297,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
 
         hFieldTextContent(
             item: displayName,
-            fieldSize: config.fieldSize,
+            fieldSize: fieldSize,
             itemDisplayName: itemDisplayName,
             leftViewWithItem: leftView,
             cellView: {
@@ -339,7 +316,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     func onTapExecuteFor(_ item: T) {
         ImpactGenerator.soft()
         withAnimation(.easeInOut(duration: 0.2)) {
-            if !(config.singleSelect ?? true) {
+            if !attributes.contains(.singleSelect) {
                 if let index = self.config.selectedItems.firstIndex(where: { $0 == item }) {
                     config.selectedItems.remove(at: index)
                 } else {
@@ -376,7 +353,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
 
     @ViewBuilder
     private func getRightView(isSelected: Bool, title: String?) -> some View {
-        if let singleSelect = config.singleSelect, singleSelect {
+        if attributes.contains(.singleSelect) {
             hRadioOptionSelectedView(
                 selectedValue: .constant(isSelected ? title : nil),
                 value: title ?? ""
@@ -423,10 +400,7 @@ struct ItemPickerScreen_Previews: PreviewProvider {
                         },
                         onCancel: {
                         },
-                        singleSelect: true,
-                        attachToBottom: true,
-                        manualInputConfig: .init(placeholder: "Enter brand name"),
-                        fieldSize: .small
+                        manualInputConfig: .init(placeholder: "Enter brand name")
                     ),
                 leftView: { _ in
                     Image(uiImage: hCoreUIAssets.pillowHome.image)
@@ -435,6 +409,8 @@ struct ItemPickerScreen_Previews: PreviewProvider {
                         .asAnyView
                 }
             )
+            .hItemPickerAttributes([.singleSelect, .attachToBottom])
+            .hFieldSize(.small)
             .hEmbeddedHeader
         }
     }
@@ -454,6 +430,30 @@ extension EnvironmentValues {
 extension View {
     public func hItemPickerBottomAttachedView<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
         self.environment(\.hItemPickerBottomAttachedView, AnyView(content()))
+    }
+}
+
+public enum ItemPickerAttribute {
+    case singleSelect
+    case disableIfNoneSelected
+    case attachToBottom
+    case alwaysAttachToBottom
+}
+
+private struct EnvironmentHItemPickerAttributes: @preconcurrency EnvironmentKey {
+    @MainActor static let defaultValue: [ItemPickerAttribute] = []
+}
+
+extension EnvironmentValues {
+    public var hItemPickerAttributes: [ItemPickerAttribute] {
+        get { self[EnvironmentHItemPickerAttributes.self] }
+        set { self[EnvironmentHItemPickerAttributes.self] = newValue }
+    }
+}
+
+extension View {
+    public func hItemPickerAttributes(_ attributes: [ItemPickerAttribute]) -> some View {
+        self.environment(\.hItemPickerAttributes, attributes)
     }
 }
 

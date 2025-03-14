@@ -493,13 +493,11 @@ struct TerminationFlowNavigation: View {
                         }
                     }
                 },
-                singleSelect: true,
-                attachToBottom: true,
-                disableIfNoneSelected: true,
-                hButtonText: L10n.generalContinueButton,
-                fieldSize: .small
+                hButtonText: L10n.generalContinueButton
             )
         )
+        .hFieldSize(.small)
+        .hItemPickerAttributes([.singleSelect, .attachToBottom, .disableIfNoneSelected])
         .hFormTitle(
             title: .init(.small, .heading2, L10n.terminationFlowTitle, alignment: .leading),
             subTitle: .init(.small, .heading2, L10n.terminationFlowBody)

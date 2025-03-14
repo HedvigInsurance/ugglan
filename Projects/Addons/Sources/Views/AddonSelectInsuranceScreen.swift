@@ -49,11 +49,7 @@ public struct AddonSelectInsuranceScreen: View {
                         }
                 }
             },
-            singleSelect: true,
-            attachToBottom: true,
-            disableIfNoneSelected: true,
-            hButtonText: L10n.generalContinueButton,
-            fieldSize: .small
+            hButtonText: L10n.generalContinueButton
         )
     }
     public var body: some View {
@@ -77,6 +73,7 @@ public struct AddonSelectInsuranceScreen: View {
         ItemPickerScreen<AddonConfig>(
             config: itemPickerConfig
         )
+        .hItemPickerAttributes([.singleSelect, .attachToBottom, .disableIfNoneSelected])
         .hFormTitle(
             title: .init(.small, .heading2, L10n.addonFlowSelectInsuranceTitle, alignment: .leading),
             subTitle: .init(.small, .heading2, L10n.addonFlowSelectInsuranceSubtitle)

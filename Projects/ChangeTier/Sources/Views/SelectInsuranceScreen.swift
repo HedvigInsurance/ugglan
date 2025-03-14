@@ -39,11 +39,7 @@ struct SelectInsuranceScreen: View {
                     changeTierNavigationVm.router.push(selectedContract)
                 }
             },
-            singleSelect: true,
-            attachToBottom: true,
-            disableIfNoneSelected: true,
-            hButtonText: L10n.generalContinueButton,
-            fieldSize: .small
+            hButtonText: L10n.generalContinueButton
         )
     }
 
@@ -55,6 +51,8 @@ struct SelectInsuranceScreen: View {
             title: .init(.small, .body2, L10n.tierFlowTitle, alignment: .leading),
             subTitle: .init(.small, .body2, L10n.tierFlowSelectInsuranceSubtitle)
         )
+        .hFieldSize(.small)
+        .hItemPickerAttributes([.singleSelect, .attachToBottom, .disableIfNoneSelected])
         .withDismissButton()
     }
 }

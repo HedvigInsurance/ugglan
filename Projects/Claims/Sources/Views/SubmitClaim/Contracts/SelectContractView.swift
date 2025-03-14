@@ -46,10 +46,7 @@ struct SelectContractView: View {
                     }
                 }
             },
-            singleSelect: true,
-            attachToBottom: true,
-            hButtonText: L10n.generalContinueButton,
-            fieldSize: .medium
+            hButtonText: L10n.generalContinueButton
         )
     }
     var body: some View {
@@ -57,6 +54,7 @@ struct SelectContractView: View {
             config: itemPickerConfig
         )
         .padding(.bottom, .padding16)
+        .hItemPickerAttributes([.singleSelect, .attachToBottom])
         .hFormTitle(
             title: .init(
                 .small,
@@ -65,6 +63,7 @@ struct SelectContractView: View {
                 alignment: .leading
             )
         )
+        .hFieldSize(.medium)
         .hButtonIsLoading(vm.state == .loading)
         .claimErrorTrackerForState($vm.state)
     }

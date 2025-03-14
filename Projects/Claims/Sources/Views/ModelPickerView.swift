@@ -44,13 +44,11 @@ struct ModelPickerView: View {
             onCancel: { [weak router] in
                 router?.dismiss()
             },
-            singleSelect: true,
             manualInputConfig: .init(
                 placeholder: L10n.Claims.Item.Enter.Model.name,
                 brandName: customName
             ),
-            contentPosition: .top,
-            useAlwaysAttachedToBottom: true
+            contentPosition: .top
         )
     }
 
@@ -58,6 +56,7 @@ struct ModelPickerView: View {
         return ItemPickerScreen<ClaimFlowItemModelOptionModel>(
             config: itemPickerConfig
         )
+        .hItemPickerAttributes([.singleSelect, .alwaysAttachToBottom])
     }
 }
 
