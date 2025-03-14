@@ -45,8 +45,10 @@ struct ModelPickerView: View {
                 router?.dismiss()
             },
             singleSelect: true,
-            manualInputPlaceholder: L10n.Claims.Item.Enter.Model.name,
-            manualBrandName: customName,
+            manualInputConfig: .init(
+                placeholder: L10n.Claims.Item.Enter.Model.name,
+                brandName: customName
+            ),
             contentPosition: .top,
             useAlwaysAttachedToBottom: true
         )
@@ -56,7 +58,6 @@ struct ModelPickerView: View {
         return ItemPickerScreen<ClaimFlowItemModelOptionModel>(
             config: itemPickerConfig
         )
-        .hIncludeManualInput
     }
 }
 

@@ -1,6 +1,24 @@
 import SwiftUI
 import hCore
 
+public class ItemManualInput {
+    let id = "manualInputId"
+    let placeholder: String?
+    @Published public var brandName: String = ""
+    @Published var input: Bool = false
+
+    public init(
+        placeholder: String? = nil,
+        brandName: String? = nil
+    ) {
+        self.placeholder = placeholder
+        if let brandName {
+            self.brandName = brandName
+            self.input = true
+        }
+    }
+}
+
 public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
     typealias PickerModel = (object: T, displayName: ItemModel)
 
@@ -11,19 +29,15 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
     let singleSelect: Bool?
     let attachToBottom: Bool
     let disableIfNoneSelected: Bool
-    let manualInputPlaceholder: String
     let hButtonText: String
     let infoCard: ItemPickerInfoCard?
     let listTitle: String?
     let contentPosition: ContentPosition?
     let useAlwaysAttachedToBottom: Bool
-
+    var manualInput: ItemManualInput
     var fieldSize: hFieldSize
-    let manualInputId = "manualInputId"
 
     @Published var type: ItemPickerFieldType? = nil
-    @Published var manualBrandName: String = ""
-    @Published var manualInput: Bool = false
     @Published var selectedItems: [T] = []
 
     public init(
@@ -34,8 +48,7 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
         singleSelect: Bool? = false,
         attachToBottom: Bool = false,
         disableIfNoneSelected: Bool = false,
-        manualInputPlaceholder: String? = "",
-        manualBrandName: String? = nil,
+        manualInputConfig: ItemManualInput? = nil,
         withTitle: String? = nil,
         hButtonText: String? = L10n.generalSaveButton,
         infoCard: ItemPickerInfoCard? = nil,
@@ -51,11 +64,7 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
         self.listTitle = withTitle
         self.attachToBottom = attachToBottom
         self.disableIfNoneSelected = disableIfNoneSelected
-        self.manualInputPlaceholder = manualInputPlaceholder ?? ""
-        if let manualBrandName {
-            self.manualBrandName = manualBrandName
-            self.manualInput = true
-        }
+        self.manualInput = manualInputConfig ?? .init(placeholder: nil)
         self.hButtonText = hButtonText ?? L10n.generalSaveButton
 
         if fieldSize != nil {
@@ -99,7 +108,6 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
 public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     @Environment(\.hButtonIsLoading) var isLoading
     @Environment(\.hItemPickerBottomAttachedView) var bottomAttachedView
-    @Environment(\.hIncludeManualInput) var includeManualInput
     @ObservedObject private var config: ItemConfig<T>
 
     let leftView: ((T?) -> AnyView?)?
@@ -178,8 +186,8 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
             proxy.scrollTo(selectedItem, anchor: .center)
         }
 
-        if config.manualInput {
-            proxy.scrollTo(config.manualInputId, anchor: .center)
+        if config.manualInput.input {
+            proxy.scrollTo(config.manualInput.id, anchor: .center)
         }
     }
 
@@ -206,8 +214,8 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                 }
             }
 
-            let showOtherCell = includeManualInput && !config.items.isEmpty
-            let showFreeTextField = (config.manualInput && includeManualInput) || config.items.isEmpty
+            let showOtherCell = config.manualInput.placeholder != nil && !config.items.isEmpty
+            let showFreeTextField = config.manualInput.input || config.items.isEmpty
 
             if showOtherCell {
                 hSection {
@@ -220,17 +228,17 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                 hSection {
                     hFloatingTextField(
                         masking: Masking(type: .none),
-                        value: $config.manualBrandName,
+                        value: $config.manualInput.brandName,
                         equals: $config.type,
                         focusValue: .inputField,
-                        placeholder: config.manualInputPlaceholder
+                        placeholder: config.manualInput.placeholder
                     )
                 }
                 .onAppear {
-                    config.manualInput = true
+                    config.manualInput.input = true
                     config.selectedItems = []
                 }
-                .id(config.manualInputId)
+                .id(config.manualInput.id)
             }
         }
     }
@@ -284,8 +292,8 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                 })
             )
         } else if config.selectedItems.count == 0 {
-            if config.manualInput && includeManualInput {
-                config.onSelected([(object: nil, displayName: config.manualBrandName)])
+            if config.manualInput.input {
+                config.onSelected([(object: nil, displayName: config.manualInput.brandName)])
             } else {
                 config.onSelected([])
             }
@@ -305,12 +313,12 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
         .onTap {
             if let item {
                 withAnimation(.easeInOut(duration: 0.2)) {
-                    config.manualInput = false
+                    config.manualInput.input = false
                 }
                 onTapExecuteFor(item)
             } else {
                 withAnimation(.easeInOut(duration: 0.2)) {
-                    config.manualInput = true
+                    config.manualInput.input = true
                 }
                 config.selectedItems = []
                 config.type = .inputField
@@ -321,7 +329,8 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     @ViewBuilder
     func getCellContent(_ item: T?, _ itemDisplayName: String?) -> some View {
         let isSelected =
-            config.selectedItems.first(where: { $0 == item }) != nil || (config.manualInput && itemDisplayName != nil)
+            config.selectedItems.first(where: { $0 == item }) != nil
+            || (config.manualInput.input && itemDisplayName != nil)
 
         let displayName = config.items.first(where: { $0.object == item })?.displayName
 
@@ -369,7 +378,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
             ZStack {
                 let isSelected =
                     config.selectedItems.first(where: { $0 == item }) != nil
-                    || (config.manualInput && itemDisplayName != nil)
+                    || (config.manualInput.input && itemDisplayName != nil)
                 var displayName = config.items.first(where: { $0.object == item })?.displayName
 
                 if itemDisplayName == L10n.manualInputListOther {
@@ -432,7 +441,7 @@ struct ItemPickerScreen_Previews: PreviewProvider {
                         },
                         singleSelect: true,
                         attachToBottom: true,
-                        manualInputPlaceholder: "Enter brand name",
+                        manualInputConfig: .init(placeholder: "Enter brand name"),
                         withTitle: "Label",
                         fieldSize: .small
                     ),
@@ -444,7 +453,6 @@ struct ItemPickerScreen_Previews: PreviewProvider {
                 }
             )
             .hEmbeddedHeader
-            .hIncludeManualInput
         }
     }
 }
@@ -482,23 +490,6 @@ enum ItemPickerFieldType: hTextFieldFocusStateCompliant {
 
     case inputField
     case none
-}
-
-private struct EnvironmentHIncludeManualInput: EnvironmentKey {
-    static let defaultValue: Bool = false
-}
-
-extension EnvironmentValues {
-    public var hIncludeManualInput: Bool {
-        get { self[EnvironmentHIncludeManualInput.self] }
-        set { self[EnvironmentHIncludeManualInput.self] = newValue }
-    }
-}
-
-extension View {
-    public var hIncludeManualInput: some View {
-        self.environment(\.hIncludeManualInput, true)
-    }
 }
 
 private struct EnvironmentHLeftAlign: EnvironmentKey {
