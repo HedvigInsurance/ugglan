@@ -5,8 +5,14 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct FilesGridView: View {
+public struct FilesGridView: View {
     @ObservedObject var vm: FileGridViewModel
+
+    public init(
+        vm: FileGridViewModel
+    ) {
+        self.vm = vm
+    }
 
     private let adaptiveColumn = [
         GridItem(.flexible(), spacing: .padding8),
@@ -14,7 +20,7 @@ struct FilesGridView: View {
         GridItem(.flexible(), spacing: .padding8),
     ]
 
-    var body: some View {
+    public var body: some View {
         LazyVGrid(columns: adaptiveColumn, spacing: .padding8) {
             ForEach(vm.files, id: \.id) { file in
                 ZStack(alignment: Alignment(horizontal: .trailing, vertical: .top)) {
@@ -64,13 +70,13 @@ struct FilesGridView: View {
 }
 
 @MainActor
-class FileGridViewModel: ObservableObject {
-    @Published var files: [File]
-    @Published private(set) var options: ClaimFilesViewModel.ClaimFilesViewOptions
+public class FileGridViewModel: ObservableObject {
+    @Published public var files: [File]
+    @Published public var options: ClaimFilesViewModel.ClaimFilesViewOptions
     @Published var fileModel: FileUrlModel?
-    var onDelete: ((_ file: File) -> Void)?
+    public var onDelete: ((_ file: File) -> Void)?
 
-    init(
+    public init(
         files: [File],
         options: ClaimFilesViewModel.ClaimFilesViewOptions,
         onDelete: ((_ file: File) -> Void)? = nil
@@ -109,7 +115,7 @@ class FileGridViewModel: ObservableObject {
         UIApplication.shared.getTopViewController()?.present(alert, animated: true, completion: nil)
     }
 
-    func update(options: ClaimFilesViewModel.ClaimFilesViewOptions) {
+    public func update(options: ClaimFilesViewModel.ClaimFilesViewOptions) {
         withAnimation {
             self.options = options
         }

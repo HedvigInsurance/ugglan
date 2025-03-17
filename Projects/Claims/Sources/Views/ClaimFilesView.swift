@@ -156,7 +156,7 @@ public struct ClaimFilesView: View {
 }
 
 @MainActor
-class ClaimFilesViewModel: ObservableObject {
+public class ClaimFilesViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var success = false
     @Published var error: String?
@@ -237,12 +237,18 @@ class ClaimFilesViewModel: ObservableObject {
         }
     }
 
-    struct ClaimFilesViewOptions: OptionSet {
-        let rawValue: UInt
+    public struct ClaimFilesViewOptions: OptionSet, Sendable {
+        public let rawValue: UInt
 
-        static let add = ClaimFilesViewOptions(rawValue: 1 << 0)
-        static let delete = ClaimFilesViewOptions(rawValue: 1 << 1)
-        static let loading = ClaimFilesViewOptions(rawValue: 1 << 2)
+        public init(
+            rawValue: UInt
+        ) {
+            self.rawValue = rawValue
+        }
+
+        static public let add = ClaimFilesViewOptions(rawValue: 1 << 0)
+        static public let delete = ClaimFilesViewOptions(rawValue: 1 << 1)
+        static public let loading = ClaimFilesViewOptions(rawValue: 1 << 2)
 
     }
 
@@ -332,8 +338,8 @@ public struct FileUrlModel: Identifiable, Equatable {
     }
 }
 @MainActor
-struct FilePicker {
-    static func showAlert(closure: @escaping (_ selected: SelectedFileInputType) -> Void) {
+public struct FilePicker {
+    public static func showAlert(closure: @escaping (_ selected: SelectedFileInputType) -> Void) {
         let alert = UIAlertController(
             title: nil,
             message: nil,
@@ -378,7 +384,7 @@ struct FilePicker {
         UIApplication.shared.getTopViewController()?.present(alert, animated: true, completion: nil)
     }
 
-    enum SelectedFileInputType {
+    public enum SelectedFileInputType {
         case camera
         case imagePicker
         case filePicker
