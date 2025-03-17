@@ -159,8 +159,10 @@ public struct hForm<Content: View>: View, KeyboardReadable {
             .padding(.top, hFormTitle.title.type.topMargin)
             .padding(
                 .bottom,
-                hFormTitle.subTitle?.type.bottomMargin
-                    ?? hFormTitle.title.type.bottomMargin
+                verticalSizeClass == .compact
+                    ? .padding16
+                    : hFormTitle.subTitle?.type.bottomMargin
+                        ?? hFormTitle.title.type.bottomMargin
             )
             .padding(.horizontal, horizontalSizeClass == .regular ? .padding60 : .padding16)
             .accessibilityElement(children: .combine)
@@ -401,12 +403,11 @@ public enum HFormTitleSpacingType {
     }
 
     var bottomMargin: CGFloat {
-        @Environment(\.verticalSizeClass) var verticalSizeClass
         switch self {
         case .standard:
             return 64
         case .small, .none:
-            return verticalSizeClass == .compact ? .padding8 : 0
+            return 0
         }
     }
 }
