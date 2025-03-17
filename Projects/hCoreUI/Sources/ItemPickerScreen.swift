@@ -1,24 +1,6 @@
 import SwiftUI
 import hCore
 
-public class ItemManualInput {
-    let id = "manualInputId"
-    let placeholder: String?
-    @Published public var brandName: String = ""
-    @Published var input: Bool = false
-
-    public init(
-        placeholder: String? = nil,
-        brandName: String? = nil
-    ) {
-        self.placeholder = placeholder
-        if let brandName {
-            self.brandName = brandName
-            self.input = true
-        }
-    }
-}
-
 public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
     typealias PickerModel = (object: T, displayName: ItemModel)
 
@@ -75,6 +57,24 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
             case bottom
         }
     }
+
+    public class ItemManualInput {
+        let id = "manualInputId"
+        let placeholder: String?
+        @Published public var brandName: String = ""
+        @Published var input: Bool = false
+
+        public init(
+            placeholder: String? = nil,
+            brandName: String? = nil
+        ) {
+            self.placeholder = placeholder
+            if let brandName {
+                self.brandName = brandName
+                self.input = true
+            }
+        }
+    }
 }
 
 public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
@@ -98,34 +98,12 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
         ScrollViewReader { proxy in
             if attributes.contains(.attachToBottom) {
                 hForm {}
-                    .accessibilityLabel(
-                        attributes.contains(.singleSelect)
-                            ? L10n.voiceoverPickerInfo(config.buttonText)
-                            : L10n.voiceoverPickerInfoMultiple(config.buttonText)
-                    )
                     .hFormContentPosition(config.contentPosition ?? .bottom)
                     .hFormAttachToBottom {
                         VStack(spacing: 0) {
-                            VStack(spacing: .padding16) {
-                                if let infoCard = config.infoCard, infoCard.placement == .top {
-                                    hSection {
-                                        InfoCard(text: infoCard.text, type: .info).buttons(infoCard.buttons)
-                                    }
-                                    .sectionContainerStyle(.transparent)
-                                }
-                                content(with: proxy)
-                                if let infoCard = config.infoCard, infoCard.placement == .bottom {
-                                    hSection {
-                                        InfoCard(text: infoCard.text, type: .info).buttons(infoCard.buttons)
-                                    }
-                                    .sectionContainerStyle(.transparent)
-                                }
-                            }
+                            content(with: proxy)
                             bottomContent
                         }
-                    }
-                    .onAppear {
-                        onAppear(with: proxy)
                     }
             } else {
                 Group {
@@ -146,10 +124,6 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                     }
                 }
                 .hFormContentPosition(config.contentPosition ?? .compact)
-
-                .onAppear {
-                    onAppear(with: proxy)
-                }
             }
         }
         .hFieldSize(fieldSize)
@@ -166,60 +140,81 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     }
 
     private func content(with proxy: ScrollViewProxy) -> some View {
-        VStack(spacing: .padding4) {
-            ForEach(config.items, id: \.object) { item in
-                hSection {
-                    getCell(item: item.object)
-                        .id(item.object)
-                }
-                .disabled(isLoading)
+        VStack(spacing: .padding16) {
+            if let infoCard = config.infoCard, infoCard.placement == .top {
+                infoCardView(infoCard: infoCard)
             }
-
-            let showOtherCell = config.manualInput.placeholder != nil && !config.items.isEmpty
-            let showFreeTextField = config.manualInput.input || config.items.isEmpty
-
-            if showOtherCell {
-                hSection {
-                    getCell(displayName: L10n.manualInputListOther)
-                }
-                .disabled(isLoading)
+            VStack(spacing: .padding4) {
+                itemsView
+                otherFieldView
             }
-
-            if showFreeTextField {
-                hSection {
-                    hFloatingTextField(
-                        masking: Masking(type: .none),
-                        value: $config.manualInput.brandName,
-                        equals: $config.type,
-                        focusValue: .inputField,
-                        placeholder: config.manualInput.placeholder
-                    )
-                }
-                .onAppear {
-                    config.manualInput.input = true
-                    config.selectedItems = []
-                }
-                .id(config.manualInput.id)
+            if let infoCard = config.infoCard, infoCard.placement == .bottom {
+                infoCardView(infoCard: infoCard)
             }
+        }
+        .onAppear {
+            onAppear(with: proxy)
         }
     }
 
-    var accessibilityText: String {
-        if config.selectedItems.isEmpty {
-            if attributes.contains(.singleSelect) {
-                return L10n.voiceoverPickerInfo(config.buttonText)
+    private var itemsView: some View {
+        ForEach(config.items, id: \.object) { item in
+            hSection {
+                getCell(item: item.object)
+                    .id(item.object)
             }
-            return L10n.voiceoverPickerInfoMultiple(config.buttonText)
+            .disabled(isLoading)
         }
-        let selectedItemsDisplayName = config.selectedItems.map { selectedItem in
-            config.items.first(where: { $0.object == selectedItem })?.displayName.title ?? ""
+    }
+
+    @ViewBuilder
+    private var otherFieldView: some View {
+        let showOtherCell = config.manualInput.placeholder != nil && !config.items.isEmpty
+        let showFreeTextField = config.manualInput.input || config.items.isEmpty
+
+        if showOtherCell {
+            otherCell
         }
-        return L10n.voiceoverOptionSelected + selectedItemsDisplayName.joined()
+
+        if showFreeTextField {
+            freeTextField
+        }
+    }
+
+    private var otherCell: some View {
+        hSection {
+            getCell(displayName: L10n.manualInputListOther)
+        }
+        .disabled(isLoading)
+    }
+
+    private var freeTextField: some View {
+        hSection {
+            hFloatingTextField(
+                masking: Masking(type: .none),
+                value: $config.manualInput.brandName,
+                equals: $config.type,
+                focusValue: .inputField,
+                placeholder: config.manualInput.placeholder
+            )
+        }
+        .onAppear {
+            config.manualInput.input = true
+            config.selectedItems = []
+        }
+        .id(config.manualInput.id)
+    }
+
+    private func infoCardView(infoCard: ItemConfig<T>.ItemPickerInfoCard) -> some View {
+        hSection {
+            InfoCard(text: infoCard.text, type: .info).buttons(infoCard.buttons)
+        }
+        .sectionContainerStyle(.transparent)
     }
 
     var bottomContent: some View {
         hSection {
-            VStack(spacing: 16) {
+            VStack(spacing: .padding16) {
                 bottomAttachedView
 
                 hButton.LargeButton(type: .primary) {
@@ -365,6 +360,19 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
             )
             .hUseCheckbox
         }
+    }
+
+    private var accessibilityText: String {
+        if config.selectedItems.isEmpty {
+            if attributes.contains(.singleSelect) {
+                return L10n.voiceoverPickerInfo(config.buttonText)
+            }
+            return L10n.voiceoverPickerInfoMultiple(config.buttonText)
+        }
+        let selectedItemsDisplayName = config.selectedItems.map { selectedItem in
+            config.items.first(where: { $0.object == selectedItem })?.displayName.title ?? ""
+        }
+        return L10n.voiceoverOptionSelected + selectedItemsDisplayName.joined()
     }
 }
 
