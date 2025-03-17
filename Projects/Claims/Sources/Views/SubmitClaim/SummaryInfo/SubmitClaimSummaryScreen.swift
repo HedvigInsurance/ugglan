@@ -151,6 +151,7 @@ public struct SubmitClaimSummaryScreen: View {
                 hText(L10n.ClaimStatusDetail.uploadedFiles)
             }
             .sectionContainerStyle(.transparent)
+            .padding(.bottom, .padding8)
         }
     }
 
