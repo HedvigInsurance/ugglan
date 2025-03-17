@@ -21,7 +21,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
     @Published var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
 
     var movingFlowConfirmViewModel: MovingFlowConfirmViewModel?
-    var quoteSummaryViewModel = QuoteSummaryViewModel(contract: [])
+    var quoteSummaryViewModel: QuoteSummaryViewModel?
     fileprivate var initialTrackingType: MovingFlowDetentType?
     init() {
         initializeData()
@@ -74,8 +74,8 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                 documents: quote.documents.map({
                     .init(displayName: $0.displayName, url: $0.url, type: .unknown)
                 }),
-                onDocumentTap: { document in
-                    self.document = document
+                onDocumentTap: { [weak self] document in
+                    self?.document = document
                 },
                 displayItems: quote.displayItems.map({ .init(title: $0.displayTitle, value: $0.displayValue) }
                 ),
@@ -96,8 +96,8 @@ public class MovingFlowNavigationViewModel: ObservableObject {
         let vm = QuoteSummaryViewModel(
             contract: contractInfos
         )
-        vm.onConfirmClick = { [weak self] in
-            Task { [weak vm] in
+        vm.onConfirmClick = { [weak self, weak router, weak vm] in
+            Task {
                 guard let self = self,
                     let movingFlowConfirmViewModel = self.movingFlowConfirmViewModel,
                     let vm
@@ -108,7 +108,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
                     removedAddons: vm.getRemovedContractsIds()
                 )
             }
-            router.push(MovingFlowRouterWithHiddenBackButtonActions.processing)
+            router?.push(MovingFlowRouterWithHiddenBackButtonActions.processing)
         }
         self.quoteSummaryViewModel = vm
     }
@@ -286,7 +286,7 @@ public struct MovingFlowNavigation: View {
         movingFlowNavigationVm.setMovingFlowSummaryViewModel(
             router: router
         )
-        let model = movingFlowNavigationVm.quoteSummaryViewModel
+        let model = movingFlowNavigationVm.quoteSummaryViewModel!
         return MovingFlowConfirmScreen(quoteSummaryViewModel: model)
             .navigationTitle(L10n.changeAddressSummaryTitle)
             .withAlertDismiss()

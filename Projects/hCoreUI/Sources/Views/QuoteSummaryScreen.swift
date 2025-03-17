@@ -210,10 +210,10 @@ public struct QuoteSummaryScreen: View {
                 extraButton: ExtraButtonModel(
                     text: removeModel.confirmButtonTitle,
                     style: .primary
-                ) {
+                ) { [weak vm] in
                     withAnimation(.easeInOut(duration: 0.4)) {
-                        vm.removeModel = nil
-                        vm.removeContract(removeModel.id)
+                        vm?.removeModel = nil
+                        vm?.removeContract(removeModel.id)
                     }
                 }
             )
@@ -490,8 +490,8 @@ public struct QuoteSummaryScreen: View {
                 }
                 .accessibilityElement(children: .combine)
                 VStack(spacing: .padding8) {
-                    hButton.LargeButton(type: .primary) {
-                        vm.onConfirmClick()
+                    hButton.LargeButton(type: .primary) { [weak vm] in
+                        vm?.onConfirmClick()
                     } content: {
                         hText(vm.isAddon ? L10n.addonFlowSummaryConfirmButton : L10n.changeAddressAcceptOffer)
                     }
