@@ -269,7 +269,7 @@ public struct EditCoInsuredSelectInsuranceNavigation: View {
 
 extension EditCoInsuredSelectInsuranceNavigation: TrackingViewNameProtocol {
     public var nameForTracking: String {
-        return .init(describing: ItemPickerScreen<InsuredPeopleConfig>.self)
+        return .init(describing: CoInsuredSelectInsuranceScreen.self)
     }
 }
 

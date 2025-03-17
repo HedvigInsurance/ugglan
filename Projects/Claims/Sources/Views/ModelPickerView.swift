@@ -52,7 +52,7 @@ struct ModelPickerView: View {
     }
 
     var body: some View {
-        return ItemPickerScreen<ClaimFlowItemModelOptionModel>(
+        ItemPickerScreen<ClaimFlowItemModelOptionModel>(
             config: itemPickerConfig
         )
         .hItemPickerAttributes([.singleSelect, .alwaysAttachToBottom])
