@@ -289,7 +289,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                 selectionField(
                     isSelected: isSelected,
                     item,
-                    isManualInput ? L10n.manualInputListOther : nil
+                    isManualInput: isManualInput
                 )
                 .asAnyView
             }
@@ -318,18 +318,18 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
         }
     }
 
-    func selectionField(isSelected: Bool, _ item: T?, _ itemDisplayName: String?) -> some View {
+    func selectionField(isSelected: Bool, _ item: T?, isManualInput: Bool) -> some View {
         Group {
             ZStack {
                 let isSelected =
                     config.selectedItems.first(where: { $0 == item }) != nil
-                    || (config.manualInput.input && itemDisplayName != nil)
-                var displayName = config.items.first(where: { $0.object == item })?.displayName
+                    || (config.manualInput.input && isManualInput)
+                let displayName = config.items.first(where: { $0.object == item })?.displayName
 
-                if itemDisplayName == L10n.manualInputListOther {
-                    let _ = displayName = .init(title: L10n.manualInputListOther, subTitle: nil)
-                }
-                getRightView(isSelected: isSelected, title: displayName?.title)
+                getRightView(
+                    isSelected: isSelected,
+                    title: isManualInput ? L10n.manualInputListOther : displayName?.title
+                )
             }
         }
         .frame(width: 24, height: 24)
