@@ -6,7 +6,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct MoveConfigurationModel {
+public struct MoveConfigurationModel: Sendable {
     let id: String
     let currentHomeAddresses: [MoveAddress]
     let extraBuildingTypes: [ExtraBuildingType]

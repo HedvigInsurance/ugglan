@@ -6,7 +6,7 @@ import hCore
 import hCoreUI
 import hGraphQL
 
-public struct MoveQuotesModel {
+public struct MoveQuotesModel: Sendable {
     let homeQuotes: [MovingFlowQuote]
     let mtaQuotes: [MovingFlowQuote]
     let changeTierModel: ChangeTierIntentModel?
