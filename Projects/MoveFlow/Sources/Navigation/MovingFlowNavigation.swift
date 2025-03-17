@@ -22,7 +22,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
 
     var movingFlowConfirmViewModel: MovingFlowConfirmViewModel?
     var quoteSummaryViewModel = QuoteSummaryViewModel(contract: [])
-
+    fileprivate var initialTrackingType: MovingFlowDetentType?
     init() {
         initializeData()
     }
@@ -47,7 +47,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
             }
             addressInputModel.nbOfCoInsured = selectedHomeAddress?.suggestedNumberCoInsured ?? 0
             self.moveConfigurationModel = intentVm
-
+            initialTrackingType = intentVm.currentHomeAddresses.count == 1 ? .selectHousingType : .selectContract
             withAnimation {
                 self.viewState = .success
             }
@@ -187,7 +187,10 @@ public struct MovingFlowNavigation: View {
     }
 
     public var body: some View {
-        RouterHost(router: router, tracking: MovingFlowDetentType.selectHousingType) {
+        RouterHost(
+            router: router,
+            tracking: movingFlowNavigationVm.initialTrackingType ?? MovingFlowDetentType.selectHousingType
+        ) {
             getInitalScreen()
                 .routerDestination(for: HousingType.self) { housingType in
                     openApartmentFillScreen()
@@ -342,6 +345,8 @@ private enum MovingFlowDetentType: TrackingViewNameProtocol {
             return .init(describing: MovingFlowAddExtraBuildingScreen.self)
         case .typeOfBuildingPicker:
             return .init(describing: TypeOfBuildingPickerScreen.self)
+        case .selectContract:
+            return .init(describing: MovingFlowSelectContractScreen.self)
         case .error:
             return "Moving flow error screen"
         }
@@ -350,6 +355,7 @@ private enum MovingFlowDetentType: TrackingViewNameProtocol {
     case selectHousingType
     case addExtraBuilding
     case typeOfBuildingPicker
+    case selectContract
     case error
 
 }
