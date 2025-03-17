@@ -62,6 +62,8 @@ extension ApolloClient {
             Dependencies.shared.add(module: Module { () -> ChangeTierClient in changeTierClient })
             Dependencies.shared.add(module: Module { () -> AddonsClient in addonClient })
             Dependencies.shared.add(module: Module { () -> hFetchClaimDetailsClient in fetchClaimDetailsDemoClient })
+            Dependencies.shared.add(module: Module { () -> CrossSellClient in crossSellClient })
+
         } else {
             let paymentService = hPaymentClientOctopus()
             let hCampaignsService = hCampaingsClientOctopus()

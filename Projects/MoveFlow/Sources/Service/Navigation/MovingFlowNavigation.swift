@@ -14,6 +14,7 @@ public class MovingFlowNavigationViewModel: ObservableObject {
     @Published public var addressInputModel = AddressInputModel()
     @Published public var movingFlowVm: MovingFlowModel?
     @Published public var houseInformationInputvm = HouseInformationInputModel()
+    @Published var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
     var movingFlowConfirmViewModel: MovingFlowConfirmViewModel?
     var quoteSummaryViewModel: QuoteSummaryViewModel?
 
@@ -118,10 +119,10 @@ extension MovingFlowRouterActions: TrackingViewNameProtocol {
 
 struct ExtraBuildingTypeNavigationModel: Identifiable, Equatable {
     static func == (lhs: ExtraBuildingTypeNavigationModel, rhs: ExtraBuildingTypeNavigationModel) -> Bool {
-        return true
+        return lhs.id == rhs.id
     }
 
-    public var id: String?
+    public var id = UUID().uuidString
     var extraBuildingType: ExtraBuildingType?
 
     var addExtraBuildingVm: MovingFlowAddExtraBuildingViewModel
@@ -132,7 +133,6 @@ public struct MovingFlowNavigation: View {
     @StateObject var router = Router()
     private let onMoved: () -> Void
     @State var cancellable: AnyCancellable?
-    @State var isBuildingTypePickerPresented: ExtraBuildingTypeNavigationModel?
 
     public init(
         onMoved: @escaping () -> Void
@@ -170,15 +170,8 @@ public struct MovingFlowNavigation: View {
             style: [.height]
         ) { houseInformationInputModel in
             MovingFlowAddExtraBuildingScreen(
-                isBuildingTypePickerPresented: $isBuildingTypePickerPresented,
                 houseInformationInputVm: houseInformationInputModel
             )
-            .detent(item: $isBuildingTypePickerPresented, style: [.height]) { model in
-                openTypeOfBuildingPicker(
-                    for: model.extraBuildingType,
-                    addExtraBuilingViewModel: model.addExtraBuildingVm
-                )
-            }
             .environmentObject(movingFlowNavigationVm)
             .navigationTitle(L10n.changeAddressAddBuilding)
             .embededInNavigation(
@@ -191,6 +184,16 @@ public struct MovingFlowNavigation: View {
             style: [.large]
         ) { document in
             PDFPreview(document: document)
+        }
+        .detent(
+            item: $movingFlowNavigationVm.isBuildingTypePickerPresented,
+            style: [.height],
+            options: .constant([.alwaysOpenOnTop])
+        ) { model in
+            openTypeOfBuildingPicker(
+                for: model.extraBuildingType,
+                addExtraBuilingViewModel: model.addExtraBuildingVm
+            )
         }
         .onDisappear {
             onMoved()
@@ -257,7 +260,7 @@ public struct MovingFlowNavigation: View {
     ) -> some View {
         TypeOfBuildingPickerScreen(
             currentlySelected: currentlySelected,
-            isBuildingTypePickerPresented: $isBuildingTypePickerPresented,
+            movingFlowNavigationVm: movingFlowNavigationVm,
             addExtraBuidlingViewModel: addExtraBuilingViewModel
         )
         .navigationTitle(L10n.changeAddressExtraBuildingContainerTitle)
@@ -265,7 +268,6 @@ public struct MovingFlowNavigation: View {
             options: [.navigationType(type: .large)],
             tracking: MovingFlowDetentType.typeOfBuildingPicker
         )
-        .environmentObject(movingFlowNavigationVm)
     }
 }
 

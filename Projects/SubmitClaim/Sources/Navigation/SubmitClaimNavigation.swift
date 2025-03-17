@@ -251,7 +251,7 @@ extension SubmitClaimRouterActionsWithoutBackButton: TrackingViewNameProtocol {
 }
 
 public struct SubmitClaimNavigation: View {
-    @StateObject var submitClaimNavigationVm = SubmitClaimNavigationViewModel()
+    @StateObject var claimsNavigationVm = SubmitClaimNavigationViewModel()
     var origin: ClaimsOrigin
     @State var cancellable: AnyCancellable?
 
@@ -263,15 +263,12 @@ public struct SubmitClaimNavigation: View {
 
     public var body: some View {
         RouterHost(
-            router: submitClaimNavigationVm.router,
+            router: claimsNavigationVm.router,
             options: [.navigationType(type: .withProgress)],
-            tracking: SubmitClaimDetentType.entryPoints
+            tracking: ClaimsDetentType.entryPoints
         ) {
-            SelectClaimEntrypointGroup(vm: submitClaimNavigationVm.selectClaimEntrypointVm)
-                .resetProgressOnDismiss(
-                    to: submitClaimNavigationVm.previousProgress,
-                    for: $submitClaimNavigationVm.progress
-                )
+            SelectClaimEntrypointGroup(vm: claimsNavigationVm.selectClaimEntrypointVm)
+                .resetProgressOnDismiss(to: claimsNavigationVm.previousProgress, for: $claimsNavigationVm.progress)
                 .addDismissClaimsFlow()
                 .routerDestination(for: SubmitClaimRouterActions.self) { routerAction in
                     Group {
@@ -281,37 +278,34 @@ public struct SubmitClaimNavigation: View {
                         case .triagingOption:
                             SelectClaimEntrypointOption()
                         case .dateOfOccurrancePlusLocation:
-                            SubmitClaimOccurrencePlusLocationScreen(claimsNavigationVm: submitClaimNavigationVm)
+                            SubmitClaimOccurrencePlusLocationScreen(claimsNavigationVm: claimsNavigationVm)
                         case .selectContract:
-                            SelectContractView()
+                            SelectContractView(claimsNavigationVm: claimsNavigationVm)
                         case let .phoneNumber(model):
                             SubmitClaimContactScreen(model: model)
                         case .audioRecording:
-                            let url = submitClaimNavigationVm.audioRecordingModel?.getUrl()
-                            SubmitClaimAudioRecordingScreen(url: url, claimsNavigationVm: submitClaimNavigationVm)
+                            let url = claimsNavigationVm.audioRecordingModel?.getUrl()
+                            SubmitClaimAudioRecordingScreen(url: url, claimsNavigationVm: claimsNavigationVm)
                         case .singleItem:
                             SubmitClaimSingleItemScreen()
                         case .summary:
-                            SubmitClaimSummaryScreen(claimsNavigationVm: submitClaimNavigationVm)
+                            SubmitClaimSummaryScreen(claimsNavigationVm: claimsNavigationVm)
                                 .configureTitle(L10n.Claims.Summary.Screen.title)
                         case .deflect:
                             openDeflectStepScreen()
                         case .emergencySelect:
                             SumitClaimEmergencySelectView(
-                                title: submitClaimNavigationVm.emergencyConfirmModel?.text ?? ""
+                                title: claimsNavigationVm.emergencyConfirmModel?.text ?? ""
                             )
                         case .uploadFiles:
-                            SubmitClaimFilesUploadScreen(claimsNavigationVm: submitClaimNavigationVm)
+                            SubmitClaimFilesUploadScreen(claimsNavigationVm: claimsNavigationVm)
                         case .checkOutNoRepair:
-                            SubmitClaimCheckoutScreen(vm: submitClaimNavigationVm.submitClaimCheckoutVm)
+                            SubmitClaimCheckoutScreen(vm: claimsNavigationVm.submitClaimCheckoutVm)
                                 .configureTitle(L10n.Claims.Payout.Summary.title)
                         }
                     }
                     .addDismissClaimsFlow()
-                    .resetProgressOnDismiss(
-                        to: submitClaimNavigationVm.previousProgress,
-                        for: $submitClaimNavigationVm.progress
-                    )
+                    .resetProgressOnDismiss(to: claimsNavigationVm.previousProgress, for: $claimsNavigationVm.progress)
                 }
                 .routerDestination(
                     for: SubmitClaimRouterActionsWithoutBackButton.self,
@@ -325,7 +319,7 @@ public struct SubmitClaimNavigation: View {
                     case .updateApp:
                         UpdateAppScreen(
                             onSelected: {
-                                submitClaimNavigationVm.router.dismiss()
+                                claimsNavigationVm.router.dismiss()
                             }
                         )
                     default:
@@ -333,59 +327,53 @@ public struct SubmitClaimNavigation: View {
                     }
                 }
         }
-        .modifier(ProgressBarView(progress: $submitClaimNavigationVm.progress))
-        .environmentObject(submitClaimNavigationVm)
+        .modifier(ProgressBarView(progress: $claimsNavigationVm.progress))
+        .environmentObject(claimsNavigationVm)
         .detent(
-            presented: $submitClaimNavigationVm.isLocationPickerPresented,
+            presented: $claimsNavigationVm.isLocationPickerPresented,
             style: [.height]
         ) {
-            LocationView()
-                .environmentObject(submitClaimNavigationVm)
+            LocationView(claimsNavigationVm: claimsNavigationVm, router: claimsNavigationVm.router)
+                .environmentObject(claimsNavigationVm)
                 .navigationTitle(L10n.Claims.Incident.Screen.location)
-                .embededInNavigation(
-                    options: .navigationType(type: .large),
-                    tracking: SubmitClaimDetentType.locationPicker
-                )
+                .embededInNavigation(options: .navigationType(type: .large), tracking: ClaimsDetentType.locationPicker)
         }
         .detent(
-            presented: $submitClaimNavigationVm.isBrandPickerPresented,
+            presented: $claimsNavigationVm.isBrandPickerPresented,
             style: [.large]
         ) {
             BrandPickerView()
-                .environmentObject(submitClaimNavigationVm)
+                .environmentObject(claimsNavigationVm)
                 .navigationTitle(L10n.claimsChooseBrandTitle)
                 .routerDestination(
                     for: ClaimFlowItemBrandOptionModel.self
                 ) { brandModel in
-                    ModelPickerView(brand: brandModel)
-                        .environmentObject(submitClaimNavigationVm)
-                        .navigationTitle(L10n.claimsChooseModelTitle)
+                    ModelPickerView(
+                        router: claimsNavigationVm.router,
+                        claimsNavigationVm: claimsNavigationVm,
+                        brand: brandModel
+                    )
+                    .navigationTitle(L10n.claimsChooseModelTitle)
                 }
-                .embededInNavigation(
-                    options: .navigationType(type: .large),
-                    tracking: SubmitClaimDetentType.brandPicker
-                )
+                .embededInNavigation(options: .navigationType(type: .large), tracking: ClaimsDetentType.brandPicker)
         }
         .detent(
-            presented: $submitClaimNavigationVm.isPriceInputPresented,
+            presented: $claimsNavigationVm.isPriceInputPresented,
             style: [.height]
         ) {
-            PriceInputScreen(claimsNavigationVm: submitClaimNavigationVm)
+            PriceInputScreen(claimsNavigationVm: claimsNavigationVm)
                 .configureTitle(L10n.submitClaimPurchasePriceTitle)
-                .embededInNavigation(options: .navigationType(type: .large), tracking: SubmitClaimDetentType.priceInput)
+                .embededInNavigation(options: .navigationType(type: .large), tracking: ClaimsDetentType.priceInput)
         }
         .detent(
-            presented: $submitClaimNavigationVm.isDamagePickerPresented,
+            presented: $claimsNavigationVm.isDamagePickerPresented,
             style: [.height]
         ) {
             openDamagePickerScreen()
-                .embededInNavigation(
-                    options: .navigationType(type: .large),
-                    tracking: SubmitClaimDetentType.damagePicker
-                )
+                .embededInNavigation(options: .navigationType(type: .large), tracking: ClaimsDetentType.damagePicker)
         }
         .detent(
-            item: $submitClaimNavigationVm.isInfoViewPresented,
+            item: $claimsNavigationVm.isInfoViewPresented,
             style: [.height]
         ) { infoViewModel in
             InfoView(
@@ -394,13 +382,13 @@ public struct SubmitClaimNavigation: View {
             )
         }
         .modally(
-            presented: $submitClaimNavigationVm.isCheckoutTransferringPresented
+            presented: $claimsNavigationVm.isCheckoutTransferringPresented
         ) {
-            SubmitClaimCheckoutTransferringScreen(vm: submitClaimNavigationVm.submitClaimCheckoutVm)
-                .environmentObject(submitClaimNavigationVm)
+            SubmitClaimCheckoutTransferringScreen(vm: claimsNavigationVm.submitClaimCheckoutVm)
+                .environmentObject(claimsNavigationVm)
         }
         .modally(
-            item: $submitClaimNavigationVm.isClaimFilesPresented
+            item: $claimsNavigationVm.isClaimFilesPresented
         ) { claimsFileModel in
             openFileScreen(model: claimsFileModel)
         }
@@ -408,7 +396,7 @@ public struct SubmitClaimNavigation: View {
 
     @ViewBuilder
     private func openDeflectStepScreen() -> some View {
-        let model = submitClaimNavigationVm.deflectStepModel
+        let model = claimsNavigationVm.deflectStepModel
 
         Group {
             if model?.id == .FlowClaimDeflectEirStep {
@@ -433,13 +421,13 @@ public struct SubmitClaimNavigation: View {
             .init(
                 actionButton: .init(
                     buttonAction: {
-                        submitClaimNavigationVm.router.pop()
+                        claimsNavigationVm.router.pop()
                     }
                 ),
                 dismissButton: .init(
                     buttonTitle: L10n.openChat,
                     buttonAction: {
-                        submitClaimNavigationVm.router.dismiss()
+                        claimsNavigationVm.router.dismiss()
                         NotificationCenter.default.post(name: .openChat, object: ChatType.newConversation)
                     }
                 )
@@ -452,11 +440,11 @@ public struct SubmitClaimNavigation: View {
         ItemPickerScreen<ClaimFlowItemProblemOptionModel>(
             config: .init(
                 items: {
-                    return submitClaimNavigationVm.singleItemModel?.availableItemProblems
+                    return claimsNavigationVm.singleItemModel?.availableItemProblems
                         .compactMap({ (object: $0, displayName: .init(title: $0.displayName)) }) ?? []
                 }(),
                 preSelectedItems: {
-                    if let singleItemStep = submitClaimNavigationVm.singleItemModel {
+                    if let singleItemStep = claimsNavigationVm.singleItemModel {
                         let preselected = singleItemStep.availableItemProblems
                             .filter { model in
                                 singleItemStep.selectedItemProblems?
@@ -476,11 +464,11 @@ public struct SubmitClaimNavigation: View {
                             damages.append(object.itemProblemId)
                         }
                     }
-                    submitClaimNavigationVm.isDamagePickerPresented = false
-                    submitClaimNavigationVm.singleItemModel?.selectedItemProblems = damages
+                    claimsNavigationVm.isDamagePickerPresented = false
+                    claimsNavigationVm.singleItemModel?.selectedItemProblems = damages
                 },
                 onCancel: {
-                    submitClaimNavigationVm.router.dismiss()
+                    claimsNavigationVm.router.dismiss()
                 }
             )
         )
@@ -489,13 +477,13 @@ public struct SubmitClaimNavigation: View {
 
     private func openFileScreen(model: ClaimsFileModel) -> some View {
         ClaimFilesView(endPoint: model.endpoint, files: model.files) { uploadedFiles in
-            submitClaimNavigationVm.router.dismiss()
+            claimsNavigationVm.router.dismiss()
         }
         .configureTitle(L10n.ClaimStatusDetail.addedFiles)
     }
 }
 
-private enum SubmitClaimDetentType: TrackingViewNameProtocol {
+private enum ClaimsDetentType: TrackingViewNameProtocol {
     var nameForTracking: String {
         switch self {
         case .entryPoints:

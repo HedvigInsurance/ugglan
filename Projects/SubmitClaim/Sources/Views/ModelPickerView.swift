@@ -3,54 +3,67 @@ import hCore
 import hCoreUI
 
 struct ModelPickerView: View {
-    @EnvironmentObject var router: Router
-    @EnvironmentObject var claimsNavigationVm: SubmitClaimNavigationViewModel
+    @ObservedObject var claimsNavigationVm: SubmitClaimNavigationViewModel
+    @ObservedObject var router: Router
     let brand: ClaimFlowItemBrandOptionModel
+    var itemPickerConfig: ItemConfig<ClaimFlowItemModelOptionModel>
 
-    var body: some View {
+    init(router: Router, claimsNavigationVm: SubmitClaimNavigationViewModel, brand: ClaimFlowItemBrandOptionModel) {
+        self.router = router
+        self.claimsNavigationVm = claimsNavigationVm
+        self.brand = brand
         let step = claimsNavigationVm.singleItemModel
         let customName = step?.selectedItemBrand == brand.itemBrandId ? step?.customName : nil
-        return ItemPickerScreen<ClaimFlowItemModelOptionModel>(
-            config: .init(
-                items: {
-                    return step?.getListOfModels(for: brand.itemBrandId)?
-                        .compactMap({ ($0, .init(title: $0.displayName)) }) ?? []
+        self.itemPickerConfig = .init(
+            items: {
+                return step?.getListOfModels(for: brand.itemBrandId)?
+                    .compactMap({ ($0, .init(title: $0.displayName)) }) ?? []
 
-                }(),
-                preSelectedItems: {
-                    if let item = step?.getListOfModels()?.first(where: { $0.itemModelId == step?.selectedItemModel }) {
-                        return [item]
-                    }
-                    return []
-                },
-                onSelected: { [weak router] item in
-                    if item.first?.0 == nil {
+            }(),
+            preSelectedItems: {
+                if let item = step?.getListOfModels()?.first(where: { $0.itemModelId == step?.selectedItemModel }) {
+                    return [item]
+                }
+                return []
+            },
+            onSelected: { [weak router] item in
+                if item.first?.0 == nil {
+                    claimsNavigationVm.singleItemModel?.selectedItemBrand = brand.itemBrandId
+                    let customName = item.first?.1 ?? ""
+                    claimsNavigationVm.singleItemModel?.customName = customName
+                    claimsNavigationVm.singleItemModel?.selectedItemModel = nil
+                } else {
+                    if let object = item.first?.0 {
                         claimsNavigationVm.singleItemModel?.selectedItemBrand = brand.itemBrandId
-                        let customName = item.first?.1 ?? ""
-                        claimsNavigationVm.singleItemModel?.customName = customName
-                        claimsNavigationVm.singleItemModel?.selectedItemModel = nil
-                    } else {
-                        if let object = item.first?.0 {
-                            claimsNavigationVm.singleItemModel?.customName = nil
-                            claimsNavigationVm.singleItemModel?.selectedItemModel = object.itemModelId
-                        }
+                        claimsNavigationVm.singleItemModel?.customName = nil
+                        claimsNavigationVm.singleItemModel?.selectedItemModel = object.itemModelId
                     }
-                    router?.dismiss()
-                },
-                onCancel: { [weak router] in
-                    router?.dismiss()
-                },
-                singleSelect: true,
-                manualInputPlaceholder: L10n.Claims.Item.Enter.Model.name,
-                manualBrandName: customName,
-                contentPosition: .top,
-                useAlwaysAttachedToBottom: true
-            )
+                }
+                router?.dismiss()
+            },
+            onCancel: { [weak router] in
+                router?.dismiss()
+            },
+            singleSelect: true,
+            manualInputPlaceholder: L10n.Claims.Item.Enter.Model.name,
+            manualBrandName: customName,
+            contentPosition: .top,
+            useAlwaysAttachedToBottom: true
+        )
+    }
+
+    var body: some View {
+        return ItemPickerScreen<ClaimFlowItemModelOptionModel>(
+            config: itemPickerConfig
         )
         .hIncludeManualInput
     }
 }
 
 #Preview {
-    ModelPickerView(brand: .init(displayName: "displayName", itemBrandId: "brandId", itemTypeId: "type"))
+    ModelPickerView(
+        router: Router(),
+        claimsNavigationVm: .init(),
+        brand: .init(displayName: "displayName", itemBrandId: "brandId", itemTypeId: "type")
+    )
 }

@@ -3,48 +3,58 @@ import hCore
 import hCoreUI
 
 struct SelectContractView: View {
-    @EnvironmentObject var claimsNavigationVm: SubmitClaimNavigationViewModel
-    @StateObject var vm = SelectContractViewModel()
+    @ObservedObject var claimsNavigationVm: SubmitClaimNavigationViewModel
+    @ObservedObject var vm = SelectContractViewModel()
+    let itemPickerConfig: ItemConfig<FlowClaimContractSelectOptionModel>
 
-    var body: some View {
-        let contractStep = claimsNavigationVm.contractSelectModel
-        ItemPickerScreen<FlowClaimContractSelectOptionModel>(
-            config: .init(
-                items: {
-                    return contractStep?.availableContractOptions
-                        .compactMap({
-                            (object: $0, displayName: .init(title: $0.displayTitle, subTitle: $0.displaySubTitle))
-                        })
-                        ?? []
-                }(),
-                preSelectedItems: {
-                    if let preselected = contractStep?.availableContractOptions
-                        .first(where: { $0.id == contractStep?.selectedContractId })
-                    {
-                        return [preselected]
-                    }
-                    return []
-                },
-                onSelected: { selectedContract in
-                    if let object = selectedContract.first?.0 {
-                        if let model = claimsNavigationVm.contractSelectModel {
-                            Task {
-                                let step = await vm.contractSelectRequest(
-                                    contractId: object.id,
-                                    context: claimsNavigationVm.currentClaimContext ?? "",
-                                    model: model
-                                )
-                                if let step {
-                                    claimsNavigationVm.navigate(data: step)
-                                }
+    init(
+        claimsNavigationVm: SubmitClaimNavigationViewModel,
+        vm: SelectContractViewModel = SelectContractViewModel()
+    ) {
+        self.claimsNavigationVm = claimsNavigationVm
+        self.vm = vm
+        self.itemPickerConfig = .init(
+            items: {
+                return claimsNavigationVm.contractSelectModel?.availableContractOptions
+                    .compactMap({
+                        (object: $0, displayName: .init(title: $0.displayTitle, subTitle: $0.displaySubTitle))
+                    })
+                    ?? []
+            }(),
+            preSelectedItems: {
+                if let preselected = claimsNavigationVm.contractSelectModel?.availableContractOptions
+                    .first(where: { $0.id == claimsNavigationVm.contractSelectModel?.selectedContractId })
+                {
+                    return [preselected]
+                }
+                return []
+            },
+            onSelected: { selectedContract in
+                if let object = selectedContract.first?.0 {
+                    claimsNavigationVm.contractSelectModel?.selectedContractId = object.id
+                    if let model = claimsNavigationVm.contractSelectModel {
+                        Task {
+                            let step = await vm.contractSelectRequest(
+                                contractId: object.id,
+                                context: claimsNavigationVm.currentClaimContext ?? "",
+                                model: model
+                            )
+                            if let step {
+                                claimsNavigationVm.navigate(data: step)
                             }
                         }
                     }
-                },
-                singleSelect: true,
-                attachToBottom: true,
-                fieldSize: .medium
-            )
+                }
+            },
+            singleSelect: true,
+            attachToBottom: true,
+            hButtonText: L10n.generalContinueButton,
+            fieldSize: .medium
+        )
+    }
+    var body: some View {
+        ItemPickerScreen<FlowClaimContractSelectOptionModel>(
+            config: itemPickerConfig
         )
         .padding(.bottom, .padding16)
         .hFormTitle(
@@ -93,7 +103,6 @@ public class SelectContractViewModel: ObservableObject {
 struct SelectContractScreen_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in FetchEntrypointsClientDemo() })
-        return SelectContractView()
-            .environmentObject(ClaimsNavigationViewModel())
+        return SelectContractView(claimsNavigationVm: .init())
     }
 }

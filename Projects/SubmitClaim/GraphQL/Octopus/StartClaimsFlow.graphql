@@ -67,6 +67,7 @@ fragment FlowClaimFailedStepFragment on FlowClaimFailedStep {
 
 fragment FlowClaimContractSelectStepFragment on FlowClaimContractSelectStep {
     id
+    selectedOptionId
     options {
         ...FlowClaimContractOptionFragment
     }
