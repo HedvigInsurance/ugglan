@@ -311,7 +311,6 @@ struct LoggedInNavigation: View {
                     }
                 )
                 .embededInNavigation(tracking: ProfileRedirectType.deleteRequestLoading)
-                .embededInNavigation(tracking: ProfileRedirectType.deleteRequestLoading)
             }
         }
         .tabItem {
@@ -326,9 +325,9 @@ struct LoggedInNavigation: View {
 
 struct HandleMoving: View {
     var body: some View {
-        let store: ContractStore = globalPresentableStoreContainer.get()
         MovingFlowNavigation(
             onMoved: {
+                let store: ContractStore = globalPresentableStoreContainer.get()
                 store.send(.fetchContracts)
             }
         )

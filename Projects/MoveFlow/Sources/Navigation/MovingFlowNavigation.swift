@@ -8,7 +8,7 @@ import hGraphQL
 
 @MainActor
 public class MovingFlowNavigationViewModel: ObservableObject {
-    private var service = MoveFlowClientOctopus()
+    @Inject private var service: MoveFlowClient
     @Published var viewState: ProcessingState = .loading
     @Published var isAddExtraBuildingPresented: HouseInformationInputModel?
     @Published var document: hPDFDocument? = nil
@@ -305,9 +305,9 @@ public struct MovingFlowNavigation: View {
     }
 
     func openChangeTier(model: ChangeTierIntentModel) -> some View {
-        let model = ChangeTierInput.existingIntent(intent: model) { (tier, deductible) in
+        let model = ChangeTierInput.existingIntent(intent: model) { (_, quote) in
             let requestVm = movingFlowNavigationVm.moveQuotesModel
-            let id = deductible.id
+            let id = quote.id
             if let currentHomeQuote = requestVm?.homeQuotes.first(where: { $0.id == id }) {
                 self.movingFlowNavigationVm.selectedHomeQuote = currentHomeQuote
             }
