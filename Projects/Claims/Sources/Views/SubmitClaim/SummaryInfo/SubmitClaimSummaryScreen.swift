@@ -6,7 +6,6 @@ import hCoreUI
 public struct SubmitClaimSummaryScreen: View {
     @StateObject fileprivate var vm: SubmitClaimSummaryScreenViewModel
     @ObservedObject var claimsNavigationVm: ClaimsNavigationViewModel
-    @Environment(\.verticalSizeClass) var verticalSizeClass
 
     public init(
         claimsNavigationVm: ClaimsNavigationViewModel
@@ -152,7 +151,6 @@ public struct SubmitClaimSummaryScreen: View {
                 hText(L10n.ClaimStatusDetail.uploadedFiles)
             }
             .sectionContainerStyle(.transparent)
-            .padding(.bottom, verticalSizeClass == .compact ? .padding8 : 0)
         }
     }
 

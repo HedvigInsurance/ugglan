@@ -171,11 +171,14 @@ public struct hForm<Content: View>: View, KeyboardReadable {
 
     @ViewBuilder
     private var getBottomAttachedView: some View {
-        if hFormAlwaysVisibleBottomAttachedView != nil || hFormIgnoreBottomPadding {
-            bottomAttachedView
-        } else {
-            bottomAttachedView?.padding(.bottom, .padding16)
+        Group {
+            if hFormAlwaysVisibleBottomAttachedView != nil || hFormIgnoreBottomPadding {
+                bottomAttachedView
+            } else {
+                bottomAttachedView?.padding(.bottom, .padding16)
+            }
         }
+        .padding(.top, verticalSizeClass == .compact ? .padding8 : 0)
     }
 
     @ViewBuilder
