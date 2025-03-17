@@ -237,8 +237,7 @@ public class ClaimFilesViewModel: ObservableObject {
         }
     }
 
-    @MainActor
-    public struct ClaimFilesViewOptions: @preconcurrency OptionSet {
+    public struct ClaimFilesViewOptions: OptionSet, Sendable {
         public let rawValue: UInt
 
         public init(
