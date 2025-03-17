@@ -52,8 +52,7 @@ struct WhoIsTravelingScreen: View {
                         )
                     ],
                     placement: .bottom
-                ) : nil,
-            contentPosition: .bottom
+                ) : nil
         )
     }
 
@@ -62,6 +61,7 @@ struct WhoIsTravelingScreen: View {
             config: itemPickerConfig
         )
         .hFieldSize(.large)
+        .hFormContentPosition(.bottom)
         .hFormTitle(title: .init(.small, .heading2, L10n.TravelCertificate.whoIsTraveling, alignment: .leading))
         .disabled(vm.isLoading)
     }

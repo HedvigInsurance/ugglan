@@ -47,8 +47,7 @@ struct ModelPickerView: View {
             manualInputConfig: .init(
                 placeholder: L10n.Claims.Item.Enter.Model.name,
                 brandName: customName
-            ),
-            contentPosition: .top
+            )
         )
     }
 
@@ -57,6 +56,7 @@ struct ModelPickerView: View {
             config: itemPickerConfig
         )
         .hItemPickerAttributes([.singleSelect, .alwaysAttachToBottom])
+        .hFormContentPosition(.top)
     }
 }
 

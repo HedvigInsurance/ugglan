@@ -25,6 +25,7 @@ public struct ContractSelectView<T: Hashable>: View {
             )
             .hFieldSize(.large)
             .hItemPickerAttributes([.singleSelect])
+            .hFormContentPosition(.compact)
             .configureTitle(title)
         } else {
             ItemPickerScreen<T>(
@@ -36,6 +37,7 @@ public struct ContractSelectView<T: Hashable>: View {
             )
             .hFieldSize(.medium)
             .hItemPickerAttributes([.singleSelect, .attachToBottom, .disableIfNoneSelected])
+            .hFormContentPosition(.bottom)
             .withDismissButton()
         }
     }

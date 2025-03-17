@@ -10,9 +10,7 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
     let onCancel: (() -> Void)?
     let buttonText: String
     let infoCard: ItemPickerInfoCard?
-    let contentPosition: ContentPosition?
     var manualInput: ItemManualInput
-
     @Published var type: ItemPickerFieldType? = nil
     @Published var selectedItems: [T] = []
 
@@ -23,8 +21,7 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
         onCancel: (() -> Void)? = nil,
         manualInputConfig: ItemManualInput? = nil,
         buttonText: String? = L10n.generalSaveButton,
-        infoCard: ItemPickerInfoCard? = nil,
-        contentPosition: ContentPosition? = nil
+        infoCard: ItemPickerInfoCard? = nil
     ) {
         self.items = items
         self.preSelectedItems = preSelectedItems()
@@ -33,7 +30,6 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
         self.manualInput = manualInputConfig ?? .init(placeholder: nil)
         self.buttonText = buttonText ?? L10n.generalSaveButton
         self.infoCard = infoCard
-        self.contentPosition = contentPosition
         self.selectedItems = preSelectedItems()
     }
 
@@ -83,14 +79,11 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     @Environment(\.hItemPickerAttributes) var attributes
     @Environment(\.hFieldSize) var fieldSize
     @ObservedObject private var config: ItemConfig<T>
-    let leftView: ((T?) -> AnyView?)?
 
     public init(
-        config: ItemConfig<T>,
-        leftView: ((T?) -> AnyView?)? = nil
+        config: ItemConfig<T>
     ) {
         self.config = config
-        self.leftView = leftView
     }
 
     @ViewBuilder
@@ -98,7 +91,6 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
         ScrollViewReader { proxy in
             if attributes.contains(.attachToBottom) {
                 hForm {}
-                    .hFormContentPosition(config.contentPosition ?? .bottom)
                     .hFormAttachToBottom {
                         VStack(spacing: 0) {
                             content(with: proxy)
@@ -123,7 +115,6 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
                         }
                     }
                 }
-                .hFormContentPosition(config.contentPosition ?? .compact)
             }
         }
         .hFieldSize(fieldSize)
@@ -160,7 +151,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     private var itemsView: some View {
         ForEach(config.items, id: \.object) { item in
             hSection {
-                getCell(item: item.object)
+                getCell(for: item.object)
                     .id(item.object)
             }
             .disabled(isLoading)
@@ -183,7 +174,7 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
 
     private var otherCell: some View {
         hSection {
-            getCell(displayName: L10n.manualInputListOther)
+            getCell(isManualInput: true)
         }
         .disabled(isLoading)
     }
@@ -261,9 +252,9 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     }
 
     @ViewBuilder
-    func getCell(item: T? = nil, displayName: String? = nil) -> some View {
+    func getCell(for item: T? = nil, isManualInput: Bool = false) -> some View {
         hRow {
-            getCellContent(item, displayName)
+            getCellContent(for: item, isManualInput)
         }
         .withEmptyAccessory
         .onTap {
@@ -283,26 +274,24 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     }
 
     @ViewBuilder
-    func getCellContent(_ item: T?, _ itemDisplayName: String?) -> some View {
+    func getCellContent(for item: T?, _ isManualInput: Bool = false) -> some View {
         let isSelected =
             config.selectedItems.first(where: { $0 == item }) != nil
-            || (config.manualInput.input && itemDisplayName != nil)
+            || (config.manualInput.input && isManualInput == true)
 
         let displayName = config.items.first(where: { $0.object == item })?.displayName
 
-        hFieldTextContent(
+        hFieldTextContent<T>(
             item: displayName,
             fieldSize: fieldSize,
-            itemDisplayName: itemDisplayName,
-            leftViewWithItem: leftView,
+            itemDisplayName: isManualInput ? L10n.manualInputListOther : nil,
             cellView: {
-                AnyView(
-                    selectionField(
-                        isSelected: isSelected,
-                        item,
-                        itemDisplayName
-                    )
+                selectionField(
+                    isSelected: isSelected,
+                    item,
+                    isManualInput ? L10n.manualInputListOther : nil
                 )
+                .asAnyView
             }
         )
         .accessibilityHint(isSelected ? L10n.voiceoverOptionSelected + (displayName?.title ?? "") : "")
@@ -410,13 +399,7 @@ struct ItemPickerScreen_Previews: PreviewProvider {
                         },
                         manualInputConfig: .init(placeholder: "Enter brand name"),
                         buttonText: L10n.generalSaveButton
-                    ),
-                leftView: { _ in
-                    Image(uiImage: hCoreUIAssets.pillowHome.image)
-                        .resizable()
-                        .frame(width: 32, height: 32)
-                        .asAnyView
-                }
+                    )
             )
             .hItemPickerAttributes([.singleSelect, .attachToBottom])
             .hFieldSize(.small)

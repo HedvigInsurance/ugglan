@@ -40,6 +40,7 @@ struct LocationView: View {
             config: itemPickerConfig
         )
         .hItemPickerAttributes([.singleSelect])
+        .hFormContentPosition(.compact)
     }
 }
 

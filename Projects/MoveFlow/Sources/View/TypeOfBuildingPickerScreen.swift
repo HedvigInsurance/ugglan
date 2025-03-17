@@ -45,6 +45,7 @@ struct TypeOfBuildingPickerScreen: View {
             config: itemPickerConfig
         )
         .hItemPickerAttributes([.singleSelect, .alwaysAttachToBottom])
+        .hFormContentPosition(.compact)
     }
 }
 

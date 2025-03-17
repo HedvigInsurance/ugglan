@@ -471,6 +471,7 @@ public struct ClaimsNavigation: View {
                 }
             )
         )
+        .hFormContentPosition(.compact)
         .configureTitle(L10n.Claims.Item.Screen.Damage.button)
     }
 
