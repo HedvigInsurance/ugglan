@@ -71,6 +71,7 @@ public class ItemConfig<T>: ObservableObject where T: Equatable & Hashable {
         self.infoCard = infoCard
         self.contentPosition = contentPosition
         self.useAlwaysAttachedToBottom = useAlwaysAttachedToBottom
+        self.selectedItems = preSelectedItems()
     }
 
     public struct ItemPickerInfoCard {
@@ -173,10 +174,6 @@ public struct ItemPickerScreen<T>: View where T: Equatable & Hashable {
     }
 
     private func onAppear(with proxy: ScrollViewProxy) {
-        config.selectedItems = config.items.filter({ config.preSelectedItems.contains($0.object) })
-            .map({
-                $0.object
-            })
         if let selectedItem = config.selectedItems.first, config.selectedItems.count == 1 {
             proxy.scrollTo(selectedItem, anchor: .center)
         }
