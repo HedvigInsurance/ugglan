@@ -344,6 +344,11 @@ struct HomeTab: View {
                     ClaimDetailView(claim: claim, type: .claim(id: claim.id))
                         .environmentObject(homeNavigationVm)
                         .configureTitle(L10n.claimsYourClaim)
+                        .onDisappear {
+                            if claim.showClaimClosedFlow {
+                                homeNavigationVm.navBarItems.isNewOfferPresented = true
+                            }
+                        }
                 }
                 .routerDestination(for: String.self) { conversation in
                     InboxView()
@@ -474,6 +479,11 @@ struct HomeTab: View {
                             let claim = claimStore.state.claimFromConversation(for: id)
                             ClaimDetailView(claim: claim, type: .conversation(id: id))
                                 .configureTitle(L10n.claimsYourClaim)
+                                .onDisappear {
+                                    if let claim, claim.showClaimClosedFlow {
+                                        homeNavigationVm.navBarItems.isNewOfferPresented = true
+                                    }
+                                }
                         }
                     }
                 )
