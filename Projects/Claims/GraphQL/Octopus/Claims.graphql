@@ -25,4 +25,5 @@ fragment ClaimFragment on Claim {
     conversation {
         ...ConversationFragment
     }
+    showClaimClosedFlow
 }
