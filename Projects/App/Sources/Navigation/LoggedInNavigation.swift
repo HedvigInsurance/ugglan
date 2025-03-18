@@ -661,6 +661,11 @@ class LoggedInNavigationViewModel: ObservableObject {
                 Task {
                     await handleTravelAddon()
                 }
+            case .OPEN_CLAIM, .CLAIM_CLOSED:
+                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+                let userInfo = notification.userInfo
+                let claimId = userInfo?["claimId"] as? String
+                handleClaimDetails(claimId: claimId)
             }
         }
     }
@@ -808,6 +813,8 @@ class LoggedInNavigationViewModel: ObservableObject {
                 }
             case .editCoInsured:
                 handleEditCoInsured(url: url)
+            case .claimDetails:
+                self.handleClaimDetails(url: url)
             case nil:
                 let isDeeplink = hGraphQL.Environment.current.isDeeplink(url)
                 if !isDeeplink {
@@ -922,6 +929,25 @@ class LoggedInNavigationViewModel: ObservableObject {
             } else {
                 // select insurance
                 self?.homeNavigationVm.editCoInsuredVm.start(fromContract: nil)
+            }
+        }
+    }
+
+    func handleClaimDetails(url: URL? = nil, claimId: String? = nil) {
+        if let url = url, let claimId = url.getParameter(property: .claimId) {
+            openClaimDetails(for: claimId)
+        } else if let claimId {
+            openClaimDetails(for: claimId)
+        }
+    }
+
+    private func openClaimDetails(for claimId: String) {
+        let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
+        if let claim = claimStore.state.claim(for: claimId) {
+            UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+            self.selectedTab = 0
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+                self?.homeNavigationVm.router.push(claim)
             }
         }
     }
