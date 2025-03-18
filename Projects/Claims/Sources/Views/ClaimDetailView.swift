@@ -29,18 +29,17 @@ public struct ClaimDetailView: View {
 
     public var body: some View {
         hForm {
-            VStack(spacing: 8) {
+            VStack(spacing: .padding8) {
                 if let claim = vm.claim {
                     hSection {
                         ClaimStatus(
                             claim: claim,
-                            enableTap: false,
-                            extendedBottomView: {
-                                AnyView(infoAndContactSection)
-                            }()
+                            enableTap: false
                         )
                     }
                     .sectionContainerStyle(.transparent)
+
+                    infoAndContactSection
                     memberFreeTextSection
                     claimDetailsSection
                         .padding(.vertical, .padding16)
@@ -48,32 +47,32 @@ public struct ClaimDetailView: View {
                 }
             }
         }
-        .setHomeNavigationBars(
-            with: $vm.toolbarOptionType,
-            and: .init(describing: ClaimDetailView.self),
-            action: { type in
-                switch type {
-                case .newOffer:
-                    break
-                case .firstVet:
-                    break
-                case .chat:
-                    if case .conversation = vm.type {
-                        router.pop()
-                    } else {
-                        NotificationCenter.default.post(
-                            name: .openChat,
-                            object: ChatType.conversationId(id: vm.claim?.conversation?.id ?? "")
-                        )
-                    }
-                case .chatNotification:
-                    NotificationCenter.default.post(
-                        name: .openChat,
-                        object: ChatType.conversationId(id: vm.claim?.conversation?.id ?? "")
-                    )
-                }
-            }
-        )
+        //        .setHomeNavigationBars(
+        //            with: $vm.toolbarOptionType,
+        //            and: .init(describing: ClaimDetailView.self),
+        //            action: { type in
+        //                switch type {
+        //                case .newOffer:
+        //                    break
+        //                case .firstVet:
+        //                    break
+        //                case .chat:
+        //                    if case .conversation = vm.type {
+        //                        router.pop()
+        //                    } else {
+        //                        NotificationCenter.default.post(
+        //                            name: .openChat,
+        //                            object: ChatType.conversationId(id: vm.claim?.conversation?.id ?? "")
+        //                        )
+        //                    }
+        //                case .chatNotification:
+        //                    NotificationCenter.default.post(
+        //                        name: .openChat,
+        //                        object: ChatType.conversationId(id: vm.claim?.conversation?.id ?? "")
+        //                    )
+        //                }
+        //            }
+        //        )
         .sheet(isPresented: $showImagePicker) {
             ImagePicker { images in
                 vm.showAddFiles(with: images)
@@ -140,19 +139,28 @@ public struct ClaimDetailView: View {
 
     @ViewBuilder
     private var infoAndContactSection: some View {
-        Divider()
-            .padding(.horizontal, -16)
-        HStack {
-            VStack(alignment: .leading, spacing: 0) {
-                hText(L10n.ClaimStatus.title, style: .label)
-                    .foregroundColor(hTextColor.Opaque.primary)
-                if let statusParagraph {
-                    hText(statusParagraph, style: .label)
-                        .foregroundColor(hTextColor.Opaque.secondary)
+        hSection {
+            VStack(spacing: 0) {
+                hRow {
+                    if let statusParagraph {
+                        hText(statusParagraph, style: .body1)
+                    }
+                }
+                Divider()
+
+                hRow {
+                    HStack {
+                        VStack(alignment: .leading) {
+                            hText("Updates and messages", style: .label)
+                                .foregroundColor(hTextColor.Translucent.secondary)
+                            hText("Go to conversation")
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        Spacer()
+                        Image(uiImage: hCoreUIAssets.inboxNotification.image)
+                    }
                 }
             }
-            .multilineTextAlignment(.leading)
-            Spacer()
         }
     }
 

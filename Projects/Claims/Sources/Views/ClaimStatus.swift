@@ -6,16 +6,13 @@ import hGraphQL
 struct ClaimStatus: View {
     var claim: ClaimModel
     var enableTap: Bool
-    let extendedBottomView: AnyView?
 
     init(
         claim: ClaimModel,
-        enableTap: Bool,
-        extendedBottomView: AnyView? = nil
+        enableTap: Bool
     ) {
         self.claim = claim
         self.enableTap = enableTap
-        self.extendedBottomView = extendedBottomView
     }
 
     @EnvironmentObject var homeRouter: Router
@@ -46,7 +43,6 @@ struct ClaimStatus: View {
                         }
                         .hButtonTakeFullWidth(true)
                     }
-                    extendedBottomView
                 }
                 .fixedSize(horizontal: false, vertical: true)
             }
