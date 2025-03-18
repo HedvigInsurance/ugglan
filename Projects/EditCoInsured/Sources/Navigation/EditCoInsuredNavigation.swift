@@ -262,7 +262,8 @@ public struct EditCoInsuredSelectInsuranceNavigation: View {
         CoInsuredSelectInsuranceScreen(
             configs: configs,
             editCoInsuredNavigationVm: editCoInsuredNavigationVm,
-            editCoInsuredViewModel: editCoInsuredViewModel
+            editCoInsuredViewModel: editCoInsuredViewModel,
+            router: router
         )
     }
 }

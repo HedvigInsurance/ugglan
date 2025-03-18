@@ -4,32 +4,20 @@ import hCore
 import hCoreUI
 
 struct CoInsuredSelectInsuranceScreen: View {
-    @ObservedObject var editCoInsuredNavigationVm: EditCoInsuredNavigationViewModel
-    @ObservedObject var editCoInsuredViewModel: EditCoInsuredViewModel
-    @EnvironmentObject var router: Router
-    let configs: [InsuredPeopleConfig]
-
+    @ObservedObject private var editCoInsuredNavigationVm: EditCoInsuredNavigationViewModel
+    @ObservedObject private var editCoInsuredViewModel: EditCoInsuredViewModel
+    private let router: Router
+    private let itemPickerConfig: ItemConfig<InsuredPeopleConfig>
     init(
         configs: [InsuredPeopleConfig],
         editCoInsuredNavigationVm: EditCoInsuredNavigationViewModel,
-        editCoInsuredViewModel: EditCoInsuredViewModel
+        editCoInsuredViewModel: EditCoInsuredViewModel,
+        router: Router
     ) {
-        self.configs = configs
         self.editCoInsuredNavigationVm = editCoInsuredNavigationVm
         self.editCoInsuredViewModel = editCoInsuredViewModel
-    }
-
-    var body: some View {
-        ContractSelectView(
-            itemPickerConfig: itemPickerConfig,
-            title: L10n.SelectInsurance.NavigationBar.CenterElement.title,
-            subtitle: L10n.tierFlowSelectInsuranceSubtitle,
-            modally: true
-        )
-    }
-
-    private var itemPickerConfig: ItemConfig<InsuredPeopleConfig> {
-        return ItemConfig<InsuredPeopleConfig>(
+        self.router = router
+        self.itemPickerConfig = ItemConfig<InsuredPeopleConfig>(
             items: {
                 return configs.compactMap({
                     (object: $0, displayName: .init(title: $0.displayName))
@@ -41,14 +29,14 @@ struct CoInsuredSelectInsuranceScreen: View {
                 }
                 return []
             },
-            onSelected: { [weak editCoInsuredViewModel] selectedConfigs in
+            onSelected: { [weak editCoInsuredViewModel, weak editCoInsuredNavigationVm] selectedConfigs in
                 if let selectedConfig = selectedConfigs.first {
                     if let object = selectedConfig.0 {
                         editCoInsuredViewModel?.editCoInsuredModelDetent = nil
                         editCoInsuredViewModel?.editCoInsuredModelFullScreen = .init(contractsSupportingCoInsured: {
                             return [object]
                         })
-                        self.editCoInsuredNavigationVm.coInsuredViewModel.initializeCoInsured(with: object)
+                        editCoInsuredNavigationVm?.coInsuredViewModel.initializeCoInsured(with: object)
                     }
                 }
             },
@@ -56,6 +44,15 @@ struct CoInsuredSelectInsuranceScreen: View {
                 router?.dismiss()
             },
             buttonText: L10n.generalContinueButton
+        )
+    }
+
+    var body: some View {
+        ContractSelectView(
+            itemPickerConfig: itemPickerConfig,
+            title: L10n.SelectInsurance.NavigationBar.CenterElement.title,
+            subtitle: L10n.tierFlowSelectInsuranceSubtitle,
+            modally: true
         )
     }
 }
