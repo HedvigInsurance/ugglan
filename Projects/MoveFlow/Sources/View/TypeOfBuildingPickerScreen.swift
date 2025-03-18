@@ -17,7 +17,7 @@ struct TypeOfBuildingPickerScreen: View {
         self.addExtraBuidlingViewModel = addExtraBuidlingViewModel
         self.itemPickerConfig = .init(
             items: {
-                return movingFlowNavigationVm.movingFlowVm?.extraBuildingTypes
+                return movingFlowNavigationVm.moveConfigurationModel?.extraBuildingTypes
                     .compactMap({ (object: $0, displayName: .init(title: $0.translatedValue)) }) ?? []
             }(),
             preSelectedItems: {
