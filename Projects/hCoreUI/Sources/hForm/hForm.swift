@@ -13,6 +13,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
     @Environment(\.hFormIgnoreBottomPadding) var hFormIgnoreBottomPadding
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityVoiceOverEnabled) private var voiceOverEnabled
+    @Environment(\.verticalSizeClass) var verticalSizeClass
 
     @StateObject fileprivate var vm = hUpdatedFormViewModel()
     @Namespace var animationNamespace
@@ -28,7 +29,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
             BackgroundView().ignoresSafeArea()
             VStack(spacing: 0) {
                 scrollView
-                if !vm.keyboardVisible && !voiceOverEnabled {
+                if !vm.keyboardVisible && !voiceOverEnabled && verticalSizeClass == .regular {
                     getAlwaysVisibleBottomView
                         .matchedGeometryEffect(id: "bottom", in: animationNamespace)
                 }
@@ -134,7 +135,7 @@ public struct hForm<Content: View>: View, KeyboardReadable {
                 content
                 getBottomAttachedView
             }
-            if vm.keyboardVisible || voiceOverEnabled {
+            if vm.keyboardVisible || voiceOverEnabled || verticalSizeClass == .compact {
                 getAlwaysVisibleBottomView
                     .matchedGeometryEffect(id: "bottom", in: animationNamespace)
             }
@@ -158,7 +159,10 @@ public struct hForm<Content: View>: View, KeyboardReadable {
             .padding(.top, hFormTitle.title.type.topMargin)
             .padding(
                 .bottom,
-                hFormTitle.subTitle?.type.bottomMargin ?? hFormTitle.title.type.bottomMargin
+                verticalSizeClass == .compact
+                    ? .padding16
+                    : hFormTitle.subTitle?.type.bottomMargin
+                        ?? hFormTitle.title.type.bottomMargin
             )
             .padding(.horizontal, horizontalSizeClass == .regular ? .padding60 : .padding16)
             .accessibilityElement(children: .combine)
@@ -167,11 +171,14 @@ public struct hForm<Content: View>: View, KeyboardReadable {
 
     @ViewBuilder
     private var getBottomAttachedView: some View {
-        if hFormAlwaysVisibleBottomAttachedView != nil || hFormIgnoreBottomPadding {
-            bottomAttachedView
-        } else {
-            bottomAttachedView?.padding(.bottom, .padding16)
+        Group {
+            if hFormAlwaysVisibleBottomAttachedView != nil || hFormIgnoreBottomPadding {
+                bottomAttachedView
+            } else {
+                bottomAttachedView?.padding(.bottom, .padding16)
+            }
         }
+        .padding(.top, verticalSizeClass == .compact ? .padding8 : 0)
     }
 
     @ViewBuilder

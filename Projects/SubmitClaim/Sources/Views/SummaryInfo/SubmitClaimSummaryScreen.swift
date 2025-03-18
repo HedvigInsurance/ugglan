@@ -21,7 +21,7 @@ public struct SubmitClaimSummaryScreen: View {
 
     public var body: some View {
         hForm {
-            VStack(spacing: 16) {
+            VStack(spacing: .padding16) {
                 hSection {
                     VStack(spacing: 0) {
                         matter
@@ -47,12 +47,11 @@ public struct SubmitClaimSummaryScreen: View {
                 }
                 memberFreeTextSection
                 uploadedFilesView
-
             }
         }
         .hFormAttachToBottom {
             hSection {
-                VStack(spacing: 8) {
+                VStack(spacing: .padding8) {
                     InfoCard(text: L10n.claimsComplementClaim, type: .info)
                         .padding(.bottom, .padding8)
                     hButton.LargeButton(type: .primary) {
@@ -136,7 +135,7 @@ public struct SubmitClaimSummaryScreen: View {
         let audioRecordingStep = claimsNavigationVm.summaryModel?.audioRecordingModel
         if audioRecordingStep?.audioContent != nil || vm.model?.fileGridViewModel.files.count ?? 0 > 0 {
             hSection {
-                VStack(spacing: 8) {
+                VStack(spacing: .padding8) {
                     if let audioRecordingStep, audioRecordingStep.audioContent != nil {
                         let audioPlayer = AudioPlayer(url: audioRecordingStep.getUrl())
                         TrackPlayerView(
@@ -153,6 +152,7 @@ public struct SubmitClaimSummaryScreen: View {
                 hText(L10n.ClaimStatusDetail.uploadedFiles)
             }
             .sectionContainerStyle(.transparent)
+            .padding(.bottom, .padding8)
         }
     }
 
@@ -187,7 +187,10 @@ public struct SubmitClaimSummaryScreen: View {
 
 struct SubmitClaimSummaryScreen_Previews: PreviewProvider {
     static var previews: some View {
-        SubmitClaimSummaryScreen(claimsNavigationVm: .init())
+        Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in FetchEntrypointsClientDemo() })
+        Dependencies.shared.add(module: Module { () -> SubmitClaimClient in SubmitClaimClientDemo() })
+        Dependencies.shared.add(module: Module { () -> hFetchClaimsClient in FetchClaimsClientDemo() })
+        return SubmitClaimSummaryScreen(claimsNavigationVm: .init())
     }
 }
 

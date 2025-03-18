@@ -15,37 +15,39 @@ struct InsuredPeopleNewScreen: View {
                 let listToDisplay = listToDisplay()
                 let hasContentBelow = !listToDisplay.isEmpty
 
-                hSection {
-                    hRow {
-                        ContractOwnerField(
-                            hasContentBelow: hasContentBelow,
-                            config: vm.config
-                        )
-                    }
-                    .verticalPadding(0)
-                    .padding(.top, .padding16)
-                }
-                .hWithoutHorizontalPadding([.section])
-                .sectionContainerStyle(.transparent)
-
-                hSection {
-                    ForEach(Array(listToDisplay.enumerated()), id: \.0) {
-                        index,
-                        coInsured in
+                Group {
+                    hSection {
                         hRow {
-                            CoInsuredField(
-                                coInsured: coInsured.coInsured,
-                                accessoryView: getAccView(coInsured: coInsured),
-                                title: coInsured.coInsured.hasMissingData ? L10n.contractCoinsured : nil,
-                                subTitle: coInsured.coInsured.hasMissingData ? L10n.contractNoInformation : nil
+                            ContractOwnerField(
+                                hasContentBelow: hasContentBelow,
+                                config: vm.config
                             )
                         }
-                        if index != listToDisplay.count - 1 {
-                            hRowDivider()
+                        .verticalPadding(0)
+                        .padding(.top, .padding16)
+                    }
+                    //                    .hWithoutHorizontalPadding([.row])
+                    //                    .sectionContainerStyle(.transparent)
+
+                    hSection {
+                        ForEach(Array(listToDisplay.enumerated()), id: \.0) {
+                            index,
+                            coInsured in
+                            hRow {
+                                CoInsuredField(
+                                    coInsured: coInsured.coInsured,
+                                    accessoryView: getAccView(coInsured: coInsured),
+                                    title: coInsured.coInsured.hasMissingData ? L10n.contractCoinsured : nil,
+                                    subTitle: coInsured.coInsured.hasMissingData ? L10n.contractNoInformation : nil
+                                )
+                            }
+                            if index != listToDisplay.count - 1 {
+                                hRowDivider()
+                            }
                         }
                     }
                 }
-                .hWithoutHorizontalPadding([.section])
+                .hWithoutHorizontalPadding([.row])
                 .sectionContainerStyle(.transparent)
 
                 if vm.coInsuredAdded.count >= vm.config.numberOfMissingCoInsured {
