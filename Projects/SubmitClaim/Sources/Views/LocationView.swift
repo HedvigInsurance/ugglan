@@ -32,17 +32,19 @@ struct LocationView: View {
             },
             onCancel: { [weak router] in
                 router?.dismiss()
-            },
-            singleSelect: true
+            }
         )
     }
     var body: some View {
         ItemPickerScreen<ClaimFlowLocationOptionModel>(
             config: itemPickerConfig
         )
+        .hItemPickerAttributes([.singleSelect])
+        .hFormContentPosition(.compact)
     }
 }
 
 #Preview {
-    LocationView(claimsNavigationVm: .init(), router: .init())
+    Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in FetchEntrypointsClientDemo() })
+    return LocationView(claimsNavigationVm: .init(), router: .init())
 }

@@ -78,9 +78,7 @@ struct CoInsuredSelectScreen: View {
             },
             onCancel: {
                 editCoInsuredNavigation.selectCoInsured = nil
-            },
-            singleSelect: true,
-            attachToBottom: true
+            }
         )
         self.intentViewModel = intentViewModel
         self.vm = vm
@@ -126,6 +124,9 @@ struct CoInsuredSelectScreen: View {
             .padding(.top, -12)
             .padding(.bottom, -4)
         }
+        .hFieldSize(.large)
+        .hItemPickerAttributes([.singleSelect, .attachToBottom])
+        .hFormContentPosition(.bottom)
         .hButtonIsLoading(vm.isLoading)
     }
 }

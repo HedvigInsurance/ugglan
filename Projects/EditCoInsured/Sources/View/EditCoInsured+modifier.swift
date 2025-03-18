@@ -98,7 +98,7 @@ extension InsuredPeopleConfigType: TrackingViewNameProtocol {
         case .oneItem:
             return .init(describing: InsuredPeopleNewScreen.self)
         case .list:
-            return .init(describing: ItemPickerScreen<InsuredPeopleConfig>.self)
+            return .init(describing: CoInsuredSelectInsuranceScreen.self)
         case .error:
             return .init(describing: GenericErrorView.self)
         }

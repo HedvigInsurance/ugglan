@@ -44,13 +44,11 @@ struct MovingFlowSelectContractScreen: View {
                         router.push(MovingFlowRouterActions.housing)
                     }
                 },
-                singleSelect: true,
-                attachToBottom: true,
-                disableIfNoneSelected: true,
-                hButtonText: L10n.generalContinueButton,
-                fieldSize: .small
+                buttonText: L10n.generalContinueButton
             )
         )
+        .hFieldSize(.small)
+        .hItemPickerAttributes([.singleSelect, .attachToBottom, .disableIfNoneSelected])
         .hFormTitle(
             title: .init(.small, .heading2, L10n.movingEmbarkTitle, alignment: .leading),
             subTitle: .init(.small, .heading2, L10n.movingFlowBody)
