@@ -667,9 +667,7 @@ class LoggedInNavigationViewModel: ObservableObject {
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 let userInfo = notification.userInfo
                 let claimId = userInfo?["claimId"] as? String
-                if let claimId {
-                    handleClaimDetails(claimId: claimId)
-                }
+                handleClaimDetails(claimId: claimId)
             }
         }
     }
@@ -818,9 +816,8 @@ class LoggedInNavigationViewModel: ObservableObject {
             case .editCoInsured:
                 handleEditCoInsured(url: url)
             case .claimDetails:
-                if let claimId = url.getParameter(property: .claimId) {
-                    self.handleClaimDetails(claimId: claimId)
-                }
+                let claimId = url.getParameter(property: .claimId)
+                self.handleClaimDetails(claimId: claimId)
             case nil:
                 let isDeeplink = hGraphQL.Environment.current.isDeeplink(url)
                 if !isDeeplink {
@@ -939,17 +936,18 @@ class LoggedInNavigationViewModel: ObservableObject {
         }
     }
 
-    private func handleClaimDetails(claimId: String) {
+    private func handleClaimDetails(claimId: String?) {
         let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
         claimStore.send(.fetchClaims)
-
-        if let claim = claimStore.state.claim(for: claimId) {
+        if let claimId, let claim = claimStore.state.claim(for: claimId) {
             UIApplication.shared.getRootViewController()?.dismiss(animated: true)
             self.selectedTab = 0
             Task { [weak self] in
                 try await Task.sleep(nanoseconds: 20_000_000)
                 self?.homeNavigationVm.router.push(claim)
             }
+        } else {
+            Toasts.shared.displayToastBar(toast: .init(type: .error, text: L10n.General.defaultError))
         }
     }
 
