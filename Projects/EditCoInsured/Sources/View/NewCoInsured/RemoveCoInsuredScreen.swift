@@ -26,8 +26,6 @@ struct RemoveCoInsuredScreen: View {
                     .verticalPadding(0)
                     .padding(.top, .padding16)
                 }
-                .hWithoutHorizontalPadding([.section])
-                .sectionContainerStyle(.transparent)
 
                 hSection {
                     ForEach(0..<nbOfMissingoInsured, id: \.self) { missingCoInsured in
@@ -43,9 +41,9 @@ struct RemoveCoInsuredScreen: View {
                         }
                     }
                 }
-                .hWithoutHorizontalPadding([.section])
-                .sectionContainerStyle(.transparent)
             }
+            .hWithoutHorizontalPadding([.row])
+            .sectionContainerStyle(.transparent)
         }
         .hFormAttachToBottom {
             VStack(spacing: 8) {
