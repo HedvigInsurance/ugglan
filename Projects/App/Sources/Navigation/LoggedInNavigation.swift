@@ -341,14 +341,7 @@ struct HomeTab: View {
         return RouterHost(router: homeNavigationVm.router, tracking: self) {
             HomeScreen()
                 .routerDestination(for: ClaimModel.self, options: [.hidesBottomBarWhenPushed]) { claim in
-                    ClaimDetailView(claim: claim, type: .claim(id: claim.id))
-                        .environmentObject(homeNavigationVm)
-                        .configureTitle(L10n.claimsYourClaim)
-                        .onDisappear {
-                            if claim.showClaimClosedFlow {
-                                homeNavigationVm.navBarItems.isNewOfferPresented = true
-                            }
-                        }
+                    openClaimDetails(claim: claim, type: .claim(id: claim.id))
                 }
                 .routerDestination(for: String.self) { conversation in
                     InboxView()
@@ -477,18 +470,24 @@ struct HomeTab: View {
                         case let .claimDetailForConversationId(id):
                             let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
                             let claim = claimStore.state.claimFromConversation(for: id)
-                            ClaimDetailView(claim: claim, type: .conversation(id: id))
-                                .configureTitle(L10n.claimsYourClaim)
-                                .onDisappear {
-                                    if let claim, claim.showClaimClosedFlow {
-                                        homeNavigationVm.navBarItems.isNewOfferPresented = true
-                                    }
-                                }
+                            openClaimDetails(claim: claim, type: .conversation(id: id))
                         }
                     }
                 )
             }
         )
+    }
+
+    private func openClaimDetails(claim: ClaimModel?, type: FetchClaimDetailsType) -> some View {
+        ClaimDetailView(claim: claim, type: type)
+            .configureTitle(L10n.claimsYourClaim)
+            .onDisappear {
+                let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+                if claim?.showClaimClosedFlow ?? false {
+                    homeNavigationVm.navBarItems.isNewOfferPresented = true
+                    claimsStore.send(.fetchClaims)
+                }
+            }
     }
 }
 
