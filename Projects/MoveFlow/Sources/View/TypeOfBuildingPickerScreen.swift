@@ -36,9 +36,7 @@ struct TypeOfBuildingPickerScreen: View {
             },
             onCancel: {
                 movingFlowNavigationVm.isBuildingTypePickerPresented = nil
-            },
-            singleSelect: true,
-            useAlwaysAttachedToBottom: true
+            }
         )
     }
 
@@ -46,6 +44,8 @@ struct TypeOfBuildingPickerScreen: View {
         ItemPickerScreen<ExtraBuildingType>(
             config: itemPickerConfig
         )
+        .hItemPickerAttributes([.singleSelect, .alwaysAttachToBottom])
+        .hFormContentPosition(.compact)
     }
 }
 

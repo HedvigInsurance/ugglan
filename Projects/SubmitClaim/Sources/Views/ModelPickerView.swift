@@ -44,19 +44,19 @@ struct ModelPickerView: View {
             onCancel: { [weak router] in
                 router?.dismiss()
             },
-            singleSelect: true,
-            manualInputPlaceholder: L10n.Claims.Item.Enter.Model.name,
-            manualBrandName: customName,
-            contentPosition: .top,
-            useAlwaysAttachedToBottom: true
+            manualInputConfig: .init(
+                placeholder: L10n.Claims.Item.Enter.Model.name,
+                brandName: customName
+            )
         )
     }
 
     var body: some View {
-        return ItemPickerScreen<ClaimFlowItemModelOptionModel>(
+        ItemPickerScreen<ClaimFlowItemModelOptionModel>(
             config: itemPickerConfig
         )
-        .hIncludeManualInput
+        .hItemPickerAttributes([.singleSelect, .alwaysAttachToBottom])
+        .hFormContentPosition(.top)
     }
 }
 
