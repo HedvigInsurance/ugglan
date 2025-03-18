@@ -20,7 +20,7 @@ struct CoInsuredSelectInsuranceScreen: View {
         self.itemPickerConfig = ItemConfig<InsuredPeopleConfig>(
             items: {
                 return configs.compactMap({
-                    (object: $0, displayName: .init(title: $0.displayName))
+                    (object: $0, displayName: .init(title: $0.displayName, subTitle: $0.exposureDisplayName))
                 })
             }(),
             preSelectedItems: {
