@@ -21,12 +21,18 @@ class FetchClaimDetailsService {
         log.info("\(FetchClaimDetailsService.self): getFiles for \(type)", error: nil, attributes: nil)
         return try await client.getFiles(for: type)
     }
+
+    func acknowledgeClosedStatus(statusId: String) async throws -> ClaimModel? {
+        log.info("\(FetchClaimDetailsService.self): acknowledgeClosedStatus for \(type)", error: nil, attributes: nil)
+        return try await client.acknowledgeClosedStatus(statusId: statusId)
+    }
 }
 
 @MainActor
 public protocol hFetchClaimDetailsClient {
     func get(for type: FetchClaimDetailsType) async throws -> ClaimModel
     func getFiles(for type: FetchClaimDetailsType) async throws -> (claimId: String, files: [File])
+    func acknowledgeClosedStatus(statusId: String) async throws -> ClaimModel?
 }
 
 public enum FetchClaimDetailsType {
@@ -36,6 +42,7 @@ public enum FetchClaimDetailsType {
 
 enum FetchClaimDetailsError: Error {
     case noClaimFound
+    case serviceError(message: String)
 }
 
 extension FetchClaimDetailsError: LocalizedError {

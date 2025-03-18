@@ -395,7 +395,8 @@ struct ClaimDetailView_Previews: PreviewProvider {
                 hasClaim: true,
                 claimType: "claim type",
                 unreadMessageCount: 0
-            )
+            ),
+            showClaimClosedFlow: true
         )
         return ClaimDetailView(
             claim: claim,
