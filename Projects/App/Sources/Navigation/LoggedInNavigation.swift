@@ -667,7 +667,9 @@ class LoggedInNavigationViewModel: ObservableObject {
                 UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 let userInfo = notification.userInfo
                 let claimId = userInfo?["claimId"] as? String
-                handleClaimDetails(claimId: claimId)
+                if let claimId {
+                    handleClaimDetails(claimId: claimId)
+                }
             }
         }
     }
@@ -816,7 +818,9 @@ class LoggedInNavigationViewModel: ObservableObject {
             case .editCoInsured:
                 handleEditCoInsured(url: url)
             case .claimDetails:
-                self.handleClaimDetails(url: url)
+                if let claimId = url.getParameter(property: .claimId) {
+                    self.handleClaimDetails(claimId: claimId)
+                }
             case nil:
                 let isDeeplink = hGraphQL.Environment.current.isDeeplink(url)
                 if !isDeeplink {
@@ -935,20 +939,15 @@ class LoggedInNavigationViewModel: ObservableObject {
         }
     }
 
-    func handleClaimDetails(url: URL? = nil, claimId: String? = nil) {
-        if let url = url, let claimId = url.getParameter(property: .claimId) {
-            openClaimDetails(for: claimId)
-        } else if let claimId {
-            openClaimDetails(for: claimId)
-        }
-    }
-
-    private func openClaimDetails(for claimId: String) {
+    private func handleClaimDetails(claimId: String) {
         let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
+        claimStore.send(.fetchClaims)
+
         if let claim = claimStore.state.claim(for: claimId) {
             UIApplication.shared.getRootViewController()?.dismiss(animated: true)
             self.selectedTab = 0
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
+            Task { [weak self] in
+                try await Task.sleep(nanoseconds: 20_000_000)
                 self?.homeNavigationVm.router.push(claim)
             }
         }
