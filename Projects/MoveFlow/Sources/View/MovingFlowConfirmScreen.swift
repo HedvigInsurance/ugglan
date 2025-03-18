@@ -20,7 +20,7 @@ public class MovingFlowConfirmViewModel: ObservableObject {
     @Published var viewState: ProcessingState = .loading
 
     @MainActor
-    func confirmMoveIntent(intentId: String, homeQuoteId: String, removedAddons: [String]) async {
+    func confirmMoveIntent(intentId: String, currentHomeQuoteId: String, removedAddons: [String]) async {
         withAnimation {
             viewState = .loading
         }
@@ -28,7 +28,7 @@ public class MovingFlowConfirmViewModel: ObservableObject {
         do {
             try await service.confirmMoveIntent(
                 intentId: intentId,
-                homeQuoteId: homeQuoteId,
+                currentHomeQuoteId: currentHomeQuoteId,
                 removedAddons: removedAddons
             )
 

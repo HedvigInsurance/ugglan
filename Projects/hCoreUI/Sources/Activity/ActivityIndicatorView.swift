@@ -38,6 +38,7 @@ struct LoadingViewWithContent: ViewModifier {
 
 struct LoadingViewWithContentForProcessingState: ViewModifier {
     @Binding var state: ProcessingState
+    var errorTrackingName: TrackingViewNameProtocol?
 
     public func body(content: Content) -> some View {
         ZStack {
@@ -48,11 +49,22 @@ struct LoadingViewWithContentForProcessingState: ViewModifier {
             case .success:
                 content.transition(.opacity.animation(.easeInOut(duration: 0.2)))
             case .error(let errorMessage):
-                GenericErrorView(
-                    description: errorMessage,
-                    formPosition: nil
-                )
-                .transition(.opacity.animation(.easeInOut(duration: 0.2)))
+                if let errorTrackingName {
+                    GenericErrorView(
+                        description: errorMessage,
+                        formPosition: nil
+                    )
+                    .transition(.opacity.animation(.easeInOut(duration: 0.2)))
+                    .withDismissButton()
+                    .embededInNavigation(tracking: errorTrackingName)
+                } else {
+                    GenericErrorView(
+                        description: errorMessage,
+                        formPosition: nil
+                    )
+                    .transition(.opacity.animation(.easeInOut(duration: 0.2)))
+                }
+
             }
         }
     }
@@ -65,6 +77,12 @@ struct LoadingViewWithContentForProcessingState: ViewModifier {
         .background(hBackgroundColor.primary.opacity(0.01))
         .edgesIgnoringSafeArea(.top)
         .useDarkColor
+    }
+}
+
+struct GenericErrorTrackName: TrackingViewNameProtocol {
+    var nameForTracking: String {
+        return ""
     }
 }
 
@@ -102,8 +120,11 @@ extension View {
         modifier(LoadingViewWithContent(isLoading: isLoading, error: error))
     }
 
-    public func loading(_ state: Binding<ProcessingState>) -> some View {
-        modifier(LoadingViewWithContentForProcessingState(state: state))
+    public func loading(
+        _ state: Binding<ProcessingState>,
+        errorTrackingName: TrackingViewNameProtocol? = nil
+    ) -> some View {
+        modifier(LoadingViewWithContentForProcessingState(state: state, errorTrackingName: errorTrackingName))
     }
 
     public func loadingWithButtonLoading(_ state: Binding<ProcessingState>) -> some View {
