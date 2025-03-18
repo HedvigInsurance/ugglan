@@ -67,10 +67,7 @@ struct LoggedInNavigation: View {
             presented: $vm.isMoveContractPresented,
             options: .constant(.alwaysOpenOnTop)
         ) {
-            MovingFlowNavigation {
-                let store: ContractStore = globalPresentableStoreContainer.get()
-                store.send(.fetchContracts)
-            }
+            HandleMoving()
         }
         .modally(
             item: $vm.isChangeTierPresented,
@@ -170,10 +167,7 @@ struct LoggedInNavigation: View {
                     )
                 )
             case .movingFlow:
-                MovingFlowNavigation {
-                    let store: ContractStore = globalPresentableStoreContainer.get()
-                    store.send(.fetchContracts)
-                }
+                HandleMoving()
             case let .pdf(document):
                 PDFPreview(document: document)
             case let .changeTier(input):
@@ -329,6 +323,17 @@ struct LoggedInNavigation: View {
     }
 }
 
+struct HandleMoving: View {
+    var body: some View {
+        MovingFlowNavigation(
+            onMoved: {
+                let store: ContractStore = globalPresentableStoreContainer.get()
+                store.send(.fetchContracts)
+            }
+        )
+    }
+}
+
 struct HomeTab: View {
     @ObservedObject var homeNavigationVm: HomeNavigationViewModel
     @ObservedObject var loggedInVm: LoggedInNavigationViewModel
@@ -364,10 +369,7 @@ struct HomeTab: View {
             ) { redirectType in
                 switch redirectType {
                 case .moveFlow:
-                    MovingFlowNavigation {
-                        let store: ContractStore = globalPresentableStoreContainer.get()
-                        store.send(.fetchContracts)
-                    }
+                    HandleMoving()
                 case .travelInsurance:
                     TravelCertificateNavigation(
                         vm: loggedInVm.travelCertificateNavigationVm,
