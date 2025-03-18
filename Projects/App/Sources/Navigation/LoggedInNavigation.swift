@@ -664,10 +664,11 @@ class LoggedInNavigationViewModel: ObservableObject {
                     await handleTravelAddon()
                 }
             case .OPEN_CLAIM, .CLAIM_CLOSED:
-                UIApplication.shared.getRootViewController()?.dismiss(animated: true)
                 let userInfo = notification.userInfo
                 let claimId = userInfo?["claimId"] as? String
-                handleClaimDetails(claimId: claimId)
+                Task {
+                    await handleClaimDetails(claimId: claimId)
+                }
             }
         }
     }
@@ -817,7 +818,9 @@ class LoggedInNavigationViewModel: ObservableObject {
                 handleEditCoInsured(url: url)
             case .claimDetails:
                 let claimId = url.getParameter(property: .claimId)
-                self.handleClaimDetails(claimId: claimId)
+                Task {
+                    await self.handleClaimDetails(claimId: claimId)
+                }
             case nil:
                 let isDeeplink = hGraphQL.Environment.current.isDeeplink(url)
                 if !isDeeplink {
@@ -936,14 +939,14 @@ class LoggedInNavigationViewModel: ObservableObject {
         }
     }
 
-    private func handleClaimDetails(claimId: String?) {
+    private func handleClaimDetails(claimId: String?) async {
         let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
-        claimStore.send(.fetchClaims)
+        await claimStore.sendAsync(.fetchClaims)
         if let claimId, let claim = claimStore.state.claim(for: claimId) {
             UIApplication.shared.getRootViewController()?.dismiss(animated: true)
             self.selectedTab = 0
             Task { [weak self] in
-                try await Task.sleep(nanoseconds: 20_000_000)
+                try await Task.sleep(nanoseconds: 200_000_000)
                 self?.homeNavigationVm.router.push(claim)
             }
         } else {
