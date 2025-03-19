@@ -11,12 +11,13 @@ public struct CrossSellingScreen: View {
             CrossSellingStack(withHeader: false)
         }
         .hFormContentPosition(.compact)
-        .navigationTitle(L10n.InsuranceTab.CrossSells.title)
+        .configureTitleView(title: L10n.crossSellTitle, subTitle: L10n.crossSellSubtitle)
     }
 }
 
 struct CrossSellingScreen_Previews: PreviewProvider {
     static var previews: some View {
-        CrossSellingScreen()
+        Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
+        return CrossSellingScreen()
     }
 }

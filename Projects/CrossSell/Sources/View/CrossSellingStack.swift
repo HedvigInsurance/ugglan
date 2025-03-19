@@ -53,3 +53,8 @@ public struct CrossSellingStack: View {
         }
     }
 }
+
+#Preview {
+    Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
+    return CrossSellingStack(withHeader: true)
+}
