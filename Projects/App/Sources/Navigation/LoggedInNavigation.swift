@@ -663,6 +663,12 @@ class LoggedInNavigationViewModel: ObservableObject {
                 Task {
                     await handleTravelAddon()
                 }
+            case .OPEN_CLAIM, .CLAIM_CLOSED:
+                let userInfo = notification.userInfo
+                let claimId = userInfo?["claimId"] as? String
+                Task {
+                    await handleClaimDetails(claimId: claimId)
+                }
             }
         }
     }
@@ -810,6 +816,11 @@ class LoggedInNavigationViewModel: ObservableObject {
                 }
             case .editCoInsured:
                 handleEditCoInsured(url: url)
+            case .claimDetails:
+                let claimId = url.getParameter(property: .claimId)
+                Task {
+                    await self.handleClaimDetails(claimId: claimId)
+                }
             case nil:
                 let isDeeplink = hGraphQL.Environment.current.isDeeplink(url)
                 if !isDeeplink {
@@ -925,6 +936,21 @@ class LoggedInNavigationViewModel: ObservableObject {
                 // select insurance
                 self?.homeNavigationVm.editCoInsuredVm.start(fromContract: nil)
             }
+        }
+    }
+
+    private func handleClaimDetails(claimId: String?) async {
+        let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
+        await claimStore.sendAsync(.fetchClaims)
+        if let claimId, let claim = claimStore.state.claim(for: claimId) {
+            UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+            self.selectedTab = 0
+            Task { [weak self] in
+                try await Task.sleep(nanoseconds: 200_000_000)
+                self?.homeNavigationVm.router.push(claim)
+            }
+        } else {
+            Toasts.shared.displayToastBar(toast: .init(type: .error, text: L10n.General.defaultError))
         }
     }
 
