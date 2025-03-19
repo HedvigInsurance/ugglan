@@ -13,7 +13,7 @@ public final class ClaimsStore: StateStore<ClaimsState, ClaimsAction> {
         case .fetchClaims:
             do {
                 let claimData = try await self.fetchClaimsClient.get()
-                self.send(.setClaims(claims: claimData))
+                await self.sendAsync(.setClaims(claims: claimData))
             } catch {
                 self.send(.setLoadingState(action: action, state: .error(error: L10n.General.errorBody)))
             }
