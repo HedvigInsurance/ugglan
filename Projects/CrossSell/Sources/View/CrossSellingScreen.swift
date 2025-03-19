@@ -5,29 +5,55 @@ import hCoreUI
 
 public struct CrossSellingScreen: View {
     @StateObject private var vm = CrossSellingScreenViewModel()
+    @EnvironmentObject private var router: Router
+    let addonCardOnClick: () -> Void
 
-    public init() {}
+    public init(
+        addonCardOnClick: @escaping () -> Void
+    ) {
+        self.addonCardOnClick = addonCardOnClick
+    }
 
     public var body: some View {
         hForm {
             VStack(spacing: .padding24) {
                 CrossSellingStack(withHeader: false)
-                if let banner = vm.addonBannerModel {
-                    AddonCardView(
-                        openAddon: {
-                            /* TODO: ADD */
-                        },
-                        addon: banner
-                    )
-                }
+                addonBanner
             }
+            .padding(.bottom, .padding8)
         }
         .hFormContentPosition(.compact)
         .configureTitleView(title: L10n.crossSellTitle, subTitle: L10n.crossSellSubtitle)
+        .hFormAttachToBottom {
+            hSection {
+                hButton.LargeButton(type: .ghost) {
+                    router.dismiss()
+                } content: {
+                    hText(L10n.generalCloseButton)
+                }
+            }
+            .sectionContainerStyle(.transparent)
+            .padding(.top, .padding16)
+        }
         .onAppear {
             Task {
                 await vm.getAddonBanner()
             }
+        }
+    }
+
+    @ViewBuilder
+    private var addonBanner: some View {
+        if let banner = vm.addonBannerModel {
+            hSection {
+                AddonCardView(
+                    openAddon: {
+                        addonCardOnClick()
+                    },
+                    addon: banner
+                )
+            }
+            .sectionContainerStyle(.transparent)
         }
     }
 }
@@ -54,6 +80,6 @@ public class CrossSellingScreenViewModel: ObservableObject {
 struct CrossSellingScreen_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
-        return CrossSellingScreen()
+        return CrossSellingScreen(addonCardOnClick: {})
     }
 }
