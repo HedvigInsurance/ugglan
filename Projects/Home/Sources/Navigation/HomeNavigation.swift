@@ -30,7 +30,6 @@ public class HomeNavigationViewModel: ObservableObject {
         NotificationCenter.default.addObserver(forName: .openChat, object: nil, queue: nil) {
             [weak self] notification in
 
-            //            let openChatTask = await Task {
             var openChat: ChatConversation?
 
             if let chatType = notification.object as? ChatType {
