@@ -1,5 +1,7 @@
 import Addons
+import Contracts
 import Foundation
+import PresentableStore
 import hCore
 import hGraphQL
 
@@ -141,6 +143,9 @@ extension TravelInsuranceContractSpecification {
         fullName: String
     ) {
         self.contractId = data.contractId
+
+        let contractStore: ContractStore = globalPresentableStoreContainer.get()
+        self.exposureDisplayName = contractStore.state.contractForId(contractId)?.exposureDisplayName
         self.minStartDate = data.minStartDate.localDateToDate ?? Date()
         self.maxStartDate = data.maxStartDate.localDateToDate ?? Date().addingTimeInterval(60 * 60 * 24 * 90)
         self.numberOfCoInsured = data.numberOfCoInsured

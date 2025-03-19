@@ -159,6 +159,7 @@ struct SuccessScreen_Previews: PreviewProvider {
                 WhoIsTravelingViewModel(
                     specification: .init(
                         contractId: "contractId",
+                        exposureDisplayName: "exposure display name",
                         minStartDate: Date(),
                         maxStartDate: "2025-12-12".localDateToDate ?? Date(),
                         numberOfCoInsured: 2,

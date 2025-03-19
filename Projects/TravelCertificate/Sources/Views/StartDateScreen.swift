@@ -113,6 +113,7 @@ struct StartDateView_Previews: PreviewProvider {
                 vm: .init(
                     specification: .init(
                         contractId: "",
+                        exposureDisplayName: "exposure display name",
                         minStartDate: Date(),
                         maxStartDate: Date().addingTimeInterval(60 * 60 * 24 * 10),
                         numberOfCoInsured: 0,

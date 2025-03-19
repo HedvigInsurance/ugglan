@@ -185,7 +185,7 @@ public struct TravelCertificateNavigation: View {
     private func showContractsList(
         for specifications: [TravelInsuranceContractSpecification]
     ) -> some View {
-        ContractsScreen(
+        TravelCertificateSelectInsuranceScreen(
             router: createNewRouter,
             specifications: specifications
         )

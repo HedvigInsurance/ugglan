@@ -133,6 +133,7 @@ struct WhoIsTravelingView_Previews: PreviewProvider {
             vm: .init(
                 specification: .init(
                     contractId: "",
+                    exposureDisplayName: "exposure display name",
                     minStartDate: Date(),
                     maxStartDate: Date(),
                     numberOfCoInsured: 2,
