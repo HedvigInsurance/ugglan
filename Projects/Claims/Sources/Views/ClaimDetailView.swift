@@ -144,7 +144,6 @@ public struct ClaimDetailView: View {
                 }
                 .withEmptyAccessory
                 .onTap {
-                    /* TODO: OBSERVE CHANGES */
                     if vm.toolbarOptionType.contains(.chat) {
                         if case .conversation = vm.type {
                             router.pop()
