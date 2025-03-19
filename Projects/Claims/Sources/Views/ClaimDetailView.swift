@@ -36,7 +36,7 @@ public struct ClaimDetailView: View {
                     memberFreeTextSection
                     claimDetailsSection
                     uploadFilesSection
-                    termsAndConditions
+                    documentSection
                 }
             }
         }
@@ -128,9 +128,9 @@ public struct ClaimDetailView: View {
                 hRow {
                     HStack {
                         VStack(alignment: .leading) {
-                            hText("Updates and messages", style: .label)
+                            hText(L10n.ClaimStatusDetail.MessageView.title, style: .label)
                                 .foregroundColor(hTextColor.Translucent.secondary)
-                            hText("Go to conversation")
+                            hText(L10n.ClaimStatusDetail.MessageView.body)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         Spacer()
@@ -312,29 +312,17 @@ public struct ClaimDetailView: View {
     }
 
     @ViewBuilder
-    private var termsAndConditions: some View {
-        //        let termsAndConditionsDocument = vm.claim?.productVariant?.documents
-        //            .first(where: { $0.type == .termsAndConditions })
-        let termsAndConditionsDocument: hPDFDocument = .init(
-            displayName: "Terms standard",
-            url: "",
-            type: .termsAndConditions
-        )
-
-        //                let appealInstructionDocument = vm.claim?.productVariant?.documents
-        //            .first(where: { $0.type == .appealInstruction })
-        let appealInstructionDocument: hPDFDocument = .init(
-            displayName: "Appeal instruction",
-            url: "",
-            type: .appealInstruction
-        )
-
-        let documents = [termsAndConditionsDocument, appealInstructionDocument]
+    private var documentSection: some View {
+        let termsAndConditionsDocument = vm.claim?.productVariant?.documents
+            .first(where: { $0.type == .termsAndConditions })
+        let appealInstructionDocument = vm.claim?.productVariant?.documents
+            .first(where: { $0.type == .appealInstruction })
+        let documents = [termsAndConditionsDocument, appealInstructionDocument].compactMap({ $0 })
 
         if !documents.isEmpty {
             InsuranceTermView(
                 documents: documents,
-                withHeader: "Instructions and terms"
+                withHeader: L10n.ClaimStatusDetail.Documents.title
             ) { document in
                 vm.document = document
             }
