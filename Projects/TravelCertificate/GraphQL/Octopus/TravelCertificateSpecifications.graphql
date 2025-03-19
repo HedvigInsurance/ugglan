@@ -3,6 +3,10 @@ query TravelCertificate {
     email
     firstName
     lastName
+    activeContracts {
+        id
+        exposureDisplayName
+    }
     travelCertificateSpecifications {
       contractSpecifications {
         contractId

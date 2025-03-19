@@ -1,7 +1,5 @@
 import Addons
-import Contracts
 import Foundation
-import PresentableStore
 import hCore
 import hGraphQL
 
@@ -40,9 +38,17 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
             let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
             let email = data.currentMember.email
             let fullName = data.currentMember.firstName + " " + data.currentMember.lastName
+            let activeContracts = data.currentMember.activeContracts
+
             let specification = data.currentMember.travelCertificateSpecifications.contractSpecifications.compactMap {
                 data in
-                TravelInsuranceContractSpecification(data, email: email, fullName: fullName)
+                TravelInsuranceContractSpecification(
+                    data,
+                    email: email,
+                    fullName: fullName,
+                    exposureDisplayName: activeContracts.first(where: { $0.id == data.contractId })?.exposureDisplayName
+                        ?? ""
+                )
             }
             return specification
         } catch let ex {
@@ -140,12 +146,11 @@ extension TravelInsuranceContractSpecification {
         _ data: OctopusGraphQL.TravelCertificateQuery.Data.CurrentMember.TravelCertificateSpecifications
             .ContractSpecification,
         email: String,
-        fullName: String
+        fullName: String,
+        exposureDisplayName: String
     ) {
         self.contractId = data.contractId
-
-        let contractStore: ContractStore = globalPresentableStoreContainer.get()
-        self.exposureDisplayName = contractStore.state.contractForId(contractId)?.exposureDisplayName
+        self.exposureDisplayName = exposureDisplayName
         self.minStartDate = data.minStartDate.localDateToDate ?? Date()
         self.maxStartDate = data.maxStartDate.localDateToDate ?? Date().addingTimeInterval(60 * 60 * 24 * 90)
         self.numberOfCoInsured = data.numberOfCoInsured
