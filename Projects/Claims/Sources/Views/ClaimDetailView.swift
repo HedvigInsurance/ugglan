@@ -31,6 +31,7 @@ public struct ClaimDetailView: View {
         hForm {
             VStack(spacing: .padding8) {
                 if let claim = vm.claim {
+                    infoCardSection(text: claim.appealInstructionsUrl)
                     claimCardSection(claim: claim)
                     infoAndContactSection
                     memberFreeTextSection
@@ -102,6 +103,15 @@ public struct ClaimDetailView: View {
                 })
             )
         )
+    }
+
+    @ViewBuilder
+    private func infoCardSection(text: String?) -> some View {
+        if let text {
+            hSection {
+                InfoCard(text: text, type: .info)
+            }
+        }
     }
 
     private func claimCardSection(claim: ClaimModel) -> some View {
@@ -272,13 +282,11 @@ public struct ClaimDetailView: View {
                         )
                     }
                     .sectionContainerStyle(.transparent)
-                } else {
-                    if !vm.fileGridViewModel.files.isEmpty {
-                        hSection {
-                            FilesGridView(vm: vm.fileGridViewModel)
-                        }
-                        .sectionContainerStyle(.transparent)
+                } else if !vm.fileGridViewModel.files.isEmpty {
+                    hSection {
+                        FilesGridView(vm: vm.fileGridViewModel)
                     }
+                    .sectionContainerStyle(.transparent)
                 }
 
                 if vm.canAddFiles {
@@ -391,7 +399,9 @@ struct ClaimDetailView_Previews: PreviewProvider {
                 hasClaim: true,
                 claimType: "claim type",
                 unreadMessageCount: 0
-            )
+            ),
+            appealInstructionsUrl: "If you have more receipts related to this claim, you can upload more on this page.",
+            isUploadingFilesEnabled: true
         )
         return ClaimDetailView(
             claim: claim,
@@ -547,7 +557,7 @@ public class ClaimDetailViewModel: ObservableObject {
     }
 
     var canAddFiles: Bool {
-        return self.claim?.status != .closed && fetchFilesError == nil
+        return self.claim?.isUploadingFilesEnabled == true && fetchFilesError == nil
     }
 }
 

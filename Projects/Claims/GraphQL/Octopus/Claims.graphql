@@ -25,4 +25,6 @@ fragment ClaimFragment on Claim {
     conversation {
         ...ConversationFragment
     }
+    appealInstructionsUrl
+    isUploadingFilesEnabled
 }
