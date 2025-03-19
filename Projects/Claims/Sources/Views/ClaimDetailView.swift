@@ -31,48 +31,15 @@ public struct ClaimDetailView: View {
         hForm {
             VStack(spacing: .padding8) {
                 if let claim = vm.claim {
-                    hSection {
-                        ClaimStatus(
-                            claim: claim,
-                            enableTap: false
-                        )
-                    }
-                    .sectionContainerStyle(.transparent)
-
+                    claimCardSection(claim: claim)
                     infoAndContactSection
                     memberFreeTextSection
                     claimDetailsSection
-                        .padding(.vertical, .padding16)
                     uploadFilesSection
+                    termsAndConditions
                 }
             }
         }
-        //        .setHomeNavigationBars(
-        //            with: $vm.toolbarOptionType,
-        //            and: .init(describing: ClaimDetailView.self),
-        //            action: { type in
-        //                switch type {
-        //                case .newOffer:
-        //                    break
-        //                case .firstVet:
-        //                    break
-        //                case .chat:
-        //                    if case .conversation = vm.type {
-        //                        router.pop()
-        //                    } else {
-        //                        NotificationCenter.default.post(
-        //                            name: .openChat,
-        //                            object: ChatType.conversationId(id: vm.claim?.conversation?.id ?? "")
-        //                        )
-        //                    }
-        //                case .chatNotification:
-        //                    NotificationCenter.default.post(
-        //                        name: .openChat,
-        //                        object: ChatType.conversationId(id: vm.claim?.conversation?.id ?? "")
-        //                    )
-        //                }
-        //            }
-        //        )
         .sheet(isPresented: $showImagePicker) {
             ImagePicker { images in
                 vm.showAddFiles(with: images)
@@ -137,6 +104,16 @@ public struct ClaimDetailView: View {
         )
     }
 
+    private func claimCardSection(claim: ClaimModel) -> some View {
+        hSection {
+            ClaimStatus(
+                claim: claim,
+                enableTap: false
+            )
+        }
+        .sectionContainerStyle(.transparent)
+    }
+
     @ViewBuilder
     private var infoAndContactSection: some View {
         hSection {
@@ -157,7 +134,31 @@ public struct ClaimDetailView: View {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         Spacer()
-                        Image(uiImage: hCoreUIAssets.inboxNotification.image)
+
+                        if vm.toolbarOptionType.contains(.chat) {
+                            Image(uiImage: hCoreUIAssets.inbox.image)
+                        } else {
+                            Image(uiImage: hCoreUIAssets.inboxNotification.image)
+                        }
+                    }
+                }
+                .withEmptyAccessory
+                .onTap {
+                    /* TODO: OBSERVE CHANGES */
+                    if vm.toolbarOptionType.contains(.chat) {
+                        if case .conversation = vm.type {
+                            router.pop()
+                        } else {
+                            NotificationCenter.default.post(
+                                name: .openChat,
+                                object: ChatType.conversationId(id: vm.claim?.conversation?.id ?? "")
+                            )
+                        }
+                    } else {
+                        NotificationCenter.default.post(
+                            name: .openChat,
+                            object: ChatType.conversationId(id: vm.claim?.conversation?.id ?? "")
+                        )
                     }
                 }
             }
@@ -196,9 +197,9 @@ public struct ClaimDetailView: View {
     @ViewBuilder
     private var claimDetailsSection: some View {
         if let claim = vm.claim {
-            VStack(spacing: 16) {
+            VStack(spacing: .padding16) {
                 hSection {
-                    VStack(spacing: 8) {
+                    VStack(spacing: .padding8) {
                         claimDetailsRow(title: L10n.ClaimStatus.ClaimDetails.type, value: claim.claimType)
                             .accessibilityHidden(claim.claimType == "")
                         if let incidentDate = claim.incidentDate {
@@ -229,9 +230,8 @@ public struct ClaimDetailView: View {
                 }
                 .hWithoutDivider
                 .sectionContainerStyle(.transparent)
-
-                termsAndConditions
             }
+            .padding(.vertical, .padding8)
         }
     }
 
@@ -248,30 +248,8 @@ public struct ClaimDetailView: View {
     }
 
     @ViewBuilder
-    private var termsAndConditions: some View {
-        if let termsAndConditionsDocument = vm.claim?.productVariant?.documents
-            .first(where: { $0.type == .termsAndConditions })
-        {
-            hSection {
-                hRow {
-                    hAttributedTextView(
-                        text: AttributedPDF().attributedPDFString(for: termsAndConditionsDocument.displayName)
-                    )
-                    .id("sds_\(String(describing: vm.claim?.productVariant?.displayName))")
-                }
-                .withCustomAccessory {
-                    Image(uiImage: hCoreUIAssets.arrowNorthEast.image)
-                }
-                .onTap {
-                    vm.document = termsAndConditionsDocument
-                }
-            }
-        }
-    }
-
-    @ViewBuilder
     private var uploadFilesSection: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: .padding8) {
             if vm.showUploadedFiles {
                 hSection {
                     if let player = vm.player {
@@ -280,10 +258,6 @@ public struct ClaimDetailView: View {
                         )
                         .onReceive(player.objectWillChange.filter({ $0.playbackState == .finished })) { player in }
                     }
-                }
-                .withHeader {
-                    hText(L10n.ClaimStatusDetail.uploadedFiles)
-                        .padding(.leading, 2)
                 }
                 if let fetchError = vm.fetchFilesError {
                     hSection {
@@ -305,32 +279,64 @@ public struct ClaimDetailView: View {
                     }
                     .sectionContainerStyle(.transparent)
                 } else {
+                    if !vm.fileGridViewModel.files.isEmpty {
+                        hSection {
+                            FilesGridView(vm: vm.fileGridViewModel)
+                        }
+                        .sectionContainerStyle(.transparent)
+                    }
+                }
+
+                if vm.canAddFiles {
                     hSection {
-                        FilesGridView(vm: vm.fileGridViewModel)
+                        VStack(spacing: .padding16) {
+                            hRow {
+                                hText(L10n.ClaimStatus.UploadedFiles.uploadText)
+                                    .multilineTextAlignment(.center)
+                                    .frame(maxWidth: .infinity, alignment: .center)
+                            }
+                            .verticalPadding(0)
+                            .fixedSize(horizontal: false, vertical: true)
+                            hButton.MediumButton(type: .primary) {
+                                showFilePickerAlert()
+                            } content: {
+                                hText(L10n.ClaimStatus.UploadedFiles.uploadButton)
+                            }
+                        }
                     }
                     .sectionContainerStyle(.transparent)
                 }
             }
+        }
+        .padding(.bottom, .padding8)
+    }
 
-            if vm.canAddFiles {
-                hSection {
-                    VStack(spacing: 16) {
-                        hRow {
-                            hText(L10n.ClaimStatus.UploadedFiles.uploadText)
-                                .multilineTextAlignment(.center)
-                                .frame(maxWidth: .infinity, alignment: .center)
-                        }
-                        .verticalPadding(0)
-                        .fixedSize(horizontal: false, vertical: true)
-                        hButton.MediumButton(type: .primary) {
-                            showFilePickerAlert()
-                        } content: {
-                            hText(L10n.ClaimStatus.UploadedFiles.uploadButton)
-                        }
-                    }
-                    .padding(.vertical, .padding32)
-                }
-                .sectionContainerStyle(.transparent)
+    @ViewBuilder
+    private var termsAndConditions: some View {
+        //        let termsAndConditionsDocument = vm.claim?.productVariant?.documents
+        //            .first(where: { $0.type == .termsAndConditions })
+        let termsAndConditionsDocument: hPDFDocument = .init(
+            displayName: "Terms standard",
+            url: "",
+            type: .termsAndConditions
+        )
+
+        //                let appealInstructionDocument = vm.claim?.productVariant?.documents
+        //            .first(where: { $0.type == .appealInstruction })
+        let appealInstructionDocument: hPDFDocument = .init(
+            displayName: "Appeal instruction",
+            url: "",
+            type: .appealInstruction
+        )
+
+        let documents = [termsAndConditionsDocument, appealInstructionDocument]
+
+        if !documents.isEmpty {
+            InsuranceTermView(
+                documents: documents,
+                withHeader: "Instructions and terms"
+            ) { document in
+                vm.document = document
             }
         }
     }
