@@ -127,12 +127,7 @@ public struct ClaimDetailView: View {
 
                 hRow {
                     HStack {
-                        VStack(alignment: .leading) {
-                            hText(L10n.ClaimStatusDetail.MessageView.title, style: .label)
-                                .foregroundColor(hTextColor.Translucent.secondary)
-                            hText(L10n.ClaimStatusDetail.MessageView.body)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                        hText(L10n.ClaimStatusDetail.MessageView.body)
                         Spacer()
 
                         if vm.toolbarOptionType.contains(.chat) {
