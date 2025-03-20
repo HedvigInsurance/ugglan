@@ -7,6 +7,7 @@ public class EditCoInsuredSharedClientDemo: EditCoInsuredSharedClient {
         return [
             Contract(
                 id: "",
+                exposureDisplayName: "",
                 supportsCoInsured: true,
                 upcomingChangedAgreement: nil,
                 currentAgreement: .init(activeFrom: nil, productVariant: .init(displayName: "")),
