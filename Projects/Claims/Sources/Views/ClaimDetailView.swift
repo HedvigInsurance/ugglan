@@ -307,10 +307,11 @@ public struct ClaimDetailView: View {
                         }
                     }
                     .sectionContainerStyle(.transparent)
+                    .padding(.top, .padding16)
                 }
             }
         }
-        .padding(.bottom, .padding8)
+        .padding(.bottom, .padding16)
     }
 
     @ViewBuilder
