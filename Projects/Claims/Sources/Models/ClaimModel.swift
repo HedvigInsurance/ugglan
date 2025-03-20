@@ -116,6 +116,14 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
                 return L10n.Home.ClaimCard.Pill.reopened
             }
         }
+
+        var pillColor: PillColor {
+            switch self {
+            case .closed: .grey
+            case .reopened: .amber
+            default: .grey
+            }
+        }
     }
 
     public enum ClaimOutcome: String, Codable, CaseIterable, Sendable {

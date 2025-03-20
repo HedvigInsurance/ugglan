@@ -63,26 +63,27 @@ struct ClaimPills: View {
 
     var body: some View {
         HStack {
-            if claim.status == .reopened {
+            if claim.status == .reopened || claim.status == .closed {
                 hPill(
-                    text: claim.status.title,
-                    color: .amber,
+                    text: (claim.outcome == .paid) ? claim.outcome.text : claim.status.title,
+                    color: claim.status.pillColor,
                     colorLevel: .three
                 )
                 .hFieldSize(.small)
             }
-            hPill(
-                text: claim.outcome.text.capitalized,
-                color: claim.outcome.color,
-                colorLevel: claim.outcome.colorLevel
-            )
-            .hFieldSize(.small)
 
             if let payout = claim.payoutAmount {
                 hPill(
                     text: payout.formattedAmount,
                     color: .blue,
                     colorLevel: .two
+                )
+                .hFieldSize(.small)
+            } else if claim.outcome != .paid {
+                hPill(
+                    text: claim.outcome.text.capitalized,
+                    color: claim.outcome.color,
+                    colorLevel: claim.outcome.colorLevel
                 )
                 .hFieldSize(.small)
             }
@@ -264,6 +265,43 @@ struct ClaimNotCovered_Previews: PreviewProvider {
             id: "1",
             status: .closed,
             outcome: .notCovered,
+            submittedAt: "2023-10-10",
+            signedAudioURL: "",
+            memberFreeText: nil,
+            payoutAmount: nil,
+            targetFileUploadUri: "",
+            claimType: "Broken item",
+            incidentDate: "2024-02-15",
+            productVariant: nil,
+            conversation: .init(
+                id: "",
+                type: .claim,
+                newestMessage: nil,
+                createdAt: nil,
+                statusMessage: nil,
+                status: .open,
+                hasClaim: true,
+                claimType: "claim type",
+                unreadMessageCount: 0
+            ),
+            appealInstructionsUrl: nil,
+            isUploadingFilesEnabled: true,
+            showClaimClosedFlow: true
+        )
+        return VStack(spacing: 20) {
+            ClaimStatus(claim: data, enableTap: true)
+
+        }
+        .padding(20)
+    }
+}
+
+struct ClaimNoResponse_Previews: PreviewProvider {
+    static var previews: some View {
+        let data = ClaimModel(
+            id: "1",
+            status: .closed,
+            outcome: .unresponsive,
             submittedAt: "2023-10-10",
             signedAudioURL: "",
             memberFreeText: nil,
