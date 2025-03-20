@@ -93,7 +93,7 @@ struct ClaimPills: View {
 extension ClaimModel.ClaimOutcome {
     var color: PillColor {
         switch self {
-        case .none, .notCompensated, .notCovered, .paid, .closed:
+        case .none, .notCompensated, .notCovered, .paid, .closed, .unresponsive:
             .grey
         case .missingReceipt:
             .amber
@@ -102,7 +102,7 @@ extension ClaimModel.ClaimOutcome {
 
     var colorLevel: PillColor.PillColorLevel {
         switch self {
-        case .none, .notCompensated, .notCovered:
+        case .none, .notCompensated, .notCovered, .unresponsive:
             .two
         case .paid, .closed, .missingReceipt:
             .three
