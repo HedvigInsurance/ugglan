@@ -401,7 +401,8 @@ struct ClaimDetailView_Previews: PreviewProvider {
                 unreadMessageCount: 0
             ),
             appealInstructionsUrl: "If you have more receipts related to this claim, you can upload more on this page.",
-            isUploadingFilesEnabled: true
+            isUploadingFilesEnabled: true,
+            showClaimClosedFlow: true
         )
         return ClaimDetailView(
             claim: claim,

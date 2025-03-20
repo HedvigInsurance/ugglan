@@ -35,6 +35,7 @@ extension ClaimModel {
         self.conversation = .init(fragment: claim.conversation.fragments.conversationFragment, type: .claim)
         self.appealInstructionsUrl = claim.appealInstructionsUrl
         self.isUploadingFilesEnabled = claim.isUploadingFilesEnabled
+        self.showClaimClosedFlow = claim.showClaimClosedFlow
     }
 }
 

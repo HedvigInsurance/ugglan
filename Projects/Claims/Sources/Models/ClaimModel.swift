@@ -20,7 +20,8 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
         productVariant: ProductVariant?,
         conversation: Conversation?,
         appealInstructionsUrl: String?,
-        isUploadingFilesEnabled: Bool
+        isUploadingFilesEnabled: Bool,
+        showClaimClosedFlow: Bool
     ) {
         self.id = id
         self.status = status
@@ -36,6 +37,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
         self.conversation = conversation
         self.appealInstructionsUrl = appealInstructionsUrl
         self.isUploadingFilesEnabled = isUploadingFilesEnabled
+        self.showClaimClosedFlow = showClaimClosedFlow
     }
 
     public let claimType: String
@@ -52,6 +54,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
     public let conversation: Conversation?
     public let appealInstructionsUrl: String?
     public let isUploadingFilesEnabled: Bool
+    public let showClaimClosedFlow: Bool
     public var statusParagraph: String {
         switch self.status {
         case .submitted:

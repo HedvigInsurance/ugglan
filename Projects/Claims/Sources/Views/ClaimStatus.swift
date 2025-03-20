@@ -137,7 +137,8 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
                 unreadMessageCount: 0
             ),
             appealInstructionsUrl: nil,
-            isUploadingFilesEnabled: true
+            isUploadingFilesEnabled: true,
+            showClaimClosedFlow: true
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -173,7 +174,8 @@ struct ClaimReopened_Previews: PreviewProvider {
                 unreadMessageCount: 0
             ),
             appealInstructionsUrl: nil,
-            isUploadingFilesEnabled: true
+            isUploadingFilesEnabled: true,
+            showClaimClosedFlow: true
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -209,7 +211,8 @@ struct ClaimPaid_Previews: PreviewProvider {
                 unreadMessageCount: 0
             ),
             appealInstructionsUrl: nil,
-            isUploadingFilesEnabled: true
+            isUploadingFilesEnabled: true,
+            showClaimClosedFlow: true
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -244,7 +247,8 @@ struct ClaimNotCompensated_Previews: PreviewProvider {
                 unreadMessageCount: 0
             ),
             appealInstructionsUrl: nil,
-            isUploadingFilesEnabled: true
+            isUploadingFilesEnabled: true,
+            showClaimClosedFlow: true
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -280,7 +284,8 @@ struct ClaimNotCovered_Previews: PreviewProvider {
                 unreadMessageCount: 0
             ),
             appealInstructionsUrl: nil,
-            isUploadingFilesEnabled: true
+            isUploadingFilesEnabled: true,
+            showClaimClosedFlow: true
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -316,7 +321,8 @@ struct ClaimClosed_Previews: PreviewProvider {
                 unreadMessageCount: 0
             ),
             appealInstructionsUrl: nil,
-            isUploadingFilesEnabled: true
+            isUploadingFilesEnabled: true,
+            showClaimClosedFlow: true
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
