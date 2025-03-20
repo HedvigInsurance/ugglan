@@ -19,9 +19,6 @@ query TravelCertificate {
         maxStartDate
         maxDurationDays
         numberOfCoInsured
-        location {
-          street
-        }
       }
     }
   }
