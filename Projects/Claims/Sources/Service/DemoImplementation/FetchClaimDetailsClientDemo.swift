@@ -24,5 +24,5 @@ public class FetchClaimDetailsClientDemo: hFetchClaimDetailsClient {
         return (claimId: "1", files: [])
     }
 
-    public func acknowledgeClosedStatus(statusId: String) async throws {}
+    public func acknowledgeClosedStatus(claimId: String) async throws {}
 }

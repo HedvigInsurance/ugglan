@@ -136,11 +136,6 @@ public struct ClaimDetailView: View {
                 })
             )
         )
-        .onDisappear {
-            Task {
-                await vm.acknowledgeClosedStatus()
-            }
-        }
     }
 
     @ViewBuilder
@@ -558,13 +553,6 @@ public class ClaimDetailViewModel: ObservableObject {
 
     var canAddFiles: Bool {
         return self.claim?.status != .closed && fetchFilesError == nil
-    }
-
-    @MainActor
-    func acknowledgeClosedStatus() async {
-        do {
-            try await claimDetailsService.acknowledgeClosedStatus(statusId: self.claim?.id ?? "")
-        } catch {}
     }
 }
 
