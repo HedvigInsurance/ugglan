@@ -50,7 +50,6 @@ public struct ListScreen: View {
                     .accessibilityElement(children: .combine)
                     .accessibilityAddTraits(.isButton)
                 }
-                .hWithoutHorizontalPadding([.section])
             }
         }
         .hFormContentPosition(vm.list.isEmpty ? .center : .top)
