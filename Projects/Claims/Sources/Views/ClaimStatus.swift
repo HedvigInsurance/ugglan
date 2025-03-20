@@ -93,7 +93,7 @@ struct ClaimPills: View {
 extension ClaimModel.ClaimOutcome {
     var color: PillColor {
         switch self {
-        case .none, .notCompensated, .notCovered, .paid, .closed, .unresponsive:
+        case .none, .notCompensated, .notCovered, .paid, .unresponsive:
             .grey
         case .missingReceipt:
             .amber
@@ -104,7 +104,7 @@ extension ClaimModel.ClaimOutcome {
         switch self {
         case .none, .notCompensated, .notCovered, .unresponsive:
             .two
-        case .paid, .closed, .missingReceipt:
+        case .paid, .missingReceipt:
             .three
         }
     }
@@ -300,7 +300,7 @@ struct ClaimClosed_Previews: PreviewProvider {
         let data = ClaimModel(
             id: "1",
             status: .closed,
-            outcome: .closed,
+            outcome: .paid,
             submittedAt: "2023-10-10",
             signedAudioURL: "",
             memberFreeText: nil,
