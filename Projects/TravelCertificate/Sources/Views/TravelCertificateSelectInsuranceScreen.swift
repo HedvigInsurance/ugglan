@@ -19,7 +19,7 @@ struct TravelCertificateSelectInsuranceScreen: View {
                 return specifications.map {
                     (
                         object: $0,
-                        displayName: .init(title: $0.street, subTitle: $0.exposureDisplayName)
+                        displayName: .init(title: $0.displayName, subTitle: $0.exposureDisplayName)
                     )
                 }
             }(),

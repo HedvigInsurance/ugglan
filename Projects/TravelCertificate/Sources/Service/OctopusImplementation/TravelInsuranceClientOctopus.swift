@@ -46,6 +46,8 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
                     data,
                     email: email,
                     fullName: fullName,
+                    displayName: activeContracts.first(where: { $0.id == data.contractId })?.currentAgreement
+                        .productVariant.displayName ?? "",
                     exposureDisplayName: activeContracts.first(where: { $0.id == data.contractId })?.exposureDisplayName
                         ?? ""
                 )
@@ -147,15 +149,16 @@ extension TravelInsuranceContractSpecification {
             .ContractSpecification,
         email: String,
         fullName: String,
+        displayName: String,
         exposureDisplayName: String
     ) {
         self.contractId = data.contractId
+        self.displayName = displayName
         self.exposureDisplayName = exposureDisplayName
         self.minStartDate = data.minStartDate.localDateToDate ?? Date()
         self.maxStartDate = data.maxStartDate.localDateToDate ?? Date().addingTimeInterval(60 * 60 * 24 * 90)
         self.numberOfCoInsured = data.numberOfCoInsured
         self.maxDuration = data.maxDurationDays
-        self.street = data.location?.street ?? ""
         self.email = email
         self.fullName = fullName
     }

@@ -6,6 +6,11 @@ query TravelCertificate {
     activeContracts {
         id
         exposureDisplayName
+        currentAgreement {
+            productVariant {
+                displayName
+            }
+        }
     }
     travelCertificateSpecifications {
       contractSpecifications {
