@@ -1,8 +1,5 @@
 mutation ClaimAcknowledgeClosedStatus($claimAcknowledgeClosedStatusId: ID!) {
   claimAcknowledgeClosedStatus(id: $claimAcknowledgeClosedStatusId) {
-    claim {
-        ...ClaimFragment
-    }
     userError {
       message
     }

@@ -2,7 +2,7 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct ContractsScreen: View {
+struct TravelCertificateSelectInsuranceScreen: View {
     @State var isLoading: Bool = false
     let specifications: [TravelInsuranceContractSpecification]
     let router: Router
@@ -17,7 +17,10 @@ struct ContractsScreen: View {
         itemPickerConfig = .init(
             items: {
                 return specifications.map {
-                    (object: $0, displayName: .init(title: $0.street))
+                    (
+                        object: $0,
+                        displayName: .init(title: $0.displayName, subTitle: $0.exposureDisplayName)
+                    )
                 }
             }(),
             preSelectedItems: {
@@ -47,6 +50,6 @@ struct ContractsScreen: View {
 
 struct TravelInsuranceContractsScreen_Previews: PreviewProvider {
     static var previews: some View {
-        ContractsScreen(router: .init(), specifications: [])
+        TravelCertificateSelectInsuranceScreen(router: .init(), specifications: [])
     }
 }

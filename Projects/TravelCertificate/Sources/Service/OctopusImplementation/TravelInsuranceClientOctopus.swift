@@ -38,9 +38,19 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
             let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
             let email = data.currentMember.email
             let fullName = data.currentMember.firstName + " " + data.currentMember.lastName
+            let activeContracts = data.currentMember.activeContracts
+
             let specification = data.currentMember.travelCertificateSpecifications.contractSpecifications.compactMap {
                 data in
-                TravelInsuranceContractSpecification(data, email: email, fullName: fullName)
+                TravelInsuranceContractSpecification(
+                    data,
+                    email: email,
+                    fullName: fullName,
+                    displayName: activeContracts.first(where: { $0.id == data.contractId })?.currentAgreement
+                        .productVariant.displayName ?? "",
+                    exposureDisplayName: activeContracts.first(where: { $0.id == data.contractId })?.exposureDisplayName
+                        ?? ""
+                )
             }
             return specification
         } catch let ex {
@@ -138,14 +148,17 @@ extension TravelInsuranceContractSpecification {
         _ data: OctopusGraphQL.TravelCertificateQuery.Data.CurrentMember.TravelCertificateSpecifications
             .ContractSpecification,
         email: String,
-        fullName: String
+        fullName: String,
+        displayName: String,
+        exposureDisplayName: String
     ) {
         self.contractId = data.contractId
+        self.displayName = displayName
+        self.exposureDisplayName = exposureDisplayName
         self.minStartDate = data.minStartDate.localDateToDate ?? Date()
         self.maxStartDate = data.maxStartDate.localDateToDate ?? Date().addingTimeInterval(60 * 60 * 24 * 90)
         self.numberOfCoInsured = data.numberOfCoInsured
         self.maxDuration = data.maxDurationDays
-        self.street = data.location?.street ?? ""
         self.email = email
         self.fullName = fullName
     }

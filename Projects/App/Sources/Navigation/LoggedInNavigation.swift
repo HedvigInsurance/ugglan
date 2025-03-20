@@ -483,11 +483,17 @@ struct HomeTab: View {
     private func openClaimDetails(claim: ClaimModel?, type: FetchClaimDetailsType) -> some View {
         ClaimDetailView(claim: claim, type: type)
             .configureTitle(L10n.claimsYourClaim)
-            .onDisappear {
-                let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
-                if claim?.showClaimClosedFlow ?? false {
-                    homeNavigationVm.navBarItems.isNewOfferPresented = true
-                    claimsStore.send(.fetchClaims)
+            .onDeinit {
+                Task {
+                    let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+                    if claim?.showClaimClosedFlow ?? false {
+                        homeNavigationVm.navBarItems.isNewOfferPresented = true
+                        let service: hFetchClaimDetailsClient = Dependencies.shared.resolve()
+                        if let claimId = claim?.id {
+                            try await service.acknowledgeClosedStatus(claimId: claimId)
+                        }
+                        claimsStore.send(.fetchClaims)
+                    }
                 }
             }
     }

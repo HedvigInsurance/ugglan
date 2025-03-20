@@ -24,7 +24,7 @@ class FetchClaimDetailsService {
 
     func acknowledgeClosedStatus(statusId: String) async throws {
         log.info("\(FetchClaimDetailsService.self): acknowledgeClosedStatus for \(type)", error: nil, attributes: nil)
-        return try await client.acknowledgeClosedStatus(statusId: statusId)
+        return try await client.acknowledgeClosedStatus(claimId: statusId)
     }
 }
 
@@ -32,7 +32,7 @@ class FetchClaimDetailsService {
 public protocol hFetchClaimDetailsClient {
     func get(for type: FetchClaimDetailsType) async throws -> ClaimModel
     func getFiles(for type: FetchClaimDetailsType) async throws -> (claimId: String, files: [File])
-    func acknowledgeClosedStatus(statusId: String) async throws
+    func acknowledgeClosedStatus(claimId: String) async throws
 }
 
 public enum FetchClaimDetailsType {

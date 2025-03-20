@@ -8,6 +8,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable {
         ssn: String?
     ) {
         self.id = contract.id
+        self.exposureDisplayName = contract.exposureDisplayName
         self.coInsured = contract.coInsured?.map({ .init(data: $0.fragments.coInsuredFragment) }) ?? []
         self.supportsCoInsured = contract.supportsCoInsured
         self.upcomingChangedAgreement = .init(agreement: contract.upcomingChangedAgreement?.fragments.agreementFragment)
@@ -21,6 +22,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable {
 
     public init(
         id: String,
+        exposureDisplayName: String,
         supportsCoInsured: Bool,
         upcomingChangedAgreement: Agreement?,
         currentAgreement: Agreement,
@@ -31,6 +33,7 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable {
         ssn: String?
     ) {
         self.id = id
+        self.exposureDisplayName = exposureDisplayName
         self.supportsCoInsured = supportsCoInsured
         self.upcomingChangedAgreement = upcomingChangedAgreement
         self.currentAgreement = currentAgreement
@@ -40,8 +43,8 @@ public struct Contract: Codable, Hashable, Equatable, Identifiable {
         self.lastName = lastName
         self.ssn = ssn
     }
-
     public let id: String
+    public let exposureDisplayName: String
     public let currentAgreement: Agreement?
     public let upcomingChangedAgreement: Agreement?
     public let terminationDate: String?
@@ -120,6 +123,7 @@ extension InsuredPeopleConfig {
             numberOfMissingCoInsured: contract.nbOfMissingCoInsured,
             numberOfMissingCoInsuredWithoutTermination: contract.nbOfMissingCoInsuredWithoutTermination,
             displayName: contract.currentAgreement?.productVariant.displayName ?? "",
+            exposureDisplayName: contract.exposureDisplayName,
             preSelectedCoInsuredList: preSelectedCoInsuredList,
             contractDisplayName: contract.currentAgreement?.productVariant.displayName ?? "",
             holderFirstName: contract.firstName,

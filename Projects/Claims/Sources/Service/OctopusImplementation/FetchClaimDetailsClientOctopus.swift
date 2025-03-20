@@ -50,8 +50,8 @@ public class FetchClaimDetailsClientOctopus: hFetchClaimDetailsClient {
         }
     }
 
-    public func acknowledgeClosedStatus(statusId: String) async throws {
-        let mutation = OctopusGraphQL.ClaimAcknowledgeClosedStatusMutation(claimAcknowledgeClosedStatusId: statusId)
+    public func acknowledgeClosedStatus(claimId: String) async throws {
+        let mutation = OctopusGraphQL.ClaimAcknowledgeClosedStatusMutation(claimAcknowledgeClosedStatusId: claimId)
         let data = try await octopus.client.perform(mutation: mutation)
         if let userError = data.claimAcknowledgeClosedStatus?.userError {
             throw FetchClaimDetailsError.serviceError(message: userError.message ?? L10n.General.errorBody)
