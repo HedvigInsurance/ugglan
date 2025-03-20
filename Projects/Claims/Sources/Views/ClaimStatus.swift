@@ -139,7 +139,8 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
                 hasClaim: true,
                 claimType: "claim type",
                 unreadMessageCount: 0
-            )
+            ),
+            showClaimClosedFlow: true
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -173,7 +174,8 @@ struct ClaimReopened_Previews: PreviewProvider {
                 hasClaim: true,
                 claimType: "claim type",
                 unreadMessageCount: 0
-            )
+            ),
+            showClaimClosedFlow: true
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -207,7 +209,8 @@ struct ClaimPaid_Previews: PreviewProvider {
                 hasClaim: true,
                 claimType: "claim type",
                 unreadMessageCount: 0
-            )
+            ),
+            showClaimClosedFlow: true
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -240,7 +243,8 @@ struct ClaimNotCompensated_Previews: PreviewProvider {
                 hasClaim: true,
                 claimType: "claim type",
                 unreadMessageCount: 0
-            )
+            ),
+            showClaimClosedFlow: true
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -274,7 +278,8 @@ struct ClaimNotCovered_Previews: PreviewProvider {
                 hasClaim: true,
                 claimType: "claim type",
                 unreadMessageCount: 0
-            )
+            ),
+            showClaimClosedFlow: true
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -308,7 +313,8 @@ struct ClaimClosed_Previews: PreviewProvider {
                 hasClaim: true,
                 claimType: "claim type",
                 unreadMessageCount: 0
-            )
+            ),
+            showClaimClosedFlow: true
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)

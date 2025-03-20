@@ -15,11 +15,14 @@ public class FetchClaimDetailsClientDemo: hFetchClaimDetailsClient {
             claimType: "",
             incidentDate: nil,
             productVariant: nil,
-            conversation: nil
+            conversation: nil,
+            showClaimClosedFlow: true
         )
     }
 
     public func getFiles(for type: FetchClaimDetailsType) async throws -> (claimId: String, files: [hCore.File]) {
         return (claimId: "1", files: [])
     }
+
+    public func acknowledgeClosedStatus(claimId: String) async throws {}
 }
