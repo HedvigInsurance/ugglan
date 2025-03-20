@@ -70,6 +70,8 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
                 return L10n.ClaimStatus.Closed.supportText
             case .missingReceipt:
                 return L10n.ClaimStatus.MissingReceipt.supportText
+            case .unresponsive:
+                return L10n.claimOutcomeUnresponsiveSupportText
             case .none:
                 return ""
             }
@@ -122,6 +124,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
         case none
         case closed
         case missingReceipt
+        case unresponsive
 
         public init?(
             rawValue: RawValue
@@ -132,6 +135,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
             case "NOT_COVERED": self = .notCovered
             case "CLOSED": self = .closed
             case "MISSING_RECIEPT": self = .missingReceipt
+            case "UNRESPONSIVE": self = .unresponsive
             default: self = .none
             }
         }
@@ -150,6 +154,8 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
                 return L10n.ClaimStatusDetail.closed
             case .missingReceipt:
                 return L10n.ClaimStatusDetail.missingReceipt
+            case .unresponsive:
+                return L10n.Claim.Decision.unresponsive
             }
         }
     }
