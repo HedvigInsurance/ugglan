@@ -26,6 +26,7 @@ public struct ListScreen: View {
                     Image(uiImage: hCoreUIAssets.infoFilled.image)
                         .resizable()
                         .frame(width: 24, height: 24)
+                        .foregroundColor(hSignalColor.Blue.element)
 
                     hText(L10n.TravelCertificate.emptyListMessage)
                         .multilineTextAlignment(.center)
