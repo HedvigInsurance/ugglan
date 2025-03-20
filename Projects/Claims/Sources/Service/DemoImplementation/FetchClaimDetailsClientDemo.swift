@@ -16,6 +16,8 @@ public class FetchClaimDetailsClientDemo: hFetchClaimDetailsClient {
             incidentDate: nil,
             productVariant: nil,
             conversation: nil,
+            appealInstructionsUrl: "If you have more receipts related to this claim, you can upload more on this page.",
+            isUploadingFilesEnabled: true,
             showClaimClosedFlow: true
         )
     }

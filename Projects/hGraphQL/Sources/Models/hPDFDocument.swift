@@ -37,6 +37,7 @@ public enum TypeOfDocument: Codable, Hashable, Sendable {
     case preSaleInfo
     case generalTerms
     case privacyPolicy
+    case appealInstruction
     case unknown
 }
 

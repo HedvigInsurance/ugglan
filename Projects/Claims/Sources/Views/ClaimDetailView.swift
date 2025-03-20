@@ -29,51 +29,18 @@ public struct ClaimDetailView: View {
 
     public var body: some View {
         hForm {
-            VStack(spacing: 8) {
+            VStack(spacing: .padding8) {
                 if let claim = vm.claim {
-                    hSection {
-                        ClaimStatus(
-                            claim: claim,
-                            enableTap: false,
-                            extendedBottomView: {
-                                AnyView(infoAndContactSection)
-                            }()
-                        )
-                    }
-                    .sectionContainerStyle(.transparent)
+                    infoCardSection(text: claim.appealInstructionsUrl)
+                    claimCardSection(claim: claim)
+                    infoAndContactSection
                     memberFreeTextSection
                     claimDetailsSection
-                        .padding(.vertical, .padding16)
                     uploadFilesSection
+                    documentSection
                 }
             }
         }
-        .setHomeNavigationBars(
-            with: $vm.toolbarOptionType,
-            and: .init(describing: ClaimDetailView.self),
-            action: { type in
-                switch type {
-                case .newOffer:
-                    break
-                case .firstVet:
-                    break
-                case .chat:
-                    if case .conversation = vm.type {
-                        router.pop()
-                    } else {
-                        NotificationCenter.default.post(
-                            name: .openChat,
-                            object: ChatType.conversationId(id: vm.claim?.conversation?.id ?? "")
-                        )
-                    }
-                case .chatNotification:
-                    NotificationCenter.default.post(
-                        name: .openChat,
-                        object: ChatType.conversationId(id: vm.claim?.conversation?.id ?? "")
-                    )
-                }
-            }
-        )
         .sheet(isPresented: $showImagePicker) {
             ImagePicker { images in
                 vm.showAddFiles(with: images)
@@ -139,20 +106,66 @@ public struct ClaimDetailView: View {
     }
 
     @ViewBuilder
+    private func infoCardSection(text: String?) -> some View {
+        if let text {
+            hSection {
+                InfoCard(text: text, type: .info)
+            }
+        }
+    }
+
+    private func claimCardSection(claim: ClaimModel) -> some View {
+        hSection {
+            ClaimStatus(
+                claim: claim,
+                enableTap: false
+            )
+        }
+        .sectionContainerStyle(.transparent)
+    }
+
+    @ViewBuilder
     private var infoAndContactSection: some View {
-        Divider()
-            .padding(.horizontal, -16)
-        HStack {
-            VStack(alignment: .leading, spacing: 0) {
-                hText(L10n.ClaimStatus.title, style: .label)
-                    .foregroundColor(hTextColor.Opaque.primary)
-                if let statusParagraph {
-                    hText(statusParagraph, style: .label)
-                        .foregroundColor(hTextColor.Opaque.secondary)
+        hSection {
+            VStack(spacing: 0) {
+                hRow {
+                    if let statusParagraph {
+                        hText(statusParagraph, style: .body1)
+                    }
+                }
+                Divider()
+
+                hRow {
+                    HStack {
+                        hText(L10n.ClaimStatusDetail.MessageView.body)
+                        Spacer()
+
+                        if vm.toolbarOptionType.contains(.chat) {
+                            Image(uiImage: hCoreUIAssets.inbox.image)
+                        } else {
+                            Image(uiImage: hCoreUIAssets.inboxNotification.image)
+                        }
+                    }
+                }
+                .withEmptyAccessory
+                .onTap {
+                    if vm.toolbarOptionType.contains(.chat) {
+                        if case .conversation = vm.type {
+                            router.pop()
+                        } else {
+                            NotificationCenter.default.post(
+                                name: .openChat,
+                                object: ChatType.conversationId(id: vm.claim?.conversation?.id ?? "")
+                            )
+                        }
+                    } else {
+                        NotificationCenter.default.post(
+                            name: .openChat,
+                            object: ChatType.conversationId(id: vm.claim?.conversation?.id ?? "")
+                        )
+                    }
                 }
             }
-            .multilineTextAlignment(.leading)
-            Spacer()
         }
     }
 
@@ -188,9 +201,9 @@ public struct ClaimDetailView: View {
     @ViewBuilder
     private var claimDetailsSection: some View {
         if let claim = vm.claim {
-            VStack(spacing: 16) {
+            VStack(spacing: .padding16) {
                 hSection {
-                    VStack(spacing: 8) {
+                    VStack(spacing: .padding8) {
                         claimDetailsRow(title: L10n.ClaimStatus.ClaimDetails.type, value: claim.claimType)
                             .accessibilityHidden(claim.claimType == "")
                         if let incidentDate = claim.incidentDate {
@@ -221,9 +234,8 @@ public struct ClaimDetailView: View {
                 }
                 .hWithoutDivider
                 .sectionContainerStyle(.transparent)
-
-                termsAndConditions
             }
+            .padding(.vertical, .padding8)
         }
     }
 
@@ -240,30 +252,8 @@ public struct ClaimDetailView: View {
     }
 
     @ViewBuilder
-    private var termsAndConditions: some View {
-        if let termsAndConditionsDocument = vm.claim?.productVariant?.documents
-            .first(where: { $0.type == .termsAndConditions })
-        {
-            hSection {
-                hRow {
-                    hAttributedTextView(
-                        text: AttributedPDF().attributedPDFString(for: termsAndConditionsDocument.displayName)
-                    )
-                    .id("sds_\(String(describing: vm.claim?.productVariant?.displayName))")
-                }
-                .withCustomAccessory {
-                    Image(uiImage: hCoreUIAssets.arrowNorthEast.image)
-                }
-                .onTap {
-                    vm.document = termsAndConditionsDocument
-                }
-            }
-        }
-    }
-
-    @ViewBuilder
     private var uploadFilesSection: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: .padding8) {
             if vm.showUploadedFiles {
                 hSection {
                     if let player = vm.player {
@@ -272,10 +262,6 @@ public struct ClaimDetailView: View {
                         )
                         .onReceive(player.objectWillChange.filter({ $0.playbackState == .finished })) { player in }
                     }
-                }
-                .withHeader {
-                    hText(L10n.ClaimStatusDetail.uploadedFiles)
-                        .padding(.leading, 2)
                 }
                 if let fetchError = vm.fetchFilesError {
                     hSection {
@@ -296,33 +282,52 @@ public struct ClaimDetailView: View {
                         )
                     }
                     .sectionContainerStyle(.transparent)
-                } else {
+                } else if !vm.fileGridViewModel.files.isEmpty {
                     hSection {
                         FilesGridView(vm: vm.fileGridViewModel)
                     }
                     .sectionContainerStyle(.transparent)
                 }
-            }
 
-            if vm.canAddFiles {
-                hSection {
-                    VStack(spacing: 16) {
-                        hRow {
-                            hText(L10n.ClaimStatus.UploadedFiles.uploadText)
-                                .multilineTextAlignment(.center)
-                                .frame(maxWidth: .infinity, alignment: .center)
-                        }
-                        .verticalPadding(0)
-                        .fixedSize(horizontal: false, vertical: true)
-                        hButton.MediumButton(type: .primary) {
-                            showFilePickerAlert()
-                        } content: {
-                            hText(L10n.ClaimStatus.UploadedFiles.uploadButton)
+                if vm.canAddFiles {
+                    hSection {
+                        VStack(spacing: .padding16) {
+                            hRow {
+                                hText(L10n.ClaimStatus.UploadedFiles.uploadText)
+                                    .multilineTextAlignment(.center)
+                                    .frame(maxWidth: .infinity, alignment: .center)
+                            }
+                            .verticalPadding(0)
+                            .fixedSize(horizontal: false, vertical: true)
+                            hButton.MediumButton(type: .primary) {
+                                showFilePickerAlert()
+                            } content: {
+                                hText(L10n.ClaimStatus.UploadedFiles.uploadButton)
+                            }
                         }
                     }
-                    .padding(.vertical, .padding32)
+                    .sectionContainerStyle(.transparent)
+                    .padding(.top, .padding16)
                 }
-                .sectionContainerStyle(.transparent)
+            }
+        }
+        .padding(.bottom, .padding16)
+    }
+
+    @ViewBuilder
+    private var documentSection: some View {
+        let termsAndConditionsDocument = vm.claim?.productVariant?.documents
+            .first(where: { $0.type == .termsAndConditions })
+        let appealInstructionDocument = vm.claim?.productVariant?.documents
+            .first(where: { $0.type == .appealInstruction })
+        let documents = [termsAndConditionsDocument, appealInstructionDocument].compactMap({ $0 })
+
+        if !documents.isEmpty {
+            InsuranceTermView(
+                documents: documents,
+                withHeader: L10n.ClaimStatusDetail.Documents.title
+            ) { document in
+                vm.document = document
             }
         }
     }
@@ -396,6 +401,8 @@ struct ClaimDetailView_Previews: PreviewProvider {
                 claimType: "claim type",
                 unreadMessageCount: 0
             ),
+            appealInstructionsUrl: "If you have more receipts related to this claim, you can upload more on this page.",
+            isUploadingFilesEnabled: true,
             showClaimClosedFlow: true
         )
         return ClaimDetailView(
@@ -552,7 +559,7 @@ public class ClaimDetailViewModel: ObservableObject {
     }
 
     var canAddFiles: Bool {
-        return self.claim?.status != .closed && fetchFilesError == nil
+        return self.claim?.isUploadingFilesEnabled == true && fetchFilesError == nil
     }
 }
 

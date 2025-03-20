@@ -6,16 +6,13 @@ import hGraphQL
 struct ClaimStatus: View {
     var claim: ClaimModel
     var enableTap: Bool
-    let extendedBottomView: AnyView?
 
     init(
         claim: ClaimModel,
-        enableTap: Bool,
-        extendedBottomView: AnyView? = nil
+        enableTap: Bool
     ) {
         self.claim = claim
         self.enableTap = enableTap
-        self.extendedBottomView = extendedBottomView
     }
 
     @EnvironmentObject var homeRouter: Router
@@ -46,7 +43,6 @@ struct ClaimStatus: View {
                         }
                         .hButtonTakeFullWidth(true)
                     }
-                    extendedBottomView
                 }
                 .fixedSize(horizontal: false, vertical: true)
             }
@@ -97,7 +93,7 @@ struct ClaimPills: View {
 extension ClaimModel.ClaimOutcome {
     var color: PillColor {
         switch self {
-        case .none, .notCompensated, .notCovered, .paid, .closed:
+        case .none, .notCompensated, .notCovered, .paid, .unresponsive:
             .grey
         case .missingReceipt:
             .amber
@@ -106,9 +102,9 @@ extension ClaimModel.ClaimOutcome {
 
     var colorLevel: PillColor.PillColorLevel {
         switch self {
-        case .none, .notCompensated, .notCovered:
+        case .none, .notCompensated, .notCovered, .unresponsive:
             .two
-        case .paid, .closed, .missingReceipt:
+        case .paid, .missingReceipt:
             .three
         }
     }
@@ -140,6 +136,8 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
                 claimType: "claim type",
                 unreadMessageCount: 0
             ),
+            appealInstructionsUrl: nil,
+            isUploadingFilesEnabled: true,
             showClaimClosedFlow: true
         )
         return VStack(spacing: 20) {
@@ -175,6 +173,8 @@ struct ClaimReopened_Previews: PreviewProvider {
                 claimType: "claim type",
                 unreadMessageCount: 0
             ),
+            appealInstructionsUrl: nil,
+            isUploadingFilesEnabled: true,
             showClaimClosedFlow: true
         )
         return VStack(spacing: 20) {
@@ -210,6 +210,8 @@ struct ClaimPaid_Previews: PreviewProvider {
                 claimType: "claim type",
                 unreadMessageCount: 0
             ),
+            appealInstructionsUrl: nil,
+            isUploadingFilesEnabled: true,
             showClaimClosedFlow: true
         )
         return VStack(spacing: 20) {
@@ -244,6 +246,8 @@ struct ClaimNotCompensated_Previews: PreviewProvider {
                 claimType: "claim type",
                 unreadMessageCount: 0
             ),
+            appealInstructionsUrl: nil,
+            isUploadingFilesEnabled: true,
             showClaimClosedFlow: true
         )
         return VStack(spacing: 20) {
@@ -279,6 +283,8 @@ struct ClaimNotCovered_Previews: PreviewProvider {
                 claimType: "claim type",
                 unreadMessageCount: 0
             ),
+            appealInstructionsUrl: nil,
+            isUploadingFilesEnabled: true,
             showClaimClosedFlow: true
         )
         return VStack(spacing: 20) {
@@ -294,7 +300,7 @@ struct ClaimClosed_Previews: PreviewProvider {
         let data = ClaimModel(
             id: "1",
             status: .closed,
-            outcome: .closed,
+            outcome: .paid,
             submittedAt: "2023-10-10",
             signedAudioURL: "",
             memberFreeText: nil,
@@ -314,6 +320,8 @@ struct ClaimClosed_Previews: PreviewProvider {
                 claimType: "claim type",
                 unreadMessageCount: 0
             ),
+            appealInstructionsUrl: nil,
+            isUploadingFilesEnabled: true,
             showClaimClosedFlow: true
         )
         return VStack(spacing: 20) {
