@@ -42,7 +42,6 @@ public struct ListScreen: View {
                         )
                     }
                     .withChevronAccessory
-                    .background(hSignalColor.Blue.fill)
                     .foregroundColor(travelCertificate.textColor)
                     .onTapGesture {
                         travelCertificateNavigationVm.isDocumentPresented = travelCertificate
