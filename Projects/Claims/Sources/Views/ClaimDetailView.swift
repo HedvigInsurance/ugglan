@@ -175,8 +175,7 @@ public struct ClaimDetailView: View {
             hRow {
                 ContactChatView(
                     store: vm.store,
-                    id: claim.id,
-                    status: claim.status.rawValue
+                    id: claim.id
                 )
             }
         }
