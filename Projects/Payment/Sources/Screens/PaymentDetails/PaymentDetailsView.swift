@@ -38,17 +38,11 @@ struct PaymentDetailsView: View {
             hSection(getPaymentElements(), id: \.id) { row in
                 row.view
             }
-            .withHeader {
-                HStack {
-                    hText(L10n.paymentsDiscountsSectionTitle)
-                    Spacer()
-                    InfoViewHolder(
-                        title: L10n.paymentsDiscountInfoTitle,
-                        description: L10n.paymentsDiscountInfoDescription
-                    )
-                }
-                .padding(.bottom, -16)
-            }
+            .withHeader(
+                title: L10n.paymentsDiscountsSectionTitle,
+                infoButtonDescription: L10n.paymentsDiscountInfoDescription,
+                withoutBottomPadding: true
+            )
             .sectionContainerStyle(.transparent)
             .dividerInsets(.all, 0)
 

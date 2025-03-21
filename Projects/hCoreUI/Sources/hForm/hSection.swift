@@ -353,22 +353,12 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             if header != nil {
-                VStack(alignment: .leading) {
-                    header
-                        .environment(\.defaultHTextStyle, .body1)
-                        .accessibilityAddTraits(.isHeader)
-                }
-                .foregroundColor(hTextColor.Opaque.primary)
-                .padding(.bottom, .padding8)
+                header
+                    .environment(\.defaultHTextStyle, .body1)
+                    .accessibilityAddTraits(.isHeader)
+                    .foregroundColor(hTextColor.Opaque.primary)
             }
             hSectionContainer {
-                if header != nil {
-                    header
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.leading, .padding16)
-                        .padding(.top, .padding12)
-                        .padding(.bottom, -8)
-                }
                 content
             }
             if footer != nil {
@@ -393,6 +383,68 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
         @ViewBuilder _ builder: @escaping () -> HeaderView
     ) -> hSection<HeaderView, Content, Footer> {
         return hSection<HeaderView, Content, Footer>(header: builder(), content: content, footer: footer)
+    }
+
+    public func withHeader(
+        title: String,
+        infoButtonDescription: String? = nil,
+        withoutBottomPadding: Bool = false,
+        extraView: (() -> AnyView)? = nil
+    ) -> hSection<HeaderView<AnyView>, Content, Footer> {
+        hSection<HeaderView, Content, Footer>(
+            header: HeaderView(
+                title: title,
+                infoButtonDescription: infoButtonDescription,
+                withoutBottomPadding: withoutBottomPadding,
+                extraView: extraView?()
+            ),
+            content: content,
+            footer: footer
+        )
+    }
+
+    public struct HeaderView<ExtraView: View>: View {
+        let title: String
+        let infoButtonDescription: String?
+        let withInfoButton: Bool
+        let withoutBottomPadding: Bool
+        let extraView: ExtraView?
+
+        init(
+            title: String,
+            infoButtonDescription: String?,
+            withoutBottomPadding: Bool,
+            extraView: ExtraView? = nil
+        ) {
+            self.title = title
+            self.infoButtonDescription = infoButtonDescription
+            self.withoutBottomPadding = withoutBottomPadding
+            self.extraView = extraView
+            self.withInfoButton = infoButtonDescription != nil
+        }
+
+        public var body: some View {
+            VStack(alignment: .leading, spacing: .padding16) {
+                HStack {
+                    hText(title)
+                        .padding(.leading, .padding2)  //?
+                    if withInfoButton, let infoButtonDescription {
+                        Spacer()
+                        InfoViewHolder(
+                            title: title,
+                            description: infoButtonDescription
+                        )
+                        .accessibilityAddTraits(.isButton)
+                        .accessibilityHint(title)
+                    }
+                }
+
+                if let extraView {
+                    extraView
+                }
+            }
+            .padding(.bottom, withoutBottomPadding ? -8 : .padding8)
+        }
     }
 
     public func withFooter<FooterView: View>(

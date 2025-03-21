@@ -40,24 +40,18 @@ struct PaymentsDiscountsView: View {
                 )
             )
         }
-        .withHeader {
-            VStack(alignment: .leading, spacing: .padding16) {
-                HStack {
-                    hText(L10n.paymentsCampaigns)
-                    Spacer()
-                    InfoViewHolder(
-                        title: L10n.paymentsCampaignsInfoTitle,
-                        description: L10n.paymentsCampaignsInfoDescription
-                    )
-                }
-                if data.discounts.count == 0 {
+        .withHeader(
+            title: L10n.paymentsCampaigns,
+            infoButtonDescription: L10n.paymentsCampaignsInfoDescription,
+            withoutBottomPadding: true,
+            extraView: data.discounts.count == 0
+                ? {
                     hText(L10n.paymentsNoCampaignCodeAdded)
                         .foregroundColor(hTextColor.Opaque.secondary)
                         .padding(.bottom, .padding16)
-                }
-            }
-            .padding(.bottom, -16)
-        }
+                        .asAnyView
+                } : nil
+        )
     }
 
     @ViewBuilder
