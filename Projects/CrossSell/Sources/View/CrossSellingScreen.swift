@@ -6,10 +6,10 @@ import hCoreUI
 public struct CrossSellingScreen: View {
     @StateObject private var vm = CrossSellingScreenViewModel()
     @EnvironmentObject private var router: Router
-    let addonCardOnClick: () -> Void
+    let addonCardOnClick: (_ contractIds: [String]) -> Void
 
     public init(
-        addonCardOnClick: @escaping () -> Void
+        addonCardOnClick: @escaping (_ contractIds: [String]) -> Void
     ) {
         self.addonCardOnClick = addonCardOnClick
     }
@@ -48,7 +48,7 @@ public struct CrossSellingScreen: View {
             hSection {
                 AddonCardView(
                     openAddon: {
-                        addonCardOnClick()
+                        addonCardOnClick(banner.contractIds)
                     },
                     addon: banner
                 )
@@ -80,6 +80,6 @@ public class CrossSellingScreenViewModel: ObservableObject {
 struct CrossSellingScreen_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> CrossSellClient in CrossSellClientDemo() })
-        return CrossSellingScreen(addonCardOnClick: {})
+        return CrossSellingScreen(addonCardOnClick: { _ in })
     }
 }

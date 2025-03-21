@@ -445,8 +445,14 @@ struct HomeTab: View {
             presented: $homeNavigationVm.navBarItems.isNewOfferPresented,
             style: [.height]
         ) {
-            CrossSellingScreen(addonCardOnClick: {
-                loggedInVm.isAddonPresented = .init(addonSource: .crossSell)
+            CrossSellingScreen(addonCardOnClick: { contractIds in
+                let store: ContractStore = globalPresentableStoreContainer.get()
+                let addonConfigs = store.getAddonConfigsFor(contractIds: contractIds)
+
+                loggedInVm.isAddonPresented = .init(
+                    addonSource: .crossSell,
+                    contractConfigs: addonConfigs
+                )
             })
             .embededInNavigation(
                 options: .navigationType(type: .large),
