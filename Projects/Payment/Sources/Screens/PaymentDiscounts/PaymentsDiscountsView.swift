@@ -13,13 +13,15 @@ struct PaymentsDiscountsView: View {
 
     var body: some View {
         hForm {
-            VStack(spacing: 8) {
+            VStack(spacing: .padding8) {
                 discounts
-                hSection {
-                    hButton.LargeButton(type: .secondary) {
-                        paymentsNavigationVm.isAddCampaignPresented = true
-                    } content: {
-                        hText(L10n.paymentsAddCampaignCode)
+                if !Dependencies.featureFlags().isRedeemCampaignDisabled {
+                    hSection {
+                        hButton.LargeButton(type: .secondary) {
+                            paymentsNavigationVm.isAddCampaignPresented = true
+                        } content: {
+                            hText(L10n.paymentsAddCampaignCode)
+                        }
                     }
                 }
                 Spacing(height: 16)
@@ -127,6 +129,7 @@ struct PaymentsDiscountsView: View {
 struct PaymentsDiscountView_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+        Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlagsDemo() })
         return PaymentsDiscountsView(
             data: .init(
                 discounts: [
