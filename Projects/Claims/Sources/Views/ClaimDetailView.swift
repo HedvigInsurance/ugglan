@@ -31,13 +31,13 @@ public struct ClaimDetailView: View {
         hForm {
             VStack(spacing: .padding8) {
                 if let claim = vm.claim {
-                    infoCardSection(text: claim.appealInstructionsUrl)
+                    infoCardSection(text: claim.infoText)
                     claimCardSection(claim: claim)
                     infoAndContactSection
                     memberFreeTextSection
                     claimDetailsSection
                     uploadFilesSection
-                    documentSection
+                    documentSection(appealInstructionUrl: claim.appealInstructionsUrl)
                 }
             }
         }
@@ -315,11 +315,20 @@ public struct ClaimDetailView: View {
     }
 
     @ViewBuilder
-    private var documentSection: some View {
+    private func documentSection(appealInstructionUrl: String?) -> some View {
         let termsAndConditionsDocument = vm.claim?.productVariant?.documents
             .first(where: { $0.type == .termsAndConditions })
-        let appealInstructionDocument = vm.claim?.productVariant?.documents
-            .first(where: { $0.type == .appealInstruction })
+        var appealInstructionDocument: hPDFDocument? {
+            if let appealInstructionUrl = appealInstructionUrl {
+                return hPDFDocument(
+                    displayName: L10n.claimStatusAppealInstructionLinkText,
+                    url: appealInstructionUrl,
+                    type: .appealInstruction
+                )
+            }
+            return nil
+        }
+
         let documents = [termsAndConditionsDocument, appealInstructionDocument].compactMap({ $0 })
 
         if !documents.isEmpty {
@@ -401,9 +410,10 @@ struct ClaimDetailView_Previews: PreviewProvider {
                 claimType: "claim type",
                 unreadMessageCount: 0
             ),
-            appealInstructionsUrl: "If you have more receipts related to this claim, you can upload more on this page.",
+            appealInstructionsUrl: "https://hedvig.com",
             isUploadingFilesEnabled: true,
-            showClaimClosedFlow: true
+            showClaimClosedFlow: true,
+            infoText: "If you have more receipts related to this claim, you can upload more on this page."
         )
         return ClaimDetailView(
             claim: claim,

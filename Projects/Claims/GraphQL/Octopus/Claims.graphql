@@ -28,4 +28,5 @@ fragment ClaimFragment on Claim {
     appealInstructionsUrl
     isUploadingFilesEnabled
     showClaimClosedFlow
+    infoText
 }
