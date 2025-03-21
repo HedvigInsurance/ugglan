@@ -46,11 +46,13 @@ struct PaymentsDiscountsView: View {
             VStack(alignment: .leading, spacing: .padding16) {
                 HStack {
                     hText(L10n.paymentsCampaigns)
-                    Spacer()
-                    InfoViewHolder(
-                        title: L10n.paymentsCampaignsInfoTitle,
-                        description: L10n.paymentsCampaignsInfoDescription
-                    )
+                    if !Dependencies.featureFlags().isRedeemCampaignDisabled {
+                        Spacer()
+                        InfoViewHolder(
+                            title: L10n.paymentsCampaignsInfoTitle,
+                            description: L10n.paymentsCampaignsInfoDescription
+                        )
+                    }
                 }
                 if data.discounts.count == 0 {
                     hText(L10n.paymentsNoCampaignCodeAdded)
