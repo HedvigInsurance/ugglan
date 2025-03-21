@@ -25,11 +25,12 @@ public struct ChangeAddonInput: Identifiable, Equatable {
 public enum AddonSource: String, Codable {
     case insurances = "INSURANCES"
     case travelCertificates = "TRAVEL_CERTIFICATES"
+    case crossSell = "CROSS_SELL"
     case deeplink = "DEEPLINK"
 
     public var getSource: OctopusGraphQL.UpsellTravelAddonFlow {
         switch self {
-        case .insurances: return .appOnlyUpsale
+        case .insurances, .crossSell: return .appOnlyUpsale
         case .travelCertificates, .deeplink: return .appUpsellUpgrade
         }
     }

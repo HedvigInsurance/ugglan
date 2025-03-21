@@ -325,10 +325,36 @@ extension View {
         }
     }
 
+    @MainActor public func configureTitleView(title: String, subTitle: String) -> some View {
+        self.introspect(.viewController, on: .iOS(.v13...)) { vc in
+            vc.navigationItem.titleView = getTitleUIView(title: title, subTitle: subTitle)
+        }
+    }
+
     @MainActor public var enableModalInPresentation: some View {
         self.introspect(.viewController, on: .iOS(.v13...)) { vc in
             vc.isModalInPresentation = true
         }
+    }
+
+    public func getTitleUIView(title: String, subTitle: String) -> UIView {
+        let view: UIView = UIHostingController(rootView: titleView(title: title, subTitle: subTitle)).view
+        view.backgroundColor = .clear
+        view.isUserInteractionEnabled = true
+        return view
+    }
+
+    @ViewBuilder
+    private func titleView(title: String, subTitle: String) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            hText(title, style: .heading1)
+                .foregroundColor(hTextColor.Opaque.primary)
+            hText(subTitle, style: .heading1)
+                .foregroundColor(hTextColor.Opaque.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.top, .padding8)
+        .accessibilityElement(children: .combine)
     }
 }
 

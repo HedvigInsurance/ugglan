@@ -1,3 +1,4 @@
+import Addons
 @preconcurrency import XCTest
 import hCore
 
@@ -35,5 +36,22 @@ final class CrossSellTests: XCTestCase {
 
         let respondedCrossSell = try! await mockService.fetchCrossSell()
         assert(respondedCrossSell == crossSell)
+    }
+
+    func testGetAddonBannerSuccess() async {
+        let addonBannerModel = AddonBannerModel(
+            contractIds: ["contractId"],
+            titleDisplayName: "title",
+            descriptionDisplayName: "description",
+            badges: []
+        )
+
+        let mockService = MockData.createMockCrossSellService(
+            fetchAddonBannerModel: { _ in addonBannerModel }
+        )
+        self.sut = mockService
+
+        let respondedAddonBannerModel = try! await mockService.getAddonBannerModel(source: .insurances)
+        assert(respondedAddonBannerModel == addonBannerModel)
     }
 }
