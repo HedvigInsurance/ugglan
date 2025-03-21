@@ -148,7 +148,7 @@ public class FeatureFlagsUnleash: FeatureFlags {
         isAddonsRemovalFromMovingFlowEnabled = unleashClient.isEnabled(name: movingFlowKey)
         featureFlags[enableAddonsRemovalFromMovingFlowKey] = isAddonsRemovalFromMovingFlowEnabled
 
-        let disableRedeemCampaignKey = "disable_reedem_campaign"
+        let disableRedeemCampaignKey = "disable_redeem_campaign"
         isRedeemCampaignDisabled = unleashClient.isEnabled(name: disableRedeemCampaignKey)
         featureFlags[disableRedeemCampaignKey] = isRedeemCampaignDisabled
 
