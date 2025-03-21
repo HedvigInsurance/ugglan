@@ -94,10 +94,7 @@ public struct PaymentHistoryView: View {
                                 .padding(.horizontal, -16)
                                 .accessibilityElement(children: .combine)
                             }
-                            .withHeader {
-                                hText(item.year)
-                                    .padding(.bottom, -16)
-                            }
+                            .withHeader(title: item.year, withoutBottomPadding: true)
                         }
                         if history.flatMap({ $0.valuesPerMonth }).count >= 12 {
                             hSection {

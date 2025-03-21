@@ -99,18 +99,11 @@ public struct SubmitClaimCheckoutScreen: View {
                     )
                 }
             }
-            .withHeader {
-                HStack {
-                    hText(L10n.claimsCheckoutCountTitle, style: .body1)
-                        .foregroundColor(hTextColor.Opaque.primary)
-                    Spacer()
-                    InfoViewHolder(
-                        title: L10n.claimsCheckoutCountTitle,
-                        description: repairCost != nil
-                            ? L10n.claimsCheckoutRepairCalculationText : L10n.claimsCheckoutNoRepairCalculationText
-                    )
-                }
-            }
+            .withHeader(
+                title: L10n.claimsCheckoutCountTitle,
+                infoButtonDescription: repairCost != nil
+                    ? L10n.claimsCheckoutRepairCalculationText : L10n.claimsCheckoutNoRepairCalculationText
+            )
             .sectionContainerStyle(.transparent)
             .padding(.bottom, .padding16)
 
@@ -160,17 +153,7 @@ public struct SubmitClaimCheckoutScreen: View {
                     }
                 }
             }
-            .withHeader {
-                HStack {
-                    hText(L10n.Claims.Payout.Summary.method, style: .body1)
-                        .foregroundColor(hTextColor.Opaque.primary)
-                    Spacer()
-                    InfoViewHolder(
-                        title: L10n.Claims.Payout.Summary.method,
-                        description: L10n.claimsCheckoutPayoutText
-                    )
-                }
-            }
+            .withHeader(title: L10n.Claims.Payout.Summary.method, infoButtonDescription: L10n.claimsCheckoutPayoutText)
         }
     }
 
@@ -253,6 +236,9 @@ public class SubmitClaimCheckoutViewModel: ObservableObject {
 struct SubmitClaimCheckoutNoRepairScreen_Previews: PreviewProvider {
     static var previews: some View {
         Localization.Locale.currentLocale.send(.en_SE)
+        Dependencies.shared.add(module: Module { () -> hFetchEntrypointsClient in FetchEntrypointsClientDemo() })
+
         return SubmitClaimCheckoutScreen(vm: .init())
+            .environmentObject(SubmitClaimNavigationViewModel())
     }
 }

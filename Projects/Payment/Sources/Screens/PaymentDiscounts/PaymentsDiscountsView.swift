@@ -59,19 +59,14 @@ struct PaymentsDiscountsView: View {
         hSection(data.referralsData.referrals, id: \.id) { item in
             getRefferalView(item)
         }
-        .withHeader {
-            VStack(alignment: .leading, spacing: 16) {
-                HStack {
-                    hText(L10n.ReferralsInfoSheet.headline)
-                    Spacer()
-                    InfoViewHolder(
-                        title: L10n.paymentsReferralsInfoTitle,
-                        description: L10n.ReferralsInfoSheet.body(
-                            store.state.paymentDiscountsData?.referralsData.discountPerMember
-                                .formattedAmount ?? ""
-                        )
-                    )
-                }
+        .withHeader(
+            title: L10n.ReferralsInfoSheet.headline,
+            infoButtonDescription: L10n.ReferralsInfoSheet.body(
+                store.state.paymentDiscountsData?.referralsData.discountPerMember
+                    .formattedAmount ?? ""
+            ),
+            withoutBottomPadding: data.referralsData.referrals.isEmpty ? false : true,
+            extraView: {
                 HStack {
                     hText(data.referralsData.code, style: .label)
                         .padding(.horizontal, .padding8)
@@ -87,9 +82,9 @@ struct PaymentsDiscountsView: View {
                     )
                     .foregroundColor(hTextColor.Opaque.secondary)
                 }
+                .asAnyView
             }
-            .padding(.bottom, data.referralsData.referrals.isEmpty ? 0 : -16)
-        }
+        )
         hSection {
             InfoCard(
                 text: L10n.ReferralsEmpty.body(data.referralsData.discountPerMember.formattedAmount),
