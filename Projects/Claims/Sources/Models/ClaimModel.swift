@@ -9,7 +9,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
     public init(
         id: String,
         status: ClaimStatus,
-        outcome: ClaimOutcome,
+        outcome: ClaimOutcome?,
         submittedAt: String?,
         signedAudioURL: String?,
         memberFreeText: String?,
@@ -45,7 +45,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
     public let productVariant: ProductVariant?
     public let id: String
     public let status: ClaimStatus
-    public let outcome: ClaimOutcome
+    public let outcome: ClaimOutcome?
     public let submittedAt: String?
     public let signedAudioURL: String?
     public let memberFreeText: String?
@@ -69,8 +69,6 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
                 return L10n.ClaimStatus.NotCompensated.supportText
             case .notCovered:
                 return L10n.ClaimStatus.NotCovered.supportText
-            case .missingReceipt:
-                return L10n.ClaimStatus.MissingReceipt.supportText
             case .unresponsive:
                 return L10n.claimOutcomeUnresponsiveSupportText
             case .none:
@@ -83,24 +81,12 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
         }
     }
 
-    public enum ClaimStatus: String, Codable, CaseIterable, Sendable {
+    public enum ClaimStatus: Codable, CaseIterable, Sendable {
         case none
         case submitted
         case beingHandled
         case closed
         case reopened
-
-        public init?(
-            rawValue: RawValue
-        ) {
-            switch rawValue {
-            case "CREATED": self = .submitted
-            case "IN_PROGRESS": self = .beingHandled
-            case "CLOSED": self = .closed
-            case "REOPENED": self = .reopened
-            default: self = .none
-            }
-        }
 
         var title: String {
             switch self {
@@ -126,26 +112,11 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
         }
     }
 
-    public enum ClaimOutcome: String, Codable, CaseIterable, Sendable {
+    public enum ClaimOutcome: Codable, CaseIterable, Sendable {
         case paid
         case notCompensated
         case notCovered
-        case none
-        case missingReceipt
         case unresponsive
-
-        public init?(
-            rawValue: RawValue
-        ) {
-            switch rawValue {
-            case "PAID": self = .paid
-            case "NOT_COMPENSATED": self = .notCompensated
-            case "NOT_COVERED": self = .notCovered
-            case "MISSING_RECIEPT": self = .missingReceipt
-            case "UNRESPONSIVE": self = .unresponsive
-            default: self = .none
-            }
-        }
 
         var text: String {
             switch self {
@@ -155,10 +126,6 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
                 return L10n.Claim.Decision.notCompensated
             case .notCovered:
                 return L10n.Claim.Decision.notCovered
-            case .none:
-                return L10n.Home.ClaimCard.Pill.claim
-            case .missingReceipt:
-                return L10n.ClaimStatusDetail.missingReceipt
             case .unresponsive:
                 return L10n.Claim.Decision.unresponsive
             }
