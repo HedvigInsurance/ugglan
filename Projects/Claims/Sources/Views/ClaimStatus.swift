@@ -138,7 +138,8 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
             ),
             appealInstructionsUrl: nil,
             isUploadingFilesEnabled: true,
-            showClaimClosedFlow: true
+            showClaimClosedFlow: true,
+            infoText: "info text"
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -175,7 +176,8 @@ struct ClaimReopened_Previews: PreviewProvider {
             ),
             appealInstructionsUrl: nil,
             isUploadingFilesEnabled: true,
-            showClaimClosedFlow: true
+            showClaimClosedFlow: true,
+            infoText: "info text"
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -212,7 +214,8 @@ struct ClaimPaid_Previews: PreviewProvider {
             ),
             appealInstructionsUrl: nil,
             isUploadingFilesEnabled: true,
-            showClaimClosedFlow: true
+            showClaimClosedFlow: true,
+            infoText: "info text"
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -248,7 +251,8 @@ struct ClaimNotCompensated_Previews: PreviewProvider {
             ),
             appealInstructionsUrl: nil,
             isUploadingFilesEnabled: true,
-            showClaimClosedFlow: true
+            showClaimClosedFlow: true,
+            infoText: "info text"
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -285,7 +289,8 @@ struct ClaimNotCovered_Previews: PreviewProvider {
             ),
             appealInstructionsUrl: nil,
             isUploadingFilesEnabled: true,
-            showClaimClosedFlow: true
+            showClaimClosedFlow: true,
+            infoText: "info text"
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -322,7 +327,8 @@ struct ClaimClosed_Previews: PreviewProvider {
             ),
             appealInstructionsUrl: nil,
             isUploadingFilesEnabled: true,
-            showClaimClosedFlow: true
+            showClaimClosedFlow: true,
+            infoText: "info text"
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)

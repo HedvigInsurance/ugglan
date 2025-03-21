@@ -36,6 +36,7 @@ extension ClaimModel {
         self.appealInstructionsUrl = claim.appealInstructionsUrl
         self.isUploadingFilesEnabled = claim.isUploadingFilesEnabled
         self.showClaimClosedFlow = claim.showClaimClosedFlow
+        self.infoText = claim.infoText
     }
 }
 
