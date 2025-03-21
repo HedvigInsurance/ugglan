@@ -403,7 +403,6 @@ struct ItemPickerScreen_Previews: PreviewProvider {
             )
             .hItemPickerAttributes([.singleSelect, .attachToBottom])
             .hFieldSize(.small)
-            .hEmbeddedHeader
         }
     }
 }

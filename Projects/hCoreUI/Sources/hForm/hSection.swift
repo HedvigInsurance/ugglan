@@ -270,23 +270,6 @@ extension View {
     }
 }
 
-private struct EnvironmentHEmbeddedHeader: EnvironmentKey {
-    static let defaultValue = false
-}
-
-extension EnvironmentValues {
-    public var hEmbeddedHeader: Bool {
-        get { self[EnvironmentHEmbeddedHeader.self] }
-        set { self[EnvironmentHEmbeddedHeader.self] = newValue }
-    }
-}
-
-extension View {
-    public var hEmbeddedHeader: some View {
-        self.environment(\.hEmbeddedHeader, true)
-    }
-}
-
 public enum HorizontalPadding: Sendable {
     case section
     case row
@@ -341,7 +324,6 @@ struct hSectionContainer<Content: View>: View {
 
 public struct hSection<Header: View, Content: View, Footer: View>: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
-    @Environment(\.hEmbeddedHeader) var embeddedHeader
     @Environment(\.hWithoutHorizontalPadding) var hWithoutHorizontalPadding
     @Environment(\.hFieldSize) var fieldSize
     var header: Header?
@@ -370,7 +352,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            if header != nil && !embeddedHeader {
+            if header != nil {
                 VStack(alignment: .leading) {
                     header
                         .environment(\.defaultHTextStyle, .body1)
@@ -380,7 +362,7 @@ public struct hSection<Header: View, Content: View, Footer: View>: View {
                 .padding(.bottom, .padding8)
             }
             hSectionContainer {
-                if header != nil && embeddedHeader {
+                if header != nil {
                     header
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.leading, .padding16)
