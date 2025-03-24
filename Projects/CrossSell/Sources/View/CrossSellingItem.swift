@@ -5,7 +5,6 @@ import hCoreUI
 struct CrossSellingItem: View {
     let crossSell: CrossSell
     @State var fieldIsClicked = false
-    //    @EnvironmentObject var contractsNavigationVm: ContractsNavigationViewModel
 
     func openExternal() {
         if let urlString = crossSell.webActionURL, let url = URL(string: urlString) {

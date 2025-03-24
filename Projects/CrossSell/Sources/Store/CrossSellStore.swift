@@ -15,6 +15,16 @@ public final class CrossSellStore: LoadingStateStore<CrossSellState, CrossSellAc
             } catch let error {
                 self.setError(error.localizedDescription, for: .fetchCrossSell)
             }
+        case .fetchAddonBanner:
+            do {
+                let addonBanner = try await self.crossSellService.getAddonBannerModel(source: .crossSell)
+                if let addonBanner {
+                    send(.setAddonBannerData(addonBanner: addonBanner))
+                }
+            } catch {
+                send(.setAddonBannerData(addonBanner: nil))
+                self.setError(error.localizedDescription, for: .fetchAddonBanner)
+            }
         default:
             break
         }
@@ -25,6 +35,8 @@ public final class CrossSellStore: LoadingStateStore<CrossSellState, CrossSellAc
         switch action {
         case let .setCrossSells(crossSells):
             newState.crossSells = crossSells
+        case let .setAddonBannerData(addonBanner):
+            newState.addonBanner = addonBanner
         default:
             break
         }

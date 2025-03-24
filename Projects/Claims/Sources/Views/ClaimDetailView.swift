@@ -189,10 +189,7 @@ public struct ClaimDetailView: View {
                     hText(inputText)
                 }
             }
-            .withHeader {
-                hText(L10n.ClaimStatusDetail.submittedMessage)
-                    .padding(.leading, 2)
-            }
+            .withHeader(title: L10n.ClaimStatusDetail.submittedMessage)
             .padding(.top, .padding16)
         }
     }
@@ -208,18 +205,10 @@ public struct ClaimDetailView: View {
                         }
                     }
                 }
-                .withHeader {
-                    HStack {
-                        hText(L10n.ClaimStatus.ClaimDetails.title)
-                        Spacer()
-                        InfoViewHolder(
-                            title: L10n.ClaimStatus.ClaimDetails.title,
-                            description: L10n.ClaimStatus.ClaimDetails.infoText
-                        )
-                        .accessibilityAddTraits(.isButton)
-                        .accessibilityHint(L10n.ClaimStatus.ClaimDetails.title)
-                    }
-                }
+                .withHeader(
+                    title: L10n.ClaimStatus.ClaimDetails.title,
+                    infoButtonDescription: L10n.ClaimStatus.ClaimDetails.infoText
+                )
                 .hWithoutDivider
                 .sectionContainerStyle(.transparent)
             }
