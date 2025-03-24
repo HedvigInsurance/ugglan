@@ -7,5 +7,5 @@ let project = Project.framework(
     projects: ["hCore", "hCoreUI", "Contracts", "Forever"],
     dependencies: ["CoreDependencies", "ResourceBundledDependencies"],
     sdks: [],
-    includesGraphQL: true
+    includesGraphQL: false
 )
