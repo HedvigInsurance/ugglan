@@ -42,26 +42,20 @@ struct PaymentsDiscountsView: View {
                 )
             )
         }
-        .withHeader {
-            VStack(alignment: .leading, spacing: .padding16) {
-                HStack {
-                    hText(L10n.paymentsCampaigns)
-                    if !Dependencies.featureFlags().isRedeemCampaignDisabled {
-                        Spacer()
-                        InfoViewHolder(
-                            title: L10n.paymentsCampaignsInfoTitle,
-                            description: L10n.paymentsCampaignsInfoDescription
-                        )
-                    }
-                }
-                if data.discounts.count == 0 {
-                    hText(L10n.paymentsNoCampaignCodeAdded)
+        .withHeader(
+            title: L10n.paymentsCampaigns,
+            infoButtonDescription: !Dependencies.featureFlags().isRedeemCampaignDisabled
+                ? L10n.paymentsCampaignsInfoDescription : nil,
+            withoutBottomPadding: true,
+            extraView: data.discounts.count == 0
+                ? (
+                    view: hText(L10n.paymentsNoCampaignCodeAdded)
                         .foregroundColor(hTextColor.Opaque.secondary)
                         .padding(.bottom, .padding16)
-                }
-            }
-            .padding(.bottom, -16)
-        }
+                        .asAnyView,
+                    alignment: .bottom
+                ) : nil
+        )
     }
 
     @ViewBuilder
@@ -69,20 +63,15 @@ struct PaymentsDiscountsView: View {
         hSection(data.referralsData.referrals, id: \.id) { item in
             getRefferalView(item)
         }
-        .withHeader {
-            VStack(alignment: .leading, spacing: 16) {
-                HStack {
-                    hText(L10n.ReferralsInfoSheet.headline)
-                    Spacer()
-                    InfoViewHolder(
-                        title: L10n.paymentsReferralsInfoTitle,
-                        description: L10n.ReferralsInfoSheet.body(
-                            store.state.paymentDiscountsData?.referralsData.discountPerMember
-                                .formattedAmount ?? ""
-                        )
-                    )
-                }
-                HStack {
+        .withHeader(
+            title: L10n.ReferralsInfoSheet.headline,
+            infoButtonDescription: L10n.ReferralsInfoSheet.body(
+                store.state.paymentDiscountsData?.referralsData.discountPerMember
+                    .formattedAmount ?? ""
+            ),
+            withoutBottomPadding: data.referralsData.referrals.isEmpty ? false : true,
+            extraView: (
+                view: HStack {
                     hText(data.referralsData.code, style: .label)
                         .padding(.horizontal, .padding8)
                         .padding(.vertical, .padding4)
@@ -97,9 +86,10 @@ struct PaymentsDiscountsView: View {
                     )
                     .foregroundColor(hTextColor.Opaque.secondary)
                 }
-            }
-            .padding(.bottom, data.referralsData.referrals.isEmpty ? 0 : -16)
-        }
+                .asAnyView,
+                alignment: .bottom
+            )
+        )
         hSection {
             InfoCard(
                 text: L10n.ReferralsEmpty.body(data.referralsData.discountPerMember.formattedAmount),
@@ -244,7 +234,7 @@ struct ReferralView: View {
     let referral: Referral
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack(spacing: 8) {
+            HStack(spacing: .padding8) {
                 Circle().fill(referral.statusColor).frame(width: 14, height: 14)
                 VStack(alignment: .leading) {
                     hText(referral.name).foregroundColor(hTextColor.Opaque.primary)
@@ -253,7 +243,7 @@ struct ReferralView: View {
                 hText(referral.discountLabelText).foregroundColor(referral.discountLabelColor)
             }
             if referral.invitedYou {
-                HStack(spacing: 8) {
+                HStack(spacing: .padding8) {
                     Circle().fill(Color.clear).frame(width: 14, height: 14)
                     hText(L10n.ReferallsInviteeStates.invitedYou, style: .label)
                         .foregroundColor(hTextColor.Opaque.secondary)

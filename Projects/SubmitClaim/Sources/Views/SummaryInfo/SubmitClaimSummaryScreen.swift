@@ -33,12 +33,8 @@ public struct SubmitClaimSummaryScreen: View {
                         purchasePrice
                     }
                 }
-                .withHeader {
-                    HStack {
-                        L10n.changeAddressDetails.hText(.body1).foregroundColor(hTextColor.Opaque.primary)
-                            .padding(.top, .padding16)
-                    }
-                }
+                .withHeader(title: L10n.changeAddressDetails)
+                .padding(.top, .padding16)
                 .sectionContainerStyle(.transparent)
                 .accessibilityElement(children: .combine)
 
@@ -148,9 +144,7 @@ public struct SubmitClaimSummaryScreen: View {
                     }
                 }
             }
-            .withHeader {
-                hText(L10n.ClaimStatusDetail.uploadedFiles)
-            }
+            .withHeader(title: L10n.ClaimStatusDetail.uploadedFiles)
             .sectionContainerStyle(.transparent)
             .padding(.bottom, .padding8)
         }
@@ -176,10 +170,7 @@ public struct SubmitClaimSummaryScreen: View {
                     hText(inputText)
                 }
             }
-            .withHeader {
-                hText(L10n.ClaimStatusDetail.submittedMessage)
-                    .padding(.leading, 2)
-            }
+            .withHeader(title: L10n.ClaimStatusDetail.submittedMessage)
             .padding(.top, .padding16)
         }
     }
