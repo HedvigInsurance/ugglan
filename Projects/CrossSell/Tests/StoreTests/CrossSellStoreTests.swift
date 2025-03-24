@@ -1,3 +1,4 @@
+import Addons
 import PresentableStore
 @preconcurrency import XCTest
 
@@ -48,6 +49,36 @@ final class CrossSellStoreTests: XCTestCase {
         assert(mockService.events.count == 1)
         assert(mockService.events.first == .getCrossSell)
     }
+
+    func testFetchAddonBannerDataSuccess() async {
+        let mockService = MockData.createMockCrossSellService(
+            fetchAddonBannerModel: { _ in AddonBannerModel.getDefault }
+        )
+        let store = CrossSellStore()
+        self.store = store
+        await store.sendAsync(.fetchAddonBanner)
+        await waitUntil(description: "loading state") {
+            store.loadingState[.fetchAddonBanner] == nil && store.state.addonBanner == AddonBannerModel.getDefault
+        }
+
+        assert(mockService.events.count == 1)
+        assert(mockService.events.first == .getAddonBannerModel)
+    }
+
+    func testFetchAddonBannerDataFailure() async throws {
+        let mockService = MockData.createMockCrossSellService(
+            fetchAddonBannerModel: { _ in throw MockContractError.fetchAddonBanner }
+        )
+
+        let store = CrossSellStore()
+        self.store = store
+        await store.sendAsync(.fetchAddonBanner)
+        try await Task.sleep(nanoseconds: 5 * 100_000_000)
+        assert(store.loadingState[.fetchAddonBanner] != nil)
+        assert(store.state.crossSells.isEmpty)
+        assert(mockService.events.count == 1)
+        assert(mockService.events.first == .getAddonBannerModel)
+    }
 }
 
 @MainActor
@@ -64,6 +95,16 @@ extension CrossSell {
             type: .home
         ),
     ]
+}
+
+@MainActor
+extension AddonBannerModel {
+    fileprivate static let getDefault = AddonBannerModel(
+        contractIds: ["contractId"],
+        titleDisplayName: "display name",
+        descriptionDisplayName: "description",
+        badges: []
+    )
 }
 
 @MainActor

@@ -445,11 +445,19 @@ struct HomeTab: View {
             presented: $homeNavigationVm.navBarItems.isNewOfferPresented,
             style: [.height]
         ) {
-            CrossSellingScreen()
-                .embededInNavigation(
-                    options: .navigationType(type: .large),
-                    tracking: LoggedInNavigationDetentType.crossSelling
+            CrossSellingScreen(addonCardOnClick: { contractIds in
+                let store: ContractStore = globalPresentableStoreContainer.get()
+                let addonConfigs = store.getAddonConfigsFor(contractIds: contractIds)
+
+                loggedInVm.isAddonPresented = .init(
+                    addonSource: .crossSell,
+                    contractConfigs: addonConfigs
                 )
+            })
+            .embededInNavigation(
+                options: .navigationType(type: .large),
+                tracking: LoggedInNavigationDetentType.crossSelling
+            )
         }
         .detent(
             item: $homeNavigationVm.openChat,
@@ -603,6 +611,20 @@ class LoggedInNavigationViewModel: ObservableObject {
             object: nil
         )
         NotificationCenter.default.addObserver(self, selector: #selector(chatClosed), name: .chatClosed, object: nil)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(fetchAddons),
+            name: .addonAdded,
+            object: nil
+        )
+    }
+
+    @objc func fetchAddons(notification: Notification) {
+        Task {
+            let store: CrossSellStore = globalPresentableStoreContainer.get()
+            await store.sendAsync(.fetchAddonBanner)
+        }
     }
 
     @objc func openDeepLinkNotification(notification: Notification) {
