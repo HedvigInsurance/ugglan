@@ -23,28 +23,36 @@ public struct CrossSellingStack: View {
                 }
             ) { crossSells in
                 if !crossSells.isEmpty {
-                    hSection {
-                        VStack(spacing: 16) {
-                            ForEach(crossSells, id: \.title) { crossSell in
-                                CrossSellingItem(crossSell: crossSell)
-                                    .transition(.slide)
+                    if withHeader {
+                        hSection {
+                            VStack(spacing: .padding16) {
+                                ForEach(crossSells, id: \.title) { crossSell in
+                                    CrossSellingItem(crossSell: crossSell)
+                                        .transition(.slide)
+                                }
                             }
                         }
-                    }
-                    .withHeader {
-                        if withHeader {
-                            HStack(alignment: .center, spacing: 8) {
-                                CrossSellingUnseenCircle()
-                                hText(L10n.InsuranceTab.CrossSells.title)
-                                    .padding(.leading, 2)
-                                    .foregroundColor(hTextColor.Opaque.primary)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
+                        .withHeader(
+                            title: L10n.InsuranceTab.CrossSells.title,
+                            extraView: (
+                                view: CrossSellingUnseenCircle().asAnyView,
+                                alignment: .top
+                            )
+                        )
+                        .sectionContainerStyle(.transparent)
+                        .transition(.slide)
+                    } else {
+                        hSection {
+                            VStack(spacing: .padding16) {
+                                ForEach(crossSells, id: \.title) { crossSell in
+                                    CrossSellingItem(crossSell: crossSell)
+                                        .transition(.slide)
+                                }
                             }
-                            .padding(.bottom, .padding8)
                         }
+                        .sectionContainerStyle(.transparent)
+                        .transition(.slide)
                     }
-                    .sectionContainerStyle(.transparent)
-                    .transition(.slide)
                 }
             }
         }
