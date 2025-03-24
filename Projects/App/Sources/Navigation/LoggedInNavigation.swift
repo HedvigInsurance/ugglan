@@ -17,6 +17,7 @@ import Payment
 import PresentableStore
 import Profile
 import SafariServices
+import SubmitClaim
 import SwiftUI
 @_spi(Advanced) import SwiftUIIntrospect
 import TerminateContracts
@@ -66,10 +67,7 @@ struct LoggedInNavigation: View {
             presented: $vm.isMoveContractPresented,
             options: .constant(.alwaysOpenOnTop)
         ) {
-            MovingFlowNavigation {
-                let store: ContractStore = globalPresentableStoreContainer.get()
-                store.send(.fetchContracts)
-            }
+            HandleMoving()
         }
         .modally(
             item: $vm.isChangeTierPresented,
@@ -169,10 +167,7 @@ struct LoggedInNavigation: View {
                     )
                 )
             case .movingFlow:
-                MovingFlowNavigation {
-                    let store: ContractStore = globalPresentableStoreContainer.get()
-                    store.send(.fetchContracts)
-                }
+                HandleMoving()
             case let .pdf(document):
                 PDFPreview(document: document)
             case let .changeTier(input):
@@ -328,6 +323,17 @@ struct LoggedInNavigation: View {
     }
 }
 
+struct HandleMoving: View {
+    var body: some View {
+        MovingFlowNavigation(
+            onMoved: {
+                let store: ContractStore = globalPresentableStoreContainer.get()
+                store.send(.fetchContracts)
+            }
+        )
+    }
+}
+
 struct HomeTab: View {
     @ObservedObject var homeNavigationVm: HomeNavigationViewModel
     @ObservedObject var loggedInVm: LoggedInNavigationViewModel
@@ -335,9 +341,7 @@ struct HomeTab: View {
         return RouterHost(router: homeNavigationVm.router, tracking: self) {
             HomeScreen()
                 .routerDestination(for: ClaimModel.self, options: [.hidesBottomBarWhenPushed]) { claim in
-                    ClaimDetailView(claim: claim, type: .claim(id: claim.id))
-                        .environmentObject(homeNavigationVm)
-                        .configureTitle(L10n.claimsYourClaim)
+                    openClaimDetails(claim: claim, type: .claim(id: claim.id))
                 }
                 .routerDestination(for: String.self) { conversation in
                     InboxView()
@@ -363,10 +367,7 @@ struct HomeTab: View {
             ) { redirectType in
                 switch redirectType {
                 case .moveFlow:
-                    MovingFlowNavigation {
-                        let store: ContractStore = globalPresentableStoreContainer.get()
-                        store.send(.fetchContracts)
-                    }
+                    HandleMoving()
                 case .travelInsurance:
                     TravelCertificateNavigation(
                         vm: loggedInVm.travelCertificateNavigationVm,
@@ -469,13 +470,30 @@ struct HomeTab: View {
                         case let .claimDetailForConversationId(id):
                             let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
                             let claim = claimStore.state.claimFromConversation(for: id)
-                            ClaimDetailView(claim: claim, type: .conversation(id: id))
-                                .configureTitle(L10n.claimsYourClaim)
+                            openClaimDetails(claim: claim, type: .conversation(id: id))
                         }
                     }
                 )
             }
         )
+    }
+
+    private func openClaimDetails(claim: ClaimModel?, type: FetchClaimDetailsType) -> some View {
+        ClaimDetailView(claim: claim, type: type)
+            .configureTitle(L10n.claimsYourClaim)
+            .onDeinit {
+                Task {
+                    let claimsStore: ClaimsStore = globalPresentableStoreContainer.get()
+                    if claim?.showClaimClosedFlow ?? false {
+                        homeNavigationVm.navBarItems.isNewOfferPresented = true
+                        let service: hFetchClaimDetailsClient = Dependencies.shared.resolve()
+                        if let claimId = claim?.id {
+                            try await service.acknowledgeClosedStatus(claimId: claimId)
+                        }
+                        claimsStore.send(.fetchClaims)
+                    }
+                }
+            }
     }
 }
 
@@ -660,6 +678,12 @@ class LoggedInNavigationViewModel: ObservableObject {
                 Task {
                     await handleTravelAddon()
                 }
+            case .OPEN_CLAIM, .CLAIM_CLOSED:
+                let userInfo = notification.userInfo
+                let claimId = userInfo?["claimId"] as? String
+                Task {
+                    await handleClaimDetails(claimId: claimId)
+                }
             }
         }
     }
@@ -807,6 +831,11 @@ class LoggedInNavigationViewModel: ObservableObject {
                 }
             case .editCoInsured:
                 handleEditCoInsured(url: url)
+            case .claimDetails:
+                let claimId = url.getParameter(property: .claimId)
+                Task {
+                    await self.handleClaimDetails(claimId: claimId)
+                }
             case nil:
                 let isDeeplink = Environment.current.isDeeplink(url)
                 if !isDeeplink {
@@ -922,6 +951,21 @@ class LoggedInNavigationViewModel: ObservableObject {
                 // select insurance
                 self?.homeNavigationVm.editCoInsuredVm.start(fromContract: nil)
             }
+        }
+    }
+
+    private func handleClaimDetails(claimId: String?) async {
+        let claimStore: ClaimsStore = globalPresentableStoreContainer.get()
+        await claimStore.sendAsync(.fetchClaims)
+        if let claimId, let claim = claimStore.state.claim(for: claimId) {
+            UIApplication.shared.getRootViewController()?.dismiss(animated: true)
+            self.selectedTab = 0
+            Task { [weak self] in
+                try await Task.sleep(nanoseconds: 200_000_000)
+                self?.homeNavigationVm.router.push(claim)
+            }
+        } else {
+            Toasts.shared.displayToastBar(toast: .init(type: .error, text: L10n.General.defaultError))
         }
     }
 

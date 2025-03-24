@@ -32,8 +32,6 @@ struct InsuredPeopleScreen: View {
                     .verticalPadding(0)
                     .padding(.top, .padding16)
                 }
-                .hWithoutHorizontalPadding([.section])
-                .sectionContainerStyle(.transparent)
 
                 hSection(listToDisplay) { coInsured in
                     hRow {
@@ -45,8 +43,6 @@ struct InsuredPeopleScreen: View {
                         )
                     }
                 }
-                .hWithoutHorizontalPadding([.section])
-                .sectionContainerStyle(.transparent)
 
                 hSection {
                     hButton.LargeButton(type: .secondary) {
@@ -66,8 +62,9 @@ struct InsuredPeopleScreen: View {
                         hText(L10n.contractAddCoinsured)
                     }
                 }
-                .sectionContainerStyle(.transparent)
             }
+            .hWithoutHorizontalPadding([.row])
+            .sectionContainerStyle(.transparent)
         }
         .hFormAttachToBottom {
             VStack(spacing: 8) {
@@ -204,6 +201,7 @@ struct InsuredPeopleScreen_Previews: PreviewProvider {
             numberOfMissingCoInsured: 0,
             numberOfMissingCoInsuredWithoutTermination: 0,
             displayName: "",
+            exposureDisplayName: nil,
             preSelectedCoInsuredList: [],
             contractDisplayName: "",
             holderFirstName: "",

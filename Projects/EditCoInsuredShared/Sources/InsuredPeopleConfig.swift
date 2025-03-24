@@ -8,6 +8,7 @@ public struct InsuredPeopleConfig: Codable & Equatable & Hashable, Identifiable,
     public var numberOfMissingCoInsured: Int
     public var numberOfMissingCoInsuredWithoutTermination: Int
     public let displayName: String
+    public let exposureDisplayName: String?
     public let preSelectedCoInsuredList: [CoInsuredModel]
     public let contractDisplayName: String
     public let holderFirstName: String
@@ -26,6 +27,7 @@ public struct InsuredPeopleConfig: Codable & Equatable & Hashable, Identifiable,
         self.numberOfMissingCoInsured = 0
         self.numberOfMissingCoInsuredWithoutTermination = 0
         self.displayName = ""
+        self.exposureDisplayName = nil
         self.holderFirstName = ""
         self.holderLastName = ""
         self.holderSSN = nil
@@ -43,6 +45,7 @@ public struct InsuredPeopleConfig: Codable & Equatable & Hashable, Identifiable,
         numberOfMissingCoInsured: Int,
         numberOfMissingCoInsuredWithoutTermination: Int,
         displayName: String,
+        exposureDisplayName: String?,
         preSelectedCoInsuredList: [CoInsuredModel],
         contractDisplayName: String,
         holderFirstName: String,
@@ -57,6 +60,7 @@ public struct InsuredPeopleConfig: Codable & Equatable & Hashable, Identifiable,
         self.numberOfMissingCoInsured = numberOfMissingCoInsured
         self.numberOfMissingCoInsuredWithoutTermination = numberOfMissingCoInsuredWithoutTermination
         self.displayName = displayName
+        self.exposureDisplayName = exposureDisplayName
         self.preSelectedCoInsuredList = preSelectedCoInsuredList
         self.contractDisplayName = contractDisplayName
         self.holderFirstName = holderFirstName

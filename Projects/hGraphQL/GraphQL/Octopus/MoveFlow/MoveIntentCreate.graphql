@@ -15,23 +15,22 @@ fragment MoveIntentFragment on MoveIntent {
       }
       extraBuildingTypes
       id
-      maxMovingDate
-      minMovingDate
       isApartmentAvailableforStudent
       maxApartmentNumberCoInsured
       maxApartmentSquareMeters
       maxHouseNumberCoInsured
       maxHouseSquareMeters
-      suggestedNumberCoInsured
       ...QuoteFragment
 }
 
 fragment MoveAddressFragment on MoveAddress {
     id
-    street
-    postalCode
-    city
+    displaySubtitle
+    displayTitle
+    maxMovingDate
+    minMovingDate
     oldAddressCoverageDurationDays
+    suggestedNumberCoInsured
 }
 
 fragment QuoteFragment on MoveIntent {

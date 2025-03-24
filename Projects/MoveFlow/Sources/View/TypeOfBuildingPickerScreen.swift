@@ -17,7 +17,7 @@ struct TypeOfBuildingPickerScreen: View {
         self.addExtraBuidlingViewModel = addExtraBuidlingViewModel
         self.itemPickerConfig = .init(
             items: {
-                return movingFlowNavigationVm.movingFlowVm?.extraBuildingTypes
+                return movingFlowNavigationVm.moveConfigurationModel?.extraBuildingTypes
                     .compactMap({ (object: $0, displayName: .init(title: $0.translatedValue)) }) ?? []
             }(),
             preSelectedItems: {
@@ -36,9 +36,7 @@ struct TypeOfBuildingPickerScreen: View {
             },
             onCancel: {
                 movingFlowNavigationVm.isBuildingTypePickerPresented = nil
-            },
-            singleSelect: true,
-            useAlwaysAttachedToBottom: true
+            }
         )
     }
 
@@ -46,6 +44,8 @@ struct TypeOfBuildingPickerScreen: View {
         ItemPickerScreen<ExtraBuildingType>(
             config: itemPickerConfig
         )
+        .hItemPickerAttributes([.singleSelect, .alwaysAttachToBottom])
+        .hFormContentPosition(.compact)
     }
 }
 

@@ -9,37 +9,20 @@ struct MockData {
         submitMoveIntent: @escaping SubmitMoveIntent = {
             .init(
                 id: "id",
+                currentHomeAddresses: [],
+                extraBuildingTypes: [],
                 isApartmentAvailableforStudent: true,
                 maxApartmentNumberCoInsured: 6,
                 maxApartmentSquareMeters: nil,
                 maxHouseNumberCoInsured: nil,
-                maxHouseSquareMeters: nil,
-                minMovingDate: Date().localDateString,
-                maxMovingDate: "2025-09-08",
-                suggestedNumberCoInsured: 2,
-                currentHomeAddresses: [],
-                potentialHomeQuotes: [],
-                mtaQuotes: [],
-                faqs: [],
-                extraBuildingTypes: []
+                maxHouseSquareMeters: nil
             )
         },
-        moveIntentRequest: @escaping MoveIntentRequest = { intentId, addressInputModel, houseInformationInputModel in
+        moveIntentRequest: @escaping MoveIntentRequest = { input in
             .init(
-                id: intentId,
-                isApartmentAvailableforStudent: true,
-                maxApartmentNumberCoInsured: 6,
-                maxApartmentSquareMeters: nil,
-                maxHouseNumberCoInsured: nil,
-                maxHouseSquareMeters: nil,
-                minMovingDate: Date().localDateString,
-                maxMovingDate: "2025-09-08",
-                suggestedNumberCoInsured: 2,
-                currentHomeAddresses: [],
-                potentialHomeQuotes: [],
+                homeQuotes: [],
                 mtaQuotes: [],
-                faqs: [],
-                extraBuildingTypes: []
+                changeTierModel: nil
             )
         },
         moveIntentConfirm: @escaping MoveIntentConfirm = { intentId, homeQuoteId, removedAddons in
@@ -56,10 +39,11 @@ struct MockData {
     }
 }
 
-typealias SubmitMoveIntent = @Sendable () async throws -> MovingFlowModel
-typealias MoveIntentRequest = (String, AddressInputModel, HouseInformationInputModel) async throws -> MovingFlowModel
-typealias MoveIntentConfirm = (String, String?, [String]) async throws -> Void
+typealias SubmitMoveIntent = () async throws -> MoveConfigurationModel
+typealias MoveIntentRequest = (RequestMoveIntentInput) async throws -> MoveQuotesModel
+typealias MoveIntentConfirm = (String, String, [String]) async throws -> Void
 
+@MainActor
 class MockMoveFlowService: MoveFlowClient {
     var events = [Event]()
 
@@ -83,23 +67,23 @@ class MockMoveFlowService: MoveFlowClient {
         self.moveIntentConfirm = moveIntentConfirm
     }
 
-    func sendMoveIntent() async throws -> MovingFlowModel {
+    func sendMoveIntent() async throws -> MoveConfigurationModel {
         events.append(.sendMoveIntent)
         let data = try await submitMoveIntent()
         return data
     }
 
-    func requestMoveIntent(
-        intentId: String,
-        addressInputModel: AddressInputModel,
-        houseInformationInputModel: HouseInformationInputModel
-    ) async throws -> MovingFlowModel {
+    func requestMoveIntent(input: RequestMoveIntentInput) async throws -> MoveQuotesModel {
         events.append(.requestMoveIntent)
-        let data = try await moveIntentRequest(intentId, addressInputModel, houseInformationInputModel)
+        let data = try await moveIntentRequest(input)
         return data
     }
 
-    func confirmMoveIntent(intentId: String, homeQuoteId: String, removedAddons: [String]) async throws {
+    func confirmMoveIntent(
+        intentId: String,
+        currentHomeQuoteId homeQuoteId: String,
+        removedAddons: [String]
+    ) async throws {
         events.append(.confirmMoveIntent)
         try await moveIntentConfirm(intentId, homeQuoteId, removedAddons)
     }

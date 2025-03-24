@@ -15,9 +15,19 @@ public class TravelInsuranceClientOctopus: TravelInsuranceClient {
             let data = try await octopus.client.fetch(query: query, cachePolicy: .fetchIgnoringCacheCompletely)
             let email = data.currentMember.email
             let fullName = data.currentMember.firstName + " " + data.currentMember.lastName
+            let activeContracts = data.currentMember.activeContracts
+
             let specification = data.currentMember.travelCertificateSpecifications.contractSpecifications.compactMap {
                 data in
-                TravelInsuranceContractSpecification(data, email: email, fullName: fullName)
+                TravelInsuranceContractSpecification(
+                    data,
+                    email: email,
+                    fullName: fullName,
+                    displayName: activeContracts.first(where: { $0.id == data.contractId })?.currentAgreement
+                        .productVariant.displayName ?? "",
+                    exposureDisplayName: activeContracts.first(where: { $0.id == data.contractId })?.exposureDisplayName
+                        ?? ""
+                )
             }
             return specification
         } catch let ex {
@@ -115,15 +125,18 @@ extension TravelInsuranceContractSpecification {
         _ data: OctopusGraphQL.TravelCertificateQuery.Data.CurrentMember.TravelCertificateSpecifications
             .ContractSpecification,
         email: String,
-        fullName: String
+        fullName: String,
+        displayName: String,
+        exposureDisplayName: String
     ) {
         self.init(
             contractId: data.contractId,
+            displayName: displayName,
+            exposureDisplayName: exposureDisplayName,
             minStartDate: data.minStartDate.localDateToDate ?? Date(),
             maxStartDate: data.maxStartDate.localDateToDate ?? Date().addingTimeInterval(60 * 60 * 24 * 90),
             numberOfCoInsured: data.numberOfCoInsured,
             maxDuration: data.maxDurationDays,
-            street: data.location?.street ?? "",
             email: email,
             fullName: fullName
         )

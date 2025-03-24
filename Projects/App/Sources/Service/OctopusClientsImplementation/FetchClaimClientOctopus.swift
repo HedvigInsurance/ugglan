@@ -34,7 +34,8 @@ extension ClaimModel {
             claimType: claim.claimType ?? "",
             incidentDate: claim.incidentDate,
             productVariant: .init(data: claim.productVariant?.fragments.productVariantFragment),
-            conversation: .init(fragment: claim.conversation.fragments.conversationFragment, type: .claim)
+            conversation: .init(fragment: claim.conversation.fragments.conversationFragment, type: .claim),
+            showClaimClosedFlow: claim.showClaimClosedFlow
         )
     }
 }

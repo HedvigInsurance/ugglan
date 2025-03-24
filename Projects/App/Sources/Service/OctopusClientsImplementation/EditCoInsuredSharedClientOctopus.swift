@@ -34,6 +34,7 @@ extension Contract {
     ) {
         self.init(
             id: contract.id,
+            exposureDisplayName: contract.exposureDisplayName,
             supportsCoInsured: contract.supportsCoInsured,
             upcomingChangedAgreement: .init(agreement: contract.upcomingChangedAgreement?.fragments.agreementFragment),
             currentAgreement: .init(agreement: contract.currentAgreement.fragments.agreementFragment),
