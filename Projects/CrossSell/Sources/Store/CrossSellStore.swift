@@ -22,6 +22,7 @@ public final class CrossSellStore: LoadingStateStore<CrossSellState, CrossSellAc
                     send(.setAddonBannerData(addonBanner: addonBanner))
                 }
             } catch {
+                send(.setAddonBannerData(addonBanner: nil))
                 self.setError(error.localizedDescription, for: .fetchAddonBanner)
             }
         default:
