@@ -611,6 +611,20 @@ class LoggedInNavigationViewModel: ObservableObject {
             object: nil
         )
         NotificationCenter.default.addObserver(self, selector: #selector(chatClosed), name: .chatClosed, object: nil)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(fetchAddons),
+            name: .addonAdded,
+            object: nil
+        )
+    }
+
+    @objc func fetchAddons(notification: Notification) {
+        Task {
+            let store: CrossSellStore = globalPresentableStoreContainer.get()
+            await store.sendAsync(.fetchAddonBanner)
+        }
     }
 
     @objc func openDeepLinkNotification(notification: Notification) {
