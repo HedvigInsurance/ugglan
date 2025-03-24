@@ -63,20 +63,26 @@ struct ClaimPills: View {
 
     var body: some View {
         HStack {
-            if claim.status == .reopened {
+            if claim.status == .reopened || (claim.status == .closed && claim.outcome != .paid) {
                 hPill(
                     text: claim.status.title,
-                    color: .amber,
+                    color: claim.status.pillColor,
                     colorLevel: .three
                 )
-                .hFieldSize(.small)
+            } else if claim.status != .closed {
+                hPill(
+                    text: L10n.Home.ClaimCard.Pill.claim,
+                    color: .grey,
+                    colorLevel: .two
+                )
             }
-            hPill(
-                text: claim.outcome.text.capitalized,
-                color: claim.outcome.color,
-                colorLevel: claim.outcome.colorLevel
-            )
-            .hFieldSize(.small)
+            if let outcome = claim.outcome {
+                hPill(
+                    text: outcome.text.capitalized,
+                    color: outcome.color,
+                    colorLevel: outcome.colorLevel
+                )
+            }
 
             if let payout = claim.payoutAmount {
                 hPill(
@@ -84,27 +90,25 @@ struct ClaimPills: View {
                     color: .blue,
                     colorLevel: .two
                 )
-                .hFieldSize(.small)
             }
         }
+        .hFieldSize(.small)
     }
 }
 
 extension ClaimModel.ClaimOutcome {
     var color: PillColor {
         switch self {
-        case .none, .notCompensated, .notCovered, .paid, .unresponsive:
+        case .notCompensated, .notCovered, .paid, .unresponsive:
             .grey
-        case .missingReceipt:
-            .amber
         }
     }
 
     var colorLevel: PillColor.PillColorLevel {
         switch self {
-        case .none, .notCompensated, .notCovered, .unresponsive:
+        case .notCompensated, .notCovered, .unresponsive:
             .two
-        case .paid, .missingReceipt:
+        case .paid:
             .three
         }
     }
@@ -116,7 +120,7 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
         let data = ClaimModel(
             id: "1",
             status: .beingHandled,
-            outcome: .none,
+            outcome: nil,
             submittedAt: "2023-06-10",
             signedAudioURL: "",
             memberFreeText: nil,
@@ -264,6 +268,43 @@ struct ClaimNotCovered_Previews: PreviewProvider {
             id: "1",
             status: .closed,
             outcome: .notCovered,
+            submittedAt: "2023-10-10",
+            signedAudioURL: "",
+            memberFreeText: nil,
+            payoutAmount: nil,
+            targetFileUploadUri: "",
+            claimType: "Broken item",
+            incidentDate: "2024-02-15",
+            productVariant: nil,
+            conversation: .init(
+                id: "",
+                type: .claim,
+                newestMessage: nil,
+                createdAt: nil,
+                statusMessage: nil,
+                status: .open,
+                hasClaim: true,
+                claimType: "claim type",
+                unreadMessageCount: 0
+            ),
+            appealInstructionsUrl: nil,
+            isUploadingFilesEnabled: true,
+            showClaimClosedFlow: true
+        )
+        return VStack(spacing: 20) {
+            ClaimStatus(claim: data, enableTap: true)
+
+        }
+        .padding(20)
+    }
+}
+
+struct ClaimNoResponse_Previews: PreviewProvider {
+    static var previews: some View {
+        let data = ClaimModel(
+            id: "1",
+            status: .closed,
+            outcome: .unresponsive,
             submittedAt: "2023-10-10",
             signedAudioURL: "",
             memberFreeText: nil,

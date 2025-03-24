@@ -22,8 +22,8 @@ extension ClaimModel {
         claim: OctopusGraphQL.ClaimFragment
     ) {
         self.id = claim.id
-        self.status = ClaimStatus(rawValue: claim.status?.rawValue ?? "") ?? .none
-        self.outcome = .init(rawValue: claim.outcome?.rawValue ?? "") ?? .none
+        self.status = claim.status?.asClaimStatus ?? .none
+        self.outcome = claim.outcome?.asClaimOutcome
         self.submittedAt = claim.submittedAt
         self.signedAudioURL = claim.audioUrl ?? ""
         self.memberFreeText = claim.memberFreeText
@@ -36,6 +36,46 @@ extension ClaimModel {
         self.appealInstructionsUrl = claim.appealInstructionsUrl
         self.isUploadingFilesEnabled = claim.isUploadingFilesEnabled
         self.showClaimClosedFlow = claim.showClaimClosedFlow
+    }
+}
+
+extension GraphQLEnum<OctopusGraphQL.ClaimStatus> {
+    fileprivate var asClaimStatus: ClaimModel.ClaimStatus {
+        switch self {
+        case .case(let status):
+            switch status {
+            case .created:
+                return .submitted
+            case .inProgress:
+                return .beingHandled
+            case .closed:
+                return .closed
+            case .reopened:
+                return .reopened
+            }
+        case .unknown:
+            return ClaimModel.ClaimStatus.none
+        }
+    }
+}
+
+extension GraphQLEnum<OctopusGraphQL.ClaimOutcome> {
+    fileprivate var asClaimOutcome: ClaimModel.ClaimOutcome? {
+        switch self {
+        case .case(let status):
+            switch status {
+            case .paid:
+                return .paid
+            case .notCompensated:
+                return .notCompensated
+            case .notCovered:
+                return .notCovered
+            case .unresponsive:
+                return .unresponsive
+            }
+        case .unknown:
+            return nil
+        }
     }
 }
 
