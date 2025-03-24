@@ -2,13 +2,6 @@ import Foundation
 import Payment
 import PresentableStore
 import hCore
-//
-//  PaymentsClientOctopus.swift
-//  Ugglan
-//
-//  Created by Sladan Nimcevic on 2025-03-24.
-//  Copyright © 2025 Hedvig. All rights reserved.
-//
 import hGraphQL
 
 extension GraphQLEnum<OctopusGraphQL.MemberPaymentConnectionStatus> {
