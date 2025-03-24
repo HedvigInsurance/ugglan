@@ -45,12 +45,15 @@ struct PaymentsDiscountsView: View {
             infoButtonDescription: L10n.paymentsCampaignsInfoDescription,
             withoutBottomPadding: true,
             extraView: data.discounts.count == 0
-                ? {
-                    hText(L10n.paymentsNoCampaignCodeAdded)
+                ? (
+                    view:
+                        hText(L10n.paymentsNoCampaignCodeAdded)
                         .foregroundColor(hTextColor.Opaque.secondary)
                         .padding(.bottom, .padding16)
-                        .asAnyView
-                } : nil
+                        .asAnyView,
+                    alignment: .bottom
+                )
+                : nil
         )
     }
 
@@ -66,24 +69,26 @@ struct PaymentsDiscountsView: View {
                     .formattedAmount ?? ""
             ),
             withoutBottomPadding: data.referralsData.referrals.isEmpty ? false : true,
-            extraView: {
-                HStack {
-                    hText(data.referralsData.code, style: .label)
-                        .padding(.horizontal, .padding8)
-                        .padding(.vertical, .padding4)
-                        .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(hSurfaceColor.Opaque.primary)
+            extraView: (
+                view:
+                    HStack {
+                        hText(data.referralsData.code, style: .label)
+                            .padding(.horizontal, .padding8)
+                            .padding(.vertical, .padding4)
+                            .background(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(hSurfaceColor.Opaque.primary)
 
+                            )
+                        Spacer()
+                        hText(
+                            "\(data.referralsData.allReferralDiscount.formattedNegativeAmount)/\(L10n.monthAbbreviationLabel)"
                         )
-                    Spacer()
-                    hText(
-                        "\(data.referralsData.allReferralDiscount.formattedNegativeAmount)/\(L10n.monthAbbreviationLabel)"
-                    )
-                    .foregroundColor(hTextColor.Opaque.secondary)
-                }
-                .asAnyView
-            }
+                        .foregroundColor(hTextColor.Opaque.secondary)
+                    }
+                    .asAnyView,
+                alignment: .bottom
+            )
         )
         hSection {
             InfoCard(

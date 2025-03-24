@@ -365,41 +365,36 @@ public struct hSection<Header: View, Content: View>: View {
         )
     }
 
-    public func withHeader<HeaderView: View>(
-        @ViewBuilder _ builder: @escaping () -> HeaderView
-    ) -> hSection<HeaderView, Content> {
-        return hSection<HeaderView, Content>(header: builder(), content: content)
-    }
-
     public func withHeader(
         title: String,
         infoButtonDescription: String? = nil,
         withoutBottomPadding: Bool = false,
-        extraView: (() -> AnyView)? = nil
+        extraView: (view: AnyView, alignment: VerticalAlignment)? = nil
     ) -> hSection<HeaderView<AnyView>, Content> {
         hSection<HeaderView, Content>(
             header: HeaderView(
                 title: title,
                 infoButtonDescription: infoButtonDescription,
                 withoutBottomPadding: withoutBottomPadding,
-                extraView: extraView?()
+                extraView: extraView
             ),
             content: content
         )
     }
 
     public struct HeaderView<ExtraView: View>: View {
+        public typealias HeaderExtraView = (view: ExtraView, alignment: VerticalAlignment)
         let title: String
         let infoButtonDescription: String?
         let withInfoButton: Bool
         let withoutBottomPadding: Bool
-        let extraView: ExtraView?
+        let extraView: HeaderExtraView?
 
         init(
             title: String,
             infoButtonDescription: String?,
             withoutBottomPadding: Bool,
-            extraView: ExtraView? = nil
+            extraView: HeaderExtraView? = nil
         ) {
             self.title = title
             self.infoButtonDescription = infoButtonDescription
@@ -411,8 +406,11 @@ public struct hSection<Header: View, Content: View>: View {
         public var body: some View {
             VStack(alignment: .leading, spacing: .padding16) {
                 HStack {
+                    if let extraView = extraView, extraView.alignment == .top {
+                        extraView.view
+                    }
+
                     hText(title)
-                        .padding(.leading, .padding2)  //?
                     if withInfoButton, let infoButtonDescription {
                         Spacer()
                         InfoViewHolder(
@@ -424,8 +422,8 @@ public struct hSection<Header: View, Content: View>: View {
                     }
                 }
 
-                if let extraView {
-                    extraView
+                if let extraView = extraView, extraView.alignment == .bottom {
+                    extraView.view
                 }
             }
             .padding(.bottom, withoutBottomPadding ? -8 : .padding8)
