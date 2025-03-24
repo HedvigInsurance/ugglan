@@ -1,11 +1,12 @@
 import Addons
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
 
 public struct CrossSellingScreen: View {
-    @StateObject private var vm = CrossSellingScreenViewModel()
     @EnvironmentObject private var router: Router
+    @PresentableStore var store: CrossSellStore
     let addonCardOnClick: (_ contractIds: [String]) -> Void
 
     public init(
@@ -35,43 +36,29 @@ public struct CrossSellingScreen: View {
             .sectionContainerStyle(.transparent)
             .padding(.top, .padding16)
         }
-        .onAppear {
-            Task {
-                await vm.getAddonBanner()
-            }
+        .task {
+            store.send(.fetchAddonBanner)
         }
     }
 
     @ViewBuilder
     private var addonBanner: some View {
-        if let banner = vm.addonBannerModel {
-            hSection {
-                AddonCardView(
-                    openAddon: {
-                        addonCardOnClick(banner.contractIds)
-                    },
-                    addon: banner
-                )
+        PresentableStoreLens(
+            CrossSellStore.self,
+            getter: { state in
+                state.addonBanner
             }
-            .sectionContainerStyle(.transparent)
-        }
-    }
-}
-
-@MainActor
-public class CrossSellingScreenViewModel: ObservableObject {
-    @Inject var service: CrossSellClient
-    @Published var addonBannerModel: AddonBannerModel?
-
-    func getAddonBanner() async {
-        do {
-            let data = try await service.getAddonBannerModel(source: .crossSell)
-            withAnimation {
-                self.addonBannerModel = data
-            }
-        } catch {
-            withAnimation {
-                self.addonBannerModel = nil
+        ) { banner in
+            if let banner {
+                hSection {
+                    AddonCardView(
+                        openAddon: {
+                            addonCardOnClick(banner.contractIds)
+                        },
+                        addon: banner
+                    )
+                }
+                .sectionContainerStyle(.transparent)
             }
         }
     }
