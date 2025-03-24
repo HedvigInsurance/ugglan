@@ -127,7 +127,6 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
             payoutAmount: nil,
             targetFileUploadUri: "",
             claimType: "Broken item",
-            incidentDate: "2024-02-15",
             productVariant: nil,
             conversation: .init(
                 id: "",
@@ -143,7 +142,8 @@ struct ClaimBeingHandled_Previews: PreviewProvider {
             appealInstructionsUrl: nil,
             isUploadingFilesEnabled: true,
             showClaimClosedFlow: true,
-            infoText: "info text"
+            infoText: "info text",
+            displayItems: []
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -165,7 +165,6 @@ struct ClaimReopened_Previews: PreviewProvider {
             payoutAmount: nil,
             targetFileUploadUri: "",
             claimType: "Broken item",
-            incidentDate: "2024-02-15",
             productVariant: nil,
             conversation: .init(
                 id: "",
@@ -181,7 +180,8 @@ struct ClaimReopened_Previews: PreviewProvider {
             appealInstructionsUrl: nil,
             isUploadingFilesEnabled: true,
             showClaimClosedFlow: true,
-            infoText: "info text"
+            infoText: "info text",
+            displayItems: []
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -203,7 +203,6 @@ struct ClaimPaid_Previews: PreviewProvider {
             payoutAmount: MonetaryAmount(amount: "100", currency: "SEK"),
             targetFileUploadUri: "",
             claimType: "Broken item",
-            incidentDate: "2024-02-15",
             productVariant: nil,
             conversation: .init(
                 id: "",
@@ -219,7 +218,8 @@ struct ClaimPaid_Previews: PreviewProvider {
             appealInstructionsUrl: nil,
             isUploadingFilesEnabled: true,
             showClaimClosedFlow: true,
-            infoText: "info text"
+            infoText: "info text",
+            displayItems: []
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -240,7 +240,6 @@ struct ClaimNotCompensated_Previews: PreviewProvider {
             payoutAmount: nil,
             targetFileUploadUri: "",
             claimType: "Broken item",
-            incidentDate: "2024-02-15",
             productVariant: nil,
             conversation: .init(
                 id: "",
@@ -256,7 +255,8 @@ struct ClaimNotCompensated_Previews: PreviewProvider {
             appealInstructionsUrl: nil,
             isUploadingFilesEnabled: true,
             showClaimClosedFlow: true,
-            infoText: "info text"
+            infoText: "info text",
+            displayItems: []
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -278,7 +278,6 @@ struct ClaimNotCovered_Previews: PreviewProvider {
             payoutAmount: nil,
             targetFileUploadUri: "",
             claimType: "Broken item",
-            incidentDate: "2024-02-15",
             productVariant: nil,
             conversation: .init(
                 id: "",
@@ -294,7 +293,8 @@ struct ClaimNotCovered_Previews: PreviewProvider {
             appealInstructionsUrl: nil,
             isUploadingFilesEnabled: true,
             showClaimClosedFlow: true,
-            infoText: "info text"
+            infoText: "info text",
+            displayItems: []
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -316,7 +316,6 @@ struct ClaimNoResponse_Previews: PreviewProvider {
             payoutAmount: nil,
             targetFileUploadUri: "",
             claimType: "Broken item",
-            incidentDate: "2024-02-15",
             productVariant: nil,
             conversation: .init(
                 id: "",
@@ -331,7 +330,9 @@ struct ClaimNoResponse_Previews: PreviewProvider {
             ),
             appealInstructionsUrl: nil,
             isUploadingFilesEnabled: true,
-            showClaimClosedFlow: true
+            showClaimClosedFlow: true,
+            infoText: nil,
+            displayItems: []
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)
@@ -353,7 +354,6 @@ struct ClaimClosed_Previews: PreviewProvider {
             payoutAmount: nil,
             targetFileUploadUri: "",
             claimType: "Broken item",
-            incidentDate: "2024-02-15",
             productVariant: nil,
             conversation: .init(
                 id: "convId",
@@ -369,7 +369,8 @@ struct ClaimClosed_Previews: PreviewProvider {
             appealInstructionsUrl: nil,
             isUploadingFilesEnabled: true,
             showClaimClosedFlow: true,
-            infoText: "info text"
+            infoText: "info text",
+            displayItems: []
         )
         return VStack(spacing: 20) {
             ClaimStatus(claim: data, enableTap: true)

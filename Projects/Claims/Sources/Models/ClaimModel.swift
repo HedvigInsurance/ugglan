@@ -16,13 +16,13 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
         payoutAmount: MonetaryAmount?,
         targetFileUploadUri: String,
         claimType: String,
-        incidentDate: String?,
         productVariant: ProductVariant?,
         conversation: Conversation?,
         appealInstructionsUrl: String?,
         isUploadingFilesEnabled: Bool,
         showClaimClosedFlow: Bool,
-        infoText: String?
+        infoText: String?,
+        displayItems: [ClaimDisplayItem]
     ) {
         self.id = id
         self.status = status
@@ -33,17 +33,16 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
         self.payoutAmount = payoutAmount
         self.targetFileUploadUri = targetFileUploadUri
         self.claimType = claimType
-        self.incidentDate = incidentDate
         self.productVariant = productVariant
         self.conversation = conversation
         self.appealInstructionsUrl = appealInstructionsUrl
         self.isUploadingFilesEnabled = isUploadingFilesEnabled
         self.showClaimClosedFlow = showClaimClosedFlow
         self.infoText = infoText
+        self.displayItems = displayItems
     }
 
     public let claimType: String
-    public let incidentDate: String?
     public let productVariant: ProductVariant?
     public let id: String
     public let status: ClaimStatus
@@ -58,6 +57,7 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
     public let isUploadingFilesEnabled: Bool
     public let showClaimClosedFlow: Bool
     public var infoText: String?
+    public let displayItems: [ClaimDisplayItem]
     public var statusParagraph: String {
         switch self.status {
         case .submitted:
@@ -133,6 +133,13 @@ public struct ClaimModel: Codable, Equatable, Identifiable, Hashable, Sendable {
                 return L10n.Claim.Decision.unresponsive
             }
         }
+    }
+    public struct ClaimDisplayItem: Codable, Equatable, Hashable, Sendable, Identifiable {
+        public var id: String {
+            displayTitle
+        }
+        let displayTitle: String
+        let displayValue: String
     }
 }
 

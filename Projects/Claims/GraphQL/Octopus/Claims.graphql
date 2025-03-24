@@ -21,7 +21,6 @@ fragment ClaimFragment on Claim {
         ...ProductVariantFragment
     }
     claimType
-    incidentDate
     conversation {
         ...ConversationFragment
     }
@@ -29,4 +28,8 @@ fragment ClaimFragment on Claim {
     isUploadingFilesEnabled
     showClaimClosedFlow
     infoText
+    displayItems {
+    	displayTitle
+        displayValue
+    }
 }

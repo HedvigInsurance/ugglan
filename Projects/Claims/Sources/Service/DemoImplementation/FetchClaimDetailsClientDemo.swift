@@ -13,13 +13,13 @@ public class FetchClaimDetailsClientDemo: hFetchClaimDetailsClient {
             payoutAmount: nil,
             targetFileUploadUri: "",
             claimType: "",
-            incidentDate: nil,
             productVariant: nil,
             conversation: nil,
             appealInstructionsUrl: "If you have more receipts related to this claim, you can upload more on this page.",
             isUploadingFilesEnabled: true,
             showClaimClosedFlow: true,
-            infoText: "info text"
+            infoText: "info text",
+            displayItems: []
         )
     }
 

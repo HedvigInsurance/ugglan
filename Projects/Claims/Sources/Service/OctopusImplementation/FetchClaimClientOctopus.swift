@@ -29,7 +29,6 @@ extension ClaimModel {
         self.memberFreeText = claim.memberFreeText
         self.payoutAmount = MonetaryAmount(optionalFragment: claim.payoutAmount?.fragments.moneyFragment)
         self.targetFileUploadUri = claim.targetFileUploadUri
-        self.incidentDate = claim.incidentDate
         self.productVariant = .init(data: claim.productVariant?.fragments.productVariantFragment)
         self.claimType = claim.claimType ?? ""
         self.conversation = .init(fragment: claim.conversation.fragments.conversationFragment, type: .claim)
@@ -37,6 +36,14 @@ extension ClaimModel {
         self.isUploadingFilesEnabled = claim.isUploadingFilesEnabled
         self.showClaimClosedFlow = claim.showClaimClosedFlow
         self.infoText = claim.infoText
+        self.displayItems = claim.displayItems.compactMap({ item in
+            let displayValue: String = {
+                return item.displayValue.localDateToDate?.displayDateDDMMMYYYYFormat ?? item.displayValue
+                    .localDateToIso8601Date?
+                    .displayDateDDMMMYYYYFormat ?? item.displayValue
+            }()
+            return .init(displayTitle: item.displayTitle, displayValue: displayValue)
+        })
     }
 }
 

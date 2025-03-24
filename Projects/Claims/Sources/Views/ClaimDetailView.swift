@@ -203,19 +203,8 @@ public struct ClaimDetailView: View {
             VStack(spacing: .padding16) {
                 hSection {
                     VStack(spacing: .padding8) {
-                        claimDetailsRow(title: L10n.ClaimStatus.ClaimDetails.type, value: claim.claimType)
-                            .accessibilityHidden(claim.claimType == "")
-                        if let incidentDate = claim.incidentDate {
-                            claimDetailsRow(
-                                title: L10n.ClaimStatus.ClaimDetails.incidentDate,
-                                value: incidentDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? ""
-                            )
-                        }
-                        if let submitted = claim.submittedAt {
-                            claimDetailsRow(
-                                title: L10n.ClaimStatus.ClaimDetails.submitted,
-                                value: submitted.localDateToIso8601Date?.displayDateDDMMMYYYYFormat ?? ""
-                            )
+                        ForEach(claim.displayItems) { item in
+                            claimDetailsRow(title: item.displayTitle, value: item.displayValue)
                         }
                     }
                 }
@@ -240,14 +229,16 @@ public struct ClaimDetailView: View {
 
     @ViewBuilder
     private func claimDetailsRow(title: String, value: String) -> some View {
-        HStack {
-            hText(title)
-                .foregroundColor(hTextColor.Opaque.secondary)
-            Spacer()
-            hText(value)
-                .foregroundColor(hTextColor.Opaque.secondary)
+        if value != "" {
+            HStack {
+                hText(title)
+                    .foregroundColor(hTextColor.Opaque.secondary)
+                Spacer()
+                hText(value)
+                    .foregroundColor(hTextColor.Opaque.secondary)
+            }
+            .accessibilityElement(children: .combine)
         }
-        .accessibilityElement(children: .combine)
     }
 
     @ViewBuilder
@@ -396,7 +387,6 @@ struct ClaimDetailView_Previews: PreviewProvider {
             payoutAmount: nil,
             targetFileUploadUri: "",
             claimType: "Broken item",
-            incidentDate: "2024-02-15",
             productVariant: nil,
             conversation: .init(
                 id: "",
@@ -412,7 +402,8 @@ struct ClaimDetailView_Previews: PreviewProvider {
             appealInstructionsUrl: "https://hedvig.com",
             isUploadingFilesEnabled: true,
             showClaimClosedFlow: true,
-            infoText: "If you have more receipts related to this claim, you can upload more on this page."
+            infoText: "If you have more receipts related to this claim, you can upload more on this page.",
+            displayItems: []
         )
         return ClaimDetailView(
             claim: claim,
