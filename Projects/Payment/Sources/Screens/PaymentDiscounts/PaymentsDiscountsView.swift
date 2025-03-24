@@ -13,13 +13,15 @@ struct PaymentsDiscountsView: View {
 
     var body: some View {
         hForm {
-            VStack(spacing: 8) {
+            VStack(spacing: .padding8) {
                 discounts
-                hSection {
-                    hButton.LargeButton(type: .secondary) {
-                        paymentsNavigationVm.isAddCampaignPresented = true
-                    } content: {
-                        hText(L10n.paymentsAddCampaignCode)
+                if !Dependencies.featureFlags().isRedeemCampaignDisabled {
+                    hSection {
+                        hButton.LargeButton(type: .secondary) {
+                            paymentsNavigationVm.isAddCampaignPresented = true
+                        } content: {
+                            hText(L10n.paymentsAddCampaignCode)
+                        }
                     }
                 }
                 Spacing(height: 16)
@@ -42,18 +44,17 @@ struct PaymentsDiscountsView: View {
         }
         .withHeader(
             title: L10n.paymentsCampaigns,
-            infoButtonDescription: L10n.paymentsCampaignsInfoDescription,
+            infoButtonDescription: !Dependencies.featureFlags().isRedeemCampaignDisabled
+                ? L10n.paymentsCampaignsInfoDescription : nil,
             withoutBottomPadding: true,
             extraView: data.discounts.count == 0
                 ? (
-                    view:
-                        hText(L10n.paymentsNoCampaignCodeAdded)
+                    view: hText(L10n.paymentsNoCampaignCodeAdded)
                         .foregroundColor(hTextColor.Opaque.secondary)
                         .padding(.bottom, .padding16)
                         .asAnyView,
                     alignment: .bottom
-                )
-                : nil
+                ) : nil
         )
     }
 
@@ -70,23 +71,22 @@ struct PaymentsDiscountsView: View {
             ),
             withoutBottomPadding: data.referralsData.referrals.isEmpty ? false : true,
             extraView: (
-                view:
-                    HStack {
-                        hText(data.referralsData.code, style: .label)
-                            .padding(.horizontal, .padding8)
-                            .padding(.vertical, .padding4)
-                            .background(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .fill(hSurfaceColor.Opaque.primary)
+                view: HStack {
+                    hText(data.referralsData.code, style: .label)
+                        .padding(.horizontal, .padding8)
+                        .padding(.vertical, .padding4)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(hSurfaceColor.Opaque.primary)
 
-                            )
-                        Spacer()
-                        hText(
-                            "\(data.referralsData.allReferralDiscount.formattedNegativeAmount)/\(L10n.monthAbbreviationLabel)"
                         )
-                        .foregroundColor(hTextColor.Opaque.secondary)
-                    }
-                    .asAnyView,
+                    Spacer()
+                    hText(
+                        "\(data.referralsData.allReferralDiscount.formattedNegativeAmount)/\(L10n.monthAbbreviationLabel)"
+                    )
+                    .foregroundColor(hTextColor.Opaque.secondary)
+                }
+                .asAnyView,
                 alignment: .bottom
             )
         )
@@ -121,6 +121,7 @@ struct PaymentsDiscountsView: View {
 struct PaymentsDiscountView_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+        Dependencies.shared.add(module: Module { () -> FeatureFlags in FeatureFlagsDemo() })
         return PaymentsDiscountsView(
             data: .init(
                 discounts: [
@@ -233,7 +234,7 @@ struct ReferralView: View {
     let referral: Referral
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack(spacing: 8) {
+            HStack(spacing: .padding8) {
                 Circle().fill(referral.statusColor).frame(width: 14, height: 14)
                 VStack(alignment: .leading) {
                     hText(referral.name).foregroundColor(hTextColor.Opaque.primary)
@@ -242,7 +243,7 @@ struct ReferralView: View {
                 hText(referral.discountLabelText).foregroundColor(referral.discountLabelColor)
             }
             if referral.invitedYou {
-                HStack(spacing: 8) {
+                HStack(spacing: .padding8) {
                     Circle().fill(Color.clear).frame(width: 14, height: 14)
                     hText(L10n.ReferallsInviteeStates.invitedYou, style: .label)
                         .foregroundColor(hTextColor.Opaque.secondary)
