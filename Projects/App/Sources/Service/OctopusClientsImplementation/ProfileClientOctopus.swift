@@ -1,51 +1,6 @@
-import Foundation
+import Profile
 import hCore
 import hGraphQL
-
-@MainActor
-public class ProfileService {
-    @Inject var client: ProfileClient
-
-    public func getProfileState() async throws -> (memberData: MemberDetails, partnerData: PartnerData?) {
-        log.info("ProfileService: getProfileState", error: nil, attributes: nil)
-        return try await client.getProfileState()
-    }
-
-    public func getMemberDetails() async throws -> MemberDetails {
-        log.info("ProfileService: getMemberDetails", error: nil, attributes: nil)
-        return try await client.getMemberDetails()
-    }
-
-    public func postDeleteRequest() async throws {
-        log.info("ProfileService: postDeleteRequest", error: nil, attributes: nil)
-        return try await client.postDeleteRequest()
-    }
-
-    public func updateLanguage() async throws {
-        log.info("ProfileService: updateLanguage", error: nil, attributes: nil)
-        return try await client.updateLanguage()
-    }
-
-    func update(email: String) async throws -> String {
-        log.info("ProfileService: update(email)", error: nil, attributes: nil)
-        return try await client.update(email: email)
-    }
-
-    func update(phone: String) async throws -> String {
-        log.info("ProfileService: update(phone)", error: nil, attributes: nil)
-        return try await client.update(phone: phone)
-    }
-
-    func update(eurobonus: String) async throws -> PartnerData {
-        log.info("ProfileService: update(eurobonus)", error: nil, attributes: nil)
-        return try await client.update(eurobonus: eurobonus)
-    }
-
-    func updateSubscriptionPreference(to subscribed: Bool) async throws {
-        log.info("ProfileService: updateSubscriptionPreference", error: nil, attributes: nil)
-        return try await client.updateSubscriptionPreference(to: subscribed)
-    }
-}
 
 public class ProfileClientOctopus: ProfileClient {
     @Inject var octopus: hOctopus
@@ -154,14 +109,13 @@ public class ProfileClientOctopus: ProfileClient {
 extension PartnerData {
     fileprivate init?(with data: OctopusGraphQL.PartnerDataFragment) {
         guard let sasData = data.partnerData?.sas else { return nil }
-        self.sas = PartnerDataSas(with: sasData)
+        self.init(sas: .init(eligible: sasData.eligible, eurobonusNumber: sasData.eurobonusNumber))
     }
 }
 
 extension PartnerDataSas {
     fileprivate init(with data: OctopusGraphQL.PartnerDataFragment.PartnerData.Sas) {
-        self.eligible = data.eligible
-        self.eurobonusNumber = data.eurobonusNumber
+        self.init(eligible: data.eligible, eurobonusNumber: data.eurobonusNumber)
     }
 }
 
@@ -169,11 +123,13 @@ extension MemberDetails {
     init?(
         memberData: OctopusGraphQL.MemberDetailsQuery.Data.CurrentMember
     ) {
-        self.id = memberData.id
-        self.email = memberData.email
-        self.phone = memberData.phoneNumber
-        self.firstName = memberData.firstName
-        self.lastName = memberData.lastName
-        self.isTravelCertificateEnabled = false
+        self.init(
+            id: memberData.id,
+            firstName: memberData.firstName,
+            lastName: memberData.lastName,
+            phone: memberData.phoneNumber,
+            email: memberData.email,
+            hasTravelCertificate: false
+        )
     }
 }
