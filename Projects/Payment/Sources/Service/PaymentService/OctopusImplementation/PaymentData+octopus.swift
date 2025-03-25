@@ -1,7 +1,7 @@
+import Campaign
 import Foundation
 import hCore
 import hGraphQL
-import Campaign
 
 @MainActor
 extension PaymentData {

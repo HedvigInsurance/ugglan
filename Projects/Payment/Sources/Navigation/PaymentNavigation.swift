@@ -1,5 +1,5 @@
-import PresentableStore
 import Campaign
+import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
@@ -37,12 +37,15 @@ public struct PaymentsNavigation<Content: View>: View {
                     case .discounts:
                         let store: PaymentStore = globalPresentableStoreContainer.get()
                         let paymentDataDiscounts = store.state.paymentData?.discounts ?? []
-                        CampaignNavigation(campaignNavigationVm: .init(paymentDataDiscounts: paymentDataDiscounts), redirect: { redirect in
-                            switch redirect {
-                            case .forever:
-                                self.redirect(.forever)
+                        CampaignNavigation(
+                            campaignNavigationVm: .init(paymentDataDiscounts: paymentDataDiscounts),
+                            redirect: { redirect in
+                                switch redirect {
+                                case .forever:
+                                    self.redirect(.forever)
+                                }
                             }
-                        })
+                        )
                     case .history:
                         PaymentHistoryView()
                             .configureTitle(L10n.paymentHistoryTitle)
