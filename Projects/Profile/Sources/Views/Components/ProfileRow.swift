@@ -2,7 +2,6 @@ import PresentableStore
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct ProfileRow: View {
     @PresentableStore var store: ProfileStore

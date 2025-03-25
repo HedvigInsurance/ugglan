@@ -126,6 +126,7 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
             data: .init(
                 discounts: [
                     .init(
+                        id: "id",
                         code: "code",
                         amount: .sek(100),
                         title: "title",
@@ -137,6 +138,7 @@ struct PaymentsDiscountView_Previews: PreviewProvider {
                         discountId: "id"
                     ),
                     .init(
+                        id: "id2",
                         code: "code 2",
                         amount: .sek(100),
                         title: "title 2",

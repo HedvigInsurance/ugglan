@@ -52,6 +52,7 @@ public class hPaymentClientDemo: hPaymentClient {
                 ],
                 discounts: [
                     .init(
+                        id: "CODE 2",
                         code: "CODE 2",
                         amount: .sek(30),
                         title: "15% off for 1 year",
@@ -111,6 +112,7 @@ public class hPaymentClientDemo: hPaymentClient {
                     ],
                     discounts: [
                         .init(
+                            id: "CODE 2",
                             code: "CODE 2",
                             amount: .sek(30),
                             title: "15% off for 1 year",
@@ -141,6 +143,7 @@ public class hPaymentClientDemo: hPaymentClient {
         return .init(
             discounts: [
                 .init(
+                    id: "CODE 2",
                     code: "CODE",
                     amount: .sek(30),
                     title: "15% off for 1 year",
@@ -150,6 +153,7 @@ public class hPaymentClientDemo: hPaymentClient {
                     discountId: "CODE"
                 ),
                 .init(
+                    id: "CODE 2",
                     code: "CODE 2",
                     amount: .sek(30),
                     title: "15% off for 1 year",

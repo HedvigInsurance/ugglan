@@ -133,6 +133,7 @@ struct DeleteCampaignView_Previews: PreviewProvider {
         DeleteCampaignView(
             vm: .init(
                 discount: .init(
+                    id: "CODE 2",
                     code: "CODE",
                     amount: nil,
                     title: "Title",
