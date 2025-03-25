@@ -108,7 +108,7 @@ extension AddonDisplayItem {
 extension AddonSource {
     public var getSource: OctopusGraphQL.UpsellTravelAddonFlow {
         switch self {
-        case .insurances: return .appOnlyUpsale
+        case .insurances, .crossSell: return .appOnlyUpsale
         case .travelCertificates, .deeplink: return .appUpsellUpgrade
         }
     }
