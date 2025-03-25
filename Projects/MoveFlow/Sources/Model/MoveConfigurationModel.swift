@@ -1,10 +1,7 @@
 import Addons
 import ChangeTier
-import Contracts
 import Foundation
 import hCore
-import hCoreUI
-import hGraphQL
 
 public struct MoveConfigurationModel: Sendable {
     let id: String
@@ -16,7 +13,7 @@ public struct MoveConfigurationModel: Sendable {
     let maxHouseNumberCoInsured: Int?
     let maxHouseSquareMeters: Int?
 
-    init(
+    public init(
         id: String,
         currentHomeAddresses: [MoveAddress],
         extraBuildingTypes: [ExtraBuildingType],
@@ -47,14 +44,14 @@ public struct MoveConfigurationModel: Sendable {
 
 }
 
-enum MovingFlowError: Error {
+public enum MovingFlowError: Error {
     case serverError(message: String)
     case missingDataError(message: String)
     case other
 }
 
 extension MovingFlowError: LocalizedError {
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case let .serverError(message): return message
         case let .missingDataError(message): return message
@@ -71,4 +68,22 @@ public struct MoveAddress: Codable, Equatable, Hashable, Sendable {
     let maxMovingDate: String
     let minMovingDate: String
     let suggestedNumberCoInsured: Int
+
+    public init(
+        id: String,
+        displayTitle: String,
+        displaySubtitle: String?,
+        oldAddressCoverageDurationDays: Int?,
+        maxMovingDate: String,
+        minMovingDate: String,
+        suggestedNumberCoInsured: Int
+    ) {
+        self.id = id
+        self.displayTitle = displayTitle
+        self.displaySubtitle = displaySubtitle
+        self.oldAddressCoverageDurationDays = oldAddressCoverageDurationDays
+        self.maxMovingDate = maxMovingDate
+        self.minMovingDate = minMovingDate
+        self.suggestedNumberCoInsured = suggestedNumberCoInsured
+    }
 }
