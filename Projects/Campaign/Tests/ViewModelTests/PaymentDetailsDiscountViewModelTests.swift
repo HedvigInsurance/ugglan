@@ -5,13 +5,18 @@ import hCore
 
 @MainActor
 final class PaymentDetailsDiscountViewModelTests: XCTestCase {
+    weak var sut: MockCampaignService?
+
     override func setUp() async throws {
         try await super.setUp()
         Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+        sut = nil
     }
 
     override func tearDown() async throws {
         try await Task.sleep(nanoseconds: 100)
+        Dependencies.shared.remove(for: hCampaignClient.self)
+        XCTAssertNil(sut)
     }
 
     func testPaymentDetailsDiscountViewModelRemoveTrueSuccess() async {
@@ -28,6 +33,9 @@ final class PaymentDetailsDiscountViewModelTests: XCTestCase {
             canBeDeleted: true,
             discountId: "id"
         )
+
+        let mockService = MockCampaignData.createMockCampaignService(removeCampaign: {})
+        self.sut = mockService
 
         let model = PaymentDetailsDiscountViewModel(options: options, discount: discount)
 
@@ -47,6 +55,9 @@ final class PaymentDetailsDiscountViewModelTests: XCTestCase {
             canBeDeleted: true,
             discountId: "id"
         )
+
+        let mockService = MockCampaignData.createMockCampaignService(removeCampaign: {})
+        self.sut = mockService
 
         let model = PaymentDetailsDiscountViewModel(options: options, discount: discount)
 
@@ -69,6 +80,9 @@ final class PaymentDetailsDiscountViewModelTests: XCTestCase {
                 canBeDeleted: true,
                 discountId: "id"
             )
+
+            let mockService = MockCampaignData.createMockCampaignService(removeCampaign: {})
+            self.sut = mockService
 
             let model = PaymentDetailsDiscountViewModel(options: options, discount: discount)
 
