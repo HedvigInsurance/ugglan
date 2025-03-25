@@ -1,19 +1,15 @@
 import Foundation
+import TerminateContracts
+//
+//  Untitled.swift
+//  Ugglan
+//
+//  Created by Sladan Nimcevic on 2025-03-24.
+//  Copyright © 2025 Hedvig. All rights reserved.
+//
 import hCore
-@preconcurrency import hGraphQL
+import hGraphQL
 
-enum TerminationError: Error {
-    case missingContext
-}
-
-extension TerminationError: LocalizedError {
-    public var errorDescription: String? {
-        switch self {
-        case .missingContext:
-            return L10n.General.errorBody
-        }
-    }
-}
 public class TerminateContractsClientOctopus: TerminateContractsClient {
     public init() {}
 
@@ -84,7 +80,7 @@ extension OctopusGraphQL.FlowTerminationFragment.CurrentStep: Into {
         } else if let step = self.asFlowTerminationFailedStep?.fragments.flowTerminationFailedFragment {
             return (step: .setFailedStep(model: .init(with: step)), nil)
         } else if let step = self.asFlowTerminationSuccessStep?.fragments.flowTerminationSuccessFragment {
-            return (step: .setSuccessStep(model: .init(with: step)), nil)
+            return (step: .setSuccessStep(model: .init(terminationDate: step.terminationDate)), nil)
         } else if let step = self.asFlowTerminationSurveyStep?.fragments.flowTerminationSurveyStepFragment {
             return (step: .setTerminationSurveyStep(model: .init(with: step)), progress)
         } else {
@@ -208,9 +204,11 @@ extension TerminationFlowSurveyStepModel {
             let stepOptionFragment = layer1.fragments.flowTerminationSurveyStepOptionFragment
             options.append(.init(with: stepOptionFragment, subOptions: subOptions))
         }
-        id = data.id
-        self.options = options
-        self.subTitleType = .default
+        self.init(
+            id: data.id,
+            options: options,
+            subTitleType: .default
+        )
     }
 }
 
@@ -220,11 +218,13 @@ extension TerminationFlowSurveyStepModelOption {
         with data: OctopusGraphQL.FlowTerminationSurveyStepOptionFragment,
         subOptions: [TerminationFlowSurveyStepModelOption]
     ) {
-        id = data.id
-        title = data.title
-        suggestion = data.suggestion?.fragments.flowTerminationSurveyOptionSuggestionFragment.asSuggestion
-        feedBack = data.feedBack?.fragments.flowTerminationSurveyOptionFeedbackFragment.asFeedback
-        self.subOptions = subOptions
+        self.init(
+            id: data.id,
+            title: data.title,
+            suggestion: data.suggestion?.fragments.flowTerminationSurveyOptionSuggestionFragment.asSuggestion,
+            feedBack: data.feedBack?.fragments.flowTerminationSurveyOptionFeedbackFragment.asFeedback,
+            subOptions: subOptions
+        )
     }
 }
 extension OctopusGraphQL.FlowTerminationSurveyOptionSuggestionFragment {
@@ -303,11 +303,13 @@ extension TerminationFlowDateNextStepModel {
     fileprivate init(
         with data: OctopusGraphQL.FlowTerminationDateStepFragment
     ) {
-        self.id = data.id
-        self.minDate = data.minDate
-        self.maxDate = data.maxDate
-        self.date = nil
-        self.extraCoverageItem = data.extraCoverage.map({ .init(fragment: $0.fragments.extraCoverageItemFragment) })
+        self.init(
+            id: data.id,
+            maxDate: data.maxDate,
+            minDate: data.minDate,
+            date: nil,
+            extraCoverageItem: data.extraCoverage.map({ .init(fragment: $0.fragments.extraCoverageItemFragment) })
+        )
     }
 }
 
@@ -315,8 +317,10 @@ extension ExtraCoverageItem {
     init(
         fragment: OctopusGraphQL.ExtraCoverageItemFragment
     ) {
-        self.displayName = fragment.displayName
-        self.displayValue = fragment.displayValue
+        self.init(
+            displayName: fragment.displayName,
+            displayValue: fragment.displayValue
+        )
     }
 }
 
@@ -324,7 +328,7 @@ extension TerminationFlowFailedNextModel {
     fileprivate init(
         with data: OctopusGraphQL.FlowTerminationFailedFragment
     ) {
-        self.id = data.id
+        self.init(id: data.id)
     }
 }
 
@@ -332,8 +336,10 @@ extension TerminationFlowDeletionNextModel {
     init(
         with data: OctopusGraphQL.FlowTerminationDeletionFragment
     ) {
-        self.id = data.id
-        self.extraCoverageItem = data.extraCoverage.map({ .init(fragment: $0.fragments.extraCoverageItemFragment) })
+        self.init(
+            id: data.id,
+            extraCoverageItem: data.extraCoverage.map({ .init(fragment: $0.fragments.extraCoverageItemFragment) })
+        )
     }
 
     public func returnDeletionInput() -> OctopusGraphQL.FlowTerminationDeletionInput {

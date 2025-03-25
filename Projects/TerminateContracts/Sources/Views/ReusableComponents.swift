@@ -1,7 +1,6 @@
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct DisplayQuestionView: View {
     @EnvironmentObject var navigationVm: TerminationFlowNavigationViewModel

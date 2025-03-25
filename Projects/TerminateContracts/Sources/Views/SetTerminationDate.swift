@@ -1,7 +1,6 @@
 import SwiftUI
 import hCore
 import hCoreUI
-import hGraphQL
 
 struct SetTerminationDate: View {
     @State private var terminationDate = Date()
