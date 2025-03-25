@@ -1,7 +1,7 @@
 @preconcurrency import XCTest
 import hCore
 
-@testable import Payment
+@testable import Campaign
 @testable import hCoreUI
 
 @MainActor
@@ -22,11 +22,9 @@ final class CampaignViewModelTests: XCTestCase {
         let mockService = MockCampaignData.createMockCampaignService(
             addCampaign: {})
 
-        MockPaymentData.createMockPaymentService()
-
         self.sut = mockService
 
-        let model = AddCampaingCodeViewModel()
+        let model = AddCampaignCodeViewModel(paymentDataDiscounts: [])
         await model.inputVm.save()
 
         assert(model.hideTitle == true)
@@ -37,11 +35,9 @@ final class CampaignViewModelTests: XCTestCase {
         let mockService = MockCampaignData.createMockCampaignService(
             addCampaign: { throw MockCampaignError.failure })
 
-        MockPaymentData.createMockPaymentService()
-
         self.sut = mockService
 
-        let model = AddCampaingCodeViewModel()
+        let model = AddCampaignCodeViewModel(paymentDataDiscounts: [])
         await model.inputVm.save()
 
         assert(model.hideTitle == false)
@@ -53,8 +49,6 @@ final class CampaignViewModelTests: XCTestCase {
         let mockService = MockCampaignData.createMockCampaignService(
             removeCampaign: {})
 
-        MockPaymentData.createMockPaymentService()
-
         self.sut = mockService
 
         let discount: Discount = .init(
@@ -67,7 +61,7 @@ final class CampaignViewModelTests: XCTestCase {
             discountId: "id"
         )
 
-        let model = DeleteCampaignViewModel(discount: discount)
+        let model = DeleteCampaignViewModel(discount: discount, paymentDataDiscounts: [])
         await model.removeCode()
 
         assert(model.codeRemoved == true)
@@ -79,8 +73,6 @@ final class CampaignViewModelTests: XCTestCase {
         let mockService = MockCampaignData.createMockCampaignService(
             removeCampaign: { throw MockCampaignError.failure })
 
-        MockPaymentData.createMockPaymentService()
-
         self.sut = mockService
 
         let discount: Discount = .init(
@@ -93,7 +85,7 @@ final class CampaignViewModelTests: XCTestCase {
             discountId: "id"
         )
 
-        let model = DeleteCampaignViewModel(discount: discount)
+        let model = DeleteCampaignViewModel(discount: discount, paymentDataDiscounts: [])
         await model.removeCode()
 
         assert(model.codeRemoved == false)

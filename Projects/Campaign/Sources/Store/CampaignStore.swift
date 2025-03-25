@@ -6,7 +6,7 @@ public enum LoadingAction: LoadingProtocol {
 }
 
 public final class CampaignStore: LoadingStateStore<CampaignState, CampaignAction, LoadingAction> {
-    @Inject var campaignService: hCampaignService
+    @Inject var campaignService: hCampaignClient
 
     public override func effects(_ getState: @escaping () -> CampaignState, _ action: CampaignAction) async {
         switch action {

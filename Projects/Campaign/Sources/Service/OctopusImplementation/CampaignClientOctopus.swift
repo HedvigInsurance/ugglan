@@ -21,7 +21,7 @@ public class hCampaignService {
     }
 }
 
-public class hCampaingsClientOctopus: hCampaignClient {
+public class hCampaignsClientOctopus: hCampaignClient {
     @Inject private var octopus: hOctopus
     public init() {}
 
