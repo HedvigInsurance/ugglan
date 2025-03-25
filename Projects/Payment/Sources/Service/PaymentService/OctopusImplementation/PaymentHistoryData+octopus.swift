@@ -1,3 +1,4 @@
+import Campaign
 import Foundation
 import PresentableStore
 import hGraphQL
@@ -78,22 +79,6 @@ extension PaymentData {
             addedToThePayment = []
         }
     }
-}
-
-extension Discount {
-    init(
-        with data: OctopusGraphQL.MemberChargeFragment.DiscountBreakdown,
-        discount: OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign?
-    ) {
-        code = data.code ?? discount?.code ?? ""
-        amount = .init(fragment: data.discount.fragments.moneyFragment)
-        title = discount?.description ?? ""
-        listOfAffectedInsurances = []
-        validUntil = nil
-        canBeDeleted = false
-        discountId = UUID().uuidString
-    }
-
 }
 
 extension PaymentData.PaymentStatus {

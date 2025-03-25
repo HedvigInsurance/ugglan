@@ -3,14 +3,15 @@ import SwiftUI
 import hCore
 import hCoreUI
 
-struct PaymentDetailsDiscountView: View {
+public struct PaymentDetailsDiscountView: View {
     @ObservedObject var vm: PaymentDetailsDiscountViewModel
-    @EnvironmentObject var paymentNavigationVm: PaymentsNavigationViewModel
+    @EnvironmentObject var campaignNavigationVm: CampaignNavigationViewModel
 
-    init(vm: PaymentDetailsDiscountViewModel) {
+    public init(vm: PaymentDetailsDiscountViewModel) {
         self.vm = vm
     }
-    var body: some View {
+
+    public var body: some View {
         hRow {
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
@@ -86,27 +87,32 @@ struct PaymentDetailsDiscountView: View {
 
     func startRemoveCode() {
         if vm.shouldShowRemove {
-            paymentNavigationVm.isDeleteCampaignPresented = vm.discount
+            campaignNavigationVm.isDeleteCampaignPresented = vm.discount
         }
     }
 }
 
 @MainActor
-class PaymentDetailsDiscountViewModel: ObservableObject {
+public class PaymentDetailsDiscountViewModel: ObservableObject {
     let options: PaymentDetailsDiscountOptions
     let discount: Discount
-    @PresentableStore private var store: PaymentStore
+    @PresentableStore private var store: CampaignStore
 
-    init(options: PaymentDetailsDiscountOptions, discount: Discount) {
+    public init(options: PaymentDetailsDiscountOptions, discount: Discount) {
         self.options = options
         self.discount = discount
     }
 
-    struct PaymentDetailsDiscountOptions: OptionSet {
-        let rawValue: UInt
+    public struct PaymentDetailsDiscountOptions: OptionSet, Sendable {
+
+        public init(rawValue: UInt) {
+            self.rawValue = rawValue
+        }
+
+        public let rawValue: UInt
         static let enableRemoving = PaymentDetailsDiscountOptions(rawValue: 1 << 0)
         static let showExpire = PaymentDetailsDiscountOptions(rawValue: 1 << 1)
-        static let forPayment = PaymentDetailsDiscountOptions(rawValue: 1 << 2)
+        public static let forPayment = PaymentDetailsDiscountOptions(rawValue: 1 << 2)
     }
 
     var shouldShowExpire: Bool {

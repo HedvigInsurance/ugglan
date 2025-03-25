@@ -1,10 +1,10 @@
 import Foundation
 import hCore
 import hGraphQL
+import Campaign
 
 @MainActor
 extension PaymentData {
-
     //used for upcoming payment
     init?(
         with data: OctopusGraphQL.PaymentDataQuery.Data,
@@ -154,53 +154,4 @@ extension OctopusGraphQL.MemberChargeFragment.ChargeBreakdown.Period {
             return L10n.paymentsPeriodDays(String(days))
         }
     }
-}
-
-extension Discount {
-    init(
-        with data: OctopusGraphQL.MemberChargeFragment.DiscountBreakdown,
-        discount: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.RedeemedCampaign?
-    ) {
-        code = data.code ?? discount?.code ?? ""
-        amount = .init(fragment: data.discount.fragments.moneyFragment)
-        title = discount?.description
-        listOfAffectedInsurances =
-            discount?.onlyApplicableToContracts?.compactMap({ .init(id: $0.id, displayName: $0.exposureDisplayName) })
-            ?? []
-        validUntil = nil
-        canBeDeleted = false
-        discountId = UUID().uuidString
-    }
-
-    init(
-        with data: OctopusGraphQL.MemberChargeFragment.DiscountBreakdown,
-        discountDto discount: ReedeemedCampaingDTO?
-    ) {
-        code = data.code ?? discount?.code ?? ""
-        amount = .init(fragment: data.discount.fragments.moneyFragment)
-        title = discount?.description ?? ""
-        listOfAffectedInsurances = []
-        validUntil = nil
-        canBeDeleted = false
-        discountId = UUID().uuidString
-    }
-
-}
-
-extension OctopusGraphQL.MemberReferralInformationCodeFragment {
-    func asReedeemedCampaing() -> ReedeemedCampaingDTO {
-        return .init(
-            code: code,
-            description: L10n.paymentsReferralDiscount,
-            type: GraphQLEnum<OctopusGraphQL.RedeemedCampaignType>(.referral),
-            id: code
-        )
-    }
-}
-
-struct ReedeemedCampaingDTO {
-    let code: String
-    let description: String
-    let type: GraphQLEnum<OctopusGraphQL.RedeemedCampaignType>
-    let id: String
 }
