@@ -16,14 +16,14 @@ public class CampaignNavigationViewModel: ObservableObject {
     }
 }
 
-public struct CampaignNavigation<Content: View>: View {
-    @ViewBuilder var redirect: (_ type: CampaignRedirectType) -> Content
+public struct CampaignNavigation: View {
+    let redirect: (CampaignRedirectType) -> Void
     @ObservedObject var campaignNavigationVm: CampaignNavigationViewModel
     let onEditCode: () -> Void
 
     public init(
         campaignNavigationVm: CampaignNavigationViewModel,
-        @ViewBuilder redirect: @escaping (_ type: CampaignRedirectType) -> Content,
+        redirect: @escaping (CampaignRedirectType) -> Void,
         onEditCode: @escaping () -> Void
     ) {
         self.campaignNavigationVm = campaignNavigationVm
@@ -33,16 +33,10 @@ public struct CampaignNavigation<Content: View>: View {
 
     public var body: some View {
         RouterHost(router: campaignNavigationVm.router, tracking: CampaignRouterAction.discounts) {
-            PaymentsDiscountsRootView(campaignNavigationVm: campaignNavigationVm)
+            PaymentsDiscountsRootView(campaignNavigationVm: campaignNavigationVm, redirect: redirect)
                 .onAppear {
                     let store: CampaignStore = globalPresentableStoreContainer.get()
                     store.send(.fetchDiscountsData(paymentDataDiscounts: campaignNavigationVm.paymentDataDiscounts))
-                }
-                .routerDestination(for: CampaignRedirectType.self) { redirectType in
-                    switch redirectType {
-                    case .forever:
-                        redirect(.forever)
-                    }
                 }
                 .configureTitle(L10n.paymentsDiscountsSectionTitle)
         }
@@ -112,15 +106,6 @@ extension CampaignRouterAction: TrackingViewNameProtocol {
 
 public enum CampaignRedirectType: Hashable {
     case forever
-}
-
-extension CampaignRedirectType: TrackingViewNameProtocol {
-    public var nameForTracking: String {
-        switch self {
-        case .forever:
-            return "Forever"
-        }
-    }
 }
 
 #Preview {

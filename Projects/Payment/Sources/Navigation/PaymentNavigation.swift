@@ -42,13 +42,19 @@ public struct PaymentsNavigation<Content: View>: View {
                             redirect: { redirect in
                                 switch redirect {
                                 case .forever:
-                                    self.redirect(.forever)
+                                    router.push(PaymentsRedirectType.forever)
                                 }
                             },
                             onEditCode: {
                                 store.send(.load)
                             }
                         )
+                        .routerDestination(for: PaymentsRedirectType.self) { redirectType in
+                            switch redirectType {
+                            case .forever:
+                                redirect(.forever)
+                            }
+                        }
                     case .history:
                         PaymentHistoryView()
                             .configureTitle(L10n.paymentHistoryTitle)
