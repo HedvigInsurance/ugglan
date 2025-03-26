@@ -211,106 +211,106 @@ struct PaymentDetailsView: View {
     }
 }
 
-//struct PaymentDetails_Previews: PreviewProvider {
-//    static var previews: some View {
-//        Localization.Locale.currentLocale.send(.en_SE)
-//        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
-//        let data = PaymentData(
-//            id: "id",
-//            payment: .init(
-//                gross: .sek(200),
-//                net: .sek(180),
-//                carriedAdjustment: .sek(100),
-//                settlementAdjustment: .sek(20),
-//                date: "2022-10-30"
-//            ),
-//            status: .upcoming,
-//            contracts: [
-//                .init(
-//                    id: "id1",
-//                    title: "title",
-//                    subtitle: "subtitle",
-//                    amount: .sek(200),
-//                    periods: [
-//                        .init(
-//                            id: "1",
-//                            from: "2023-11-10",
-//                            to: "2023-11-23",
-//                            amount: .sek(100),
-//                            isOutstanding: false,
-//                            desciption: nil
-//                        ),
-//                        .init(
-//                            id: "2",
-//                            from: "2023-11-23",
-//                            to: "2023-11-30",
-//                            amount: .sek(80),
-//                            isOutstanding: true,
-//                            desciption: nil
-//                        ),
-//                    ]
-//                ),
-//                .init(
-//                    id: "id2",
-//                    title: "title 2",
-//                    subtitle: "subtitle 2",
-//                    amount: .sek(300),
-//                    periods: [
-//                        .init(
-//                            id: "1",
-//                            from: "2023-11-10",
-//                            to: "2023-11-23",
-//                            amount: .sek(100),
-//                            isOutstanding: false,
-//                            desciption: nil
-//                        ),
-//                        .init(
-//                            id: "2",
-//                            from: "2023-11-23",
-//                            to: "2023-11-30",
-//                            amount: .sek(80),
-//                            isOutstanding: true,
-//                            desciption: nil
-//                        ),
-//                    ]
-//                ),
-//            ],
-//            discounts: [
-//                .init(
-//                    code: "CODE",
-//                    amount: .sek(100),
-//                    title: "Title",
-//                    listOfAffectedInsurances: [
-//                        .init(id: "1", displayName: "Car 15%")
-//                    ],
-//                    validUntil: "2023-11-20",
-//                    canBeDeleted: false,
-//                    discountId: "CODE"
-//                ),
-//                .init(
-//                    code: "CODE2",
-//                    amount: .sek(99),
-//                    title: "Title1",
-//                    listOfAffectedInsurances: [
-//                        .init(id: "2", displayName: "House 15%")
-//                    ],
-//                    validUntil: "2023-11-22",
-//                    canBeDeleted: false,
-//                    discountId: "CODE2"
-//                ),
-//                .init(
-//                    code: "MY CODE",
-//                    amount: .sek(30),
-//                    title: "3 friends invited",
-//                    listOfAffectedInsurances: [],
-//                    validUntil: nil,
-//                    canBeDeleted: false,
-//                    discountId: "FRIENDS"
-//                ),
-//            ],
-//            paymentDetails: nil,
-//            addedToThePayment: nil
-//        )
-//        return PaymentDetailsView(data: data)
-//    }
-//}
+struct PaymentDetails_Previews: PreviewProvider {
+    static var previews: some View {
+        Localization.Locale.currentLocale.send(.en_SE)
+        Dependencies.shared.add(module: Module { () -> DateService in DateService() })
+        let data = PaymentData(
+            id: "id",
+            payment: .init(
+                gross: .sek(200),
+                net: .sek(180),
+                carriedAdjustment: .sek(100),
+                settlementAdjustment: .sek(20),
+                date: "2022-10-30"
+            ),
+            status: .upcoming,
+            contracts: [
+                .init(
+                    id: "id1",
+                    title: "title",
+                    subtitle: "subtitle",
+                    amount: .sek(200),
+                    periods: [
+                        .init(
+                            id: "1",
+                            from: "2023-11-10",
+                            to: "2023-11-23",
+                            amount: .sek(100),
+                            isOutstanding: false,
+                            desciption: nil
+                        ),
+                        .init(
+                            id: "2",
+                            from: "2023-11-23",
+                            to: "2023-11-30",
+                            amount: .sek(80),
+                            isOutstanding: true,
+                            desciption: nil
+                        ),
+                    ]
+                ),
+                .init(
+                    id: "id2",
+                    title: "title 2",
+                    subtitle: "subtitle 2",
+                    amount: .sek(300),
+                    periods: [
+                        .init(
+                            id: "1",
+                            from: "2023-11-10",
+                            to: "2023-11-23",
+                            amount: .sek(100),
+                            isOutstanding: false,
+                            desciption: nil
+                        ),
+                        .init(
+                            id: "2",
+                            from: "2023-11-23",
+                            to: "2023-11-30",
+                            amount: .sek(80),
+                            isOutstanding: true,
+                            desciption: nil
+                        ),
+                    ]
+                ),
+            ],
+            discounts: [
+                .init(
+                    code: "CODE",
+                    amount: .sek(100),
+                    title: "Title",
+                    listOfAffectedInsurances: [
+                        .init(id: "1", displayName: "Car 15%")
+                    ],
+                    validUntil: "2023-11-20",
+                    canBeDeleted: false,
+                    discountId: "CODE"
+                ),
+                .init(
+                    code: "CODE2",
+                    amount: .sek(99),
+                    title: "Title1",
+                    listOfAffectedInsurances: [
+                        .init(id: "2", displayName: "House 15%")
+                    ],
+                    validUntil: "2023-11-22",
+                    canBeDeleted: false,
+                    discountId: "CODE2"
+                ),
+                .init(
+                    code: "MY CODE",
+                    amount: .sek(30),
+                    title: "3 friends invited",
+                    listOfAffectedInsurances: [],
+                    validUntil: nil,
+                    canBeDeleted: false,
+                    discountId: "FRIENDS"
+                ),
+            ],
+            paymentDetails: nil,
+            addedToThePayment: nil
+        )
+        return PaymentDetailsView(data: data)
+    }
+}
