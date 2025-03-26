@@ -10,6 +10,8 @@ public class CampaignNavigationViewModel: ObservableObject {
     @Published public var isDeleteCampaignPresented: Discount?
     var paymentDataDiscounts: [Discount]
 
+    public let router = Router()
+
     public init(paymentDataDiscounts: [Discount]) {
         self.paymentDataDiscounts = paymentDataDiscounts
     }
@@ -17,7 +19,6 @@ public class CampaignNavigationViewModel: ObservableObject {
 
 public struct CampaignNavigation<Content: View>: View {
     @ViewBuilder var redirect: (_ type: CampaignRedirectType) -> Content
-    @EnvironmentObject var router: Router
     @ObservedObject var campaignNavigationVm: CampaignNavigationViewModel
     let onEditCode: () -> Void
 
@@ -32,7 +33,7 @@ public struct CampaignNavigation<Content: View>: View {
     }
 
     public var body: some View {
-        RouterHost(router: router, tracking: CampaignRouterAction.discounts) {
+        RouterHost(router: campaignNavigationVm.router, tracking: CampaignRouterAction.discounts) {
             PaymentsDiscountsRootView(campaignNavigationVm: campaignNavigationVm)
                 .onAppear {
                     let store: CampaignStore = globalPresentableStoreContainer.get()
