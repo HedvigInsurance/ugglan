@@ -286,7 +286,7 @@ public struct ClaimDetailView: View {
                         }
                     }
                     .sectionContainerStyle(.transparent)
-                    .padding(.top, .padding16)
+                    .padding(.vertical, .padding16)
                 }
             }
         }
