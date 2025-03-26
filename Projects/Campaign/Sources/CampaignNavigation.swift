@@ -19,13 +19,16 @@ public struct CampaignNavigation<Content: View>: View {
     @ViewBuilder var redirect: (_ type: CampaignRedirectType) -> Content
     @EnvironmentObject var router: Router
     @ObservedObject var campaignNavigationVm: CampaignNavigationViewModel
+    let onEditCode: () -> Void
 
     public init(
         campaignNavigationVm: CampaignNavigationViewModel,
-        @ViewBuilder redirect: @escaping (_ type: CampaignRedirectType) -> Content
+        @ViewBuilder redirect: @escaping (_ type: CampaignRedirectType) -> Content,
+        onEditCode: @escaping () -> Void
     ) {
         self.campaignNavigationVm = campaignNavigationVm
         self.redirect = redirect
+        self.onEditCode = onEditCode
     }
 
     public var body: some View {
@@ -48,19 +51,29 @@ public struct CampaignNavigation<Content: View>: View {
             presented: $campaignNavigationVm.isAddCampaignPresented,
             style: [.height]
         ) {
-            AddCampaignCodeView(campaignNavigationVm: campaignNavigationVm)
-                .configureTitle(L10n.paymentsAddCampaignCode)
-                .embededInNavigation(
-                    options: .navigationType(type: .large),
-                    tracking: CampaignDetentActions.addCampaign
+            AddCampaignCodeView(
+                campaignNavigationVm: campaignNavigationVm,
+                vm: .init(
+                    paymentDataDiscounts: campaignNavigationVm.paymentDataDiscounts,
+                    onInputChange: onEditCode
                 )
+            )
+            .configureTitle(L10n.paymentsAddCampaignCode)
+            .embededInNavigation(
+                options: .navigationType(type: .large),
+                tracking: CampaignDetentActions.addCampaign
+            )
         }
         .detent(
             item: $campaignNavigationVm.isDeleteCampaignPresented,
             style: [.height]
         ) { discount in
             DeleteCampaignView(
-                vm: .init(discount: discount, paymentDataDiscounts: campaignNavigationVm.paymentDataDiscounts)
+                vm: .init(
+                    discount: discount,
+                    paymentDataDiscounts: campaignNavigationVm.paymentDataDiscounts,
+                    onInputChange: onEditCode
+                )
             )
             .embededInNavigation(
                 options: .navigationType(type: .large),
@@ -111,5 +124,5 @@ extension CampaignRedirectType: TrackingViewNameProtocol {
 }
 
 #Preview {
-    CampaignNavigation(campaignNavigationVm: .init(paymentDataDiscounts: []), redirect: { redirect in })
+    CampaignNavigation(campaignNavigationVm: .init(paymentDataDiscounts: []), redirect: { redirect in }, onEditCode: {})
 }

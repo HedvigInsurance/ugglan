@@ -4,17 +4,16 @@ import hCore
 import hCoreUI
 
 struct AddCampaignCodeView: View {
-    @StateObject var vm: AddCampaignCodeViewModel
+    @ObservedObject private var vm: AddCampaignCodeViewModel
     @ObservedObject var campaignNavigationVm: CampaignNavigationViewModel
     @EnvironmentObject var router: Router
 
     init(
-        campaignNavigationVm: CampaignNavigationViewModel
+        campaignNavigationVm: CampaignNavigationViewModel,
+        vm: AddCampaignCodeViewModel
     ) {
         self.campaignNavigationVm = campaignNavigationVm
-        self._vm = StateObject(
-            wrappedValue: AddCampaignCodeViewModel(paymentDataDiscounts: campaignNavigationVm.paymentDataDiscounts)
-        )
+        self.vm = vm
     }
 
     var body: some View {
@@ -46,7 +45,8 @@ class AddCampaignCodeViewModel: ObservableObject {
     var campaignsService = hCampaignService()
     @PresentableStore var store: CampaignStore
     init(
-        paymentDataDiscounts: [Discount]
+        paymentDataDiscounts: [Discount],
+        onInputChange: @escaping () -> Void
     ) {
         self.paymentDataDiscounts = paymentDataDiscounts
         inputVm = TextInputViewModel(
@@ -57,7 +57,7 @@ class AddCampaignCodeViewModel: ObservableObject {
 
         inputVm.onSave = { [weak self] text in
             try await self?.campaignsService.add(code: text)
-            //            self?.store.send(.load)
+            onInputChange()
             self?.store.send(.fetchDiscountsData(paymentDataDiscounts: paymentDataDiscounts))
 
             await self?.onSuccessAdd()
@@ -89,6 +89,9 @@ class AddCampaignCodeViewModel: ObservableObject {
 struct AddCampaingCodeView_Previews: PreviewProvider {
     static var previews: some View {
         Dependencies.shared.add(module: Module { () -> hCampaignClient in hCampaignClientDemo() })
-        return AddCampaignCodeView(campaignNavigationVm: .init(paymentDataDiscounts: []))
+        return AddCampaignCodeView(
+            campaignNavigationVm: .init(paymentDataDiscounts: []),
+            vm: .init(paymentDataDiscounts: [], onInputChange: {})
+        )
     }
 }

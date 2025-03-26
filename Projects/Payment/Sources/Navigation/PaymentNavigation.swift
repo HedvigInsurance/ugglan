@@ -44,6 +44,9 @@ public struct PaymentsNavigation<Content: View>: View {
                                 case .forever:
                                     self.redirect(.forever)
                                 }
+                            },
+                            onEditCode: {
+                                store.send(.load)
                             }
                         )
                     case .history:
