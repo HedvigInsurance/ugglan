@@ -137,6 +137,7 @@ struct CoInusuredInputScreen: View {
                                             )
                                         }
                                     }
+                                    editCoInsuredNavigation.coInsuredInputModel = nil
                                 }
                             } content: {
                                 hText(L10n.removeConfirmationButton)
@@ -177,6 +178,7 @@ struct CoInusuredInputScreen: View {
                                                     origin: .coinsuredInput,
                                                     coInsured: insuredPeopleVm.completeList()
                                                 )
+                                                editCoInsuredNavigation.coInsuredInputModel = nil
                                             } else {
                                                 let coInsuredToAdd: CoInsuredModel = {
                                                     if vm.noSSN {
@@ -208,6 +210,7 @@ struct CoInusuredInputScreen: View {
                                                 {
                                                     insuredPeopleVm.addCoInsured(coInsuredToAdd)
                                                 }
+                                                editCoInsuredNavigation.coInsuredInputModel = nil
                                             }
 
                                             if !intentViewModel.showErrorViewForCoInsuredInput {
