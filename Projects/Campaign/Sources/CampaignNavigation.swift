@@ -9,7 +9,6 @@ public class CampaignNavigationViewModel: ObservableObject {
     @Published public var isAddCampaignPresented = false
     @Published public var isDeleteCampaignPresented: Discount?
     var paymentDataDiscounts: [Discount]
-
     public let router = Router()
 
     public init(paymentDataDiscounts: [Discount]) {

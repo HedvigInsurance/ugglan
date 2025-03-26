@@ -33,27 +33,25 @@ public struct PaymentsNavigation<Content: View>: View {
                         .configureTitleView(paymentData)
                 }
                 .routerDestination(for: PaymentsRouterAction.self) { routerAction in
-                    Group {
-                        switch routerAction {
-                        case .discounts:
-                            let store: PaymentStore = globalPresentableStoreContainer.get()
-                            let paymentDataDiscounts = store.state.paymentData?.discounts ?? []
-                            CampaignNavigation(
-                                campaignNavigationVm: .init(paymentDataDiscounts: paymentDataDiscounts),
-                                redirect: { redirect in
-                                    switch redirect {
-                                    case .forever:
-                                        self.redirect(.forever)
-                                    }
-                                },
-                                onEditCode: {
-                                    store.send(.load)
+                    switch routerAction {
+                    case .discounts:
+                        let store: PaymentStore = globalPresentableStoreContainer.get()
+                        let paymentDataDiscounts = store.state.paymentData?.discounts ?? []
+                        CampaignNavigation(
+                            campaignNavigationVm: .init(paymentDataDiscounts: paymentDataDiscounts),
+                            redirect: { redirect in
+                                switch redirect {
+                                case .forever:
+                                    self.redirect(.forever)
                                 }
-                            )
-                        case .history:
-                            PaymentHistoryView()
-                                .configureTitle(L10n.paymentHistoryTitle)
-                        }
+                            },
+                            onEditCode: {
+                                store.send(.load)
+                            }
+                        )
+                    case .history:
+                        PaymentHistoryView()
+                            .configureTitle(L10n.paymentHistoryTitle)
                     }
                 }
         }
