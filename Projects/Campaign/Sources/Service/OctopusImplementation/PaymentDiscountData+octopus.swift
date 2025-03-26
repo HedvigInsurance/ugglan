@@ -34,14 +34,16 @@ extension Discount {
 
     public init(
         with data: OctopusGraphQL.MemberChargeFragment.DiscountBreakdown,
-        discount: OctopusGraphQL.PaymentDataQuery.Data.CurrentMember.RedeemedCampaign?
+        discount: OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign?
     ) {
         code = data.code ?? discount?.code ?? ""
         amount = .init(fragment: data.discount.fragments.moneyFragment)
-        title = discount?.description
+        title = discount?.description ?? ""
         listOfAffectedInsurances =
-            discount?.onlyApplicableToContracts?.compactMap({ .init(id: $0.id, displayName: $0.exposureDisplayName) })
-            ?? []
+            discount?.onlyApplicableToContracts?
+            .compactMap({
+                .init(id: $0.id, displayName: $0.exposureDisplayName)
+            }) ?? []
         validUntil = nil
         canBeDeleted = false
         discountId = UUID().uuidString
@@ -100,21 +102,6 @@ extension Referral {
         self.name = data.name
         self.activeDiscount = .init(optionalFragment: data.activeDiscount?.fragments.moneyFragment)
         self.invitedYou = invitedYou
-    }
-}
-
-extension Discount {
-    public init(
-        with data: OctopusGraphQL.MemberChargeFragment.DiscountBreakdown,
-        discount: OctopusGraphQL.ReedemCampaignsFragment.RedeemedCampaign?
-    ) {
-        code = data.code ?? discount?.code ?? ""
-        amount = .init(fragment: data.discount.fragments.moneyFragment)
-        title = discount?.description ?? ""
-        listOfAffectedInsurances = []
-        validUntil = nil
-        canBeDeleted = false
-        discountId = UUID().uuidString
     }
 }
 
