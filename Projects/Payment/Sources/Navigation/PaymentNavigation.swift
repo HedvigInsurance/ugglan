@@ -55,28 +55,6 @@ public struct PaymentsNavigation<Content: View>: View {
                                 .configureTitle(L10n.paymentHistoryTitle)
                         }
                     }
-                    .routerDestination(for: PaymentsRouterAction.self) { routerAction in
-                        switch routerAction {
-                        case .discounts:
-                            let store: PaymentStore = globalPresentableStoreContainer.get()
-                            let paymentDataDiscounts = store.state.paymentData?.discounts ?? []
-                            CampaignNavigation(
-                                campaignNavigationVm: .init(paymentDataDiscounts: paymentDataDiscounts),
-                                redirect: { redirect in
-                                    switch redirect {
-                                    case .forever:
-                                        self.redirect(.forever)
-                                    }
-                                },
-                                onEditCode: {
-                                    store.send(.load)
-                                }
-                            )
-                        case .history:
-                            PaymentHistoryView()
-                                .configureTitle(L10n.paymentHistoryTitle)
-                        }
-                    }
                 }
         }
         .environmentObject(paymentsNavigationVm)
