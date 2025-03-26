@@ -32,7 +32,12 @@ extension ClaimModel {
         self.productVariant = .init(data: claim.productVariant?.fragments.productVariantFragment)
         self.claimType = claim.claimType ?? ""
         self.conversation = .init(fragment: claim.conversation.fragments.conversationFragment, type: .claim)
-        self.appealInstructionsUrl = claim.appealInstructionsUrl
+        self.appealInstructionsUrl = {
+            if let appealInstructionsUrl = claim.appealInstructionsUrl {
+                return Environment.current.claimsApiURL.absoluteString + appealInstructionsUrl
+            }
+            return nil
+        }()
         self.isUploadingFilesEnabled = claim.isUploadingFilesEnabled
         self.showClaimClosedFlow = claim.showClaimClosedFlow
         self.infoText = claim.infoText
