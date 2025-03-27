@@ -114,7 +114,6 @@ struct CoInusuredInputScreen: View {
                                     )
                                     if !intentViewModel.showErrorViewForCoInsuredInput {
                                         editCoInsuredNavigation.coInsuredViewModel.removeCoInsured(coInsuredToDelete)
-                                        router.push(CoInsuredAction.delete)
                                     } else {
                                         // add back
                                         if vm.noSSN {
@@ -209,7 +208,12 @@ struct CoInusuredInputScreen: View {
                         origin: .coinsuredInput,
                         coInsured: insuredPeopleVm.completeList()
                     )
-                    editCoInsuredNavigation.coInsuredInputModel = nil
+
+                    if !editCoInsuredNavigation.intentViewModel
+                        .showErrorViewForCoInsuredInput
+                    {
+                        editCoInsuredNavigation.coInsuredInputModel = nil
+                    }
                 } else {
                     let coInsuredToAdd: CoInsuredModel = {
                         if vm.noSSN {
@@ -597,8 +601,10 @@ public class IntentViewModel: ObservableObject {
         do {
             let data = try await service.sendIntent(contractId: contractId, coInsured: coInsured)
             withAnimation {
-                self.intent = data
-                self.viewState = .success
+                //                self.intent = data
+                //                self.viewState = .success
+                self.viewState = .error(errorMessage: "error")
+                self.errorMessageForInput = "error"
             }
         } catch let exception {
             withAnimation {
