@@ -1,7 +1,6 @@
 import ChangeTier
-import Contracts
 import Foundation
-import PresentableStore
+import MoveFlow
 import hCore
 import hCoreUI
 import hGraphQL
@@ -117,116 +116,135 @@ public class MoveFlowClientOctopus: MoveFlowClient {
 @MainActor
 extension MoveConfigurationModel {
     init(from data: OctopusGraphQL.MoveIntentFragment) {
-        id = data.id
-        isApartmentAvailableforStudent = data.isApartmentAvailableforStudent ?? false
-        maxApartmentNumberCoInsured = data.maxApartmentNumberCoInsured
-        maxApartmentSquareMeters = data.maxApartmentSquareMeters
-        maxHouseNumberCoInsured = data.maxHouseNumberCoInsured
-        maxHouseSquareMeters = data.maxHouseSquareMeters
-        currentHomeAddresses = data.currentHomeAddresses.compactMap({
-            MoveAddress(from: $0.fragments.moveAddressFragment)
-        })
-        self.extraBuildingTypes = data.extraBuildingTypes.compactMap({ $0.rawValue })
+        self.init(
+            id: data.id,
+            currentHomeAddresses: data.currentHomeAddresses.compactMap({
+                MoveAddress(from: $0.fragments.moveAddressFragment)
+            }),
+            extraBuildingTypes: data.extraBuildingTypes.compactMap({ $0.rawValue }),
+            isApartmentAvailableforStudent: data.isApartmentAvailableforStudent ?? false,
+            maxApartmentNumberCoInsured: data.maxApartmentNumberCoInsured,
+            maxApartmentSquareMeters: data.maxApartmentSquareMeters,
+            maxHouseNumberCoInsured: data.maxHouseNumberCoInsured,
+            maxHouseSquareMeters: data.maxHouseSquareMeters
+        )
     }
 }
 
 @MainActor
 extension MoveQuotesModel {
     init(from data: OctopusGraphQL.MoveIntentFragment) {
-        mtaQuotes = data.fragments.quoteFragment.mtaQuotes?.compactMap({ MovingFlowQuote(from: $0) }) ?? []
-        changeTierModel = {
-            if let data = data.fragments.quoteFragment.homeQuotes, !data.isEmpty {
-                return ChangeTierIntentModel.initWith(data: data)
-            }
-            return nil
-        }()
-        homeQuotes = data.homeQuotes?.compactMap({ MovingFlowQuote(from: $0) }) ?? []
+        self.init(
+            homeQuotes: data.homeQuotes?.compactMap({ MovingFlowQuote(from: $0) }) ?? [],
+            mtaQuotes: data.fragments.quoteFragment.mtaQuotes?.compactMap({ MovingFlowQuote(from: $0) }) ?? [],
+            changeTierModel: {
+                if let data = data.fragments.quoteFragment.homeQuotes, !data.isEmpty {
+                    return ChangeTierIntentModel.initWith(data: data)
+                }
+                return nil
+            }()
+        )
     }
 }
 
 @MainActor
 extension MoveAddress {
     init(from data: OctopusGraphQL.MoveAddressFragment) {
-        self.id = data.id
-        self.oldAddressCoverageDurationDays = data.oldAddressCoverageDurationDays
-        self.suggestedNumberCoInsured = data.suggestedNumberCoInsured
         let minMovingDate = data.minMovingDate
         let maxMovingDate = data.maxMovingDate
         let minMovingDateDate = minMovingDate.localDateToDate
         let maxMovingDateDate = maxMovingDate.localDateToDate
-        if let minMovingDateDate, let maxMovingDateDate {
-            if minMovingDateDate < maxMovingDateDate {
-                self.minMovingDate = minMovingDate
-                self.maxMovingDate = maxMovingDate
+        let minMaxMovingDate: (min: String, max: String) = {
+            if let minMovingDateDate, let maxMovingDateDate {
+                if minMovingDateDate < maxMovingDateDate {
+                    return (minMovingDate, maxMovingDate)
+                } else {
+                    return (maxMovingDate, minMovingDate)
+
+                }
             } else {
-                self.maxMovingDate = minMovingDate
-                self.minMovingDate = maxMovingDate
+                return (data.minMovingDate, data.maxMovingDate)
             }
-        } else {
-            self.minMovingDate = data.minMovingDate
-            self.maxMovingDate = data.maxMovingDate
-        }
-        self.displayTitle = data.displayTitle
-        self.displaySubtitle = data.displaySubtitle
+        }()
+
+        self.init(
+            id: data.id,
+            displayTitle: data.displayTitle,
+            displaySubtitle: data.displaySubtitle,
+            oldAddressCoverageDurationDays: data.oldAddressCoverageDurationDays,
+            maxMovingDate: minMaxMovingDate.max,
+            minMovingDate: minMaxMovingDate.min,
+            suggestedNumberCoInsured: data.suggestedNumberCoInsured
+        )
     }
 }
 
 @MainActor
 extension MovingFlowQuote {
     init(from data: OctopusGraphQL.QuoteFragment.MtaQuote) {
-        id = UUID().uuidString
-        premium = .init(fragment: data.premium.fragments.moneyFragment)
-        startDate = data.startDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? data.startDate
         let productVariantFragment = data.productVariant.fragments.productVariantFragment
-        displayName = productVariantFragment.displayName
-        exposureName = data.exposureName
-        insurableLimits = productVariantFragment.insurableLimits.compactMap({
-            .init(label: $0.label, limit: $0.limit, description: $0.description)
-        })
-        perils = productVariantFragment.perils.compactMap({ .init(fragment: $0.fragments.perilFragment) })
-        documents = productVariantFragment.documents.compactMap({ .init($0) })
-        contractType = TypeOfContract.resolve(for: data.productVariant.typeOfContract)
-        displayItems = data.displayItems.map({ .init($0) })
-        addons = data.addons.map({ AddonDataModel(fragment: $0.fragments.moveAddonQuoteFragment) })
+        self.init(
+            premium: .init(fragment: data.premium.fragments.moneyFragment),
+            startDate: data.startDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? data.startDate,
+            displayName: productVariantFragment.displayName,
+            insurableLimits: productVariantFragment.insurableLimits.compactMap({
+                .init(label: $0.label, limit: $0.limit, description: $0.description)
+            }),
+            perils: productVariantFragment.perils.compactMap({ .init(fragment: $0.fragments.perilFragment) }),
+            documents: productVariantFragment.documents.compactMap({ .init($0) }),
+            contractType: TypeOfContract.resolve(for: data.productVariant.typeOfContract),
+            id: UUID().uuidString,
+            displayItems: data.displayItems.map({ .init($0) }),
+            exposureName: data.exposureName,
+            addons: data.addons.map({ AddonDataModel(fragment: $0.fragments.moveAddonQuoteFragment) })
+        )
     }
 
     init(from data: OctopusGraphQL.QuoteFragment.HomeQuote) {
-        id = data.id
-        premium = .init(fragment: data.premium.fragments.moneyFragment)
-        startDate = data.startDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? data.startDate
         let productVariantFragment = data.productVariant.fragments.productVariantFragment
-        displayName = productVariantFragment.displayName
-        exposureName = data.exposureName
-        insurableLimits = productVariantFragment.insurableLimits.compactMap({
-            .init(label: $0.label, limit: $0.limit, description: $0.description)
-        })
-        perils = productVariantFragment.perils.compactMap({ .init(fragment: $0.fragments.perilFragment) })
-        documents = productVariantFragment.documents.compactMap({ .init($0) })
-        contractType = TypeOfContract.resolve(for: data.productVariant.typeOfContract)
-        displayItems = data.displayItems.map({ .init($0) })
-        addons = data.addons.map({ AddonDataModel(fragment: $0.fragments.moveAddonQuoteFragment) })
+        self.init(
+            premium: .init(fragment: data.premium.fragments.moneyFragment),
+            startDate: data.startDate.localDateToDate?.displayDateDDMMMYYYYFormat ?? data.startDate,
+            displayName: productVariantFragment.displayName,
+            insurableLimits: productVariantFragment.insurableLimits.compactMap({
+                .init(label: $0.label, limit: $0.limit, description: $0.description)
+            }),
+            perils: productVariantFragment.perils.compactMap({ .init(fragment: $0.fragments.perilFragment) }),
+            documents: productVariantFragment.documents.compactMap({ .init($0) }),
+            contractType: TypeOfContract.resolve(for: data.productVariant.typeOfContract),
+            id: data.id,
+            displayItems: data.displayItems.map({ .init($0) }),
+            exposureName: data.exposureName,
+            addons: data.addons.map({ AddonDataModel(fragment: $0.fragments.moveAddonQuoteFragment) })
+        )
     }
 }
 
 extension InsuranceDocument {
     init(_ data: OctopusGraphQL.ProductVariantFragment.Document) {
-        self.displayName = data.displayName
-        self.url = data.url
+        self.init(
+            displayName: data.displayName,
+            url: data.url
+        )
     }
 }
 
 extension DisplayItem {
 
     init(_ data: OctopusGraphQL.QuoteFragment.MtaQuote.DisplayItem) {
-        displaySubtitle = data.displaySubtitle
-        displayTitle = data.displayTitle
-        displayValue = data.displayValue
+        self.init(
+            displaySubtitle: data.displaySubtitle,
+            displayTitle: data.displayTitle,
+            displayValue: data.displayValue
+        )
     }
 
     init(_ data: OctopusGraphQL.QuoteFragment.HomeQuote.DisplayItem) {
-        displaySubtitle = data.displaySubtitle
-        displayTitle = data.displayTitle
-        displayValue = data.displayValue
+        self.init(
+            displaySubtitle: data.displaySubtitle,
+            displayTitle: data.displayTitle,
+            displayValue: data.displayValue
+        )
     }
 }
 
@@ -308,26 +326,40 @@ extension ChangeTierIntentModel {
 @MainActor
 extension AddonDataModel {
     init(fragment: OctopusGraphQL.MoveAddonQuoteFragment) {
-        self.id = fragment.addonId
-        self.displayItems = fragment.displayItems.map({
-            .init(displaySubtitle: $0.displaySubtitle, displayTitle: $0.displayTitle, displayValue: $0.displayValue)
-        })
-        self.price = .init(fragment: fragment.premium.fragments.moneyFragment)
-        self.quoteInfo = .init(title: fragment.displayName, description: L10n.movingFlowTravelAddonSummaryDescription)
-        self.addonVariant = .init(fragment: fragment.addonVariant.fragments.addonVariantFragment)
-        self.startDate = fragment.startDate.localDateToDate ?? Date()
-        self.coverageDisplayName = fragment.coverageDisplayName
-        self.removeDialogInfo = {
-            if Dependencies.featureFlags().isAddonsRemovalFromMovingFlowEnabled {
-                return .init(
-                    title: L10n.addonRemoveTitle(fragment.displayName),
-                    description: L10n.addonRemoveDescription,
-                    confirmButtonTitle: L10n.addonRemoveConfirmButton(fragment.displayName),
-                    cancelButtonTitle: L10n.addonRemoveCancelButton
-                )
-            }
-            return nil
+        self.init(
+            id: fragment.addonId,
+            quoteInfo: .init(title: fragment.displayName, description: L10n.movingFlowTravelAddonSummaryDescription),
+            displayItems: fragment.displayItems.map({
+                .init(displaySubtitle: $0.displaySubtitle, displayTitle: $0.displayTitle, displayValue: $0.displayValue)
+            }),
+            coverageDisplayName: fragment.coverageDisplayName,
+            price: .init(fragment: fragment.premium.fragments.moneyFragment),
+            addonVariant: .init(fragment: fragment.addonVariant.fragments.addonVariantFragment),
+            startDate: fragment.startDate.localDateToDate ?? Date(),
+            removeDialogInfo: {
+                if Dependencies.featureFlags().isAddonsRemovalFromMovingFlowEnabled {
+                    return .init(
+                        title: L10n.addonRemoveTitle(fragment.displayName),
+                        description: L10n.addonRemoveDescription,
+                        confirmButtonTitle: L10n.addonRemoveConfirmButton(fragment.displayName),
+                        cancelButtonTitle: L10n.addonRemoveCancelButton
+                    )
+                }
+                return nil
+            }()
+        )
+    }
+}
 
-        }()
+extension HousingType {
+    fileprivate var asMoveApartmentSubType: GraphQLEnum<OctopusGraphQL.MoveApartmentSubType> {
+        switch self {
+        case .apartment:
+            return GraphQLEnum<OctopusGraphQL.MoveApartmentSubType>(.own)
+        case .rental:
+            return GraphQLEnum<OctopusGraphQL.MoveApartmentSubType>(.rent)
+        case .house:
+            return GraphQLEnum<OctopusGraphQL.MoveApartmentSubType>(.own)
+        }
     }
 }
